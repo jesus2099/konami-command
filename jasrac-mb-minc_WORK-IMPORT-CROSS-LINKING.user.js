@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.0423.1765
+// @version      2014.0514.1716
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
@@ -520,8 +520,19 @@ function chromehackuserjs94676f(){"use strict";
 				tjasrac.setAttribute("tabindex", "-1");
 				tjasrac.setAttribute("rows", "1");
 				tjasrac.style.overflow = "hidden";
-				tjasrac.addEventListener("mouseover", function(e) { xhrForm.lastinput = document.activeElement; this.select(); }, false);
-				tjasrac.addEventListener("mouseout", function(e) { if (xhrForm.lastinput.focus) xhrForm.lastinput.focus(); }, false);
+				tjasrac.addEventListener("mouseover", function(e) {
+					if (document.activeElement != this) { xhrForm.lastinput = document.activeElement; }
+					this.blur();
+					this.focus();
+				}, false);
+				tjasrac.addEventListener("focus", function(e) {
+					this.setAttribute("rows", "4");
+					this.select();
+				}, false);
+				tjasrac.addEventListener("mouseout", function(e) {
+					this.setAttribute("rows", "1");
+					if (xhrForm.lastinput && xhrForm.lastinput.focus) { xhrForm.lastinput.focus(); }
+				}, false);
 				tjasrac.addEventListener("keyup", function(e) {
 					var sakuhinCode = this.value.match(new RegExp("work code '''("+reCode+")'''"));
 					if (sakuhinCode && this.value.indexOf(hasCredits) != -1) {
