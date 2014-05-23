@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2012.1112.1534
+// @version      2014.0516.1628
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_PLAIN-TEXT-TRACKLIST.user.js
@@ -55,7 +55,7 @@ var j2ujsID = "jesus2099userjs89036"
 var content = document.getElementById("page");
 var indexes = { "catnum" : 3, "barcode" : 4 };
 var sidebar = document.getElementById("sidebar");
-var CSS_TR_track = "div#content tbody[about^='[mbz:release/'] tr[rel='mo:track']";
+var CSS_TR_track = "div#content > table.tbl > tbody > tr[id]";
 var CSS_A_recording = "td:not(.pos):not(.video) a[href^='/recording/']";
 /* ## PLAIN TEXT TRACKLIST ## */
 function textTracklist(patt) {
