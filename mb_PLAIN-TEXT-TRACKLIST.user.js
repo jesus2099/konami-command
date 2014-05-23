@@ -2,7 +2,9 @@
 // @name         mb. PLAIN TEXT TRACKLIST
 // @version      2012.1112.1534
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
-// @namespace    https://userscripts.org/89036
+// @namespace    https://github.com/jesus2099/konami-command
+// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_PLAIN-TEXT-TRACKLIST.user.js
+// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_PLAIN-TEXT-TRACKLIST.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @grant        none
