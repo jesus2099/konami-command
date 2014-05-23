@@ -2,7 +2,9 @@
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
 // @version      2014.0423.1765
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
-// @namespace    https://userscripts.org/94676
+// @namespace    https://github.com/jesus2099/konami-command
+// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
+// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @grant        none
