@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.0602.0113
+// @version      2014.0602.0137
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -265,7 +265,7 @@
 		var page = document.getElementById("page");
 		var h1 = getParent(link, "h1");
 		var tabs = getParent(link, "div", "tabs");
-		var row = !getParent(link, "li") && getParent(link, "tr");
+		var row = !getParent(link, "ul") && !getParent(link, "dl") && getParent(link, "tr");
 		if (row && !h1 && !tabs && !(cat == "release" && page && clss(page, "box", "r") && stu == "recording") && stu.match(/^(release|recording|work|release-group)$/)) { clss(row, "row", "w"); }
 		if (!tabs) { clss(link, "item", "w"); }
 		if (cat == "edit" || h1) { clss(page, "box", "w"); }
