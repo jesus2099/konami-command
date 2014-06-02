@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.0602.0137
+// @version      2014.0602.0203
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -26,6 +26,7 @@
 // @include      http*://*musicbrainz.org/release-group/*
 // @include      http*://*musicbrainz.org/report/*
 // @include      http*://*musicbrainz.org/search*
+// @include      http*://*musicbrainz.org/series/*
 // @include      http*://*musicbrainz.org/tag/*
 // @include      http*://*musicbrainz.org/tracklist/*
 // @include      http*://*musicbrainz.org/url/*
@@ -41,7 +42,7 @@
 // ==/UserScript==
 (function(){
 	var host = (["musicbrainz.org", "beta.musicbrainz.org", "test.musicbrainz.org"].indexOf(location.host) != -1);
-	var cat = location.href.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
+	var cat = location.href.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|series|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 	if (host && cat) {
 		/* -------- CONFIGURATION START (don’t edit above) -------- */
 		var confirmIfMoreThan = 2000;/*-1 to never confirm*/
