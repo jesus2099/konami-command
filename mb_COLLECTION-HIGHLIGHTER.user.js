@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.0602.0203
+// @version      2014-06-02-203
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -9,35 +9,35 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012.2.21.
 // @grant        none
-// @include      http*://*musicbrainz.org/*edits*
-// @include      http*://*musicbrainz.org/*votes*
-// @include      http*://*musicbrainz.org/area/*
-// @include      http*://*musicbrainz.org/artist/*
-// @include      http*://*musicbrainz.org/cdtoc/*
-// @include      http*://*musicbrainz.org/collection/*
-// @include      http*://*musicbrainz.org/edit/*
-// @include      http*://*musicbrainz.org/isrc/*
-// @include      http*://*musicbrainz.org/label/*
-// @include      http*://*musicbrainz.org/place/*
-// @include      http*://*musicbrainz.org/puid/*
-// @include      http*://*musicbrainz.org/recording/*
-// @include      http*://*musicbrainz.org/release/*
-// @include      http*://*musicbrainz.org/release_group/*
-// @include      http*://*musicbrainz.org/release-group/*
-// @include      http*://*musicbrainz.org/report/*
-// @include      http*://*musicbrainz.org/search*
-// @include      http*://*musicbrainz.org/series/*
-// @include      http*://*musicbrainz.org/tag/*
-// @include      http*://*musicbrainz.org/tracklist/*
-// @include      http*://*musicbrainz.org/url/*
-// @include      http*://*musicbrainz.org/user/*/collections
-// @include      http*://*musicbrainz.org/user/*/ratings*
-// @include      http*://*musicbrainz.org/user/*/subscriptions/artist*
-// @include      http*://*musicbrainz.org/user/*/subscriptions/collection*
-// @include      http*://*musicbrainz.org/user/*/subscriptions/label*
-// @include      http*://*musicbrainz.org/user/*/tag/*
-// @include      http*://*musicbrainz.org/work/*
-// @exclude      http*://*musicbrainz.org/collection/*/own_collection/*
+// @match      http*://*.musicbrainz.org/*edits*
+// @match      http*://*.musicbrainz.org/*votes*
+// @match      http*://*.musicbrainz.org/area/*
+// @match      http*://*.musicbrainz.org/artist/*
+// @match      http*://*.musicbrainz.org/cdtoc/*
+// @match      http*://*.musicbrainz.org/collection/*
+// @match      http*://*.musicbrainz.org/edit/*
+// @match      http*://*.musicbrainz.org/isrc/*
+// @match      http*://*.musicbrainz.org/label/*
+// @match      http*://*.musicbrainz.org/place/*
+// @match      http*://*.musicbrainz.org/puid/*
+// @match      http*://*.musicbrainz.org/recording/*
+// @match      http*://*.musicbrainz.org/release/*
+// @match      http*://*.musicbrainz.org/release_group/*
+// @match      http*://*.musicbrainz.org/release-group/*
+// @match      http*://*.musicbrainz.org/report/*
+// @match      http*://*.musicbrainz.org/search*
+// @match      http*://*.musicbrainz.org/series/*
+// @match      http*://*.musicbrainz.org/tag/*
+// @match      http*://*.musicbrainz.org/tracklist/*
+// @match      http*://*.musicbrainz.org/url/*
+// @match      http*://*.musicbrainz.org/user/*/collections
+// @match      http*://*.musicbrainz.org/user/*/ratings*
+// @match      http*://*.musicbrainz.org/user/*/subscriptions/artist*
+// @match      http*://*.musicbrainz.org/user/*/subscriptions/collection*
+// @match      http*://*.musicbrainz.org/user/*/subscriptions/label*
+// @match      http*://*.musicbrainz.org/user/*/tag/*
+// @match      http*://*.musicbrainz.org/work/*
+// @match      http*://*.musicbrainz.org/collection/*/own_collection/*
 // @run-at       document-end
 // ==/UserScript==
 (function(){
