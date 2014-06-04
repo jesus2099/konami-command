@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2014.0604.1604
+// @version      2014.0604.1616
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. focus the captcha field.
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/freenode_WEBCHAT-CONNECT.user.js
@@ -15,26 +15,37 @@
 // ==/UserScript==
 (function(){"use strict";
 	var userjs = { name: "freenode. WEBCHAT CONNECT", key:"j2fwc" };
+	var inputs, recaptchaParent, recaptcha;
 	self.addEventListener("load", function(e) {
-		var inputs = document.getElementsByTagName("input");
-		var recaptchaParent = document.querySelector("div.qwebirc-qui table.qwebirc-loginbox div#recaptcha_image");
-		var recaptcha = document.querySelector("input#recaptcha_response_field");
+		inputs = document.getElementsByTagName("input");
+		recaptchaParent = document.querySelector("div.qwebirc-qui table.qwebirc-loginbox div#recaptcha_image");
+		recaptcha = document.querySelector("input#recaptcha_response_field");
 		if (document.body.textContent.trim().match(/^412 - Precondition Failed$/) || !recaptchaParent) { location.reload(); }
 		else if (document.getElementsByTagName("frameset").length == 0 && inputs && inputs[0] && inputs[1] && recaptcha) {
 			setTimeout(function() {
 				if (!recaptchaParent.querySelector("img#recaptcha_challenge_image")) { location.reload(); }
 			}, 4000);
 			self.addEventListener("focus", function(e) {
-				recaptcha.focus();
+				cleverFocus();
 			});
 			storify(inputs[0], "nickname");
 			storify(inputs[1], "channels");
-			recaptcha.focus();
+			cleverFocus();
 			inputs[1].style.setProperty("width", "100%");
 			inputs[1].parentNode.style.setProperty("border-bottom", "1px dashed black");
 			inputs[1].parentNode.parentNode.setAttribute("title", "format: “a-channel” (no need for #) or “cats,superchan,(c)rap” (no spacing)");
 		}
 	});
+	function cleverFocus() {
+		for (var i=0; i<2; i++) {
+			if (inputs[i].value.trim().length == 0) {
+				inputs[i].focus();
+				return inputs[i];
+			}
+		}
+		recaptcha.focus();
+		return recaptcha;
+	}
 	function storify(field, key) {
 		var _key = userjs.key+"_"+key;
 		field.setAttribute("ref", _key);
