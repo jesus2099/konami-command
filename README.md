@@ -1,10 +1,18 @@
-﻿# コナミコマンド #
+﻿# ↑↑↓↓←→←→BA（コナミコマンド） #
 
-**Browser‐compatible power‐ups to various web sites** that augment reality.
-Those are user scripts that are thoroughly tested under [Opera 12](http://opera.com/download/guide/?custom=yes)’s native userjs support.
-They also run with Firefox’s Greasemonkey or compatible extension as well as with other browsers as I do not rely on any libraries (self‐contained pure javascript, no GM_, no funny stuff).
-The most augmented web site is [musicbrainz](https://musicbrainz.org).
+**ARE YOU RAYDEE TO AUGMENT YOUR BORWSING ?** (with userjs, user javascript, greasemonkey, etc.) **YES ?**
 
-There are two user friendly access sites (with **install** buttons and classifications) to my scripts : [Greasy Fork](https://greasyfork.org/users/2206-jesus2099) and [OpenUserJS](https://openuserjs.org/users/jesus2099).
+Here are my small user scripts (mainly for [musicbrainz](https://musicbrainz.org) but not only).
+I use myself [Opera 12](http://opera.com/download/guide/?custom=yes)’s native userjs support but the scripts are written for cross-browser compatibility (I don’t use any libraries nor GM_ syntax) and users usually **report bugs** for other browsers quite quick, so please do so too (**in the *issues* section**).
 
-I’m slowly migrating my scripts from [userscripts.org (down)](https://userscripts.org) (you can access my scripts that are still not migrated [over there](http://userscripts.org:8080/users/31010/scripts), as long as that work‐around works).
+## HOW TO INSTALL ##
+
+For the **easiest installation**, you may use one of [Greasy Fork](https://greasyfork.org/users/2206-jesus2099) or [OpenUserJS](https://openuserjs.org/users/jesus2099) that both are up to date **OFFICIAL DISTRIBUTORS** and that both have some handy **INSTALL** buttons.
+
+---
+
+※ IE is not supported (has poor userjs support anyway) but if you need something, still ask me.
+
+※ Find more musicbrainz scripts at [GF](https://greasyfork.org/scripts/by-site/musicbrainz.org) and [OUJS](https://openuserjs.org/group/musicbrainz).
+
+※ Those scripts used to be hosted at [userscripts.org (now read-only)](http://userscripts.org:8080/users/31010/scripts) since 18/7/2007 and **before the may 2014 break down**. The scripts that had no necessity for new version since the break down, are still over there and not yet imported here in “KONAMI COMMAND”.
