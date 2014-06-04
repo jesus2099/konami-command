@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2014.0604.1234
+// @version      2014.0604.1604
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. focus the captcha field.
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/freenode_WEBCHAT-CONNECT.user.js
@@ -24,6 +24,9 @@
 			setTimeout(function() {
 				if (!recaptchaParent.querySelector("img#recaptcha_challenge_image")) { location.reload(); }
 			}, 4000);
+			self.addEventListener("focus", function(e) {
+				recaptcha.focus();
+			});
 			storify(inputs[0], "nickname");
 			storify(inputs[1], "channels");
 			recaptcha.focus();
