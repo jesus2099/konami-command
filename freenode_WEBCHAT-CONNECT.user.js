@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2014.0604.1616
+// @version      2014.0605.1354
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. focus the captcha field.
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/freenode_WEBCHAT-CONNECT.user.js
@@ -33,7 +33,7 @@
 			cleverFocus();
 			inputs[1].style.setProperty("width", "100%");
 			inputs[1].parentNode.style.setProperty("border-bottom", "1px dashed black");
-			inputs[1].parentNode.parentNode.setAttribute("title", "format: “a-channel” (no need for #) or “cats,superchan,(c)rap” (no spacing)");
+			inputs[1].parentNode.parentNode.setAttribute("title", "example: « github,musicbrainz-devel,musicbrainz »");
 		}
 	});
 	function cleverFocus() {
@@ -53,6 +53,7 @@
 		field.addEventListener("change", function(e) {
 			var key = this.getAttribute("ref");
 			if (key && key.match(new RegExp("^"+userjs.key+"_\\w+"))) {
+				if (key.match(/channels/)) { this.value = this.value.replace(/[#  :;]/g, ",").replace(/,{2,}/g, ",").replace(/^,|,$/g, ""); }
 				localStorage.setItem(key, this.value);
 			}
 		});
