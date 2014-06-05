@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.0605.1811
+// @version      2014.0605.1819
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -168,12 +168,8 @@
 							var txt = stu+"s";
 							lab.appendChild(concat([createTag("input", {"a":{"type":"checkbox", "name":stu}, "e":{"change":function(){localStorage.setItem(userjs+"cfg"+this.getAttribute("name"), this.checked?"1":"0");}}}), txt+" "]));
 							var cfgcb = lab.querySelector("input[type='checkbox'][name='"+stu+"']");
-							switch (stu) {
-								case "release":
-								case "release-group":
-								case "recording":
-								case "artist":
-									cfgcb.setAttribute("checked", "checked");
+							if (stu.match(/artist|recording|release(-group)?/)) {
+								cfgcb.setAttribute("checked", "checked");
 							}
 							switch (stu) {
 								case "release":
@@ -208,46 +204,44 @@
 			/*almost generic stuff highlighter*/
 			stuff = {};
 			self.addEventListener("load",function(e){
-				for (var stu in highlightWhatWhere) { if (highlightWhatWhere.hasOwnProperty(stu)) {
+				for (var stu in highlightWhatWhere) if (highlightWhatWhere.hasOwnProperty(stu)) {
 					localStorage.removeItem("jesus2099skip_linksdeco_"+stu);
-				} }
+				}
 			},false);
-			for (var stu in highlightWhatWhere) {
-				if (highlightWhatWhere.hasOwnProperty(stu)) {
-					stuff[stu] = {};
-					var uphill = "";
-					var downhill = cat=="release"&&stu=="label"?"":"[count(ancestor::xhtml:div[contains(@id, 'sidebar')])=0]";
-					if (!highlightInEditNotes && (cat == "edit" || cat == "edits")) {
-						downhill += "[count(ancestor::xhtml:div[contains(@class, 'edit-notes')])=0]";
-					}
-					if (typeof highlightWhatWhere[stu][cat] == "undefined" || highlightWhatWhere[stu][cat]) {
-						var path = uphill+"//xhtml:a[starts-with(@href, '"+server+"/"+stu+"/')"+(cat=="release"?" or starts-with(@href, '/"+stu+"/')":"")+"]"+downhill;
-						xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-						if (xp.snapshotLength > 0) {
-							var skip = localStorage.getItem("jesus2099skip_linksdeco_"+stu);/*skip deco shared with ENTITY ICONS asks only once per page*/
-							if (confirmIfMoreThan < 0 || (xp.snapshotLength <= confirmIfMoreThan || xp.snapshotLength > confirmIfMoreThan && !(skip && skip == "1") && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are "+xp.snapshotLength+" "+stu.toUpperCase()+"S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
-								skip = "0";
-								for (i=0; i < xp.snapshotLength; i++) {
-									var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/"+stu+"/("+strMBID+")$"));
-									if (mbid) {
-										mbid = mbid[1];
-										if (!stuff[stu].loaded) {
-											stuff[stu].rawids = localStorage.getItem(userjs+stu+"s");
-											if (stuff[stu].rawids) {
-												stuff[stu].ids = stuff[stu].rawids.split(" ");
-												debug(" \n"+stuff[stu].ids.length+" "+stu.toUpperCase()+(stuff[stu].ids.length==1?"":"S")+" loaded from local storage ("+userjs+stu+"s)\nMatching: "+path, true);
-											} else { debug(" \nNo "+stu.toUpperCase()+"S in local storage ("+userjs+stu+"s)", true); }
-											stuff[stu].loaded = true;
-										}
-										if (stuff[stu].ids && stuff[stu].ids.indexOf(mbid) > -1) {
-											debug(mbid+" ● “"+xp.snapshotItem(i).textContent+"”", true);
-											decorate(stu, xp.snapshotItem(i));
-										}
+			for (var stu in highlightWhatWhere) if (highlightWhatWhere.hasOwnProperty(stu)) {
+				stuff[stu] = {};
+				var uphill = "";
+				var downhill = cat=="release"&&stu=="label"?"":"[count(ancestor::xhtml:div[contains(@id, 'sidebar')])=0]";
+				if (!highlightInEditNotes && (cat == "edit" || cat == "edits")) {
+					downhill += "[count(ancestor::xhtml:div[contains(@class, 'edit-notes')])=0]";
+				}
+				if (typeof highlightWhatWhere[stu][cat] == "undefined" || highlightWhatWhere[stu][cat]) {
+					var path = uphill+"//xhtml:a[starts-with(@href, '"+server+"/"+stu+"/')"+(cat=="release"?" or starts-with(@href, '/"+stu+"/')":"")+"]"+downhill;
+					xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+					if (xp.snapshotLength > 0) {
+						var skip = localStorage.getItem("jesus2099skip_linksdeco_"+stu);/*skip deco shared with ENTITY ICONS asks only once per page*/
+						if (confirmIfMoreThan < 0 || (xp.snapshotLength <= confirmIfMoreThan || xp.snapshotLength > confirmIfMoreThan && !(skip && skip == "1") && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are "+xp.snapshotLength+" "+stu.toUpperCase()+"S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
+							skip = "0";
+							for (i=0; i < xp.snapshotLength; i++) {
+								var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/"+stu+"/("+strMBID+")$"));
+								if (mbid) {
+									mbid = mbid[1];
+									if (!stuff[stu].loaded) {
+										stuff[stu].rawids = localStorage.getItem(userjs+stu+"s");
+										if (stuff[stu].rawids) {
+											stuff[stu].ids = stuff[stu].rawids.split(" ");
+											debug(" \n"+stuff[stu].ids.length+" "+stu.toUpperCase()+(stuff[stu].ids.length==1?"":"S")+" loaded from local storage ("+userjs+stu+"s)\nMatching: "+path, true);
+										} else { debug(" \nNo "+stu.toUpperCase()+"S in local storage ("+userjs+stu+"s)", true); }
+										stuff[stu].loaded = true;
+									}
+									if (stuff[stu].ids && stuff[stu].ids.indexOf(mbid) > -1) {
+										debug(mbid+" ● “"+xp.snapshotItem(i).textContent+"”", true);
+										decorate(stu, xp.snapshotItem(i));
 									}
 								}
-							} else { skip = "1"; }
-							localStorage.setItem("jesus2099skip_linksdeco_"+stu, skip);
-						}
+							}
+						} else { skip = "1"; }
+						localStorage.setItem("jesus2099skip_linksdeco_"+stu, skip);
 					}
 				}
 			}
@@ -593,7 +587,7 @@
 					stuff[stu].rawids = localStorage.getItem(userjs+stu+"s");
 					stuff[stu].ids = stuff[stu].rawids!=null?(stuff[stu].rawids.length>0?stuff[stu].rawids.split(" "):[]):null;
 				}
-				if (stuff["release"].ids && (releaseID = location.href.match(new RegExp(strMBID)))) {
+				if (stuff["release"].ids && (releaseID = location.pathname.match(new RegExp(strMBID)))) {
 					setTitle(true);
 					var checks = getStuffs();
 					switch (action) {
