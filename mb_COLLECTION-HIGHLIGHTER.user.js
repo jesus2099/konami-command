@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.0605.1819
+// @version      2014.0605.1822
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -170,6 +170,26 @@
 							var cfgcb = lab.querySelector("input[type='checkbox'][name='"+stu+"']");
 							if (stu.match(/artist|recording|release(-group)?/)) {
 								cfgcb.setAttribute("checked", "checked");
+							}
+							if (stu.match(/artist|work/)) {
+								cfgcb.addEventListener("change", function(e) {
+									if (this.checked) {
+										var recording = this.parentNode.parentNode.querySelector("input[name='recording']");
+										recording.checked = true;
+										sendEvent(recording, "change");
+									}
+								}, false);
+							}
+							else if (stu.match(/recording/)) {
+								cfgcb.addEventListener("change", function(e) {
+									if (!this.checked) {
+										var artistwork = this.parentNode.parentNode.querySelectorAll("input[name='artist'], input[name='work']");
+										for (var aw=0; aw<artistwork.length; aw++) {
+											artistwork[aw].checked = false;
+											sendEvent(artistwork[aw], "change");
+										}
+									}
+								}, false);
 							}
 							switch (stu) {
 								case "release":
@@ -870,5 +890,10 @@
 	    "mb": "http://musicbrainz.org/ns/mmd-2.0#",
 	  };
 	  return ns[prefix] || null;
+	}
+	function sendEvent(n, e){
+		var ev = document.createEvent("HTMLEvents");
+		ev.initEvent(e.toLowerCase(), true, true);
+		n.dispatchEvent(ev);
 	}
 })();
