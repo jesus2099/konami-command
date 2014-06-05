@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2014.0605.1354
+// @version      2014.0605.1724
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. focus the captcha field.
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/freenode_WEBCHAT-CONNECT.user.js
@@ -25,26 +25,26 @@
 			setTimeout(function() {
 				if (!recaptchaParent.querySelector("img#recaptcha_challenge_image")) { location.reload(); }
 			}, 4000);
-			self.addEventListener("focus", function(e) {
-				cleverFocus();
-			});
+			self.addEventListener("focus", cleverFocus);
 			storify(inputs[0], "nickname");
 			storify(inputs[1], "channels");
-			cleverFocus();
+			cleverFocus(e);
 			inputs[1].style.setProperty("width", "100%");
 			inputs[1].parentNode.style.setProperty("border-bottom", "1px dashed black");
 			inputs[1].parentNode.parentNode.setAttribute("title", "example: « github,musicbrainz-devel,musicbrainz »");
 		}
 	});
-	function cleverFocus() {
-		for (var i=0; i<2; i++) {
-			if (inputs[i].value.trim().length == 0) {
-				inputs[i].focus();
-				return inputs[i];
+	function cleverFocus(e) {
+		if (document.querySelector("table.qwebirc-loginbox")) {
+			for (var i=0; i<2; i++) {
+				if (inputs[i].value.trim().length == 0) {
+					inputs[i].focus();
+					return inputs[i];
+				}
 			}
+			recaptcha.focus();
+			return recaptcha;
 		}
-		recaptcha.focus();
-		return recaptcha;
 	}
 	function storify(field, key) {
 		var _key = userjs.key+"_"+key;
