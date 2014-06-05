@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.0602.0203
+// @version      2014.0605.1811
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -590,8 +590,8 @@
 				modal(true, "Refreshing memory…", 1);
 				collectionsID = localStorage.getItem(userjs+"collections") || "";
 				for (var stu in stuff) if (highlightWhatWhere.hasOwnProperty(stu)) {
-					stuff[stu].rawids = localStorage.getItem(userjs+stu+"s") || "";
-					stuff[stu].ids = stuff[stu].rawids.length>0?stuff[stu].rawids.split(" "):[];
+					stuff[stu].rawids = localStorage.getItem(userjs+stu+"s");
+					stuff[stu].ids = stuff[stu].rawids!=null?(stuff[stu].rawids.length>0?stuff[stu].rawids.split(" "):[]):null;
 				}
 				if (stuff["release"].ids && (releaseID = location.href.match(new RegExp(strMBID)))) {
 					setTitle(true);
