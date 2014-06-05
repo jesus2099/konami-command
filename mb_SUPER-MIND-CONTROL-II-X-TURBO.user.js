@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL II X TURBO
-// @version      2014.0605.1653
+// @version      2014.0605.1706
 // @description  musicbrainz.org power ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / RADIO_DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
@@ -248,7 +248,7 @@
 								/* fin */
 								if (ok) document.body.appendChild(reled.form).submit();
 								else sendEvent(this, "error");
-							}
+							};
 							xhr.onerror = function(e) {
 								alert("mb. RELEASE_CLONER ERROR MY GOD");
 							};
@@ -840,14 +840,32 @@
 		}
 	}
 	/* --- ENTITY BONUS --- */
-	j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the release editor by mistake. repairs the keyboard tab navigation to save button (MBS-3112) (for the new release editor, the tab order might not be perfectly chosen yet but submit comes first and cancel last)");
-	j2setting("TRACKLIST_TOOLS", true, true, "adds “Set selected works date” in releationship editor and tools to the tracklist tab of release editor: a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 	j2setting("POWER_RELATE_TO", true, true, "remembers last used search type (artist/release/track/label) for “Relate to …” inline AJAX search relationship creator. focuses its search field on click");
 	j2setting("POWER_RELATE_TO_autofocus", true, true, "focus text search field");
 	j2setting("POWER_RELATE_TO_autoselect", true, true, "selects its current value for quick reset by typing");
+	j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the release editor by mistake. repairs the keyboard tab navigation to save button (MBS-3112) (for the new release editor, the tab order might not be perfectly chosen yet but submit comes first and cancel last)");
+	j2setting("TRACKLIST_TOOLS", true, true, "adds “Set selected works date” in releationship editor and tools to the tracklist tab of release editor: a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 	var enttype = self.location.href.match(new RegExp("^"+MBS+"/(artist|label|recording|release|release-group|work)/.*$"));
 	if (enttype) {
 		enttype = enttype[1];
+		/*============================================== KEYBOARD+ MOUSE+ REMEMBER+
+		## POWER_RELATE_TO ##
+		=========================================================================*/
+		if (j2sets.POWER_RELATE_TO) {
+			var rta = document.querySelector("a.relate-to");
+			var rtd = document.querySelector("div.relate-to");
+			if (rta && rtd) {
+		/* MEMORY */
+				initsel(rtd.querySelector("select"), j2sets["POWER_RELATE_TO_"+enttype+"_type!"]);
+				if (enttype == "release") { initsel(rtd.querySelector("select.endpoint"), j2sets["POWER_RELATE_TO_"+enttype+"_endpoint!"]); }
+		/* AUTOFOCUS + AUTOSELECT */
+				var prtq = rtd.querySelector("input.name[type='text']");
+				if (prtq) {
+					rta.addEventListener("click", function(e) { if (j2sets.POWER_RELATE_TO_autofocus) { setTimeout(function(){prtq.focus();},0); } }, false);
+					prtq.addEventListener("focus", function(e) { if (j2sets.POWER_RELATE_TO_autofocus && j2sets.POWER_RELATE_TO_autoselect) { this.select(); } }, false);
+				}
+			}
+		}
 		/*======================================================== KEYBOARD+ MOUSE+
 		## RELEASE_EDITOR_PROTECTOR ##
 		=========================================================================*/
@@ -891,24 +909,6 @@
 						_($("td.works > div.ar > input[type='checkbox']:checked")).map(ko.contextFor).pluck("$parent").each(function (a) { a.period.begin_date(date); a.period.end_date(date); });
 					}
 				}}}, "SET SELECTED WORKS DATE")));
-			}
-		}
-		/*============================================== KEYBOARD+ MOUSE+ REMEMBER+
-		## POWER_RELATE_TO ##
-		=========================================================================*/
-		if (j2sets.POWER_RELATE_TO) {
-			var rta = document.querySelector("a.relate-to");
-			var rtd = document.querySelector("div.relate-to");
-			if (rta && rtd) {
-		/* MEMORY */
-				initsel(rtd.querySelector("select"), j2sets["POWER_RELATE_TO_"+enttype+"_type!"]);
-				if (enttype == "release") { initsel(rtd.querySelector("select.endpoint"), j2sets["POWER_RELATE_TO_"+enttype+"_endpoint!"]); }
-		/* AUTOFOCUS + AUTOSELECT */
-				var prtq = rtd.querySelector("input.name[type='text']");
-				if (prtq) {
-					rta.addEventListener("click", function(e) { if (j2sets.POWER_RELATE_TO_autofocus) { setTimeout(function(){prtq.focus();},0); } }, false);
-					prtq.addEventListener("focus", function(e) { if (j2sets.POWER_RELATE_TO_autofocus && j2sets.POWER_RELATE_TO_autoselect) { this.select(); } }, false);
-				}
 			}
 		}
 	}
