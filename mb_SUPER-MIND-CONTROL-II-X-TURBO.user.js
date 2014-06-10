@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL II X TURBO
-// @version      2014.0605.1706
+// @version      2014.0610.1750
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / RADIO_DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
@@ -224,7 +224,6 @@
 								resv = res.querySelectorAll("release > medium-list > medium");
 								for (var resi=0; resi<resv.length && ok; resi++) {
 									ok &= reled.add("medium > format", "mediums."+resi+".format", {"node":resv[resi]});
-									ok &= reled.add("medium > position", "mediums."+resi+".position", {"node":resv[resi]});
 									ok &= reled.add("medium > title", "mediums."+resi+".name", {"node":resv[resi]});
 									var tracks = resv[resi].querySelectorAll("medium > track-list > track");
 									for (var tr=0; tr<tracks.length; tr++) {
