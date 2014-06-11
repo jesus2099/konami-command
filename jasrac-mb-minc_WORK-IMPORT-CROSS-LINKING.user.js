@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.0514.1716
+// @version      2014.0611.1135
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
@@ -389,21 +389,29 @@ function chromehackuserjs94676f(){"use strict";
 			case "work":
 				if (getExtLinks()) {
 					/* -- vv ------ JASRAC + ongakunomori sakuhin code link ------ vv -- */
-					var sakuhincode, codes = new RegExp(reAnnotCode, "ig");
+					var sakuhincode, codes = new RegExp(reAnnotCode, "ig"), donecodes = [];
 					for (var workattr=document.querySelectorAll("div#sidebar > dl.properties > dd:not(.iswc):not(.lyrics-language):not(.type)"), at=0; at<workattr.length; at++) {
 						var dd = workattr[at];
 						var dt = getSibling(dd, "dt", null, true);
 						if (dt && dt.textContent.match(/jasrac id/i)) {
-							dd.replaceChild(createTag("a", {"href":workLookupURL("jasrac", "code", dd.textContent.trim())}, {}, {}, dd.textContent), dd.firstChild);
-							getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", dd.textContent.trim())}, {"background":background}, {}, "JASRAC — "+dd.textContent.trim())));
-							getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", dd.textContent.trim())}, {"background":background}, {}, "音楽の森 — "+dd.textContent.trim())));
+							var ddcode = dd.textContent.trim();
+							dd.replaceChild(createTag("a", {"href":workLookupURL("jasrac", "code", ddcode)}, {}, {}, ddcode), dd.firstChild);
+							if (donecodes.indexOf(ddcode) < 0) {
+								donecodes.push(ddcode);
+								getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", ddcode)}, {"background":background}, {}, "JASRAC — "+ddcode)));
+								getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", ddcode)}, {"background":background}, {}, "音楽の森 — "+ddcode)));
+							}
 						}
 					}
 					var annotation = document.querySelector("div#content div.annotation");
 					if (annotation) {
 						while (sakuhincode = codes.exec(annotation.textContent)) {
-							getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", sakuhincode[1])}, {"background":background}, {}, "JASRAC — "+sakuhincode[1])));
-							getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", sakuhincode[1])}, {"background":background}, {}, "音楽の森 — "+sakuhincode[1])));
+							sakuhincode = sakuhincode[1];
+							if (donecodes.indexOf(sakuhincode) < 0) {
+								donecodes.push(sakuhincode);
+								getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", sakuhincode)}, {"background":background}, {}, "JASRAC — "+sakuhincode)));
+								getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", sakuhincode)}, {"background":background}, {}, "音楽の森 — "+sakuhincode)));
+							}
 						}
 					}
 					/* -- vv ------ JASRAC ISWC link ------ vv -- */
