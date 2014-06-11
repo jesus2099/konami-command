@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.0611.1648
+// @version      2014.0611.1703
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -296,7 +296,7 @@
 			modal(true, "Loading collection "+mbid+"…", 1);
 			modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(e){location.reload();}), " or close this page."]), 2);
 			modal(true, concat(["<hr>", "Fetching releases…"]), 2);
-			stuff["release-tmp"] = {"ids":[], "rawids":""};
+			stuff["release-tmp"] = {ids:[]};
 			for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
 				stuff[stu].rawids = localStorage.getItem(userjs+stu+"s") || "";
 				stuff[stu].ids = stuff[stu].rawids.length>0?stuff[stu].rawids.split(" "):[];
@@ -322,7 +322,6 @@
 								stuff["release"].rawids += release+" ";
 							}
 							stuff["release-tmp"].ids.push(release);
-							stuff["release-tmp"].rawids += release+" ";
 						}
 						modal(true, rels.length+" release"+(rels.length==1?"":"s")+" fetched.", 1);
 					}
@@ -345,7 +344,6 @@
 						modal(true, " ", 1);
 						if (stuff["release-tmp"].ids.length > 0) {
 							localStorage.setItem(userjs+"releases", stuff["release"].rawids);
-							stuff["release-tmp"].rawids = "";
 							modal(true, concat([createTag("strong", {}, stuff["release"].ids.length+" release"+(stuff["release"].ids.length==1?"":"s")), " saved into local storage ("+userjs+"releases)… "]));
 							modal(true, "OK.", 2);
 							retry = 0;
@@ -439,6 +437,7 @@
 						}
 						else {
 							modal(true, " ", 1);
+							delete(stuff["release-tmp"]);
 							for (var stu in stuff) if (stu != "release" && stuff.hasOwnProperty(stu)) {
 								localStorage.setItem(userjs+stu+"s", stuff[stu].rawids);
 								stuff[stu].rawids = "";
