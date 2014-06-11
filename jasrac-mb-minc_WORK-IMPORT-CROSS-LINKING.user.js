@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.0611.1135
+// @version      2014.0611.1215
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
@@ -401,6 +401,11 @@ function chromehackuserjs94676f(){"use strict";
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", ddcode)}, {"background":background}, {}, "JASRAC — "+ddcode)));
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", ddcode)}, {"background":background}, {}, "音楽の森 — "+ddcode)));
 							}
+							else {
+								if (confirm("Duplicate JASRAC ID detected in work attributes.\nDo you want to edit?")) {
+									location.href = location.pathname+"/edit";
+								}
+							}
 						}
 					}
 					var annotation = document.querySelector("div#content div.annotation");
@@ -411,6 +416,11 @@ function chromehackuserjs94676f(){"use strict";
 								donecodes.push(sakuhincode);
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", sakuhincode)}, {"background":background}, {}, "JASRAC — "+sakuhincode)));
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", sakuhincode)}, {"background":background}, {}, "音楽の森 — "+sakuhincode)));
+							}
+							else {
+								if (confirm("Bogus JASRAC ID detected in annotation (already set as work attribute).\nDo you want to edit annotation?")) {
+									location.href = location.pathname+"/edit_annotation";
+								}
 							}
 						}
 					}
