@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.0611.1544
+// @version      2014.0611.1648
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -50,21 +50,6 @@
 		var highlightInEditNotes = false;
 		var skipArtists = "89ad4ac3-39f7-470e-963a-56509c546377"; /*put artist GUID separated by space that you want to skip, example here it’s VA*/
 		var MBWSRate = 600;
-		/* highlightWhatWhere { "stuff":{"cat":true|false} (cat = page category), ... }
-		default is true (initial set up highlights everything possible, only excludes unused stuff type for each page category, for performance)
-		available page categories: artist, releases, recordings, report, works, aliases, cdtoc, collection, edit, edits,
-		isrc, label, puid, ratings, recording, relationships, release, tracklist, release-group, search, tag, url, work
-		if you don’t want to highlight any artists, comment out the whole "artist" line instead of falsing all categories*/
-		/*TODO. drop this, useless, apparently no perf. gain*/
-		var highlightWhatWhere = {
-			"collection":    {"artist":false, "releases":false, "recordings":false, "works":false, "aliases":false, "cdtoc":false, "collection":false, "edit":false, "edits":false, "isrc":false, "label":false, "puid":false, "ratings":false, "recording":false, "relationships":false, "release":false, "tracklist":false, "release-group":false, "search":false, "tag":false, "url":false, "work":false},
-			"release":       {"artist":false, "recordings":false, "works":false, "aliases":false, "isrc":false, "puid":false, "ratings":false, "work":false},
-			"release-group": {"releases":false, "recordings":false, "works":false, "aliases":false, "cdtoc":false, "collection":false, "isrc":false, "label":false, "puid":false, "recording":false, "tracklist":false, "work":false},
-			"recording":     {"artist":false, "releases":false, "works":false, "aliases":false, "cdtoc":false, "collection":false, "label":false},
-			"artist":        {},
-			"work":          {"artist":false, "releases":false, "recordings":false, "aliases":false, "cdtoc":false, "collection":false, "isrc":false, "label":false, "puid":false, "tracklist":false, "release-group":false},
-			"label":         {"artist":false, "recordings":false, "works":false, "aliases":false, "isrc":false, "puid":false},
-		};
 		/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 		var userjs = "jesus2099userjs126380";
 		var DEBUG = false;
@@ -86,7 +71,7 @@
 		j2ss.insertRule("."+userjs+"HLrow ."+userjs+"HLitem { border: 0; padding: 0; }", j2ss.cssRules.length);
 		var server = location.protocol+"//"+location.host;
 		var collectionsID = localStorage.getItem(userjs+"collections") || "";
-		var stuff;
+		var stuff, collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
 		var strType = "release-group|recording|label|artist|work";
 		var strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 		cat = cat[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
@@ -152,9 +137,9 @@
 							function(e) {
 								var cmsg = "This will REPLACE your current loaded stuff.";
 								if (confirm(dialogprefix+cmsg)) {
-									for (var stu in highlightWhatWhere) { if (highlightWhatWhere.hasOwnProperty(stu)) {
-										localStorage.removeItem(userjs+stu+"s");
-									} }
+									for (var stu=0; stu<collectedStuff.length; stu++) {
+										localStorage.removeItem(userjs+collectedStuff[stu]+"s");
+									}
 									this.previousSibling.previousSibling.click();
 								}
 							},
@@ -165,23 +150,24 @@
 					if (i == 0) {
 						/* settings */
 						var settings = [];
-						for (var stu in highlightWhatWhere) if (stu != "collection" && highlightWhatWhere.hasOwnProperty(stu)) {
+						for (var stu=0; stu<collectedStuff.length; stu++) if (collectedStuff[stu] != "collection") {
+							var cstuff = collectedStuff[stu];
 							var lab = document.createElement("label");
 							lab.style.setProperty("white-space", "nowrap");
-							lab.appendChild(concat([createTag("input", {"a":{"type":"checkbox", "name":stu}, "e":{"change":function(){localStorage.setItem(userjs+"cfg"+this.getAttribute("name"), this.checked?"1":"0");}}}), stu+"s "]));
-							var cfgcb = lab.querySelector("input[type='checkbox'][name='"+stu+"']");
+							lab.appendChild(concat([createTag("input", {"a":{"type":"checkbox", "name":cstuff}, "e":{"change":function(){localStorage.setItem(userjs+"cfg"+this.getAttribute("name"), this.checked?"1":"0");}}}), cstuff+"s "]));
+							var cfgcb = lab.querySelector("input[type='checkbox'][name='"+cstuff+"']");
 							/* defaults */
-							if (stu.match(/artist|recording|release(-group)?/)) {
+							if (cstuff.match(/artist|recording|release(-group)?/)) {
 								cfgcb.setAttribute("checked", "checked");
 							}
 							/* forced */
-							if (stu.match(/release(-group)?/)) {
+							if (cstuff.match(/release(-group)?/)) {
 								lab.style.opacity = ".5";
 								cfgcb.setAttribute("disabled", "disabled");
 							}
 							/* read local storage stored settings */
 							else {
-								var cfgstu = localStorage.getItem(userjs+"cfg"+stu);
+								var cfgstu = localStorage.getItem(userjs+"cfg"+cstuff);
 								if (cfgstu == "1") {
 									cfgcb.setAttribute("checked", "checked");
 								}
@@ -190,7 +176,7 @@
 								}
 							}
 							/* artist and work tracking requires recording tracking */
-							if (stu.match(/artist|work/)) {
+							if (cstuff.match(/artist|work/)) {
 								cfgcb.addEventListener("change", function(e) {
 									if (this.checked) {
 										var recording = this.parentNode.parentNode.querySelector("input[name='recording']");
@@ -199,7 +185,7 @@
 									}
 								}, false);
 							}
-							else if (stu.match(/recording/)) {
+							else if (cstuff.match(/recording/)) {
 								cfgcb.addEventListener("change", function(e) {
 									if (!this.checked) {
 										var artistwork = this.parentNode.parentNode.querySelectorAll("input[name='artist'], input[name='work']");
@@ -222,47 +208,46 @@
 			/*almost generic stuff highlighter*/
 			stuff = {};
 			self.addEventListener("load",function(e){
-				for (var stu in highlightWhatWhere) if (highlightWhatWhere.hasOwnProperty(stu)) {
-					localStorage.removeItem("jesus2099skip_linksdeco_"+stu);
+				for (var stu=0; stu<collectedStuff.length; stu++) {
+					localStorage.removeItem("jesus2099skip_linksdeco_"+collectedStuff[stu]);
 				}
 			},false);
-			for (var stu in highlightWhatWhere) if (highlightWhatWhere.hasOwnProperty(stu)) {
-				stuff[stu] = {};
+			for (var stu=0; stu<collectedStuff.length; stu++) {
+				var cstuff = collectedStuff[stu];
+				stuff[cstuff] = {};
 				var uphill = "";
-				var downhill = cat=="release"&&stu=="label"?"":"[count(ancestor::xhtml:div[contains(@id, 'sidebar')])=0]";
+				var downhill = cat=="release"&&cstuff=="label"?"":"[count(ancestor::xhtml:div[contains(@id, 'sidebar')])=0]";
 				if (!highlightInEditNotes && (cat == "edit" || cat == "edits")) {
 					downhill += "[count(ancestor::xhtml:div[contains(@class, 'edit-notes')])=0]";
 				}
-				if (typeof highlightWhatWhere[stu][cat] == "undefined" || highlightWhatWhere[stu][cat]) {
-					var path = uphill+"//xhtml:a[starts-with(@href, '"+server+"/"+stu+"/')"+(cat=="release"?" or starts-with(@href, '/"+stu+"/')":"")+"]"+downhill;
-					xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-					if (xp.snapshotLength > 0) {
-						var skip = localStorage.getItem("jesus2099skip_linksdeco_"+stu);/*skip deco shared with ENTITY ICONS asks only once per page*/
-						if (confirmIfMoreThan < 0 || (xp.snapshotLength <= confirmIfMoreThan || xp.snapshotLength > confirmIfMoreThan && !(skip && skip == "1") && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are "+xp.snapshotLength+" "+stu.toUpperCase()+"S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
-							skip = "0";
-							for (i=0; i < xp.snapshotLength; i++) {
-								var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/"+stu+"/("+strMBID+")$"));
-								if (mbid) {
-									mbid = mbid[1];
-									if (!stuff[stu].loaded) {
-										stuff[stu].rawids = localStorage.getItem(userjs+stu+"s");
-										if (stuff[stu].rawids) {
-											stuff[stu].ids = stuff[stu].rawids.split(" ");
-											debug(" \n"+stuff[stu].ids.length+" "+stu.toUpperCase()+(stuff[stu].ids.length==1?"":"S")+" loaded from local storage ("+userjs+stu+"s)\nMatching: "+path, true);
-										}
-										else { debug(" \nNo "+stu.toUpperCase()+"S in local storage ("+userjs+stu+"s)", true); }
-										stuff[stu].loaded = true;
+				var path = uphill+"//xhtml:a[starts-with(@href, '"+server+"/"+cstuff+"/')"+(cat=="release"?" or starts-with(@href, '/"+cstuff+"/')":"")+"]"+downhill;
+				xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+				if (xp.snapshotLength > 0) {
+					var skip = localStorage.getItem("jesus2099skip_linksdeco_"+cstuff);/*skip deco shared with ENTITY ICONS asks only once per page*/
+					if (confirmIfMoreThan < 0 || (xp.snapshotLength <= confirmIfMoreThan || xp.snapshotLength > confirmIfMoreThan && !(skip && skip == "1") && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are "+xp.snapshotLength+" "+cstuff.toUpperCase()+"S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
+						skip = "0";
+						for (i=0; i < xp.snapshotLength; i++) {
+							var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/"+cstuff+"/("+strMBID+")$"));
+							if (mbid) {
+								mbid = mbid[1];
+								if (!stuff[cstuff].loaded) {
+									stuff[cstuff].rawids = localStorage.getItem(userjs+cstuff+"s");
+									if (stuff[cstuff].rawids) {
+										stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
+										debug(" \n"+stuff[cstuff].ids.length+" "+cstuff.toUpperCase()+(stuff[cstuff].ids.length==1?"":"S")+" loaded from local storage ("+userjs+cstuff+"s)\nMatching: "+path, true);
 									}
-									if (stuff[stu].ids && stuff[stu].ids.indexOf(mbid) > -1) {
-										debug(mbid+" ● “"+xp.snapshotItem(i).textContent+"”", true);
-										decorate(stu, xp.snapshotItem(i));
-									}
+									else { debug(" \nNo "+cstuff.toUpperCase()+"S in local storage ("+userjs+cstuff+"s)", true); }
+									stuff[cstuff].loaded = true;
+								}
+								if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
+									debug(mbid+" ● “"+xp.snapshotItem(i).textContent+"”", true);
+									decorate(cstuff, xp.snapshotItem(i));
 								}
 							}
 						}
-						else { skip = "1"; }
-						localStorage.setItem("jesus2099skip_linksdeco_"+stu, skip);
 					}
+					else { skip = "1"; }
+					localStorage.setItem("jesus2099skip_linksdeco_"+cstuff, skip);
 				}
 			}
 			debug("");
@@ -312,7 +297,7 @@
 			modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(e){location.reload();}), " or close this page."]), 2);
 			modal(true, concat(["<hr>", "Fetching releases…"]), 2);
 			stuff["release-tmp"] = {"ids":[], "rawids":""};
-			for (var stu in stuff) if (highlightWhatWhere.hasOwnProperty(stu)) {
+			for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
 				stuff[stu].rawids = localStorage.getItem(userjs+stu+"s") || "";
 				stuff[stu].ids = stuff[stu].rawids.length>0?stuff[stu].rawids.split(" "):[];
 			}
@@ -428,7 +413,7 @@
 						]), 0, [i+1, stuff["release-tmp"].ids.length]);
 						var sep = "";
 						var totalAddedStuff = 0
-						for (var stu in stuff) { if (stuff.hasOwnProperty(stu) && stu != "release") {
+						for (var stu in stuff) if (stu != "release" && stuff.hasOwnProperty(stu)) {
 							var addedStuff = 0;
 							xp = res.evaluate("//mb:release[1]//mb:"+stu, res, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 							for (var ixp=0; ixp<xp.snapshotLength; ixp++) {
@@ -446,7 +431,7 @@
 								modal(true, sep+addedStuff+" "+stu+(addedStuff==1?"":"s"));
 								sep = ", ";
 							}
-						} }
+						}
 						if (totalAddedStuff > 0) { modal(true, ".", 1); }
 						if (++i < stuff["release-tmp"].ids.length) {
 							retry = 0;
@@ -454,13 +439,11 @@
 						}
 						else {
 							modal(true, " ", 1);
-							for (var stu in stuff) {
-								if (stuff.hasOwnProperty(stu) && stu != "release") {
-									localStorage.setItem(userjs+stu+"s", stuff[stu].rawids);
-									stuff[stu].rawids = "";
-									modal(true, concat([createTag("strong", {}, stuff[stu].ids.length+" "+stu+(stuff[stu].ids.length==1?"":"s")), " saved into local storage ("+userjs+stu+"s)… "]));
-									modal(true, "OK.", 1);
-								}
+							for (var stu in stuff) if (stu != "release" && stuff.hasOwnProperty(stu)) {
+								localStorage.setItem(userjs+stu+"s", stuff[stu].rawids);
+								stuff[stu].rawids = "";
+								modal(true, concat([createTag("strong", {}, stuff[stu].ids.length+" "+stu+(stuff[stu].ids.length==1?"":"s")), " saved into local storage ("+userjs+stu+"s)… "]));
+								modal(true, "OK.", 1);
 							}
 							end(true);
 						}
@@ -606,7 +589,7 @@
 				altered = this.getAttribute("href") != location.href;
 				modal(true, "Refreshing memory…", 1);
 				collectionsID = localStorage.getItem(userjs+"collections") || "";
-				for (var stu in stuff) if (highlightWhatWhere.hasOwnProperty(stu)) {
+				for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
 					stuff[stu].rawids = localStorage.getItem(userjs+stu+"s");
 					stuff[stu].ids = stuff[stu].rawids!=null?(stuff[stu].rawids.length>0?stuff[stu].rawids.split(" "):[]):null;
 				}
@@ -822,17 +805,17 @@
 		return a;
 	}
 	function createTag(tag, gadgets, children) {
-	        var t = (tag=="fragment"?document.createDocumentFragment():document.createElement(tag));
-	        if(t.tagName) {
-	                if (gadgets) {
-	                        for (var attri in gadgets.a) { if (gadgets.a.hasOwnProperty(attri)) { t.setAttribute(attri, gadgets.a[attri]); } }
-	                        for (var style in gadgets.s) { if (gadgets.s.hasOwnProperty(style)) { t.style.setProperty(style.replace(/!/,""), gadgets.s[style], style.match(/!/)?"important":""); } }
-	                        for (var event in gadgets.e) { if (gadgets.e.hasOwnProperty(event)) { t.addEventListener(event, gadgets.e[event], false); } }
-	                }
-	                if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) { t.style.setProperty("cursor", "pointer"); }
-	        }
-			if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.nodeType) { chldrn = [chldrn]; } for(var child=0; child<chldrn.length; child++) { t.appendChild(typeof chldrn[child]=="string"?document.createTextNode(chldrn[child]):chldrn[child]); } t.normalize(); }
-	        return t;
+		var t = (tag=="fragment"?document.createDocumentFragment():document.createElement(tag));
+		if(t.tagName) {
+			if (gadgets) {
+				for (var attri in gadgets.a) if (gadgets.a.hasOwnProperty(attri)) t.setAttribute(attri, gadgets.a[attri]);
+				for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) t.style.setProperty(style.replace(/!/,""), gadgets.s[style], style.match(/!/)?"important":"");
+				for (var event in gadgets.e) if (gadgets.e.hasOwnProperty(event)) t.addEventListener(event, gadgets.e[event], false);
+			}
+			if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) t.style.setProperty("cursor", "pointer");
+		}
+		if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.nodeType) { chldrn = [chldrn]; } for(var child=0; child<chldrn.length; child++) { t.appendChild(typeof chldrn[child]=="string"?document.createTextNode(chldrn[child]):chldrn[child]); } t.normalize(); }
+		return t;
 	}
 	function addAfter(n, e) {
 		if (n && e && e.parentNode) {
