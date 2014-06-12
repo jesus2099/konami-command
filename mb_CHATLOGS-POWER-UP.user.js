@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2013.0905.1803
+// @version      2014.0612.1314
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; misc stuff too
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_CHATLOGS-POWER-UP.user.js
@@ -12,12 +12,12 @@
 // @include      https://chatlogs.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
-(function () {
-	const userjs = "j2userjs127580";
-	const ls = (typeof localStorage != "undefined");
-	const cat = self.location.href.match(/chatlogs\.musicbrainz\.org\/([^/]+)\//);
-	const date = self.location.href.match(/\/(\d{4}-\d{2}-\d{2})\.html/);
-	const dds = document.querySelectorAll("dd");
+(function(){
+	var userjs = "j2userjs127580";
+	var ls = (typeof localStorage != "undefined");
+	var cat = self.location.href.match(/chatlogs\.musicbrainz\.org\/([^/]+)\//);
+	var date = self.location.href.match(/\/(\d{4}-\d{2}-\d{2})\.html/);
+	var dds = document.querySelectorAll("dd");
 	var srdd = "none";
 	var srnv = "jesus script patate";/*just some starting default value example*/
 	linkify();
@@ -101,7 +101,7 @@
 					plusmoins(this.value);
 				}
 			}));
-			plusmoins();
+			asyncPlusmoins();
 			/* server messages on/off */
 			ctt.appendChild(document.createTextNode(sep));
 			ctt.appendChild(createTag("input", {
@@ -169,6 +169,19 @@
 			ctt.appendChild(createA("#"+tgt, self.location.href.replace(/\/musicbrainz(?:-devel)?\//, "/"+tgt+"/")));
 		}
 	}
+	var timeoutPlusmoins;
+	function asyncPlusmoins (e) {
+		if (e) {
+			document.body.removeEventListener("DOMNodeInserted", asyncPlusmoins, false);
+			document.body.removeEventListener("DOMAttrModified", asyncPlusmoins, false);
+			clearTimeout(timeoutPlusmoins);
+			timeoutPlusmoins = setTimeout(plusmoins, 400);
+		}
+		else {
+			document.body.addEventListener("DOMNodeInserted", asyncPlusmoins, false);
+			document.body.addEventListener("DOMAttrModified", asyncPlusmoins, false);
+		}
+	}
 	function plusmoins(p) {
 		if (p) {
 			srnv = p;
@@ -183,9 +196,11 @@
 				var a = nicks[nick].getElementsByClassName(userjs+"plusmoins");
 				if (a && a.length == 1) {
 					a = a[0];
+					a.replaceChild(document.createTextNode(gotit?"-":"+"), a.firstChild);
+					a.setAttribute("title", a.getAttribute("title").replace(/^(\S+)/, gotit?"unwatch":"watch"));
 				}
 				else {
-					a = nicks[nick].insertBefore(createA(gotit?"-":"+", function(e) {
+					a = createA(gotit?"-":"+", function(e) {
 						var inni = document.getElementById(userjs+"nick");
 						var t = this.getAttribute("title").match(/^(\S+) (\S+)$/);
 						var v = inni.value;
@@ -204,14 +219,13 @@
 						}
 						inni.value = v;
 						plusmoins(inni.value);
-					}, (gotit?"unwatch":"watch")+" "+who[1]), nicks[nick].lastChild);
+					}, (gotit?"unwatch":"watch")+" "+who[1]);
 					a.setAttribute("class", userjs+"plusmoins");
 					a.style.textDecoration = "none";
 					a.style.marginRight = "0";
+					nicks[nick].insertBefore(a, nicks[nick].lastChild);
 					nicks[nick].insertBefore(document.createTextNode(" "), nicks[nick].lastChild);
 				}
-				a.replaceChild(document.createTextNode(gotit?"-":"+"), a.firstChild);
-				a.setAttribute("title", a.getAttribute("title").replace(/^(\S+)/, gotit?"unwatch":"watch"));
 				var subs = srnv.split(" ");
 				for (var sub=0; sub<subs.length; sub++) {
 					var dd = getSibling(nicks[nick], "dd");
@@ -268,8 +282,8 @@
 	}
 	function createTag(tag, attribs, events) {
 		var t = document.createElement(tag);
-		for (attr in attribs) { if (attribs.hasOwnProperty(attr)) { t.setAttribute(attr, attribs[attr]); } }
-		for (evt in events) { if (events.hasOwnProperty(evt)) { t.addEventListener(evt, events[evt], false); } }
+		for (var attr in attribs) { if (attribs.hasOwnProperty(attr)) { t.setAttribute(attr, attribs[attr]); } }
+		for (var evt in events) { if (events.hasOwnProperty(evt)) { t.addEventListener(evt, events[evt], false); } }
 		return t;
 	}
 	function createA(text, link, title) {
@@ -290,37 +304,42 @@
 	}
 	function linkify() {
 		/*linkify http://userscripts.org/scripts/show/1295 adapt*/
-	    const urlRegex = /\b(https?:\/\/[^\s\"\<\>]+)/ig;/*/\b(https?:\/\/[^\s+\"\<\>]+)/ig;*/
-	    // tags we will scan looking for un-hyperlinked urls
-	    var allowedParents = [
-	        /*"abbr", "acronym", "address", "applet", "b", "bdo", "big", "blockquote", "body", 
-	        "caption", "center", "cite", "code", */"dd"/*, "del", "div", "dfn", "dt", "em", 
-	        "fieldset", "font", "form", "h1", "h2", "h3", "h4", "h5", "h6", "i", "iframe",
-	        "ins", "kdb", "li", "object", "pre", "p", "q", "samp", "small", "span", "strike", 
-	        "s", "strong", "sub", "sup", "td", "th", "tt", "u", "var"*/
-	        ];
-	    var xpath = "//text()[(parent::" + allowedParents.join(" or parent::") + ") and " +
-	                "contains(translate(., 'HTTP', 'http'), 'http')]";
-	    var candidates = document.evaluate(xpath, document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-	    /*var t0 = new Date().getTime();*/
-	    for (var cand = null, i = 0; (cand = candidates.snapshotItem(i)); i++) {
-	        if (urlRegex.test(cand.nodeValue)) {
-	            var span = document.createElement("span");
-	            var source = cand.nodeValue;
-	            cand.parentNode.replaceChild(span, cand);
-	            urlRegex.lastIndex = 0;
-	            for (var match = null, lastLastIndex = 0; (match = urlRegex.exec(source)); ) {
-	                span.appendChild(document.createTextNode(source.substring(lastLastIndex, match.index)));
-	                var a = document.createElement("a");
-	                a.setAttribute("href", match[0]);
-	                a.appendChild(document.createTextNode(match[0]));
-	                span.appendChild(a);
-	                lastLastIndex = urlRegex.lastIndex;
-	            }
-	            span.appendChild(document.createTextNode(source.substring(lastLastIndex)));
-	            span.normalize();
-	        }
-	    }
-	    /*alert(((new Date().getTime()) - t0) / 1000);*/
+		var urlRegex = /\b(https?:\/\/[^\s\"\<\>]+)/ig;/*/\b(https?:\/\/[^\s+\"\<\>]+)/ig;*/
+		// tags we will scan looking for un-hyperlinked urls
+		var allowedParents = [
+			/*"abbr", "acronym", "address", "applet", "b", "bdo", "big", "blockquote", "body", 
+			"caption", "center", "cite", "code", */"dd"/*, "del", "div", "dfn", "dt", "em", 
+			"fieldset", "font", "form", "h1", "h2", "h3", "h4", "h5", "h6", "i", "iframe",
+			"ins", "kdb", "li", "object", "pre", "p", "q", "samp", "small", "span", "strike", 
+			"s", "strong", "sub", "sup", "td", "th", "tt", "u", "var"*/
+			];
+		var xpath = "//text()[(parent::" + allowedParents.join(" or parent::") + ") and " +
+					"contains(translate(., 'HTTP', 'http'), 'http')]";
+		var candidates = document.evaluate(xpath, document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+		/*var t0 = new Date().getTime();*/
+		for (var cand = null, i = 0; (cand = candidates.snapshotItem(i)); i++) {
+			if (urlRegex.test(cand.nodeValue)) {
+				var span = document.createElement("span");
+				var source = cand.nodeValue;
+				cand.parentNode.replaceChild(span, cand);
+				urlRegex.lastIndex = 0;
+				for (var match = null, lastLastIndex = 0; (match = urlRegex.exec(source)); ) {
+					span.appendChild(document.createTextNode(source.substring(lastLastIndex, match.index)));
+					var a = document.createElement("a");
+					a.setAttribute("href", match[0]);
+					a.appendChild(document.createTextNode(match[0]));
+					span.appendChild(a);
+					lastLastIndex = urlRegex.lastIndex;
+				}
+				span.appendChild(document.createTextNode(source.substring(lastLastIndex)));
+				span.normalize();
+			}
+		}
+		/*alert(((new Date().getTime()) - t0) / 1000);*/
+	}
+	function debug(text, e) {
+		if (false) {
+			console.log((new Date()).toString()+" "+(e?e.type:"")+(text?"\n"+text:""));
+		}
 	}
 })();
