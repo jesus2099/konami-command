@@ -1,6 +1,7 @@
+(function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.0319.1656
+// @version      2014.0613.1853
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -13,7 +14,7 @@
 // @exclude      *://*musicbrainz.org/release/*/*
 // @run-at       document-end
 // ==/UserScript==
-(function(){
+};if(meta&&meta.toString&&(meta=meta.toString()))meta={n:meta.match(/@name\s+(.+)/)[1],v:meta.match(/@version\s+(.+)/)[1],ns:meta.match(/@namespace\s+(.+)/)[1]};
 	/* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 	/* COLOURS */
 	var cOK = "greenyellow";
@@ -62,7 +63,7 @@
 		var statuses = ["cancelling previous merges", "adding recs. to merge", "applying merge edit"];
 		var buttStatuses = ["Clearing…", "Stacking…", "Merging…"];
 		var urls = ["/recording/merge", "/recording/merge_queue", "/recording/merge"];
-		var params = ["submit=cancel", "add-to-merge="+to.value+"&add-to-merge="+from.value, "merge.merging.0="+to.value+"&merge.target="+to.value+"&merge.merging.1="+from.value+"&merge.edit_note="+encodeURIComponent(MMR.getElementsByTagName("textarea")[0].value.trim()+(MMR.getElementsByTagName("textarea")[0].value.trim().length>0?"\n —":"")+"\n'''MASS MERGE RECORDINGS''' (https://userscripts.org/120382)\n")];
+		var params = ["submit=cancel", "add-to-merge="+to.value+"&add-to-merge="+from.value, "merge.merging.0="+to.value+"&merge.target="+to.value+"&merge.merging.1="+from.value+"&merge.edit_note="+encodeURIComponent(MMR.getElementsByTagName("textarea")[0].value.trim()+(MMR.getElementsByTagName("textarea")[0].value.trim().length>0?"\n —":"")+(meta?"\n'''"+meta.n+"''' ver. "+meta.v+" ("+meta.ns+")\n":""))];
 		if (step == 2) {
 			var paramsup = releaseInfoRow("source", swap.value=="no"?remoteRelease:localRelease);
 			paramsup += releaseInfoRow("target", swap.value=="no"?localRelease:remoteRelease);
