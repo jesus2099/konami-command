@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.0616.1804
+// @version      2014.0616.1900
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -64,20 +64,22 @@
 		var statuses = ["cancelling previous merges", "adding recs. to merge", "applying merge edit"];
 		var buttStatuses = ["Clearing…", "Stacking…", "Merging…"];
 		var urls = ["/recording/merge", "/recording/merge_queue", "/recording/merge"];
-		var params = ["submit=cancel", "add-to-merge="+to.value+"&add-to-merge="+from.value, "merge.merging.0="+to.value+"&merge.target="+to.value+"&merge.merging.1="+from.value+"&merge.edit_note="+encodeURIComponent(MMR.getElementsByTagName("textarea")[0].value.trim()+(MMR.getElementsByTagName("textarea")[0].value.trim().length>0?"\n —\n":""))];
+		var params = [
+			"submit=cancel",
+			"add-to-merge="+to.value+"&add-to-merge="+from.value,
+			"merge.merging.0="+to.value+"&merge.target="+to.value+"&merge.merging.1="+from.value
+		];
 		if (step == 2) {
-			var paramsup = releaseInfoRow("source", swap.value=="no"?remoteRelease:localRelease);
+			params[step] += "&merge.edit_note=";
+			var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
+			if (paramsup != "") paramsup += "\n —\n";
+			paramsup += releaseInfoRow("source", swap.value=="no"?remoteRelease:localRelease);
 			paramsup += releaseInfoRow("target", swap.value=="no"?localRelease:remoteRelease);
-			if (localRelease.ac == remoteRelease.ac) {
-				paramsup += "'''SAME RELEASE ARTIST''' "+localRelease.ac+"\n";
-			}
-			if (localRelease.title == remoteRelease.title) {
-				paramsup += "'''SAME RELEASE TITLE''' “"+localRelease.title+"”\n";
-			}
-			if (localRelease.rg == remoteRelease.rg) {
-				paramsup += "'''SAME RELEASE GROUP''' "+MBS+"/release-group/"+localRelease.rg+"\n";
-			}
-			params[2] += encodeURIComponent(paramsup) + (meta?" —\n'''"+meta.n+"''' ("+meta.ns+") "+meta.v:"");
+			if (localRelease.ac == remoteRelease.ac) paramsup += "'''SAME RELEASE ARTIST''' "+localRelease.ac+"\n";
+			if (localRelease.title == remoteRelease.title) paramsup += "'''SAME RELEASE TITLE''' “"+localRelease.title+"”\n";
+			if (localRelease.rg == remoteRelease.rg) paramsup += "'''SAME RELEASE GROUP''' "+MBS+"/release-group/"+localRelease.rg+"\n";
+			if (meta) paramsup += " —\n'''"+meta.n+"''' ("+meta.ns+") "+meta.v;
+			params[step] += encodeURIComponent(paramsup);
 		}
 		infoMerge("#"+from.value+" to #"+to.value+" "+statuses[step]+"…");
 		currentButt.setAttribute("value", buttStatuses[step]+" "+step+"/2");
@@ -234,7 +236,7 @@
 										rmForm = document.createElement("form");
 										rmForm.setAttribute("action", "/recording/merge");
 										rmForm.setAttribute("method", "post");
-										rmForm.setAttribute("title", "remote recording #"+remoteRelease.tracks[rtrack].recording.id);
+										rmForm.setAttribute("title", "AC: "+ac2str(remoteRelease.tracks[rtrack].artistCredit)+"\nremote recording #"+remoteRelease.tracks[rtrack].recording.id);
 										rmForm.setAttribute("class", MMRid);
 										rmForm.style.setProperty("display", "inline");
 										rmForm.appendChild(createInput("hidden", "merge.merging.0", localRelease.tracks[ltrack].recid));
@@ -253,6 +255,8 @@
 												this.value = (this.value == rem2loc?loc2rem:rem2loc);
 											}, false);
 											rmForm.appendChild(createA(remoteRelease.tracks[rtrack].number+". “"+remoteRelease.tracks[rtrack].name+"” ("+time(remoteRelease.tracks[rtrack].length)+")", "/recording/"+remoteRelease.tracks[rtrack].recording.gid));
+											rmForm.appendChild(document.createTextNode(" by "));
+											rmForm.appendChild(ac2dom(remoteRelease.tracks[rtrack].artistCredit));
 											var mergeButt = rmForm.appendChild(createInput("button", "", "Merge"));
 											mergeButt.setAttribute("class", MMRid+"mergebutt");
 											mergeButt.style.setProperty("background-color", cMerge);
@@ -303,7 +307,13 @@
 									}
 								}
 							}
-							infoMerge("Recordings loaded, ready to merge", true);
+							var mergebutts = document.getElementsByClassName(MMRid+"mergebutt").length;
+							infoMerge("Recordings loaded, "+mergebutts+" ready to merge", true);
+							var mergeallbutt = document.getElementById(MMRid+"mergeallbutt");
+							mergeallbutt.value = mergeallbutt.getAttribute("ref").replace(/all/, mergebutts);
+							if (mergebutts == 1) mergeallbutt.value = mergeallbutt.value.replace(/recs/, "rec");
+							if (mergebutts == 0) mergeallbutt.setAttribute("disabled", "disabled");
+							else mergeallbutt.removeAttribute("disabled");
 							document.getElementById(MMRid).getElementsByTagName("textarea")[0].focus();
 						}
 						else { infoMerge("This is not a valid release", false); }
@@ -345,6 +355,8 @@
 			}
 		}, false);
 		tmp = MMRdiv.appendChild(createInput("button", "", "Merge all found recs"));
+		tmp.setAttribute("ref", tmp.value);
+		tmp.setAttribute("id", MMRid+"mergeallbutt");
 		tmp.style.setProperty("background-color", cMerge);
 		tmp.addEventListener("click", function(e) {
 			var allbutts = document.getElementsByClassName(MMRid+"mergebutt");
@@ -459,5 +471,26 @@
 			return d.getMinutes()+":"+(d.getSeconds()<10?"0":"")+d.getSeconds()+(d.getMilliseconds()>0?"."+(d.getMilliseconds()<100?"0":"")+(d.getMilliseconds()<10?"0":"")+d.getMilliseconds():"");
 		}
 		return "?:??";
+	}
+	function ac2str(ac) {
+		var str = "";
+		for (var c=0; c<ac.length; c++) {
+			str += ac[c].name+ac[c].joinPhrase;
+		}
+		return str;
+	}
+	function ac2dom(ac) {
+		var dom = document.createDocumentFragment();
+		for (var c=0; c<ac.length; c++) {
+			var a = createA(ac[c].name, "/artist/"+ac[c].artist.gid);
+			if (ac[c].name != ac[c].artist.name) {
+				a.setAttribute("title", ac[c].artist.name);
+				a = document.createElement("span").appendChild(a).parentNode;
+				a.className = "name-variation";
+			}
+			dom.appendChild(a);
+			if (ac[c].joinPhrase != "") dom.appendChild(document.createTextNode(ac[c].joinPhrase));
+		}
+		return dom;
 	}
 })();
