@@ -1,13 +1,14 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.0613.1853
+// @version      2014.0616.1801
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @since        2011.12.13.
 // @grant        none
 // @include      http*://*musicbrainz.org/release/*
 // @include      http://*.mbsandbox.org/release/*
@@ -63,7 +64,7 @@
 		var statuses = ["cancelling previous merges", "adding recs. to merge", "applying merge edit"];
 		var buttStatuses = ["Clearing…", "Stacking…", "Merging…"];
 		var urls = ["/recording/merge", "/recording/merge_queue", "/recording/merge"];
-		var params = ["submit=cancel", "add-to-merge="+to.value+"&add-to-merge="+from.value, "merge.merging.0="+to.value+"&merge.target="+to.value+"&merge.merging.1="+from.value+"&merge.edit_note="+encodeURIComponent(MMR.getElementsByTagName("textarea")[0].value.trim()+(MMR.getElementsByTagName("textarea")[0].value.trim().length>0?"\n —":"")+(meta?"\n'''"+meta.n+"''' ver. "+meta.v+" ("+meta.ns+")\n":""))];
+		var params = ["submit=cancel", "add-to-merge="+to.value+"&add-to-merge="+from.value, "merge.merging.0="+to.value+"&merge.target="+to.value+"&merge.merging.1="+from.value+"&merge.edit_note="+encodeURIComponent(MMR.getElementsByTagName("textarea")[0].value.trim()+(MMR.getElementsByTagName("textarea")[0].value.trim().length>0?"\n —\n":""))];
 		if (step == 2) {
 			var paramsup = releaseInfoRow("source", swap.value=="no"?remoteRelease:localRelease);
 			paramsup += releaseInfoRow("target", swap.value=="no"?localRelease:remoteRelease);
@@ -76,13 +77,13 @@
 			if (localRelease.rg == remoteRelease.rg) {
 				paramsup += "'''SAME RELEASE GROUP''' "+MBS+"/release-group/"+localRelease.rg+"\n";
 			}
-			params[2] += encodeURIComponent(paramsup);
+			params[2] += encodeURIComponent(paramsup) + (meta?" —\n'''"+meta.n+"''' ("+meta.ns+") "+meta.v:"");
 		}
 		infoMerge("#"+from.value+" to #"+to.value+" "+statuses[step]+"…");
 		currentButt.setAttribute("value", buttStatuses[step]+" "+step+"/2");
 		var xhr = new XMLHttpRequest();
 		function releaseInfoRow(hdr, rel) {
-			return hdr+": “"+rel.title+"”"+rel.comment+" ("+rel.tracks.length+" tracks) by "+rel.ac+" "+MBS+"/release/"+rel.mbid+"\n";
+			return hdr+": “'''''"+rel.title+"'''''”"+rel.comment+" ("+rel.tracks.length+" tracks) "+MBS+"/release/"+rel.mbid+" by '''"+rel.ac+"'''\n";
 		}
 		function FuckingFireFrox(butt) {
 			butt.removeAttribute("disabled");
@@ -143,7 +144,7 @@
 		var rmForm = td.getElementsByTagName("form");
 		if (rmForm) {
 			for (var irf=0; irf<rmForm.length; irf++) {
-				if (rmForm[irf].getAttribute("class") == MMRid) {
+				if (rmForm[irf].className == MMRid) {
 					rmForm[irf].parentNode.removeChild(rmForm[irf]);
 				}
 			}
@@ -233,7 +234,6 @@
 										rmForm = document.createElement("form");
 										rmForm.setAttribute("action", "/recording/merge");
 										rmForm.setAttribute("method", "post");
-										rmForm.setAttribute("target", "_blank");
 										rmForm.setAttribute("title", "remote recording #"+remoteRelease.tracks[rtrack].recording.id);
 										rmForm.setAttribute("class", MMRid);
 										rmForm.style.setProperty("display", "inline");
@@ -305,7 +305,8 @@
 							}
 							infoMerge("Recordings loaded, ready to merge", true);
 							document.getElementById(MMRid).getElementsByTagName("textarea")[0].focus();
-						} else { infoMerge("This is not a valid release", false); }
+						}
+						else { infoMerge("This is not a valid release", false); }
 					}
 				};
 				xhr.open("GET", url, true);
@@ -374,6 +375,7 @@
 		var a = document.createElement("a");
 		if (link) {
 			a.setAttribute("href", link);
+			a.setAttribute("target", "_blank");
 		}
 		else {
 			a.style.setProperty("cursor", "pointer");
