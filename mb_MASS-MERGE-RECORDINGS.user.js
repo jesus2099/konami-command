@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.0616.1900
+// @version      2014.0616.2000
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -10,9 +10,11 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011.12.13.
 // @grant        none
-// @include      http*://*musicbrainz.org/release/*
 // @include      http://*.mbsandbox.org/release/*
-// @exclude      *://*musicbrainz.org/release/*/*
+// @include      http://*musicbrainz.org/release/*
+// @include      https://*musicbrainz.org/release/*
+// @exclude      *.org/release/*/*
+// @exclude      *.org/release/*/merge*
 // @run-at       document-end
 // ==/UserScript==
 };if(meta&&meta.toString&&(meta=meta.toString()))meta={n:meta.match(/@name\s+(.+)/)[1],v:meta.match(/@version\s+(.+)/)[1],ns:meta.match(/@namespace\s+(.+)/)[1]};
@@ -85,7 +87,7 @@
 		currentButt.setAttribute("value", buttStatuses[step]+" "+step+"/2");
 		var xhr = new XMLHttpRequest();
 		function releaseInfoRow(hdr, rel) {
-			return hdr+": “'''''"+rel.title+"'''''”"+rel.comment+" ("+rel.tracks.length+" tracks) "+MBS+"/release/"+rel.mbid+" by '''"+rel.ac+"'''\n";
+			return hdr+": "+MBS+"/release/"+rel.mbid+" “'''''"+rel.title+"'''''”"+rel.comment+" ("+rel.tracks.length+" tracks) by '''"+rel.ac+"'''\n";
 		}
 		function FuckingFireFrox(butt) {
 			butt.removeAttribute("disabled");
