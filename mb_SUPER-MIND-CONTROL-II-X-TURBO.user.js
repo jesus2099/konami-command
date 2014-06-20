@@ -1,6 +1,7 @@
+(function(){"use strict";var meta=function(){
 // ==UserScript==
-// @name         mb. SUPER MIND CONTROL II X TURBO
-// @version      2014.0611.1103
+// @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
+// @version      2014.0620.1926
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
@@ -8,11 +9,10 @@
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @grant        none
+// @include      http*://*musicbrainz.org/*
 // @include      http://*.mbsandbox.org/*
-// @include      http://*musicbrainz.org/*
-// @include      https://*musicbrainz.org/*
-// @exclude      *.*.mbsandbox.org*
-// @exclude      *.*.musicbrainz.org*
+// @exclude      *//*/*mbsandbox.org*
+// @exclude      *//*/*musicbrainz.org*
 // @exclude      *blog.musicbrainz.org*
 // @exclude      *bugs.musicbrainz.org*
 // @exclude      *chatlogs.musicbrainz.org*
@@ -22,8 +22,8 @@
 // @exclude      *wiki.musicbrainz.org*
 // @run-at       document-end
 // ==/UserScript==
-(function(){"use strict";
-	var userjs = {"key":"jesus2099userjs85790", "name":"SUPER MIND CONTROL Ⅱ X TURBO", "ohp":"https://userscripts.org/85790"};
+};if(meta&&meta.toString&&(meta=meta.toString()))meta={n:meta.match(/@name\s+(.+)/)[1],v:meta.match(/@version\s+(.+)/)[1],ns:meta.match(/@namespace\s+(.+)/)[1]};
+	var userjs = {"key":"jesus2099userjs85790"};
 	var MBS = self.location.protocol+"//"+self.location.host;
 	var sidebar = document.getElementById("sidebar");
 	var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -54,7 +54,7 @@
 			getParent(this, "ul").style.setProperty("left", "-10000px");
 			j2setting();
 			if (j2sets) {
-				var j2setsdiv = document.body.appendChild(createTag("div",{"a":{"id":userjs.key+"j2sets"},"s":{"position":"fixed","overflow":"auto","top":"50px","right":"50px","bottom":"50px","left":"50px","background-color":"silver","border":"2px outset white","padding":"1em","z-index":"99"}},[createTag("a",{"s":{"float":"right"},"e":{"click":function(e){del(document.getElementById(userjs.key+"j2sets"));}}}, "  CLOSE ×  "),createTag("a",{"s":{"float":"right"},"e":{"click":function(e){if(confirm("RESET TO DEFAULT and REMOVE OBSOLETE")){localStorage.removeItem(userjs.key+"settings");self.location.reload();}}}}, "  reset  "),createTag("h4",{"s":{"text-shadow":"0 0 8px black"}},["██ ",createTag("a",{"a":{"href":userjs.ohp,"target":"_blank"}},userjs.name)," settings"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{"e":{"click":function(){location.reload();}}},"page reload")," to see the effect."])]));
+				var j2setsdiv = document.body.appendChild(createTag("div",{"a":{"id":userjs.key+"j2sets"},"s":{"position":"fixed","overflow":"auto","top":"50px","right":"50px","bottom":"50px","left":"50px","background-color":"silver","border":"2px outset white","padding":"1em","z-index":"99"}},[createTag("a",{"s":{"float":"right"},"e":{"click":function(e){del(document.getElementById(userjs.key+"j2sets"));}}}, "  CLOSE ×  "),createTag("a",{"s":{"float":"right"},"e":{"click":function(e){if(confirm("RESET TO DEFAULT and REMOVE OBSOLETE")){localStorage.removeItem(userjs.key+"settings");self.location.reload();}}}}, "  reset  "),createTag("h4",{"s":{"text-shadow":"0 0 8px black"}},["██ ",createTag("a",{"a":{"href":meta.ns,"target":"_blank"}},meta.n)," ver."+meta.v]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{"e":{"click":function(){location.reload();}}},"page reload")," to see the effect."])]));
 				var alphakeys = [];
 				for (var s in j2sets) { if (j2sets.hasOwnProperty(s)) {
 					if (j2setsclean.indexOf(s)<0) { delete j2sets[s]; }
@@ -71,7 +71,7 @@
 					if (j2docs[alphakeys[a]]) { tr.appendChild(createTag("td", {"s":{"margin-bottom":".4em"}}, j2docit(j2docs[alphakeys[a]]))); }
 				}
 			}
-		}}}, userjs.name+" settings")), j2set);
+		}}}, meta.n+" settings")), j2set);
 	}
 	function j2setting(set, val, def, doc) {
 		if (set == null) { j2sets = localStorage.getItem(userjs.key+"settings"); if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; } }
@@ -133,7 +133,7 @@
 		) {
 			var addrel = document.querySelector("div#header-menu li.editing > ul > li:not(.separator) > a[href$='/release/add']");
 			if (addrel) {
-				addAfter(createTag("li", null, createTag("a", {"a":{"title":userjs.name+"\nshift+click to open new tab / ctrl+click for background tab"+(rcwhere!="release"?"\nno need to select if there is only one release on this page":"")},"s":{"text-shadow":"1px 1px 2px grey"},"e":{"click":function(e){
+				addAfter(createTag("li", null, createTag("a", {"a":{"title":meta.n+"\nshift+click to open new tab / ctrl+click for background tab"+(rcwhere!="release"?"\nno need to select if there is only one release on this page":"")},"s":{"text-shadow":"1px 1px 2px grey"},"e":{"click":function(e){
 					var crmbids = [];
 					var samerg = confirm("new release in same release group?");
 					if (rcwhere == "release") {
@@ -243,7 +243,7 @@
 									}
 								}
 								/* ws:medium-list */
-								ok &= reled.add("\n —\n"+MBS+"/release/"+crmbids[crr]+" cloned using "+userjs.name+"’s '''RELEASE_CLONER'''™ ("+userjs.ohp+")", "edit_note", {"raw":true,"multiline":true});
+								ok &= reled.add("\n —\n"+MBS+"/release/"+crmbids[crr]+" cloned using '''"+meta.n+"''' ver."+meta.v+"’s '''RELEASE_CLONER'''™ ("+meta.ns+")", "edit_note", {"raw":true,"multiline":true});
 								/* fin */
 								if (ok) document.body.appendChild(reled.form).submit();
 								else sendEvent(this, "error");
