@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL II X TURBO
 // @version      2014.0611.1103
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / RADIO_DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
@@ -554,29 +554,27 @@
 		}
 	}
 	/*=================================================================== MOUSE+
-	## RADIO_DOUBLE_CLICK_SUBMIT ##
+	## DOUBLE_CLICK_SUBMIT ##
 	==========================================================================*/
-	j2setting("RADIO_DOUBLE_CLICK_SUBMIT", true, true, "makes the radio buttons submit forms on double-click (MBS-3229)");
-	if (j2sets.RADIO_DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdstub\/|edit\/|release\/(add(\?release-group=.+)?|[^/+]\/edit)|search|.+\/merge)/)) {
-		var radios = document.querySelectorAll("div#page form > *:not(.edit-list) input[type='radio']");
-		if (radios) {
-			for (var rad=0; rad<radios.length; rad++) {
-				var obj = getParent(radios[rad], "label") || radios[rad];
-				obj.addEventListener("mousedown", stop, false);
-				obj.addEventListener("dblclick", function(e) {
-					var form = getParent(this, "form");
-					if (form) {
-						var submitbutt = form.querySelector("div#release-editor input#id-next[type='submit'],button.submit.positive,span.buttons > button[type='submit']");
-						if (submitbutt) {
-							submitbutt.style.setProperty("background-color", "yellow");
-							submitbutt.click();
-						} else {
-							form.submit();
-						}
+	j2setting("DOUBLE_CLICK_SUBMIT", true, true, "makes the “radio buttons” and “multi-selects” submit forms on double-click (MBS-3229)");
+	if (j2sets.DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdstub\/|edit\/|release\/(add(\?release-group=.+)?|[^/+]\/edit)|search|.+\/merge)/)) {
+		var objs = document.querySelectorAll("div#page form > *:not(.edit-list) input[type='radio'], select[multiple]");
+		for (var o=0; o < objs.length; o++) {
+			var obj = getParent(objs[o], "label") || objs[o];
+			obj.addEventListener("mousedown", stop, false);
+			obj.addEventListener("dblclick", function(e) {
+				var form = getParent(this, "form");
+				if (form) {
+					var submitbutt = form.querySelector("div#release-editor input#id-next[type='submit'],button.submit.positive,span.buttons > button[type='submit']");
+					if (submitbutt) {
+						submitbutt.style.setProperty("background-color", "yellow");
+						submitbutt.click();
+					} else {
+						form.submit();
 					}
-				}, false);
-				obj.setAttribute("title", "double-click this radio button to submit its whole form");
-			}
+				}
+			}, false);
+			obj.setAttribute("title", "double-click here to submit the form");
 		}
 	}
 	/*================================================================ REMEMBER+
