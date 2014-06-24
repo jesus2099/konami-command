@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.0616.2000
+// @version      2014.0624.1527
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -44,14 +44,14 @@
 	var loc2rem = "\u25b6";
 	var ltitle = document.title.match(new RegExp("^"+sregex_title+"$"));
 	var localRelease = {
-		"rg": document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
-		"title": ltitle[1],
-		"comment": document.getElementsByTagName("h1")[0].textContent.match(new RegExp("^"+ltitle[1]+"  (\(.*\))$")),
-		"ac": ltitle[2],
-		"mbid": location.pathname.match(regex_MBID)[0],
-		"tracks":[]
+		rg: document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
+		title: ltitle[1],
+		comment: document.querySelector("h1 > span.comment > bdi"),
+		ac: ltitle[2],
+		mbid: location.pathname.match(regex_MBID)[0],
+		tracks: []
 	};
-	if (localRelease.comment) localRelease.comment = " "+localRelease.comment[1]; else localRelease.comment = "";
+	if (localRelease.comment) localRelease.comment = " ("+localRelease.comment.textContent+")"; else localRelease.comment = "";
 	var remoteRelease = {"tracks":[]};
 	sidebar.insertBefore(mergeRecs(false), sidebar.querySelector("h2"));
 	var skipstep;
