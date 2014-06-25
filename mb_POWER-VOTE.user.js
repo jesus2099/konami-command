@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
 // @description  Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
-// @version      2014.0409.0641
+// @version      2014.0625.1547
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_POWER-VOTE.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_POWER-VOTE.user.js
@@ -402,6 +402,7 @@ function chromehackuserjs57765f(){"use strict";
 			stat = document.body.appendChild(document.createElement("div"));
 			stat.setAttribute("id", userjs+"xhrstat");
 			stat.appendChild(document.createTextNode(" "));
+			stat.style.setProperty("z-index", "2099");
 		}
 		stat.replaceChild(document.createTextNode(nbr+" background vote"+(nbr==1?"":"s")+" pending\u2026"), stat.firstChild);
 		lockform(editform.querySelector("div.edit-list:not(."+userjs+"force) div.edit-description")?false:true);
