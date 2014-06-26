@@ -1,8 +1,11 @@
 (function(){"use strict";var meta=function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.0620.1926
+// @version      2014.6.26.1700
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
+// @doc          http://userscripts.org:8080/scripts/show/85790
+// @doc          http://userscripts-mirror.org/scripts/show/85790
+// @bugs         https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
