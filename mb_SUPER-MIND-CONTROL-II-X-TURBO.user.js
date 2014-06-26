@@ -1,7 +1,7 @@
-(function(){"use strict";var meta=function(){
+(function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.6.26.1700
+// @version      2014.6.26.1716
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
@@ -25,8 +25,17 @@
 // @exclude      *wiki.musicbrainz.org*
 // @run-at       document-end
 // ==/UserScript==
-};if(meta&&meta.toString&&(meta=meta.toString()))meta={n:meta.match(/@name\s+(.+)/)[1],v:meta.match(/@version\s+(.+)/)[1],ns:meta.match(/@namespace\s+(.+)/)[1]};
-	var userjs = {"key":"jesus2099userjs85790"};
+	}};
+	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
+		var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+		while ((kv = row.exec(meta.rawmdb)) !== null) {
+			if (meta[kv[1]]) {
+				if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
+				meta[kv[1]].push(kv[2]);
+			} else meta[kv[1]] = kv[2];
+		}
+	}
+	var userjs = "jesus2099userjs85790"/*have to keep this for legacy saved settings*/;
 	var MBS = self.location.protocol+"//"+self.location.host;
 	var sidebar = document.getElementById("sidebar");
 	var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -57,7 +66,12 @@
 			getParent(this, "ul").style.setProperty("left", "-10000px");
 			j2setting();
 			if (j2sets) {
-				var j2setsdiv = document.body.appendChild(createTag("div",{"a":{"id":userjs.key+"j2sets"},"s":{"position":"fixed","overflow":"auto","top":"50px","right":"50px","bottom":"50px","left":"50px","background-color":"silver","border":"2px outset white","padding":"1em","z-index":"99"}},[createTag("a",{"s":{"float":"right"},"e":{"click":function(e){del(document.getElementById(userjs.key+"j2sets"));}}}, "  CLOSE ×  "),createTag("a",{"s":{"float":"right"},"e":{"click":function(e){if(confirm("RESET TO DEFAULT and REMOVE OBSOLETE")){localStorage.removeItem(userjs.key+"settings");self.location.reload();}}}}, "  reset  "),createTag("h4",{"s":{"text-shadow":"0 0 8px black"}},["██ ",createTag("a",{"a":{"href":meta.ns,"target":"_blank"}},meta.n)," ver."+meta.v]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{"e":{"click":function(){location.reload();}}},"page reload")," to see the effect."])]));
+				var j2setsdiv = document.body.appendChild(createTag("div",{"a":{"id":userjs+"j2sets"},"s":{"position":"fixed","overflow":"auto","top":"50px","right":"50px","bottom":"50px","left":"50px","background-color":"silver","border":"2px outset white","padding":"1em","z-index":"99"}},[createTag("a",{"s":{"float":"right"},"e":{"click":function(e){del(document.getElementById(userjs+"j2sets"));}}}, "  CLOSE ×  "),createTag("a",{"s":{"float":"right"},"e":{"click":function(e){if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")){localStorage.removeItem(userjs+"settings");self.location.reload();}}}}, "  reset  "),createTag("h4",{"s":{"text-shadow":"0 0 8px black"}},["██ ",createTag("a",{"a":{"href":meta.namespace,"target":"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{"e":{"click":function(){location.reload();}}},"page reload")," to see the effect."])]));
+				j2setsdiv.appendChild(createTag("p", {}, "There is some documentation for this script at:"));
+				for (var d=0; d < meta.doc.length; d++) {
+					j2setsdiv.lastChild.appendChild(createTag("a", {a:{href:meta.doc[d],target:"_blank"}}, " mirror #"+(d+1)));
+				}
+				j2setsdiv.appendChild(createTag("p", {}, ["Please check out the ", createTag("a", {a:{href:meta.bugs,target:"_blank"}}, "knwon bugs"), "before submitting ", createTag("a", {a:{href:meta.bugs+"/new?title="+encodeURIComponent(meta.name+" error")+"&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while I was on [that page]("+location.href+") (or not?).\nMy error is that bla bla bla…"),target:"_blank"}}, "new bug"), "."]));
 				var alphakeys = [];
 				for (var s in j2sets) { if (j2sets.hasOwnProperty(s)) {
 					if (j2setsclean.indexOf(s)<0) { delete j2sets[s]; }
@@ -74,10 +88,10 @@
 					if (j2docs[alphakeys[a]]) { tr.appendChild(createTag("td", {"s":{"margin-bottom":".4em"}}, j2docit(j2docs[alphakeys[a]]))); }
 				}
 			}
-		}}}, meta.n+" settings")), j2set);
+		}}}, meta.name+" settings")), j2set);
 	}
 	function j2setting(set, val, def, doc) {
-		if (set == null) { j2sets = localStorage.getItem(userjs.key+"settings"); if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; } }
+		if (set == null) { j2sets = localStorage.getItem(userjs+"settings"); if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; } }
 		else {
 			if (doc) { j2docs[set] = doc; }
 			if (def) {
@@ -86,7 +100,7 @@
 			}
 			if (val != null && (!def || j2sets[set] == null)) {
 				j2sets[set] = val;
-				localStorage.setItem(userjs.key+"settings", JSON.stringify(j2sets));
+				localStorage.setItem(userjs+"settings", JSON.stringify(j2sets));
 			} else if (set) {
 				return j2sets[set];
 			}
@@ -95,7 +109,7 @@
 	function j2settinput(set) {
 		var val = j2setting(set);
 		var rnd = (Math.random()+"").substring(2);
-		var lbl = createTag("label", {"a":{"for":userjs.key+enttype+set+rnd}, "s":{"white-space":"nowrap","text-shadow":"1px 1px 2px grey"}}, createTag("input", {"a":{"type":"checkbox", "id":userjs.key+enttype+set+rnd, "class":set},"e":{"change":function(e){
+		var lbl = createTag("label", {"a":{"for":userjs+enttype+set+rnd}, "s":{"white-space":"nowrap","text-shadow":"1px 1px 2px grey"}}, createTag("input", {"a":{"type":"checkbox", "id":userjs+enttype+set+rnd, "class":set},"e":{"change":function(e){
 			j2setting(this.className, this.getAttribute("type")=="checkbox"?this.checked:this.value);
 		}}}));
 		var inp = lbl.querySelector("input");
@@ -136,7 +150,7 @@
 		) {
 			var addrel = document.querySelector("div#header-menu li.editing > ul > li:not(.separator) > a[href$='/release/add']");
 			if (addrel) {
-				addAfter(createTag("li", null, createTag("a", {"a":{"title":meta.n+"\nshift+click to open new tab / ctrl+click for background tab"+(rcwhere!="release"?"\nno need to select if there is only one release on this page":"")},"s":{"text-shadow":"1px 1px 2px grey"},"e":{"click":function(e){
+				addAfter(createTag("li", null, createTag("a", {"a":{"title":meta.name+"\nshift+click to open new tab / ctrl+click for background tab"+(rcwhere!="release"?"\nno need to select if there is only one release on this page":"")},"s":{"text-shadow":"1px 1px 2px grey"},"e":{"click":function(e){
 					var crmbids = [];
 					var samerg = confirm("new release in same release group?");
 					if (rcwhere == "release") {
@@ -246,13 +260,15 @@
 									}
 								}
 								/* ws:medium-list */
-								ok &= reled.add("\n —\n"+MBS+"/release/"+crmbids[crr]+" cloned using '''"+meta.n+"''' ver."+meta.v+"’s '''RELEASE_CLONER'''™ ("+meta.ns+")", "edit_note", {"raw":true,"multiline":true});
+								ok &= reled.add("\n —\n"+MBS+"/release/"+crmbids[crr]+" cloned using '''RELEASE_CLONER'''™\n※ part of "+meta.namespace+" '''"+meta.name+"''' ("+meta.version+")", "edit_note", {"raw":true,"multiline":true});
 								/* fin */
 								if (ok) document.body.appendChild(reled.form).submit();
 								else sendEvent(this, "error");
 							};
 							xhr.onerror = function(e) {
-								alert("mb. RELEASE_CLONER ERROR MY GOD");
+								if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
+									self.open(meta.bugs+"/new?title=RELEASE_CLONER+xhr+error&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while cloning [this release]("+MBS+"/release/) on [that page]("+location.href+").\n"));
+								}
 							};
 							xhr.open("get", "/ws/2/release/"+crmbids[crr]+"?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation", false);
 							xhr.overrideMimeType("text/xml");
@@ -394,7 +410,7 @@
 		EASY_DATE_calmDOMto = setTimeout(EASY_DATE_init, 100);
 	}
 	function EASY_DATE_init() {
-		for (var years=document.querySelectorAll("*.partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(."+userjs.key+"easydate)"), y=0; y<years.length; y++) {
+		for (var years=document.querySelectorAll("*.partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(."+userjs+"easydate)"), y=0; y<years.length; y++) {
 			addAfter(
 				createTag("input",{
 					"a":{"value":years[y].value, "placeholder":"YYY+", "size":"4", "title":"EASY_DATE®\n"+j2docs.EASY_DATE},
@@ -447,7 +463,7 @@
 						"focus":function(e){this.select();}
 					}}
 				), years[y]);
-			years[y].className += " "+userjs.key+"easydate";
+			years[y].className += " "+userjs+"easydate";
 			years[y].setAttribute("type", "hidden");
 			years[y].addEventListener("change", function(e){
 				if (this.nextSibling.value != this.value) {
@@ -496,12 +512,12 @@
 	if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+)$/i)) {
 		var hldrule = {
 			"selector":[
-				"tr."+userjs.key+"rowhld th",
-				"tr."+userjs.key+"rowhld td",
-				"div#release-editor > div#tracklist tr."+userjs.key+"rowhld td input",
-				"table.details td > span."+userjs.key+"rowhld",
-				"table.details td > span."+userjs.key+"rowhld a",
-				"table.details th."+userjs.key+"rowhld"
+				"tr."+userjs+"rowhld th",
+				"tr."+userjs+"rowhld td",
+				"div#release-editor > div#tracklist tr."+userjs+"rowhld td input",
+				"table.details td > span."+userjs+"rowhld",
+				"table.details td > span."+userjs+"rowhld a",
+				"table.details th."+userjs+"rowhld"
 			],
 			"rule":[
 				"background-color:"+j2sets.ROW_HIGHLIGHTER_colour+"!important"
@@ -531,7 +547,7 @@
 		}
 	}
 	function ROW_HIGHLIGHTER_refresh(e) {
-		var cls = " "+userjs.key+"rowhld";
+		var cls = " "+userjs+"rowhld";
 		var row = [this.parentNode];
 		if (row[0]) {
 			if (location.pathname.match(new RegExp("^/release/(add|"+stre_GUID+"/edit)$"))) {/*release-editor hacks*/
@@ -590,7 +606,7 @@
 			var open = typeof (what[3] || what[6]) != "undefined";
 			var which = what[2] || what[5];
 			what = what[1] || what[4];
-			var lastseenedits = localStorage.getItem(userjs.key+"lastseenedits-"+what);
+			var lastseenedits = localStorage.getItem(userjs+"lastseenedits-"+what);
 			var upd = false;
 			if (lastseenedits) { lastseenedits = JSON.parse(lastseenedits); } else { lastseenedits = {}; }
 			var now = new Date();
@@ -624,7 +640,7 @@
 				}
 			}
 			if (upd && !open) {
-				localStorage.setItem(userjs.key+"lastseenedits-"+what, JSON.stringify(lastseenedits));
+				localStorage.setItem(userjs+"lastseenedits-"+what, JSON.stringify(lastseenedits));
 			}
 		}
 	}
@@ -645,11 +661,11 @@
 			if (
 				self.location.href.indexOf(account.getElementsByTagName("a")[0].getAttribute("href")) < 0 &&
 				(refine = document.querySelector("table.search-help td > a[href*='/search/edits?conditions.']")) &&
-				(id = refine.getAttribute("href").match(/user_id=(\d+)/) || localStorage.getItem(userjs.key+"me-userid"))
+				(id = refine.getAttribute("href").match(/user_id=(\d+)/) || localStorage.getItem(userjs+"me-userid"))
 			) {
 				if (typeof id == "object") {
 					id = id[1];
-					if (id  != localStorage.getItem(userjs.key+"me-userid")) localStorage.setItem(userjs.key+"me-userid", id);
+					if (id  != localStorage.getItem(userjs+"me-userid")) localStorage.setItem(userjs+"me-userid", id);
 					refines.appendChild(document.createTextNode(" | "));
 					refines.appendChild(createTag("a", {"a":{"href": refine.getAttribute("href")+notme.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me"),")"]));
 					novote = notme+novote;
@@ -974,8 +990,8 @@
 		re.addEventListener("DOMNodeInserted", function(e) {
 			var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
 			for (var tp=0; tp<tps.length; tp++) {
-				if (!tps[tp].parentNode.querySelector("*."+userjs.key+"track-length-parser")) {
-					addAfter(createTag("input", {"a":{"type":"button","class":userjs.key+"track-length-parser","value":"Time Parser","_ctrlValue":"Erase times","title":"CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"},"s":{"background-color":"yellow"},"e":{
+				if (!tps[tp].parentNode.querySelector("*."+userjs+"track-length-parser")) {
+					addAfter(createTag("input", {"a":{"type":"button","class":userjs+"track-length-parser","value":"Time Parser","_ctrlValue":"Erase times","title":"CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"},"s":{"background-color":"yellow"},"e":{
 						"click":function(e){
 							var erase = this.value.match(/erase/i) || e.ctrlKey;
 							var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']", this, e);
@@ -999,10 +1015,10 @@
 						"mouseout":TRACKLIST_TOOLS_buttonChange
 					}}), tps[tp]);
 				}
-				if (!tps[tp].parentNode.querySelector("*."+userjs.key+"search-replace")) {
-					addAfter(createTag("input", {"a":{"type":"button","class":userjs.key+"search-replace","value":"Search→replace","title":"SHIFT key to alter all open tracklists"},"s":{"background-color":"yellow"},"e":{
+				if (!tps[tp].parentNode.querySelector("*."+userjs+"search-replace")) {
+					addAfter(createTag("input", {"a":{"type":"button","class":userjs+"search-replace","value":"Search→replace","title":"SHIFT key to alter all open tracklists"},"s":{"background-color":"yellow"},"e":{
 						"click":function(e){
-							var searchrep = localStorage.getItem(userjs.key+"search-replace");
+							var searchrep = localStorage.getItem(userjs+"search-replace");
 							searchrep = searchrep?JSON.parse(searchrep):["",""];
 							if (searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /regex/ig\n\nor normal (case sensitive and global): My String", searchrep[0])) {
 								searchrep[1] = prompt("replace\n\nif it was a regex, you can use those $1 $2 $3 etc.", searchrep[1]);
@@ -1016,7 +1032,7 @@
 										sendEvent(tracks[t], "change");
 									}
 								}
-								localStorage.setItem(userjs.key+"search-replace", JSON.stringify(searchrep));
+								localStorage.setItem(userjs+"search-replace", JSON.stringify(searchrep));
 							}
 						},
 						"mouseover":TRACKLIST_TOOLS_buttonChange,
