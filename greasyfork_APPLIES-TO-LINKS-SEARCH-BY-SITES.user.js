@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         greasyfork. APPLIES TO LINKS SEARCH BY SITES
-// @version      2014.0618.0000
-// @description  greasyfork.org. makes each site in applies to section of script page into a clickable link to search scripts by sites (and see other scripts for same site) (JasonBarnabe/greasyfork#146)
+// @version      2014.6.30.1213
+// @description  greasyfork.org. makes applies to “All site” link to the “*” by site search (JasonBarnabe/greasyfork#146)
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/greasyfork_APPLIES-TO-LINKS-SEARCH-BY-SITES.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/greasyfork_APPLIES-TO-LINKS-SEARCH-BY-SITES.user.js
@@ -20,19 +20,9 @@
 	var appliesto = document.querySelector("div#script-meta dd.script-show-applies-to");
 	if (appliesto) {
 		var at = appliesto.textContent.trim();
-		var applies2 = document.createDocumentFragment();
 		if (at.match(/^all sites$/i)) {
-			applies2.appendChild(a(at, "*"));
+			appliesto.replaceChild(a(at, "*"), appliesto.firstChild);
 		}
-		else {
-			var sep, site, sites = /[^, ]+/g;
-			while ((site = sites.exec(at)) !== null) {
-				if (sep) { applies2.appendChild(document.createTextNode(sep)) }
-				else { sep = ", "; }
-				applies2.appendChild(a(site[0]));
-			}
-		}
-		appliesto.replaceChild(applies2, appliesto.firstChild);
 	}
 	function a(t, l) {
 		var a = document.createElement("a");
