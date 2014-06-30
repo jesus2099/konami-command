@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.6.26.1716
+// @version      2014.6.30.1552
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
@@ -1020,8 +1020,8 @@
 						"click":function(e){
 							var searchrep = localStorage.getItem(userjs+"search-replace");
 							searchrep = searchrep?JSON.parse(searchrep):["",""];
-							if (searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /regex/ig\n\nor normal (case sensitive and global): My String", searchrep[0])) {
-								searchrep[1] = prompt("replace\n\nif it was a regex, you can use those $1 $2 $3 etc.", searchrep[1]);
+							if (searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /\"([^\"]+)\"/g\n\nor normal (case sensitive and global): My String", searchrep[0])) {
+								searchrep[1] = prompt("replace\n\nif it was a regex, you can use those $1 $2 $3 etc.: “$1”", searchrep[1]);
 								for (var t=0, tracks=TRACKLIST_TOOLS_getInputs("td.title > input.track-name[type='text']", this, e); t<tracks.length; t++) {
 									var val = searchrep[0].match(/^\/.+\/[gi]*$/)?tracks[t].value.replace(eval(searchrep[0]), searchrep[1]):tracks[t].value.split(searchrep[0]).join(searchrep[1]);
 									tracks[t].style.removeProperty("background-color");
