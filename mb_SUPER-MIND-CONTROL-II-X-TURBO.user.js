@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.6.30.1552
+// @version      2014.6.30.1710
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
@@ -143,6 +143,9 @@
 	todo : add debugged clone release-AR module
 	==========================================================================*/
 	j2setting("RELEASE_CLONER", true, true, "one-click duplicate release(s). you can find this in the standard “Editing” menu");
+	j2setting("RELEASE_CLONER_release_event", false, true, "clones release event(s), package, catalogue number(s), etc. (not advised as those usually change for each edition)");
+	j2setting("RELEASE_CLONER_additional_information", false, true, "clones annotation and disambiguation (usually change for each edition)");
+	j2setting("RELEASE_CLONER_external_links", false, true, "(EXPERIMENTAL) clones URL relations (not advised as those usually change for each edition)");
 	if (j2sets.RELEASE_CLONER && account) {
 		var rcwhere = self.location.pathname.match(new RegExp("^/((release(?!-group)|release-group|label)/"+stre_GUID+")|artist/"+stre_GUID+"/(releases)$"));
 		if (
@@ -178,8 +181,8 @@
 										if (val) {
 											if (typeof val == "object") val = val.textContent;
 											/*console.log(re+" = "+val);*/
-											if (opt.multiline) reled.form.appendChild(createTag("textarea", {"a":{"name":re}}, val));
-											else reled.form.appendChild(createTag("input", {"a":{"name":re,"value":val}}));
+											if (opt.multiline) reled.form.appendChild(createTag("textarea", {a:{name:re}}, val));
+											else reled.form.appendChild(createTag("input", {a:{name:re, value:val}}));
 										}
 										else if (opt.req) {
 											return false;
@@ -199,36 +202,40 @@
 										ok &= reled.add(resv[resi].textContent.toLowerCase(), "type", {"raw":true});
 									}
 								}
-								ok &= reled.add("release > disambiguation", "comment");
-								ok &= reled.add("release > annotation", "annotation", {"multiline":true});
-								ok &= reled.add("release > barcode", "barcode");
-								/* ws:release-event-list */
-								resv = res.querySelectorAll("release > release-event-list > release-event");
-								for (var resi=0; resi<resv.length && ok; resi++) {
-									var date = resv[resi].querySelector("release-event > date");
-									if (date && (date = date.textContent)) {
-										var datex;
-										if (datex = date.match(/^(\d{4})/)) ok &= reled.add(datex[1], "events."+resi+".date.year", {"raw":true});
-										if (datex = date.match(/^.{4}-(\d{2})/)) ok &= reled.add(datex[1], "events."+resi+".date.month", {"raw":true});
-										if (datex = date.match(/^.{4}-.{2}-(\d{2})$/)) ok &= reled.add(datex[1], "events."+resi+".date.day", {"raw":true});
-										ok &= reled.add("release-event > area > iso-3166-1-code-list > iso-3166-1-code", "events."+resi+".country", {"node":resv[resi]});
-									}
+								if (j2sets.RELEASE_CLONER_additional_information) {
+									ok &= reled.add("release > disambiguation", "comment");
+									ok &= reled.add("release > annotation", "annotation", {"multiline":true});
 								}
-								/* ws:release-event-list */
+								if (j2sets.RELEASE_CLONER_release_event) {
+									ok &= reled.add("release > barcode", "barcode");
+									/* ws:release-event-list */
+									resv = res.querySelectorAll("release > release-event-list > release-event");
+									for (var resi=0; resi<resv.length && ok; resi++) {
+										var date = resv[resi].querySelector("release-event > date");
+										if (date && (date = date.textContent)) {
+											var datex;
+											if (datex = date.match(/^(\d{4})/)) ok &= reled.add(datex[1], "events."+resi+".date.year", {"raw":true});
+											if (datex = date.match(/^.{4}-(\d{2})/)) ok &= reled.add(datex[1], "events."+resi+".date.month", {"raw":true});
+											if (datex = date.match(/^.{4}-.{2}-(\d{2})$/)) ok &= reled.add(datex[1], "events."+resi+".date.day", {"raw":true});
+											ok &= reled.add("release-event > area > iso-3166-1-code-list > iso-3166-1-code", "events."+resi+".country", {"node":resv[resi]});
+										}
+									}
+									/* ws:release-event-list */
+									ok &= reled.add("release > status", "status");
+									ok &= reled.add("release > packaging", "packaging");
+									/* ws:label-info-list */
+									resv = res.querySelectorAll("release > label-info-list > label-info");
+									for (var resi=0; resi<resv.length && ok; resi++) {
+										var label = resv[resi].querySelector("label-info > label");
+										if (label && (label = label.getAttribute("id"))) {
+											ok &= reled.add(label, "labels."+resi+".mbid", {"raw":true});
+										}
+										ok &= reled.add("label-info > catalog-number", "labels."+resi+".catalog_number", {"node":resv[resi]});
+									}
+									/* ws:label-info-list */
+								}
 								ok &= reled.add("release > text-representation > language", "language");
 								ok &= reled.add("release > text-representation > script", "script");
-								ok &= reled.add("release > status", "status");
-								ok &= reled.add("release > packaging", "packaging");
-								/* ws:label-info-list */
-								resv = res.querySelectorAll("release > label-info-list > label-info");
-								for (var resi=0; resi<resv.length && ok; resi++) {
-									var label = resv[resi].querySelector("label-info > label");
-									if (label && (label = label.getAttribute("id"))) {
-										ok &= reled.add(label, "labels."+resi+".mbid", {"raw":true});
-									}
-									ok &= reled.add("label-info > catalog-number", "labels."+resi+".catalog_number", {"node":resv[resi]});
-								}
-								/* ws:label-info-list */
 								/* ws:artist-credit */
 								resv = res.querySelectorAll("release > artist-credit > name-credit > artist");
 								for (var resi=0; resi<resv.length && ok; resi++) {
@@ -260,6 +267,34 @@
 									}
 								}
 								/* ws:medium-list */
+								if (j2sets.RELEASE_CLONER_external_links) {
+									/* ws:url-rels*/
+									resv = res.querySelectorAll("release > relation-list[target-type='url'] > relation");
+									var linkTypes = {
+										"unknown01":  72/*production*/,
+										"unknown02":  83/*IMDb*/,
+										"4f2e710d-166c-480c-a293-2e2c8d658d87":  77/*ASIN*/,
+										"823656dd-0309-4247-b282-b92d287d59c5": 288/*discography*/,
+										"unknown03": 301/*licence*/,
+										"unknown04":  73/*get*/,
+										"unknown05":  79/*buy mail*/,
+										"unknown06":  74/*buy download*/,
+										"unknown07":  75/*download*/,
+										"unknown08":  85/*stream*/,
+										"unknown09": 729/*notes*/,
+										"unknown10":  78/*cover art*/,
+										"unknown11":  29/*notes*/,
+										"unknown12":  82/*other db*/,
+										"unknown13":  76/*discogs*/,
+										"unknown14":  86/*VGMdb*/,
+										"unknown15": 308/*2ndhandsong*/,
+									};
+									for (var resi=0; resi<resv.length && ok; resi++) {
+										ok &= reled.add(linkTypes[resv[resi].getAttribute("type-id")], "urls."+resi+".link_type", {raw:true});
+										ok &= reled.add("relation > target", "urls."+resi+".url", {node:resv[resi]});
+									}
+									/* ws:url-rels */
+								}
 								ok &= reled.add("\n —\n"+MBS+"/release/"+crmbids[crr]+" cloned using '''RELEASE_CLONER'''™\n※ part of "+meta.namespace+" '''"+meta.name+"''' ("+meta.version+")", "edit_note", {"raw":true,"multiline":true});
 								/* fin */
 								if (ok) document.body.appendChild(reled.form).submit();
@@ -270,7 +305,7 @@
 									self.open(meta.bugs+"/new?title=RELEASE_CLONER+xhr+error&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while cloning [this release]("+MBS+"/release/) on [that page]("+location.href+").\n"));
 								}
 							};
-							xhr.open("get", "/ws/2/release/"+crmbids[crr]+"?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation", false);
+							xhr.open("get", "/ws/2/release/"+crmbids[crr]+"?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels", false);
 							xhr.overrideMimeType("text/xml");
 							xhr.send(null);
 						}
