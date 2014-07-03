@@ -1,9 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.7.1.822
+// @version      2014.7.3.2048
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
-
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
 // @bugs         https://github.com/jesus2099/konami-command/issues
@@ -80,7 +79,7 @@
 				} }
 				alphakeys.sort();
 				var table = j2setsdiv.appendChild(createTag("table", {"a":{"border":"2", "cellpadding":"4", "cellspacing":"1"}}));
-				table.appendChild(createTag("thead", {}, [createTag("th", {}, "setting"), createTag("th", {}, "default value"), createTag("th", {}, "description")]));
+				table.appendChild(createTag("thead", {}, [createTag("th", {}, "setting"), createTag("th", {}, "default setting"), createTag("th", {}, "description")]));
 				table = table.appendChild(document.createElement("tbody"));
 				for (var a=0; a<alphakeys.length; a++) {
 					var tr = table.appendChild(document.createElement("tr"));
@@ -403,7 +402,7 @@
 	/*==========================================================================
 	## MAX_RECENT_ENTITIES ##
 	==========================================================================*/
-	var maxent = MB.constants.MAX_RECENT_ENTITIES;
+	var maxent = MB && MB.constants && MB.constants.MAX_RECENT_ENTITIES;
 	if (maxent && typeof maxent == "number") {
 		j2setting("MAX_RECENT_ENTITIES", maxent+"", true, "adjust the amount of recently used entities in inline searches (default is taken from MB itself)");
 		if (j2sets.MAX_RECENT_ENTITIES) {
@@ -554,7 +553,7 @@
 	MusicBrainz row highlighter https://userscripts.org/118008
 	==========================================================================*/
 	j2setting("ROW_HIGHLIGHTER", true, true, "highlights rows in various MB tables");
-	j2setting("ROW_HIGHLIGHTER_colour", "#fcf", true, "use any CSS colour code or name");
+	j2setting("ROW_HIGHLIGHTER_colour", "#fcf", true,  (crmbid = getParent(checkrels[cr], "use any CSS colour code or name");
 	if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+)$/i)) {
 		var hldrule = {
 			"selector":[
