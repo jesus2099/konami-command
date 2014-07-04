@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.7.4.1502
+// @version      2014.7.4.1540
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
@@ -49,34 +49,36 @@
 		"D": "(1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)",
 	};
 	var account = document.querySelector("div#header-menu li.account");
-	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-	var j2css = document.styleSheets[document.styleSheets.length-1];
 	/*==========================================================================
 	## CONFIGURATORZ ##
 	find this script settings in MB "About" menu
 	==========================================================================*/
 	var j2superturbo = {
 		menu: {
+			expl: " (you can find this in “%editing%+” menu)",
 			addItem: function(item) {
-				var sep = (item == "---");
-				addAfter(createTag("li", {a:{"class":"jesus2099"+(sep?" separator":"")}}, sep?null:item), j2superturbo.menu.getLastItem());
+				j2superturbo.menu.lastItem = addAfter(createTag("li", {a:{"class":"jesus2099"}}, item), j2superturbo.menu.getLastItem());
 			},
 			getLastItem: function() {
 				if (j2superturbo.menu.lastItem) return j2superturbo.menu.lastItem;
 				else {
 					var css_MBmenu = "div#header-menu li.editing > ul";
-					var MBmenu = document.querySelector(css_MBmenu);
-					if (MBmenu) {
+					var head, MBmenu = document.querySelector(css_MBmenu);
+					if (MBmenu && (head = MBmenu.parentNode.querySelector("a"))) {
+						j2superturbo.menu.expl = j2superturbo.menu.expl.replace(/%editing%/, head.textContent);
 						j2superturbo.menu.lastItem = MBmenu.appendChild(createTag("li", {a:{"class":"jesus2099 separator"}}));
+						head.appendChild(document.createTextNode("+"));
 						return j2superturbo.menu.lastItem;
 					} else bug({message:"Can’t find “"+css_MBmenu+"” to add menu", report:true});
 				}
 			},
 		},
 	};
+	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
+	j2superturbo.css = document.styleSheets[document.styleSheets.length-1];
 	var j2sets = {}, j2docs = {}, j2defs = {}, j2setsclean = [];
 	j2setting();
-	j2superturbo.menu.addItem(createTag("a",{"e":{"click":function(e){
+	j2superturbo.menu.addItem(createTag("a",{e:{click:function(e){
 			getParent(this, "ul").style.setProperty("left", "-10000px");
 			j2setting();
 			if (j2sets) {
@@ -174,7 +176,7 @@
 	## RELEASE_CLONER ##
 	todo : add debugged clone release-AR module
 	==========================================================================*/
-	j2setting("RELEASE_CLONER", true, true, "one-click duplicate release(s). you can find this in the standard “Editing” menu");
+	j2setting("RELEASE_CLONER", true, true, "one-click duplicate release(s)"+j2superturbo.menu.expl);
 	j2setting("RELEASE_CLONER_release_event", false, true, "clones release event(s), package, catalogue number(s), etc. (not advised as those usually change for each edition)");
 	j2setting("RELEASE_CLONER_additional_information", false, true, "clones annotation and disambiguation (usually change for each edition)");
 	j2setting("RELEASE_CLONER_external_links", false, true, "(EXPERIMENTAL) clones URL relations (not advised as those usually change for each edition)");
@@ -185,164 +187,164 @@
 		) {
 			var addrel = document.querySelector("div#header-menu li.editing > ul > li:not(.separator) > a[href$='/release/add']");
 			if (addrel) {
-				addAfter(createTag("li", null, createTag("a", {"a":{"title":meta.name+"\nshift+click to open new tab / ctrl+click for background tab"+(rcwhere!="release"?"\nno need to select if there is only one release on this page":"")},"s":{"text-shadow":"1px 1px 2px grey"},"e":{"click":function(e){
-					var crmbids = [];
-					var samerg = confirm("new release in same release group?");
-					if (rcwhere == "release") {
-						crmbids.push(""+self.location.pathname.match(re_GUID));
-					}
-					else {
-						var checkrels = document.querySelectorAll("table.tbl > tbody input[type='checkbox'][name='add-to-merge']");
-						for (var crmbid, cr=0; cr<checkrels.length; cr++) {
-							if ((checkrels[cr].checked || checkrels.length == 1) && (crmbid = getParent(checkrels[cr], "tr")) && (crmbid = crmbid.querySelector("a[href*='/release/']").getAttribute("href").match(re_GUID))) {
-								crmbids.push(""+crmbid);
+				j2superturbo.menu.addItem(createTag("a", {a:{title:meta.name+"\nshift+click to open new tab / ctrl+click for background tab"+(rcwhere!="release"?"\nno need to select if there is only one release on this page":"")},e:{click:function(e){
+						var crmbids = [];
+						var samerg = confirm("new release in same release group?");
+						if (rcwhere == "release") {
+							crmbids.push(""+self.location.pathname.match(re_GUID));
+						}
+						else {
+							var checkrels = document.querySelectorAll("table.tbl > tbody input[type='checkbox'][name='add-to-merge']");
+							for (var crmbid, cr=0; cr<checkrels.length; cr++) {
+								if ((checkrels[cr].checked || checkrels.length == 1) && (crmbid = getParent(checkrels[cr], "tr")) && (crmbid = crmbid.querySelector("a[href*='/release/']").getAttribute("href").match(re_GUID))) {
+									crmbids.push(""+crmbid);
+								}
 							}
 						}
-					}
-					if (crmbids.length > 0) {
-						for (var crr=crmbids.length-1; crr>=0; crr--) {
-							var xhr = new XMLHttpRequest();
-							xhr.onload = function(e) {
-								var resv, res = this.responseXML.documentElement;
-								var reled = {
-									"form": createTag("form", {"a":{"action":"/release/add","method":"post","target":crr==0?"_self":"_blank"},"s":{"display":"none"}}),
-									"add": function(ws, re, _opt) {
-										var opt = _opt?_opt:{};
-										var cont = opt.node?opt.node:res;
-										var val = opt.raw?ws:cont.querySelector(ws);
-										if (val) {
-											if (typeof val == "object") val = val.textContent;
-											/*console.log(re+" = "+val);*/
-											if (opt.multiline) reled.form.appendChild(createTag("textarea", {a:{name:re}}, val));
-											else reled.form.appendChild(createTag("input", {a:{name:re, value:val}}));
+						if (crmbids.length > 0) {
+							for (var crr=crmbids.length-1; crr>=0; crr--) {
+								var xhr = new XMLHttpRequest();
+								xhr.onload = function(e) {
+									var resv, res = this.responseXML.documentElement;
+									var reled = {
+										"form": createTag("form", {"a":{"action":"/release/add","method":"post","target":crr==0?"_self":"_blank"},"s":{"display":"none"}}),
+										"add": function(ws, re, _opt) {
+											var opt = _opt?_opt:{};
+											var cont = opt.node?opt.node:res;
+											var val = opt.raw?ws:cont.querySelector(ws);
+											if (val) {
+												if (typeof val == "object") val = val.textContent;
+												/*console.log(re+" = "+val);*/
+												if (opt.multiline) reled.form.appendChild(createTag("textarea", {a:{name:re}}, val));
+												else reled.form.appendChild(createTag("input", {a:{name:re, value:val}}));
+											}
+											else if (opt.req) {
+												return false;
+											}
+											return true;
 										}
-										else if (opt.req) {
-											return false;
+									};
+									var ok = true;
+									ok &= reled.add("release > title", "name", {"req":true});
+									resv = res.querySelector("release > release-group");
+									if (samerg) {
+										ok &= reled.add(resv.getAttribute("id"), "release_group", {"raw":true});
+									}
+									else {
+										resv = resv.querySelectorAll("release-group > primary-type, release-group > secondary-type-list > secondary-type");
+										for (var resi=0; resi<resv.length && ok; resi++) {
+											ok &= reled.add(resv[resi].textContent.toLowerCase(), "type", {"raw":true});
 										}
-										return true;
+									}
+									if (j2sets.RELEASE_CLONER_additional_information) {
+										ok &= reled.add("release > disambiguation", "comment");
+										ok &= reled.add("release > annotation", "annotation", {"multiline":true});
+									}
+									if (j2sets.RELEASE_CLONER_release_event) {
+										ok &= reled.add("release > barcode", "barcode");
+										/* ws:release-event-list */
+										resv = res.querySelectorAll("release > release-event-list > release-event");
+										for (var resi=0; resi<resv.length && ok; resi++) {
+											var date = resv[resi].querySelector("release-event > date");
+											if (date && (date = date.textContent)) {
+												var datex;
+												if (datex = date.match(/^(\d{4})/)) ok &= reled.add(datex[1], "events."+resi+".date.year", {"raw":true});
+												if (datex = date.match(/^.{4}-(\d{2})/)) ok &= reled.add(datex[1], "events."+resi+".date.month", {"raw":true});
+												if (datex = date.match(/^.{4}-.{2}-(\d{2})$/)) ok &= reled.add(datex[1], "events."+resi+".date.day", {"raw":true});
+												ok &= reled.add("release-event > area > iso-3166-1-code-list > iso-3166-1-code", "events."+resi+".country", {"node":resv[resi]});
+											}
+										}
+										/* ws:release-event-list */
+										ok &= reled.add("release > status", "status");
+										ok &= reled.add("release > packaging", "packaging");
+										/* ws:label-info-list */
+										resv = res.querySelectorAll("release > label-info-list > label-info");
+										for (var resi=0; resi<resv.length && ok; resi++) {
+											var label = resv[resi].querySelector("label-info > label");
+											if (label && (label = label.getAttribute("id"))) {
+												ok &= reled.add(label, "labels."+resi+".mbid", {"raw":true});
+											}
+											ok &= reled.add("label-info > catalog-number", "labels."+resi+".catalog_number", {"node":resv[resi]});
+										}
+										/* ws:label-info-list */
+									}
+									ok &= reled.add("release > text-representation > language", "language");
+									ok &= reled.add("release > text-representation > script", "script");
+									/* ws:artist-credit */
+									resv = res.querySelectorAll("release > artist-credit > name-credit > artist");
+									for (var resi=0; resi<resv.length && ok; resi++) {
+										ok &= reled.add(resv[resi].getAttribute("id"), "artist_credit.names."+resi+".mbid", {"raw":true});
+										ok &= reled.add("name-credit name", "artist_credit.names."+resi+".name", {"node":resv[resi].parentNode});
+										ok &= reled.add(resv[resi].parentNode.getAttribute("joinphrase"), "artist_credit.names."+resi+".join_phrase", {"raw":true});
+									}
+									/* ws:artist-credit */
+									/* ws:medium-list */
+									resv = res.querySelectorAll("release > medium-list > medium");
+									for (var resi=0; resi<resv.length && ok; resi++) {
+										ok &= reled.add("medium > format", "mediums."+resi+".format", {"node":resv[resi]});
+										ok &= reled.add("medium > title", "mediums."+resi+".name", {"node":resv[resi]});
+										var tracks = resv[resi].querySelectorAll("medium > track-list > track");
+										for (var tr=0; tr<tracks.length; tr++) {
+											ok &= reled.add("track title", "mediums."+resi+".track."+tr+".name", {"node":tracks[tr]});
+											ok &= reled.add("track > number", "mediums."+resi+".track."+tr+".number", {"node":tracks[tr]});
+											ok &= reled.add(tracks[tr].querySelector("track > recording").getAttribute("id"), "mediums."+resi+".track."+tr+".recording", {"raw":true});
+											/* ws:artist-credit */
+											var trac = tracks[tr].querySelector("track > artist-credit, track > recording > artist-credit");
+											trac = trac.querySelectorAll("artist-credit > name-credit > artist");
+											for (var aci=0; aci<trac.length && ok; aci++) {
+												ok &= reled.add(trac[aci].getAttribute("id"), "mediums."+resi+".track."+tr+".artist_credit.names."+aci+".mbid", {"raw":true});
+												ok &= reled.add("name-credit > name", "mediums."+resi+".track."+tr+".artist_credit.names."+aci+".name", {"node":trac[aci].parentNode});
+												ok &= reled.add(trac[aci].parentNode.getAttribute("joinphrase"), "mediums."+resi+".track."+tr+".artist_credit.names."+aci+".join_phrase", {"raw":true});
+											}
+											/* ws:artist-credit */
+											ok &= reled.add("track > length", "mediums."+resi+".track."+tr+".length", {"node":tracks[tr]});
+										}
+									}
+									/* ws:medium-list */
+									if (j2sets.RELEASE_CLONER_external_links) {
+										/* ws:url-rels*/
+										resv = res.querySelectorAll("release > relation-list[target-type='url'] > relation");
+										var linkTypes = {
+											"unknown01":  72/*production*/,
+											"unknown02":  83/*IMDb*/,
+											"4f2e710d-166c-480c-a293-2e2c8d658d87":  77/*ASIN*/,
+											"823656dd-0309-4247-b282-b92d287d59c5": 288/*discography*/,
+											"unknown03": 301/*licence*/,
+											"unknown04":  73/*get*/,
+											"unknown05":  79/*buy mail*/,
+											"unknown06":  74/*buy download*/,
+											"unknown07":  75/*download*/,
+											"unknown08":  85/*stream*/,
+											"unknown09": 729/*notes*/,
+											"unknown10":  78/*cover art*/,
+											"unknown11":  29/*notes*/,
+											"unknown12":  82/*other db*/,
+											"unknown13":  76/*discogs*/,
+											"unknown14":  86/*VGMdb*/,
+											"unknown15": 308/*2ndhandsong*/,
+										};
+										for (var resi=0; resi<resv.length && ok; resi++) {
+											ok &= reled.add(linkTypes[resv[resi].getAttribute("type-id")], "urls."+resi+".link_type", {raw:true});
+											ok &= reled.add("relation > target", "urls."+resi+".url", {node:resv[resi]});
+										}
+										/* ws:url-rels */
+									}
+									ok &= reled.add("\n —\n"+MBS+"/release/"+crmbids[crr]+" cloned using '''RELEASE_CLONER'''™\n※ part of "+meta.namespace+" '''"+meta.name+"''' ("+meta.version+")", "edit_note", {"raw":true,"multiline":true});
+									/* fin */
+									if (ok) document.body.appendChild(reled.form).submit();
+									else sendEvent(this, "error");
+								};
+								xhr.onerror = function(e) {
+									if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
+										self.open(meta.bugs+"/new?title=RELEASE_CLONER+xhr+error&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while cloning [this release]("+MBS+"/release/) on [that page]("+location.href+").\n"));
 									}
 								};
-								var ok = true;
-								ok &= reled.add("release > title", "name", {"req":true});
-								resv = res.querySelector("release > release-group");
-								if (samerg) {
-									ok &= reled.add(resv.getAttribute("id"), "release_group", {"raw":true});
-								}
-								else {
-									resv = resv.querySelectorAll("release-group > primary-type, release-group > secondary-type-list > secondary-type");
-									for (var resi=0; resi<resv.length && ok; resi++) {
-										ok &= reled.add(resv[resi].textContent.toLowerCase(), "type", {"raw":true});
-									}
-								}
-								if (j2sets.RELEASE_CLONER_additional_information) {
-									ok &= reled.add("release > disambiguation", "comment");
-									ok &= reled.add("release > annotation", "annotation", {"multiline":true});
-								}
-								if (j2sets.RELEASE_CLONER_release_event) {
-									ok &= reled.add("release > barcode", "barcode");
-									/* ws:release-event-list */
-									resv = res.querySelectorAll("release > release-event-list > release-event");
-									for (var resi=0; resi<resv.length && ok; resi++) {
-										var date = resv[resi].querySelector("release-event > date");
-										if (date && (date = date.textContent)) {
-											var datex;
-											if (datex = date.match(/^(\d{4})/)) ok &= reled.add(datex[1], "events."+resi+".date.year", {"raw":true});
-											if (datex = date.match(/^.{4}-(\d{2})/)) ok &= reled.add(datex[1], "events."+resi+".date.month", {"raw":true});
-											if (datex = date.match(/^.{4}-.{2}-(\d{2})$/)) ok &= reled.add(datex[1], "events."+resi+".date.day", {"raw":true});
-											ok &= reled.add("release-event > area > iso-3166-1-code-list > iso-3166-1-code", "events."+resi+".country", {"node":resv[resi]});
-										}
-									}
-									/* ws:release-event-list */
-									ok &= reled.add("release > status", "status");
-									ok &= reled.add("release > packaging", "packaging");
-									/* ws:label-info-list */
-									resv = res.querySelectorAll("release > label-info-list > label-info");
-									for (var resi=0; resi<resv.length && ok; resi++) {
-										var label = resv[resi].querySelector("label-info > label");
-										if (label && (label = label.getAttribute("id"))) {
-											ok &= reled.add(label, "labels."+resi+".mbid", {"raw":true});
-										}
-										ok &= reled.add("label-info > catalog-number", "labels."+resi+".catalog_number", {"node":resv[resi]});
-									}
-									/* ws:label-info-list */
-								}
-								ok &= reled.add("release > text-representation > language", "language");
-								ok &= reled.add("release > text-representation > script", "script");
-								/* ws:artist-credit */
-								resv = res.querySelectorAll("release > artist-credit > name-credit > artist");
-								for (var resi=0; resi<resv.length && ok; resi++) {
-									ok &= reled.add(resv[resi].getAttribute("id"), "artist_credit.names."+resi+".mbid", {"raw":true});
-									ok &= reled.add("name-credit name", "artist_credit.names."+resi+".name", {"node":resv[resi].parentNode});
-									ok &= reled.add(resv[resi].parentNode.getAttribute("joinphrase"), "artist_credit.names."+resi+".join_phrase", {"raw":true});
-								}
-								/* ws:artist-credit */
-								/* ws:medium-list */
-								resv = res.querySelectorAll("release > medium-list > medium");
-								for (var resi=0; resi<resv.length && ok; resi++) {
-									ok &= reled.add("medium > format", "mediums."+resi+".format", {"node":resv[resi]});
-									ok &= reled.add("medium > title", "mediums."+resi+".name", {"node":resv[resi]});
-									var tracks = resv[resi].querySelectorAll("medium > track-list > track");
-									for (var tr=0; tr<tracks.length; tr++) {
-										ok &= reled.add("track title", "mediums."+resi+".track."+tr+".name", {"node":tracks[tr]});
-										ok &= reled.add("track > number", "mediums."+resi+".track."+tr+".number", {"node":tracks[tr]});
-										ok &= reled.add(tracks[tr].querySelector("track > recording").getAttribute("id"), "mediums."+resi+".track."+tr+".recording", {"raw":true});
-										/* ws:artist-credit */
-										var trac = tracks[tr].querySelector("track > artist-credit, track > recording > artist-credit");
-										trac = trac.querySelectorAll("artist-credit > name-credit > artist");
-										for (var aci=0; aci<trac.length && ok; aci++) {
-											ok &= reled.add(trac[aci].getAttribute("id"), "mediums."+resi+".track."+tr+".artist_credit.names."+aci+".mbid", {"raw":true});
-											ok &= reled.add("name-credit > name", "mediums."+resi+".track."+tr+".artist_credit.names."+aci+".name", {"node":trac[aci].parentNode});
-											ok &= reled.add(trac[aci].parentNode.getAttribute("joinphrase"), "mediums."+resi+".track."+tr+".artist_credit.names."+aci+".join_phrase", {"raw":true});
-										}
-										/* ws:artist-credit */
-										ok &= reled.add("track > length", "mediums."+resi+".track."+tr+".length", {"node":tracks[tr]});
-									}
-								}
-								/* ws:medium-list */
-								if (j2sets.RELEASE_CLONER_external_links) {
-									/* ws:url-rels*/
-									resv = res.querySelectorAll("release > relation-list[target-type='url'] > relation");
-									var linkTypes = {
-										"unknown01":  72/*production*/,
-										"unknown02":  83/*IMDb*/,
-										"4f2e710d-166c-480c-a293-2e2c8d658d87":  77/*ASIN*/,
-										"823656dd-0309-4247-b282-b92d287d59c5": 288/*discography*/,
-										"unknown03": 301/*licence*/,
-										"unknown04":  73/*get*/,
-										"unknown05":  79/*buy mail*/,
-										"unknown06":  74/*buy download*/,
-										"unknown07":  75/*download*/,
-										"unknown08":  85/*stream*/,
-										"unknown09": 729/*notes*/,
-										"unknown10":  78/*cover art*/,
-										"unknown11":  29/*notes*/,
-										"unknown12":  82/*other db*/,
-										"unknown13":  76/*discogs*/,
-										"unknown14":  86/*VGMdb*/,
-										"unknown15": 308/*2ndhandsong*/,
-									};
-									for (var resi=0; resi<resv.length && ok; resi++) {
-										ok &= reled.add(linkTypes[resv[resi].getAttribute("type-id")], "urls."+resi+".link_type", {raw:true});
-										ok &= reled.add("relation > target", "urls."+resi+".url", {node:resv[resi]});
-									}
-									/* ws:url-rels */
-								}
-								ok &= reled.add("\n —\n"+MBS+"/release/"+crmbids[crr]+" cloned using '''RELEASE_CLONER'''™\n※ part of "+meta.namespace+" '''"+meta.name+"''' ("+meta.version+")", "edit_note", {"raw":true,"multiline":true});
-								/* fin */
-								if (ok) document.body.appendChild(reled.form).submit();
-								else sendEvent(this, "error");
-							};
-							xhr.onerror = function(e) {
-								if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
-									self.open(meta.bugs+"/new?title=RELEASE_CLONER+xhr+error&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while cloning [this release]("+MBS+"/release/) on [that page]("+location.href+").\n"));
-								}
-							};
-							xhr.open("get", "/ws/2/release/"+crmbids[crr]+"?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels", false);
-							xhr.overrideMimeType("text/xml");
-							xhr.send(null);
+								xhr.open("get", "/ws/2/release/"+crmbids[crr]+"?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels", false);
+								xhr.overrideMimeType("text/xml");
+								xhr.send(null);
+							}
 						}
-					}
-				}}}, ["Clone "+(rcwhere=="release"?"release":"selected releases")+" ", createTag("small", {"s":{"color":"grey"}}, "← RELEASE_CLONER™")])), addrel.parentNode);
+					}}}, ["Clone "+(rcwhere=="release"?"release":"selected releases")+" ", createTag("small", {s:{color:"grey"}}, "← RELEASE_CLONER™")]));
 			}
 		}
 	}
@@ -555,7 +557,7 @@
 	j2setting("SPOT_AC", true, true, "name variations (Artist Credit, track name ≠ recording name, etc.) stand out");
 	j2setting("SPOT_AC_css", "border-bottom: 2px dashed maroon;", true, "CSS syntax (on “span.name-variation”)");
 	if (j2sets.SPOT_AC) {
-		j2css.insertRule("span.name-variation { "+j2sets.SPOT_AC_css+" }", j2css.cssRules.length);
+		j2superturbo.css.insertRule("span.name-variation { "+j2sets.SPOT_AC_css+" }", j2superturbo.css.cssRules.length);
 	}
 	/*================================================================= DISPLAY+
 	## SPOT_CAA ##
@@ -563,21 +565,21 @@
 	j2setting("SPOT_CAA", true, true, "cover art archive’s images stand out from other images. Allows spotting incorrectly padded CAA uploads and looks cool altogether");
 	j2setting("SPOT_CAA_css", "box-shadow: 0 0 8px black;", true, "CSS syntax (on “a.artwork-image > img”)");
 	if (j2sets.SPOT_CAA) {
-		j2css.insertRule("a.artwork-image > img { "+j2sets.SPOT_CAA_css+" }", j2css.cssRules.length);
+		j2superturbo.css.insertRule("a.artwork-image > img { "+j2sets.SPOT_CAA_css+" }", j2superturbo.css.cssRules.length);
 	}
 	/*================================================================= DISPLAY+
 	## WARN_NEW_WINDOW ##
 	==========================================================================*/
 	j2setting("WARN_NEW_WINDOW", true, true, "links that open in a new window will be marked with an icon");
 	if (j2sets.WARN_NEW_WINDOW) {
-		j2css.insertRule("a[target]:not([target='_parent']):not([target='_self']):not([target='_self']):after { margin: 0 2px 0 4px; content: url(data:image/gif;base64,R0lGODlhCwAKAPcAAOAaGv///////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAIALAAAAAALAAoAAAgpAAUIFACgoEEAAwkeLJgQYUODBBMqZOhwIEOBFTFWXAhRYkOJGTlmDAgAOw==); }", j2css.cssRules.length);
+		j2superturbo.css.insertRule("a[target]:not([target='_parent']):not([target='_self']):not([target='_self']):after { margin: 0 2px 0 4px; content: url(data:image/gif;base64,R0lGODlhCwAKAPcAAOAaGv///////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAIALAAAAAALAAoAAAgpAAUIFACgoEEAAwkeLJgQYUODBBMqZOhwIEOBFTFWXAhRYkOJGTlmDAgAOw==); }", j2superturbo.css.cssRules.length);
 	}
 	/*================================================================= DISPLAY+
 	## CENTER_FLAGS ##
 	==========================================================================*/
 	j2setting("CENTER_FLAGS", true, true, "vertically center flags");
 	if (j2sets.CENTER_FLAGS) {
-		j2css.insertRule(".flag { background-origin: padding-box; background-position: 0% 84%; }", j2css.cssRules.length);
+		j2superturbo.css.insertRule(".flag { background-origin: padding-box; background-position: 0% 84%; }", j2superturbo.css.cssRules.length);
 	}
 	/*================================================================= DISPLAY+
 	## ROW_HIGHLIGHTER ##
@@ -600,7 +602,7 @@
 				"background-color:"+j2sets.ROW_HIGHLIGHTER_colour+"!important"
 			]
 		};
-		j2css.insertRule(hldrule.selector.join(",")+"{"+hldrule.rule.join(";")+"}", j2css.cssRules.length);
+		j2superturbo.css.insertRule(hldrule.selector.join(",")+"{"+hldrule.rule.join(";")+"}", j2superturbo.css.cssRules.length);
 		ROW_HIGHLIGHTER_init();
 		document.body.addEventListener("DOMNodeInserted", ROW_HIGHLIGHTER_calmDOM, false);
 	}
@@ -944,7 +946,7 @@
 	j2setting("POWER_RELATE_TO_autofocus", true, true, "focus text search field");
 	j2setting("POWER_RELATE_TO_autoselect", true, true, "selects its current value for quick reset by typing");
 	j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the release editor by mistake. repairs the keyboard tab navigation to save button (MBS-3112) (for the new release editor, the tab order might not be perfectly chosen yet but submit comes first and cancel last)");
-	j2setting("TRACKLIST_TOOLS", true, true, "adds “Set selected works date” in releationship editor and tools to the tracklist tab of release editor: a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
+	j2setting("TRACKLIST_TOOLS", true, true, "adds “Set selected works date” in releationship editor and tools to the tracklist tab of release editor"+j2superturbo.menu.expl+": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 	var enttype = self.location.href.match(new RegExp("^"+MBS+"/(artist|label|recording|release|release-group|work)/.*$"));
 	if (enttype) {
 		enttype = enttype[1];
@@ -1002,13 +1004,14 @@
 		if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/"+stre_GUID+"/edit-relationships$"))) {
 			var tabs, re = document.querySelector("div.rel-editor");
 			if (re && (tabs = re.querySelector("ul.tabs"))) {
-				tabs.appendChild(createTag("li", {}, createTag("a", {"s":{"background-color":"yellow"},"e":{"click":function(e){
+				j2superturbo.menu.addItem(createTag("a", {e:{click:function(e){
 					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.");
 					if (date.match(new RegExp("^"+re_date.YYYY+"(-"+re_date.MM+"(-"+re_date.DD+")?)?$"))) {
 						// from reosarevok https://chatlogs.musicbrainz.org/musicbrainz/2014/2014-04/2014-04-23.html#T15-48-37-184918
 						_($("td.works > div.ar > input[type='checkbox']:checked")).map(ko.contextFor).pluck("$parent").each(function (a) { a.period.begin_date(date); a.period.end_date(date); });
 					}
-				}}}, "SET SELECTED WORKS DATE")));
+					}}}, "Set selected works’ recording dates")
+				);
 			}
 		}
 	}
