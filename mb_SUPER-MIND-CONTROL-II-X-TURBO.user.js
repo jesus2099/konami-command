@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.7.3.2051
+// @version      2014.7.4.1502
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
@@ -55,14 +55,28 @@
 	## CONFIGURATORZ ##
 	find this script settings in MB "About" menu
 	==========================================================================*/
-	var j2set = document.querySelector("div#header-menu li.about > ul > li.jesus2099");
-	if (!j2set && (j2set = document.querySelector("div#header-menu li.about > ul"))) {
-		j2set = j2set.appendChild(createTag("li",{"a":{"class":"jesus2099 separator"}}));
-	}
+	var j2superturbo = {
+		menu: {
+			addItem: function(item) {
+				var sep = (item == "---");
+				addAfter(createTag("li", {a:{"class":"jesus2099"+(sep?" separator":"")}}, sep?null:item), j2superturbo.menu.getLastItem());
+			},
+			getLastItem: function() {
+				if (j2superturbo.menu.lastItem) return j2superturbo.menu.lastItem;
+				else {
+					var css_MBmenu = "div#header-menu li.editing > ul";
+					var MBmenu = document.querySelector(css_MBmenu);
+					if (MBmenu) {
+						j2superturbo.menu.lastItem = MBmenu.appendChild(createTag("li", {a:{"class":"jesus2099 separator"}}));
+						return j2superturbo.menu.lastItem;
+					} else bug({message:"Can’t find “"+css_MBmenu+"” to add menu", report:true});
+				}
+			},
+		},
+	};
 	var j2sets = {}, j2docs = {}, j2defs = {}, j2setsclean = [];
 	j2setting();
-	if (j2set) {
-		j2set = addAfter(createTag("li", {"a":{"class":"jesus2099"}}, createTag("a",{"e":{"click":function(e){
+	j2superturbo.menu.addItem(createTag("a",{"e":{"click":function(e){
 			getParent(this, "ul").style.setProperty("left", "-10000px");
 			j2setting();
 			if (j2sets) {
@@ -88,7 +102,25 @@
 					if (j2docs[alphakeys[a]]) { tr.appendChild(createTag("td", {"s":{"margin-bottom":".4em"}}, j2docit(j2docs[alphakeys[a]]))); }
 				}
 			}
-		}}}, meta.name+" settings")), j2set);
+		}}}, meta.name+" settings")
+	);
+	function bug(error) {
+		var title = "", alrt = meta.name+" ("+meta.version+")"+" ERROR";
+		if (error.module) {
+			title = " in “"+error.module+"” module";
+			alrt += title;
+		}
+		if (error.message) {
+			title = error.message+title;
+			alrt += "\n\n"+error.message;
+		}
+		if (error.report && title) {
+			if (confirm(alrt+"\n\nDo you want to report a bug to script writer (requires github account)?")) {
+				self.open(meta.bugs+"/new?title="+encodeURIComponent(title)+"&body="+encodeURIComponent("Hello,\nI am using the awesome *"+meta.name+"* (**"+meta.version+"**).\nI got an error while I was on [that page]("+location.href+"):\n\n    "+error.message.replace(/\n/g, "\n    ")));
+			}
+		} else {
+			alert(alrt);
+		}
 	}
 	function j2setting(set, val, def, doc) {
 		if (set == null) { j2sets = localStorage.getItem(userjs+"settings"); if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; } }
