@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.7.4.1540
+// @version      2014.7.4.1646
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
@@ -1010,7 +1010,7 @@
 						// from reosarevok https://chatlogs.musicbrainz.org/musicbrainz/2014/2014-04/2014-04-23.html#T15-48-37-184918
 						_($("td.works > div.ar > input[type='checkbox']:checked")).map(ko.contextFor).pluck("$parent").each(function (a) { a.period.begin_date(date); a.period.end_date(date); });
 					}
-					}}}, "Set selected works’ recording dates")
+					}}}, [createTag("del", {}, "Set selected works’ recording dates")," ", createTag("small", {s:{"background-color":"yellow"}}, "(BROKEN SINCE A RECTENT MBS UPDATE)")])
 				);
 			}
 		}
