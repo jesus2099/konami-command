@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.7.4.1646
+// @version      2014.7.8.1412
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
@@ -20,6 +20,7 @@
 // @exclude      *bugs.musicbrainz.org*
 // @exclude      *chatlogs.musicbrainz.org*
 // @exclude      *forums.musicbrainz.org*
+// @exclude      *geordi.musicbrainz.org*
 // @exclude      *musicbrainz.org/ws*
 // @exclude      *tickets.musicbrainz.org*
 // @exclude      *wiki.musicbrainz.org*
@@ -69,7 +70,7 @@
 						j2superturbo.menu.lastItem = MBmenu.appendChild(createTag("li", {a:{"class":"jesus2099 separator"}}));
 						head.appendChild(document.createTextNode("+"));
 						return j2superturbo.menu.lastItem;
-					} else bug({message:"Can’t find “"+css_MBmenu+"” to add menu", report:true});
+					} else if (document.querySelector("div#header-menu")) bug({message:"Can’t find “"+css_MBmenu+"” to add menu", report:true});
 				}
 			},
 		},
@@ -117,8 +118,8 @@
 			alrt += "\n\n"+error.message;
 		}
 		if (error.report && title) {
-			if (confirm(alrt+"\n\nDo you want to report a bug to script writer (requires github account)?")) {
-				self.open(meta.bugs+"/new?title="+encodeURIComponent(title)+"&body="+encodeURIComponent("Hello,\nI am using the awesome *"+meta.name+"* (**"+meta.version+"**).\nI got an error while I was on [that page]("+location.href+"):\n\n    "+error.message.replace(/\n/g, "\n    ")));
+			if (confirm(alrt+"\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
+				self.open(meta.bugs+"/new?title="+encodeURIComponent(title)+"&body="+encodeURIComponent("Hello,\nI am using that awesome *"+meta.name+"* (**"+meta.version+"**).\nI got an error while I was on ["+(document.title?document.title:"that page")+"]("+location.href+"):\n\n    "+error.message.replace(/\n/g, "\n    ")));
 			}
 		} else {
 			alert(alrt);
