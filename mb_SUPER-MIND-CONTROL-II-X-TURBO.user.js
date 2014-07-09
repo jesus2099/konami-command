@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.7.8.1412
+// @version      2014.7.9.1322
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
@@ -1007,12 +1007,11 @@
 			if (re && (tabs = re.querySelector("ul.tabs"))) {
 				j2superturbo.menu.addItem(createTag("a", {e:{click:function(e){
 					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.");
-					if (date.match(new RegExp("^"+re_date.YYYY+"(-"+re_date.MM+"(-"+re_date.DD+")?)?$"))) {
-						// from reosarevok https://chatlogs.musicbrainz.org/musicbrainz/2014/2014-04/2014-04-23.html#T15-48-37-184918
-						_($("td.works > div.ar > input[type='checkbox']:checked")).map(ko.contextFor).pluck("$parent").each(function (a) { a.period.begin_date(date); a.period.end_date(date); });
-					}
-					}}}, [createTag("del", {}, "Set selected works’ recording dates")," ", createTag("small", {s:{"background-color":"yellow"}}, "(BROKEN SINCE A RECTENT MBS UPDATE)")])
-				);
+					if (date = date.match(new RegExp("^"+re_date.YYYY+"(?:-"+re_date.MM+"(?:-"+re_date.DD+")?)?$"))) {
+						// jquery stuff from reosarevok https://chatlogs.musicbrainz.org/musicbrainz/2014/2014-07/2014-07-08.html#T14-46-11-334532 who got it from bitmap :)
+						_($("td.works div.ar :checked")).map(ko.contextFor).pluck("$parent").each(function (a) { a.period.beginDate.year(date[1]); a.period.beginDate.month(date[2]); a.period.beginDate.day(date[3]); a.period.endDate.year(date[1]); a.period.endDate.month(date[2]); a.period.endDate.day(date[3]); });
+					} else { alert("Wrong date format"); }
+				}}}, "Set selected works’ recording dates"));
 			}
 		}
 	}
