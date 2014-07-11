@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.7.11.1528
+// @version      2014.7.11.1549
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
@@ -419,7 +419,7 @@ function chromehackuserjs94676f(){"use strict";
 							}
 							else {
 								if (confirm("Bogus JASRAC ID detected in annotation (already set as work attribute).\nDo you want to edit annotation?")) {
-									location.href = location.pathname+"/edit_annotation";
+									location.href = location.pathname+"/edit_annotation?edit-annotation.changelog=JASRAC+ID+is+already+set+as+an+attribute";
 								}
 							}
 						}
