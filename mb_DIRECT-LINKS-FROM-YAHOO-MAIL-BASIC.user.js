@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. DIRECT LINKS FROM YAHOO! MAIL (BASIC)
 // @description  BACK FOR BASIC Y!MAIL only (/neo/b/) now. Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
-// @version      2014.0301.1308
+// @version      2014.7.11.1805
 // @since        2010.6.28.
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_DIRECT-LINKS-FROM-YAHOO-MAIL-BASIC.user.js
@@ -58,14 +58,9 @@
 				editid = editid[editid.length-1];
 				email.replaceChild(document.createTextNode(emailtxt.substring(0,emailtxt.length-editid.length-2)), email.firstChild);
 				var emailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
-				var editor = document.createElement("a");
-				editor.setAttribute("href", "//musicbrainz.org/user/"+encodeURIComponent(emailfrom.textContent.trim()));
-				editor.setAttribute("target", "_blank");
-				editor.style.setProperty("background-color", colour);
-				editor.appendChild(document.createTextNode("mb"));
-				emailfrom.appendChild(document.createTextNode(" ("));
-				emailfrom.appendChild(editor);
-				emailfrom.appendChild(document.createTextNode(")"));
+				emailfrom.setAttribute("href", "//musicbrainz.org/user/"+encodeURIComponent(emailfrom.textContent.trim()));
+				emailfrom.setAttribute("target", "_blank");
+				emailfrom.style.setProperty("background-color", colour);
 				if (!edits[editid]) {
 					edits[editid] = email;
 					editlink(email, editid);
@@ -159,7 +154,6 @@
 								nonoemail.replaceChild(document.createTextNode(nono[1]), nonoemail.firstChild);/* from: xxx */
 								nonoemail.style.setProperty("background-color", colournobg);
 								nonoemail.style.setProperty("color", colourno);
-								nonoemail = nonoemail.querySelector("a > a");
 								nonoemail.setAttribute("href", nonoemail.getAttribute("href").replace(/[^/]+$/, encodeURIComponent(nono[1])));
 							}
 							else {
