@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2013.1023.1925
+// @version      2014.7.11.1717
 // @description  musicbrainz.org: MOUSE-LESS EDITING ! Cleverly focuses fields in various musicbrainz edit pages and allows keyboard selection of relationship types as well as some release editor keyboard navigation performance features
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_AUTO-FOCUS-KEYBOARD-SELECT.user.js
@@ -11,7 +11,7 @@
 // @include      http*://*musicbrainz.org/*/*/add-alias
 // @include      http*://*musicbrainz.org/*/*/alias/*/delete
 // @include      http*://*musicbrainz.org/*/*/alias/*/edit
-// @include      http*://*musicbrainz.org/*/*/edit_annotation
+// @include      http*://*musicbrainz.org/*/*/edit_annotation*
 // @include      http*://*musicbrainz.org/*/*/tags*
 // @include      http*://*musicbrainz.org/artist/*/edit
 // @include      http*://*musicbrainz.org/artist/create
@@ -56,7 +56,7 @@ const experimentalTracklistEditorKeyboardNavUpDown = true; /* press UP↓/↑DOW
 	/*work in progress, don't refrain from requesting more pages and/or fields*/
 	function what() {
 		var w;
-		switch (self.location.pathname.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/, "*").replace(/[0-9]+/, "*")) {
+		switch (location.pathname.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/, "*").replace(/[0-9]+/, "*")) {
 			case "/artist/*/add-alias":
 			case "/work/*/add-alias":
 			case "/label/*/add-alias":
