@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.7.11.1839
+// @version      2014.7.15.1733
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
@@ -63,14 +63,13 @@
 			getLastItem: function() {
 				if (j2superturbo.menu.lastItem) return j2superturbo.menu.lastItem;
 				else {
-					var css_MBmenu = "div#header-menu li.editing > ul";
-					var head, MBmenu = document.querySelector(css_MBmenu);
+					var head, MBmenu = document.querySelector("div#header-menu li.editing > ul") || document.querySelector("div#header-menu li.about > ul");
 					if (MBmenu && (head = MBmenu.parentNode.querySelector("a"))) {
 						j2superturbo.menu.expl = j2superturbo.menu.expl.replace(/%editing%/, head.textContent);
 						j2superturbo.menu.lastItem = MBmenu.appendChild(createTag("li", {a:{"class":"jesus2099 separator"}}));
 						head.appendChild(document.createTextNode("+"));
 						return j2superturbo.menu.lastItem;
-					} else if (document.querySelector("div#header-menu")) bug({message:"Can’t find “"+css_MBmenu+"” to add menu", report:true});
+					} else if (document.querySelector("div#header-menu")) bug({message:"Can’t add menu", report:true});
 				}
 			},
 		},
