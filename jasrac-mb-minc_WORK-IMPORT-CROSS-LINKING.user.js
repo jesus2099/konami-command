@@ -1,6 +1,7 @@
+var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.7.11.1549
+// @version      2014.7.17.1546
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
@@ -14,10 +15,20 @@
 // @exclude      *://*musicbrainz.org/work/*edits*
 // @run-at       document-end
 // ==/UserScript==
+}};
+if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
+	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+	while ((kv = row.exec(meta.rawmdb)) !== null) {
+		if (meta[kv[1]]) {
+			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
+			meta[kv[1]].push(kv[2]);
+		} else meta[kv[1]] = kv[2];
+	}
+}
 function chromehackuserjs94676f(){"use strict";
 	var DEBUG = localStorage.getItem("jesus2099debug");
 	var userjs = "jesus2099userjs94676";
-	var userjsname = "''JASRAC work importer'' (https://userscripts.org/94676)";
+	var userjsname = meta.name+" '''"+meta.version+"''' ("+meta.namespace+")";
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var reISWC = "T- ?\\d{3}\\.\\d{3}.\\d{3}-\\d";
 	var reCode = "\\d[A-Z\\d]\\d-\\d{4}-\\d";
@@ -25,7 +36,7 @@ function chromehackuserjs94676f(){"use strict";
 	var MBS = self.location.protocol+"//"+self.location.host;
 	var pagecat = self.location.href.match(new RegExp("(jasrac(?=\\.or\\.jp)|minc(?=\\.gr\\.jp)|work(/"+RE_GUID+"/edit$|/create)|work)"));
 	var oldTitle = document.title;
-	var spam = " ← needs ''JASRAC direct links enabler'' (https://userscripts.org/131591)";
+	var spam = " ← needs ''JASRAC direct links enabler'' ("+meta.namespace+")";
 	var xhrForm = {}, xhrWork = {}, h1;
 	var MBlookups = [];
 	var joblist = [];
@@ -573,7 +584,7 @@ function chromehackuserjs94676f(){"use strict";
 							}
 						}
 						if (xhrWork.jasracidmatch) { xhrWork.jasracidmatch.style.background = cOK; }
-						else if (workattr[workattr.length-2].querySelector(workattrValueCSS).value == "") {
+						else if (workattr.length > 1 && workattr[workattr.length-2].querySelector(workattrValueCSS) && workattr[workattr.length-2].querySelector(workattrValueCSS).value == "") {
 							workattr[workattr.length-2].querySelector(workattrTypeCSS).value = "3";
 							workattr[workattr.length-2].querySelector(workattrValueCSS).value = xhrWork.code;
 							workattr[workattr.length-2].querySelector(workattrValueCSS).style.background = cWARN;
