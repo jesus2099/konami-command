@@ -544,7 +544,8 @@ function chromehackuserjs94676f(){"use strict";
 				slangid.parentNode.appendChild(createButtol("\u65e5", 198));
 				slangid.parentNode.appendChild(createButtol("EN", 120));
 				teditnote.parentNode.appendChild(document.createElement("br"));
-				var tjasrac = teditnote.parentNode.appendChild(createTag("textarea", {"placeholder":"Paste JASRAC summary here"}));
+				var tjasrac = document.querySelector("div.workheader p.subheader") || document.querySelector("h1");
+				tjasrac = tjasrac.appendChild(createTag("textarea", {"placeholder":"Paste JASRAC summary here"}));
 				addAfter(document.createTextNode(" ← Hover and paste JASRAC summary here for some magic :)"), tjasrac);
 				tjasrac.setAttribute("tabindex", "-1");
 				tjasrac.setAttribute("rows", "1");
@@ -632,6 +633,7 @@ function chromehackuserjs94676f(){"use strict";
 						stypeid.style.background = "";
 						this.style.background = cERR;
 					}
+					scrollTo(0, 0);
 				}, false);
 				break;
 			default:
