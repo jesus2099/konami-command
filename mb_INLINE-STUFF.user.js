@@ -7,7 +7,7 @@
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_INLINE-STUFF.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2010.7.9.
+// @since        2010.7.9
 // @grant        none
 // @include      http*://*musicbrainz.org/release/*
 // @include      http*://*musicbrainz.org*edit*
