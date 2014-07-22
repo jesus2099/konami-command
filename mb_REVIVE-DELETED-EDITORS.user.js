@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2014.0413.2044
+// @version      2014.7.22.1249
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_REVIVE-DELETED-EDITORS.user.js
@@ -37,6 +37,7 @@
 		"Deleted Editor #313128": "mistoffeles",       /*2007-03-31 - 2009-02-06*/
 		"Deleted Editor #346478": "neothe0ne",         /*2007-08-31 - 2011-05-28*/
 		"Deleted Editor #386354": "grosnombril",       /*2008-03-04 - 2008-04-03*/
+		"Deleted Editor #420821": "kaik (aka. jozo)",  /*2008-09-10 - 2014-07-19 / 54b97c60-f768-42fa-a5ff-d4e7c173910e*/
 		"Deleted Editor #457889": "deivsonscherzinger",/*2009-04-12 - 2014-01-12*/
 		"Deleted Editor #629372": "nightspirit",       /*2012-04-04 - 2014-04-08*/
 		"Deleted Editor #701715": "remdia",            /*2013-01-07 - 2013-01-30*/
