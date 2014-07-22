@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2014.0326.1737
+// @version      2014.7.22.1526
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_INLINE-STUFF.user.js
@@ -551,9 +551,15 @@ function acoustidFishBatch(recids) {
 						acoustids[recmbid].length > 0 &&
 						(trackTitleCell = tracksHtml[th].querySelector("td:not(.pos):not(.video)"))
 					) {
-						var aids = insertBeforeARS(trackTitleCell, createStuffFragment("AcoustID", acoustids[recmbid], shownacoustids, acoustidLinksTexts, acoustidURL, null, recmbid)).querySelectorAll("a > code[title]");
-						if (contractFingerPrints) for (var aid=0; aid<aids.length; aid++) {
-							aids[aid].parentNode.style.setProperty("width", parseInt(self.getComputedStyle(aids[aid].parentNode).getPropertyValue("width").match(/^\d+/)+"", 10)/aids[aid].textContent.length*6+"px");
+						var aidtable = insertBeforeARS(trackTitleCell, createStuffFragment("AcoustID", acoustids[recmbid], shownacoustids, acoustidLinksTexts, acoustidURL, null, recmbid));
+						if (contractFingerPrints) {
+							var show = aidtable.style.getPropertyValue("display") == "block";
+							aidtable.style.setProperty("display", "block");
+							var aids = aidtable.querySelectorAll("a > code[title]");
+							for (var aid=0; aid<aids.length; aid++) {
+								aids[aid].parentNode.style.setProperty("width", parseInt(self.getComputedStyle(aids[aid].parentNode).getPropertyValue("width").match(/^\d+/)+"", 10)/aids[aid].textContent.length*6+"px");
+							}
+							aidtable.style.setProperty("display", show?"block":"none");
 						}
 					}
 				}
