@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.7.15.1733
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS
+// @version      2014.7.22.1122
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
 // @doc          http://userscripts.org:8080/scripts/show/85790
 // @doc          http://userscripts-mirror.org/scripts/show/85790
 // @bugs         https://github.com/jesus2099/konami-command/issues
@@ -580,6 +580,23 @@
 	j2setting("CENTER_FLAGS", true, true, "vertically center flags");
 	if (j2sets.CENTER_FLAGS) {
 		j2superturbo.css.insertRule(".flag { background-origin: padding-box; background-position: 0% 84%; }", j2superturbo.css.cssRules.length);
+	}
+	/*================================================================= DISPLAY+
+	## RATINGS_ON_TOP ##
+	==========================================================================*/
+	j2setting("RATINGS_ON_TOP", false, true, "show (5 stars) ratings at the top of the sidebar");
+	j2setting("RATINGS_ON_TOP_below_image", true, true, "place the ratings just below the entity image (instead of topmost)");
+	if (sidebar && j2sets.RATINGS_ON_TOP) {
+		var ratings = sidebar.querySelector("h2.rating");
+		if (ratings) {
+			ratings = [ratings, getSibling(ratings, "p")];
+			var where;
+			if (j2setting.RATINGS_ON_TOP_below_image) where = sidebar.querySelector("div.cover-art, div.picture");
+			if (!where) where = sidebar.firstChild;
+			if (ratings[1] && where) for (var r=0; r<ratings.length; r++) {
+				sidebar.insertBefore(sidebar.removeChild(ratings[r]), where);
+			}
+		}
 	}
 	/*================================================================= DISPLAY+
 	## ROW_HIGHLIGHTER ##
