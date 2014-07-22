@@ -1,12 +1,15 @@
 // ==UserScript==
 // @name         www. HTTPS REDIREKTOR
-// @version      2013.0920.1920
-// @description  redirect to HTTPS in some websites. keep hash. avoid infinite loops. Opera speed-up tip: save as bla.js instead of bla.user.js. (fork of me and https://userscripts.org/topics/118881 and https://userscripts.org/topics/131180)
+// @version      2014.7.22.2057
+// @description  redirect to HTTPS in some websites. keep hash. avoid infinite loops (Opera speed-up tip: save as bla.js instead of bla.user.js)
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/www_HTTPS-REDIREKTOR.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/www_HTTPS-REDIREKTOR.user.js
-// @author       PATATE12 aka. jesus2099/shamo (+Freso +RaiuGekkou)
+// @author       PATATE12 aka. jesus2099/shamo
+// @contributor  Freso
+// @contributor  RaiuGekkou
+// @contributor  http://userscripts-mirror.org/topics/131180
+// @contributor  http://userscripts-mirror.org/topics/118881
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @since        2013.9.18
 // @grant        none
 // @include      http://*.mediawiki.org/*
 // @include      http://*.wikibooks.org/*
