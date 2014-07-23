@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.7.23.1431
+// @version      2014.7.23.1608
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -14,7 +14,7 @@
 // @include      http://*musicbrainz.org/release/*
 // @include      https://*musicbrainz.org/release/*
 // @exclude      *.org/release/*/*
-// @exclude      *.org/release/*/merge*
+// @exclude      *.org/release/merge*
 // @run-at       document-end
 // ==/UserScript==
 };if(meta&&meta.toString&&(meta=meta.toString()))meta={n:meta.match(/@name\s+(.+)/)[1],v:meta.match(/@version\s+(.+)/)[1],ns:meta.match(/@namespace\s+(.+)/)[1]};
@@ -316,7 +316,8 @@
 							if (mergebutts == 1) mergeallbutt.value = mergeallbutt.value.replace(/recs/, "rec");
 							if (mergebutts == 0) mergeallbutt.setAttribute("disabled", "disabled");
 							else mergeallbutt.removeAttribute("disabled");
-							document.getElementById(MMRid).getElementsByTagName("textarea")[0].focus();
+							if (startpos.value > 0) startpos.focus();
+							else document.getElementById(MMRid).getElementsByTagName("textarea")[0].focus();
 						}
 						else { infoMerge("This is not a valid release", false); }
 					}

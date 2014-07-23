@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2013.9.17.1402
+// @version      2013.9.17.1650
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       PATATE12 aka. jesus2099/shamo
@@ -54,7 +54,7 @@ var lookForOldestEdit = true;
 					}
 				}
 				if (a && rad) {
-					ents.push({"a":a,"rad":rad});
+					ents.push({"a":a,"rad":rad,"row":lis[il]});
 					if (document.referrer) {
 						var lmbid = a.getAttribute("href").match(rembid);
 						var rmbid = document.referrer.match(rembid);
@@ -141,7 +141,7 @@ var lookForOldestEdit = true;
 							var tmp = res.evaluate(".//mb:release-group", res, nsr, XPathResult.ANY_TYPE, null);
 							while (tmp2 = tmp.iterateNext()) {
 								var span = document.createElement("span");
-								fill(span, "in ", createA(tmp2.getElementsByTagName("title")[0].firstChild.nodeValue, "/release-group/"+tmp2.getAttribute("id")), "");
+								fill(span, "in ", createA(tmp2.getElementsByTagName("title")[0].textContent.replace(/\s/g, " "), "/release-group/"+tmp2.getAttribute("id")), "");
 								var count = parseInt(tmp2.getAttribute("count"));
 								stackInfo(eiZone, span);
 							}
@@ -181,8 +181,8 @@ var lookForOldestEdit = true;
 				if (this.status == 200) {
 					var res = document.createElement("html"); res.innerHTML = this.responseText;
 					if ((edit = res.querySelector("div#content div.edit-list h2 a[href*='musicbrainz.org/edit/']")) && (editid = edit.getAttribute("href").match(/[0-9]+$/)) && (edittype = edit.textContent.match(/- (.+)$/)) && (edittype = edittype[1].toUpperCase())) {
-						ents[ioe].edit = editid;
-						if (typeof ents[io].edit=="undefined" || parseInt(ents[io].edit) > parseInt(ents[ioe].edit)) { io = ioe; }
+						ents[ioe].edit = parseInt(editid, 10);
+						if (!ents[io].edit || ents[io].edit > ents[ioe].edit) { io = ioe; }
 						var span = document.createElement("span");
 						span.appendChild(document.createTextNode("edit:"));
 						span.appendChild(createA(editid, "/edit/"+editid)).setAttribute("id", userjs+"oldestEditA"+ioe);
@@ -204,7 +204,11 @@ var lookForOldestEdit = true;
 							oldestEnt = io;
 							if (lastEnt < 0) { ents[io].rad.click(); }
 							var ioeZone = document.getElementById(userjs+"oldestEdit"+io);
-							ioeZone.appendChild(document.createTextNode(" (oldest)"));
+							ioeZone.appendChild(document.createTextNode(" (oldest) "));
+							ioeZone.appendChild(createA("SORT!", null, "sort those rows (oldest edit first)")).addEventListener("click", function(e) {
+								this.parentNode.removeChild(this);
+								sortByEdit();
+							});
 							document.getElementById(userjs+"oldestEditA"+io).style.background = "#6F6";
 						}
 						top.status = "";
@@ -217,6 +221,29 @@ var lookForOldestEdit = true;
 		};
 		xhr.open("GET", url, true);
 		xhr.send(null);
+	}
+	function sortByEdit() {
+		for (var ent=0; ent < ents.length; ent++) {
+			if (!ents[ent].edit) {
+				ents[ent].row.parentNode.appendChild(ents[ent].row.parentNode.removeChild(ents[ent].row));
+			} else {
+				var rows = ents[ent].row.parentNode.querySelectorAll("tr");
+				for (var row=0; rows.length; row++) {
+					var rowedit = rows[row].querySelector("a[id^='"+userjs+"oldestEdit'][href^='/edit/']");
+					if (rowedit && (rowedit = parseInt(rowedit.textContent, 10)) && parseInt(rowedit, 10) >= ents[ent].edit) {
+						if (ents[ent].row != rows[row]) ents[ent].row.parentNode.insertBefore(ents[ent].row.parentNode.removeChild(ents[ent].row), rows[row]);
+						break;
+					}
+				}
+			}
+		}
+		var rows = ents[0].row.parentNode.getElementsByTagName(ents[0].row.tagName.toLowerCase());
+		for (var row=0; row < rows.length; row++) {
+			if (row%2) {
+				if (!rows[row].className.match(/\bev\b/i)) rows[row].className += " ev";
+			}
+			else rows[row].className = rows[row].className.replace(/ ?\bev\b/ig, "");
+		}
 	}
 	function loadimg(txt) {
 		var img = document.createElement("img");
