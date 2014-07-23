@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.0624.1527
+// @version      2014.7.23.1431
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -26,7 +26,6 @@
 	var cWarning = "yellow";
 	var cMerge = "#fcc";
 	var cCancel = "#cfc";
-	var cSwap = "#ccf";
 	/* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 	if (document.getElementsByClassName("account").length < 1) { return; }
 	var rythm = 1000;
@@ -103,7 +102,7 @@
 					if (step < 2) {
 						mergeRecsStep(step+1);
 					} else {
-						cleanTrack(localRelease.tracks[recid2trackIndex[swap.value=="yes"?from.value:to.value]], true);
+						cleanTrack(localRelease.tracks[recid2trackIndex[swap.value=="no"?to.value:from.value]], true);
 						infoMerge("#"+from.value+" to #"+to.value+" merged OK", true, true);
 						currentButt = null;
 						if (nextButt = mergeQueue.shift()) {
@@ -247,14 +246,15 @@
 										rmForm.appendChild(createInput("hidden", "merge.edit_note", "mass rec merger"));
 										if (remoteRelease.tracks[rtrack].recording.id != localRelease.tracks[ltrack].recid) {
 											rmForm.style.setProperty("background-color", cWarning);
-											var dirButt = rmForm.appendChild(createInput("button", "direction", rem2loc));
+											var dirButt = rmForm.appendChild(createInput("button", "direction", swap.value=="no"?rem2loc:loc2rem));
 											dirButt.setAttribute("class", MMRid+"dirbutt");
-											dirButt.style.setProperty("background-color", cSwap);
+											dirButt.style.setProperty("background-color", swap.value=="no"?cOK:cInfo);
 											dirButt.style.setProperty("font-size", "1em");
 											dirButt.style.setProperty("padding", "0 1em .5em 1em");
 											dirButt.style.setProperty("margin", "0 4px");
 											dirButt.addEventListener("click", function(e) {
-												this.value = (this.value == rem2loc?loc2rem:rem2loc);
+												this.value = this.value==rem2loc?loc2rem:rem2loc;
+												this.style.setProperty("background-color", this.value==rem2loc?cOK:cInfo);
 											}, false);
 											rmForm.appendChild(createA(remoteRelease.tracks[rtrack].number+". “"+remoteRelease.tracks[rtrack].name+"” ("+time(remoteRelease.tracks[rtrack].length)+")", "/recording/"+remoteRelease.tracks[rtrack].recording.gid));
 											rmForm.appendChild(document.createTextNode(" by "));
@@ -348,13 +348,14 @@
 		from = MMRdiv.appendChild(createInput("hidden", "from", ""));
 		to = MMRdiv.appendChild(createInput("hidden", "to", ""));
 		swap = MMRdiv.appendChild(createInput("hidden", "swap", "no"));
-		tmp = MMRdiv.appendChild(createInput("button", "", "Change all merge directions"));
-		tmp.style.setProperty("background-color", cSwap);
+		tmp = MMRdiv.appendChild(createInput("button", "", "Change all merge directions to "+(swap.value=="no"?loc2rem:rem2loc)));
+		tmp.style.setProperty("background-color", cInfo);
 		tmp.addEventListener("click", function(e) {
 			var allbutts = document.getElementsByClassName(MMRid+"dirbutt");
-			for (var iab=0; iab < allbutts.length; iab++) {
-				allbutts[iab].click();
-			}
+			for (var iab=0; iab < allbutts.length; iab++) if (allbutts[iab].value != this.value[this.value.length-1]) allbutts[iab].click();
+			swap.value = this.value[this.value.length-1]==rem2loc?"no":"yes";
+			this.value = this.value.substring(0, this.value.length-1) + (swap.value=="no"?loc2rem:rem2loc);
+			this.style.setProperty("background-color", swap.value=="no"?cInfo:cOK);
 		}, false);
 		tmp = MMRdiv.appendChild(createInput("button", "", "Merge all found recs"));
 		tmp.setAttribute("ref", tmp.value);
