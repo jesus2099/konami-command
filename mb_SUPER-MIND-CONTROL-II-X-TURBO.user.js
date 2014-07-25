@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.7.22.1122
+// @version      2014.7.25.1633
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER / DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO / RELEASE_EDITOR_PROTECTOR / TRACKLIST_TOOLS / ALIAS_SORT_NAME / LAST_SEEN_EDIT / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
 // @doc          http://userscripts-mirror.org/scripts/show/85790
 // @bugs         https://github.com/jesus2099/konami-command/issues
@@ -83,11 +83,7 @@
 			j2setting();
 			if (j2sets) {
 				var j2setsdiv = document.body.appendChild(createTag("div",{"a":{"id":userjs+"j2sets"},"s":{"position":"fixed","overflow":"auto","top":"50px","right":"50px","bottom":"50px","left":"50px","background-color":"silver","border":"2px outset white","padding":"1em","z-index":"99"}},[createTag("a",{"s":{"float":"right"},"e":{"click":function(e){del(document.getElementById(userjs+"j2sets"));}}}, "  CLOSE ×  "),createTag("a",{"s":{"float":"right"},"e":{"click":function(e){if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")){localStorage.removeItem(userjs+"settings");self.location.reload();}}}}, "  reset  "),createTag("h4",{"s":{"text-shadow":"0 0 8px black"}},["██ ",createTag("a",{"a":{"href":meta.namespace,"target":"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{"e":{"click":function(){location.reload();}}},"page reload")," to see the effect."])]));
-				j2setsdiv.appendChild(createTag("p", {}, "There is some documentation for this script at:"));
-				for (var d=0; d < meta.doc.length; d++) {
-					j2setsdiv.lastChild.appendChild(createTag("a", {a:{href:meta.doc[d],target:"_blank"}}, " mirror #"+(d+1)));
-				}
-				j2setsdiv.appendChild(createTag("p", {}, ["Please check out the ", createTag("a", {a:{href:meta.bugs,target:"_blank"}}, "knwon bugs"), "before submitting ", createTag("a", {a:{href:meta.bugs+"/new?title="+encodeURIComponent(meta.name+" error")+"&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while I was on [that page]("+location.href+") (or not?).\nMy error is that bla bla bla…"),target:"_blank"}}, "new bug"), "."]));
+				j2setsdiv.appendChild(createTag("p", {}, ["There is some ", createTag("a", {a:{href:meta.doc,target:"_blank"}}, "old documentation"), " for this script. Please check out the ", createTag("a", {a:{href:meta.bugs,target:"_blank"}}, "knwon bugs"), "before submitting ", createTag("a", {a:{href:meta.bugs+"/new?title="+encodeURIComponent(meta.name+" error")+"&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while I was on [that page]("+location.href+") (or not?).\nMy error is that bla bla bla…"),target:"_blank"}}, "new bug"), "."]));
 				var alphakeys = [];
 				for (var s in j2sets) { if (j2sets.hasOwnProperty(s)) {
 					if (j2setsclean.indexOf(s)<0) { delete j2sets[s]; }
