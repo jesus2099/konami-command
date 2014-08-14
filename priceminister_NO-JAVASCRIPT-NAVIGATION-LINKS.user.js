@@ -1,17 +1,15 @@
 // ==UserScript==
-// @name           priceminister. NO JAVASCRIPT NAVIGATION LINKS
-// @version        2012.1214.1916
-// @description    Replaces most javascript browsing with standard href anchor links. Remplace la plupart des liens javascript par des liens href standards.
+// @name         priceminister. NO JAVASCRIPT NAVIGATION LINKS
+// @version      2014.8.14.1648
+// @description  Remplace la plupart des liens javascript par des liens href standards.
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/priceminister_NO-JAVASCRIPT-NAVIGATION-LINKS.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/priceminister_NO-JAVASCRIPT-NAVIGATION-LINKS.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @grant          none
-// @include        http://*priceminister.com*
-// @include        http://*priceminister.co.uk*
-// @include        http://*priceminister.es*
-// @run-at         document-end
+// @grant        none
+// @include      http://www.priceminister.com/*
+// @run-at       document-end
 // ==/UserScript==
 (function(){
 /* lines you can add to your "blocked content", many advertisement systems used on priceminister that slow down the page display.
