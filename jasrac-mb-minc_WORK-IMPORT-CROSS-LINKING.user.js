@@ -1,5 +1,5 @@
 function lameChromeWorkaroundForUsingLameJQuery(){"use strict";
-var meta={rawmdb:function(){
+	var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
 // @version      2014.8.19.22
@@ -16,16 +16,16 @@ var meta={rawmdb:function(){
 // @exclude      *://*musicbrainz.org/work/*edits*
 // @run-at       document-end
 // ==/UserScript==
-}};
-if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
-	while ((kv = row.exec(meta.rawmdb)) !== null) {
-		if (meta[kv[1]]) {
-			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
-			meta[kv[1]].push(kv[2]);
-		} else meta[kv[1]] = kv[2];
+	}};
+	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
+		var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+		while ((kv = row.exec(meta.rawmdb)) !== null) {
+			if (meta[kv[1]]) {
+				if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
+				meta[kv[1]].push(kv[2]);
+			} else meta[kv[1]] = kv[2];
+		}
 	}
-}
 	var DEBUG = localStorage.getItem("jesus2099debug");
 	var userjs = "jesus2099userjs94676";
 	var userjsname = meta.name+" '''"+meta.version+"''' ("+meta.namespace+")";
