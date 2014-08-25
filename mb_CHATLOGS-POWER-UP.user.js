@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2014.0612.1314
+// @version      2014.8.25.1234
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; misc stuff too
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_CHATLOGS-POWER-UP.user.js
@@ -15,8 +15,8 @@
 (function(){
 	var userjs = "j2userjs127580";
 	var ls = (typeof localStorage != "undefined");
-	var cat = self.location.href.match(/chatlogs\.musicbrainz\.org\/([^/]+)\//);
-	var date = self.location.href.match(/\/(\d{4}-\d{2}-\d{2})\.html/);
+	var cat = location.href.match(/chatlogs\.musicbrainz\.org\/([^/]+)\//);
+	var date = location.href.match(/\/((\d{4})-(\d{2})-(\d{2}))\.html/);
 	var dds = document.querySelectorAll("dd");
 	var srdd = "none";
 	var srnv = "jesus script patate";/*just some starting default value example*/
@@ -52,7 +52,7 @@
 			var css_brdr = "2px dashed red";
 			var maxStoredLastread = 100;
 			var lastread; if (ls && (lastread = localStorage.getItem(userjs+"lr"+cat[1]+date[1]))) { lastread = document.getElementById(lastread.split(" ")[0]); }
-			var hashrow; if ((urlid = document.location.href.match(re_urlid)) && (urlide = document.getElementById(urlid[1]))) { hashrow = urlide; }
+			var hashrow; if ((urlid = location.href.match(re_urlid)) && (urlide = document.getElementById(urlid[1]))) { hashrow = urlide; }
 			if (ls) {
 				if (tmp = localStorage.getItem(userjs+"srd")) { srdd = tmp; }
 				if (tmp = localStorage.getItem(userjs+"nick")) { srnv = tmp; }
@@ -166,7 +166,7 @@
 		if (cat[1].match(/^musicbrainz(?:-devel)?$/)) {
 			var tgt = "musicbrainz" + (cat[1].match(/^musicbrainz$/)?"-devel":"");
 			ctt.appendChild(document.createTextNode(sep));
-			ctt.appendChild(createA("#"+tgt, self.location.href.replace(/\/musicbrainz(?:-devel)?\//, "/"+tgt+"/")));
+			ctt.appendChild(createA("#"+tgt, location.href.replace(/\/musicbrainz(?:-devel)?\//, "/"+tgt+"/")));
 		}
 	}
 	var timeoutPlusmoins;
