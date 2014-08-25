@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2014.8.25.1234
+// @version      2014.8.25.1243
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; misc stuff too
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_CHATLOGS-POWER-UP.user.js
@@ -128,16 +128,14 @@
 				}
 			}));
 			/* jump around! */
-			if (hashrow || lastread) {
-				var jumpto = setTimeout(function(){
-					(hashrow||lastread).scrollIntoView();
-					jumpto = null;
-				}, 400);
-				document.getElementsByTagName("head")[0].addEventListener("DOMNodeInserted", function(e) {
-					if ((hashrow||lastread) && !jumpto) { (hashrow||lastread).scrollIntoView(); }
-				}, false);
-			}
-			/* last read stuff */
+			var jumpto = setTimeout(function() {
+				jumpAround();
+				jumpto = null;
+			}, 400);
+			document.getElementsByTagName("head")[0].addEventListener("DOMNodeInserted", function(e) {
+				if (!jumpto) jumpAround();
+			}, false);
+				/* last read stuff */
 			if (ls && date) {
 				if (lastread) {
 					if (nextDD = getSibling(lastread, "dd")) { nextDD.style.borderBottom = css_brdr; }
@@ -170,6 +168,12 @@
 		}
 	}
 	var timeoutPlusmoins;
+	function jumpAround() {
+		var highlighted = document.querySelector(nicksel(srnv, "*"));
+		if (highlighted = (hashrow || lastread || highlighted)) {
+			highlighted.scrollIntoView();
+		}
+	}
 	function asyncPlusmoins (e) {
 		if (e) {
 			document.body.removeEventListener("DOMNodeInserted", asyncPlusmoins, false);
