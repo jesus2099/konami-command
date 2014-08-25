@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2014.8.25.1243
-// @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; misc stuff too
+// @version      2014.8.25.1342
+// @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_CHATLOGS-POWER-UP.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_CHATLOGS-POWER-UP.user.js
@@ -166,6 +166,63 @@
 			ctt.appendChild(document.createTextNode(sep));
 			ctt.appendChild(createA("#"+tgt, location.href.replace(/\/musicbrainz(?:-devel)?\//, "/"+tgt+"/")));
 		}
+		/* prev./next day */
+			ctt.appendChild(document.createTextNode(sep));
+			ctt.appendChild(createA("prev.", prevNextDate()));
+			ctt.appendChild(document.createTextNode(sep));
+			ctt.appendChild(createA("next", prevNextDate(true)));
+		var prev
+	}
+	function prevNextDate(next) {
+		var y = parseInt(date[2], 10), m = parseInt(date[3], 10), d = parseInt(date[4], 10);
+		if (next) {
+			d += 1;
+			if (d > lastDateOfMonth(y, m)) {
+				m += 1;
+				if (m > 12) {
+					y += 1;
+					m = 1;
+				}
+				d = 1;
+			}
+		} else {
+			d -= 1;
+			if (d <= 1) {
+				m -= 1;
+				if (m <= 1) {
+					y -= 1;
+				}
+				d -= lastDateOfMonth(y, m);
+			}
+		}
+		y = zeroPad(y, 4);
+		m = zeroPad(m, 2);
+		d = zeroPad(d, 2);
+		return location.pathname.match(/^\/[^/]+\//)+y+"/"+y+"-"+m+"/"+y+"-"+m+"-"+d+".html";
+	}
+	function zeroPad(i, cols) {
+		var str = ""+i;
+		while (str.length < cols) {
+			str = "0"+str;
+		}
+		return str;
+	}
+	function lastDateOfMonth(y, m) {
+		switch (m) {
+			case 2:
+			case 4:
+			case 6:
+			case 9:
+			case 11:
+				return 30;
+			case 2:
+				return (isLeap(y)?29:28);
+			default:
+				return 31;
+		}
+	}
+	function isLeap(year) {
+		return (new Date(year, 1, 29).getMonth() == 1);
 	}
 	var timeoutPlusmoins;
 	function jumpAround() {
