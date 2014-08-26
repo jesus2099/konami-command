@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.7.26.1658
+// @version      2014.7.26.1717
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -41,7 +41,8 @@
 	var startpos, status, from, to, swap, editNote, queuetrack;
 	var rem2loc = "\u25c0";
 	var loc2rem = "\u25b6";
-	var ltitle = document.title.match(new RegExp("^"+sregex_title+"$"));
+	var dtitle = document.title;
+	var ltitle = dtitle.match(new RegExp("^"+sregex_title+"$"));
 	var localRelease = {
 		rg: document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
 		title: ltitle[1],
@@ -87,6 +88,7 @@
 		}
 		infoMerge("#"+from.value+" to #"+to.value+" "+statuses[step]+"…");
 		currentButt.setAttribute("value", buttStatuses[step]+" "+step+"/2");
+		document.title = "⌛("+mergeQueue.length+") "+dtitle;
 		var xhr = new XMLHttpRequest();
 		function releaseInfoRow(hdr, rel) {
 			return hdr+": "+MBS+"/release/"+rel.mbid+" “'''''"+rel.title+"'''''”"+rel.comment+" ("+rel.tracks.length+" tracks) by '''"+rel.ac+"'''\n";
@@ -108,6 +110,7 @@
 						cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]], true);
 						infoMerge("#"+from.value+" to #"+to.value+" merged OK", true, true);
 						currentButt = null;
+						document.title = dtitle;
 						if (nextButt = mergeQueue.shift()) {
 							skipstep = true;
 							FuckingFireFrox(nextButt);
@@ -286,7 +289,7 @@
 											reclen.appendChild(document.createTextNode(" "+time(remoteRelease.tracks[rtrack].length, true)));
 											var delta = typeof localRelease.tracks[ltrack].length == "number" && typeof remoteRelease.tracks[rtrack].length == "number" && Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
 											if (delta == false || delta <= safeLengthDelta*1000) {
-												reclen.style.setProperty("background-color", delta<=1000?cOK:cWarning);
+												reclen.style.setProperty("background-color", delta<=500?cOK:cWarning);
 											} else {
 												reclen.parentNode.style.setProperty("background-color", cNG);
 												if (delta < 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
