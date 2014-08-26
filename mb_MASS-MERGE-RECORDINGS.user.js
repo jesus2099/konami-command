@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.7.26.1530
+// @version      2014.7.26.1658
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -77,8 +77,8 @@
 			if (paramsup != "") paramsup += "\n —\n";
 			paramsup += releaseInfoRow("source", swap.value=="no"?remoteRelease:localRelease);
 			paramsup += releaseInfoRow("target", swap.value=="no"?localRelease:remoteRelease);
-			var delta = Math.abs(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length - remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length;
-			if (delta <= safeLengthDelta*1000) paramsup += "'''DURATIONS ARE "+(delta==0?:"THE SAME''' (in milliseconds)":"VERY CLOSE''' (within "+safeLengthDelta+" seconds)")+"\n";
+			var delta = Math.abs(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length - remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length);
+			if (delta <= safeLengthDelta*1000) paramsup += "'''DURATIONS ARE "+(delta==0?"THE SAME''' (in milliseconds)":"VERY CLOSE''' (within "+safeLengthDelta+" seconds)")+"\n";
 			if (localRelease.ac == remoteRelease.ac) paramsup += "'''SAME RELEASE ARTIST''' "+localRelease.ac+"\n";
 			if (localRelease.title == remoteRelease.title) paramsup += "'''SAME RELEASE TITLE''' “"+localRelease.title+"”\n";
 			if (localRelease.rg == remoteRelease.rg) paramsup += "'''SAME RELEASE GROUP''' "+MBS+"/release-group/"+localRelease.rg+"\n";
@@ -284,9 +284,9 @@
 											reclen.style.setProperty("float", "right");
 											reclen.style.setProperty("font-family", "monospace");
 											reclen.appendChild(document.createTextNode(" "+time(remoteRelease.tracks[rtrack].length, true)));
-											var delta = Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
-											if (delta <= safeLengthDelta*1000) {
-												reclen.style.setProperty("background-color", cWarning);
+											var delta = typeof localRelease.tracks[ltrack].length == "number" && typeof remoteRelease.tracks[rtrack].length == "number" && Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
+											if (delta == false || delta <= safeLengthDelta*1000) {
+												reclen.style.setProperty("background-color", delta<=1000?cOK:cWarning);
 											} else {
 												reclen.parentNode.style.setProperty("background-color", cNG);
 												if (delta < 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
