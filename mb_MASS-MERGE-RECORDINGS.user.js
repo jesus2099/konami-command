@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.7.26.1717
+// @version      2014.7.27.1154
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -88,7 +88,7 @@
 		}
 		infoMerge("#"+from.value+" to #"+to.value+" "+statuses[step]+"…");
 		currentButt.setAttribute("value", buttStatuses[step]+" "+step+"/2");
-		document.title = "⌛("+mergeQueue.length+") "+dtitle;
+		document.title = "⌛("+(mergeQueue.length+1)+") "+dtitle;
 		var xhr = new XMLHttpRequest();
 		function releaseInfoRow(hdr, rel) {
 			return hdr+": "+MBS+"/release/"+rel.mbid+" “'''''"+rel.title+"'''''”"+rel.comment+" ("+rel.tracks.length+" tracks) by '''"+rel.ac+"'''\n";
@@ -288,18 +288,18 @@
 											reclen.style.setProperty("font-family", "monospace");
 											reclen.appendChild(document.createTextNode(" "+time(remoteRelease.tracks[rtrack].length, true)));
 											var delta = typeof localRelease.tracks[ltrack].length == "number" && typeof remoteRelease.tracks[rtrack].length == "number" && Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
-											if (delta == false || delta <= safeLengthDelta*1000) {
-												reclen.style.setProperty("background-color", delta<=500?cOK:cWarning);
-											} else {
+											if (delta != false && delta > safeLengthDelta*1000) {
 												reclen.parentNode.style.setProperty("background-color", cNG);
-												if (delta < 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
-													reclen.style.setProperty("background-color", cNG);
-													reclen.setAttribute("title", "more than "+safeLengthDelta+" seconds difference");
-												} else {
+												if (delta >= 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
 													reclen.style.setProperty("color", "red");
 													reclen.style.setProperty("background-color", "black");
 													reclen.setAttribute("title", "MORE THAN "+15+" SECONDS DIFFERENCE");
+												} else {
+													reclen.style.setProperty("background-color", cNG);
+													reclen.setAttribute("title", "more than "+safeLengthDelta+" seconds difference");
 												}
+											} else {
+												reclen.style.setProperty("background-color", delta==false||delta>500?cWarning:cOK);
 											}
 											rmForm.appendChild(document.createTextNode(" by "));
 											rmForm.appendChild(ac2dom(remoteRelease.tracks[rtrack].artistCredit));
