@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.7.27.1212
+// @version      2014.7.27.1234
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -72,7 +72,11 @@
 			"add-to-merge="+to.value+"&add-to-merge="+from.value,
 			"merge.merging.0="+to.value+"&merge.target="+to.value+"&merge.merging.1="+from.value
 		];
+		document.title = "⌛"+(mergeQueue.length>0?"("+(mergeQueue.length+1)+") ":" ")+dtitle;
+		disable(startpos);
+		disable(status);
 		if (step == 2) {
+			disable(editNote);
 			params[step] += "&merge.edit_note=";
 			var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
 			if (paramsup != "") paramsup += "\n —\n";
@@ -88,13 +92,12 @@
 		}
 		infoMerge("#"+from.value+" to #"+to.value+" "+statuses[step]+"…");
 		currentButt.setAttribute("value", buttStatuses[step]+" "+step+"/2");
-		document.title = "⌛("+(mergeQueue.length+1)+") "+dtitle;
 		var xhr = new XMLHttpRequest();
 		function releaseInfoRow(hdr, rel) {
 			return hdr+": "+MBS+"/release/"+rel.mbid+" “'''''"+rel.title+"'''''”"+rel.comment+" ("+rel.tracks.length+" tracks) by '''"+rel.ac+"'''\n";
 		}
 		function FuckingFireFrox(butt) {
-			butt.removeAttribute("disabled");
+			enable(butt);
 			if (/*LAME*/navigator.userAgent.match(/firefox/i)) {
 				butt.setAttribute("value", "(F)FF delay…");
 				setTimeout(function() { butt.click(); }, 1000);
@@ -111,9 +114,14 @@
 						infoMerge("#"+from.value+" to #"+to.value+" merged OK", true, true);
 						currentButt = null;
 						document.title = dtitle;
+						enable(startpos);
+						enable(status);
+						enable(editNote);
 						if (nextButt = mergeQueue.shift()) {
 							skipstep = true;
 							FuckingFireFrox(nextButt);
+						} else {
+							startpos.focus();
 						}
 					}
 				}
@@ -186,9 +194,9 @@
 		startpos.style.setProperty("font-size", ".8em");
 		startpos.style.setProperty("width", "100%");
 		startpos.addEventListener("change", function(e) {
-			if (remoteRelease.tracks.length > 0) {
-				status.focus();
-			} else {/*i know it is dumb, it is for future clever stuff if time (no reload source release)*/
+			if (remoteRelease.mbid && remoteRelease.tracks.length > 0) {
+				spreadTracks(e);
+			} else {
 				status.focus();
 			}
 		}, false);
@@ -252,118 +260,9 @@
 									}
 								}
 								jsonRelease = null;/*maybe it frees up memory*/
-								for (var ltrack=0, rtrack=0; ltrack < localRelease.tracks.length; ltrack++) {
-									cleanTrack(localRelease.tracks[ltrack]);
-									if(ltrack >= startpos.value && rtrack < remoteRelease.tracks.length) {
-										var ntitl = "local recording #"+localRelease.tracks[ltrack].recid;
-										var ntit = localRelease.tracks[ltrack].a.getAttribute("title");
-										if (!ntit || (ntit && !ntit.match(new RegExp(ntitl)))) {
-											localRelease.tracks[ltrack].a.setAttribute("title", (ntit?ntit+" \u2014\u00A0":"")+ntitl);
-										}
-										rmForm = document.createElement("form");
-										rmForm.setAttribute("action", "/recording/merge");
-										rmForm.setAttribute("method", "post");
-										rmForm.setAttribute("title", "AC: "+ac2str(remoteRelease.tracks[rtrack].artistCredit)+"\nremote recording #"+remoteRelease.tracks[rtrack].recording.id);
-										rmForm.setAttribute("class", MMRid);
-										rmForm.style.setProperty("display", "inline");
-										rmForm.appendChild(createInput("hidden", "merge.merging.0", localRelease.tracks[ltrack].recid));
-										rmForm.appendChild(createInput("hidden", "merge.target", localRelease.tracks[ltrack].recid));
-										rmForm.appendChild(createInput("hidden", "merge.merging.1", remoteRelease.tracks[rtrack].recording.id));
-										rmForm.appendChild(createInput("hidden", "merge.edit_note", "mass rec merger"));
-										if (remoteRelease.tracks[rtrack].recording.id != localRelease.tracks[ltrack].recid) {
-											rmForm.style.setProperty("background-color", cWarning);
-											var dirButt = rmForm.appendChild(createInput("button", "direction", swap.value=="no"?rem2loc:loc2rem));
-											dirButt.setAttribute("class", MMRid+"dirbutt");
-											dirButt.style.setProperty("background-color", swap.value=="no"?cOK:cInfo);
-											dirButt.style.setProperty("font-size", "1em");
-											dirButt.style.setProperty("padding", "0 1em .5em 1em");
-											dirButt.style.setProperty("margin", "0 4px");
-											dirButt.addEventListener("click", function(e) {
-												this.value = this.value==rem2loc?loc2rem:rem2loc;
-												this.style.setProperty("background-color", this.value==rem2loc?cOK:cInfo);
-											}, false);
-											var reclen = rmForm.appendChild(createA(remoteRelease.tracks[rtrack].number+". “"+remoteRelease.tracks[rtrack].name+"” ", "/recording/"+remoteRelease.tracks[rtrack].recording.gid));
-											reclen = reclen.appendChild(document.createElement("span"));
-											reclen.style.setProperty("float", "right");
-											reclen.style.setProperty("font-family", "monospace");
-											reclen.appendChild(document.createTextNode(" "+time(remoteRelease.tracks[rtrack].length, true)));
-											var delta = typeof localRelease.tracks[ltrack].length == "number" && typeof remoteRelease.tracks[rtrack].length == "number" && Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
-											if (delta != false && delta > safeLengthDelta*1000) {
-												reclen.parentNode.style.setProperty("background-color", cNG);
-												if (delta >= 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
-													reclen.style.setProperty("color", "red");
-													reclen.style.setProperty("background-color", "black");
-													reclen.setAttribute("title", "MORE THAN "+15+" SECONDS DIFFERENCE");
-												} else {
-													reclen.style.setProperty("background-color", cNG);
-													reclen.setAttribute("title", "more than "+safeLengthDelta+" seconds difference");
-												}
-											} else {
-												reclen.style.setProperty("background-color", delta==false||delta>500?cWarning:cOK);
-											}
-											rmForm.appendChild(document.createTextNode(" by "));
-											rmForm.appendChild(ac2dom(remoteRelease.tracks[rtrack].artistCredit));
-											var mergeButt = rmForm.appendChild(createInput("button", "", "Merge"));
-											mergeButt.setAttribute("class", MMRid+"mergebutt");
-											mergeButt.style.setProperty("background-color", cMerge);
-											mergeButt.style.setProperty("float", "right");
-											mergeButt.addEventListener("click", function(e) {
-												this.setAttribute("disabled", "disabled");
-												this.style.setProperty("background-color", cInfo);
-												var swapped = (this.parentNode.getElementsByTagName("input")[4].value == loc2rem);
-												var mergeFrom = this.parentNode.getElementsByTagName("input")[swapped?0:2].value;
-												var mergeTo = this.parentNode.getElementsByTagName("input")[swapped?2:0].value;
-												if (from.value == "") {
-													from.value = mergeFrom;
-													to.value = mergeTo;
-													swap.value = (swapped?"yes":"no");
-													currentButt = this;
-													mergeRecsStep(skipstep?1:0);
-												}
-												else if (mergeQueue.indexOf(this) == -1 && from.value != mergeFrom && to.value != mergeTo) {
-													this.value = "Unqueue";
-													this.removeAttribute("disabled");
-													mergeQueue.push(this);
-												} else if ((where = mergeQueue.indexOf(this)) > -1) {
-													mergeQueue.splice(where, 1);
-													this.value = "Merge";
-													this.removeAttribute("disabled");
-													this.style.setProperty("background-color", cInfo);
-												} else {
-													this.removeAttribute("disabled");
-													this.style.setProperty("background-color", cWarning);
-													this.value += " error?";
-												}
-												queueTrack();
-											}, false);
-										} else {
-											rmForm.style.setProperty("background-color", cCancel);
-											prints(rmForm, " (same recording) ");
-											rmForm.appendChild(createA(remoteRelease.tracks[rtrack].name, localRelease.tracks[ltrack].a.getAttribute("href")));
-										}
-										if (!localRelease.tracks[ltrack].a.parentNode) {
-											localRelease.tracks[ltrack].a = localRelease.tracks[ltrack].tr.querySelector("td:not(.pos):not(.video) a[href^='/recording/']");
-										}
-										var tracktd = getParent(localRelease.tracks[ltrack].a, "td");
-										var bestPos = tracktd.querySelector("span.mp");
-										bestPos = bestPos?bestPos:localRelease.tracks[ltrack].a;
-										if (recdis = tracktd.querySelector("span.userjs81127recdis")) { bestPos = recdis; }
-										addAfter(rmForm, bestPos);
-										rtrack++;
-									}
-								}
+								spreadTracks(e);
 							}
-							var mergebutts = document.getElementsByClassName(MMRid+"mergebutt").length;
-							infoMerge("Recordings loaded, "+mergebutts+" ready to merge", true);
-							var mergeallbutt = document.getElementById(MMRid+"mergeallbutt");
-							mergeallbutt.value = mergeallbutt.getAttribute("ref").replace(/all/, mergebutts);
-							if (mergebutts == 1) mergeallbutt.value = mergeallbutt.value.replace(/recs/, "rec");
-							if (mergebutts == 0) mergeallbutt.setAttribute("disabled", "disabled");
-							else mergeallbutt.removeAttribute("disabled");
-							if (startpos.value > 0) startpos.focus();
-							else document.getElementById(MMRid).getElementsByTagName("textarea")[0].focus();
-						}
-						else { infoMerge("This is not a valid release", false); }
+						} else { infoMerge("This is not a valid release", false); }
 					}
 				};
 				xhr.open("GET", url, true);
@@ -396,7 +295,7 @@
 		tmp = MMRdiv.appendChild(createInput("button", "", "Change all merge directions to "+(swap.value=="no"?loc2rem:rem2loc)));
 		tmp.style.setProperty("background-color", cInfo);
 		tmp.addEventListener("click", function(e) {
-			var allbutts = document.getElementsByClassName(MMRid+"dirbutt");
+			var allbutts = document.querySelectorAll("input."+MMRid+"dirbutt:not([disabled])");
 			for (var iab=0; iab < allbutts.length; iab++) if (allbutts[iab].value != this.value[this.value.length-1]) allbutts[iab].click();
 			swap.value = this.value[this.value.length-1]==rem2loc?"no":"yes";
 			this.value = this.value.substring(0, this.value.length-1) + (swap.value=="no"?loc2rem:rem2loc);
@@ -418,7 +317,7 @@
 			while (mergeQueue.length > 0) {
 				var unqueuedbutt = mergeQueue.shift()
 				unqueuedbutt.style.setProperty("background-color", cMerge);
-				unqueuedbutt.removeAttribute("disabled");
+				enable(unqueuedbutt);
 				unqueuedbutt.setAttribute("value", "Merge");
 			}
 			queueTrack();
@@ -430,6 +329,129 @@
 		prints(queuetrack, "\u00A0");
 		frg.appendChild(MMRdiv);
 		return frg;
+	}
+	function spreadTracks(e) {
+		for (var ltrack=0, rtrack=0; ltrack < localRelease.tracks.length; ltrack++) {
+			cleanTrack(localRelease.tracks[ltrack]);
+			if(ltrack >= startpos.value && rtrack < remoteRelease.tracks.length) {
+				var ntitl = "local recording #"+localRelease.tracks[ltrack].recid;
+				var ntit = localRelease.tracks[ltrack].a.getAttribute("title");
+				if (!ntit || (ntit && !ntit.match(new RegExp(ntitl)))) {
+					localRelease.tracks[ltrack].a.setAttribute("title", (ntit?ntit+" \u2014\u00A0":"")+ntitl);
+				}
+				rmForm = document.createElement("form");
+				rmForm.setAttribute("action", "/recording/merge");
+				rmForm.setAttribute("method", "post");
+				rmForm.setAttribute("title", "AC: "+ac2str(remoteRelease.tracks[rtrack].artistCredit)+"\nremote recording #"+remoteRelease.tracks[rtrack].recording.id);
+				rmForm.setAttribute("class", MMRid);
+				rmForm.style.setProperty("display", "inline");
+				rmForm.appendChild(createInput("hidden", "merge.merging.0", localRelease.tracks[ltrack].recid));
+				rmForm.appendChild(createInput("hidden", "merge.target", localRelease.tracks[ltrack].recid));
+				rmForm.appendChild(createInput("hidden", "merge.merging.1", remoteRelease.tracks[rtrack].recording.id));
+				rmForm.appendChild(createInput("hidden", "merge.edit_note", "mass rec merger"));
+				if (remoteRelease.tracks[rtrack].recording.id != localRelease.tracks[ltrack].recid) {
+					rmForm.style.setProperty("background-color", cWarning);
+					var dirButt = rmForm.appendChild(createInput("button", "direction", swap.value=="no"?rem2loc:loc2rem));
+					dirButt.setAttribute("class", MMRid+"dirbutt");
+					dirButt.style.setProperty("background-color", swap.value=="no"?cOK:cInfo);
+					dirButt.style.setProperty("font-size", "1em");
+					dirButt.style.setProperty("padding", "0 1em .5em 1em");
+					dirButt.style.setProperty("margin", "0 4px");
+					dirButt.addEventListener("click", function(e) {
+						this.value = this.value==rem2loc?loc2rem:rem2loc;
+						this.style.setProperty("background-color", this.value==rem2loc?cOK:cInfo);
+					}, false);
+					var reclen = rmForm.appendChild(createA(remoteRelease.tracks[rtrack].number+". “"+remoteRelease.tracks[rtrack].name+"” ", "/recording/"+remoteRelease.tracks[rtrack].recording.gid));
+					reclen = reclen.appendChild(document.createElement("span"));
+					reclen.style.setProperty("float", "right");
+					reclen.style.setProperty("font-family", "monospace");
+					reclen.appendChild(document.createTextNode(" "+time(remoteRelease.tracks[rtrack].length, true)));
+					var delta = typeof localRelease.tracks[ltrack].length == "number" && typeof remoteRelease.tracks[rtrack].length == "number" && Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
+					if (delta != false && delta > safeLengthDelta*1000) {
+						reclen.parentNode.style.setProperty("background-color", cNG);
+						if (delta >= 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
+							reclen.style.setProperty("color", "red");
+							reclen.style.setProperty("background-color", "black");
+							reclen.setAttribute("title", "MORE THAN "+15+" SECONDS DIFFERENCE");
+						} else {
+							reclen.style.setProperty("background-color", cNG);
+							reclen.setAttribute("title", "more than "+safeLengthDelta+" seconds difference");
+						}
+					} else {
+						reclen.style.setProperty("background-color", delta&&delta>500?cWarning:cOK);
+					}
+					rmForm.appendChild(document.createTextNode(" by "));
+					rmForm.appendChild(ac2dom(remoteRelease.tracks[rtrack].artistCredit));
+					var mergeButt = rmForm.appendChild(createInput("button", "", "Merge"));
+					mergeButt.setAttribute("class", MMRid+"mergebutt");
+					mergeButt.style.setProperty("background-color", cMerge);
+					mergeButt.style.setProperty("float", "right");
+					mergeButt.addEventListener("click", function(e) {
+						disable(this);
+						var swapbutt = this.parentNode.getElementsByTagName("input")[4];
+						disable(swapbutt)
+						this.style.setProperty("background-color", cInfo);
+						var swapped = (swapbutt.value == loc2rem);
+						var mergeFrom = this.parentNode.getElementsByTagName("input")[swapped?0:2].value;
+						var mergeTo = this.parentNode.getElementsByTagName("input")[swapped?2:0].value;
+						if (from.value == "") {
+							from.value = mergeFrom;
+							to.value = mergeTo;
+							swap.value = (swapped?"yes":"no");
+							currentButt = this;
+							mergeRecsStep(skipstep?1:0);
+						}
+						else if (mergeQueue.indexOf(this) == -1 && from.value != mergeFrom && to.value != mergeTo) {
+							this.value = "Unqueue";
+							enable(this);
+							enable(swapbutt);
+							mergeQueue.push(this);
+						} else if ((where = mergeQueue.indexOf(this)) > -1) {
+							mergeQueue.splice(where, 1);
+							this.value = "Merge";
+							enable(this);
+							enable(swapbutt);
+							this.style.setProperty("background-color", cInfo);
+						} else {
+							enable(this);
+							enable(swapbutt);
+							this.style.setProperty("background-color", cWarning);
+							this.value += " error?";
+						}
+						queueTrack();
+					}, false);
+				} else {
+					rmForm.style.setProperty("background-color", cCancel);
+					prints(rmForm, " (same recording) ");
+					rmForm.appendChild(createA(remoteRelease.tracks[rtrack].name, localRelease.tracks[ltrack].a.getAttribute("href")));
+				}
+				if (!localRelease.tracks[ltrack].a.parentNode) {
+					localRelease.tracks[ltrack].a = localRelease.tracks[ltrack].tr.querySelector("td:not(.pos):not(.video) a[href^='/recording/']");
+				}
+				var tracktd = getParent(localRelease.tracks[ltrack].a, "td");
+				var bestPos = tracktd.querySelector("span.mp");
+				bestPos = bestPos?bestPos:localRelease.tracks[ltrack].a;
+				if (recdis = tracktd.querySelector("span.userjs81127recdis")) { bestPos = recdis; }
+				addAfter(rmForm, bestPos);
+				rtrack++;
+			}
+		}
+		var mergebutts = document.getElementsByClassName(MMRid+"mergebutt").length;
+		infoMerge("Recordings loaded, "+mergebutts+" ready to merge", true);
+		var mergeallbutt = document.getElementById(MMRid+"mergeallbutt");
+		mergeallbutt.value = mergeallbutt.getAttribute("ref").replace(/all/, mergebutts);
+		if (mergebutts == 1) mergeallbutt.value = mergeallbutt.value.replace(/recs/, "rec");
+		if (mergebutts == 0) disable(mergeallbutt);
+		else enable(mergeallbutt);
+		if (e && e.type && e.type == "readystatechange") startpos.focus();
+	}
+	function disable(o, dis) {
+		if (Array.isArray(o) || o.length) for (io=0; io<o.length; o++) disable(o[io], dis);
+		else if (dis == null || dis == true) o.setAttribute("disabled", "disabled");
+		else o.removeAttribute("disabled");
+	}
+	function enable (o) {
+		disable(o, false);
 	}
 	function createA(text, link) {
 		var a = document.createElement("a");
