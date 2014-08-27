@@ -2,7 +2,7 @@ function lameChromeWorkaroundForUsingLameJQuery(){"use strict";
 	var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.8.19.22
+// @version      2014.8.27.1135
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
@@ -456,10 +456,11 @@ function lameChromeWorkaroundForUsingLameJQuery(){"use strict";
 				var iname = document.getElementById("id-edit-work.name");
 				xhrForm.form = getParent(iname, "form");
 				xhrForm.form.addEventListener("submit", function(e) {
-					var inputs = xhrForm.form.querySelectorAll("form > div > fieldset:not(."+userjs+") input[name]:not([name='']):not([type='button']), form > div > fieldset:not(."+userjs+") select[name]");
-					var changed = !(xhrWork.edit) || (xhrForm.original.amount != inputs.length);
-					for (input=0; !changed && input<inputs.length; input++) {
-						if (xhrForm.original.inputs[inputs[input].getAttribute("name")] != inputs[input].value) {
+					var inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
+					var changed = !(xhrWork.edit) || (xhrForm.originalInputs.inputs.length != inputs.length);
+					for (i=0; !changed && i<xhrForm.originalInputs.inputs.length; i++) {
+console.log(i+"("+xhrForm.originalInputs.inputs.length+"≠"+inputs.length+")\n*"+xhrForm.originalInputs.inputs[i].outerHTML+"*\n-------------------\n#"+xhrForm.originalInputs.values[i]+"#\n-------------------\n$"+xhrForm.originalInputs.inputs[i].value+"$");
+						if (xhrForm.originalInputs.inputs[i].value != xhrForm.originalInputs.values[i]) {
 							changed = true;
 						}
 					}
@@ -514,11 +515,11 @@ function lameChromeWorkaroundForUsingLameJQuery(){"use strict";
 				}, false);
 				xhrForm.submit = xhrForm.form.querySelector("div.row button.submit.positive[type='submit']");
 				xhrForm.submit.parentNode.insertBefore(createTag("input", {"type":"reset","value":"Reset","title":"reset form values","tabindex":"-1"}, {"float":"left","font-size":".77em","height":"16px","width":"32px","margin":"0 8px","border":"1px solid #ccc"}), xhrForm.submit);
-				var inputs = xhrForm.form.querySelectorAll("form > div > fieldset:not(."+userjs+") input[name]:not([name='']):not([type='button']), form > div > fieldset:not(."+userjs+") select[name]");
-				xhrForm.original = {"amount":inputs.length};
-				xhrForm.original.inputs = {};
-				for (var input=0; input<inputs.length; input++) {
-					xhrForm.original.inputs[inputs[input].getAttribute("name")] = inputs[input].value;
+				xhrForm.originalInputs = {inputs:[], values:[], css:"form > div > fieldset:not(."+userjs+") input:not([type='button']), form > div > fieldset:not(."+userjs+") select"};
+				xhrForm.originalInputs.inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
+				for (var i=0; i<xhrForm.originalInputs.inputs.length; i++) {
+console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalInputs.inputs[i].outerHTML+"*\n-------------------\n#"+xhrForm.originalInputs.inputs[i].value+"#");
+					xhrForm.originalInputs.values.push(xhrForm.originalInputs.inputs[i].value);
 				}
 				var icomment = document.getElementById("id-edit-work.comment");
 				var stypeid = document.getElementById("id-edit-work.type_id");
