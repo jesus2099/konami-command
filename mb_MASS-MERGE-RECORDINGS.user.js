@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.7.27.1154
+// @version      2014.7.27.1212
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -223,7 +223,7 @@
 		prints(MMRdiv, ["", "Source release MBID or URL:"], true);
 		status = createInput("text", "status", "", "Source release MBID or URL");
 		status.style.setProperty("width", "100%");
-		status.addEventListener("keyup", function(e) {
+		status.addEventListener("input", function(e) {
 			var mbid = this.value.match(regex_MBID);
 			if (mbid) {
 				this.setAttribute("ref", this.value);
