@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.7.27.1633
+// @version      2014.7.28.1323
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -82,8 +82,9 @@
 			if (paramsup != "") paramsup += "\n —\n";
 			paramsup += releaseInfoRow("source", swap.value=="no"?remoteRelease:localRelease);
 			paramsup += releaseInfoRow("target", swap.value=="no"?localRelease:remoteRelease);
+			if (localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].name.toUpperCase() == remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].name.toUpperCase()) paramsup += "'''SAME TRACK TITLES''' (case insensitive comparison)"+"\n";
 			var delta = Math.abs(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length - remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length);
-			if (delta <= safeLengthDelta*1000) paramsup += "'''TRACK TIMES ARE "+(delta==0?"THE SAME''' (in milliseconds)":"VERY CLOSE''' (within "+safeLengthDelta+" seconds)")+"\n";
+			if (delta <= safeLengthDelta*1000) paramsup += "'''"+(delta==0?"SAME":"VERY CLOSE")+" TRACK TIMES''' "+(delta==0?"(in milliseconds)":"(within "+safeLengthDelta+" seconds)")+"\n";
 			if (localRelease.ac == remoteRelease.ac) paramsup += "'''SAME RELEASE ARTIST''' "+localRelease.ac+"\n";
 			if (localRelease.title == remoteRelease.title) paramsup += "'''SAME RELEASE TITLE''' “"+localRelease.title+"”\n";
 			if (localRelease.rg == remoteRelease.rg) paramsup += "'''SAME RELEASE GROUP''' "+MBS+"/release-group/"+localRelease.rg+"\n";
@@ -110,6 +111,7 @@
 					if (step < 2) {
 						mergeRecsStep(step+1);
 					} else {
+						remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].recording.editsPending++;
 						cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]], true);
 						infoMerge("#"+from.value+" to #"+to.value+" merged OK", true, true);
 						currentButt = null;
@@ -212,9 +214,9 @@
 				var recid = trs[itrs].querySelector("td.rating a.set-rating").getAttribute("href").match(/id=([0-9]+)/)[1];
 				localRelease.tracks.push({"tr": trs[itrs], "disc": d, "track": dt, "a": tracka, "recid": recid});
 				if (jsonRelease) {
-					var length = jsonRelease.mediums[d-1].tracks[dt].length;
-					if (length) {
-						localRelease.tracks[localRelease.tracks.length-1].length = length;
+//					localRelease.tracks[localRelease.tracks.length-1] = jsonRelease.mediums[d-1].tracks[dt];
+					for (var key in jsonRelease.mediums[d-1].tracks[dt]) if (jsonRelease.mediums[d-1].tracks[dt].hasOwnProperty(key)) {
+						localRelease.tracks[localRelease.tracks.length-1][key] = jsonRelease.mediums[d-1].tracks[dt][key];
 					}
 				}
 				dt++;
@@ -361,14 +363,23 @@
 						this.value = this.value==rem2loc?loc2rem:rem2loc;
 						this.style.setProperty("background-color", this.value==rem2loc?cOK:cInfo);
 					}, false);
-					var reclen = rmForm.appendChild(createA(remoteRelease.tracks[rtrack].number+". “"+remoteRelease.tracks[rtrack].name+"” ", "/recording/"+remoteRelease.tracks[rtrack].recording.gid));
-					reclen = reclen.appendChild(document.createElement("span"));
+					var remrec = rmForm.appendChild(createA(remoteRelease.tracks[rtrack].number+". “", "/recording/"+remoteRelease.tracks[rtrack].recording.gid));
+					var rectitle = remrec.appendChild(document.createElement("span"));
+					rectitle.appendChild(document.createTextNode(remoteRelease.tracks[rtrack].name));
+					remrec.appendChild(document.createTextNode("” "));
+					if (remoteRelease.tracks[rtrack].name.toUpperCase() == localRelease.tracks[ltrack].name.toUpperCase()) {
+						rectitle.style.setProperty("background-color", cOK);
+						rectitle.setAttribute("title", "same title");
+					}
+					if (remoteRelease.tracks[rtrack].recording.editsPending > 0) {
+						remrec = mp(remrec, true);
+					}
+					var reclen = remrec.appendChild(document.createElement("span"));
 					reclen.style.setProperty("float", "right");
 					reclen.style.setProperty("font-family", "monospace");
 					reclen.appendChild(document.createTextNode(" "+time(remoteRelease.tracks[rtrack].length, true)));
 					var delta = typeof localRelease.tracks[ltrack].length == "number" && typeof remoteRelease.tracks[rtrack].length == "number" && Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
 					if (delta != false && delta > safeLengthDelta*1000) {
-						reclen.parentNode.style.setProperty("background-color", cNG);
 						if (delta >= 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
 							reclen.style.setProperty("color", "red");
 							reclen.style.setProperty("background-color", "black");
