@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.9.1.1718
+// @version      2014.9.1.1855
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -247,7 +247,7 @@
 							var jsonRelease = JSON.parse(xhr.responseText.match(/MB\.Release\.init\(([^<]+)\)/)[1].trim());
 							var rtitle = xhr.responseText.match(/<title>[^“]+“(.+)” \S+ (.+) - MusicBrainz<\/title>/)[1];
 							var rtitle = xhr.responseText.match(new RegExp("<title>"+sregex_title+"</title>"));
-							remoteRelease.rg = xhr.responseText.match(/\(<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>\)/)[1];
+							remoteRelease.rg = xhr.responseText.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
 							remoteRelease.title = rtitle[1];
 							remoteRelease.comment = xhr.responseText.match(/<h1>.+  <span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
 							if (remoteRelease.comment) remoteRelease.comment = " ("+remoteRelease.comment[1]+")"; else remoteRelease.comment = "";
