@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.7.28.1323
+// @version      2014.9.1.1254
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -302,6 +302,7 @@
 			swap.value = this.value[this.value.length-1]==rem2loc?"no":"yes";
 			this.value = this.value.substring(0, this.value.length-1) + (swap.value=="no"?loc2rem:rem2loc);
 			this.style.setProperty("background-color", swap.value=="no"?cInfo:cOK);
+			startpos.focus();
 		}, false);
 		tmp = MMRdiv.appendChild(createInput("button", "", "Merge all found recs"));
 		tmp.setAttribute("ref", tmp.value);
@@ -323,6 +324,7 @@
 				unqueuedbutt.setAttribute("value", "Merge");
 			}
 			queueTrack();
+			startpos.focus();
 		}, false);
 		queuetrack = MMRdiv.appendChild(document.createElement("div"));
 		queuetrack.style.setProperty("text-align", "center");
@@ -457,7 +459,7 @@
 		if (e && e.type && e.type == "readystatechange") startpos.focus();
 	}
 	function disable(o, dis) {
-		if (Array.isArray(o) || o.length) for (io=0; io<o.length; o++) disable(o[io], dis);
+		if (!o.tagName && o.length) for (io=0; io<o.length; o++) disable(o[io], dis);
 		else if (dis == null || dis == true) o.setAttribute("disabled", "disabled");
 		else o.removeAttribute("disabled");
 	}
