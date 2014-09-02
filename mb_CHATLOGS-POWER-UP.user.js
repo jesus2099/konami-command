@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2014.8.25.1418
+// @version      2014.9.2.1111
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_CHATLOGS-POWER-UP.user.js
@@ -40,7 +40,8 @@
 		}
 	}
 	if (cat) {
-		var ss = document.styleSheets[0];
+		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
+		var ss = document.styleSheets[document.styleSheets.length-1];
 		ss.insertRule("div#"+userjs+"toolbar { position: fixed; bottom: 0; right: 0; background: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; }", ss.cssRules.length);
 		ss.insertRule("body { padding-bottom: .5em; }", ss.cssRules.length);
 		var ctt = document.body.appendChild(createTag("div", { "id": userjs+"toolbar"}));
@@ -167,11 +168,12 @@
 			ctt.appendChild(createA("#"+tgt, location.href.replace(/\/musicbrainz(?:-devel)?\//, "/"+tgt+"/")));
 		}
 		/* prev./next day */
+		if (date) {
 			ctt.appendChild(document.createTextNode(sep));
 			ctt.appendChild(createA("« prev.", shiftDate(-1)));
 			ctt.appendChild(document.createTextNode(sep));
 			ctt.appendChild(createA("next »", shiftDate(+1)));
-		var prev
+		}
 	}
 	function shiftDate(shift) {
 		var sdate = (new Date(date[1]));
