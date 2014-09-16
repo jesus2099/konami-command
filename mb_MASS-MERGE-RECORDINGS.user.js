@@ -159,14 +159,9 @@
 		queuetrack.style.setProperty("display", mergeQueue.length>0?"block":"none");
 	}
 	function cleanTrack(track, ok) {
-		var td = track.tr.querySelector("td:not(.pos):not(.video)");
-		var rmForm = td.getElementsByTagName("form");
-		if (rmForm) {
-			for (var irf=0; irf<rmForm.length; irf++) {
-				if (rmForm[irf].className == MMRid) {
-					rmForm[irf].parentNode.removeChild(rmForm[irf]);
-				}
-			}
+		var rmForm = track.tr.querySelectorAll("td:not(.pos):not(.video) form."+MMRid);
+		for (var irf=0; irf<rmForm.length; irf++) {
+			rmForm[irf].parentNode.removeChild(rmForm[irf]);
 		}
 		if (ok) {
 			mp(track.tr.querySelector("a"), true);
