@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.9.30.1632
+// @version      2014.9.30.1717
 // @description  musicbrainz.org: (CURRENTLY “ONLY” SUPPORTS edit search → collection AND MAYBE collection → collection) browses pages of MB content to perform some actions on spotted entities
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_HYPER-MOULINETTE.user.js
@@ -34,8 +34,8 @@
 			} else meta[kv[1]] = kv[2];
 		}
 	}
-	var DEBUG = true;
-	meta.key = "jesus2099userjsHyperMoulinette";
+	var DEBUG = false;
+	meta.key = "jesus2099"+meta.name.replace(/^mb\. /, "").replace(/ /, "-");
 	var MBS = self.location.protocol+"//"+self.location.host;
 	var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var re_GUID = new RegExp(stre_GUID);
@@ -72,19 +72,22 @@
 	## THE BIG ONE ## goes here
 	==========================================================================*/
 	function mouli() {
-		collid = prompt("This allows to batch PUT/DELETE releases from an edit search into a collection.\n\nPlease paste a collection URL or MBID.").toLowerCase();
-		action = prompt("Please tell if you want to PUT or DELETE releases to/from this collection.", "put").toLowerCase();
-		search = prompt("Please paste your edit search URL here.\nCurrently it has only been tested on a « edit type is Add Release by editor XXX » kind of search that is updating a collection.");
+		collid = prompt("This allows to batch PUT/DELETE releases from an edit search into a collection.\n\nPlease paste the “TARGET” collection URL or MBID.", localStorage.getItem(meta.key+"target")||"").toLowerCase();
+		action = prompt("Please tell if you want to PUT or DELETE releases to/from this collection.", localStorage.getItem(meta.key+"method")||"put").toLowerCase();
+		search = prompt("Please paste your “SOURCE” edit search URL here.\nCurrently it has only been tested on a « edit type is Add Release by editor XXX » kind of search that is updating a collection.", localStorage.getItem(meta.key+"source")||"");
 		client = meta.name.replace(/^mb\. /, "").replace(/ /g, ".").toLowerCase()+"-"+meta.version;
 		if (
 			(collid = collid.match(re_GUID)) &&
 			(action.match(/^(put|delete)$/i)) &&
-			(search = search.replace(/^https?:/, "").replace(/([\?&])page=\d+&*/g, "$1")+(search.match(/\?/)?"&":"?")+"page=1")
+			search
 		) {
+			localStorage.setItem(meta.key+"target", collid);
+			localStorage.setItem(meta.key+"method", action);
+			localStorage.setItem(meta.key+"source", search);
 			modal(createTag("fragment", {}, [createTag("a", {a:{href:meta.namespace, target:"_blank"}}, meta.name), " ", createTag("b", {}, meta.version), " (reload this page to abort)"]), 2);
-			loadForExtract(search);
+			loadForExtract(search.replace(/^https?:/, "").replace(/([\?&])page=\d+&*/g, "$1")+(search.match(/\?/)?"&":"?")+"page=1");
 		} else {
-			alert("syntax error\ncollid: "+collid+"\naction (should be either “put” or “delete”): "+action+"\nsearch: "+search);
+			alert("syntax error\ncollid: "+collid+"\naction: "+action+" (should be either “put” or “delete”)\nsearch: "+search);
 		}
 	}
 	function loadForExtract(page) {
@@ -127,7 +130,6 @@
 		xhr.sendDebug(null);
 	}
 	function requestForAction(method, url) {
-		//<?xml version="1.0" encoding="UTF-8"?><metadata xmlns="http://musicbrainz.org/ns/mmd-2.0#"><message><text>OK</text></message></metadata>
 		var xhr = new XMLHttpRequest();
 		loaders[xhr.getID()] = {method:method, url:url, maxRetry:5};
 		xhr.addEventListener("load", function(e) {
@@ -217,7 +219,7 @@
 		if (DEBUG) {
 			console.log("XHR-"+this.getID()+" send("+params+")");
 			var loaded = function(e) {
-				console.log("XHR-"+this.getID()+" "+e.type+" "+this.status+"\n"+this.responseText);
+				console.log("XHR-"+this.getID()+" "+e.type+" "+this.status);
 			}
 			this.addEventListener("load", loaded, false);
 			this.addEventListener("error", loaded, false);
