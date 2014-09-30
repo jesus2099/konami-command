@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
-// @version      2013.0822.1016
+// @version      2014.9.30.1727
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
@@ -23,7 +23,7 @@
 		var li = document.createElement("li");
 		li.className = "jesus2099";
 		addAfter(li, j2set).appendChild(createA("Local storage manager\u00ae", function(e){
-			getParent(this, "ul").style.setProperty("left", "-10000px");
+			this.parentNode.parentNode.style.removeProperty("left");
 			if (lsm) {
 				unloadLS()
 			}
@@ -198,19 +198,6 @@
 		if (title){ a.setAttribute("title", title); }
 		a.appendChild(document.createTextNode(text));
 		return a;
-	}
-	function getParent(obj, tag, cls) {
-		var cur = obj;
-		if (cur.parentNode) {
-			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
-				return cur;
-			} else {
-				return getParent(cur, tag, cls);
-			}
-		} else {
-			return null;
-		}
 	}
 	function addAfter(n, e) {
 		if (n && e && e.parentNode) {
