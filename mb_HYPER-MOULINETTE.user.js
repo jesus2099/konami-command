@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.9.30.1616
-// @description  musicbrainz.org: (CURRENTLY “ONLY” SUPPORTS COLLECTING RELEASES FROM EDIT SEARCH AND PUT/DELETE THEM IN/FROM COLLECTION) browses pages of MB content to perform some actions on spotted entities
+// @version      2014.9.30.1632
+// @description  musicbrainz.org: (CURRENTLY “ONLY” SUPPORTS edit search → collection AND MAYBE collection → collection) browses pages of MB content to perform some actions on spotted entities
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_HYPER-MOULINETTE.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_HYPER-MOULINETTE.user.js
@@ -34,7 +34,7 @@
 			} else meta[kv[1]] = kv[2];
 		}
 	}
-	var DEBUG = false;
+	var DEBUG = true;
 	meta.key = "jesus2099userjsHyperMoulinette";
 	var MBS = self.location.protocol+"//"+self.location.host;
 	var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -81,10 +81,10 @@
 			(action.match(/^(put|delete)$/i)) &&
 			(search = search.replace(/^https?:/, "").replace(/([\?&])page=\d+&*/g, "$1")+(search.match(/\?/)?"&":"?")+"page=1")
 		) {
-			modal(meta.name+" "+meta.version+" (reload this page to abort)…", 2);
+			modal(createTag("fragment", {}, [createTag("a", {a:{href:meta.namespace, target:"_blank"}}, meta.name), " ", createTag("b", {}, meta.version), " (reload this page to abort)"]), 2);
 			loadForExtract(search);
 		} else {
-			alert("syntax error\nsearch: "+search+"\ncollid: "+collid+"\naction (should be either “put” or “delete”): "+action);
+			alert("syntax error\ncollid: "+collid+"\naction (should be either “put” or “delete”): "+action+"\nsearch: "+search);
 		}
 	}
 	function loadForExtract(page) {
@@ -92,8 +92,8 @@
 		loaders[xhr.getID()] = {maxRetry:5, url:page};
 		xhr.addEventListener("load", function(e) {
 			var p = parseInt(loaders[this.getID()].url.match(/page=(\d+)$/)[1], 10);
-			modal("Page #"+p+" loaded.");
-			document.title = "Page #"+p+" loaded (HYPER MOULINETTE) "+genuineTitle;
+			modal(createTag("fragment", {}, [createTag("a", {a:{href:loaders[this.getID()].url, target:"_blank"}}, "Page "+p), " loaded."]));
+			document.title = "Page "+p+" loaded (HYPER MOULINETTE) "+genuineTitle;
 			var res = document.createElement("html"); res.innerHTML = this.responseText;
 			var releases = res.querySelectorAll("div.edit-details a[href*='/release/']");
 			if (releases.length > 0) {
@@ -117,7 +117,7 @@
 		});
 		xhr.addEventListener("error", function(e) {
 			if (--loaders[this.getID()].maxRetry > 0) {
-				modal("Error loading page, retrying…");
+				modal(createTag("fragment", {}, ["Error loading ", createTag("a", {a:{href:loaders[this.getID()].url, target:"_blank"}}, "page"), ", retrying…"]));
 				loadForExtract(loaders[this.getID()].url);
 			} else {
 				alert("XHR-"+this.getID()+" ERROR "+this.status+"\nStopped retrying.\n"+loaders[this.getID].url+"\n\n"+this.responseText);
@@ -132,15 +132,16 @@
 		loaders[xhr.getID()] = {method:method, url:url, maxRetry:5};
 		xhr.addEventListener("load", function(e) {
 			var node, res = this.responseXML.documentElement;
+			var msg = createTag("fragment", {}, ["Releases “", createTag("a", {a:{title:loaders[this.getID()].method, href:loaders[this.getID()].url, target:"_blank"}}, loaders[this.getID()].method), "” on collection "]);
 			if ((node = res.querySelector("message text")) && node.textContent.match(/ok/i)) {
-				modal("Releases “"+loaders[this.getID()].method+"” on collection OK.");
+				modal(createTag("fragment", {}, [msg, "OK."]));
 			} else {
-				modal("Releases “"+loaders[this.getID()].method+"” on collection failed.\n\n"+res.textContent);
+				modal(createTag("fragment", {}, [msg, "failed.\n\n"+res.textContent]));
 			}
 		});
 		xhr.addEventListener("error", function(e) {
 			if (--loaders[this.getID()].maxRetry > 0) {
-				modal("Error performing action, retrying…");
+				modal(createTag("fragment", {}, ["Error performing ", createTag("a", {a:{title:loaders[this.getID()].method, href:loaders[this.getID()].url, target:"_blank"}}, "“"+loaders[this.getID()].method+"” action"), ", retrying…"]));
 				loadForAction(loaders[this.getID()].method, loaders[this.getID()].url);
 			} else {
 				alert("XHR-"+this.getID()+" ERROR "+this.status+"\nStopped retrying.\n"+loaders[this.getID].url+"\n\n"+this.responseText);
