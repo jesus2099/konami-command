@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.9.30.1555
+// @version      2014.9.30.1616
 // @description  musicbrainz.org: (CURRENTLY “ONLY” SUPPORTS COLLECTING RELEASES FROM EDIT SEARCH AND PUT/DELETE THEM IN/FROM COLLECTION) browses pages of MB content to perform some actions on spotted entities
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_HYPER-MOULINETTE.user.js
@@ -41,6 +41,7 @@
 	var re_GUID = new RegExp(stre_GUID);
 	var account = document.querySelector("div#header-menu li.account");
 	var collid, action, search, client, loaders = [];
+	var genuineTitle = document.title;
 	if (!self.opera && account) {
 		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 		/*==========================================================================
@@ -92,6 +93,7 @@
 		xhr.addEventListener("load", function(e) {
 			var p = parseInt(loaders[this.getID()].url.match(/page=(\d+)$/)[1], 10);
 			modal("Page #"+p+" loaded.");
+			document.title = "Page #"+p+" loaded (HYPER MOULINETTE) "+genuineTitle;
 			var res = document.createElement("html"); res.innerHTML = this.responseText;
 			var releases = res.querySelectorAll("div.edit-details a[href*='/release/']");
 			if (releases.length > 0) {
@@ -108,6 +110,7 @@
 			if (p < lp) {
 				loadForExtract(page.replace(/(page=)\d+$/, "$1"+(p+1)));
 			} else {
+				document.title = genuineTitle;
 				alert("Last page processed.");
 				modal();
 			}
