@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         greasyfork. APPLIES TO LINKS SEARCH BY SITES
 // @version      2014.6.30.1213
-// @description  greasyfork.org. makes applies to ìAll siteî link to the ì*î by site search (JasonBarnabe/greasyfork#146)
+// @description  greasyfork.org. makes applies to ‚ÄúAll site‚Äù link to the ‚Äú*‚Äù by site search (JasonBarnabe/greasyfork#146)
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/greasyfork_APPLIES-TO-LINKS-SEARCH-BY-SITES.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/greasyfork_APPLIES-TO-LINKS-SEARCH-BY-SITES.user.js
