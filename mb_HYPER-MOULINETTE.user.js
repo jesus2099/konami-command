@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.9.30.1717
+// @version      2014.9.30.1718
 // @description  musicbrainz.org: (CURRENTLY “ONLY” SUPPORTS edit search → collection AND MAYBE collection → collection) browses pages of MB content to perform some actions on spotted entities
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_HYPER-MOULINETTE.user.js
@@ -72,13 +72,13 @@
 	## THE BIG ONE ## goes here
 	==========================================================================*/
 	function mouli() {
-		collid = prompt("This allows to batch PUT/DELETE releases from an edit search into a collection.\n\nPlease paste the “TARGET” collection URL or MBID.", localStorage.getItem(meta.key+"target")||"").toLowerCase();
-		action = prompt("Please tell if you want to PUT or DELETE releases to/from this collection.", localStorage.getItem(meta.key+"method")||"put").toLowerCase();
+		collid = prompt("This allows to batch PUT/DELETE releases from an edit search into a collection.\n\nPlease paste the “TARGET” collection URL or MBID.", localStorage.getItem(meta.key+"target")||"");
+		action = prompt("Please tell if you want to PUT or DELETE releases to/from this collection.", localStorage.getItem(meta.key+"method")||"put");
 		search = prompt("Please paste your “SOURCE” edit search URL here.\nCurrently it has only been tested on a « edit type is Add Release by editor XXX » kind of search that is updating a collection.", localStorage.getItem(meta.key+"source")||"");
 		client = meta.name.replace(/^mb\. /, "").replace(/ /g, ".").toLowerCase()+"-"+meta.version;
 		if (
-			(collid = collid.match(re_GUID)) &&
-			(action.match(/^(put|delete)$/i)) &&
+			collid && (collid = collid.match(re_GUID)) &&
+			action && (action.match(/^(put|delete)$/i)) &&
 			search
 		) {
 			localStorage.setItem(meta.key+"target", collid);
