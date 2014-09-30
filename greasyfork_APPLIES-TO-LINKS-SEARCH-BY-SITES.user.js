@@ -9,7 +9,6 @@
 // @grant        none
 // @include      https://greasyfork.org/scripts/*
 // @include      https://greasyfork.org/*/scripts/*
-// @include      https://www.greasyfork.org/*/scripts/*
 // @exclude      *greasyfork.org/scripts/*/*
 // @exclude      *greasyfork.org/scripts/?
 // @exclude      *greasyfork.org/scripts/by*
