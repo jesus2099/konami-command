@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.9.30.1234
+// @version      2014.9.30.1555
 // @description  musicbrainz.org: (CURRENTLY “ONLY” SUPPORTS COLLECTING RELEASES FROM EDIT SEARCH AND PUT/DELETE THEM IN/FROM COLLECTION) browses pages of MB content to perform some actions on spotted entities
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_HYPER-MOULINETTE.user.js
@@ -41,7 +41,7 @@
 	var re_GUID = new RegExp(stre_GUID);
 	var account = document.querySelector("div#header-menu li.account");
 	var collid, action, search, client, loaders = [];
-	if (account) {
+	if (!self.opera && account) {
 		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 		/*==========================================================================
 		## MENU ITEM ##
@@ -78,7 +78,7 @@
 		if (
 			(collid = collid.match(re_GUID)) &&
 			(action.match(/^(put|delete)$/i)) &&
-			(search = search.replace(/([\?&])page=\d+&*/g, "$1")+(search.match(/\?/)?"&":"?")+"page=1")
+			(search = search.replace(/^https?:/, "").replace(/([\?&])page=\d+&*/g, "$1")+(search.match(/\?/)?"&":"?")+"page=1")
 		) {
 			modal(meta.name+" "+meta.version+" (reload this page to abort)…", 2);
 			loadForExtract(search);
@@ -87,10 +87,11 @@
 		}
 	}
 	function loadForExtract(page) {
-		var p = parseInt(page.match(/page=(\d+)$/)[1], 10);
 		var xhr = new XMLHttpRequest();
 		loaders[xhr.getID()] = {maxRetry:5, url:page};
 		xhr.addEventListener("load", function(e) {
+			var p = parseInt(loaders[this.getID()].url.match(/page=(\d+)$/)[1], 10);
+			modal("Page #"+p+" loaded.");
 			var res = document.createElement("html"); res.innerHTML = this.responseText;
 			var releases = res.querySelectorAll("div.edit-details a[href*='/release/']");
 			if (releases.length > 0) {
@@ -113,14 +114,13 @@
 		});
 		xhr.addEventListener("error", function(e) {
 			if (--loaders[this.getID()].maxRetry > 0) {
-				modal("Retrying…");
+				modal("Error loading page, retrying…");
 				loadForExtract(loaders[this.getID()].url);
 			} else {
 				alert("XHR-"+this.getID()+" ERROR "+this.status+"\nStopped retrying.\n"+loaders[this.getID].url+"\n\n"+this.responseText);
 			}
 		});
 		xhr.openDebug("get", page);
-		modal("Loading page #"+p+"…");
 		xhr.sendDebug(null);
 	}
 	function requestForAction(method, url) {
@@ -130,14 +130,14 @@
 		xhr.addEventListener("load", function(e) {
 			var node, res = this.responseXML.documentElement;
 			if ((node = res.querySelector("message text")) && node.textContent.match(/ok/i)) {
-				modal(loaders[this.getID()].method+" releases OK.", 2);
+				modal("Releases “"+loaders[this.getID()].method+"” on collection OK.");
 			} else {
-				modal(loaders[this.getID()].method+" releases NG.\n\n"+this.responseText, 2);
+				modal("Releases “"+loaders[this.getID()].method+"” on collection failed.\n\n"+res.textContent);
 			}
 		});
 		xhr.addEventListener("error", function(e) {
 			if (--loaders[this.getID()].maxRetry > 0) {
-				modal("Retrying…");
+				modal("Error performing action, retrying…");
 				loadForAction(loaders[this.getID()].method, loaders[this.getID()].url);
 			} else {
 				alert("XHR-"+this.getID()+" ERROR "+this.status+"\nStopped retrying.\n"+loaders[this.getID].url+"\n\n"+this.responseText);
@@ -145,7 +145,6 @@
 		});
 		xhr.openDebug(method, url);
 		xhr.overrideMimeType("text/xml");
-		modal("Changing collection…");
 		xhr.sendDebug(null);
 	}
 	/*======================================
@@ -206,9 +205,9 @@
 		}
 		return this.id;
 	};
-	XMLHttpRequest.prototype.openDebug = function(method, url, async, user, password) {
-		if (DEBUG) { console.log("XHR-"+this.getID()+" open "+method.toUpperCase()+" "+url+"\n"+async+", "+user+":"+password); }
-		this.open(method, url, async, user, password);
+	XMLHttpRequest.prototype.openDebug = function(method, url) {
+		if (DEBUG) { console.log("XHR-"+this.getID()+" open "+method.toUpperCase()+" "+url); }
+		this.open(method, url);
 	};
 	XMLHttpRequest.prototype.sendDebug = function(params) {
 		if (DEBUG) {
