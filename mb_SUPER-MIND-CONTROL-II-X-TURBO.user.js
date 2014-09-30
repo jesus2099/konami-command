@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.8.14.1653
+// @version      2014.9.30.1727
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / RADIO_DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
 // @doc          http://userscripts-mirror.org/scripts/show/85790
 // @bugs         https://github.com/jesus2099/konami-command/issues
@@ -79,7 +79,7 @@
 	var j2sets = {}, j2docs = {}, j2defs = {}, j2setsclean = [];
 	j2setting();
 	j2superturbo.menu.addItem(createTag("a",{e:{click:function(e){
-			getParent(this, "ul").style.setProperty("left", "-10000px");
+			this.parentNode.parentNode.style.removeProperty("left");
 			j2setting();
 			if (j2sets) {
 				var j2setsdiv = document.body.appendChild(createTag("div",{"a":{"id":userjs+"j2sets"},"s":{"position":"fixed","overflow":"auto","top":"50px","right":"50px","bottom":"50px","left":"50px","background-color":"silver","border":"2px outset white","padding":"1em","z-index":"99"}},[createTag("a",{"s":{"float":"right"},"e":{"click":function(e){del(document.getElementById(userjs+"j2sets"));}}}, "  CLOSE ×  "),createTag("a",{"s":{"float":"right"},"e":{"click":function(e){if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")){localStorage.removeItem(userjs+"settings");self.location.reload();}}}}, "  reset  "),createTag("h4",{"s":{"text-shadow":"0 0 8px black"}},["██ ",createTag("a",{"a":{"href":meta.namespace,"target":"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{"e":{"click":function(){location.reload();}}},"page reload")," to see the effect."])]));
