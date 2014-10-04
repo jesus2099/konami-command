@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2014.0322.1232
+// @version      2014.9.8.1154
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_ALL-LINKS.user.js
@@ -14,7 +14,8 @@
 // @include      http*://*musicbrainz.org/release/*
 // @run-at       document-end
 // ==/UserScript==
-(function () {
+(function(){
+/* hint for Opera 12 users allow opera:config#UserPrefs|Allowscripttolowerwindow and opera:config#UserPrefs|Allowscripttoraisewindow */
 /*------------settings*/
 var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/;/*U+2FA1D is currently out of js range*/
 var autolinksOpacity = ".5"; /*can be dimmer than existing links*/
