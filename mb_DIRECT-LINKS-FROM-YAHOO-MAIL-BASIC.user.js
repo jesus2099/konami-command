@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. DIRECT LINKS FROM YAHOO! MAIL (BASIC)
 // @description  BACK FOR BASIC Y!MAIL only (/neo/b/) now. Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
-// @version      2014.7.11.1805
+// @version      2014.10.6.1132
 // @since        2010.6.28.
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_DIRECT-LINKS-FROM-YAHOO-MAIL-BASIC.user.js
@@ -93,8 +93,7 @@
 										susuemail.style.backgroundColor = colourdupe;
 									}
 									editlink(susuemail, modid, true, edittypes[type]+modid).setAttribute("title", type);
-								}
-								else {
+								} else {
 									edits[modid] = susuemail;
 									editlink(susuemail, modid, false, edittypes[type]+modid).setAttribute("title", type);
 								}
@@ -112,11 +111,12 @@
 							a.setAttribute("target", "_blank");
 							a.style.setProperty("background-color", colourclicked);
 							var im = a.appendChild(document.createElement("img"));
-							if ((type = allparts[4].match(/artist|collection|label/))) {
-								im.setAttribute("src", "//musicbrainz.org/static/images/entity/%type%.png".replace(/%type%/, type).replace("collection", "release_group"));
-							}
-							else {
+							var openedits = "/open_edits";
+							if ((type = allparts[4].match(/artist|collection|label|series/))) {
+								im.setAttribute("src", "//musicbrainz.org/static/images/entity/%type%.png".replace(/%type%/, type).replace(/collection|series/, "release_group"));
+							} else if (allparts[4].match(/user/)) {
 								im.setAttribute("src", "//gravatar.com/avatar/placeholder?d=mm&s=12");
+								openedits = "/edits/open";
 							}
 							im.style.setProperty("margin-right", "4px");
 							im.style.setProperty("vertical-align", "-.3em");
@@ -125,7 +125,7 @@
 							a = a.cloneNode(true);
 							a.removeChild(a.firstChild);
 							a.replaceChild(document.createTextNode(allparts[2]), a.firstChild);
-							a.setAttribute("href", a.getAttribute("href")+"/open_edits");
+							a.setAttribute("href", a.getAttribute("href")+openedits);
 							lnk.parentNode.insertBefore(document.createTextNode(" ("), lnk);
 							lnk.parentNode.insertBefore(a, lnk);
 							lnk.parentNode.insertBefore(document.createTextNode(", "), lnk);
@@ -155,8 +155,7 @@
 								nonoemail.style.setProperty("background-color", colournobg);
 								nonoemail.style.setProperty("color", colourno);
 								nonoemail.setAttribute("href", nonoemail.getAttribute("href").replace(/[^/]+$/, encodeURIComponent(nono[1])));
-							}
-							else {
+							} else {
 								nonoemail = nonoemail.querySelector("tr > td > div > a > span");
 								nonoemail.appendChild(document.createTextNode("…"));
 							}
