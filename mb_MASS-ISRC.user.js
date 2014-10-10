@@ -1,25 +1,27 @@
 // ==UserScript==
-// @name           mb. MASS ISRC
-// @version        2013.0521.1346
-// @description    notlob.eu/isrc. BATCH SUBMIT ISRCs. Allows pasting all ISRCs at once (from Simonf’s mediatool on multi-disc releases or from 音楽の森/ongakunomori/minc) - does not work in Opera for AUTH bug reason :/
+// @name         mb. MASS ISRC
+// @version      2013.10.10.1616
+// @description  notlob.eu/isrc. BATCH SUBMIT ISRCs. Allows pasting all ISRCs at once (from Simonf’s mediatool on multi-disc releases or from 音楽の森/ongakunomori/minc) - does not work in Opera for AUTH bug reason :/
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-ISRC.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-ISRC.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @grant          none
-// @include        http://mb.lmfao.org.uk/isrc/*
-// @include        http://notlob.eu/isrc/*
-// @include        http://musicbrainz.org/ws/1/track/
-// @run-at         document-end
+// @grant        none
+// @include      http://mb.lmfao.org.uk/isrc/*
+// @include      http://notlob.eu/isrc/*
+// @include      http://musicbrainz.org/ws/1/track/
+// @run-at       document-end
 // ==/UserScript==
-(function () { "use strict";
+(function(){"use strict";
+	var home = "http://notlob.eu/isrc/";
 	var dummySkip = "JESUS2099999";
 	var inputs, submit = document.querySelector("form > input[type='submit']");
 	if (self.location.href.match(/^https?:\/\/[^/]+\/ws\/1\//)) {
 		if (document.body.textContent == "") {
-			document.body.appendChild(document.createTextNode("Everything seems OK. Thanks for your submission, dude. "));
-			document.body.appendChild(document.createElement("a")).appendChild(document.createTextNode("Let’s submit more ISRC!")).parentNode.setAttribute("href", "http://notlob.eu/isrc/");
+			document.body.appendChild(document.createTextNode("ISRC submission seems OK. "));
+			document.body.appendChild(document.createElement("a")).appendChild(document.createTextNode("Going back to submission page (in 4 seconds).")).parentNode.setAttribute("href", home);
+			setTimeout(function(){self.location=home;}, 4000);
 		}
 	}
 	else if (inputs = document.querySelector("form input[name='mbid']")) {
