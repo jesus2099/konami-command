@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.9.30.1727
-// @description  musicbrainz.org: (CURRENTLY “ONLY” SUPPORTS edit search → collection AND MAYBE collection → collection) browses pages of MB content to perform some actions on spotted entities
+// @version      2014.10.10.1909
+// @description  musicbrainz.org: browses pages of MB content to perform some actions on spotted entities
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_HYPER-MOULINETTE.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_HYPER-MOULINETTE.user.js
@@ -40,7 +40,11 @@
 	var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var re_GUID = new RegExp(stre_GUID);
 	var account = document.querySelector("div#header-menu li.account");
-	var collid, action, search, client, loaders = [];
+	var target, action, source, client, loaders = [];
+	var crawlType = {
+		"^/collection/": "div#content table.tbl a[href*='/release/']",
+		"^/search/edits": "div.edit-details a[href*='/release/']",
+	};
 	var genuineTitle = document.title;
 	if (!self.opera && account) {
 		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
@@ -73,22 +77,23 @@
 	==========================================================================*/
 	function mouli() {
 		this.parentNode.parentNode.style.removeProperty("left");
-		collid = prompt("This allows to batch PUT/DELETE releases from an edit search into a collection.\n\nPlease paste the “TARGET” collection URL or MBID.", localStorage.getItem(meta.key+"target")||"");
-		action = prompt("Please tell if you want to PUT or DELETE releases to/from this collection.", localStorage.getItem(meta.key+"method")||"put");
-		search = prompt("Please paste your “SOURCE” edit search URL here.\nCurrently it has only been tested on a « edit type is Add Release by editor XXX » kind of search that is updating a collection.", localStorage.getItem(meta.key+"source")||"");
+		target = prompt("This allows to batch PUT/DELETE releases from an edit search into a collection.\n\nPlease paste the “TARGET” collection URL or MBID.\nThis is the collection that will be modified (either add or remove releases).", localStorage.getItem(meta.key+"target")||"");
+		action = prompt("Please tell if you want to PUT or DELETE releases in this collection.", localStorage.getItem(meta.key+"method")||"put");
+		source = prompt("Please paste your “SOURCE” (release edit search, another collection) URL here.\nIt will parse these pages to modify the previously mentionned collection.", localStorage.getItem(meta.key+"source")||"");
 		client = meta.name.replace(/^mb\. /, "").replace(/ /g, ".").toLowerCase()+"-"+meta.version;
 		if (
-			collid && (collid = collid.match(re_GUID)) &&
+			target && (target = target.match(re_GUID)) &&
 			action && (action.match(/^(put|delete)$/i)) &&
-			search
+			source
 		) {
-			localStorage.setItem(meta.key+"target", collid);
+			localStorage.setItem(meta.key+"target", target);
 			localStorage.setItem(meta.key+"method", action);
-			localStorage.setItem(meta.key+"source", search);
+			localStorage.setItem(meta.key+"source", source);
+			source = source.replace(/^(https?:\/\/[^\/]+)?(\/.+)/, "$2");
 			modal(createTag("fragment", {}, [createTag("a", {a:{href:meta.namespace, target:"_blank"}}, meta.name), " ", createTag("b", {}, meta.version), " (reload this page to abort)"]), 2);
-			loadForExtract(search.replace(/^https?:/, "").replace(/([\?&])page=\d+&*/g, "$1")+(search.match(/\?/)?"&":"?")+"page=1");
+			loadForExtract(source.replace(/([\?&])page=\d+&*/g, "$1")+(source.match(/\?/)?"&":"?")+"page=1");
 		} else {
-			alert("syntax error\ncollid: "+collid+"\naction: "+action+" (should be either “put” or “delete”)\nsearch: "+search);
+			alert("syntax error\ntarget: "+target+"\naction: "+action+" (should be either “put” or “delete”)\nsource: "+source);
 		}
 	}
 	function loadForExtract(page) {
@@ -99,13 +104,17 @@
 			modal(createTag("fragment", {}, [createTag("a", {a:{href:loaders[this.getID()].url, target:"_blank"}}, "Page "+p), " loaded."]));
 			document.title = "Page "+p+" loaded (HYPER MOULINETTE) "+genuineTitle;
 			var res = document.createElement("html"); res.innerHTML = this.responseText;
-			var releases = res.querySelectorAll("div.edit-details a[href*='/release/']");
-			if (releases.length > 0) {
-				var url = "/ws/2/collection/"+collid+"/releases/";
-				for (var r=0; r < releases.length; r++) {
-					url += (r==0?"":";")+releases[r].getAttribute("href").match(re_GUID);
+			var releases;
+			for (var type in crawlType) if (crawlType.hasOwnProperty(type) && loaders[this.getID()].url.match(new RegExp(type))) {
+				releases = res.querySelectorAll(crawlType[type]);/*crawlTypes*/
+				if (releases.length > 0) {
+					var url = "/ws/2/collection/"+target+"/releases/";
+					for (var r=0; r < releases.length; r++) {
+						url += (r==0?"":";")+releases[r].getAttribute("href").match(re_GUID);
+					}
+					requestForAction(action, url+"?client="+client);
 				}
-				requestForAction(action, url+"?client="+client);
+				break;
 			}
 			var lp;
 			if ((lp = res.querySelector("p.pageselector > a:last-of-type")) && (lp = lp.getAttribute("href").match(/page=(\d+)/))) {
