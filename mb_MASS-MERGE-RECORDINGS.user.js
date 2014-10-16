@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.9.16.1951
+// @version      2014.10.16.1348
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -164,7 +164,7 @@
 			rmForm[irf].parentNode.removeChild(rmForm[irf]);
 		}
 		if (ok) {
-			mp(track.tr.querySelector("a"), true);
+			mp(track.tr.querySelector("td:not(.pos):not(.video) a"), true);
 		} else {
 			var lengthcell = track.tr.querySelector("td.treleases");
 			if (track.length && lengthcell) {
