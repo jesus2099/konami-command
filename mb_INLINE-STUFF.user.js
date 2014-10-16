@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2014.7.22.1526
+// @version      2014.10.16.1346
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_INLINE-STUFF.user.js
@@ -41,9 +41,6 @@ var isrcLinksTexts = {"start": "has\u00A0ISRC", "separator": ", ", "final-separa
 var acoustidLinksTexts = {"start": "has\u00A0AcoustID", "separator": ", ", "final-separator": " and ", "end": ""};
 var dupeColour = "pink";
 var infoColour = "lightcyan";
-var isrcRemoveLinkTexts = { "before": "\u00A0(", "link": "remove", "after":")" };/*or "\u00D7" for instance*/
-var addIsrcLinkText = "Add ISRC"; /* put "" to disable this link */
-var UrlRelText = "URL rel."; /* put "" to disable this link */
 var contractFingerPrints = true; /* more compact AcoustIDs but brwoser can still inline search/find full AcoustID */
 var pleaseWaitText = "Fetching %s AcoustID and ISRC\u2026"; /* put "" to disable this pleasewait message */
 	/* track/recording name diff: null for no marking and no inline recording disambiguation comment either, 
@@ -67,7 +64,8 @@ var releasewsURL = "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musi
 var isrcRemoveURL = "/edit/isrc/remove.html?trackid=%trackid&isrc=%isrc";
 var addIsrcURL = "/edit/isrc/add.html?trackid=%trackid";
 var UrlRelURL = "/edit/relationship/addurl.html?id=%trackid&type=track&name=%trackname";
-var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+var str_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+var re_GUID = new RegExp(str_GUID, "i");
 var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acoustid&mbid=%mbid&state=%state";
 var CSS_Arec = "td:not(.pos):not(.video) a[href^='/recording/']";
 var pleaseWaitFragment = null;
@@ -77,7 +75,7 @@ if (self.location.href.match(/\/recordings/i)) { pagecat = "recordings"; }
 if (pagecat) {
 	switch(pagecat) {
 		case "release":
-			var relMBID = getRelMBID();
+			var relMBID = self.location.href.match(re_GUID);
 			if (relMBID && (tracksHtml = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]:not(.subh)")).length > 0) {
 				if (recUseInRelationshipLink || recAddToMergeLink) {
 					for (var ith=0; ith < tracksHtml.length; ith++) {
@@ -100,7 +98,7 @@ if (pagecat) {
 						}
 						if (works = tracksHtml[ith].querySelectorAll("td:not(.pos):not(.video) dl.ars > dd a[href^='/work/']")) {
 							for (var w=0; w<works.length; w++) {
-								if (workid = works[w].getAttribute("href").match(new RegExp("/work/("+RE_GUID+")$"))) {
+								if (workid = works[w].getAttribute("href").match(new RegExp("/work/("+str_GUID+")$"))) {
 									if (!shownworks[workid[1]]) {
 										shownworks[workid[1]] = 0;
 										shownworks.count++;
@@ -256,41 +254,37 @@ function isrcFish() {
 		}
 		acoustidFishBatch(acoustidNet);
 		for (var i=0 ; i < tracksHtml.length ; i++) {
-			var as = tracksHtml[i].getElementsByTagName("a");
-			if (as.length > 0) {
-				var mbid = as[0].getAttribute("href").match(/(recording|track)\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*$/);
-				if (mbid) { mbid = mbid[2]; }
-				else { continue; }
-				var trackid = as[as.length-1].getAttribute("href").match(/trackid=(.+)$/);
-				if (trackid) { trackid = trackid[1]; }
+			var aRec = tracksHtml[i].querySelector("a[href^='/recording/']");
+			if (aRec) {
+				var mbid = aRec.getAttribute("href").match(re_GUID);
 				var trackTitleCell = tracksHtml[i].querySelector("td:not(.pos):not(.video)");
 				var trackLinksCell = tracksHtml[i].querySelector("td.links");
 				if (isrcNet[mbid].length > 0) {
-					insertBeforeARS(trackTitleCell, createStuffFragment("ISRC", isrcNet[mbid], shownisrcs, isrcLinksTexts, isrcURL, trackid, mbid));
+					insertBeforeARS(trackTitleCell, createStuffFragment("ISRC", isrcNet[mbid], shownisrcs, isrcLinksTexts, isrcURL, null, mbid));
 				}
-				if (as[0].textContent != recnameNet[mbid].name) {
-					var ntit = as[0].getAttribute("title");
-					ntit = (ntit?ntit+" \u2014\u00a0":"")+"track name: "+as[0].textContent+"\n\u2260rec. name: "+recnameNet[mbid].name;
-					as[0].setAttribute("title", ntit);
+				if (aRec.textContent != recnameNet[mbid].name) {
+					var ntit = aRec.getAttribute("title");
+					ntit = (ntit?ntit+" \u2014\u00a0":"")+"track name: "+aRec.textContent+"\n\u2260rec. name: "+recnameNet[mbid].name;
+					aRec.setAttribute("title", ntit);
 					if (markTrackRecNameDiff != null) {
 						if (typeof markTrackRecNameDiff == "string" && markTrackRecNameDiff != "") {
 							var patf = document.createDocumentFragment();
-							var patt = markTrackRecNameDiff.replace(/%track-name%/ig, as[0].textContent).replace(/%recording-name%/ig, recnameNet[mbid].name).split("%br%");
+							var patt = markTrackRecNameDiff.replace(/%track-name%/ig, aRec.textContent).replace(/%recording-name%/ig, recnameNet[mbid].name).split("%br%");
 							for (var p=0; p<patt.length; p++) {
 								if (p>0) { patf.appendChild(document.createElement("br")); }
 								patf.appendChild(document.createTextNode(patt[p]));
 							}
-							as[0].replaceChild(patf, as[0].firstChild);
+							aRec.replaceChild(patf, aRec.firstChild);
 						}
-						as[0].style.setProperty("text-shadow", "1px 2px 2px #999");
-						as[0].style.setProperty("color", "maroon");
+						aRec.style.setProperty("text-shadow", "1px 2px 2px #999");
+						aRec.style.setProperty("color", "maroon");
 					}
 				}
 				if (markTrackRecNameDiff != null && recnameNet[mbid].comment) {
 					var recdis = document.createElement("span");
 					recdis.className = userjs+"recdis";
 					recdis.appendChild(document.createTextNode(" ("+recnameNet[mbid].comment+")"));
-					addAfter(recdis, as[0]);
+					addAfter(recdis, aRec);
 				}
 			}
 		}
@@ -353,13 +347,8 @@ function createStuffFragment(stufftype, stuffs, shownstuffs, linksTexts, url, tr
 				shownstuffs[stuff] = { "a": a, "trackid": trackid, "recid": recid };
 			}
 		}
-		switch (stufftype) {
-			case "ISRC":
-				if (trackid) { td.appendChild(isrcRemoveLink(trackid, stuff)); }
-				break;
-			case "AcoustID":
-				a.parentNode.appendChild(togAID(recid, stuff, adisabled));
-				break;
+		if (stufftype == "AcoustID") {
+			a.parentNode.appendChild(togAID(recid, stuff, adisabled));
 		}
 	}
 	td.appendChild(document.createTextNode(linksTexts["end"]));
@@ -377,23 +366,10 @@ function togAID(rec, aid, dis) {
 	acoustracktoggle.style.setProperty("color", dis?"green":"red");
 	return acoustracktoggle;
 }
-function isrcRemoveLink(trackid, isrc) {
-	var span = document.createElement("span");
-	span.style.setProperty("background-color", dupeColour);
-	span.appendChild(document.createTextNode(isrcRemoveLinkTexts["before"]));
-	span.appendChild(createA(isrcRemoveLinkTexts["link"], isrcRemoveURL.replace(/%trackid/, trackid).replace(/%isrc/, isrc)));
-	span.appendChild(document.createTextNode(isrcRemoveLinkTexts["after"]));
-	return span;
-}
 function insertBeforeARS(par, chi) {
 	var ars = par.getElementsByClassName("ars");
 	if (ars.length > 0) { return par.insertBefore(chi, ars[0]); }
 	else { return par.appendChild(chi); }
-}
-function getRelMBID() {
-	var mbid = self.location.href.match(/musicbrainz\.org\/[^/]+\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
-	if (mbid) { return mbid[1]; }
-	else { return null; }
 }
 function nsr(prefix) {
 	switch (prefix) {
@@ -529,11 +505,11 @@ function acoustidFishBatch(recids) {
 			) {
 				var acoustids = {};
 				for (var m = 0; m < mbids.length; m++) {
-					if ((mbid = mbids[m].textContent) && mbid.match(new RegExp(RE_GUID))) {
+					if ((mbid = mbids[m].textContent) && mbid.match(re_GUID)) {
 						if (!acoustids[mbid]) { acoustids[mbid] = []; }
 						var trackids = mbids[m].parentNode.querySelectorAll("track > id:not(:empty)");
 						for (var ti = 0; ti < trackids.length; ti++) {
-							if ((trackid = trackids[ti].firstChild.textContent) && trackid.match(new RegExp(RE_GUID))) {
+							if ((trackid = trackids[ti].firstChild.textContent) && trackid.match(re_GUID)) {
 								var disabled = trackids[ti].parentNode.querySelector("disabled");
 								disabled = disabled && disabled.textContent.match(/true/i);
 								var duo = [trackid, disabled];
@@ -546,7 +522,7 @@ function acoustidFishBatch(recids) {
 				for (var th = 0; th < tracksHtml.length; th++) {
 					if (
 						(recmbid = tracksHtml[th].querySelector(CSS_Arec)) && 
-						(recmbid = recmbid.getAttribute("href").match(new RegExp("/("+RE_GUID+")$"))) && 
+						(recmbid = recmbid.getAttribute("href").match(new RegExp("/("+str_GUID+")$"))) && 
 						(recmbid = recmbid[1]) && 
 						acoustids[recmbid].length > 0 &&
 						(trackTitleCell = tracksHtml[th].querySelector("td:not(.pos):not(.video)"))
