@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.10.17.1707
+// @version      2014.10.17.1821
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_HYPER-MOULINETTE.user.js
@@ -55,12 +55,15 @@
 	function mouli() {
 		target = this.parentNode.parentNode.querySelector("a[href*='/collection/']").getAttribute("href").match(re_GUID);
 		method = this.textContent.toLowerCase();
-		source = prompt("Please paste your release edit search or other collection URL here.\nIt will parse these pages to modify the previously mentionned collection.", localStorage.getItem(meta.key+"source")||"");
+		source = prompt("Please paste your release edit search or other collection URL here.\nIt will parse these pages to modify the previously mentionned collection.", localStorage.getItem(meta.key+"_"+method+"-source")||"");
 		client = meta.name.replace(/^mb\. /, "").replace(/ /g, ".").toLowerCase()+"-"+meta.version;
 		if (target && method.match(/^(put|delete)$/i) && source) {
-			localStorage.setItem(meta.key+"source", source);
+			localStorage.setItem(meta.key+"_"+method+"-source", source);
 			source = source.replace(/^(https?:\/\/[^\/]+)?(\/.+)/, "$2");
 			modal(createTag("h3", {}, [createTag("a", {a:{href:meta.namespace, target:"_blank"}}, meta.name), " ", createTag("b", {}, meta.version), " (reload this page to abort)"]));
+			if (source.match(/^\/search\/edits/)) {
+				modal(createTag("p", {}, "(loading first page of an edit search is always long)"));
+			}
 			loadForExtract(source.replace(/([\?&])page=\d+&*/g, "$1")+(source.match(/\?/)?"&":"?")+"page=1");
 		} else {
 			alert("syntax error\ntarget: "+target+"\nmethod: "+method+" (should be either “put” or “delete”)\nsource: "+source);
@@ -76,14 +79,14 @@
 			var res = document.createElement("html"); res.innerHTML = this.responseText;
 			var releases;
 			for (var type in crawlType) if (crawlType.hasOwnProperty(type) && loaders[this.getID()].url.match(new RegExp(type))) {
-				releases = res.querySelectorAll(crawlType[type]);/*crawlTypes*/
+				releases = res.querySelectorAll(crawlType[type]);
 				ploaded.appendChild(document.createTextNode(" ("+releases.length+" release"+(releases.length==1?"":"s")+"):"));
 				if (releases.length > 0) {
 					var url = "/ws/2/collection/"+target+"/releases/";
-					var ol = modal(createTag("ol"));
+					var cont = modal(createTag("table"));
 					for (var r=0; r < releases.length; r++) {
 						var guid = releases[r].getAttribute("href").match(re_GUID);
-						ol.appendChild(createTag("li", {}, createTag("a", {a:{href:releases[r].getAttribute("href"),target:"_blank"}}, [createTag("img", {a:{src:"//coverartarchive.org/release/"+guid+"/front-250",height:"12px",width:"12px"},s:{"box-shadow":"1px 1px 4px black"},e:{error:function(){this.parentNode.replaceChild(createTag("span", {s:{"background-color":"#ccc",display:"inline-block",width:"12px"}}, " "), this);}}})," "+releases[r].textContent])));
+						cont.appendChild(createTag("tr", {}, [createTag("th", {s:{"padding-right":"6px"}}, (r+1)+"."), createTag("td", {s:{padding:"0px"}}, createTag("img", {a:{src:"http://coverartarchive.org/release/"+guid+"/front-250",alt:""},s:{margin:"0px","max-height":"16px","max-width":"16px","box-shadow":"1px 1px 2px black"},e:{error:function(){this.parentNode.removeChild(this);}}})), createTag("td", {s:{"padding-left":"6px"}}, createTag("a", {a:{href:releases[r].getAttribute("href"),target:"_blank"}}, releases[r].textContent))]));
 						url += (r==0?"":";")+guid;
 					}
 					requestForAction(method, url+"?client="+client);
