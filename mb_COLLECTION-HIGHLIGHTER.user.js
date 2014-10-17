@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.6.26.1706
+// @version      2014.10.17.1519
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @doc          http://userscripts.org:8080/scripts/show/126380
 // @doc          http://userscripts-mirror.org/scripts/show/126380
@@ -106,9 +106,6 @@
 				xp = document.evaluate("./xhtml:thead//xhtml:th[contains(./text(), 'Actions')]", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 				if (xp.snapshotLength > 0) {
 					xp.snapshotItem(0).style.width = "";
-				}
-				else {
-					tbl.getElementsByTagName("tr")[0].appendChild(document.createElement("th")).appendChild(document.createTextNode("Actions"));
 				}
 				xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 				for (i=0; i < xp.snapshotLength; i++) {
