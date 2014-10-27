@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
-// @version      2014.10.10.1616
+// @version      2014.10.27.1648
 // @description  notlob.eu/isrc. BATCH SUBMIT ISRCs. Allows pasting all ISRCs at once (from Simonf’s mediatool on multi-disc releases or from 音楽の森/ongakunomori/minc) - does not work in Opera for AUTH bug reason :/
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-ISRC.user.js
@@ -18,7 +18,8 @@
 	var dummySkip = "JESUS2099999";
 	var inputs, submit = document.querySelector("form > input[type='submit']");
 	if (self.location.href.match(/^https?:\/\/[^/]+\/ws\/1\//)) {
-		if (document.body.textContent == "") {
+		var p = document.body.querySelector("pre, p");
+		if (p && p.textContent.trim() == "") {
 			document.body.appendChild(document.createTextNode("ISRC submission seems OK. "));
 			document.body.appendChild(document.createElement("a")).appendChild(document.createTextNode("Going back to submission page (in 4 seconds).")).parentNode.setAttribute("href", home);
 			setTimeout(function(){self.location=home;}, 4000);
