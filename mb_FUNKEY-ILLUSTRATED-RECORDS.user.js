@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2014.0113.1708
+// @version      2014.11.5.1530
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
@@ -69,7 +69,8 @@ function chromehackuserjs154481f(){"use strict";
 			tr.addEventListener("mouseout", updateBig, false);
 			var box = getParent(as[a], "table") || getParent(as[a], "ul");
 			if (bigpics && imgurls.indexOf(imgurl) < 0 && (box = box.previousSibling.tagName == "DIV" && box.previousSibling.className == userjs+"bigbox"?box.previousSibling:box.parentNode.insertBefore(createTag("div",{"class":userjs+"bigbox"}),box))) {
-				box.appendChild(createTag("a",{"href":as[a].getAttribute("href"),"title":as[a].textContent+(istable?"\r\n"+getSibling(getParent(as[a],"td"),"td").textContent.trim():"")},{"display":"inline-block","height":"100%","margin":"8px 8px 4px 4px"},{},[
+				var artisttd = istable && getSibling(getParent(as[a],"td"),"td");
+				box.appendChild(createTag("a",{"href":as[a].getAttribute("href"),"title":as[a].textContent+(artisttd?"\r\n"+artisttd.textContent.trim():"")},{"display":"inline-block","height":"100%","margin":"8px 8px 4px 4px"},{},[
 					document.createTextNode("\u231b"),
 					createTag("img",
 						{"src":imgurl+"-250","alt":as[a].textContent},
