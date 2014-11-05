@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2014.0225.1252
+// @version      2014.11.5.1548
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COOL-ENTITY-LINKS.user.js
@@ -87,7 +87,7 @@
 		}
 		as = document.querySelectorAll(cssas);
 		var skip = localStorage.getItem("jesus2099skip_linksdeco_"+ent);/*skip deco shared with COLLECTION HIGHLIGHTER asks only once per page*/
-		if (confirmIfMoreThan < 0 || (as.length <= confirmIfMoreThan || as.length > confirmIfMoreThan && !(skip && skip == "1") && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are "+as.length+" "+ent.toUpperCase()+"S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
+		if (confirmIfMoreThan < 0 || (as.length <= confirmIfMoreThan || skip && skip == "0" || !(skip && skip == "1") && as.length > confirmIfMoreThan && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are "+as.length+" "+ent.toUpperCase()+"S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
 			skip = "0";
 			for (var a=0; a<as.length; a++) {
 				var href, id;

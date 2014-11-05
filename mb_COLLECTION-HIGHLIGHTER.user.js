@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.10.17.1519
+// @version      2014.11.5.1548
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @doc          http://userscripts.org:8080/scripts/show/126380
 // @doc          http://userscripts-mirror.org/scripts/show/126380
@@ -225,7 +225,7 @@
 				xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 				if (xp.snapshotLength > 0) {
 					var skip = localStorage.getItem("jesus2099skip_linksdeco_"+cstuff);/*skip deco shared with ENTITY ICONS asks only once per page*/
-					if (confirmIfMoreThan < 0 || (xp.snapshotLength <= confirmIfMoreThan || xp.snapshotLength > confirmIfMoreThan && !(skip && skip == "1") && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are "+xp.snapshotLength+" "+cstuff.toUpperCase()+"S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
+					if (confirmIfMoreThan < 0 || (xp.snapshotLength <= confirmIfMoreThan || skip && skip == "0" || !(skip && skip == "1") && xp.snapshotLength > confirmIfMoreThan && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are "+xp.snapshotLength+" "+cstuff.toUpperCase()+"S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
 						skip = "0";
 						for (i=0; i < xp.snapshotLength; i++) {
 							var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/"+cstuff+"/("+strMBID+")$"));
