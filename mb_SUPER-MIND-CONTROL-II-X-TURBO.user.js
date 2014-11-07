@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.11.7.1835
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / RADIO_DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
+// @version      2014.11.7.1930
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CTRL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
 // @doc          http://userscripts-mirror.org/scripts/show/85790
 // @bugs         https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -668,6 +668,22 @@
 		}
 	}
 	/*=================================================================== MOUSE+
+	## Common form submission function ##
+	==========================================================================*/
+	function parentFormSubmit(input, e) {
+		var form = getParent(input, "form");
+		if (form) {
+			var submitbutt = form.querySelector("div#release-editor input#id-next[type='submit'], div.buttons > button[type='submit'], span.buttons > button[type='submit']");
+			if (submitbutt) {
+				submitbutt.style.setProperty("background-color", "yellow");
+				if (submitbutt.getAttribute("disabled")) alert("This form is not (yet) submitable. Maybe you haven’t changed anything yet.");
+				else sendEvent(submitbutt, (e.shiftKey?"shift+":"")+"click");
+			} else {
+				form.submit();
+			}
+		} else { alert("can’t find parent form."); }
+	}
+	/*=================================================================== MOUSE+
 	## DOUBLE_CLICK_SUBMIT ##
 	==========================================================================*/
 	j2setting("DOUBLE_CLICK_SUBMIT", true, true, "makes the “radio buttons” and “multi-selects” submit forms on double-click (MBS-3229)");
@@ -677,19 +693,22 @@
 			var obj = getParent(objs[o], "label") || objs[o];
 			obj.addEventListener("mousedown", stop, false);
 			obj.addEventListener("dblclick", function(e) {
-				var form = getParent(this, "form");
-				if (form) {
-					var submitbutt = form.querySelector("div#release-editor input#id-next[type='submit'], div.buttons > button[type='submit'], span.buttons > button[type='submit']");
-					if (submitbutt) {
-						submitbutt.style.setProperty("background-color", "yellow");
-						submitbutt.click();
-					} else {
-						form.submit();
-					}
-				}
+				parentFormSubmit(this, e);
 			}, false);
 			obj.setAttribute("title", "double-click here to submit the form");
 		}
+	}
+	/*=================================================================== MOUSE+
+	## CTRL_ENTER_SUBMIT ##
+	==========================================================================*/
+	j2setting("CTRL_ENTER_SUBMIT", true, true, "hit CTRL+ENTER keys when you’re in a text area to submit the current form");
+	if (j2sets.CTRL_ENTER_SUBMIT) {
+		[].forEach.call(document.querySelectorAll("form"), function(form) {/* funny stuff from http://coderwall.com/p/jcmzxw */
+			form.addEventListener("keydown", function(e){
+				if (e.target.tagName && e.target.tagName == "TEXTAREA" && e.ctrlKey && e.keyCode == 13)
+					parentFormSubmit(e.target, e);
+			});
+		});
 	}
 	/*================================================================ REMEMBER+
 	## LAST_SEEN_EDIT ##
