@@ -1,72 +1,78 @@
+(function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
-// @version      2014.9.30.1727
+// @version      2014.11.7.2014
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @since        2012.2.22
 // @grant        none
 // @include      http*://*musicbrainz.org/*
+// @exclude      *//*/*musicbrainz.org*
 // @run-at       document-end
 // ==/UserScript==
-(function () {
+	}};
+	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
+		var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+		while ((kv = row.exec(meta.rawmdb)) !== null) {
+			if (meta[kv[1]]) {
+				if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
+				meta[kv[1]].push(kv[2]);
+			} else meta[kv[1]] = kv[2];
+		}
+	}
 	var userjs = "jesus2099userjs126475";
 	var lsm, lskeys;
 	var j2set = document.querySelector("div#header-menu li.about > ul > li.jesus2099");
 	if (!j2set && (j2set = document.querySelector("div#header-menu li.about > ul"))) {
-		j2set = j2set.appendChild(document.createElement("li"));
-		j2set.className = "jesus2099 separator";
+		j2set = j2set.appendChild(createTag("li", {a:{"class":"jesus2099 separator"}}));
 	}
 	if (j2set) {
-		var li = document.createElement("li");
-		li.className = "jesus2099";
-		addAfter(li, j2set).appendChild(createA("Local storage manager\u00ae", function(e){
-			this.parentNode.parentNode.style.removeProperty("left");
-			if (lsm) {
-				unloadLS()
-			}
-			else {
-				lskeys = [];
-				lsm = document.getElementById("page");
-				lsm = lsm.insertBefore(document.createElement("div"), lsm.firstChild);
-				lsm.setAttribute("id", userjs+"lsm");
-				lsm.appendChild(document.createElement("h2")).appendChild(concat([
-					"Local storage manager (",
-					createA("new", function(e) {
-						loadLS();
-						var key = prompt("Type new key name");
-						if (key) {
-							if (lskeys.indexOf(key) == -1 || confirm("THIS KEY ALREADY EXISTS\nDo you want to replace it\u00a0?\n\n\u201c"+key+"\u201d\u00a0:\n"+localStorage.getItem(key))) {
-								var newValue = prompt("Type value for key \u201c"+key+"\u201d");
-								if (newValue) {
-									localStorage.setItem(key, newValue);
-									loadLS();
+		addAfter(createTag("li", {a:{"class":"jesus2099"}}, 
+			createTag("a", {e:{click:function(e){
+				this.parentNode.parentNode.style.removeProperty("left");
+				if (lsm) { unloadLS(); } else {
+					lskeys = [];
+					lsm = document.getElementById("page");
+					lsm = lsm.insertBefore(createTag("div", {a:{id:userjs+"lsm"}}, createTag("h2", {}, [
+						meta.name+" (",
+						createTag("a", {a:{title:"Add a new key"},e:{click:function(e){
+							loadLS();
+							var key = prompt("Type new key name");
+							if (key) {
+								if (lskeys.indexOf(key) == -1 || confirm("THIS KEY ALREADY EXISTS\nDo you want to replace it\u00a0?\n\n\u201c"+key+"\u201d\u00a0:\n"+localStorage.getItem(key))) {
+									var newValue = prompt("Type value for key \u201c"+key+"\u201d");
+									if (newValue) {
+										localStorage.setItem(key, newValue);
+										loadLS();
+									}
 								}
 							}
-						}
-					}, "Add a new key"),
-					"/",
-					createA("reload", function(e) { loadLS(); }, "Browse all local storage keys"),
-					"/",
-					createA("clear", function(e) {
-						loadLS();
-						if (!e.shiftKey) { alert("SHIFT+CLICK\n\nIn order to avoid GRO\u00df MALHEUR,\nyou must hold down shift key\nif you really really want to erase\nall your local storage for this website."); return true; }
-						if (confirm("Are you sure you want to clear all those keys\nfrom your local storage memory\nfor this website?\nYOU CANNOT UNDO THIS ACTION.")) {
-							localStorage.clear();
+						}}}, "new"),
+						"/",
+						createTag("a", {a:{title:"Browse all local storage keys"},e:{click:function(e){loadLS();}}}, "reload"),
+						"/",
+						createTag("a", {a:{title:"Clear all local storage keys"},e:{click:function(e){
 							loadLS();
-						} 
-					}, "Clear all local storage keys"),
-					"/",
-					createA("close", function(e) { unloadLS(); }, "Close local storage manager"),
-					")"
-				]));
-				document.addEventListener("storage", function(e) { loadLS(); }, false);/*does never trigger btw*/
-				loadLS();
-				lsm.parentNode.scrollIntoView();
-			}
-		}));
+							if (!e.shiftKey) { alert("SHIFT+CLICK\n\nIn order to avoid GRO\u00df MALHEUR,\nyou must hold down shift key\nif you really really want to erase\nall your local storage for this website."); return true; }
+							if (confirm("Are you sure you want to clear all those keys\nfrom your local storage memory\nfor this website?\nYOU CANNOT UNDO THIS ACTION.")) {
+								localStorage.clear();
+								loadLS();
+							} 
+						}}}, "clear"),
+						"/",
+						createTag("a", {a:{title:"Close local storage manager"},e:{click:function(e){unloadLS();}}}, "close"),
+						")"
+					])), lsm.firstChild);
+					document.addEventListener("storage", function(e) { loadLS(); }, false);/*does never trigger btw*/
+					loadLS();
+					lsm.parentNode.scrollIntoView();
+				}
+			}}}, meta.name)
+		), j2set);
 	}
 	function unloadLS() {
 		lsm.parentNode.removeChild(lsm);
@@ -74,13 +80,7 @@
 		lskeys = null;
 	}
 	function loadLS() {
-		var keylist = document.createElement("table");
-		keylist.setAttribute("cellspacing", "0");
-		keylist.setAttribute("cellpadding", "0");
-		keylist.style.setProperty("border", "2px dashed red");
-		keylist.style.setProperty("background-color", "#eee");
-		keylist.style.setProperty("padding", "8px");
-		keylist.style.setProperty("margin", "8px");
+		var keylist = createTag("table", {a:{cellspacing:"0",cellpadding:"0"},s:{border:"2px dashed red","background-color":"#eee",padding:"8px",margin:"8px"}});
 		lskeys = [];
 		for (var ls=0; ls<localStorage.length; ls++) {
 			lskeys.push(localStorage.key(ls));
@@ -94,7 +94,7 @@
 			size += content.length;
 			var tr = addRow(keylist, [
 				(k+1)+".\u00a0",
-				document.createElement("code").appendChild(document.createTextNode(key)).parentNode,
+				createTag("code", {}, key),
 				content.length>64||content.match(/(\n|\r)/)?content.substr(0, 64)+(content.length>64?"\u2026":""):content,
 				concat([
 					" ",
@@ -183,6 +183,19 @@
 			concats.appendChild(typeof stuff[thisStuff]=="string"?document.createTextNode(stuff[thisStuff]):stuff[thisStuff]);
 		}
 		return concats;
+	}
+	function createTag(tag, gadgets, children) {
+		var t = (tag=="fragment"?document.createDocumentFragment():document.createElement(tag));
+		if(t.tagName) {
+			if (gadgets) {
+				for (var attri in gadgets.a) if (gadgets.a.hasOwnProperty(attri)) { t.setAttribute(attri, gadgets.a[attri]); }
+				for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) { t.style.setProperty(style.replace(/!/g,""), gadgets.s[style].replace(/!/g,""), style.match(/!/)||gadgets.s[style].match(/!/)?"important":""); }
+				for (var event in gadgets.e) if (gadgets.e.hasOwnProperty(event)) { t.addEventListener(event, gadgets.e[event], false); }
+			}
+			if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) t.style.setProperty("cursor", "pointer");
+		}
+		if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.tagName) { chldrn = [chldrn]; } for(var child=0; child<chldrn.length; child++) { t.appendChild(typeof chldrn[child]=="string"?document.createTextNode(chldrn[child]):chldrn[child]); } t.normalize(); }
+		return t;
 	}
 	function createA(text, link, title) {
 		var a = document.createElement("a");
