@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
-// @version      2014.11.7.2014
+// @version      2014.11.7.1757
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
@@ -67,6 +67,9 @@
 						createTag("a", {a:{title:"Close local storage manager"},e:{click:function(e){unloadLS();}}}, "close"),
 						")"
 					])), lsm.firstChild);
+					if (self.opera) lsm.appendChild(createTag("p", {}, "☞ Opera 12 has its own local storage editor: CTRL+SHIFT+I (Dragon fly) > Storage > Local Storage."));
+					else if (navigator.userAgent.match(/firefox/i)) lsm.appendChild(createTag("p", {}, "☞ Firefox’s Firebug has its own local storage editor: DOM > localStorage."));
+					else if (navigator.userAgent.match(/chrom(ium|e)/i)) lsm.appendChild(createTag("p", {}, "☞ Chromium has its own local storage editor: F12 > Resources > Local Storage."));
 					document.addEventListener("storage", function(e) { loadLS(); }, false);/*does never trigger btw*/
 					loadLS();
 					lsm.parentNode.scrollIntoView();
