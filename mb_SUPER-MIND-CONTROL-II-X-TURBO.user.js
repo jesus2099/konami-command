@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.9.30.1727
+// @version      2014.11.7.1835
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / RADIO_DOUBLE_CLICK_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
 // @doc          http://userscripts-mirror.org/scripts/show/85790
 // @bugs         https://github.com/jesus2099/konami-command/issues
@@ -78,7 +78,7 @@
 	j2superturbo.css = document.styleSheets[document.styleSheets.length-1];
 	var j2sets = {}, j2docs = {}, j2defs = {}, j2setsclean = [];
 	j2setting();
-	j2superturbo.menu.addItem(createTag("a",{e:{click:function(e){
+	j2superturbo.menu.addItem(createTag("a",{a:{title:meta.description.replace(/^[^:]+: /,"").replace(/ \/ /g,"\n")},e:{click:function(e){
 			this.parentNode.parentNode.style.removeProperty("left");
 			j2setting();
 			if (j2sets) {
@@ -184,8 +184,8 @@
 			var addrel = document.querySelector("div#header-menu li.editing > ul > li:not(.separator) > a[href$='/release/add']");
 			if (addrel) {
 				j2superturbo.menu.addItem(createTag("a", {a:{title:meta.name+"\nshift+click to open new tab / ctrl+click for background tab"+(rcwhere!="release"?"\nno need to select if there is only one release on this page":"")},e:{click:function(e){
+						this.parentNode.parentNode.style.removeProperty("left");
 						var crmbids = [];
-						var samerg = confirm("new release in same release group?");
 						if (rcwhere == "release") {
 							crmbids.push(""+self.location.pathname.match(re_GUID));
 						}
@@ -198,6 +198,7 @@
 							}
 						}
 						if (crmbids.length > 0) {
+							var samerg = confirm("new release in same release group?");
 							for (var crr=crmbids.length-1; crr>=0; crr--) {
 								var xhr = new XMLHttpRequest();
 								xhr.onload = function(e) {
@@ -339,6 +340,8 @@
 								xhr.overrideMimeType("text/xml");
 								xhr.send(null);
 							}
+						} else {
+							alert("Please select at least one release.");
 						}
 					}}}, ["Clone "+(rcwhere=="release"?"release":"selected releases")+" ", createTag("small", {s:{color:"grey"}}, "← RELEASE_CLONER™")]));
 			}

@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
-// @version      2014.11.7.1757
+// @version      2014.11.7.1835
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
@@ -32,7 +32,7 @@
 	}
 	if (j2set) {
 		addAfter(createTag("li", {a:{"class":"jesus2099"}}, 
-			createTag("a", {e:{click:function(e){
+		createTag("a", {a:{title:meta.description.replace(/^[^:]+: /,"")},e:{click:function(e){
 				this.parentNode.parentNode.style.removeProperty("left");
 				if (lsm) { unloadLS(); } else {
 					lskeys = [];
