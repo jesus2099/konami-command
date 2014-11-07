@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.10.16.1348
+// @version      2014.11.7.1935
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -10,10 +10,13 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011.12.13.
 // @grant        none
+// @include      http*://*musicbrainz.org/release/*
 // @include      http://*.mbsandbox.org/release/*
-// @include      http://*musicbrainz.org/release/*
-// @include      https://*musicbrainz.org/release/*
+// @exclude      *//*/*mbsandbox.org*
+// @exclude      *//*/*musicbrainz.org*
 // @exclude      *.org/release/*/*
+// @exclude      *.org/release/add
+// @exclude      *.org/release/add?*
 // @exclude      *.org/release/merge*
 // @run-at       document-end
 // ==/UserScript==
