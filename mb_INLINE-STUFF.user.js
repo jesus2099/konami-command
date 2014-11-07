@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2014.10.16.1346
+// @version      2014.11.7.1718
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_INLINE-STUFF.user.js
@@ -37,8 +37,6 @@
 // ==/UserScript==
 (function(){
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
-var isrcLinksTexts = {"start": "has\u00A0ISRC", "separator": ", ", "final-separator": " and ", "end": ""};
-var acoustidLinksTexts = {"start": "has\u00A0AcoustID", "separator": ", ", "final-separator": " and ", "end": ""};
 var dupeColour = "pink";
 var infoColour = "lightcyan";
 var contractFingerPrints = true; /* more compact AcoustIDs but brwoser can still inline search/find full AcoustID */
@@ -260,7 +258,7 @@ function isrcFish() {
 				var trackTitleCell = tracksHtml[i].querySelector("td:not(.pos):not(.video)");
 				var trackLinksCell = tracksHtml[i].querySelector("td.links");
 				if (isrcNet[mbid].length > 0) {
-					insertBeforeARS(trackTitleCell, createStuffFragment("ISRC", isrcNet[mbid], shownisrcs, isrcLinksTexts, isrcURL, null, mbid));
+					insertBeforeARS(trackTitleCell, createStuffFragment("ISRC", isrcNet[mbid], shownisrcs, isrcURL, null, mbid));
 				}
 				if (aRec.textContent != recnameNet[mbid].name) {
 					var ntit = aRec.getAttribute("title");
@@ -292,18 +290,13 @@ function isrcFish() {
 		idCount("ISRC", shownisrcs);
 	}
 }
-function createStuffFragment(stufftype, stuffs, shownstuffs, linksTexts, url, trackid, recid) {
-	var td = document.createElement("span");
-	td.className = "small";
-	td.style.setProperty("font-style", "normal");
-	td.appendChild(document.createTextNode(linksTexts["start"]+(stuffs.length>1?"s":"")+" "));
+function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid) {
+	var td = document.createElement("dd");
 	for (var i=0; i < stuffs.length; i++) {
 		var adisabled = (stufftype == "AcoustID" && stuffs[i][1]);
 		var stuff = (stufftype == "AcoustID"?stuffs[i][0]:stuffs[i]);
-		if (stuffs.length > 1 && i == stuffs.length - 1) {
-			td.appendChild(document.createTextNode(linksTexts["final-separator"]));
-		} else if (i > 0) {
-			td.appendChild(document.createTextNode(linksTexts["separator"]));
+		if (i > 0) {
+			td.appendChild(document.createTextNode(", "));
 		}
 		var a = document.createElement("a");
 		a.style.setProperty("white-space", "nowrap");
@@ -351,13 +344,13 @@ function createStuffFragment(stufftype, stuffs, shownstuffs, linksTexts, url, tr
 			a.parentNode.appendChild(togAID(recid, stuff, adisabled));
 		}
 	}
-	td.appendChild(document.createTextNode(linksTexts["end"]));
-	var tr = document.createElement("div");
+	var tr = document.createElement("dl");
+	tr.className = "ars";
+	tr.appendChild(document.createElement("dt").appendChild(document.createTextNode(stufftype+(stuffs.length>1?"s":"")+":")).parentNode);
 	tr.appendChild(td);
 	var table = document.createElement("div");
-	table.className = "relationships "+stufftype+"81127";
+	table.className = "ars "+stufftype+"81127";
 	table.style.setProperty("display", localStorage.getItem("hide"+stufftype+"81127")=="1"?"none":"block");
-	table.style.setProperty("margin", "0 1em");
 	table.appendChild(tr);
 	return table;
 }
@@ -527,7 +520,7 @@ function acoustidFishBatch(recids) {
 						acoustids[recmbid].length > 0 &&
 						(trackTitleCell = tracksHtml[th].querySelector("td:not(.pos):not(.video)"))
 					) {
-						var aidtable = insertBeforeARS(trackTitleCell, createStuffFragment("AcoustID", acoustids[recmbid], shownacoustids, acoustidLinksTexts, acoustidURL, null, recmbid));
+						var aidtable = insertBeforeARS(trackTitleCell, createStuffFragment("AcoustID", acoustids[recmbid], shownacoustids, acoustidURL, null, recmbid));
 						if (contractFingerPrints) {
 							var show = aidtable.style.getPropertyValue("display") == "block";
 							aidtable.style.setProperty("display", "block");
