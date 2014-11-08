@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.11.7.1930
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CTRL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
+// @version      2014.11.8.1454
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
 // @doc          http://userscripts-mirror.org/scripts/show/85790
 // @bugs         https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -671,9 +671,9 @@
 	## Common form submission function ##
 	==========================================================================*/
 	function parentFormSubmit(input, e) {
-		var form = getParent(input, "form");
+		var form = getParent(input, "form") || document.querySelector("div#release-editor");
 		if (form) {
-			var submitbutt = form.querySelector("div#release-editor input#id-next[type='submit'], div.buttons > button[type='submit'], span.buttons > button[type='submit']");
+			var submitbutt = form.querySelector("div#release-editor button.positive[data-click='submitEdits'], div.buttons > button[type='submit'], span.buttons > button[type='submit']");
 			if (submitbutt) {
 				submitbutt.style.setProperty("background-color", "yellow");
 				if (submitbutt.getAttribute("disabled")) alert("This form is not (yet) submitable. Maybe you haven’t changed anything yet.");
@@ -698,16 +698,14 @@
 			obj.setAttribute("title", "double-click here to submit the form");
 		}
 	}
-	/*=================================================================== MOUSE+
-	## CTRL_ENTER_SUBMIT ##
+	/*================================================================ KEYBOARD+
+	## CONTROL_ENTER_SUBMIT ##
 	==========================================================================*/
-	j2setting("CTRL_ENTER_SUBMIT", true, true, "hit CTRL+ENTER keys when you’re in a text area to submit the current form");
-	if (j2sets.CTRL_ENTER_SUBMIT) {
-		[].forEach.call(document.querySelectorAll("form"), function(form) {/* funny stuff from http://coderwall.com/p/jcmzxw */
-			form.addEventListener("keydown", function(e){
-				if (e.target.tagName && e.target.tagName == "TEXTAREA" && e.ctrlKey && e.keyCode == 13)
-					parentFormSubmit(e.target, e);
-			});
+	j2setting("CONTROL_ENTER_SUBMIT", true, true, "hit CTRL+ENTER keys when you’re in a text area to submit the current form");
+	if (j2sets.CONTROL_ENTER_SUBMIT) {
+		document.body.addEventListener("keydown", function(e){
+			if (e.target.tagName && e.target.tagName == "TEXTAREA" && e.ctrlKey && e.keyCode == 13)
+				parentFormSubmit(e.target, e);
 		});
 	}
 	/*================================================================ REMEMBER+
