@@ -2,13 +2,14 @@ function lameChromeWorkaroundForUsingLameJQuery(){"use strict";
 	var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.8.27.1135
+// @version      2014.11.11.1849
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @since        2011-01-14
 // @grant        none
 // @include      http*://*musicbrainz.org/work/*
 // @include      http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=*WORKS_CD=*
@@ -733,8 +734,8 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 					MBlookups[MBlookups.length-1].indexedSearch = false;
 					target.querySelector("input.name").value = credit;
 					jQac.bind("lookup-performed", function(e) {
-						var remember = xhrForm.form.querySelector("form > div > fieldset.editnote label input[type='checkbox']");
-						if (remember && remember.checked && remember.parentNode.textContent.trim().match(/^remember$/i)) { remember.click(); }
+						var remember = xhrForm.form.querySelector("fieldset.editnote label input.jesus2099remember[type='checkbox']");
+						if (remember && remember.checked) { remember.click(); }
 						var name = this.querySelector("input.name");
 						var gidv = this.querySelector("input.gid").value;
 						var href = "/"+this.getAttribute("ref")+"/"+gidv;
