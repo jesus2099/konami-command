@@ -1,12 +1,17 @@
+(function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2014.11.5.1530
+// @version      2014.11.12.1616
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
+// @homepage     http://userscripts-mirror.org/scripts/show/154481
+// @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @since        2012-12-19
+// @icon         http://musicbrainz.org/favicon.ico
 // @grant        none
 // @include      http*://*musicbrainz.org/artist/*
 // @include      http*://*musicbrainz.org/cdtoc/*
@@ -22,13 +27,23 @@
 // @exclude      *://*musicbrainz.org/cdtoc/remove*
 // @run-at       document-end
 // ==/UserScript==
-function chromehackuserjs154481f(){"use strict";
+	}};
+	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
+		var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+		while ((kv = row.exec(meta.rawmdb)) !== null) {
+			if (meta[kv[1]]) {
+				if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
+				meta[kv[1]].push(kv[2]);
+			} else meta[kv[1]] = kv[2];
+		}
+	}
 /*---CONFIG-START---*/
 	var bigpics = true; /*displays big pics illustrated discography in main artist page*/
 	var smallpics = "right"; /*false, "left" or "right" : displays small pics for every releases and release groups, everywhere*/
 	var forceHTTP = true; /*as long as HTTP is being faster on CAA (less latency), you can force it for CAA images even if when you are using HTTPS for musicbrainz*/
 	var colour = "yellow"; /*used for various mouse-over highlights*/
 /*---CONFIG-STOPR---*/
+	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var userjs = "jesus2099userjs154481";
 	var CAA_URL = (forceHTTP?"http:":"")+"//coverartarchive.org/%type%/%mbid%/front";
 	var SMALL_SIZE = "19px";
@@ -76,7 +91,7 @@ function chromehackuserjs154481f(){"use strict";
 						{"src":imgurl+"-250","alt":as[a].textContent},
 						{"vertical-align":"middle","display":"none","max-height":"20px","max-width":"20px","box-shadow":"1px 1px 4px black"},
 						{
-							"load":function(e){del(this.parentNode.firstChild);this.style.setProperty("display","inline");jQuery(this).animate({"max-height":BIG_SIZE,"max-width":BIG_SIZE},"fast");},
+							"load":function(e){del(this.parentNode.firstChild);this.style.setProperty("display","inline");try{jQuery(this).animate({"max-height":BIG_SIZE,"max-width":BIG_SIZE},"fast");}catch(e){this.style.setProperty("max-height",BIG_SIZE);this.style.setProperty("max-width",BIG_SIZE);console.log(e.message+"!\n"+chrome);}},
 							"error":function(e){del(this.parentNode);},
 							"mouseover":updateA,
 							"mouseout":updateA
@@ -118,7 +133,9 @@ function chromehackuserjs154481f(){"use strict";
 		if (!e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
 			var click = o.getAttribute("title"); click = click && click.match(/^click to (enlarge|shrink)$/);
 			var b = (o.getAttribute("_s")=="t");
-			jQuery(o).animate({"height": b?(o.getAttribute("_height")||"250px"):s}, "fast");
+			var h = b?(o.getAttribute("_height")||"250px"):s;
+			try{jQuery(o).animate({"height": h}, "fast");}
+			catch(e){o.style.setProperty("height", h);console.log(e.message+"!\n"+chrome);}
 			if (click) {
 				o.setAttribute("_s", b?"o":"t");
 				o.setAttribute("title", o.getAttribute("title").replace(/\w+$/, b?"shrink":"enlarge"));
@@ -164,7 +181,4 @@ function chromehackuserjs154481f(){"use strict";
 			return null;
 		}
 	}
-}
-var chromehackuserjs154481s = document.createElement("script");
-chromehackuserjs154481s.appendChild(document.createTextNode("("+chromehackuserjs154481f+")();"));
-document.body.appendChild(chromehackuserjs154481s);
+})();
