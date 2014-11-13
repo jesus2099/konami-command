@@ -1,15 +1,17 @@
-function lameChromeWorkaroundForUsingLameJQuery(){"use strict";
-	var meta={rawmdb:function(){
+(function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.11.11.1849
+// @version      2014.11.13.1057
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
+// @homepage     http://userscripts-mirror.org/scripts/show/94676
+// @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-01-14
+// @icon         http://musicbrainz.org/favicon.ico
 // @grant        none
 // @include      http*://*musicbrainz.org/work/*
 // @include      http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=*WORKS_CD=*
@@ -27,6 +29,7 @@ function lameChromeWorkaroundForUsingLameJQuery(){"use strict";
 			} else meta[kv[1]] = kv[2];
 		}
 	}
+	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var DEBUG = localStorage.getItem("jesus2099debug");
 	var userjs = "jesus2099userjs94676";
 	var userjsname = meta.name+" '''"+meta.version+"''' ("+meta.namespace+")";
@@ -689,6 +692,10 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 			wcs = addAfter(createTag("fieldset", {"class":userjs}, {}, {}, [createTag("legend", {}, {}, {}, "Relationships"), createTag("p", {}, {}, {}, [createTag("b", null, null, null, "JASRAC sometimes has wrong credits")," so, please double-check with your booklet then only lookup for the correct relationship(s) you want to create.", createTag("br"), "If you change your mind and want to un-lookup one of them, just select and clear the text field.", createTag("br"), "Only green fields will queue relationship edits."]), createTag("div", {"id":userjs+"wcs"})]), xhrForm.form.querySelector("form > div > fieldset")).querySelector("div#"+userjs+"wcs");
 		}
 		removeChildren(wcs);
+		try { jQuery; } catch (e) {
+			wcs.parentNode.appendChild(createTag("p", {}, {color:"red"}, {}, e.message+" — “Credits inline searches” can’t work. "+chrome));
+			return;
+		}
 		workCredit("artist", {
 			"作詞":{"nomatch":/^権利者　/,"english":"lyrics","ar.link_type_id":"165"},
 			"訳詞":{"nomatch":/^権利者　/,"english":"translate lyrics","ar.link_type_id":"165","ar.attrs.translated":"1"},
@@ -1195,7 +1202,4 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		ev.initEvent(e, true, true);
 		n.dispatchEvent(ev);
 	}
-}
-var chromehackuserjs94676s = document.createElement("script");
-chromehackuserjs94676s.appendChild(document.createTextNode("("+lameChromeWorkaroundForUsingLameJQuery+")();"));
-document.head.appendChild(chromehackuserjs94676s);
+})();

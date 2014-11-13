@@ -1,16 +1,17 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.11.8.1454
+// @version      2014.11.12.229
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
-// @doc          http://userscripts-mirror.org/scripts/show/85790
-// @bugs         https://github.com/jesus2099/konami-command/issues
+// @homepage     http://userscripts-mirror.org/scripts/show/85790
+// @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2010.9.9
+// @since        2010-09-09
+// @icon         http://musicbrainz.org/favicon.ico
 // @grant        none
 // @include      http*://*musicbrainz.org/*
 // @include      http://*.mbsandbox.org/*
@@ -36,6 +37,7 @@
 			} else meta[kv[1]] = kv[2];
 		}
 	}
+	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var userjs = "jesus2099userjs85790"/*have to keep this for legacy saved settings*/;
 	var MBS = self.location.protocol+"//"+self.location.host;
 	var sidebar = document.getElementById("sidebar");
@@ -83,7 +85,7 @@
 			j2setting();
 			if (j2sets) {
 				var j2setsdiv = document.body.appendChild(createTag("div",{"a":{"id":userjs+"j2sets"},"s":{"position":"fixed","overflow":"auto","top":"50px","right":"50px","bottom":"50px","left":"50px","background-color":"silver","border":"2px outset white","padding":"1em","z-index":"99"}},[createTag("a",{"s":{"float":"right"},"e":{"click":function(e){del(document.getElementById(userjs+"j2sets"));}}}, "  CLOSE ×  "),createTag("a",{"s":{"float":"right"},"e":{"click":function(e){if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")){localStorage.removeItem(userjs+"settings");self.location.reload();}}}}, "  reset  "),createTag("h4",{"s":{"text-shadow":"0 0 8px black"}},["██ ",createTag("a",{"a":{"href":meta.namespace,"target":"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{"e":{"click":function(){location.reload();}}},"page reload")," to see the effect."])]));
-				j2setsdiv.appendChild(createTag("p", {}, ["There is some ", createTag("a", {a:{href:meta.doc,target:"_blank"}}, "old documentation"), " for this script. Please check out the ", createTag("a", {a:{href:meta.bugs,target:"_blank"}}, "knwon bugs"), "before submitting ", createTag("a", {a:{href:meta.bugs+"/new?title="+encodeURIComponent(meta.name+" error")+"&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while I was on [that page]("+location.href+") (or not?).\nMy error is that bla bla bla…"),target:"_blank"}}, "new bug"), "."]));
+				j2setsdiv.appendChild(createTag("p", {}, ["There is some ", createTag("a", {a:{href:meta.homepage,target:"_blank"}}, "old documentation"), " for this script. Please check out the ", createTag("a", {a:{href:meta.supportURL,target:"_blank"}}, "knwon bugs"), "before submitting ", createTag("a", {a:{href:meta.supportURL+"/new?title="+encodeURIComponent(meta.name+" error")+"&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while I was on [that page]("+location.href+") (or not?).\nMy error is that bla bla bla…"),target:"_blank"}}, "new bug"), "."]));
 				var alphakeys = [];
 				for (var s in j2sets) { if (j2sets.hasOwnProperty(s)) {
 					if (j2setsclean.indexOf(s)<0) { delete j2sets[s]; }
@@ -114,7 +116,7 @@
 		}
 		if (error.report && title) {
 			if (confirm(alrt+"\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
-				self.open(meta.bugs+"/new?title="+encodeURIComponent(title)+"&body="+encodeURIComponent("Hello,\nI am using that awesome *"+meta.name+"* (**"+meta.version+"**).\nI got an error while I was on ["+(document.title?document.title:"that page")+"]("+location.href+"):\n\n    "+error.message.replace(/\n/g, "\n    ")));
+				self.open(meta.supportURL+"/new?title="+encodeURIComponent(title)+"&body="+encodeURIComponent("Hello,\nI am using that awesome *"+meta.name+"* (**"+meta.version+"**).\nI got an error while I was on ["+(document.title?document.title:"that page")+"]("+location.href+"):\n\n    "+error.message.replace(/\n/g, "\n    ")));
 			}
 		} else {
 			alert(alrt);
@@ -333,7 +335,7 @@
 								};
 								xhr.onerror = function(e) {
 									if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
-										self.open(meta.bugs+"/new?title=RELEASE_CLONER+xhr+error&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while cloning [this release]("+MBS+"/release/) on [that page]("+location.href+").\n"));
+										self.open(meta.supportURL+"/new?title=RELEASE_CLONER+xhr+error&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while cloning [this release]("+MBS+"/release/) on [that page]("+location.href+").\n"));
 									}
 								};
 								xhr.open("get", "/ws/2/release/"+crmbids[crr]+"?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels", false);
@@ -435,12 +437,16 @@
 	/*==========================================================================
 	## MAX_RECENT_ENTITIES ##
 	==========================================================================*/
-	var maxent = MB && MB.constants && MB.constants.MAX_RECENT_ENTITIES;
-	if (maxent && typeof maxent == "number") {
-		j2setting("MAX_RECENT_ENTITIES", maxent+"", true, "adjust the amount of recently used entities in inline searches (default is taken from MB itself)");
-		if (j2sets.MAX_RECENT_ENTITIES) {
-			MB.constants.MAX_RECENT_ENTITIES = parseInt(j2sets.MAX_RECENT_ENTITIES, 10);
+	try {
+		var maxent = MB && MB.constants && MB.constants.MAX_RECENT_ENTITIES;
+		if (maxent && typeof maxent == "number") {
+			j2setting("MAX_RECENT_ENTITIES", maxent+"", true, "adjust the amount of recently used entities in inline searches (default is taken from MB itself)");
+			if (j2sets.MAX_RECENT_ENTITIES) {
+				MB.constants.MAX_RECENT_ENTITIES = parseInt(j2sets.MAX_RECENT_ENTITIES, 10);
+			}
 		}
+	} catch(e) {
+		j2setting("MAX_RECENT_ENTITIES", "ERROR", true, e.message+"! — MAX_RECENT_ENTITIES can’t work. — "+chrome);
 	}
 	/*==================================================================== LINK+
 	## RETURN_TO_MB_PROPERLY ##
@@ -1041,7 +1047,11 @@
 					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.");
 					if (date = date.match(new RegExp("^"+re_date.YYYY+"(?:-"+re_date.MM+"(?:-"+re_date.DD+")?)?$"))) {
 						// jquery stuff from reosarevok https://chatlogs.musicbrainz.org/musicbrainz/2014/2014-07/2014-07-08.html#T14-46-11-334532 who got it from bitmap :)
-						_($("td.works div.ar :checked")).map(ko.contextFor).pluck("$parent").each(function (a) { a.period.beginDate.year(date[1]); a.period.beginDate.month(date[2]); a.period.beginDate.day(date[3]); a.period.endDate.year(date[1]); a.period.endDate.month(date[2]); a.period.endDate.day(date[3]); });
+						try {
+							_($("td.works div.ar :checked")).map(ko.contextFor).pluck("$parent").each(function (a) { a.period.beginDate.year(date[1]); a.period.beginDate.month(date[2]); a.period.beginDate.day(date[3]); a.period.endDate.year(date[1]); a.period.endDate.month(date[2]); a.period.endDate.day(date[3]); });
+						} catch (e) {
+							alert(e.message+"!\n\n“Set selected works’ recording dates” can’t work.\n"+chrome);
+						}
 					} else { alert("Wrong date format"); }
 				}}}, "Set selected works’ recording dates"));
 			}
