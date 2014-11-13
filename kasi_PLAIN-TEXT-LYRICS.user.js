@@ -1,12 +1,16 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2014.0321.1712
+// @version      2014.3.21.1712
 // @description  music.goo.ne.jp, lyrics.gyao.yahoo.co.jp, kasi-time.com, lyric.kget.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
+// @homepage     http://userscripts-mirror.org/scripts/show/91968
+// @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/kasi_PLAIN-TEXT-LYRICS.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/kasi_PLAIN-TEXT-LYRICS.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @since        2010-12-05
+// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @include      http*://*uta-net.com/movie/*/
 // @include      http*://*uta-net.com/song/*/

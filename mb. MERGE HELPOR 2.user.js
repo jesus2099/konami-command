@@ -2,9 +2,15 @@
 // @name         mb. MERGE HELPOR 2
 // @version      2013.9.17.1650
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
+// @homepage     http://userscripts-mirror.org/scripts/show/124579
+// @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
+// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb.%20MERGE%20HELPOR%202.user.js
+// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb.%20MERGE%20HELPOR%202.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @since        2012-01-31
+// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @include      http*://*musicbrainz.org/*/merge*
 // @include      http://*.mbsandbox.org/*/merge*

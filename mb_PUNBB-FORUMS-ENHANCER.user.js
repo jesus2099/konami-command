@@ -1,12 +1,16 @@
 // ==UserScript==
 // @name         mb. PUNBB FORUMS ENHANCER
-// @version      2013.1107.1500
+// @version      2013.11.7.1500
 // @description  BBCode markup buttons (bold, italic, url, etc.) with keyboard shortcut keys and restore accesskey on preview and submit too in musicbrainz forums + Hide some forums from new posts page
+// @homepage     http://userscripts-mirror.org/scripts/show/125668
+// @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_PUNBB-FORUMS-ENHANCER.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_PUNBB-FORUMS-ENHANCER.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @since        2012-02-13
+// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @include      http://forums.musicbrainz.org/viewtopic.php*
 // @include      http://forums.musicbrainz.org/post.php*

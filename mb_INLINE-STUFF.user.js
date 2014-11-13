@@ -2,12 +2,15 @@
 // @name         mb. INLINE STUFF
 // @version      2014.11.7.1718
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
+// @homepage     http://userscripts-mirror.org/scripts/show/81127
+// @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_INLINE-STUFF.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_INLINE-STUFF.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2010.7.9
+// @since        2010-07-09
+// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @include      http*://*musicbrainz.org/release/*
 // @include      http*://*musicbrainz.org*edit*
