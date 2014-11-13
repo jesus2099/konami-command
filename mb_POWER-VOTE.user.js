@@ -1,21 +1,33 @@
+(function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2014.6.26.1710
+// @version      2014.11.12.1629
 // @description  Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
-// @doc          http://userscripts.org:8080/scripts/show/57765
-// @doc          http://userscripts-mirror.org/scripts/show/57765
-// @bugs         https://github.com/jesus2099/konami-command/issues
+// @homepage     http://userscripts-mirror.org/scripts/show/57765
+// @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_POWER-VOTE.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_POWER-VOTE.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @since        2009-09-14
+// @icon         http://musicbrainz.org/favicon.ico
 // @grant        none
 // @include      http*://*musicbrainz.org/*
 // @exclude      *//*/*musicbrainz.org*
 // @run-at       document-end
 // ==/UserScript==
-function chromehackuserjs57765f(){"use strict";
+	}};
+	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
+		var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+		while ((kv = row.exec(meta.rawmdb)) !== null) {
+			if (meta[kv[1]]) {
+				if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
+				meta[kv[1]].push(kv[2]);
+			} else meta[kv[1]] = kv[2];
+		}
+	}
+	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var editform = document.querySelector("div#edits > form");
 	if (editform) {
 		/* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
@@ -362,18 +374,32 @@ function chromehackuserjs57765f(){"use strict";
 		disable(o, n);
 		var cls = spec?spec:"ninja";
 		if (n != null) {
-			var jQwtf = spec?jQuery(o):jQuery(o).children("div.edit-actions, div.edit-notes, div.edit-details");
+			var jQwtf;
+			var allbutheader = "div.edit-actions, div.edit-notes, div.edit-details";
+			try {
+				jQwtf = spec?jQuery(o):jQuery(o).children(allbutheader);
+			} catch(e) {
+				jQwtf = spec?[o]:o.querySelectorAll(allbutheader);
+				console.log(e.message+"!\n"+chrome);
+			}
 			if (e.detail > 0 && !e.altKey && !e.ctrlKey && !e.shiftKey) {
 				if (n) {
-					jQwtf.hide(100);
+					try { jQwtf.hide(100); } catch(e) { for(var j=0; j<jQwtf.length; j++) jQwtf[j].style.setProperty("display", "none"); }
 				}
 				else {
-					jQuery(o).removeClass(userjs+"ninja");
-					jQwtf.show(100);
+					try {
+						jQuery(o).removeClass(userjs+"ninja");
+						jQwtf.show(100);
+					} catch(e) {
+						for(var j=0; j<jQwtf.length; j++) {
+							cssClass(jQwtf[j], "-"+userjs+"ninja");
+							jQwtf[j].style.setProperty("display", "block");
+						}
+					}
 				}
 			}
 			else {
-				jQwtf.css("display", n?"none":"");
+				try { jQwtf.css("display", n?"none":""); } catch(e) { for(var j=0; j<jQwtf.length; j++) jQwtf[j].style.setProperty("display", n?"none":""); }
 				cssClass(o, (n?"+":"-")+userjs+cls);
 			}
 		}
@@ -419,7 +445,4 @@ function chromehackuserjs57765f(){"use strict";
 	}
 	function submitShiftKey(e) { submitShift = e.shiftKey; }
 	function pd(ob, en) { ob.addEventListener(en, function(e) { e.preventDefault(); }, false); }
-}
-var chromehackuserjs57765s = document.createElement("script");
-chromehackuserjs57765s.appendChild(document.createTextNode("("+chromehackuserjs57765f+")();"));
-document.body.appendChild(chromehackuserjs57765s);
+})();
