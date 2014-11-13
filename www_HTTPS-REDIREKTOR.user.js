@@ -2,14 +2,19 @@
 // @name         www. HTTPS REDIREKTOR
 // @version      2014.7.22.2057
 // @description  redirect to HTTPS in some websites. keep hash. avoid infinite loops (Opera speed-up tip: save as bla.js instead of bla.user.js)
+// @homepage     http://userscripts-mirror.org/scripts/show/178037
+// @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
+// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/www_HTTPS-REDIREKTOR.user.js
+// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/www_HTTPS-REDIREKTOR.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @contributor  Freso
 // @contributor  RaiuGekkou
 // @contributor  http://userscripts-mirror.org/topics/131180
 // @contributor  http://userscripts-mirror.org/topics/118881
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2013.9.18
+// @since        2013-09-18
+// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @include      http://*.mediawiki.org/*
 // @include      http://*.wikibooks.org/*

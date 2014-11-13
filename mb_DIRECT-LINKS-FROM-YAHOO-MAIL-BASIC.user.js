@@ -1,13 +1,16 @@
 // ==UserScript==
 // @name         mb. DIRECT LINKS FROM YAHOO! MAIL (BASIC)
-// @description  BACK FOR BASIC Y!MAIL only (/neo/b/) now. Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @version      2014.10.6.1132
-// @since        2010.6.28.
+// @description  BACK FOR BASIC Y!MAIL only (/neo/b/) now. Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
+// @homepage     http://userscripts-mirror.org/scripts/show/80308
+// @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_DIRECT-LINKS-FROM-YAHOO-MAIL-BASIC.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_DIRECT-LINKS-FROM-YAHOO-MAIL-BASIC.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @since        2010-06-28
+// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @include      http*://*mail.yahoo.com/neo/b/*
 // @exclude      http*://*mail.yahoo.com/mc/md.php*
