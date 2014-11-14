@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2014.11.7.1718
+// @version      2014.11.14.2208
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -43,7 +43,7 @@
 var dupeColour = "pink";
 var infoColour = "lightcyan";
 var contractFingerPrints = true; /* more compact AcoustIDs but brwoser can still inline search/find full AcoustID */
-var pleaseWaitText = "Fetching %s AcoustID and ISRC\u2026"; /* put "" to disable this pleasewait message */
+var pleaseWaitText = "Fetching %s AcoustID and ISRC…"; /* put "" to disable this pleasewait message */
 	/* track/recording name diff: null for no marking and no inline recording disambiguation comment either, 
 	"" for no name change, %br% is return to new line feed
 	ex.: "%track-name%*", "%track-name% (%recording-name%)" or even %recording-name% */
@@ -86,11 +86,11 @@ if (pagecat) {
 							toolzone.className = userjs+"toolzone";
 							toolzone.style.setProperty("display", "none");
 							if (recUseInRelationshipLink && (rec = tracksHtml[ith].querySelector(CSS_Arec))) {
-								toolzone.appendChild(createA(recUseInRelationshipLink, rec.getAttribute("href")+"/relate", "Use this recording in a relationship\u2026"));
+								toolzone.appendChild(createA(recUseInRelationshipLink, rec.getAttribute("href")+"/relate", "Use this recording in a relationship…"));
 							}
 							if (recAddToMergeLink && (rat = tracksHtml[ith].querySelector("span.star-rating a.set-rating"))) {
 								if (recUseInRelationshipLink) { toolzone.appendChild(document.createElement("br")); }
-								toolzone.appendChild(createA(recAddToMergeLink, "/recording/merge_queue?add-to-merge="+rat.getAttribute("href").match(/id=([0-9]+)/)[1], "Merge this recording\u2026"));
+								toolzone.appendChild(createA(recAddToMergeLink, "/recording/merge_queue?add-to-merge="+rat.getAttribute("href").match(/id=([0-9]+)/)[1], "Merge this recording…"));
 							}
 							toolzone = toolzone.parentNode.appendChild(document.createElement("div"));
 							toolzone.className = userjs+"editbutt";
@@ -265,7 +265,7 @@ function isrcFish() {
 				}
 				if (aRec.textContent != recnameNet[mbid].name) {
 					var ntit = aRec.getAttribute("title");
-					ntit = (ntit?ntit+" \u2014\u00a0":"")+"track name: "+aRec.textContent+"\n\u2260rec. name: "+recnameNet[mbid].name;
+					ntit = (ntit?ntit+" —\u00a0":"")+"track name: "+aRec.textContent+"\n≠rec. name: "+recnameNet[mbid].name;
 					aRec.setAttribute("title", ntit);
 					if (markTrackRecNameDiff != null) {
 						if (typeof markTrackRecNameDiff == "string" && markTrackRecNameDiff != "") {

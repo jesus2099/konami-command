@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         priceminister. NO JAVASCRIPT NAVIGATION LINKS
-// @version      2014.8.14.1648
+// @version      2014.11.14.2213
 // @description  Remplace la plupart des liens javascript par des liens href standards.
 // @homepage     http://userscripts-mirror.org/scripts/show/95062
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -74,7 +74,7 @@ if (as) {
 				var url = PM_BT_escape(PM_BT_ub.apply(null,href.split(",").map(secureEval)));
 				as[i].setAttribute("href", url);
 				if (colouring["enabled"]) { deco(as[i], true); }
-				debugg(href+" \u2192 "+url);
+				debugg(href+" → "+url);
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2014.11.5.1548
+// @version      2014.11.14.2205
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -104,7 +104,7 @@
 					var hrefn = href;
 					if (altserv && addNormal) { hrefn = href.replace(/^([^/]*\/\/).+\.(musicbrainz\.org.+)$/, "$1$2"); }
 					as[a].className += " "+c;
-					if (as[a].textContent == href || /*forums*/as[a].textContent == href.substr(0, 39)+" \u2026 "+href.substr(-10) || /*edit-notes*/as[a].textContent == href.substr(0, 48)+"\u2026") {
+					if (as[a].textContent == href || /*forums*/as[a].textContent == href.substr(0, 39)+" … "+href.substr(-10) || /*edit-notes*/as[a].textContent == href.substr(0, 48)+"…") {
 						if (forceHTTPS && !entities[ent].HTTPonly && href.match(/^http[^s]/)) {
 							href = href.replace(/^(http)(:\/\/.+)$/, "https$2");
 							as[a].setAttribute("href", href);
@@ -116,7 +116,7 @@
 							as[a].setAttribute("title", ent);
 						}
 						if (id[2] || id[3]) {
-							as[a].appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2]?id[2]:"") + (id[3]?"\u2026":""))).parentNode.style.setProperty("opacity", ".5");
+							as[a].appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2]?id[2]:"") + (id[3]?"…":""))).parentNode.style.setProperty("opacity", ".5");
 						}
 						if ((ent=="user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi+"$"))) && (editsLink || editLink)) {
 							addAfter(document.createTextNode(">"), as[a]);

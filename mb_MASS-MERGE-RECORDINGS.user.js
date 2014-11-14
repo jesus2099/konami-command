@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.11.7.1935
+// @version      2014.11.14.2211
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -45,8 +45,8 @@
 	var regex_MBID = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
 	var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
 	var startpos, status, from, to, swap, editNote, queuetrack;
-	var rem2loc = "\u25c0";
-	var loc2rem = "\u25b6";
+	var rem2loc = "◀";
+	var loc2rem = "▶";
 	var dtitle = document.title;
 	var ltitle = dtitle.match(new RegExp("^"+sregex_title+"$"));
 	var localRelease = {
@@ -229,7 +229,7 @@
 				d++; dt = 0;
 			}
 		}
-		prints(MMRdiv, "\u2199 Select start position (track):", true);
+		prints(MMRdiv, "↙ Select start position (track):", true);
 		MMRdiv.appendChild(startpos);
 		prints(MMRdiv, ["", "Source release MBID or URL:"], true);
 		status = createInput("text", "status", "", "Source release MBID or URL");
@@ -342,7 +342,7 @@
 				var ntitl = "local recording #"+localRelease.tracks[ltrack].recid;
 				var ntit = localRelease.tracks[ltrack].a.getAttribute("title");
 				if (!ntit || (ntit && !ntit.match(new RegExp(ntitl)))) {
-					localRelease.tracks[ltrack].a.setAttribute("title", (ntit?ntit+" \u2014\u00A0":"")+ntitl);
+					localRelease.tracks[ltrack].a.setAttribute("title", (ntit?ntit+" — ":"")+ntitl);
 				}
 				rmForm = document.createElement("form");
 				rmForm.setAttribute("action", "/recording/merge");
