@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         goocal. FORCE LOCAL TIMEZONE
-// @version      2013.2.15.1446
+// @version      2014.11.14.2134
 // @description  google.com/calendar/ (gcal): Display times in your own local computed time zone (uses jsTimezoneDetect)
 // @homepage     http://userscripts-mirror.org/scripts/show/159216
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -14,6 +14,7 @@
 // @grant        none
 // @include      http*://*google.com/calendar/*
 // @exclude      *//*/*google.com*
+// @exclude      *ctz=*
 // @run-at       document-start
 // ==/UserScript==
 (function(){/*"use strict"; we can’t use this with current jstz (._.?)*/
@@ -24,7 +25,7 @@
 	/*end of jsTimezoneDetect*/
 	var ctz = jstz.determine();
 	if (ctz = ctz.name()) {
-		console.log("goocal. FORCE LOCAL TIMEZONE\n"+ctz+" timezone set for google calendar\n"+self.location.href);
-		self.location.href = self.location.href.replace(/[?&]ctz=[^?&]*/g,"")+(self.location.href.match(/\?/)?"&":"?")+"ctz="+ctz;
+		console.log("goocal. FORCE LOCAL TIMEZONE\n"+ctz+" timezone set for google calendar\n"+location.href);
+		location.href += (location.href.match(/\?/)?"&":"?")+"ctz="+ctz;
 	}
 })();
