@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. TAGGER LINKS NOW
-// @version      2014.11.13.1418
+// @version      2014.11.14.2148
 // @description  musicbrainz.org: Quickly show or update "TAGGER" links with desired port
 // @homepage     http://userscripts-mirror.org/scripts/show/88065
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -25,7 +25,7 @@
 	var url = "/search?query=artist%3AAJICO+AND+release%3A%22AJICO+SHOW%22+AND+format%3AVHS&type=release&method=advanced&tport=%tagger-port%";
 	var txt_notaggerlinks = "%tagger-img% (%tagger-port%)"; /* %tagger-port% variable shows the current port and %tagger-img% the tagger image */
 	var txt_taggerlinksloaded = "%tagger-img% (%tagger-port%)";
-	var txt_loading = "\u231b\u00a0loading\u2026";
+	var txt_loading = "⌛ loading…";
 	var bgcolour = "#6f9";
 	var taggerImgUrl = "/static/images/icons/mblookup-tagger.png"; /*replaces %tagger-img% in txt and chgtxt*/
 	/* ----- - END OF CONFIG */
@@ -111,14 +111,14 @@
 					} else {
 						con.style.setProperty("opacity", "1");
 						con.style.removeProperty("background-color");
-						a.setAttribute("title", a.getAttribute("title")+" \n \u261e AUTO-LOAD seems to have WORKED");
+						a.setAttribute("title", a.getAttribute("title")+" \n ☞ AUTO-LOAD seems to have WORKED");
 					}
 				}
 				else {
 					con.style.setProperty("opacity", "1");
 					con.style.setProperty("background-color", "gold");
 					if (reload) {
-						a.setAttribute("title", a.getAttribute("title")+" \n \u261e AUTO-LOAD seems to have FAILED");
+						a.setAttribute("title", a.getAttribute("title")+" \n ☞ AUTO-LOAD seems to have FAILED");
 					} else {
 						removeChildren(a);
 						a.appendChild(document.createTextNode("Error "+this.status+" (retry)"));
