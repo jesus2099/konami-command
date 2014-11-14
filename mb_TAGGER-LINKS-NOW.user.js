@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. TAGGER LINKS NOW
-// @version      2014.11.14.2148
+// @version      2014.11.14.2156
 // @description  musicbrainz.org: Quickly show or update "TAGGER" links with desired port
 // @homepage     http://userscripts-mirror.org/scripts/show/88065
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -12,8 +12,14 @@
 // @since        2010-10-13
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      http*://*musicbrainz.org/*
-// @include      http://*.mbsandbox.org/*
+// @include      http*://*musicbrainz.org/artist/*/releases*
+// @include      http*://*musicbrainz.org/label/*
+// @include      http*://*musicbrainz.org/recording/*
+// @include      http*://*musicbrainz.org/release*
+// @include      http://*.mbsandbox.org/artist/*/releases*
+// @include      http://*.mbsandbox.org/label/*
+// @include      http://*.mbsandbox.org/recording/*
+// @include      http://*.mbsandbox.org/release*
 // @exclude      *//*/*mbsandbox.org*
 // @exclude      *//*/*musicbrainz.org*
 // @run-at       document-end
