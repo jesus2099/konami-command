@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.10.17.1821
+// @version      2014.11.14.1843
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -75,9 +75,12 @@
 		var xhr = new XMLHttpRequest();
 		loaders[xhr.getID()] = {maxRetry:5, url:page};
 		xhr.addEventListener("load", function(e) {
-			var p = parseInt(loaders[this.getID()].url.match(/page=(\d+)$/)[1], 10);
-			var ploaded = modal(createTag("h4", {}, [createTag("a", {a:{href:loaders[this.getID()].url, target:"_blank"}}, "Page "+p), " loaded"]));
-			document.title = "Page "+p+" loaded (HYPER MOULINETTE) "+genuineTitle;
+			var sPage = loaders[this.getID()].url.match(/page=(\d+)$/)[1];
+			var iPage = parseInt(sPage, 10);
+			var suffix = {1:"st",2:"nd",3:"rd",digit:sPage.match(/(?:^|[02-9])([123])$/)};
+			sPage = sPage+(suffix.digit?suffix[suffix.digit[1]]:"th")+" page";
+			var ploaded = modal(createTag("h4", {}, [createTag("a", {a:{href:loaders[this.getID()].url, target:"_blank"}}, sPage), " loaded"]));
+			document.title = sPage+" loaded (HYPER MOULINETTE) "+genuineTitle;
 			var res = document.createElement("html"); res.innerHTML = this.responseText;
 			var releases;
 			for (var type in crawlType) if (crawlType.hasOwnProperty(type) && loaders[this.getID()].url.match(new RegExp(type))) {
@@ -95,12 +98,12 @@
 				}
 				break;
 			}
-			var lp;
-			if ((lp = res.querySelector("p.pageselector > a:last-of-type")) && (lp = lp.getAttribute("href").match(/page=(\d+)/))) {
-				lp = parseInt(lp[1]);
+			var lastPage;
+			if ((lastPage = res.querySelector("p.pageselector > a:last-of-type")) && (lastPage = lastPage.getAttribute("href").match(/page=(\d+)/))) {
+				lastPage = parseInt(lastPage[1]);
 			}
-			if (p < lp) {
-				loadForExtract(page.replace(/(page=)\d+$/, "$1"+(p+1)));
+			if (iPage < lastPage) {
+				loadForExtract(page.replace(/(page=)\d+$/, "$1"+(iPage+1)));
 			} else {
 				document.title = genuineTitle;
 				modal(createTag("h3", {}, ["Last page processed (", createTag("a",{e:{click:function(){location.reload()}}},"RELOAD"), " page to quit this crap)."]));
