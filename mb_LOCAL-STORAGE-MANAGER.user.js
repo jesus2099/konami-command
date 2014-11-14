@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2014.11.7.1835
+// @version      2014.11.14.2209
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @homepage     http://userscripts-mirror.org/scripts/show/126475
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -46,8 +46,8 @@
 							loadLS();
 							var key = prompt("Type new key name");
 							if (key) {
-								if (lskeys.indexOf(key) == -1 || confirm("THIS KEY ALREADY EXISTS\nDo you want to replace it\u00a0?\n\n\u201c"+key+"\u201d\u00a0:\n"+localStorage.getItem(key))) {
-									var newValue = prompt("Type value for key \u201c"+key+"\u201d");
+								if (lskeys.indexOf(key) == -1 || confirm("THIS KEY ALREADY EXISTS\nDo you want to replace it\u00a0?\n\n“"+key+"”\u00a0:\n"+localStorage.getItem(key))) {
+									var newValue = prompt("Type value for key “"+key+"”");
 									if (newValue) {
 										localStorage.setItem(key, newValue);
 										loadLS();
@@ -60,7 +60,7 @@
 						"/",
 						createTag("a", {a:{title:"Clear all local storage keys"},e:{click:function(e){
 							loadLS();
-							if (!e.shiftKey) { alert("SHIFT+CLICK\n\nIn order to avoid GRO\u00df MALHEUR,\nyou must hold down shift key\nif you really really want to erase\nall your local storage for this website."); return true; }
+							if (!e.shiftKey) { alert("SHIFT+CLICK\n\nIn order to avoid GROß MALHEUR,\nyou must hold down shift key\nif you really really want to erase\nall your local storage for this website."); return true; }
 							if (confirm("Are you sure you want to clear all those keys\nfrom your local storage memory\nfor this website?\nYOU CANNOT UNDO THIS ACTION.")) {
 								localStorage.clear();
 								loadLS();
@@ -101,11 +101,11 @@
 			var tr = addRow(keylist, [
 				(k+1)+".\u00a0",
 				createTag("code", {}, key),
-				content.length>64||content.match(/(\n|\r)/)?content.substr(0, 64)+(content.length>64?"\u2026":""):content,
+				content.length>64||content.match(/(\n|\r)/)?content.substr(0, 64)+(content.length>64?"…":""):content,
 				concat([
 					" ",
 					createA(
-						"\u00d7",
+						"×",
 						function(e) {
 							stop(e);
 							var item = this.getAttribute("title").match(/^remove (.+)$/)[1];

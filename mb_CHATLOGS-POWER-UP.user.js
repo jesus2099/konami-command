@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2014.9.2.1111
+// @version      2014.11.14.2204
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -95,7 +95,7 @@
 				var a = ctt.appendChild(createA("Firefox bug 28182", "http://bugs.webkit.org/show_bug.cgi?id=28182", "reload after change nick names"));
 				a.style.background = "pink";
 				a.setAttribute("target", "_blank");
-				ctt.appendChild(document.createTextNode("\u00a0\u2192\u00a0"));
+				ctt.appendChild(document.createTextNode("\u00a0→\u00a0"));
 			} else if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
 			ctt.appendChild(createTag("input", {
 				"id": userjs+"nick",

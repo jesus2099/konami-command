@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2014.11.12.1629
+// @version      2014.11.14.2212
 // @description  Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -36,7 +36,7 @@
 		var border = "thin dashed red"; /*leave "" for defaults*/
 		var submitButtonOnTopToo = true;
 		var onlySubmitTabIndexed = true; /*hit tab after typed text or voted directly goes to a submit button*/
-		var text = " // Check all unvoted edits (shift+click to force all votes) \u2192 ";
+		var text = " // Check all unvoted edits (shift+click to force all votes) → ";
 		var canceltext = "Reset votes";
 		var scrollToEdits = false; /*will never get in the way if you have scrolled down yourself*/
 		var rangeclick = true; /*multiple votes by clicking first vote then shift-clicking last radio in a range*/
@@ -56,7 +56,7 @@
 		var radiosafe = [];
 		var lastradio;
 		var submitButton, submitClone, submitShift, inputs;
-		var collapse = ["\u25bc", "\u25c0"];
+		var collapse = ["▼", "◀"];
 		var pendingXHRvote = 0;
 		editform.addEventListener("submit", function(e) {
 			e.preventDefault();
@@ -252,7 +252,7 @@
 			var navpages = document.querySelector("div#edits > p.pageselector > em");
 			var addedStuff;
 			if (navpages) {
-				navpages.appendChild(document.createTextNode(" \u2014 "));
+				navpages.appendChild(document.createTextNode(" — "));
 				addedStuff = navpages.appendChild(foundcount.cloneNode(true));
 			} else if (submitClone) {
 				addedStuff = getParent(submitClone, "div", "row").appendChild(foundcount.cloneNode(true));
@@ -433,7 +433,7 @@
 			stat.appendChild(document.createTextNode(" "));
 			stat.style.setProperty("z-index", "2099");
 		}
-		stat.replaceChild(document.createTextNode(nbr+" background vote"+(nbr==1?"":"s")+" pending\u2026"), stat.firstChild);
+		stat.replaceChild(document.createTextNode(nbr+" background vote"+(nbr==1?"":"s")+" pending…"), stat.firstChild);
 		lockform(editform.querySelector("div.edit-list:not(."+userjs+"force) div.edit-description")?false:true);
 		if (!editform.querySelector("div.edit-list div.edit-description")) {
 			self.location.reload();

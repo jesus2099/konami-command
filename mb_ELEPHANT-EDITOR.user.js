@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2014.11.11.1849
+// @version      2014.11.14.2207
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -42,8 +42,8 @@
 (function(){
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 var textLabels = ["n-1", "n-2", "n-3", "n-4", "n-5", "n-6", "n-7", "n-8", "n-9", "n-10"]; /* maximum 10 labels empty [] will skip buttons */
-var delLabel = "\u00d7";
-var copyDateLabels = ["\u2193", "\u2191", "copy date"];
+var delLabel = "×";
+var copyDateLabels = ["↓", "↑", "copy date"];
 var setPrevNoteOnLoad = true; /* "true" will restore last edit note on load (user can choose text with buttons in either case) */
 var setPrevNoteOnEditPageLoad = false; /* "true" can be troublesome if you just want to vote, believe me */
 var setPrevDateOnLoad = false; /* "true" can be troublesome when you don’t need date any more and you forget to clear it */
@@ -135,7 +135,7 @@ if (content) {
 			}
 			notetext.parentNode.insertBefore(document.createElement("br"), notetext);
 			createClearButtor("notetext");
-			notetext.parentNode.insertBefore(document.createTextNode(" \u2190 shift+click to submit right away"), notetext.previousSibling);
+			notetext.parentNode.insertBefore(document.createTextNode(" ← shift+click to submit right away"), notetext.previousSibling);
 			var lastnotetext = localStorage.getItem(notetextStorage+"00");
 			if (!editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
 				notetext.value = lastnotetext;

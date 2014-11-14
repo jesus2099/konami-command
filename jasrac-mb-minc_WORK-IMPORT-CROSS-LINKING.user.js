@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.11.13.1057
+// @version      2014.11.14.2215
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -546,7 +546,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 				stypeid.parentNode.appendChild(createButtor(vocal));
 				stypeid.parentNode.appendChild(createButtor(instrumental));
 				slangid.style.setProperty("width", "260px");
-				slangid.parentNode.appendChild(createButtol("\u65e5", 198));
+				slangid.parentNode.appendChild(createButtol("日", 198));
 				slangid.parentNode.appendChild(createButtol("EN", 120));
 				teditnote.parentNode.appendChild(document.createElement("br"));
 				var tjasrac = document.querySelector("div.workheader p.subheader") || document.querySelector("h1");
@@ -1179,7 +1179,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		else if (!async) { xhr.onload = function(e) { xhrMachine(); }; async = true; }
 		if (job.onerror) { xhr.onerror = job.onerror; }
 		if (job.init) { job.init(xhr); }
-		if (!job.ninja) document.title = "\u231b "+(job.info?job.info:"loading");
+		if (!job.ninja) document.title = "⌛ "+(job.info?job.info:"loading");
 		if (h1) {
 			if (h1.textContent.trim().match(/add work/i)) { removeChildren(h1); }
 			h1.appendChild(createTag("div", {}, {}, {}, " "+document.title.replace(/ /g, "\u00a0")));

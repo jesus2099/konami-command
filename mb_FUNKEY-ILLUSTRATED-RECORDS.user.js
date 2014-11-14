@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2014.11.12.1616
+// @version      2014.11.14.2207
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -62,7 +62,7 @@
 			var imgurl = CAA_URL.replace(/%type%/, types[t]).replace(/%mbid%/,as[a].getAttribute("href").match(new RegExp(RE_GUID)));
 			if (smallpics) {
 				as[a].parentNode.insertBefore(
-					createTag("div",{},{"float":smallpics=="left"?"left":"right","margin-right":".5em"},{},[document.createTextNode("\u231b"),
+					createTag("div",{},{"float":smallpics=="left"?"left":"right","margin-right":".5em"},{},[document.createTextNode("⌛"),
 						createTag("a",{"href":imgurl},{"display":"none"},{},[
 							createTag("img",
 								{"alt":as[a].textContent,"title":"click to enlarge","src":imgurl+"-250","_s":"_"},
@@ -86,7 +86,7 @@
 			if (bigpics && imgurls.indexOf(imgurl) < 0 && (box = box.previousSibling.tagName == "DIV" && box.previousSibling.className == userjs+"bigbox"?box.previousSibling:box.parentNode.insertBefore(createTag("div",{"class":userjs+"bigbox"}),box))) {
 				var artisttd = istable && getSibling(getParent(as[a],"td"),"td");
 				box.appendChild(createTag("a",{"href":as[a].getAttribute("href"),"title":as[a].textContent+(artisttd?"\r\n"+artisttd.textContent.trim():"")},{"display":"inline-block","height":"100%","margin":"8px 8px 4px 4px"},{},[
-					document.createTextNode("\u231b"),
+					document.createTextNode("⌛"),
 					createTag("img",
 						{"src":imgurl+"-250","alt":as[a].textContent},
 						{"vertical-align":"middle","display":"none","max-height":"20px","max-width":"20px","box-shadow":"1px 1px 4px black"},

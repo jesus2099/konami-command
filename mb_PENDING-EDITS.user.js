@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2013.10.24.1026
+// @version      2014.11.14.2211
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -115,7 +115,7 @@ It will add other request(s) to MB server, this is why it is an option.*/
 		var ret = smp.querySelector("span."+userjs+"ret");
 		if (!ret) {
 			smp.appendChild(document.createTextNode("\u00a0("));
-			ret = smp.appendChild(document.createElement("span")).appendChild(document.createTextNode("\u231b")).parentNode;
+			ret = smp.appendChild(document.createElement("span")).appendChild(document.createTextNode("⌛")).parentNode;
 			ret.className = userjs+"ret";
 			smp.appendChild(document.createTextNode(")"));
 		}

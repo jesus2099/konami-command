@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
-// @version      2014.10.27.1648
+// @version      2014.11.14.2210
 // @description  notlob.eu/isrc. BATCH SUBMIT ISRCs. Allows pasting all ISRCs at once (from Simonf’s mediatool on multi-disc releases or from 音楽の森/ongakunomori/minc) - does not work in Opera for AUTH bug reason :/
 // @homepage     http://userscripts-mirror.org/scripts/show/151040
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -40,7 +40,7 @@
 			inputs[input].setAttribute("size", "12");
 		}
 		var f = document.querySelector("form");
-		f.appendChild(document.createElement("strong")).appendChild(document.createTextNode(" - Paste your batch of ISRCs below \u2014 dummy ISRC if you need to skip a track: "+dummySkip));
+		f.appendChild(document.createElement("strong")).appendChild(document.createTextNode(" - Paste your batch of ISRCs below — dummy ISRC if you need to skip a track: "+dummySkip));
 		f.appendChild(document.createElement("br"));
 		var t = f.appendChild(document.createElement("textarea"));
 		t.style.setProperty("width", "100%");

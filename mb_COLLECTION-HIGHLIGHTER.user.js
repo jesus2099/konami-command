@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.11.5.1548
+// @version      2014.11.14.2205
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -276,7 +276,7 @@
 		var old = document.title.match(/ :: (.+)$/);
 		old = old?old[1]:document.title;
 		if (ldng) {
-			document.title = (pc?pc+"%":"\u231b")+" Altering local collection… :: "+old;
+			document.title = (pc?pc+"%":"⌛")+" Altering local collection… :: "+old;
 		}
 		else {
 			document.title = old;
