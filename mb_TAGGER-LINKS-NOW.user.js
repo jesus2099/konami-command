@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. TAGGER LINKS NOW
-// @version      2014.11.14.2156
+// @version      2014.11.15.1248
 // @description  musicbrainz.org: Quickly show or update "TAGGER" links with desired port
 // @homepage     http://userscripts-mirror.org/scripts/show/88065
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -12,14 +12,23 @@
 // @since        2010-10-13
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
+// @include      http*://*musicbrainz.org/area/*/releases*
 // @include      http*://*musicbrainz.org/artist/*/releases*
+// @include      http*://*musicbrainz.org/cdtoc/attach?toc=*
 // @include      http*://*musicbrainz.org/label/*
 // @include      http*://*musicbrainz.org/recording/*
 // @include      http*://*musicbrainz.org/release*
+// @include      http*://*musicbrainz.org/search*type=release*
+// @include      http://*.mbsandbox.org/area/*/releases*
 // @include      http://*.mbsandbox.org/artist/*/releases*
+// @include      http://*.mbsandbox.org/cdtoc/attach?toc=*
 // @include      http://*.mbsandbox.org/label/*
 // @include      http://*.mbsandbox.org/recording/*
 // @include      http://*.mbsandbox.org/release*
+// @include      http://*.mbsandbox.org/search*type=release*
+// @exclude      *.org/cdtoc/attach?toc=*medium=*
+// @exclude      *.org/cdtoc/search*type=release_group*
+// @exclude      *.org/cdtoc/search*type=release-group*
 // @exclude      *//*/*mbsandbox.org*
 // @exclude      *//*/*musicbrainz.org*
 // @run-at       document-end
