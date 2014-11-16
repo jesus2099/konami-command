@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2014.11.14.2207
+// @version      2014.11.16.2014
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -13,6 +13,17 @@
 // @since        2012-12-19
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
+// @include      http*://*.mbsandbox.org/artist/*
+// @include      http*://*.mbsandbox.org/cdtoc/*
+// @include      http*://*.mbsandbox.org/collection/*
+// @include      http*://*.mbsandbox.org/label/*
+// @include      http*://*.mbsandbox.org/recording/*
+// @include      http*://*.mbsandbox.org/release-group/*
+// @include      http*://*.mbsandbox.org/search?*type=annotation*
+// @include      http*://*.mbsandbox.org/search?*type=release*
+// @include      http*://*.mbsandbox.org/tag/*
+// @include      http*://*.mbsandbox.org/user/*/ratings*
+// @include      http*://*.mbsandbox.org/user/*/tag/*
 // @include      http*://*musicbrainz.org/artist/*
 // @include      http*://*musicbrainz.org/cdtoc/*
 // @include      http*://*musicbrainz.org/collection/*
@@ -24,7 +35,9 @@
 // @include      http*://*musicbrainz.org/tag/*
 // @include      http*://*musicbrainz.org/user/*/ratings*
 // @include      http*://*musicbrainz.org/user/*/tag/*
-// @exclude      *://*musicbrainz.org/cdtoc/remove*
+// @exclude      *.org/cdtoc/remove*
+// @exclude      *//*/*mbsandbox.org*
+// @exclude      *//*/*musicbrainz.org*
 // @run-at       document-end
 // ==/UserScript==
 	}};
@@ -51,6 +64,11 @@
 	var types = ["release-group", "release"];
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var imgurls = [];
+	if (forceHTTP && location.protocol == "https:") {
+		[].forEach.call(document.querySelectorAll("img[src^='//coverartarchive.org/release']"), function(caa) {
+			caa.setAttribute("src", "http:"+caa.getAttribute("src"));
+		});
+	}
 	for (var t=0; t<types.length; t++) {
 		var as = document.querySelectorAll("tr > td a[href*='musicbrainz.org/"+types[t]+"/'], div#page.fullwidth ul > li a[href*='musicbrainz.org/"+types[t]+"/']");
 		var istable = false;
