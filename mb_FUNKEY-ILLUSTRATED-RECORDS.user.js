@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2014.11.16.2014
+// @version      2014.11.16.2015
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -13,22 +13,26 @@
 // @since        2012-12-19
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
+// @include      http*://*.mbsandbox.org/
 // @include      http*://*.mbsandbox.org/artist/*
 // @include      http*://*.mbsandbox.org/cdtoc/*
 // @include      http*://*.mbsandbox.org/collection/*
 // @include      http*://*.mbsandbox.org/label/*
 // @include      http*://*.mbsandbox.org/recording/*
+// @include      http*://*.mbsandbox.org/release/*
 // @include      http*://*.mbsandbox.org/release-group/*
 // @include      http*://*.mbsandbox.org/search?*type=annotation*
 // @include      http*://*.mbsandbox.org/search?*type=release*
 // @include      http*://*.mbsandbox.org/tag/*
 // @include      http*://*.mbsandbox.org/user/*/ratings*
 // @include      http*://*.mbsandbox.org/user/*/tag/*
+// @include      http*://*musicbrainz.org/
 // @include      http*://*musicbrainz.org/artist/*
 // @include      http*://*musicbrainz.org/cdtoc/*
 // @include      http*://*musicbrainz.org/collection/*
 // @include      http*://*musicbrainz.org/label/*
 // @include      http*://*musicbrainz.org/recording/*
+// @include      http*://*musicbrainz.org/release/*
 // @include      http*://*musicbrainz.org/release-group/*
 // @include      http*://*musicbrainz.org/search?*type=annotation*
 // @include      http*://*musicbrainz.org/search?*type=release*
@@ -36,6 +40,7 @@
 // @include      http*://*musicbrainz.org/user/*/ratings*
 // @include      http*://*musicbrainz.org/user/*/tag/*
 // @exclude      *.org/cdtoc/remove*
+// @exclude      *.org/release/*/*edit*
 // @exclude      *//*/*mbsandbox.org*
 // @exclude      *//*/*musicbrainz.org*
 // @run-at       document-end
@@ -69,7 +74,7 @@
 			caa.setAttribute("src", "http:"+caa.getAttribute("src"));
 		});
 	}
-	for (var t=0; t<types.length; t++) {
+	if (!location.pathname.match(/^\/$|^\/release\//)) for (var t=0; t<types.length; t++) {
 		var as = document.querySelectorAll("tr > td a[href*='musicbrainz.org/"+types[t]+"/'], div#page.fullwidth ul > li a[href*='musicbrainz.org/"+types[t]+"/']");
 		var istable = false;
 		for (var a=0; a<as.length; a++) {
