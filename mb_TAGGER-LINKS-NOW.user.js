@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. TAGGER LINKS NOW
-// @version      2014.11.15.1248
+// @version      2014.11.17.1624
 // @description  musicbrainz.org: Quickly show or update "TAGGER" links with desired port
 // @homepage     http://userscripts-mirror.org/scripts/show/88065
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -29,6 +29,7 @@
 // @exclude      *.org/cdtoc/attach?toc=*medium=*
 // @exclude      *.org/cdtoc/search*type=release_group*
 // @exclude      *.org/cdtoc/search*type=release-group*
+// @exclude      *.org/release*/*/*edits*
 // @exclude      *//*/*mbsandbox.org*
 // @exclude      *//*/*musicbrainz.org*
 // @run-at       document-end
