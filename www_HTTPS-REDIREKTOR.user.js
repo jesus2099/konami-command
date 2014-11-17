@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         www. HTTPS REDIREKTOR
-// @version      2014.7.22.2057
+// @version      2014.11.17.1518
 // @description  redirect to HTTPS in some websites. keep hash. avoid infinite loops (Opera speed-up tip: save as bla.js instead of bla.user.js)
 // @homepage     http://userscripts-mirror.org/scripts/show/178037
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -40,4 +40,4 @@
 // @exclude      http://*musicbrainz.org/ws/*
 // @run-at       document-start
 // ==/UserScript==
-if(location.protocol=="http:")location.href=location.href.replace(/^http/,"https");
+if(location.protocol=="http:")location.replace(location.href.replace(/^http/,"https"));
