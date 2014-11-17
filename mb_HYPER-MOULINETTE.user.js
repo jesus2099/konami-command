@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.11.14.1843
+// @version      2014.11.17.1629
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -14,8 +14,8 @@
 // @grant        none
 // @include      http*://*musicbrainz.org/user/*/collections
 // @include      http://*.mbsandbox.org/user/*/collections
-// @exclude      *//*/*mbsandbox.org*
-// @exclude      *//*/*musicbrainz.org*
+// @exclude      *//*/*mbsandbox.org/*
+// @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
 	}};

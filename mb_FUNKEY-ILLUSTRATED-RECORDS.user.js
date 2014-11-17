@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2014.11.16.2015
+// @version      2014.11.17.1629
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -41,8 +41,8 @@
 // @include      http*://*musicbrainz.org/user/*/tag/*
 // @exclude      *.org/cdtoc/remove*
 // @exclude      *.org/release/*/*edit*
-// @exclude      *//*/*mbsandbox.org*
-// @exclude      *//*/*musicbrainz.org*
+// @exclude      *//*/*mbsandbox.org/*
+// @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
 	}};
