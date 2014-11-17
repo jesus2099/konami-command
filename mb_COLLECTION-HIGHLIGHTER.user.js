@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.11.14.2205
+// @version      2014.11.17.1629
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -40,7 +40,7 @@
 // @include      http*://*musicbrainz.org/user/*/subscriptions/label*
 // @include      http*://*musicbrainz.org/user/*/tag/*
 // @include      http*://*musicbrainz.org/work/*
-// @exclude      *//*/*musicbrainz.org*
+// @exclude      *//*/*musicbrainz.org/*
 // @exclude      http*://*musicbrainz.org/collection/*/own_collection/*
 // @run-at       document-end
 // ==/UserScript==

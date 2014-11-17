@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2014.11.14.2203
+// @version      2014.11.17.1629
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -14,8 +14,8 @@
 // @grant        none
 // @include      http*://*musicbrainz.org/*/merge*
 // @include      http://*.mbsandbox.org/*/merge*
-// @exclude      *//*/*mbsandbox.org*
-// @exclude      *//*/*musicbrainz.org*
+// @exclude      *//*/*mbsandbox.org/*
+// @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
 (function(){

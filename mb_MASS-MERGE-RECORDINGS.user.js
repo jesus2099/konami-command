@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.11.14.2211
+// @version      2014.11.17.1629
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -15,8 +15,8 @@
 // @grant        none
 // @include      http*://*musicbrainz.org/release/*
 // @include      http://*.mbsandbox.org/release/*
-// @exclude      *//*/*mbsandbox.org*
-// @exclude      *//*/*musicbrainz.org*
+// @exclude      *//*/*mbsandbox.org/*
+// @exclude      *//*/*musicbrainz.org/*
 // @exclude      *.org/release/*/*
 // @exclude      *.org/release/add
 // @exclude      *.org/release/add?*
