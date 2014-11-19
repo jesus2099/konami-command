@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         github. INSTALL USER SCRIPT
-// @version      2014.11.17.1803
+// @version      2014.11.19.2250
 // @description  github.com: Convenient direct “raw” download link (leftmost file icon) to “Install” user scripts from file lists
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -16,7 +16,7 @@
 // @run-at       document-end
 // ==/UserScript==
 setInterval(function() {"use strict";
-	var ujs = document.querySelectorAll("table.files tbody a.js-directory-link[title$='.user.js']:not(.j2gIUS)");
+	var ujs = document.querySelectorAll("table.files tbody a.js-directory-link[title$='.user.js']:not(.j2gIUS), table.files tbody a.js-directory-link[title$='.uc.js']:not(.j2gIUS), table.files tbody a.js-directory-link[title$='.uc.xul']:not(.j2gIUS)");
 	for (var i=0; i<ujs.length; i++) {
 		ujs[i].className += " j2gIUS";
 		var icon = ujs[i].parentNode.parentNode.parentNode.querySelector("td.icon span.octicon.octicon-file-text");
