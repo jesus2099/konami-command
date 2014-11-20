@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.11.18.2327
+// @version      2014.11.20.1506
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
 // @homepage     http://userscripts-mirror.org/scripts/show/85790
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -85,22 +85,32 @@
 			this.parentNode.parentNode.style.removeProperty("left");
 			j2setting();
 			if (j2sets) {
-				var j2setsdiv = document.body.appendChild(createTag("div",{"a":{"id":userjs+"j2sets"},"s":{"position":"fixed","overflow":"auto","top":"50px","right":"50px","bottom":"50px","left":"50px","background-color":"silver","border":"2px outset white","padding":"1em","z-index":"99"}},[createTag("a",{"s":{"float":"right"},"e":{"click":function(e){del(document.getElementById(userjs+"j2sets"));}}}, "  CLOSE ×  "),createTag("a",{"s":{"float":"right"},"e":{"click":function(e){if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")){localStorage.removeItem(userjs+"settings");self.location.reload();}}}}, "  reset  "),createTag("h4",{"s":{"text-shadow":"0 0 8px black"}},["██ ",createTag("a",{"a":{"href":meta.namespace,"target":"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{"e":{"click":function(){location.reload();}}},"page reload")," to see the effect."])]));
-				j2setsdiv.appendChild(createTag("p", {}, ["There is some ", createTag("a", {a:{href:meta.homepage,target:"_blank"}}, "old documentation"), " for this script. Please check out the ", createTag("a", {a:{href:meta.supportURL,target:"_blank"}}, "knwon bugs"), "before submitting ", createTag("a", {a:{href:meta.supportURL+"/new?title="+encodeURIComponent(meta.name+" error")+"&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while I was on [that page]("+location.href+") (or not?).\nMy error is that bla bla bla…"),target:"_blank"}}, "new bug"), "."]));
+				var j2setsdiv = document.body.appendChild(createTag("div",{a:{"id":userjs+"j2sets"},s:{"position":"fixed","overflow":"auto","top":"50px","right":"50px","bottom":"50px","left":"50px","background-color":"silver","border":"2px outset white","padding":"1em","z-index":"99"}},[
+					createTag("p", {s:{"text-align":"right",margin:"0px"}}, [
+						createTag("a", {a:{href:meta.homepage,target:"_blank"}}, "HELP"),
+						" | ",
+						createTag("a", {a:{href:meta.supportURL,target:"_blank"}}, "known bugs"),
+						" | ",
+						createTag("a", {e:{"click":function(e){if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")){localStorage.removeItem(userjs+"settings");self.location.reload();}}}}, "RESET"),
+						" | ",
+						createTag("a", {e:{"click":function(e){del(document.getElementById(userjs+"j2sets"));}}}, "CLOSE"),
+					]),
+					createTag("h4",{s:{"text-shadow":"0 0 8px white","font-size":"1.5em","margin-top":"0px"}},["██ ",createTag("a",{a:{"href":meta.namespace,"target":"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{e:{"click":function(){location.reload();}}},"page reload")," to see the effect."])
+				]));
 				var alphakeys = [];
 				for (var s in j2sets) { if (j2sets.hasOwnProperty(s)) {
 					if (j2setsclean.indexOf(s)<0) { delete j2sets[s]; }
 					else if (!s.match(/!/)) { alphakeys.push(s); }
 				} }
 				alphakeys.sort();
-				var table = j2setsdiv.appendChild(createTag("table", {"a":{"border":"2", "cellpadding":"4", "cellspacing":"1"}}));
+				var table = j2setsdiv.appendChild(createTag("table", {a:{"border":"2", "cellpadding":"4", "cellspacing":"1"}}));
 				table.appendChild(createTag("thead", {}, [createTag("th", {}, "setting"), createTag("th", {}, "default setting"), createTag("th", {}, "description")]));
 				table = table.appendChild(document.createElement("tbody"));
 				for (var a=0; a<alphakeys.length; a++) {
 					var tr = table.appendChild(document.createElement("tr"));
-					tr.appendChild(createTag("td", {"s":{"background-color":"#ccc","padding-left":alphakeys[a].match(/[a-z]/)?"2em":"inherit"}}, j2settinput(alphakeys[a])));
-					tr.appendChild(createTag("td", {"s":{"opacity":".666", "text-align":"center"}}, typeof j2defs[alphakeys[a]]=="boolean"?(j2defs[alphakeys[a]]?"☑":"☐"):j2defs[alphakeys[a]]));
-					if (j2docs[alphakeys[a]]) { tr.appendChild(createTag("td", {"s":{"margin-bottom":".4em"}}, j2docit(j2docs[alphakeys[a]]))); }
+					tr.appendChild(createTag("th", {s:{"background-color":"#ccc","text-align":"left","padding-left":alphakeys[a].match(/[a-z]/)?"2em":"inherit"}}, j2settinput(alphakeys[a])));
+					tr.appendChild(createTag("td", {s:{"opacity":".666", "text-align":"center"}}, typeof j2defs[alphakeys[a]]=="boolean"?(j2defs[alphakeys[a]]?"☑":"☐"):j2defs[alphakeys[a]]));
+					if (j2docs[alphakeys[a]]) { tr.appendChild(createTag("td", {s:{"margin-bottom":".4em"}}, j2docit(j2docs[alphakeys[a]]))); }
 				}
 			}
 		}}}, meta.name+" settings")
@@ -142,7 +152,7 @@
 	function j2settinput(set) {
 		var val = j2setting(set);
 		var rnd = (Math.random()+"").substring(2);
-		var lbl = createTag("label", {"a":{"for":userjs+enttype+set+rnd}, "s":{"white-space":"nowrap","text-shadow":"1px 1px 2px grey"}}, createTag("input", {"a":{"type":"checkbox", "id":userjs+enttype+set+rnd, "class":set},"e":{"change":function(e){
+		var lbl = createTag("label", {a:{"for":userjs+enttype+set+rnd}, s:{"white-space":"nowrap","text-shadow":"1px 1px 2px #999"}}, createTag("input", {a:{"type":"checkbox", "id":userjs+enttype+set+rnd, "class":set},e:{"change":function(e){
 			j2setting(this.className, this.getAttribute("type")=="checkbox"?this.checked:this.value);
 		}}}));
 		var inp = lbl.querySelector("input");
@@ -166,7 +176,7 @@
 		var jira = txt.match(/\b(MBS-\d+)\b/);
 		if (jira) {
 			var arr = txt.split(jira[1]);
-			arr.splice(1, 0, createTag("a", {"a":{"href":"http://tickets.musicbrainz.org/browse/"+jira[1].toUpperCase(),"target":"_blank","title":"opens in new window"}}, jira[1]));
+			arr.splice(1, 0, createTag("a", {a:{"href":"http://tickets.musicbrainz.org/browse/"+jira[1].toUpperCase(),"target":"_blank","title":"opens in new window"}}, jira[1]));
 			return arr;
 		}
 		else return txt;
@@ -207,7 +217,7 @@
 								xhr.onload = function(e) {
 									var resv, res = this.responseXML.documentElement;
 									var reled = {
-										"form": createTag("form", {"a":{"action":"/release/add","method":"post","target":crr==0?"_self":"_blank"},"s":{"display":"none"}}),
+										"form": createTag("form", {a:{"action":"/release/add","method":"post","target":crr==0?"_self":"_blank"},s:{"display":"none"}}),
 										"add": function(ws, re, _opt) {
 											var opt = _opt?_opt:{};
 											var cont = opt.node?opt.node:res;
@@ -388,14 +398,14 @@
 			stats[2].parentNode.parentNode.insertBefore(
 				createTag("tr", null, [
 					createTag("th", null, "Ranked total"),
-					createTag("th", null, createTag("a", {"a":{"href":"/statistics/editors","title":"see editor rankings"},"s":{"cursor":"help"}}, separ1000(0+accepted+autoedits)))
+					createTag("th", null, createTag("a", {a:{"href":"/statistics/editors","title":"see editor rankings"},s:{"cursor":"help"}}, separ1000(0+accepted+autoedits)))
 				]),
 				stats[2].parentNode
 			);
 			stats[6].parentNode.parentNode.insertBefore(
 				createTag("tr", null, [
 					createTag("th", null, "Total"),
-					createTag("th", null, createTag("a", {"a":{"href":self.location.pathname+"/edits"}}, separ1000(0+accepted+autoedits+voteddown+failed+open+cancelled)))
+					createTag("th", null, createTag("a", {a:{"href":self.location.pathname+"/edits"}}, separ1000(0+accepted+autoedits+voteddown+failed+open+cancelled)))
 				]),
 				stats[6].parentNode
 			);
@@ -407,7 +417,7 @@
 			votes = votes.replace(/conditions\.1[^&]+/g, "");
 			for (var i = 7; i < stats.length; i++) {
 				var vote = stats[i];
-				vote.replaceChild(createTag("a", {"a":{"href":votes.replace(/%vote%/, {7:1, 8:0, 9:-1, 10:2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
+				vote.replaceChild(createTag("a", {a:{"href":votes.replace(/%vote%/, {7:1, 8:0, 9:-1, 10:2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
 			}
 			var yes = readStat(stats, 7);
 			var no = readStat(stats, 8);
@@ -416,7 +426,7 @@
 			stats[9].parentNode.parentNode.insertBefore(
 				createTag("tr", null, [
 					createTag("th", null, "Ranked total"),
-					createTag("th", {"a":{"colspan":"2"}}, createTag("a", {"a":{"href":"/statistics/editors","title":"see editor rankings"},"s":{"cursor":"help"}}, separ1000(0+yes+no+appr)+" ("+pc(yes+no+appr,yes+no+abs+appr)+")"))
+					createTag("th", {a:{"colspan":"2"}}, createTag("a", {a:{"href":"/statistics/editors","title":"see editor rankings"},s:{"cursor":"help"}}, separ1000(0+yes+no+appr)+" ("+pc(yes+no+appr,yes+no+abs+appr)+")"))
 				]),
 				stats[9].parentNode
 			);
@@ -459,7 +469,7 @@
 			var h = a.getAttribute("href").split("?");
 			a.setAttribute("href", h[0]+location.pathname+location.search+(h[1]?(location.search.length>1?"&":"?")+h[1]:"")+location.hash);
 			a.style.setProperty("background-color", "yellow");
-			addAfter(createTag("fragment", {}, ["←", createTag("a", {"a":{"href":"http://tickets.musicbrainz.org/browse/MBS-6837"}}, "MBS-6837"), " fixed"]), a);
+			addAfter(createTag("fragment", {}, ["←", createTag("a", {a:{"href":"http://tickets.musicbrainz.org/browse/MBS-6837"}}, "MBS-6837"), " fixed"]), a);
 		}
 	}
 	/*=================================================================== MOUSE+
@@ -470,7 +480,7 @@
 		var cbs = document.querySelectorAll("div#page > form > table.tbl > tbody > tr > td > input[type='checkbox']");
 		var ths = document.querySelector("div#page > form > table.tbl > thead > tr > th");
 		if (ths && !ths.hasChildNodes() && cbs && cbs.length > 0) {
-			var cb = ths.appendChild(createTag("input",{"a":{"type":"checkbox"},"e":{"click":function(e){
+			var cb = ths.appendChild(createTag("input",{a:{"type":"checkbox"},e:{"click":function(e){
 				for (var icb=0; icb < cbs.length; icb++) {
 					if (cbs[icb].checked != this.checked) {
 						cbs[icb].click();
@@ -498,9 +508,9 @@
 		for (var years=document.querySelectorAll("*.partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(."+userjs+"easydate)"), y=0; y<years.length; y++) {
 			addAfter(
 				createTag("input",{
-					"a":{"value":years[y].value, "placeholder":"YYY+", "size":"4", "title":"EASY_DATE®\n"+j2docs.EASY_DATE},
-					"s":{"background-color":"#ff9"},
-					"e":{
+					a:{"value":years[y].value, "placeholder":"YYY+", "size":"4", "title":"EASY_DATE®\n"+j2docs.EASY_DATE},
+					s:{"background-color":"#ff9"},
+					e:{
 						"input":function(e) {
 							this.style.setProperty("background-color", "#ff9");
 							this.value = this.value.trim().replace(/[０-９]/g,function(d){return String.fromCharCode(d.charCodeAt(0)-"０".charCodeAt(0)+"0".charCodeAt(0));}).replace(/^\D+|\D+$/, "");
@@ -749,7 +759,7 @@
 				if (editn <= lastseenedits[which][0]) {
 					editlist.setAttribute("title", "SEEN EDIT");
 					if (editn == lastseenedits[which][0]) {
-						editlist.parentNode.insertBefore(createTag("hr", {"a":{"title":"edits below are already seen"},"s":{"height":"0px", "border":"none", "border-top": "4px dashed red"}}), editlist);
+						editlist.parentNode.insertBefore(createTag("hr", {a:{"title":"edits below are already seen"},s:{"height":"0px", "border":"none", "border-top": "4px dashed red"}}), editlist);
 						if (ed > 0) { getSibling(editlist, "div", "edit-list", true).scrollIntoView(); }
 					}
 				}
@@ -776,7 +786,7 @@
 		var novote = "&conditions.2098.field=vote&conditions.2098.operator=%3D&conditions.2098.voter_id=%id%&conditions.2098.args=no";
 		var noPUID = "&conditions.2097.field=type&conditions.2097.operator=%21%3D&conditions.2097.args=77&conditions.2097.args=113";
 		if (searchHelp && refine) {
-			refines.appendChild(createTag("a", {"a":{"href": location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2]?"edits":(location.pathname.match(re_GUID)?"open_edits":"edits/open"))+location.search+location.hash}}, (refine[1]||refine[2]?"All ":"Open ")+"edits"));
+			refines.appendChild(createTag("a", {a:{"href": location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2]?"edits":(location.pathname.match(re_GUID)?"open_edits":"edits/open"))+location.search+location.hash}}, (refine[1]||refine[2]?"All ":"Open ")+"edits"));
 			if (
 				self.location.href.indexOf(account.getElementsByTagName("a")[0].getAttribute("href")) < 0 &&
 				(refine = document.querySelector("table.search-help td > a[href*='/search/edits?conditions.']")) &&
@@ -786,14 +796,14 @@
 					id = id[1];
 					if (id  != localStorage.getItem(userjs+"me-userid")) localStorage.setItem(userjs+"me-userid", id);
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {"a":{"href": refine.getAttribute("href")+notme.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me"),")"]));
+					refines.appendChild(createTag("a", {a:{"href": refine.getAttribute("href")+notme.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me"),")"]));
 					novote = notme+novote;
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {"a":{"href": refine.getAttribute("href")+novote.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me+not voted"),")"]));
+					refines.appendChild(createTag("a", {a:{"href": refine.getAttribute("href")+novote.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me+not voted"),")"]));
 				}
 				if (!location.pathname.match(/label|work/)) {
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {"a":{"href": refine.getAttribute("href")+noPUID}}, ["Refine this search (",createTag("strong", null, "no PUID edits"),")"]));
+					refines.appendChild(createTag("a", {a:{"href": refine.getAttribute("href")+noPUID}}, ["Refine this search (",createTag("strong", null, "no PUID edits"),")"]));
 				}
 			}
 			if (refines.childElementCount > 0) {
@@ -809,7 +819,7 @@
 		var cdtoctrs = document.querySelectorAll("div#page > table table tr");
 		var TOC = cdtoctrs[2].getElementsByTagName("td")[0].textContent+"%20"+cdtoctrs[cdtoctrs.length-1].getElementsByTagName("td")[0].textContent+"%20"+cdtoctrs[cdtoctrs.length-1].getElementsByTagName("td")[6].textContent;/*this should be 1%20totaltracks%20lastsector*/
 		for (var i=2; i < cdtoctrs.length; i++) { TOC += "%20"+cdtoctrs[i].getElementsByTagName("td")[2].textContent; }
-		(document.querySelector("h1")||document.body).appendChild(createTag("fragment", {}, [" (", createTag("a", {"a":{"href":"/cdtoc/attach?toc="+TOC}}, "re-lookup"), ")"]));
+		(document.querySelector("h1")||document.body).appendChild(createTag("fragment", {}, [" (", createTag("a", {a:{"href":"/cdtoc/attach?toc="+TOC}}, "re-lookup"), ")"]));
 	}
 	/*==================================================================== LINK+
 	## SERVER_SWITCH ##
@@ -824,7 +834,7 @@
 				servname = servname[1];
 			}
 			else { servname = "MBS"; }
-			var menu = menu.appendChild(createTag("li", {}, [createTag("a", {"a":{"title":"Server Switch"}}, createTag("code", {}, servname)), document.createElement("ul")]));
+			var menu = menu.appendChild(createTag("li", {}, [createTag("a", {a:{"title":"Server Switch"}}, createTag("code", {}, servname)), document.createElement("ul")]));
 			menu.addEventListener("mouseover", function(e){
 				this.firstChild.nextSibling.style.setProperty("left", "inherit");
 				this.firstChild.nextSibling.style.setProperty("right", "0px");
@@ -899,10 +909,10 @@
 		}
 	}
 	function tagswitch(cont, urltxt) {
-		var switcht = h1.appendChild(createTag("span", {"s":{"color":"grey","text-shadow":"1px 1px 2px silver"}}, " (see "));
+		var switcht = h1.appendChild(createTag("span", {s:{"color":"grey","text-shadow":"1px 1px 2px silver"}}, " (see "));
 		for (var i=0; i<urltxt.length; i++) {
 			if (i>0) { switcht.appendChild(document.createTextNode(" or ")); }
-			switcht.appendChild(createTag("a", {"a":{"href":urltxt[i][0]}}, urltxt[i][1]))
+			switcht.appendChild(createTag("a", {a:{"href":urltxt[i][0]}}, urltxt[i][1]))
 		}
 		switcht.appendChild(document.createTextNode(")"));
 	}
@@ -953,7 +963,7 @@
 	if (j2sets.MERGE_USER_MENUS && account && data && datas.length > 0) {
 		var accountul = account.querySelector("ul");
 		data.style.setProperty("display", "none");
-		accountul.insertBefore(createTag("li",{"a":{"class":"separator"}}), accountul.firstChild);
+		accountul.insertBefore(createTag("li",{a:{"class":"separator"}}), accountul.firstChild);
 		for (var d=datas.length-1; d > -1; d--) {
 			accountul.insertBefore(datas[d].cloneNode(true), accountul.firstChild);
 		}
@@ -1116,7 +1126,7 @@
 			var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
 			for (var tp=0; tp<tps.length; tp++) {
 				if (!tps[tp].parentNode.querySelector("*."+userjs+"track-length-parser")) {
-					addAfter(createTag("input", {"a":{"type":"button","class":userjs+"track-length-parser","value":"Time Parser","_ctrlValue":"Erase times","title":"CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"},"s":{"background-color":"yellow"},"e":{
+					addAfter(createTag("input", {a:{"type":"button","class":userjs+"track-length-parser","value":"Time Parser","_ctrlValue":"Erase times","title":"CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"},s:{"background-color":"yellow"},e:{
 						"click":function(e){
 							var erase = this.value.match(/erase/i) || e.ctrlKey;
 							var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']", this, e);
@@ -1141,7 +1151,7 @@
 					}}), tps[tp]);
 				}
 				if (!tps[tp].parentNode.querySelector("*."+userjs+"search-replace")) {
-					addAfter(createTag("input", {"a":{"type":"button","class":userjs+"search-replace","value":"Search→replace","title":"SHIFT key to alter all open tracklists"},"s":{"background-color":"yellow"},"e":{
+					addAfter(createTag("input", {a:{"type":"button","class":userjs+"search-replace","value":"Search→replace","title":"SHIFT key to alter all open tracklists"},s:{"background-color":"yellow"},e:{
 						"click":function(e){
 							var searchrep = localStorage.getItem(userjs+"search-replace");
 							searchrep = searchrep?JSON.parse(searchrep):["",""];
