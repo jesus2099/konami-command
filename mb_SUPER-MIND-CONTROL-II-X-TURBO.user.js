@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.11.20.1720
+// @version      2014.11.20.1819
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
 // @homepage     http://userscripts-mirror.org/scripts/show/85790
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -59,10 +59,10 @@
 	==========================================================================*/
 	var j2superturbo = {
 		menu: {
-			expl: " (you can find this in “%editing%+” menu)",
+			expl: " (you can find this in “%editing%” menu)",
 			addItem: function(item) {
 				item.addEventListener("click", function(e) { this.parentNode.parentNode.style.removeProperty("left"); });
-				j2superturbo.menu.lastItem = addAfter(createTag("li", {a:{"class":"jesus2099"}}, item), j2superturbo.menu.getLastItem());
+				j2superturbo.menu.lastItem = addAfter(createTag("li", {a:{"class":"jesus2099"},s:{"text-shadow":"0 0 8px purple"}}, item), j2superturbo.menu.getLastItem());
 			},
 			getLastItem: function() {
 				if (j2superturbo.menu.lastItem) return j2superturbo.menu.lastItem;
@@ -71,7 +71,7 @@
 					if (MBmenu && (head = MBmenu.parentNode.querySelector("a"))) {
 						j2superturbo.menu.expl = j2superturbo.menu.expl.replace(/%editing%/, head.textContent);
 						j2superturbo.menu.lastItem = MBmenu.appendChild(createTag("li", {a:{"class":"jesus2099 separator"}}));
-						head.appendChild(document.createTextNode("+"));
+						head.style.setProperty("text-shadow", "0 0 8px purple");
 						return j2superturbo.menu.lastItem;
 					} else if (document.querySelector("div#header-menu")) bug({message:"Can’t add menu", report:true});
 				}
@@ -806,7 +806,7 @@
 				}
 			}
 			if (refines.childElementCount > 0) {
-				searchHelp.insertBefore(createTag("tr", {}, [createTag("th", {}, "Cool link"+(refines.childElementCount>1?"s":"")+": "), refines]), searchHelp.firstChild);
+				searchHelp.insertBefore(createTag("tr", {s:{"text-shadow":"0 0 8px purple"}}, [createTag("th", {}, "Cool link"+(refines.childElementCount>1?"s":"")+": "), refines]), searchHelp.firstChild);
 			}
 		}
 	}
