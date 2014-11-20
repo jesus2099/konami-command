@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.11.20.1506
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
+// @version      2014.11.20.1710
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
 // @homepage     http://userscripts-mirror.org/scripts/show/85790
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -61,6 +61,7 @@
 		menu: {
 			expl: " (you can find this in “%editing%+” menu)",
 			addItem: function(item) {
+				item.addEventListener("click", function(e) { this.parentNode.parentNode.style.removeProperty("left"); });
 				j2superturbo.menu.lastItem = addAfter(createTag("li", {a:{"class":"jesus2099"}}, item), j2superturbo.menu.getLastItem());
 			},
 			getLastItem: function() {
@@ -82,7 +83,6 @@
 	var j2sets = {}, j2docs = {}, j2defs = {}, j2setsclean = [];
 	j2setting();
 	j2superturbo.menu.addItem(createTag("a",{a:{title:meta.description.replace(/^[^:]+: /,"").replace(/ \/ /g,"\n")},e:{click:function(e){
-			this.parentNode.parentNode.style.removeProperty("left");
 			j2setting();
 			if (j2sets) {
 				var j2setsdiv = document.body.appendChild(createTag("div",{a:{"id":userjs+"j2sets"},s:{"position":"fixed","overflow":"auto","top":"50px","right":"50px","bottom":"50px","left":"50px","background-color":"silver","border":"2px outset white","padding":"1em","z-index":"99"}},[
@@ -197,7 +197,6 @@
 			var addrel = document.querySelector("div#header-menu li.editing > ul > li:not(.separator) > a[href$='/release/add']");
 			if (addrel) {
 				j2superturbo.menu.addItem(createTag("a", {a:{title:meta.name+"\nshift+click to open new tab / ctrl+click for background tab"+(rcwhere!="release"?"\nno need to select if there is only one release on this page":"")},e:{click:function(e){
-						this.parentNode.parentNode.style.removeProperty("left");
 						var crmbids = [];
 						if (rcwhere == "release") {
 							crmbids.push(""+self.location.pathname.match(re_GUID));
@@ -996,7 +995,7 @@
 	j2setting("POWER_RELATE_TO_autofocus", true, true, "focus text search field");
 	j2setting("POWER_RELATE_TO_autoselect", true, true, "selects its current value for quick reset by typing");
 	j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the release editor by mistake. repairs the keyboard tab navigation to save button (MBS-3112) (for the new release editor, the tab order might not be perfectly chosen yet but submit comes first and cancel last)");
-	j2setting("TRACKLIST_TOOLS", true, true, "adds “Set selected works date” in releationship editor and tools to the tracklist tab of release editor"+j2superturbo.menu.expl+": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
+	j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor"+j2superturbo.menu.expl+": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 	var enttype = self.location.href.match(new RegExp("^"+MBS+"/(artist|label|recording|release|release-group|work)/.*$"));
 	if (enttype) {
 		enttype = enttype[1];
@@ -1055,6 +1054,17 @@
 			var tabs, re = document.querySelector("div.rel-editor");
 			if (re && (tabs = re.querySelector("ul.tabs"))) {
 				j2superturbo.menu.addItem(createTag("a", {e:{click:function(e){
+					var text = prompt("I will remove the recording relationships that match the following text (ex.: “arrange”, “john”, “guitar”):");
+					if (text && (text = text.trim()) && text != "") {
+						var ars = document.querySelectorAll("td.recording > div.ars > div.ar > span[class*='remove-button']");
+						for(var ar=0; ar<ars.length; ar++) {
+							if (!ars[ar].parentNode.querySelector("span.rel-remove") && ars[ar].parentNode.textContent.match(new RegExp(text, "i"))) {
+								ars[ar].click();
+							}
+						}
+					}
+				}}}, ["Remove recording relationships ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
+				j2superturbo.menu.addItem(createTag("a", {e:{click:function(e){
 					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
 					if (date) {
 						if (date = date.match(new RegExp(re_date.ISO+"(?:.+"+re_date.ISO+")?"))) {
@@ -1066,7 +1076,7 @@
 							}
 						} else { alert("Wrong date format"); }
 					}
-				}}}, "Set selected works’ recording dates"));
+				}}}, ["Set selected works’ recording dates ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
 			}
 		}
 	}
