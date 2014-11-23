@@ -134,7 +134,9 @@ Adds a “check all” checkbox to subscriptions pages ([MBS-3629]).
 
 ### EASY_DATE ← [Kejo feature request][193018], very basic [paste‐a‐date!][121217]‐like ([MBS-1197])
 
-Paste full dates in one go.
+Paste full dates (YYYY-MM-DD or D.M.YYYY) in that new YYY+ field and it will fill‐in all Y, M and D fields.
+
+Press “c” key to copy current date into the other (begin→end or end→begin).
 
 ### ROW_HIGHLIGHTER
 

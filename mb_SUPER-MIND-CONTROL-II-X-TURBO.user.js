@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2014.11.22.1532
+// @version      2014.11.22.1731
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -491,7 +491,7 @@
 	/*=============================================================== KEYBOARD+
 	## EASY_DATE ## basic paste-a-date!-like (https://userscripts.org/121217)
 	=========================================================================*/
-	j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it — ascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197)");
+	j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it — ascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197) — type “c” to copy current date into the other (begin→end or end→begin)");
 	if (j2sets.EASY_DATE) {
 		EASY_DATE_init();
 		document.body.addEventListener("DOMNodeInserted", EASY_DATE_calmDOM, false);
@@ -525,8 +525,7 @@
 										date = this.value.match(new RegExp("^"+re_date.YYYY+re_date.MM+re_date.DD+"$"));
 										break;
 								}
-							}
-							else {
+							} else {
 								date = this.value.match(new RegExp("^(?:"+re_date.YYYY+"\\D+"+re_date.MM+"(?:\\D+"+re_date.DD+")?|(?:"+re_date.DD+"\\D+)"+re_date.MM+"\\D+"+re_date.YYYY+"|"+re_date.YYYY+"\\D+"+re_date.M+"(?:\\D+"+re_date.D+")?|(?:"+re_date.D+"\\D+)?"+re_date.M+"\\D+"+re_date.YYYY+"|"+re_date.YY+"\\D+"+re_date.M+"(?:\\D+"+re_date.D+")?|(?:"+re_date.D+"\\D+)?"+re_date.M+"\\D+"+re_date.YY+")$"));
 							}
 							if (date) {
@@ -547,19 +546,31 @@
 									sendEvent(input, "change");
 								}
 								this.style.setProperty("background-color", "#cfc");
-							}
-							else {
+								this.select();
+							} else {
 								this.previousSibling.value = this.value;
 								sendEvent(this.previousSibling, "change");
 								if (!this.value.match(/^\d\d\d\d$/)) this.style.setProperty("background-color", "#fcc");
 							}
 						},
-						focus:function(e){this.select();}
+						focus:function(e){this.select();},
+						keydown:function(e) {
+							if (!e.ctrlKey && !e.shiftKey && e.keyCode == /*c*/67) {
+								stop(e);
+								var ph = ["YYYY", "MM", "DD"];
+								for (var p=0; p<ph.length; p++) {
+									var inps = this.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='"+ph[p]+"']");
+									var downwards = (this.parentNode == inps[0].parentNode);
+									inps[downwards?1:0].value = inps[downwards?0:1].value;
+									sendEvent(inps[downwards?1:0], "change");
+								}
+							}
+						}
 					}}
 				), years[y]);
 			years[y].className += " "+userjs+"easydate";
 			years[y].style.setProperty("display", "none");
-			years[y].addEventListener("change", function(e){
+			years[y].addEventListener("change", function(e) {
 				if (this.nextSibling.value != this.value) {
 					this.nextSibling.value = this.value;
 				}
