@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2014.11.14.2207
+// @version      2014.11.23.2101
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -54,10 +54,10 @@ var cWARN = "gold";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs94629";
 var notetextStorage = "jesus2099userjs::last_editnotetext";
-var acoustid = self.location.href.match(/acoustid\.org\/edit\//);
+var acoustid = location.href.match(/acoustid\.org\/edit\//);
 var mb = !acoustid;
-var editpage = (mb && self.location.href.match(/musicbrainz\.org\/edit\/\d+($|[?#&])/));
-var editsearchpage = (mb && self.location.href.match(/musicbrainz\.org\/.+(?:edits|subscribed)/));
+var editpage = (mb && location.href.match(/musicbrainz\.org\/edit\/\d+($|[?#&])/));
+var editsearchpage = (mb && location.href.match(/musicbrainz\.org\/.+(?:edits|subscribed)/));
 var re = (mb && document.querySelector("div#release-editor"));
 var save = editpage||editsearchpage?false:true;
 var content = document.getElementById(mb?"page":"content");
@@ -145,39 +145,37 @@ if (content) {
 		if (reldates.length == 2) {
 			createClearButtor("dates");
 			/*date memories*/
-			for (var ixd in xdate) {
-				if (xdate.hasOwnProperty(ixd)) {
-					var lastdatey = localStorage.getItem(xdate[ixd][0]+"_y");
-					var lastdatem = localStorage.getItem(xdate[ixd][0]+"_m");
-					var lastdated = localStorage.getItem(xdate[ixd][0]+"_d");
-					var butt = createButtor(textLabels[0]);
-					butt.setAttribute("id", xdate[ixd][0]);
-					if (!lastdatey) {
-						butt.setAttribute("disabled", "true");
-						butt.style.opacity = ".5";
-					}
-					else {
-						butt.setAttribute("title", lastdatey+"-"+lastdatem+"-"+lastdated);
-						butt.setAttribute("value", butt.getAttribute("title").replace(/-null/g, ""));
-						butt.addEventListener("click", function(e) {
-							var xdymd =  this.getAttribute("title").match(/^(.*)-(.*)-(.*)$/);
-							for (var iixd=0, acts=["YYYY","MM","DD"]; iixd<3; iixd++) {
-								var input = this.parentNode.querySelector("input[placeholder='"+acts[iixd]+"']");
-								input.value = xdymd[iixd+1].match(/^\d+$/);
-								sendEvent(input, "change");
-							}
-							if (e.shiftKey) {
-								sendEvent(this.parentNode.getElementsByTagName("input")[3], "click");
-							}
-							submitbtn.focus();
-						}, false);/*onclick*/
-					}
-					xdate[ixd][1].parentNode.setAttribute("title", "shift+click to change both dates at once");
-					addAfter(butt, xdate[ixd][3]);
-					addAfter(document.createTextNode(" "), xdate[ixd][3]);
-					if (setPrevDateOnLoad && localStorage.getItem(xdate[ixd][0]) == "1") {
-						sendEvent(document.getElementById(xdate[ixd][0]), "click");
-					}
+			for (var ixd=0; ixd<xdate.length; ixd++) {
+				var lastdatey = localStorage.getItem(xdate[ixd][0]+"_y");
+				var lastdatem = localStorage.getItem(xdate[ixd][0]+"_m");
+				var lastdated = localStorage.getItem(xdate[ixd][0]+"_d");
+				var butt = createButtor(textLabels[0]);
+				butt.setAttribute("id", xdate[ixd][0]);
+				if (!lastdatey) {
+					butt.setAttribute("disabled", "true");
+					butt.style.opacity = ".5";
+				}
+				else {
+					butt.setAttribute("title", lastdatey+"-"+lastdatem+"-"+lastdated);
+					butt.setAttribute("value", butt.getAttribute("title").replace(/-null/g, ""));
+					butt.addEventListener("click", function(e) {
+						var xdymd = this.getAttribute("title").match(/^(.*)-(.*)-(.*)$/);
+						for (var iixd=0, acts=["YYYY","MM","DD"]; iixd<3; iixd++) {
+							var input = this.parentNode.querySelector("input[placeholder='"+acts[iixd]+"']");
+							input.value = xdymd[iixd+1].match(/^\d+$/);
+							sendEvent(input, "change");
+							if (iixd == 0) focusYYYY(input);
+						}
+						if (e.shiftKey) {
+							sendEvent(this.parentNode.getElementsByTagName("input")[3], "click");
+						}
+					}, false);/*onclick*/
+				}
+				xdate[ixd][1].parentNode.setAttribute("title", "shift+click to change both dates at once");
+				addAfter(butt, xdate[ixd][3]);
+				addAfter(document.createTextNode(" "), xdate[ixd][3]);
+				if (setPrevDateOnLoad && localStorage.getItem(xdate[ixd][0]) == "1") {
+					sendEvent(document.getElementById(xdate[ixd][0]), "click");
 				}
 			}
 			/*copy dates*/
@@ -190,14 +188,14 @@ if (content) {
 						xdate[src==1?0:1][icdymd].value = xdate[src][icdymd].value;
 						sendEvent(xdate[src==1?0:1][icdymd], "change");
 					}
-					submitbtn.focus();
+					focusYYYY(xdate[src][1]);
 				}, false);/*onclick*/
 				addAfter(buttcd, xdate[icd][3]);
 				addAfter(document.createTextNode(" "), xdate[icd][3]);
 			}
 		}
 	}
-	if (self.location.href.match(/edit-relationships$/) && (sub = document.querySelector("div#content.rel-editor > form > div.row.no-label.buttons > button.submit.positive[type='submit']"))) {
+	if (location.href.match(/edit-relationships$/) && (sub = document.querySelector("div#content.rel-editor > form > div.row.no-label.buttons > button.submit.positive[type='submit']"))) {
 		sub.addEventListener("click", saveNote, false);
 	}
 	self.addEventListener("unload", saveNote, false);
@@ -220,31 +218,29 @@ function saveNote() {
 			}
 		}
 		if (reldates.length == 2) {
-			for (var ixd in xdate) {
-				if (xdate.hasOwnProperty(ixd)) {
-					var ndy = xdate[ixd][1].value;
-					var ndm = xdate[ixd][2].value;
-					var ndd = xdate[ixd][3].value;
-					if (ndy.match(/^\d{4}$/)) {
-						localStorage.setItem(xdate[ixd][0], "1");
-						localStorage.setItem(xdate[ixd][0]+"_y", ndy);
-						if (ndm.match(/^\d{1,2}$/)) {
-							localStorage.setItem(xdate[ixd][0]+"_m", ndm);
-							if (ndd.match(/^\d{1,2}$/)) {
-								localStorage.setItem(xdate[ixd][0]+"_d", ndd);
-							}
-							else {
-								localStorage.removeItem(xdate[ixd][0]+"_d");
-							}
+			for (var ixd=0; ixd<xdate.length; ixd++) {
+				var ndy = xdate[ixd][1].value;
+				var ndm = xdate[ixd][2].value;
+				var ndd = xdate[ixd][3].value;
+				if (ndy.match(/^\d{4}$/)) {
+					localStorage.setItem(xdate[ixd][0], "1");
+					localStorage.setItem(xdate[ixd][0]+"_y", ndy);
+					if (ndm.match(/^\d{1,2}$/)) {
+						localStorage.setItem(xdate[ixd][0]+"_m", ndm);
+						if (ndd.match(/^\d{1,2}$/)) {
+							localStorage.setItem(xdate[ixd][0]+"_d", ndd);
 						}
 						else {
-							localStorage.removeItem(xdate[ixd][0]+"_m");
 							localStorage.removeItem(xdate[ixd][0]+"_d");
 						}
 					}
-					else if (ndy.trim() == "") {
-						localStorage.setItem(xdate[ixd][0], "0");
+					else {
+						localStorage.removeItem(xdate[ixd][0]+"_m");
+						localStorage.removeItem(xdate[ixd][0]+"_d");
 					}
+				}
+				else if (ndy.trim() == "") {
+					localStorage.setItem(xdate[ixd][0], "0");
 				}
 			}
 		}
@@ -293,7 +289,7 @@ function createClearButtor(input) {
 						sendEvent(xdate[id][nii], "change");
 					}
 					if (e.shiftKey) { sendEvent(document.getElementById(userjs+"deldate"+(id==0?1:0)), "click"); }
-					submitbtn.focus();
+					focusYYYY(xdate[id][1]);
 					e.cancelBubble = true;
 					if (e.stopPropagation) e.stopPropagation();
 				}, false);/*onclick*/
@@ -340,5 +336,11 @@ function sendEvent(n, _e){
 		ev.initEvent(e, true, true);
 	}
 	n.dispatchEvent(ev);
+}
+function focusYYYY(input) {
+	if(input.style.getPropertyValue("display") == "none" && input.nextSibling.getAttribute("placeholder") == "YYY+")/*EASY_DATE*/
+		input.nextSibling.focus();
+	else
+		input.focus();
 }
 })();
