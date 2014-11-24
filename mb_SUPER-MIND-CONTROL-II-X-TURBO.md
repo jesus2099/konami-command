@@ -15,9 +15,9 @@ Requirements
 
 This user script requires one of those to install and run:
 
-* [Opera] (runs faster with [Violent monkey])
+* [Opera][] (runs faster with [Violent monkey][])
 * [Firefox] + [Greasemonkey]
-* [Chromium] (or [Chrome]) + [Tampermonkey]
+* [Chromium][] (or [Chrome][]) + [Tampermonkey]
 
 Content
 -------
