@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         priceminister. NO JAVASCRIPT NAVIGATION LINKS
-// @version      2014.11.14.2213
+// @version      2014.11.24.1429
 // @description  Remplace la plupart des liens javascript par des liens href standards.
 // @homepage     http://userscripts-mirror.org/scripts/show/95062
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -31,14 +31,14 @@ You can also press ESC key if page is loaded but still waiting.
 *veoxa.com*
 *view.atdmt.com*
 start of settings ------ */
-var colouring = { "enabled": true, "colours": { "ok": "lime", "ng": "red" }};
+var colouring = { enabled: true, colours: { ok: "lime", ng: "red" }};
 /* end of settings ------ */
 var debug = false;
 var jslink = /^javascript:/;
 var ubslink = /^javascript:void PM\.BT\.ubs\((.+)\)/;
 var scriptid = 95062;
 if (debug) {
-	colouring["enabled"] = true;
+	colouring.enabled = true;
 	debugg("debugging");
 	var div = document.createElement("div");
 	div.style.position = "fixed";
@@ -67,13 +67,13 @@ if (as) {
 	for (var i = 0; i < as.length; i++) {
 		var href = as[i].getAttribute("href");
 		if (href) {
-			if (colouring["enabled"]) { deco(as[i], !href.match(jslink)); }
+			if (colouring.enabled) { deco(as[i], !href.match(jslink)); }
 			href = href.match(ubslink);
 			if (href) { href = href[1]; }
 			if (href) {
 				var url = PM_BT_escape(PM_BT_ub.apply(null,href.split(",").map(secureEval)));
 				as[i].setAttribute("href", url);
-				if (colouring["enabled"]) { deco(as[i], true); }
+				if (colouring.enabled) { deco(as[i], true); }
 				debugg(href+" → "+url);
 			}
 		}
@@ -91,6 +91,6 @@ function debugg(txt) {
 	}
 }
 function deco(obj, ok) {
-	obj.style.textShadow = colouring["colours"][ok?"ok":"ng"]+" 0 0 2px";
+	obj.style.textShadow = colouring.colours[ok?"ok":"ng"]+" 0 0 2px";
 }
 })();

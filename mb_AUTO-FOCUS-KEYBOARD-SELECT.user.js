@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2014.7.11.1717
+// @version      2014.11.24.1435
 // @description  musicbrainz.org: MOUSE-LESS EDITING ! Cleverly focuses fields in various musicbrainz edit pages and allows keyboard selection of relationship types as well as some release editor keyboard navigation performance features
 // @homepage     http://userscripts-mirror.org/scripts/show/135547
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -115,7 +115,7 @@ const experimentalTracklistEditorKeyboardNavUpDown = true; /* press UP↓/↑DOW
 						/*artist-release*/
 							19: "ill", //illust(/design)
 							20: "ph", //photo
-							26: "l", //liner notes
+							24: "l", //liner notes
 							26: "mix", //mix
 							27: "d", //design
 							28: "e", //engineer
@@ -133,7 +133,7 @@ const experimentalTracklistEditorKeyboardNavUpDown = true; /* press UP↓/↑DOW
 						/*recording-work*/
 							244: "m", //medley
 							278: "r", //recording of
-					}
+					};
 					for (var rtype in kbdsel) {
 						if (kbdsel.hasOwnProperty(rtype) && (opt = w.querySelector("option[value='"+rtype+"']"))) {
 							opt.replaceChild(document.createTextNode(kbdsel[rtype].toUpperCase()+"."+opt.textContent), opt.firstChild);
@@ -148,7 +148,7 @@ const experimentalTracklistEditorKeyboardNavUpDown = true; /* press UP↓/↑DOW
 						var urlmatch = {
 							199: /6109\.jp|ameblo|blog|cocolog|instagram\.com|jugem\.jp|plaza.rakuten\.co\.jp|tumblr\.com/i, //blog
 							288: /sonymusic\.co\.jp|\/disco/i, //discography
-						}
+						};
 						for (var utype in urlmatch) {
 							if (urlmatch.hasOwnProperty(utype) && (opt = type.querySelector("option[value='"+utype+"']")) && w.value.match(urlmatch[utype])) {
 								type.value = utype;

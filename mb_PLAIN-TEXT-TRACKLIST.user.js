@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2014.5.16.1628
+// @version      2014.11.24.1412
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @homepage     http://userscripts-mirror.org/scripts/show/89036
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -95,7 +95,7 @@ function textTracklist(patt) {
 	return tracklist;
 }
 if (content.querySelector(CSS_TR_track)) {
-	for (var p in patterns) { if (patterns.hasOwnProperty(p)) {
+	for (var p in patterns) if (patterns.hasOwnProperty(p)) {
 		var fragment= document.createDocumentFragment();
 		var a = document.createElement("a");
 		a.style.cursor = "pointer";
@@ -140,7 +140,7 @@ if (content.querySelector(CSS_TR_track)) {
 			tldd.appendChild(document.createTextNode(sep));
 			tldd.appendChild(a);
 		}
-	} }
+	}
 }
 /* ## RELEASE EVENT TOOLS ## classic.mb only DEAD CODE */
 if (false && REtools) {
@@ -150,7 +150,7 @@ if (false && REtools) {
 		var catnum = null;
 		var catnum1 = null;
 		var catnum2 = null;
-		tmp = REfound.snapshotItem(ire).getElementsByTagName("td")[indexes["catnum"]].firstChild.nodeValue;
+		tmp = REfound.snapshotItem(ire).getElementsByTagName("td")[indexes.catnum].firstChild.nodeValue;
 		if (tmp != "-") {
 			catnum = tmp;
 			tmp = catnum.split("-", 2);
@@ -160,13 +160,13 @@ if (false && REtools) {
 			}
 		}
 		var barcode = null;
-		tmp = REfound.snapshotItem(ire).getElementsByTagName("td")[indexes["barcode"]].firstChild.nodeValue;
+		tmp = REfound.snapshotItem(ire).getElementsByTagName("td")[indexes.barcode].firstChild.nodeValue;
 		if (tmp != "-") {
 			barcode = tmp;
 		}
 		debug("release event\ncatnum  : "+catnum+"\ncatnum1 : "+catnum1+"\ncatnum2 : "+catnum2+"\nbarcode : "+barcode);
-		for (tool in REtools) {
-			if (REtools.hasOwnProperty(tool)) { addTool(REfound.snapshotItem(ire), tool, REtools[tool], catnum, catnum1, catnum2, barcode); }
+		for (var tool in REtools) if (REtools.hasOwnProperty(tool)) {
+			addTool(REfound.snapshotItem(ire), tool, REtools[tool], catnum, catnum1, catnum2, barcode);
 		}
 	}
 }

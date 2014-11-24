@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2014.9.8.1154
+// @version      2014.11.24.1357
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -117,7 +117,7 @@ function do108889() {
 		if (artistid && artistname) {
 			artistid = artistid[1];
 			arelsws = arelsws.replace(/%artist-id%/, artistid);
-			artistsortname = artistname.getAttribute("title")
+			artistsortname = artistname.getAttribute("title");
 			var tmpsn = artistsortname.split(",");
 			for (var isn=tmpsn.length-1; isn>=0; isn--) {
 				artistsortnameSwapped += tmpsn[isn].trim();
@@ -156,7 +156,7 @@ function do108889() {
 							/*artist_autolinks*/
 							extlinksOpacity = autolinksOpacity;
 							haslinks = false;
-							for (link in artist_autolinks) {
+							for (var link in artist_autolinks) if (artist_autolinks.hasOwnProperty(link)) {
 								var target = artist_autolinks[link];
 								var sntarget = null;
 								if (target) {
@@ -171,9 +171,9 @@ function do108889() {
 									else {
 										var aname = target["accept-charset"];
 										aname = aname&&aname.match(/iso-8859/i)&&artistname!=artistsortnameSwapped&&artistname.match(nonLatinName)?artistsortnameSwapped:artistname;
-										for (var param in target["parameters"]) { if (target["parameters"].hasOwnProperty(param)) {
-											target["parameters"][param] = target["parameters"][param].replace(/%artist-id%/, artistid).replace(/%artist-name%/, aname).replace(/%artist-family-name-first%/, artistname.match(nonLatinName)?artistname:artistsortname);
-										} }
+										for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
+											target.parameters[param] = target.parameters[param].replace(/%artist-id%/, artistid).replace(/%artist-name%/, aname).replace(/%artist-family-name-first%/, artistname.match(nonLatinName)?artistname:artistsortname);
+										}
 									}
 								}
 								if (addExternalLink(link, target, null, null, sntarget)) {
@@ -184,7 +184,7 @@ function do108889() {
 								}
 							}
 						} else if (xhr.status >= 400) {
-							var txt = xhr.responseText.match(/\<error\>\<text\>(.+)\<\/text\>\<text\>/);
+							var txt = xhr.responseText.match(/<error><text>(.+)<\/text><text>/);
 							txt = txt?txt[1]:"";
 							error(xhr.status, txt);
 						}
@@ -218,26 +218,26 @@ function addExternalLink(text, target, begin, end, sntarget) {
 		var li;
 		if (typeof target != "string") {
 			var form = document.createElement("form");
-			form.setAttribute("action", target["action"]);
-			if (target["title"]) {
+			form.setAttribute("action", target.action);
+			if (target.title) {
 				form.style.setProperty("cursor", "help");
 			}
-			var info = "\n"+target["action"];
-			for (var attr in target) { if (target.hasOwnProperty(attr)) {
+			var info = "\n"+target.action;
+			for (var attr in target) if (target.hasOwnProperty(attr)) {
 				if (attr == "parameters") {
-					for (var param in target["parameters"]) { if (target["parameters"].hasOwnProperty(param)) {
-						info += "\n"+param+"="+target["parameters"][param];
+					for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
+						info += "\n"+param+"="+target.parameters[param];
 						var input = document.createElement("input");
 						input.setAttribute("type", "hidden");
 						input.setAttribute("name", param);
-						input.setAttribute("value", target["parameters"][param]);
+						input.setAttribute("value", target.parameters[param]);
 						form.appendChild(input);
-					} }
+					}
 				} else {
 					if (attr.match(/accept-charset|enctype|method/)) { info = target[attr]+" "+info; }
 					form.setAttribute(attr, target[attr]);
 				}
-			} }
+			}
 			var a = createA(text);
 			a.setAttribute("title", info);
 			a.addEventListener("mousedown", function (e) {
@@ -291,7 +291,7 @@ function addExternalLink(text, target, begin, end, sntarget) {
 				li.appendChild(document.createElement("span").appendChild(document.createTextNode(dates)).parentNode).style.whiteSpace = "nowrap";
 			}
 		}
-		var favurltest = (typeof target == "string")?target:target["action"];
+		var favurltest = (typeof target == "string")?target:target.action;
 		var favurlfound = false;
 		for (part in favicons) {
 			if (favurltest.indexOf(part) != -1) {

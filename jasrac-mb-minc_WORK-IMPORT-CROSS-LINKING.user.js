@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.11.14.2215
+// @version      2014.11.24.1421
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -299,7 +299,7 @@
 						td.appendChild(document.createTextNode("click to select → "));
 						var ta = createTag("textarea", {"name":"tsummary"}, {}, {}, summary);
 						ta.setAttribute("id", ta.getAttribute("name"));
-						ta.style.setProperty("width", "40%")
+						ta.style.setProperty("width", "40%");
 						ta.setAttribute("rows", "1");
 						ta.style.color = "black";
 						ta.style.background = background;
@@ -396,8 +396,8 @@
 							sakuhincode += sakuhincodet[st].textContent.trim().replace(/-/, "");
 							prec = prec.lastChild;
 						}
-						addAfter(createA("M", workLookupURL("mb", "code", sakuhincode), "Search this work code in MusicBrainz"), prec)
-						addAfter(createA("J", workLookupURL("jasrac", "code", sakuhincode), "Go to this work in JASRAC"), prec)
+						addAfter(createA("M", workLookupURL("mb", "code", sakuhincode), "Search this work code in MusicBrainz"), prec);
+						addAfter(createA("J", workLookupURL("jasrac", "code", sakuhincode), "Go to this work in JASRAC"), prec);
 					}
 				}
 				break;
@@ -1193,9 +1193,6 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		if (DEBUG) console.log(job.info+"\n"+job.url+"\n"+(job.params?job.params.replace(/&/g, "\n"):""));
 		xhr.send(job.params);
 		if (!async) { xhrMachine(); }
-	}
-	function removeChildren(p) {
-		while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
 	}
 	function sendEvent(n, e) {
 		var ev = document.createEvent("HTMLEvents");

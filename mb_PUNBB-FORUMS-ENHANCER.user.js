@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PUNBB FORUMS ENHANCER
-// @version      2014.11.14.2212
+// @version      2014.11.24.1434
 // @description  BBCode markup buttons (bold, italic, url, etc.) with keyboard shortcut keys and restore accesskey on preview and submit too in musicbrainz forums + Hide some forums from new posts page
 // @homepage     http://userscripts-mirror.org/scripts/show/125668
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -46,16 +46,16 @@
 /*add some markup tools on new/edit post page*/
 	else {
 		var tool, texttools = {
-			"bold":       { "pattern": "[b]%s[/b]", "accesskey": "b" },
-			"underlined": { "pattern": "[u]%s[/u]", "accesskey": "u" },
-			"italic":     { "pattern": "[i]%s[/i]", "accesskey": "i" },
-			"colour":     { "pattern": "[color=%p]%s[/color]", "accesskey": "r", "prompt": "Type colour (red, #ff6, #ccff33, etc.)" },
-			"url":        { "pattern": "[url=%p]%s[/url]", "accesskey": "l", "prompt": "Type an URL (or delete if you already have selected an URL)", "default": "http://" },
-			"e-mail":     { "pattern": "[email=%p]%s[/email]", "accesskey": "e", "prompt": "Type an e-mail address (or delete if you already have selected an address)", "default": "@" },
-			"img":        { "pattern": "[img]%s[/img]", "accesskey": "g" },
-			"header":     { "pattern": "[h]%s[/h]", "accesskey": "h" },
-			"quote":      { "pattern": "[quote=%p]%s[/quote]", "accesskey": "q", "prompt": "Type the name of the quoted person (optional)" },
-			"code":       { "pattern": "[code]%s[/code]", "accesskey": "o" },
+			"bold":       { pattern: "[b]%s[/b]", accesskey: "b" },
+			"underlined": { pattern: "[u]%s[/u]", accesskey: "u" },
+			"italic":     { pattern: "[i]%s[/i]", accesskey: "i" },
+			"colour":     { pattern: "[color=%p]%s[/color]", accesskey: "r", prompt: "Type colour (red, #ff6, #ccff33, etc.)" },
+			"url":        { pattern: "[url=%p]%s[/url]", accesskey: "l", prompt: "Type an URL (or delete if you already have selected an URL)", "default": "http://" },
+			"e-mail":     { pattern: "[email=%p]%s[/email]", accesskey: "e", prompt: "Type an e-mail address (or delete if you already have selected an address)", "default": "@" },
+			"img":        { pattern: "[img]%s[/img]", accesskey: "g" },
+			"header":     { pattern: "[h]%s[/h]", accesskey: "h" },
+			"quote":      { pattern: "[quote=%p]%s[/quote]", accesskey: "q", prompt: "Type the name of the quoted person (optional)" },
+			"code":       { pattern: "[code]%s[/code]", accesskey: "o" },
 		};
 		var textarea, form, submittedButt;
 		var operaAccessKeyHack = {};
@@ -83,10 +83,10 @@
 					textarea.focus();
 					var osel = [textarea.value.substring(textarea.selectionStart, textarea.selectionEnd), textarea.selectionStart, textarea.selectionEnd];
 					var tool = this.textContent;
-					var nsel = texttools[tool]["pattern"].replace(/%s/g, osel[0]);
+					var nsel = texttools[tool].pattern.replace(/%s/g, osel[0]);
 					var p = null;
-					if (texttools[tool]["pattern"].indexOf("=%p") != -1) {
-						p = prompt(texttools[tool]["prompt"]?texttools[tool]["prompt"]:"Type parameter (%p) for “"+nsel+"”\u00a0:", texttools[tool]["default"]?texttools[tool]["default"]:"");
+					if (texttools[tool].pattern.indexOf("=%p") != -1) {
+						p = prompt(texttools[tool].prompt?texttools[tool]["prompt"]:"Type parameter (%p) for “"+nsel+"”\u00a0:", texttools[tool]["default"]?texttools[tool]["default"]:"");
 						nsel = nsel.replace(/=%p/g, p?"="+p:"");
 					}
 					textarea.value = textarea.value.substr(0, osel[1]) + nsel + textarea.value.substr(osel[2]);
@@ -97,7 +97,7 @@
 						textarea.selectionStart = osel[1] + nsel.indexOf("[", 1);
 						textarea.selectionEnd = textarea.selectionStart;
 					}
-				}, texttools[tool]["pattern"], texttools[tool]["accesskey"]));
+				}, texttools[tool].pattern, texttools[tool].accesskey));
 				tt.appendChild(document.createTextNode(" "));
 			} }
 			textarea.parentNode.insertBefore(tt, textarea);

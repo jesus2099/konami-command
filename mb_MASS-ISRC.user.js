@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
-// @version      2014.11.14.2210
+// @version      2014.11.24.1428
 // @description  notlob.eu/isrc. BATCH SUBMIT ISRCs. Allows pasting all ISRCs at once (from Simonf’s mediatool on multi-disc releases or from 音楽の森/ongakunomori/minc) - does not work in Opera for AUTH bug reason :/
 // @homepage     http://userscripts-mirror.org/scripts/show/151040
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -31,7 +31,7 @@
 	}
 	else if (inputs = document.querySelector("form input[name='mbid']")) {
 		inputs.addEventListener("focus", function(e) { this.select(); }, false);
-		inputs.focus();;
+		inputs.focus();
 	}
 	else if ((inputs = document.querySelectorAll("form table input[type='text'][name^='track'][name$='-isrc']")) && inputs.length > 0) {
 		for (var input=0; input<inputs.length; input++) {

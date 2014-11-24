@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         greasyfork. APPLIES TO LINKS SEARCH BY SITES
-// @version      2014.9.30.1928
+// @version      2014.11.24.1424
 // @description  greasyfork.org. makes applies to “All site” link to the “*” by site search (JasonBarnabe/greasyfork#146)
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -13,8 +13,6 @@
 // @grant        none
 // @include      https://greasyfork.org/*/scripts/*
 // @include      https://greasyfork.org/scripts/*
-// @include      https://www.greasyfork.org/*/scripts/*
-// @include      https://www.greasyfork.org/scripts/*
 // @exclude      *greasyfork.org/scripts/*/*
 // @exclude      *greasyfork.org/scripts/?
 // @exclude      *greasyfork.org/scripts/by*
@@ -25,10 +23,10 @@
 	if (appliesto) {
 		var at = appliesto.textContent.trim();
 		if (at.match(/^(all sites|alle seiten|todos los sitios|tous les sites|semua situs|すべてのサイト|alle websites|wszystkie strony|todos sites|все сайты|所有站点|所有網站)$/i)) {
-			appliesto.replaceChild(a(at, "*"), appliesto.firstChild);
+			appliesto.replaceChild(appliestoLink(at, "*"), appliesto.firstChild);
 		}
 	}
-	function a(t, l) {
+	function appliestoLink(t, l) {
 		var a = document.createElement("a");
 		a.setAttribute("href", "/scripts/by-site/"+(l?l:t));
 		a.appendChild(document.createTextNode(t));

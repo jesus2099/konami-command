@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SPOT DUPLICATE RECORDINGS
-// @version      2014.2.21.1717
+// @version      2014.11.24.1447
 // @description  musicbrainz.org: Spot recordings that are linked multiple times to the same work
 // @homepage     http://userscripts-mirror.org/scripts/show/106145
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -29,14 +29,14 @@
 			if (pn.tagName.toLowerCase() == "span" && pn.className.indexOf("mp") >= 0) { pn = pn.parentNode; }
 			if (href && href.match(/\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) && pn.tagName.toLowerCase() != "h1" && pn.parentNode.className.indexOf("tabs") < 0 && pn.className.indexOf("pageselector") < 0) {
 				if (parsedlinks[href]) { /*dupelink*/
-					if (!parsedlinks[href]["dup"]) {
-						parsedlinks[href]["obj"].parentNode.insertBefore(dupetxt(parsedlinks[href]["idx"]), parsedlinks[href]["obj"]);
-						parsedlinks[href]["dup"] = true;
+					if (!parsedlinks[href].dup) {
+						parsedlinks[href].obj.parentNode.insertBefore(dupetxt(parsedlinks[href].idx), parsedlinks[href].obj);
+						parsedlinks[href].dup = true;
 					}
-					alllinks[i].parentNode.insertBefore(dupetxt(parsedlinks[href]["idx"]), alllinks[i]);
+					alllinks[i].parentNode.insertBefore(dupetxt(parsedlinks[href].idx), alllinks[i]);
 				}
 				else { /*newlink*/
-					parsedlinks[href] = { "obj": alllinks[i], "idx": it+"-"+i, "dup": false };
+					parsedlinks[href] = { obj: alllinks[i], idx: it+"-"+i, dup: false };
 				}
 			}
 		}
