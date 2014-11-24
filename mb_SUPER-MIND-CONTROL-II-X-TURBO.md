@@ -19,11 +19,8 @@ This user script requires one of those to install and run:
 * [Firefox] + [Greasemonkey]
 * [Chromium] (or [Chrome]) + [Tampermonkey]
 
-<!--
-TOC
----
-
-<ol class="j2toc"></ol>
+Content
+-------
 
 1. [Requirements](#requirements)
 1. [Installation](#installation)
@@ -48,7 +45,7 @@ TOC
   1. [MERGE_USER_MENUS](#merge_user_menus) (default off)
   1. [SLOW_DOWN_RETRY](#slow_down_retry)
   1. [SPOT_AC, SPOT_CAA and WARN_NEW_WINDOW](#spot_ac-spot_caa-and-warn_new_window)
--->
+
 
 Settings
 --------
@@ -65,8 +62,6 @@ because you won’t believe how huge this all ended up to be.
 
 This is now world acclaimed ground breaking features 
 **ALMIGHTY SCRUPT [merge][119639]** of (all those are now superseded):
-
-<ol class="j2toc"></ol>
 
 ---
 
@@ -258,14 +253,3 @@ hack that enabled Firefox+Greasemonkey, Chromium+Tampermonkey and the likes.
 
 [119639]: http://userscripts-mirror.org/topics/119639
 [193018]: http://userscripts-mirror.org/topics/193018
-
-<script type="text/javascript">
-	var toc = document.querySelector("ol.j2toc");
-	var chapters = document.querySelectorAll("h3 > a[id]");
-	for (var c=0; c<chapters.length; c++) {
-		var a = document.createElement("a");
-		a.appendChild(document.createTextnode(chapters[c].textContent));
-		a.setAttribute("href", "#"+chapters[c].getAttribute("id"));
-		toc.appendChild(document.createElement("li").appendChild(a).parentNode);
-	}
-</script>
