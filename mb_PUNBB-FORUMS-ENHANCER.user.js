@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PUNBB FORUMS ENHANCER
-// @version      2014.11.24.1434
+// @version      2014.11.24.1511
 // @description  BBCode markup buttons (bold, italic, url, etc.) with keyboard shortcut keys and restore accesskey on preview and submit too in musicbrainz forums + Hide some forums from new posts page
 // @homepage     http://userscripts-mirror.org/scripts/show/125668
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -86,7 +86,7 @@
 					var nsel = texttools[tool].pattern.replace(/%s/g, osel[0]);
 					var p = null;
 					if (texttools[tool].pattern.indexOf("=%p") != -1) {
-						p = prompt(texttools[tool].prompt?texttools[tool]["prompt"]:"Type parameter (%p) for “"+nsel+"”\u00a0:", texttools[tool]["default"]?texttools[tool]["default"]:"");
+						p = prompt(texttools[tool].prompt?texttools[tool].prompt:"Type parameter (%p) for “"+nsel+"”\u00a0:", texttools[tool]["default"]?texttools[tool]["default"]:"");
 						nsel = nsel.replace(/=%p/g, p?"="+p:"");
 					}
 					textarea.value = textarea.value.substr(0, osel[1]) + nsel + textarea.value.substr(osel[2]);
