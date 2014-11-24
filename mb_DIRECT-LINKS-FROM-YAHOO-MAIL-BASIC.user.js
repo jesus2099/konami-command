@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. DIRECT LINKS FROM YAHOO! MAIL (BASIC)
-// @version      2014.10.6.1132
+// @version      2014.11.24.1443
 // @description  BACK FOR BASIC Y!MAIL only (/neo/b/) now. Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @homepage     http://userscripts-mirror.org/scripts/show/80308
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -37,10 +37,10 @@
 	var edits = [];
 	var trigger = /^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/;
 	var triggerno = /^Someone has voted against your edit(?: #[0-9]+)?$/;
-	var triggernoextractorz = /\<div class="plainMail"\>\'(.+)\' has voted against your edit #([0-9]+)/;
+	var triggernoextractorz = /<div class="plainMail">'(.+)' has voted against your edit #([0-9]+)/;
 	var edittypeextractor = /(deleted|merged) by edit #([0-9]+)/;
 	var idextractor = /by edit #([0-9]+)/;
-	var triggerResponseURL = /\<input type="hidden" name="mid" value="([^"]+)"/;
+	var triggerResponseURL = /<input type="hidden" name="mid" value="([^"]+)"/;
 	var editurl = "//musicbrainz.org/edit/";
 	for (var i=0; i<directlinks; i++) {
 		var lnk = document.querySelector("li#"+directlinks[i]+" a");
@@ -50,11 +50,11 @@
 		}
 	}
 	var emails = document.querySelectorAll("table#datatable > tbody > tr > td > h2 > a.mlink");
-	var emailnovotes = new Array();
-	var emailsubscrs = new Array();
+	var emailnovotes = [];
+	var emailsubscrs = [];
 	if (emails) {
 		for (var i=0; i < emails.length; i++) {
-			var email = emails[i]
+			var email = emails[i];
 			var emailtxt = email.getAttribute("title");
 			var editid = emailtxt.match(trigger);
 			if (editid) {
@@ -104,7 +104,7 @@
 						} else {
 							susuemail.style.backgroundColor = colourclicked;
 						}
-						var entitiesEditorsExtractorz = "<BR>([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR>(?:Open edits: )?<a href=\"(https?:\\/\\/musicbrainz\.org\\/(?:artist|collection|label|user)\\/[^/]+\\/edits)(?:\\/open)?\" target=_blank";
+						var entitiesEditorsExtractorz = "<BR>([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR>(?:Open edits: )?<a href=\"(https?://musicbrainz\\.org/(?:artist|collection|label|user)/[^/]+/edits)(?:/open)?\" target=_blank";
 						var alledits = res.match(new RegExp(entitiesEditorsExtractorz, "g"));
 						for (var ee=0; ee<alledits.length; ee++) {
 							var allparts = alledits[ee].match(new RegExp(entitiesEditorsExtractorz));
@@ -152,15 +152,14 @@
 							nonoemail = getParent(nonoemail, "tr");
 							nonoemail.className = "";/* mark as read */
 							var nono = this.responseText.match(triggernoextractorz);
+							nonoemail = nonoemail.querySelector("tr > td > div > a");
 							if (nono) {
-								nonoemail = nonoemail.querySelector("tr > td > div > a");
 								nonoemail.replaceChild(document.createTextNode(nono[1]), nonoemail.firstChild);/* from: xxx */
 								nonoemail.style.setProperty("background-color", colournobg);
 								nonoemail.style.setProperty("color", colourno);
 								nonoemail.setAttribute("href", nonoemail.getAttribute("href").replace(/[^/]+$/, encodeURIComponent(nono[1])));
 							} else {
-								nonoemail = nonoemail.querySelector("tr > td > div > a > span");
-								nonoemail.appendChild(document.createTextNode("…"));
+								nonoemail.replaceChild(document.createTextNode("(._.?)"), nonoemail.firstChild);
 							}
 						}
 					}

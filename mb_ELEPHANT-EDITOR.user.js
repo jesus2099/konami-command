@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2014.11.23.2101
+// @version      2014.11.24.1416
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -183,8 +183,8 @@ if (content) {
 				var buttcd = createButtor(copyDateLabels[icd]);
 				buttcd.setAttribute("title", copyDateLabels[2]);
 				buttcd.addEventListener("click", function(e) {
+					var src = copyDateLabels.indexOf(this.getAttribute("value"));
 					for (var icdymd=1; icdymd<4; icdymd++) {
-						var src = copyDateLabels.indexOf(this.getAttribute("value"));
 						xdate[src==1?0:1][icdymd].value = xdate[src][icdymd].value;
 						sendEvent(xdate[src==1?0:1][icdymd], "change");
 					}

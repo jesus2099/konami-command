@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.11.17.1629
+// @version      2014.11.24.1451
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -166,12 +166,12 @@
 		if (txt && obj) {
 			var ret = obj.appendChild(typeof txt=="string"?document.createTextNode(txt):txt);
 			if (obj.style.borderColor == "black") { obj.scrollTop = obj.scrollHeight; }
+			return ret;
 		}
 		if (!txt && obj) {
 			obj.parentNode.removeChild(obj.previousSibling);
 			obj.parentNode.removeChild(obj);
 		}
-		return ret;
 		function coolstuff(t,z,x,y,b,o,a) {
 			var truc = document.getElementsByTagName("body")[0].appendChild(document.createElement(t));
 			truc.style.position = "fixed";
@@ -209,7 +209,7 @@
 			console.log("XHR-"+this.getID()+" send("+params+")");
 			var loaded = function(e) {
 				console.log("XHR-"+this.getID()+" "+e.type+" "+this.status);
-			}
+			};
 			this.addEventListener("load", loaded, false);
 			this.addEventListener("error", loaded, false);
 		}

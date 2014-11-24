@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         cdj. TURBO DASH
-// @version      2013.10.25.1727
+// @version      2014.11.24.1449
 // @description  CDJournal.com: adds quick links to artists’ CD and ビデオ. removes adcrap
 // @homepage     http://userscripts-mirror.org/scripts/show/180523
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -33,9 +33,9 @@
 	/*add quick links*/
 	var artists = document.querySelectorAll("a:not(.border)[href^='http://artist.cdjournal.com/artist.php?ano='], h1 > a[href^='http://artist.cdjournal.com/a/']");
 	var pages = {
-		"CD": "cd",
-		"ビデオ": "dvd",
-	}
+		CD: "cd",
+		ビデオ: "dvd",
+	};
 	for (var a=0; a < artists.length; a++) {
 		var url = "http://artist.cdjournal.com/a/-/"+artists[a].getAttribute("href").match(/\d+$/);
 		artists[a].setAttribute("href", url);

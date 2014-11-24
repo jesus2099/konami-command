@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. TAGGER LINKS NOW
-// @version      2014.11.18.1509
+// @version      2014.11.24.1411
 // @description  musicbrainz.org: Quickly show or update "TAGGER" links with desired port
 // @homepage     http://userscripts-mirror.org/scripts/show/88065
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -49,7 +49,7 @@
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var portStorage = userjs+"_tport";
 	var isOK = document.cookie.match(new RegExp(userjs+"_ok=1"));
-	var shouldhavetaggerlink = location.pathname.match(new RegExp("^/(artist/"+RE_GUID+"/releases|label/"+RE_GUID+"|recording/"+RE_GUID+"|release[-_]group/"+RE_GUID+"|release/"+RE_GUID+"(/(relationships|discids|tags|details|((add|edit|remove|reorder)-)?cover-art(/\d+)?|edit))?)/?$")) && document.querySelector("a[href*='/release/']:not([href*='/release/add'])");
+	var shouldhavetaggerlink = location.pathname.match(new RegExp("^/(artist/"+RE_GUID+"/releases|label/"+RE_GUID+"|recording/"+RE_GUID+"|release[-_]group/"+RE_GUID+"|release/"+RE_GUID+"(/(relationships|discids|tags|details|((add|edit|remove|reorder)-)?cover-art(/\\d+)?|edit))?)/?$")) && document.querySelector("a[href*='/release/']:not([href*='/release/add'])");
 	var taggerlink = document.querySelector("a.tagger-icon");
 	var con, a, menu;
 	var savedport = localStorage.getItem(portStorage);
