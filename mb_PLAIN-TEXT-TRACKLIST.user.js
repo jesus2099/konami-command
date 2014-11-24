@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2014.11.24.1412
+// @version      2014.11.24.1515
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @homepage     http://userscripts-mirror.org/scripts/show/89036
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -55,7 +55,7 @@ var REtools = { /*DEAD CODE*/
 };
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var debugging = false;
-var j2ujsID = "jesus2099userjs89036"
+var j2ujsID = "jesus2099userjs89036";
 var content = document.getElementById("page");
 var indexes = { "catnum" : 3, "barcode" : 4 };
 var sidebar = document.getElementById("sidebar");

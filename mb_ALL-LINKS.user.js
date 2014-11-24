@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2014.11.24.1357
+// @version      2014.11.24.1504
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -293,7 +293,7 @@ function addExternalLink(text, target, begin, end, sntarget) {
 		}
 		var favurltest = (typeof target == "string")?target:target.action;
 		var favurlfound = false;
-		for (part in favicons) {
+		for (var part in favicons) if (favicons.hasOwnProperty(part)) {
 			if (favurltest.indexOf(part) != -1) {
 				favurlfound = favicons[part];
 				break;
