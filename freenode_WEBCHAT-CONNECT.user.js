@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2014.6.5.1724
+// @version      2014.11.29.2142
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. focus the captcha field.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -17,25 +17,26 @@
 // ==/UserScript==
 (function(){"use strict";
 	var userjs = { name: "freenode. WEBCHAT CONNECT", key:"j2fwc" };
-	var inputs, recaptchaParent, recaptcha;
-	self.addEventListener("load", function(e) {
-		inputs = document.getElementsByTagName("input");
-		recaptchaParent = document.querySelector("div.qwebirc-qui table.qwebirc-loginbox div#recaptcha_image");
-		recaptcha = document.querySelector("input#recaptcha_response_field");
-		if (document.body.textContent.trim().match(/^412 - Precondition Failed$/) || !recaptchaParent) { location.reload(); }
-		else if (document.getElementsByTagName("frameset").length == 0 && inputs && inputs[0] && inputs[1] && recaptcha) {
-			setTimeout(function() {
-				if (!recaptchaParent.querySelector("img#recaptcha_challenge_image")) { location.reload(); }
-			}, 4000);
-			self.addEventListener("focus", cleverFocus);
-			storify(inputs[0], "nickname");
-			storify(inputs[1], "channels");
-			cleverFocus(e);
-			inputs[1].style.setProperty("width", "100%");
-			inputs[1].parentNode.style.setProperty("border-bottom", "1px dashed black");
-			inputs[1].parentNode.parentNode.setAttribute("title", "example: « github,musicbrainz-devel,musicbrainz »");
-		}
-	});
+	var channels = "github, last.fm, musicbrainz";
+	var inputs = document.getElementsByTagName("input");
+	var recaptchaParent = document.querySelector("div.qwebirc-qui table.qwebirc-loginbox div#recaptcha_image");
+	var recaptcha = document.querySelector("input#recaptcha_response_field");
+	if (document.body.textContent.trim().match(/^412 - Precondition Failed$/) || !recaptchaParent) { location.reload(); }
+	else if (document.getElementsByTagName("frameset").length == 0 && inputs && inputs[0] && inputs[1] && recaptcha) {
+		setTimeout(function() {
+			if (!recaptchaParent.querySelector("img#recaptcha_challenge_image")) {
+				location.reload();
+			}
+		}, 4000);
+		self.addEventListener("focus", cleverFocus);
+		storify(inputs[0], "nickname");
+		storify(inputs[1], "channels");
+		cleverFocus();
+		inputs[1].style.setProperty("width", "100%");
+		inputs[1].setAttribute("placeholder", channels);
+		inputs[1].parentNode.style.setProperty("border-bottom", "1px dashed black");
+		inputs[1].parentNode.parentNode.setAttribute("title", "example: « "+channels+" »");
+	}
 	function cleverFocus(e) {
 		if (document.querySelector("table.qwebirc-loginbox")) {
 			for (var i=0; i<2; i++) {
