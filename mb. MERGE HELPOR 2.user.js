@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2014.11.17.1629
+// @version      2014.12.2.1215
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -236,8 +236,15 @@ var lookForOldestEdit = true;
 				var rows = ents[ent].row.parentNode.querySelectorAll("tr");
 				for (var row=0; rows.length; row++) {
 					var rowedit = rows[row].querySelector("a[id^='"+userjs+"oldestEdit'][href^='/edit/']");
-					if (rowedit && (rowedit = parseInt(rowedit.textContent, 10)) && parseInt(rowedit, 10) >= ents[ent].edit) {
-						if (ents[ent].row != rows[row]) ents[ent].row.parentNode.insertBefore(ents[ent].row.parentNode.removeChild(ents[ent].row), rows[row]);
+					if (rowedit && (rowedit = parseInt(rowedit.textContent, 10)) && rowedit >= ents[ent].edit) {
+						if (ents[ent].row != rows[row]) {
+							ents[ent].row.parentNode.insertBefore(ents[ent].row.parentNode.removeChild(ents[ent].row), rows[row]);
+							if (rowedit == ents[ent].edit) {
+								var samesame = rows[row].querySelector("a[id^='"+userjs+"oldestEdit'][href^='/edit/']");
+								samesame.style.setProperty("background-color", "silver");
+								samesame.setAttribute("title", "same edit as above");
+							}
+						}
 						break;
 					}
 				}
