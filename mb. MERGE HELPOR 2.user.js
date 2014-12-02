@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2014.12.2.1215
+// @version      2014.12.2.1225
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -252,10 +252,7 @@ var lookForOldestEdit = true;
 		}
 		var rows = ents[0].row.parentNode.getElementsByTagName(ents[0].row.tagName.toLowerCase());
 		for (var row=0; row < rows.length; row++) {
-			if (row%2) {
-				if (!rows[row].className.match(/\bev\b/i)) rows[row].className += " ev";
-			}
-			else rows[row].className = rows[row].className.replace(/ ?\bev\b/ig, "");
+			rows[row].className = rows[row].className.replace(/\b(even|odd)\b/, row%2?"even":"odd");
 		}
 	}
 	function loadimg(txt) {
