@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.11.17.1629
+// @version      2014.12.2.1130
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -108,8 +108,7 @@
 			if (/*LAME*/navigator.userAgent.match(/firefox/i)) {
 				butt.setAttribute("value", "(F)FF delay…");
 				setTimeout(function() { butt.click(); }, 1000);
-			}
-			else { butt.click(); }
+			} else { butt.click(); }
 		}
 		xhr.onreadystatechange = function(e) {
 			if (xhr.readyState == 4) {
@@ -132,8 +131,7 @@
 							startpos.focus();
 						}
 					}
-				}
-				else {
+				} else {
 					var errormsg = "Error "+xhr.status+", step "+(step+1)+"/3.";
 					if (currentButt) {
 						errormsg += " Retry in "+Math.ceil(coolos/1000)+" seconds.";
@@ -224,8 +222,7 @@
 				recid2trackIndex.local[recid] = t;
 				addOption(startpos, t, d+"."+(dt<10?" ":"")+dt+". "+tracka.textContent);
 				t++;
-			}
-			else {
+			} else {
 				d++; dt = 0;
 			}
 		}
@@ -370,9 +367,9 @@
 					var rectitle = remrec.appendChild(document.createElement("span"));
 					rectitle.appendChild(document.createTextNode(remoteRelease.tracks[rtrack].name));
 					remrec.appendChild(document.createTextNode("” "));
-					if (remoteRelease.tracks[rtrack].name.toUpperCase() == localRelease.tracks[ltrack].name.toUpperCase()) {
+					if (remoteRelease.tracks[rtrack].name.toUpperCase().replace(/[^A-Z0-9]/g,"") == localRelease.tracks[ltrack].name.toUpperCase().replace(/[^A-Z0-9]/g,"")) {
 						rectitle.style.setProperty("background-color", cOK);
-						rectitle.setAttribute("title", "same title");
+						rectitle.setAttribute("title", "(almost) same title");
 					}
 					if (remoteRelease.tracks[rtrack].recording.editsPending > 0) {
 						remrec = mp(remrec, true);
@@ -414,8 +411,7 @@
 							swap.value = (swapped?"yes":"no");
 							currentButt = this;
 							mergeRecsStep(skipstep?1:0);
-						}
-						else if (mergeQueue.indexOf(this) == -1 && from.value != mergeFrom && to.value != mergeTo) {
+						} else if (mergeQueue.indexOf(this) == -1 && from.value != mergeFrom && to.value != mergeTo) {
 							this.value = "Unqueue";
 							enable(this);
 							enable(swapbutt);
@@ -472,8 +468,7 @@
 		if (link) {
 			a.setAttribute("href", link);
 			a.setAttribute("target", "_blank");
-		}
-		else {
+		} else {
 			a.style.setProperty("cursor", "pointer");
 		}
 		prints(a, text);
@@ -523,14 +518,12 @@
 	function mp(o, set) {
 		if (set == null || typeof set != "boolean") {
 			return o.parentNode.tagName == "SPAN" && o.parentNode.className == "mp";
-		}
-		else if (set && !mp(o)) {
+		} else if (set && !mp(o)) {
 			var smp = document.createElement("span");
 			smp.className = "mp";
 			o.parentNode.replaceChild(smp.appendChild(o.cloneNode(true)).parentNode, o);
 			return smp.firstChild;
-		}
-		else if (!set && mp(o)) {
+		} else if (!set && mp(o)) {
 			o.parentNode.parentNode.replaceChild(o.cloneNode(true), o.parentNode)
 		}
 	}
