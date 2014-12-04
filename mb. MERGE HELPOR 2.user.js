@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2014.12.2.1225
+// @version      2014.12.4.121
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -21,7 +21,9 @@
 (function(){
 /* -------- CONFIG START ---- */
 var showEntityInfo = true;
-var lookForOldestEdit = true;
+/*	lookForOldestEdit is DEPRECATED in favour of oldest rowid = oldest MBID. 
+	i will remove it completely during 2015 except if popular request to keep it or change it. */
+var lookForOldestEdit = false;
 /* -------- CONFIG  END  ---- */
 	var userjs = "j2userjs124579";
 	var rembid = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
@@ -30,57 +32,76 @@ var lookForOldestEdit = true;
 		var ents = [];
 		var lastEnt = -1;
 		var oldestEnt = -1;
+		var minrowid;
+		var rowid2row = {};
 		if (mergeForm = document.querySelector("div#content > form[action*='/merge']")) {
-			var tbl = mergeForm.querySelector("table");
-			var lis = mergeForm.getElementsByTagName("li");
+			/*	entity merge pages progressively abandon ul layout in favour of table.tbl
+				* area			ul (but only for admins)
+				* artist		table.tbl
+				* event			table.tbl
+				* label			table.tbl
+				* place			table.tbl
+				* recording		table.tbl
+				* release		table.tbl
+				* release group	table.tbl
+				* series		table.tbl
+				* work			table.tbl
+				* what else ?	*/
+			var tbl = mergeForm.querySelector("table.tbl");
+			var entityRows = mergeForm.getElementsByTagName("li");
 			if (tbl) {
-				lis = mergeForm.querySelectorAll("form > table > tbody > tr");
+				entityRows = mergeForm.querySelectorAll("form > table > tbody > tr");
+				tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("MBID birth date (row ID)"));
 				if (showEntityInfo && etype.match(/(release|release-group)/)) {
-					mergeForm.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Infos"));
+					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
 				} else { showEntityInfo = false; }
 				if (lookForOldestEdit) {
-					mergeForm.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Oldest edit"));
+					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("First found edit (deprecated)"));
 				}
 			}
-			for (var il=0; il<lis.length; il++) {
-				if (showEntityInfo) {
-					addZone(lis[il], "entInfo"+il);
-				}
-				if (lookForOldestEdit) {
-					addZone(lis[il], "oldestEdit"+il);
-				}
-				var a, rad;
-				var as = lis[il].getElementsByTagName("a");
-				if (as.length>0) { a = as[0]; }
-				var rads = lis[il].getElementsByTagName("input");
-				for (var ir=0; ir<rads.length; ir++) {
-					if (rads[ir].getAttribute("type") == "radio") {
-						rad = rads[ir];
-						break;
-					}
-				}
+			var rowIDzone = [];
+			for (var row=0; row<entityRows.length; row++) {
+				var a = entityRows[row].querySelector("a");
+				var rad = entityRows[row].querySelector("input[type='radio']");
 				if (a && rad) {
-					ents.push({"a":a,"rad":rad,"row":lis[il]});
+					rowid2row[rad.value] = row;
+					ents.push({a:a, rad:rad, row:entityRows[row], rowid:parseInt(rad.value,10)});
+					minrowid = row==0?ents[row].rowid:Math.min(minrowid, ents[row].rowid);
 					if (document.referrer) {
 						var lmbid = a.getAttribute("href").match(rembid);
 						var rmbid = document.referrer.match(rembid);
 						if (rmbid && lmbid+"" == rmbid+"") {
 							lastEnt = ents.length - 1;
 							if (tbl) {
-								var tds = lis[il].querySelectorAll("td");
+								var tds = entityRows[row].querySelectorAll("td");
 								for (var td=0; td<tds.length; td++) {
-									tds[td].style.background = "#FF6";
+									tds[td].style.setProperty("background-color", "#FF6");
 								}
 							}
 							else {
-								lis[il].style.background = "#FF6";
+								entityRows[row].style.setProperty("background-color", "#FF6");
 							}
-							lis[il].style.border = "thin dashed black";
-							lis[il].setAttribute("title", "LAST CLICK");
+							entityRows[row].style.setProperty("border", "thin dashed black");
+							entityRows[row].setAttribute("title", "LAST CLICK");
 							rad.click();
 						}
 					}
+					ents[row].rowidzone = addZone(entityRows[row], "rowID"+row);
+					ents[row].rowidzone.appendChild(document.createTextNode(rad.value));
 				}
+				if (showEntityInfo) {
+					addZone(entityRows[row], "entInfo"+row);
+				}
+				if (lookForOldestEdit) {
+					addZone(entityRows[row], "oldestEdit"+row);
+				}
+			}
+			if (minrowid > -1) {
+				var oldestMBIDrow = rowid2row[minrowid+""];
+				ents[oldestMBIDrow].row.style.setProperty("text-shadow", "0px 0px 8px #0C0");
+				ents[oldestMBIDrow].rowidzone.style.setProperty("font-weight", "bold");
+				ents[oldestMBIDrow].rowidzone.appendChild(document.createTextNode(" (oldest)"));
+				ents[oldestMBIDrow].rad.click();
 			}
 			if (showEntityInfo) {
 				entInfo();
@@ -161,7 +182,7 @@ var lookForOldestEdit = true;
 					}
 					if (!eiZone.hasChildNodes()) {
 						stackInfo(eiZone, "no info");
-						eiZone.style.opacity = ".5";
+						eiZone.style.setProperty("opacity", ".5");
 					}
 					if (++iei<ents.length) {
 						entInfo(iei);
@@ -199,8 +220,8 @@ var lookForOldestEdit = true;
 						stackInfo(oeZone, span);
 					}
 					else {
-						stackInfo(oeZone, "no edits");
-						oeZone.style.opacity = ".5";
+						stackInfo(oeZone, "(no edits found)");
+						oeZone.style.setProperty("opacity", ".5");
 					}
 					if (++ioe<ents.length) {
 						oldestEdit(ioe, io);
@@ -208,14 +229,14 @@ var lookForOldestEdit = true;
 					else {
 						if (ents[io].edit) {
 							oldestEnt = io;
-							if (lastEnt < 0) { ents[io].rad.click(); }
+//							if (lastEnt < 0) { ents[io].rad.click(); }
 							var ioeZone = document.getElementById(userjs+"oldestEdit"+io);
 							ioeZone.appendChild(document.createTextNode(" (oldest) "));
-							ioeZone.appendChild(createA("SORT!", null, "sort those rows (oldest edit first)")).addEventListener("click", function(e) {
-								this.parentNode.removeChild(this);
-								sortByEdit();
-							});
-							document.getElementById(userjs+"oldestEditA"+io).style.background = "#6F6";
+//							ioeZone.appendChild(createA("SORT!", null, "sort those rows (oldest edit first)")).addEventListener("click", function(e) {
+//								this.parentNode.removeChild(this);
+//								sortByEdit();
+//							});
+							document.getElementById(userjs+"oldestEditA"+io).style.setProperty("background-color",  "#6F6");
 						}
 						top.status = "";
 					}
@@ -228,33 +249,33 @@ var lookForOldestEdit = true;
 		xhr.open("GET", url, true);
 		xhr.send(null);
 	}
-	function sortByEdit() {
-		for (var ent=0; ent < ents.length; ent++) {
-			if (!ents[ent].edit) {
-				ents[ent].row.parentNode.appendChild(ents[ent].row.parentNode.removeChild(ents[ent].row));
-			} else {
-				var rows = ents[ent].row.parentNode.querySelectorAll("tr");
-				for (var row=0; rows.length; row++) {
-					var rowedit = rows[row].querySelector("a[id^='"+userjs+"oldestEdit'][href^='/edit/']");
-					if (rowedit && (rowedit = parseInt(rowedit.textContent, 10)) && rowedit >= ents[ent].edit) {
-						if (ents[ent].row != rows[row]) {
-							ents[ent].row.parentNode.insertBefore(ents[ent].row.parentNode.removeChild(ents[ent].row), rows[row]);
-							if (rowedit == ents[ent].edit) {
-								var samesame = rows[row].querySelector("a[id^='"+userjs+"oldestEdit'][href^='/edit/']");
-								samesame.style.setProperty("background-color", "silver");
-								samesame.setAttribute("title", "same edit as above");
-							}
-						}
-						break;
-					}
-				}
-			}
-		}
-		var rows = ents[0].row.parentNode.getElementsByTagName(ents[0].row.tagName.toLowerCase());
-		for (var row=0; row < rows.length; row++) {
-			rows[row].className = rows[row].className.replace(/\b(even|odd)\b/, row%2?"even":"odd");
-		}
-	}
+//	function sortByEdit() {
+//		for (var ent=0; ent < ents.length; ent++) {
+//			if (!ents[ent].edit) {
+//				ents[ent].row.parentNode.appendChild(ents[ent].row.parentNode.removeChild(ents[ent].row));
+//			} else {
+//				var rows = ents[ent].row.parentNode.querySelectorAll("tr");
+//				for (var row=0; rows.length; row++) {
+//					var rowedit = rows[row].querySelector("a[id^='"+userjs+"oldestEdit'][href^='/edit/']");
+//					if (rowedit && (rowedit = parseInt(rowedit.textContent, 10)) && rowedit >= ents[ent].edit) {
+//						if (ents[ent].row != rows[row]) {
+//							ents[ent].row.parentNode.insertBefore(ents[ent].row.parentNode.removeChild(ents[ent].row), rows[row]);
+//							if (rowedit == ents[ent].edit) {
+//								var samesame = rows[row].querySelector("a[id^='"+userjs+"oldestEdit'][href^='/edit/']");
+//								samesame.style.setProperty("background-color", "silver");
+//								samesame.setAttribute("title", "same edit as above");
+//							}
+//						}
+//						break;
+//					}
+//				}
+//			}
+//		}
+//		var rows = ents[0].row.parentNode.getElementsByTagName(ents[0].row.tagName.toLowerCase());
+//		for (var row=0; row < rows.length; row++) {
+//			rows[row].className = rows[row].className.replace(/\b(even|odd)\b/, row%2?"even":"odd");
+//		}
+//	}
 	function loadimg(txt) {
 		var img = document.createElement("img");
 		img.setAttribute("src", "/static/images/icons/loading.gif");
@@ -286,7 +307,7 @@ var lookForOldestEdit = true;
 			a.setAttribute("href", link);
 		}
 		else {
-			a.style.cursor = "pointer";
+			a.style.setProperty("cursor", "pointer");
 		}
 		if (title){ a.setAttribute("title", title); }
 		a.appendChild(document.createTextNode(text));
@@ -294,19 +315,6 @@ var lookForOldestEdit = true;
 	}
 	function removeChildren(p) {
 		while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
-	}
-	function getParent(obj, tag) {
-		var cur = obj;
-		if (cur.parentNode) {
-			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase()) {
-				return cur;
-			} else {
-				return getParent(cur, tag);
-			}
-		} else {
-			return null;
-		}
 	}
 	function nsr(prefix) {
 		var ns = {
