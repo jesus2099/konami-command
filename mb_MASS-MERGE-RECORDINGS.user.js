@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.12.4.231
+// @version      2014.12.4.1206
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -91,14 +91,14 @@
 			var targetID = parseInt(to.value, 10);
 			var sourceID = parseInt(from.value, 10);
 			if (sourceID > targetID) {
-				 paramsup += "'''TARGETTING OLDEST [MBID]''' ('''"+targetID+"'''<"+sourceID+")"+"\n";
+				 paramsup += "👍 Targetting oldest [MBID] ('''"+format(to.value)+"'''<"+format(from.value)+")"+"\n";
 			}
-			if (localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].name.toUpperCase() == remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].name.toUpperCase()) paramsup += "'''SAME TRACK TITLES''' (case insensitive comparison)"+"\n";
+			if (localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].name.toUpperCase() == remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].name.toUpperCase()) paramsup += "👍 Same track titles (case insensitive comparison)\n";
 			var delta = Math.abs(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length - remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length);
-			if (delta <= safeLengthDelta*1000) paramsup += "'''"+(delta==0?"SAME":"VERY CLOSE")+" TRACK TIMES''' "+(delta==0?"(in milliseconds)":"(within "+safeLengthDelta+" seconds)")+"\n";
-			if (localRelease.ac == remoteRelease.ac) paramsup += "'''SAME RELEASE ARTIST''' "+localRelease.ac+"\n";
-			if (localRelease.title == remoteRelease.title) paramsup += "'''SAME RELEASE TITLE''' “"+localRelease.title+"”\n";
-			if (localRelease.rg == remoteRelease.rg) paramsup += "'''SAME RELEASE GROUP''' "+MBS+"/release-group/"+localRelease.rg+"\n";
+			if (delta <= safeLengthDelta*1000) paramsup += "👍 "+(delta==0?"Same":"Very close")+" track times "+(delta==0?"(in milliseconds)":"(within "+safeLengthDelta+" seconds)")+"\n";
+			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 Same release artist “"+localRelease.ac+"”\n";
+			if (localRelease.title == remoteRelease.title) paramsup += "👍 Same release title “"+localRelease.title+"”\n";
+			if (localRelease.rg == remoteRelease.rg) paramsup += "👍 Same release group ("+MBS+"/release-group/"+localRelease.rg+")\n";
 			if (meta) paramsup += " —\n'''"+meta.n+"''' ("+meta.ns+") "+meta.v;
 			params[step] += encodeURIComponent(paramsup);
 		}
@@ -111,7 +111,7 @@
 		function FireFoxWorkAround(butt) {
 			enable(butt);
 			if (/*LAME*/navigator.userAgent.match(/firefox/i)) {
-				butt.setAttribute("value", "(F)FF delay…");
+				butt.setAttribute("value", "FF delay…");
 				setTimeout(function() { butt.click(); }, 1000);
 			} else { butt.click(); }
 		}
@@ -563,6 +563,10 @@
 			return (pad&&d.getMinutes()<10?" ":"")+d.getMinutes()+":"+(d.getSeconds()<10?"0":"")+d.getSeconds()+(pad||d.getMilliseconds()>0?"."+(d.getMilliseconds()<100?"0":"")+(d.getMilliseconds()<10?"0":"")+d.getMilliseconds():"");
 		}
 		return "?:??";
+	}
+	function format(number) {
+		/* thanks to http://snipplr.com/view/72657/thousand-separator */
+		return (number+"").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
 	}
 	function ac2str(ac) {
 		var str = "";

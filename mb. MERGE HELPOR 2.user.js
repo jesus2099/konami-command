@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2014.12.4.145
+// @version      2014.12.4.1241
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -51,10 +51,10 @@ var lookForOldestEdit = false;
 			var entityRows = mergeForm.getElementsByTagName("li");
 			if (tbl) {
 				entityRows = mergeForm.querySelectorAll("form > table > tbody > tr");
-				tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("MBID birth date (row ID)"));
 				if (showEntityInfo && etype.match(/(release|release-group)/)) {
 					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
 				} else { showEntityInfo = false; }
+				tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("MBID birth date (row ID)")).parentNode.style.setProperty("text-align", "right");
 				if (lookForOldestEdit) {
 					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("First found edit (deprecated)"));
 				}
@@ -63,6 +63,9 @@ var lookForOldestEdit = false;
 			for (var row=0; row<entityRows.length; row++) {
 				var a = entityRows[row].querySelector("a");
 				var rad = entityRows[row].querySelector("input[type='radio']");
+				if (showEntityInfo) {
+					addZone(entityRows[row], "entInfo"+row);
+				}
 				if (a && rad) {
 					rowid2row[rad.value] = row;
 					ents.push({a:a, rad:rad, row:entityRows[row], rowid:parseInt(rad.value,10)});
@@ -87,10 +90,8 @@ var lookForOldestEdit = false;
 						}
 					}
 					ents[row].rowidzone = addZone(entityRows[row], "rowID"+row);
-					ents[row].rowidzone.appendChild(document.createTextNode(rad.value));
-				}
-				if (showEntityInfo) {
-					addZone(entityRows[row], "entInfo"+row);
+					ents[row].rowidzone.style.setProperty("text-align", "right");
+					ents[row].rowidzone.appendChild(rowIDLink(etype.replace(/-/, "_"), rad.value));
 				}
 				if (lookForOldestEdit) {
 					addZone(entityRows[row], "oldestEdit"+row);
@@ -99,8 +100,8 @@ var lookForOldestEdit = false;
 			if (minrowid) {
 				var oldestMBIDrow = rowid2row[minrowid+""];
 				ents[oldestMBIDrow].row.style.setProperty("text-shadow", "0px 0px 8px #0C0");
-				ents[oldestMBIDrow].rowidzone.style.setProperty("font-weight", "bold");
-				ents[oldestMBIDrow].rowidzone.appendChild(document.createTextNode(" (oldest)"));
+				ents[oldestMBIDrow].rowidzone.style.setProperty("color", "#060");
+				ents[oldestMBIDrow].rowidzone.insertBefore(document.createTextNode("(oldest) "), ents[oldestMBIDrow].rowidzone.firstChild);
 				ents[oldestMBIDrow].rad.click();
 			}
 			if (showEntityInfo) {
@@ -322,5 +323,14 @@ var lookForOldestEdit = false;
 			"mb": "http://musicbrainz.org/ns/mmd-2.0#",
 		};
 		return ns[prefix] || null;
+	}
+	function rowIDLink(type, id) {
+		/* thanks to http://snipplr.com/view/72657/thousand-separator */
+		var renderedID = (id+"").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
+		var a = createA(
+			renderedID,
+			"/search/edits?conditions.0.operator=%3D&conditions.0.field="+type+"&conditions.0.name="+renderedID+"&conditions.0.args.0="+id
+		);
+		return a;
 	}
 })();
