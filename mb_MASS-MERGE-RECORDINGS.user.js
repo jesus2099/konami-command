@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.12.2.1958
+// @version      2014.12.4.231
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -88,6 +88,11 @@
 			if (paramsup != "") paramsup += "\n —\n";
 			paramsup += releaseInfoRow("source", swap.value=="no"?remoteRelease:localRelease);
 			paramsup += releaseInfoRow("target", swap.value=="no"?localRelease:remoteRelease);
+			var targetID = parseInt(to.value, 10);
+			var sourceID = parseInt(from.value, 10);
+			if (sourceID > targetID) {
+				 paramsup += "'''TARGETTING OLDEST [MBID]''' ('''"+targetID+"'''<"+sourceID+")"+"\n";
+			}
 			if (localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].name.toUpperCase() == remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].name.toUpperCase()) paramsup += "'''SAME TRACK TITLES''' (case insensitive comparison)"+"\n";
 			var delta = Math.abs(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length - remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length);
 			if (delta <= safeLengthDelta*1000) paramsup += "'''"+(delta==0?"SAME":"VERY CLOSE")+" TRACK TIMES''' "+(delta==0?"(in milliseconds)":"(within "+safeLengthDelta+" seconds)")+"\n";
@@ -103,7 +108,7 @@
 		function releaseInfoRow(hdr, rel) {
 			return hdr+": "+MBS+"/release/"+rel.mbid+" “'''''"+rel.title+"'''''”"+rel.comment+" ("+rel.tracks.length+" tracks) by '''"+rel.ac+"'''\n";
 		}
-		function FuckingFireFrox(butt) {
+		function FireFoxWorkAround(butt) {
 			enable(butt);
 			if (/*LAME*/navigator.userAgent.match(/firefox/i)) {
 				butt.setAttribute("value", "(F)FF delay…");
@@ -126,7 +131,7 @@
 						enable(editNote);
 						if (nextButt = mergeQueue.shift()) {
 							skipstep = true;
-							FuckingFireFrox(nextButt);
+							FireFoxWorkAround(nextButt);
 						} else {
 							var x = scrollX, y = scrollY;
 							startpos.focus();
@@ -138,7 +143,7 @@
 					if (currentButt) {
 						errormsg += " Retry in "+Math.ceil(coolos/1000)+" seconds.";
 						setTimeout(function(){
-							FuckingFireFrox(currentButt);
+							FireFoxWorkAround(currentButt);
 						}, coolos);
 					}
 					infoMerge(errormsg, false, true);
@@ -191,7 +196,7 @@
 		var MMRdiv = document.createElement("div");
 		MMRdiv.setAttribute("id", MMRid);
 		MMRdiv.style.setProperty("display", show?"block":"none");
-		prints(MMRdiv, ["Current page will be the target for each recording merge.", ""], true);
+		prints(MMRdiv, ["Each recording merge will automatically target the oldest MBID unless direction is manually changed.", ""], true);
 		/*track parsing*/
 		startpos = document.createElement("select");
 		startpos.style.setProperty("font-size", ".8em");
@@ -343,7 +348,7 @@
 				if (!ntit || (ntit && !ntit.match(new RegExp(ntitl)))) {
 					localRelease.tracks[ltrack].a.setAttribute("title", (ntit?ntit+" — ":"")+ntitl);
 				}
-				rmForm = document.createElement("form");
+				var rmForm = document.createElement("form");
 				rmForm.setAttribute("action", "/recording/merge");
 				rmForm.setAttribute("method", "post");
 				rmForm.setAttribute("title", "AC: "+ac2str(remoteRelease.tracks[rtrack].artistCredit)+"\nremote recording #"+remoteRelease.tracks[rtrack].recording.id);
@@ -445,6 +450,14 @@
 				bestPos = bestPos?bestPos:localRelease.tracks[ltrack].a;
 				if (recdis = tracktd.querySelector("span.userjs81127recdis")) { bestPos = recdis; }
 				addAfter(rmForm, bestPos);
+				if (remoteRelease.tracks[rtrack].recording.id != localRelease.tracks[ltrack].recid) {
+					var remoteRowID = parseInt(remoteRelease.tracks[rtrack].recording.id, 10);
+					var localRowID = parseInt(localRelease.tracks[ltrack].recid, 10);
+					var dirbutt = rmForm.querySelector("input[type='button']."+MMRid+"dirbutt");
+					if (remoteRowID > localRowID && dirbutt.value == loc2rem || remoteRowID < localRowID && dirbutt.value == rem2loc) {
+						dirbutt.click();
+					}
+				}
 				rtrack++;
 			}
 		}
