@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.12.10.1242
+// @version      2014.12.10.1750
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -29,6 +29,7 @@
 			} else meta[kv[1]] = kv[2];
 		}
 	}
+	var MBS7313 = "This script became so broken with time.\n(ノ ゜Д゜)ノ 彡┻━┻ Work credits and aliases have been disabled until required enhancements are done.";
 	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var DEBUG = localStorage.getItem("jesus2099debug");
 	var userjs = "jesus2099userjs94676";
@@ -336,11 +337,11 @@
 							createWork += "&edit-work.language_id=486";
 						}
 						form.appendChild(createTag("input", {"type":"hidden", "name":"edit-work.edit_note", "value":summary}));
-						form.appendChild(createTag("a", {"title":"Import this work in MusicBrainz (name, iswc, type, edit note)"}, {"background":background,"cursor":"pointer","text-decoration":"underline","color":"blue"}, {"click":function(e){
+						form.appendChild(createTag("a", {"title":MBS7313+"\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, {"background":background,"cursor":"pointer","text-decoration":"underline","color":"blue"}, {"click":function(e){
 							this.parentNode.setAttribute("target", e.shiftKey||e.ctrlKey?"_blank":"_self");
 							this.parentNode.submit();
 							return stop(e);
-						}}, "Add to MB (ノ ゜Д゜)ノ 彡┻━┻ partially disabled until required enhancements are done"));
+						}}, "Add to MB"));
 						sakuhin.parentNode.appendChild(document.createTextNode(" （"));
 						sakuhin.parentNode.appendChild(form);
 						sakuhin.parentNode.appendChild(document.createTextNode("）"));
@@ -471,12 +472,11 @@
 				xhrWork.mbid = self.location.pathname.match(new RegExp(RE_GUID));
 				xhrMachine(xhrJobs["workinfo-get"]);
 			case "work/create":
-				addAfter(document.createTextNode("JASRAC automatic work importing/editing is disabled until required enhancements are done."), document.querySelector("div#content h1"));
 				h1 = document.querySelector("h1");
 				var iname = document.getElementById("id-edit-work.name");
 				xhrForm.form = getParent(iname, "form");
-				break;
-				xhrForm.form.addEventListener("submit", function(e) {
+				insertBefore(createTag("p", {}, {color: "purple", border: "1px dashed #fcc", "background-color": "#ffc"}, {}, [createTag("h3", {}, {}, {}, meta.name), MBS7313, " ☞ ", createA("Read more…", "https://github.com/jesus2099/konami-command/issues/14", null, "_blank")]), xhrForm.form);
+/*				xhrForm.form.addEventListener("submit", function(e) {
 					var inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
 					var changed = !(xhrWork.edit) || (xhrForm.originalInputs.inputs.length != inputs.length);
 					for (i=0; !changed && i<xhrForm.originalInputs.inputs.length; i++) {
@@ -491,7 +491,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+"≠"+inputs.length+")\n*
 						xhrJobs["batch-relationship-create"].info = rels+" relationship"+(rels>1?"s":"");
 						joblist.push("batch-relationship-create");
 					}
-					if (xhrWork.code && xhrWork.edit && !xhrWork.jasracidmatch) {/*je sais pas si je comprendrai toujours ça la prochaine fois*/
+					if (xhrWork.code && xhrWork.edit && !xhrWork.jasracidmatch) {/*je sais pas si je comprendrai toujours ça la prochaine fois*//*
 						if (xhrWork.edit && typeof xhrWork.annotation == "undefined") {
 							joblist.push("annotation-get");
 						}
@@ -533,7 +533,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+"≠"+inputs.length+")\n*
 						disable(this, true);
 						xhrMachine();
 					}
-				}, false);
+				}, false);*/
 				xhrForm.submit = xhrForm.form.querySelector("div.row button.submit.positive[type='submit']");
 				xhrForm.submit.parentNode.insertBefore(createTag("input", {"type":"reset","value":"Reset","title":"reset form values","tabindex":"-1"}, {"float":"left","font-size":".77em","height":"16px","width":"32px","margin":"0 8px","border":"1px solid #ccc"}), xhrForm.submit);
 				xhrForm.originalInputs = {inputs:[], values:[], css:"form > div > fieldset:not(."+userjs+") input:not([type='button']), form > div > fieldset:not(."+userjs+") select"};
@@ -553,8 +553,8 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 					if (err && err.textContent.match(/name field is required/i)) {
 						err.replaceChild(document.createTextNode("Please review work name and everything else before submitting this work"), err.firstChild);
 					}
-					workSortName(teditnote.value);
-					workCredits(teditnote.value);
+//					workSortName(teditnote.value);
+//					workCredits(teditnote.value);
 				}
 				iname.addEventListener("focus", function(e){ this.style.background = ""; }, false);
 				icomment.addEventListener("focus", function(e){ this.style.background = ""; }, false);
@@ -644,8 +644,8 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 							}
 						}
 						setType(this.value.indexOf(hasLyrics)!=-1?vocal:instrumental);
-						workSortName(this.value);
-						workCredits(this.value);
+//						workSortName(this.value);
+//						workCredits(this.value);
 						teditnote.value = this.value;
 						this.style.background = cOK;
 						this.value = xhrWork.code+" "+sakuhin;
@@ -1120,6 +1120,11 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		if (n && e && e.parentNode) {
 			if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
 			else { return e.parentNode.appendChild(n); }
+		} else { return null; }
+	}
+	function insertBefore(newSibling, element) {
+		if (newSibling && element && element.parentNode) {
+			return element.parentNode.insertBefore(newSibling, element);
 		} else { return null; }
 	}
 	function createTag(tag, attribs, styles, events, children) {
