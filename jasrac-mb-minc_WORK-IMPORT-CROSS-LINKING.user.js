@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.12.10.903
+// @version      2014.12.10.1242
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -423,7 +423,7 @@
 							}
 						}
 					}
-					var annotation = document.querySelector("div#content div.annotation");
+					var annotation = document.querySelector("div#content div.annotation div.annotation-body");
 					if (annotation) {
 						while (sakuhincode = codes.exec(annotation.textContent)) {
 							sakuhincode = sakuhincode[1];
@@ -433,8 +433,23 @@
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", sakuhincode)}, {"background":background}, {}, "音楽の森 — "+sakuhincode)));
 							}
 							else {
-								if (confirm("Bogus JASRAC ID detected in annotation (already set as work attribute).\nDo you want to edit annotation?")) {
-									location.href = location.pathname+"/edit_annotation?edit-annotation.changelog=JASRAC+ID+is+already+set+as+an+attribute";
+								if (annotation.textContent.trim().match(new RegExp("^"+reAnnotCode+"( \\(MBS-7359\\))?$", "i"))) {
+									annotation.insertBefore(createTag("p", {}, {"background-color":"#ffc"}, {}, [createTag("img", {src: "/static/images/icons/loading.gif"}), " This JASRAC ID is now set as an attribute of this work: Removing obsolete annotation, please wait…"]), annotation.firstChild);
+									simpleXHR(
+										{method:"post", action:location.pathname+"/edit_annotation?edit-annotation.text=&edit-annotation.changelog=Removing+obsolete+JASRAC+ID+annotation&edit-annotation.edit_note=The+same+JASRAC+ID+is+now+set+as+an+attribute+to+this+work+(self+cleaning)."},
+										function() {
+											if (this.responseText.indexOf("<h2 class=\"annotation\">Annotation</h2>") == -1) {
+												removeElement(document.querySelector("div#content h2.annotation"));
+												removeElement(document.querySelector("div#content div.annotation"));
+											} else {
+												replaceElement(createTag("p", {}, {"background-color": "#fcc"}, {}, "Couldn’t remove obsolete JASRAC ID. Please help. :)"), document.querySelector("div#content div.annotation-body"));
+											}
+										},
+									function() { alert("Got an error while trying to remove obsolete annotation:\n"+this.status+this.responseText.match(/<title>.*(?=<\/title>)/)); /*(?<=<script>) lookbehind is not supported in js*/ }
+									);
+									break;
+								} else if (confirm("Bogus JASRAC ID detected in annotation (now is set as work attribute).\nDo you want to edit annotation and remove it now?")) {
+									location.href = location.pathname+"/edit_annotation?edit-annotation.changelog=JASRAC+ID+is+now+set+as+an+attribute";
 								}
 							}
 						}
@@ -770,7 +785,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 						var acname = this.querySelector("input.name");
 						acname.value = acname.getAttribute("ref");
 						if (this.nextSibling.tagName == "A") {
-							this.parentNode.removeChild(this.nextSibling);
+							removeElement(this.nextSibling);
 						}
 					});
 					for (var wap in ctype[c]) { if (wap != "english" && ctype[c].hasOwnProperty(wap)) {
@@ -806,7 +821,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		if (el) {
 			var lis = el.getElementsByTagName("li");
 			if (lis.length == 1 && lis[0].textContent.match(/has no url relationships/i)) {
-				el.removeChild(lis[0]);
+				removeElement(lis[0]);
 			}
 		}
 		else if (!el && (sb = document.querySelector("div#sidebar"))) {
@@ -1200,5 +1215,42 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		var ev = document.createEvent("HTMLEvents");
 		ev.initEvent(e, true, true);
 		n.dispatchEvent(ev);
+	}
+	function simpleXHR(_request, onload, onerror) {
+		/* defaults */
+		var request = typeof _request == "string"? {action:_request}: _request;
+		if (!request.action) { console.log("simpleXHR has no action do perform."); return; }
+		if (!request.method) request.method = request.params? "post" : "get";
+		if (typeof request.async != "boolean") request.async = true;
+		/* process */
+		var xhr = new XMLHttpRequest();
+		xhr.onload = onload;
+		xhr.onerror = onerror;
+		xhr.open(request.method, request.action, request.async);
+		if (request.method == "post") {
+			if (request.action.match(/\?.+=/)) {
+				var action1query2 = request.action.match(/^(.+)\?(.+)$/);
+				request.action = action1query2[1];
+				request.params = action1query2[2];
+			} else if (typeof request.params == "object") {
+				var encodedparams = "";
+				for (var param in request.params) if (request.params.hasOwnProperty(param)) {
+					encodedparams += param + "=" + encodeURIComponent(request.params[param]);
+				}
+				request.params = encodedparams;
+			}
+			if (request.params) {
+				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				xhr.setRequestHeader("Content-length", request.params.length);
+				xhr.setRequestHeader("Connection", "close");
+			}
+		}
+		xhr.send(request.params);
+	}
+	function removeElement(element) {
+		element.parentNode.removeChild(element);
+	}
+	function replaceElement(newElement, oldElement) {
+		oldElement.parentNode.replaceChild(newElement, oldElement);
 	}
 })();
