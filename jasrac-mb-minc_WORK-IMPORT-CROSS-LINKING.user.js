@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.11.24.1421
+// @version      2014.12.10.903
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -41,7 +41,7 @@
 	var pagecat = self.location.href.match(new RegExp("(jasrac(?=\\.or\\.jp)|minc(?=\\.gr\\.jp)|work(/"+RE_GUID+"/edit$|/create)|work)"));
 	var oldTitle = document.title;
 	var spam = " ← needs ''JASRAC direct links enabler'' ("+meta.namespace+")";
-	var xhrForm = {}, xhrWork = {}, h1;
+	var xhrForm = {}, xhrWork = {}, h1, iname;
 	var MBlookups = [];
 	var joblist = [];
 	var xhrJobs = {
@@ -340,7 +340,7 @@
 							this.parentNode.setAttribute("target", e.shiftKey||e.ctrlKey?"_blank":"_self");
 							this.parentNode.submit();
 							return stop(e);
-						}}, "Add to MB"));
+						}}, "Add to MB (ノ ゜Д゜)ノ 彡┻━┻ partially disabled until required enhancements are done"));
 						sakuhin.parentNode.appendChild(document.createTextNode(" （"));
 						sakuhin.parentNode.appendChild(form);
 						sakuhin.parentNode.appendChild(document.createTextNode("）"));
@@ -456,9 +456,11 @@
 				xhrWork.mbid = self.location.pathname.match(new RegExp(RE_GUID));
 				xhrMachine(xhrJobs["workinfo-get"]);
 			case "work/create":
+				addAfter(document.createTextNode("JASRAC automatic work importing/editing is disabled until required enhancements are done."), document.querySelector("div#content h1"));
 				h1 = document.querySelector("h1");
 				var iname = document.getElementById("id-edit-work.name");
 				xhrForm.form = getParent(iname, "form");
+				break;
 				xhrForm.form.addEventListener("submit", function(e) {
 					var inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
 					var changed = !(xhrWork.edit) || (xhrForm.originalInputs.inputs.length != inputs.length);
