@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2014.11.14.2204
+// @version      2014.12.11.17
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -14,25 +14,31 @@
 // @grant        none
 // @include      http://chatlogs.musicbrainz.org/*
 // @include      https://chatlogs.musicbrainz.org/*
+// @include      http://hcm.fam.cx/mbja/chatlog.cgi*
 // @run-at       document-end
 // ==/UserScript==
 (function(){
 	var userjs = "j2userjs127580";
-	var ls = (typeof localStorage != "undefined");
-	var cat = location.href.match(/chatlogs\.musicbrainz\.org\/([^/]+)\//);
-	var date = location.href.match(/\/((\d{4})-(\d{2})-(\d{2}))\.html/);
-	var dds = document.querySelectorAll("dd");
+	var cat = location.href.match(/chatlogs\.musicbrainz\.org\/([^/]+)\/|mbja/);
+	cat = cat[1]?cat[1]:"musicbrainz-ja";
+	if (cat == "musicbrainz-ja" && !location.pathname.match(/^\/mbja\/chatlog.cgi\//) && document.getElementsByTagName("a").length > 4) {
+		location.replace(document.getElementsByTagName("a")[4].getAttribute("href"));
+		return;
+	}
+	var date = location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
+	if (date) date = date[1]+"-"+date[2]+"-"+date[3];
+	var entries = document.querySelectorAll("dd") || document.querySelectorAll("th + td");
 	var srdd = "none";
-	var srnv = "jesus script patate";/*just some starting default value example*/
+	var srnv = "ajico bowie script 百恵";/*just some starting default value example*/
 	linkify();
 	var lskeys = [];
 	for (var lsi=0; lsi<localStorage.length; lsi++) {
-		if (localStorage.key(lsi).match(new RegExp(userjs+"lr"+(cat?cat[1]:"[a-z-]+")+"\\d{4}-\\d{2}-\\d{2}", "i"))) {
+		if (localStorage.key(lsi).match(new RegExp(userjs+"lr"+(cat?cat:"[a-z-]+")+"\\d{4}-\\d{2}-\\d{2}", "i"))) {
 			lskeys.push(localStorage.key(lsi));
 		}
 	}
 	if (lskeys.length > 0) {
-		document.body.appendChild(document.createElement("h2")).appendChild(createA("Last read "+(cat?"#"+cat[1]:"")+" chat logs", function (e) { var lulu = document.getElementById(userjs+"logs"); lulu.style.setProperty("display", lulu.style.getPropertyValue("display")=="none"?"block":"none"); }));
+		document.body.appendChild(document.createElement("h2")).appendChild(createA("Last read "+(cat?"#"+cat:"")+" chat logs", function (e) { var lulu = document.getElementById(userjs+"logs"); lulu.style.setProperty("display", lulu.style.getPropertyValue("display")=="none"?"block":"none"); }));
 		lskeys.sort();
 		var ul = document.body.appendChild(document.createElement("ul"));
 		ul.setAttribute("id", userjs+"logs");
@@ -50,18 +56,16 @@
 		ss.insertRule("body { padding-bottom: .5em; }", ss.cssRules.length);
 		var ctt = document.body.appendChild(createTag("div", { "id": userjs+"toolbar"}));
 		var sep = " | ";
-		if (date) {
+		if (!cat.match(/-ja/) && date) { /* work in progress: #musicbrainz-ja will get everything too */
 			var re_urlid = /html#(.+)$/;
 			var re_server = /^\S+ has (?:joined|left) #\S+$/;
 			var re_nick = /([^\s\[\]>]+)\]?$/;
 			var css_brdr = "2px dashed red";
 			var maxStoredLastread = 100;
-			var lastread; if (ls && (lastread = localStorage.getItem(userjs+"lr"+cat[1]+date[1]))) { lastread = document.getElementById(lastread.split(" ")[0]); }
+			var lastread; if (lastread = localStorage.getItem(userjs+"lr"+cat+date)) { lastread = document.getElementById(lastread.split(" ")[0]); }
 			var hashrow; if ((urlid = location.href.match(re_urlid)) && (urlide = document.getElementById(urlid[1]))) { hashrow = urlide; }
-			if (ls) {
-				if (tmp = localStorage.getItem(userjs+"srd")) { srdd = tmp; }
-				if (tmp = localStorage.getItem(userjs+"nick")) { srnv = tmp; }
-			}
+			if (tmp = localStorage.getItem(userjs+"srd")) { srdd = tmp; }
+			if (tmp = localStorage.getItem(userjs+"nick")) { srnv = tmp; }
 			var sr = ss.insertRule("dt.server, dd.server { display: "+srdd+"; }", ss.cssRules.length);
 			var nrdt = ss.insertRule(nicksel(srnv, "dt")+" { background: #ff6; }", ss.cssRules.length);
 			var nrdd = ss.insertRule(nicksel(srnv, "dd")+" { background: #ffc; }", ss.cssRules.length);
@@ -120,7 +124,7 @@
 					var s = this.value.match(/^(Show|Hide)/);
 					if (s) { s = s[1]=="Show"; }
 					var d = s?"block":"none";
-					if (ls) { localStorage.setItem(userjs+"srd", d); }
+					localStorage.setItem(userjs+"srd", d);
 					ss.cssRules[sr].style.display = d;
 					this.value = this.value.replace(s?"Show":"Hide", s?"Hide":"Show");
 					if (fv) {
@@ -140,13 +144,13 @@
 			document.getElementsByTagName("head")[0].addEventListener("DOMNodeInserted", function(e) {
 				if (!jumpto) jumpAround();
 			}, false);
-				/* last read stuff */
-			if (ls && date) {
+			/* last read stuff */
+			if (date) {
 				if (lastread) {
 					if (nextDD = getSibling(lastread, "dd")) { nextDD.style.borderBottom = css_brdr; }
 				}
 				if (ldt = lastDT()) {
-					localStorage.setItem(userjs+"lr"+cat[1]+date[1], ldt.getAttribute("id")+" "+new Date().getTime());
+					localStorage.setItem(userjs+"lr"+cat+date, ldt.getAttribute("id")+" "+new Date().getTime());
 				}
 				/* last read cleanup */
 				dates = [];
@@ -166,26 +170,45 @@
 			}
 		}
 		/* #musicbrainz / #musicbrainz-devel */
-		if (cat[1].match(/^musicbrainz(?:-devel)?$/)) {
-			var tgt = "musicbrainz" + (cat[1].match(/^musicbrainz$/)?"-devel":"");
+		if (cat.match(/^musicbrainz(?:-devel)?$/)) {
+			var tgt = "musicbrainz" + (cat.match(/^musicbrainz$/)?"-devel":"");
 			ctt.appendChild(document.createTextNode(sep));
 			ctt.appendChild(createA("#"+tgt, location.href.replace(/\/musicbrainz(?:-devel)?\//, "/"+tgt+"/")));
+			ctt.appendChild(document.createTextNode(sep));
+			ctt.appendChild(createA("#musicbrainz-ja", "http://hcm.fam.cx/mbja/chatlog.cgi/"+(location.pathname.match(/\d/)?(location.pathname.match(/[\d-]+(?=\/$|\.html$)/)+"").replace(/-/g, "/"):"")));
+		} else {
+			var path = "";
+			if (location.pathname.match(/\d/)) {
+				var dateDetect = location.pathname.match(/(\d{4})\/(?:(\d{2})\/)?(\d{2})?$/);
+				if (dateDetect[1]) {
+					path += dateDetect[1]+"/";
+					if (dateDetect[2]) {
+						path += dateDetect[1]+"-"+dateDetect[2]+"/";
+						if (dateDetect[3]) {
+							path += dateDetect[1]+"-"+dateDetect[2]+"-"+dateDetect[3]+".html";
+						}
+					}
+				}
+			}
+			ctt.appendChild(createA("#musicbrainz", "https://chatlogs.musicbrainz.org/musicbrainz/"+path));
+			ctt.appendChild(document.createTextNode(sep));
+			ctt.appendChild(createA("#musicbrainz-devel", "https://chatlogs.musicbrainz.org/musicbrainz-devel/"+path));
 		}
 		/* prev./next day */
 		if (date) {
 			ctt.appendChild(document.createTextNode(sep));
-			ctt.appendChild(createA("« prev.", shiftDate(-1)));
+			ctt.appendChild(createA("« "+(cat.match(/-ja/)?"前":"prev."), shiftDate(-1)));
 			ctt.appendChild(document.createTextNode(sep));
-			ctt.appendChild(createA("next »", shiftDate(+1)));
+			ctt.appendChild(createA((cat.match(/-ja/)?"次":"next")+" »", shiftDate(+1)));
 		}
 	}
 	function shiftDate(shift) {
-		var sdate = (new Date(date[1]));
+		var sdate = (new Date(date));
 		sdate.setDate(sdate.getDate() + shift);
 		var yyyy = zeroPad(sdate.getFullYear(), 4);
 		var mm = zeroPad(sdate.getMonth() + 1, 2);
 		var dd = zeroPad(sdate.getDate(), 2);
-		return location.pathname.match(/^\/[^/]+\//)+yyyy+"/"+yyyy+"-"+mm+"/"+yyyy+"-"+mm+"-"+dd+".html";
+		return location.pathname.match(/[^\d]+/)+yyyy+"/"+(cat.match(/-ja/)?mm+"/"+dd:yyyy+"-"+mm+"/"+yyyy+"-"+mm+"-"+dd+".html");
 	}
 	function zeroPad(i, cols) {
 		var str = ""+i;
@@ -216,7 +239,7 @@
 	function plusmoins(p) {
 		if (p) {
 			srnv = p;
-			if (ls) { localStorage.setItem(userjs+"nick", srnv); }
+			localStorage.setItem(userjs+"nick", srnv);
 			ss.cssRules[nrdt].selectorText = nicksel(srnv, "dt");
 			ss.cssRules[nrdd].selectorText = nicksel(srnv, "dd");
 		}
@@ -281,18 +304,18 @@
 	}
 	function firstVisibleDT() {
 		var okdt;
-		for (var dd = 0; dd < dds.length; dd++) {
-			if (dds[dd].offsetTop >= self.pageYOffset + self.innerHeight) { return [okdt, 0]; }
-			else if (!isServer(dds[dd])) {
-				okdt = getSibling(dds[dd], "dt", null, true);
-				if (dds[dd].offsetTop >= self.pageYOffset) { return [okdt, okdt.offsetTop-self.pageYOffset]; }
+		for (var dd = 0; dd < entries.length; dd++) {
+			if (entries[dd].offsetTop >= self.pageYOffset + self.innerHeight) { return [okdt, 0]; }
+			else if (!isServer(entries[dd])) {
+				okdt = getSibling(entries[dd], cat.match(/-ja/)?"th":"dt", null, true);
+				if (entries[dd].offsetTop >= self.pageYOffset) { return [okdt, okdt.offsetTop-self.pageYOffset]; }
 			}
 		}
 		return null;
 	}
 	function lastDT() {
-		for (var dd = dds.length-1; dd >= 0; dd--) {
-			if (!isServer(dds[dd])) { return getSibling(dds[dd], "dt", null, true); }
+		for (var dd = entries.length-1; dd >= 0; dd--) {
+			if (!isServer(entries[dd])) { return getSibling(entries[dd], cat.match(/-ja/)?"th":"dt", null, true); }
 		}
 		return null;
 	}
