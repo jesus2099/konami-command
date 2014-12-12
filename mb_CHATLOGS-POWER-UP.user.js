@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2014.12.11.17
+// @version      2014.12.12.2004
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -27,7 +27,7 @@
 	}
 	var date = location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
 	if (date) date = date[1]+"-"+date[2]+"-"+date[3];
-	var entries = document.querySelectorAll("dd") || document.querySelectorAll("th + td");
+	var entries = document.querySelectorAll("table#log th + td, dd");
 	var srdd = "none";
 	var srnv = "ajico bowie script 百恵";/*just some starting default value example*/
 	linkify();
@@ -52,32 +52,34 @@
 	if (cat) {
 		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 		var ss = document.styleSheets[document.styleSheets.length-1];
-		ss.insertRule("div#"+userjs+"toolbar { position: fixed; bottom: 0; right: 0; background: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; }", ss.cssRules.length);
+		ss.insertRule("div#"+userjs+"toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; }", ss.cssRules.length);
 		ss.insertRule("body { padding-bottom: .5em; }", ss.cssRules.length);
 		var ctt = document.body.appendChild(createTag("div", { "id": userjs+"toolbar"}));
 		var sep = " | ";
-		if (!cat.match(/-ja/) && date) { /* work in progress: #musicbrainz-ja will get everything too */
-			var re_urlid = /html#(.+)$/;
+		if (date) {
+			var re_urlid = /^#(.+)$/;
 			var re_server = /^\S+ has (?:joined|left) #\S+$/;
 			var re_nick = /([^\s\[\]>]+)\]?$/;
 			var css_brdr = "2px dashed red";
 			var maxStoredLastread = 100;
+			/* lastread and hashrow are <dt> in mb, <tr> in mbja */
 			var lastread; if (lastread = localStorage.getItem(userjs+"lr"+cat+date)) { lastread = document.getElementById(lastread.split(" ")[0]); }
-			var hashrow; if ((urlid = location.href.match(re_urlid)) && (urlide = document.getElementById(urlid[1]))) { hashrow = urlide; }
+			var hashrow; if ((urlid = location.hash.match(re_urlid)) && (urlide = document.getElementById(urlid[1]))) { hashrow = urlide; }
 			if (tmp = localStorage.getItem(userjs+"srd")) { srdd = tmp; }
 			if (tmp = localStorage.getItem(userjs+"nick")) { srnv = tmp; }
-			var sr = ss.insertRule("dt.server, dd.server { display: "+srdd+"; }", ss.cssRules.length);
-			var nrdt = ss.insertRule(nicksel(srnv, "dt")+" { background: #ff6; }", ss.cssRules.length);
-			var nrdd = ss.insertRule(nicksel(srnv, "dd")+" { background: #ffc; }", ss.cssRules.length);
+			var sr = ss.insertRule("dt.server, dd.server, table#log tr:not(.msg) { display: "+srdd+"; }", ss.cssRules.length);
+			var nrdt = ss.insertRule(nicksel(srnv, "dt")+" { background-color: #ff6; }", ss.cssRules.length);
+			var nrdd = ss.insertRule(nicksel(srnv, "dd")+" { background-color: #ffc; }", ss.cssRules.length);
 			/* jump links */
 			if (hashrow) {
 				if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
-				var a = ctt.appendChild(createA("#\u00a0"+hashrow.getAttribute("id").match(/T(\d\d-\d\d-\d\d)-\d+/)[1].replace(/-/g, ":"), "#"+hashrow.getAttribute("id"), hashrow.getAttribute("id")));
-				if (isServer(getSibling(hashrow, "dd"))) {
+				var a = ctt.appendChild(createA("#\u00a0"+hashrow.firstChild.textContent.replace(/[^\d:]/g, ""), "#"+hashrow.getAttribute("id"), hashrow.getAttribute("id")));
+				if (hashrow.className.match(/enter|quit/) || isServer(getSibling(hashrow, "dd"))) {
 					ctt.appendChild(document.createTextNode(" (server)"));
 					a.addEventListener("click", function(e) {
-						if ((servel = document.getElementById(this.getAttribute("href").substr(1))) && self.getComputedStyle(servel).display == "none" && (prevnick = getSibling(servel, "dt", "nick-", true))) {
-							scrollTo(0, prevnick.offsetTop);
+						if ((servel = document.getElementById(this.getAttribute("href").substr(1))) && self.getComputedStyle(servel).display == "none" && (prevmsg = getSibling(servel, !cat.match(/-ja/)?"dt":"tr", !cat.match(/-ja/)?"nick-":"msg", true))) {
+							prevmsg.querySelector("a").style.setProperty("background-color", "#ff9");
+							scrollTo(0, prevmsg.offsetTop);
 							e.cancelBubble = true;
 							if (e.stopPropagation) e.stopPropagation();
 							e.preventDefault();
@@ -85,7 +87,7 @@
 						}
 					}, false);
 				}
-				hashrow.getElementsByTagName("a")[0].style.border = css_brdr;
+				hashrow.querySelector("a").style.setProperty("border", css_brdr);
 			}
 			if (lastread) {
 				if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
@@ -93,43 +95,45 @@
 					document.getElementById(this.getAttribute("title")).scrollIntoView();
 				}, lastread.getAttribute("id")));
 			}
-			/* nick names highlight */ 
-			if (navigator.userAgent.match(/firefox/i)) {/*(-_-;)*/
-				if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
-				var a = ctt.appendChild(createA("Firefox bug 28182", "http://bugs.webkit.org/show_bug.cgi?id=28182", "reload after change nick names"));
-				a.style.background = "pink";
-				a.setAttribute("target", "_blank");
-				ctt.appendChild(document.createTextNode("\u00a0→\u00a0"));
-			} else if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
-			ctt.appendChild(createTag("input", {
-				"id": userjs+"nick",
-				"type": "text",
-				"value": srnv
-			}, {
-				"keyup": function(e) {
-					plusmoins(this.value);
-				}
-			}));
-			asyncPlusmoins();
+			if (!cat.match(/-ja/)) {
+				/* nick names highlight */ 
+				if (navigator.userAgent.match(/firefox/i)) {/*(-_-;)*/
+					if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
+					var a = ctt.appendChild(createA("Firefox bug 28182", "http://bugs.webkit.org/show_bug.cgi?id=28182", "reload after change nick names"));
+					a.style.setProperty("background-color", "pink");
+					a.setAttribute("target", "_blank");
+					ctt.appendChild(document.createTextNode("\u00a0→\u00a0"));
+				} else if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
+				ctt.appendChild(createTag("input", {
+					"id": userjs+"nick",
+					"type": "text",
+					"value": srnv
+				}, {
+					"keyup": function(e) {
+						plusmoins(this.value);
+					}
+				}));
+				asyncPlusmoins();
+			}
 			/* server messages on/off */
-			ctt.appendChild(document.createTextNode(sep));
+			if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
 			ctt.appendChild(createTag("input", {
 				"id": userjs+"tog",
 				"type": "button",
-				"value": (srdd=="block"?"Hide":"Show")+" server messages"
+				"value": (srdd=="none"?"Show":"Hide")+" server messages"
 			}, {
 				"click": function(e) {
 					var fv;
-					if ((dls = document.getElementsByTagName("dl")) && dls[0].offsetTop < self.pageYOffset) { fv = firstVisibleDT(); }
+					if ((log = document.querySelector("dl, table#log")) && log.offsetTop < self.pageYOffset) { fv = firstVisibleMsg(); }
 					var s = this.value.match(/^(Show|Hide)/);
 					if (s) { s = s[1]=="Show"; }
-					var d = s?"block":"none";
+					var d = s?(cat.match(/-ja/)?"table-row":"block"):"none";
 					localStorage.setItem(userjs+"srd", d);
-					ss.cssRules[sr].style.display = d;
+					ss.cssRules[sr].style.setProperty("display", d);
 					this.value = this.value.replace(s?"Show":"Hide", s?"Hide":"Show");
 					if (fv) {
 						if ((y = fv[0].offsetTop-fv[1]) < 0) {
-							if (prevnick = getSibling(fv[0], "dt", "nick-", true)) { y = prevnick.offsetTop; }
+						if (prevmsg = getSibling(fv[0], !cat.match(/-ja/)?"dt":"tr", !cat.match(/-ja/)?"nick-":"msg", true)) { y = prevmsg.offsetTop; }
 							else { y = fv[0].offsetTop; }
 						}
 						scrollTo(0, y);
@@ -147,9 +151,9 @@
 			/* last read stuff */
 			if (date) {
 				if (lastread) {
-					if (nextDD = getSibling(lastread, "dd")) { nextDD.style.borderBottom = css_brdr; }
+					(cat.match(/-ja/)?lastread.querySelector("td:last-child"):document.querySelector("dt#"+lastread.getAttribute("id")+" ~ dd")).style.setProperty("border-bottom", css_brdr);
 				}
-				if (ldt = lastDT()) {
+				if (ldt = lastMsg()) {
 					localStorage.setItem(userjs+"lr"+cat+date, ldt.getAttribute("id")+" "+new Date().getTime());
 				}
 				/* last read cleanup */
@@ -169,11 +173,11 @@
 				}
 			}
 		}
-		/* #musicbrainz / #musicbrainz-devel */
-		if (cat.match(/^musicbrainz(?:-devel)?$/)) {
+		/* cross linking */
+		if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
+		if (!cat.match(/-ja/)) {
 			var tgt = "musicbrainz" + (cat.match(/^musicbrainz$/)?"-devel":"");
-			ctt.appendChild(document.createTextNode(sep));
-			ctt.appendChild(createA("#"+tgt, location.href.replace(/\/musicbrainz(?:-devel)?\//, "/"+tgt+"/")));
+			ctt.appendChild(createA("#"+tgt, location.pathname.replace(/\/musicbrainz(?:-devel)?\//, "/"+tgt+"/")));
 			ctt.appendChild(document.createTextNode(sep));
 			ctt.appendChild(createA("#musicbrainz-ja", "http://hcm.fam.cx/mbja/chatlog.cgi/"+(location.pathname.match(/\d/)?(location.pathname.match(/[\d-]+(?=\/$|\.html$)/)+"").replace(/-/g, "/"):"")));
 		} else {
@@ -243,50 +247,53 @@
 			ss.cssRules[nrdt].selectorText = nicksel(srnv, "dt");
 			ss.cssRules[nrdd].selectorText = nicksel(srnv, "dd");
 		}
-		var nicks = document.getElementsByTagName("dt");
-		for (var nick=0; nick<nicks.length; nick++) {
-			if (who = nicks[nick].innerHTML.match(re_nick)) {
-				var gotit = srnv.match(new RegExp("(?:^|[^\\w-])"+who[1]+"(?:$|[^\\w-])"));
-				var a = nicks[nick].getElementsByClassName(userjs+"plusmoins");
-				if (a && a.length == 1) {
-					a = a[0];
-					a.replaceChild(document.createTextNode(gotit?"-":"+"), a.firstChild);
-					a.setAttribute("title", a.getAttribute("title").replace(/^(\S+)/, gotit?"unwatch":"watch"));
-				}
-				else {
-					a = createA(gotit?"-":"+", function(e) {
-						var inni = document.getElementById(userjs+"nick");
-						var t = this.getAttribute("title").match(/^(\S+) (\S+)$/);
-						var v = inni.value;
-						if (t[1] == "watch") {
-							v += " "+t[2];
+		/* not supporting the “add/remove nick to watched keywords” feature in mbja */
+		if (!cat.match(/-ja/)) {
+			var nicks = document.getElementsByTagName("dt");
+			for (var nick=0; nick<nicks.length; nick++) {
+				if (who = nicks[nick].innerHTML.match(re_nick)) {
+					var gotit = srnv.match(new RegExp("(?:^|[^\\w-])"+who[1]+"(?:$|[^\\w-])"));
+					var a = nicks[nick].getElementsByClassName(userjs+"plusmoins");
+					if (a && a.length == 1) {
+						a = a[0];
+						a.replaceChild(document.createTextNode(gotit?"-":"+"), a.firstChild);
+						a.setAttribute("title", a.getAttribute("title").replace(/^(\S+)/, gotit?"unwatch":"watch"));
+					}
+					else {
+						a = createA(gotit?"-":"+", function(e) {
+							var inni = document.getElementById(userjs+"nick");
+							var t = this.getAttribute("title").match(/^(\S+) (\S+)$/);
+							var v = inni.value;
+							if (t[1] == "watch") {
+								v += " "+t[2];
+							} else {
+								v = v.replace(t[2], "");
+							}
+							var ns = v.match(/([\w-]+)/g);
+							ns.sort(function(a,b) {
+								return (a.toLowerCase()>b.toLowerCase()?1:-1);
+							});
+							v = "";
+							for (var n=0; n<ns.length; n++) {
+								v += ns[n]+" ";
+							}
+							inni.value = v;
+							plusmoins(inni.value);
+						}, (gotit?"unwatch":"watch")+" "+who[1]);
+						a.setAttribute("class", userjs+"plusmoins");
+						a.style.setProperty("text-decoration", "none");
+						a.style.setProperty("margin-right", "0");
+						nicks[nick].insertBefore(a, nicks[nick].lastChild);
+						nicks[nick].insertBefore(document.createTextNode(" "), nicks[nick].lastChild);
+					}
+					var subs = srnv.split(" ");
+					for (var sub=0; sub<subs.length; sub++) {
+						var dd = getSibling(nicks[nick], "dd");
+						if (subs[sub].match(/\w+/) && dd.textContent.match(new RegExp(subs[sub], "i"))) {
+							dd.className += " nick-"+subs[sub]+" ";
 						} else {
-							v = v.replace(t[2], "");
+							dd.className = dd.className.replace(subs[sub], "");
 						}
-						var ns = v.match(/([\w-]+)/g);
-						ns.sort(function(a,b) {
-							return (a.toLowerCase()>b.toLowerCase()?1:-1);
-						});
-						v = "";
-						for (var n=0; n<ns.length; n++) {
-							v += ns[n]+" ";
-						}
-						inni.value = v;
-						plusmoins(inni.value);
-					}, (gotit?"unwatch":"watch")+" "+who[1]);
-					a.setAttribute("class", userjs+"plusmoins");
-					a.style.textDecoration = "none";
-					a.style.marginRight = "0";
-					nicks[nick].insertBefore(a, nicks[nick].lastChild);
-					nicks[nick].insertBefore(document.createTextNode(" "), nicks[nick].lastChild);
-				}
-				var subs = srnv.split(" ");
-				for (var sub=0; sub<subs.length; sub++) {
-					var dd = getSibling(nicks[nick], "dd");
-					if (subs[sub].match(/\w+/) && dd.textContent.match(new RegExp(subs[sub], "i"))) {
-						dd.className += " nick-"+subs[sub]+" ";
-					} else {
-						dd.className = dd.className.replace(subs[sub], "");
 					}
 				}
 			}
@@ -302,7 +309,7 @@
 		}
 		return sel;
 	}
-	function firstVisibleDT() {
+	function firstVisibleMsg() {
 		var okdt;
 		for (var dd = 0; dd < entries.length; dd++) {
 			if (entries[dd].offsetTop >= self.pageYOffset + self.innerHeight) { return [okdt, 0]; }
@@ -313,14 +320,14 @@
 		}
 		return null;
 	}
-	function lastDT() {
+	function lastMsg() {
 		for (var dd = entries.length-1; dd >= 0; dd--) {
-			if (!isServer(entries[dd])) { return getSibling(entries[dd], cat.match(/-ja/)?"th":"dt", null, true); }
+			if (!isServer(entries[dd])) { return cat.match(/-ja/)?entries[dd].parentNode:getSibling(entries[dd], "dt", null, true); }
 		}
 		return null;
 	}
 	function isServer(o) {
-		return (o.childNodes.length == 1 && o.firstChild.nodeType == 3 && o.firstChild.nodeValue.match(re_server));
+		return cat.match(/-ja/) && o.parentNode.className.match(/enter|quit/) || (o.childNodes.length == 1 && o.firstChild.nodeType == 3 && o.firstChild.nodeValue.match(re_server));
 	}
 	function getSibling(obj, tag, cls, prev) {
 		var cur = obj;
@@ -349,8 +356,8 @@
 			if (link && typeof link == "function") {
 				a.addEventListener("click", link, false);
 			}
-			a.style.cursor = "pointer";
-			a.style.textDecoration = "underline";
+			a.style.setProperty("cursor", "pointer");
+			a.style.setProperty("text-decoration", "underline");
 		}
 		if (title){ a.setAttribute("title", title); }
 		a.appendChild(typeof text=="string"?document.createTextNode(text):text);
