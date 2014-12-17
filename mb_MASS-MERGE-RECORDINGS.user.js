@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.12.17.831
+// @version      2014.12.17.846
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -309,6 +309,18 @@
 			this.style.setProperty("background-color", swap.value=="no"?cInfo:cOK);
 			startpos.focus();
 		}, false);
+		tmp = MMRdiv.appendChild(createInput("button", "", "Reset all merge directions to oldest"));
+		tmp.addEventListener("click", function(e) {
+			var allbutts = document.querySelectorAll("input."+MMRid+"dirbutt:not([disabled])");
+			for (var iab=0; iab < allbutts.length; iab++) {
+				var remoteRowID = parseInt(allbutts[iab].parentNode.querySelector("input[name='merge.merging.1']").value, 10);
+				var localRowID = parseInt(allbutts[iab].parentNode.querySelector("input[name='merge.merging.0']").value, 10);
+				if (remoteRowID > localRowID && allbutts[iab].value == loc2rem || remoteRowID < localRowID && allbutts[iab].value == rem2loc) {
+					allbutts[iab].click();
+				}
+			}
+			startpos.focus();
+		});
 		tmp = MMRdiv.appendChild(createInput("button", "", "Merge all found recs"));
 		tmp.setAttribute("ref", tmp.value);
 		tmp.setAttribute("id", MMRid+"mergeallbutt");
