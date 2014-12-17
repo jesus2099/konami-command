@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2014.12.12.2004
+// @version      2014.12.17.902
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -201,9 +201,9 @@
 		/* prev./next day */
 		if (date) {
 			ctt.appendChild(document.createTextNode(sep));
-			ctt.appendChild(createA("« "+(cat.match(/-ja/)?"前":"prev."), shiftDate(-1)));
+			ctt.appendChild(createA("« "+(cat.match(/-ja/)?"前日":"prev."), shiftDate(-1)));
 			ctt.appendChild(document.createTextNode(sep));
-			ctt.appendChild(createA((cat.match(/-ja/)?"次":"next")+" »", shiftDate(+1)));
+			ctt.appendChild(createA((cat.match(/-ja/)?"翌日":"next")+" »", shiftDate(+1)));
 		}
 	}
 	function shiftDate(shift) {
