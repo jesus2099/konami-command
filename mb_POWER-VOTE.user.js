@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2014.12.17.738
+// @version      2014.12.17.848
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -295,7 +295,7 @@
 		editdetails = mkElt("div", "edit-details");
 		editdetails.style.setProperty("text-align", "right");
 		editdetails.style.setProperty("margin", "0");
-		editdetails.appendChild(mkElt("span", "buttons").appendChild(shortcut("omgcancel", canceltext)).parentNode).style.setProperty("border", "2px dashed maroon");
+		editdetails.appendChild(mkElt("span", "buttons").appendChild(shortcut("omgcancel", canceltext)).parentNode);
 		editdetails.appendChild(document.createTextNode(text));
 		editlist.appendChild(editdetails);
 		return editlist;
