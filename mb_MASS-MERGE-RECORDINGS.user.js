@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2014.12.4.1206
+// @version      2014.12.17.831
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -363,7 +363,6 @@
 					var dirButt = rmForm.appendChild(createInput("button", "direction", swap.value=="no"?rem2loc:loc2rem));
 					dirButt.setAttribute("class", MMRid+"dirbutt");
 					dirButt.style.setProperty("background-color", swap.value=="no"?cOK:cInfo);
-					dirButt.style.setProperty("font-size", "1em");
 					dirButt.style.setProperty("padding", "0 1em .5em 1em");
 					dirButt.style.setProperty("margin", "0 4px");
 					dirButt.addEventListener("click", function(e) {

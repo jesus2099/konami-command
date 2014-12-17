@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2014.11.24.1416
+// @version      2014.12.17.805
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -67,8 +67,8 @@ if (content) {
 	if (notetext.length == 1) {
 		notetext = notetext[0];
 		if (acoustid) {
-			notetext.style.height = "8em";
-			notetext.style.width = "100%";
+			notetext.style.setProperty("height", "8em");
+			notetext.style.setProperty("width", "100%");
 		} else {
 			reldates = content.querySelectorAll("span.partial-date");
 		}
@@ -96,51 +96,46 @@ if (content) {
 		if (mb) {
 			if (carcan = getParent(notetext, "div", "half-width")) {
 				if (re) carcan.style.setProperty("width", "inherit");
-				else notetext.parentNode.style.width = carcan.parentNode.offsetWidth+"px";
-				if (xdate[0] && (fs = getParent(xdate[0][1], "fieldset"))) { fs.style.width = carcan.parentNode.offsetWidth+"px"; }
+				else notetext.parentNode.style.setProperty("width", carcan.parentNode.offsetWidth+"px");
+				if (xdate[0] && (fs = getParent(xdate[0][1], "fieldset"))) { fs.style.setProperty("width", carcan.parentNode.offsetWidth+"px"); }
 			}
-			notetext.style.width = "98%";
-			var debilos = ["label-id-ar.edit_note", "label-id-edit_note", "label-id-edit-artist.edit_note", "label-id-edit-label.edit_note", "label-id-edit-recording.edit_note", "label-id-edit-release-group.edit_note", "label-id-edit-url.edit_note", "label-id-edit-work.edit_note"];
-			for (var neuneu=0; neuneu<debilos.length; neuneu++) {
-				if (ducon = document.getElementById(debilos[neuneu])) { ducon.parentNode.removeChild(ducon); }
-			}
+			notetext.style.setProperty("width", "98%");
+			var removeLabels = ["label-id-ar.edit_note", "label-id-edit_note", "label-id-edit-artist.edit_note", "label-id-edit-label.edit_note", "label-id-edit-recording.edit_note", "label-id-edit-release-group.edit_note", "label-id-edit-url.edit_note", "label-id-edit-work.edit_note"];
+			for (var l=0; l<removeLabels.length; l++) if (label = document.getElementById(removeLabels[l])) label.parentNode.removeChild(label);
 		}
-		var savecb = notetext.parentNode.insertBefore(createTag("label", {a:{title:"saves edit note on page unload"}, s:{"background-color":(save?cOK:cWARN),"float":"none",margin:"0"}, e:{"click":function(e){if(e.shiftKey){sendEvent(submitbtn, "click");}}}}), notetext);
-		savecb = savecb.appendChild(createTag("input", {a:{type:"checkbox","class":"jesus2099remember",tabindex:"-1"}, s:{display:"inline"}, e:{"change":function(e){save=this.checked;this.parentNode.style.backgroundColor=save?cOK:cWARN;}}}));
+		var buttons = createTag("div", {a:{"class":"buttons"}});
+		var savecb = buttons.appendChild(createTag("label", {a:{title:"saves edit note on page unload"}, s:{"background-color":(save?cOK:cWARN),"min-width":"0",margin:"0"}, e:{"click":function(e){if(e.shiftKey){sendEvent(submitbtn, "click");}}}}));
+		savecb = savecb.appendChild(createTag("input", {a:{type:"checkbox","class":"jesus2099remember",tabindex:"-1"}, s:{display:"inline"}, e:{"change":function(e){save=this.checked;this.parentNode.style.setProperty("background-color",save?cOK:cWARN);}}}));
 		savecb.checked = save;
-		savecb.parentNode.appendChild(document.createTextNode("remember "));
-		notetext.parentNode.insertBefore(document.createTextNode(" "), notetext);
-		if (textLabels.length > 0) {
-			for (var ni = 0; ni < textLabels.length; ni++) {
-				var butt = createButtor(textLabels[ni], "50px");
-				var buttid = notetextStorage+"0"+ni;
-				butt.setAttribute("id", buttid);
-				var lastnotetext = localStorage.getItem(buttid);
-				if (!lastnotetext) {
-					butt.setAttribute("disabled", "true");
-					butt.style.opacity = ".5";
-				}
-				else {
-					butt.setAttribute("title", lastnotetext);
-					butt.setAttribute("value", lastnotetext.replace(/(http:\/\/|https:\/\/|www\.|[\n\r])/gi, "").substr(0, 6));
-					butt.addEventListener("click", function(e) {
-						notetext.value = this.getAttribute("title");
-						sendEvent(notetext, "change");
-						notetext.focus();
-						if (e.shiftKey) { sendEvent(submitbtn, "click"); }
-					}, false);/*onclick*/
-				}
-				notetext.parentNode.insertBefore(butt, notetext);
-				notetext.parentNode.insertBefore(document.createTextNode(" "), notetext);
+		savecb.parentNode.appendChild(document.createTextNode(" remember  "));
+		for (var ni = 0; ni < textLabels.length; ni++) {
+			var butt = createButtor(textLabels[ni], "50px");
+			var buttid = notetextStorage+"0"+ni;
+			butt.setAttribute("id", buttid);
+			var lastnotetext = localStorage.getItem(buttid);
+			if (!lastnotetext) {
+				butt.setAttribute("disabled", "true");
+				butt.style.setProperty("opacity", ".5");
 			}
-			notetext.parentNode.insertBefore(document.createElement("br"), notetext);
-			createClearButtor("notetext");
-			notetext.parentNode.insertBefore(document.createTextNode(" ← shift+click to submit right away"), notetext.previousSibling);
-			var lastnotetext = localStorage.getItem(notetextStorage+"00");
-			if (!editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
-				notetext.value = lastnotetext;
-				sendEvent(notetext, "change");
+			else {
+				butt.setAttribute("title", lastnotetext);
+				butt.setAttribute("value", lastnotetext.replace(/(http:\/\/|https:\/\/|www\.|[\n\r])/gi, "").substr(0, 6));
+				butt.addEventListener("click", function(e) {
+					notetext.value = this.getAttribute("title");
+					sendEvent(notetext, "change");
+					notetext.focus();
+					if (e.shiftKey) { sendEvent(submitbtn, "click"); }
+				}, false);/*onclick*/
 			}
+			buttons.appendChild(butt);
+		}
+		buttons.appendChild(createClearButtor("notetext"));
+		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
+		notetext.parentNode.insertBefore(buttons, notetext);
+		var lastnotetext = localStorage.getItem(notetextStorage+"00");
+		if (!editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
+			notetext.value = lastnotetext;
+			sendEvent(notetext, "change");
 		}
 		if (reldates.length == 2) {
 			createClearButtor("dates");
@@ -153,7 +148,7 @@ if (content) {
 				butt.setAttribute("id", xdate[ixd][0]);
 				if (!lastdatey) {
 					butt.setAttribute("disabled", "true");
-					butt.style.opacity = ".5";
+					butt.style.setProperty("opacity", ".5");
 				}
 				else {
 					butt.setAttribute("title", lastdatey+"-"+lastdatem+"-"+lastdated);
@@ -260,8 +255,8 @@ function createTag(tag, gadgets, children) {
 	return t;
 }
 function createButtor(label, width) {
-	var butt = createTag("input", {a:{type:"button",value:label,tabindex:"-1"}, s:{display:"inline",padding:"2px"}});
-	if (width) { butt.style.width = width; }
+	var butt = createTag("input", {a:{type:"button",value:label,tabindex:"-1"}, s:{display:"inline",padding:"2px","float":"none"}});
+	if (width) { butt.style.setProperty("width", width); }
 	return butt;
 }
 function createClearButtor(input) {
@@ -274,9 +269,9 @@ function createClearButtor(input) {
 				notetext.focus();
 				if (e.shiftKey) { sendEvent(submitbtn, "click"); }
 			}, false);/*onclick*/
-			butt.style.color = "red";
-			butt.style.backgroundColor = cWARN;
-			notetext.parentNode.insertBefore(butt, notetext.previousSibling);
+			butt.style.setProperty("color", "red");
+			butt.style.setProperty("background-color", cWARN);
+			return butt;
 			break;
 		case "dates":
 			for (var i=0; i<2; i++) {
