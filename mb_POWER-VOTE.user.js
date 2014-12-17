@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2014.11.24.1411
+// @version      2014.12.17.738
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -283,7 +283,7 @@
 		editlist = mkElt("div", "edit-list");
 		editlist.style.setProperty("border", border);
 		editactions = mkElt("div", "edit-actions c applied");
-		voteopts = mkElt("div", "voteopts");
+		voteopts = mkElt("div", "voteopts buttons");
 		voteopts.style.setProperty("width", "175px");
 		voteopts.style.setProperty("margin", "0");
 		voteopts.appendChild(shortcut("1", "Yes"));
@@ -295,7 +295,7 @@
 		editdetails = mkElt("div", "edit-details");
 		editdetails.style.setProperty("text-align", "right");
 		editdetails.style.setProperty("margin", "0");
-		editdetails.appendChild(shortcut("omgcancel", canceltext)).style.setProperty("background-color", "#ff6");
+		editdetails.appendChild(mkElt("span", "buttons").appendChild(shortcut("omgcancel", canceltext)).parentNode).style.setProperty("border", "2px dashed maroon");
 		editdetails.appendChild(document.createTextNode(text));
 		editlist.appendChild(editdetails);
 		return editlist;
@@ -309,8 +309,9 @@
 		var button = document.createElement("input");
 		button.setAttribute("type", "button");
 		if (onlySubmitTabIndexed) { button.setAttribute("tabindex", "-1"); }
-		button.style.setProperty("padding", "0 1px");
-		button.style.setProperty("margin", "0 1px");
+		button.style.setProperty("padding", "4px");
+		button.style.setProperty("margin", "0 2px");
+		button.style.setProperty("float", "none");
 		button.appendChild( document.createTextNode(txt) );
 		button.setAttribute("value", txt);
 		button.addEventListener("click", function(e) { doitdoit(e, vote); }, false);

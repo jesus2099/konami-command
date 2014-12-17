@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.12.10.1750
+// @version      2014.12.17.820
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -560,11 +560,10 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 				icomment.addEventListener("focus", function(e){ this.style.background = ""; }, false);
 				stypeid.addEventListener("focus", function(e){ this.style.background = ""; }, false);
 				stypeid.style.width = "260px";
-				stypeid.parentNode.appendChild(createButtor(vocal));
-				stypeid.parentNode.appendChild(createButtor(instrumental));
-				slangid.style.setProperty("width", "260px");
-				slangid.parentNode.appendChild(createButtol("日", 198));
-				slangid.parentNode.appendChild(createButtol("EN", 120));
+				var buttons = stypeid.parentNode.appendChild(createTag("span", {"class":"buttons"}, {}, {}, [createButtor(vocal), createButtor(instrumental)]));
+				stypeid.style.setProperty("width", (parseInt(getComputedStyle(stypeid).getPropertyValue("width"), 10) - parseInt(getComputedStyle(buttons).getPropertyValue("width"), 10))+"px");
+				buttons = slangid.parentNode.appendChild(createTag("span", {"class":"buttons"}, {}, {}, [createButtol("日", 198), createButtol("EN", 120)]));
+				slangid.style.setProperty("width", (parseInt(getComputedStyle(slangid).getPropertyValue("width"), 10) - parseInt(getComputedStyle(buttons).getPropertyValue("width"), 10))+"px");
 				teditnote.parentNode.appendChild(document.createElement("br"));
 				var tjasrac = document.querySelector("div.workheader p.subheader") || document.querySelector("h1");
 				tjasrac = tjasrac.appendChild(createTag("textarea", {"placeholder":"Paste JASRAC summary here"}));
@@ -1097,7 +1096,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		}});
 	}
 	function createButtol(txt, val) {
-		return createTag("input", {"type":"button", "value":txt, "title":val, "tabindex":"-1"}, {"width":"10px", "padding": "1px 8px"}, {"click":function(e){
+		return createTag("input", {"type":"button", "value":txt, "title":val, "tabindex":"-1"}, {"width":"10px", "padding": "1px 8px", "float": "none"}, {"click":function(e){
 			var slang;
 			var title = this.getAttribute("title");
 			if (title && title.length > 0 && (slang = getSibling(this, "select", null, true))) {
