@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2014.12.17.902
+// @version      2014.12.18.722
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -55,7 +55,6 @@
 		ss.insertRule("div#"+userjs+"toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; }", ss.cssRules.length);
 		ss.insertRule("body { padding-bottom: .5em; }", ss.cssRules.length);
 		var ctt = document.body.appendChild(createTag("div", { "id": userjs+"toolbar"}));
-		var sep = " | ";
 		if (date) {
 			var re_urlid = /^#(.+)$/;
 			var re_server = /^\S+ has (?:joined|left) #\S+$/;
@@ -72,7 +71,7 @@
 			var nrdd = ss.insertRule(nicksel(srnv, "dd")+" { background-color: #ffc; }", ss.cssRules.length);
 			/* jump links */
 			if (hashrow) {
-				if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
+				separate(ctt);
 				var a = ctt.appendChild(createA("#\u00a0"+hashrow.firstChild.textContent.replace(/[^\d:]/g, ""), "#"+hashrow.getAttribute("id"), hashrow.getAttribute("id")));
 				if (hashrow.className.match(/enter|quit/) || isServer(getSibling(hashrow, "dd"))) {
 					ctt.appendChild(document.createTextNode(" (server)"));
@@ -90,7 +89,7 @@
 				hashrow.querySelector("a").style.setProperty("border", css_brdr);
 			}
 			if (lastread) {
-				if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
+				separate(ctt);
 				ctt.appendChild(createA("#\u00a0last-read", function(e){
 					document.getElementById(this.getAttribute("title")).scrollIntoView();
 				}, lastread.getAttribute("id")));
@@ -98,12 +97,14 @@
 			if (!cat.match(/-ja/)) {
 				/* nick names highlight */ 
 				if (navigator.userAgent.match(/firefox/i)) {/*(-_-;)*/
-					if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
+					separate(ctt);
 					var a = ctt.appendChild(createA("Firefox bug 28182", "http://bugs.webkit.org/show_bug.cgi?id=28182", "reload after change nick names"));
 					a.style.setProperty("background-color", "pink");
 					a.setAttribute("target", "_blank");
 					ctt.appendChild(document.createTextNode("\u00a0→\u00a0"));
-				} else if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
+				} else {
+					separate(ctt);
+				}
 				ctt.appendChild(createTag("input", {
 					"id": userjs+"nick",
 					"type": "text",
@@ -116,7 +117,7 @@
 				asyncPlusmoins();
 			}
 			/* server messages on/off */
-			if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
+			separate(ctt);
 			ctt.appendChild(createTag("input", {
 				"id": userjs+"tog",
 				"type": "button",
@@ -174,12 +175,23 @@
 			}
 		}
 		/* cross linking */
-		if (ctt.firstChild) { ctt.appendChild(document.createTextNode(sep)); }
+		separate(ctt);
 		if (!cat.match(/-ja/)) {
 			var tgt = "musicbrainz" + (cat.match(/^musicbrainz$/)?"-devel":"");
-			ctt.appendChild(createA("#"+tgt, location.pathname.replace(/\/musicbrainz(?:-devel)?\//, "/"+tgt+"/")));
-			ctt.appendChild(document.createTextNode(sep));
+			var tgtA = createA("#"+tgt, location.pathname.replace(/\/musicbrainz(?:-devel)?\//, "/"+tgt+"/"));
+			if (cat == "musicbrainz") {
+				ctt.appendChild(document.createTextNode("#musicbrainz"));
+			} else {
+				ctt.appendChild(tgtA);
+			}
+			separate(ctt);
 			ctt.appendChild(createA("#musicbrainz-ja", "http://hcm.fam.cx/mbja/chatlog.cgi/"+(location.pathname.match(/\d/)?(location.pathname.match(/[\d-]+(?=\/$|\.html$)/)+"").replace(/-/g, "/"):"")));
+			separate(ctt);
+			if (cat == "musicbrainz-devel") {
+				ctt.appendChild(document.createTextNode("#musicbrainz-devel"));
+			} else {
+				ctt.appendChild(tgtA);
+			}
 		} else {
 			var path = "";
 			if (location.pathname.match(/\d/)) {
@@ -195,14 +207,14 @@
 				}
 			}
 			ctt.appendChild(createA("#musicbrainz", "https://chatlogs.musicbrainz.org/musicbrainz/"+path));
-			ctt.appendChild(document.createTextNode(sep));
+			ctt.appendChild(document.createTextNode(" | #musicbrainz-ja | "));
 			ctt.appendChild(createA("#musicbrainz-devel", "https://chatlogs.musicbrainz.org/musicbrainz-devel/"+path));
 		}
 		/* prev./next day */
 		if (date) {
-			ctt.appendChild(document.createTextNode(sep));
+			separate(ctt);
 			ctt.appendChild(createA("« "+(cat.match(/-ja/)?"前日":"prev."), shiftDate(-1)));
-			ctt.appendChild(document.createTextNode(sep));
+			separate(ctt);
 			ctt.appendChild(createA((cat.match(/-ja/)?"翌日":"next")+" »", shiftDate(+1)));
 		}
 	}
@@ -228,7 +240,7 @@
 			highlighted.scrollIntoView();
 		}
 	}
-	function asyncPlusmoins (e) {
+	function asyncPlusmoins(e) {
 		if (e) {
 			document.body.removeEventListener("DOMNodeInserted", asyncPlusmoins, false);
 			document.body.removeEventListener("DOMAttrModified", asyncPlusmoins, false);
@@ -247,7 +259,7 @@
 			ss.cssRules[nrdt].selectorText = nicksel(srnv, "dt");
 			ss.cssRules[nrdd].selectorText = nicksel(srnv, "dd");
 		}
-		/* not supporting the “add/remove nick to watched keywords” feature in mbja */
+		/* not supporting the “add/remove nick to watched keywords” feature in mbja — i think i will simply remove this feature completely */
 		if (!cat.match(/-ja/)) {
 			var nicks = document.getElementsByTagName("dt");
 			for (var nick=0; nick<nicks.length; nick++) {
@@ -398,9 +410,7 @@
 		}
 		/*alert(((new Date().getTime()) - t0) / 1000);*/
 	}
-	function debug(text, e) {
-		if (false) {
-			console.log((new Date()).toString()+" "+(e?e.type:"")+(text?"\n"+text:""));
-		}
+	function separate(cont, sep) {
+		if (cont.firstChild) ctt.appendChild(document.createTextNode(sep?sep:" | "));
 	}
 })();
