@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2014.12.18.722
+// @version      2014.12.18.811
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -56,6 +56,8 @@
 		ss.insertRule("body { padding-bottom: .5em; }", ss.cssRules.length);
 		var ctt = document.body.appendChild(createTag("div", { "id": userjs+"toolbar"}));
 		if (date) {
+			document.title = "#"+cat+" ("+date+")";
+			if (history.replaceState) history.replaceState(history.state, document.title);
 			var re_urlid = /^#(.+)$/;
 			var re_server = /^\S+ has (?:joined|left) #\S+$/;
 			var re_nick = /([^\s\[\]>]+)\]?$/;
