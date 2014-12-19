@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.12.17.820
+// @version      2014.12.19.757
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -1099,7 +1099,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		return createTag("input", {"type":"button", "value":txt, "title":val, "tabindex":"-1"}, {"width":"10px", "padding": "1px 8px", "float": "none"}, {"click":function(e){
 			var slang;
 			var title = this.getAttribute("title");
-			if (title && title.length > 0 && (slang = getSibling(this, "select", null, true))) {
+			if (title && title.length > 0 && (slang = getSibling(this.parentNode, "select", null, true))) {
 				slang.value = this.getAttribute("title");
 				slang.focus();
 			}
