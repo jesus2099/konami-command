@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2014.11.14.2208
+// @version      2014.12.29.1731
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -62,21 +62,18 @@ var shownworks = {"count":0};
 var isrcURL = "/isrc/%s";
 var acoustidURL = "//acoustid.org/track/%s";
 var releasewsURL = "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musicbrainz.org/XMLWebService#release_resources */ 
-var isrcRemoveURL = "/edit/isrc/remove.html?trackid=%trackid&isrc=%isrc";
-var addIsrcURL = "/edit/isrc/add.html?trackid=%trackid";
-var UrlRelURL = "/edit/relationship/addurl.html?id=%trackid&type=track&name=%trackname";
 var str_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(str_GUID, "i");
 var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acoustid&mbid=%mbid&state=%state";
 var CSS_Arec = "td:not(.pos):not(.video) a[href^='/recording/']";
 var pleaseWaitFragment = null;
 var tracksHtml = null;
-var pagecat = self.location.href.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i)? "edits" : "release";
-if (self.location.href.match(/\/recordings/i)) { pagecat = "recordings"; }
+var pagecat = location.href.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i)? "edits" : "release";
+if (location.href.match(/\/recordings/i)) { pagecat = "recordings"; }
 if (pagecat) {
 	switch(pagecat) {
 		case "release":
-			var relMBID = self.location.href.match(re_GUID);
+			var relMBID = location.href.match(re_GUID);
 			if (relMBID && (tracksHtml = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]:not(.subh)")).length > 0) {
 				if (recUseInRelationshipLink || recAddToMergeLink) {
 					for (var ith=0; ith < tracksHtml.length; ith++) {
