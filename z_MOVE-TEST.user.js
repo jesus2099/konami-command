@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         z. MOVE TEST
-// @version      1
-// @description  please don’t install this is just a test to see how to manage script file move with auto update maintain (on github, gf and oujs).
+// @version      2
+// @description  please donâ€™t install this is just a test to see how to manage script file move with auto update maintain (on github, gf and oujs).
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/z_MOVE-TEST.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/z_MOVE-TEST.user.js
 // ==/UserScript==
@@ -17,6 +17,6 @@
 		}
 	}
 	var aMalibu = meta.name+" ("+meta.version+")";
-	try { aMalibu += "\n\n"+meta.downloadURL; } catch() {}
+	try { aMalibu += "\n\n"+meta.downloadURL; } catch(e) {}
 	alert(aMalibu);
 })();
