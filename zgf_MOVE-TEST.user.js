@@ -1,10 +1,10 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         zgf. MOVE TEST
-// @version      2
+// @version      3
 // @description  please don’t install this is just a test to see how to manage script file move with auto update maintain (on github, gf and oujs).
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/zgf_MOVE-TEST.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/zgf_MOVE-TEST.user.js
+// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/tests/zgf_MOVE-TEST.user.js
+// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/tests/zgf_MOVE-TEST.user.js
 // ==/UserScript==
 	}};
 	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
