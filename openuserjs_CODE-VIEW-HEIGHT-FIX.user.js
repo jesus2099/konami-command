@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         openuserjs. CODE VIEW HEIGHT FIX
-// @version      2015.1.2.1459
+// @version      2015.1.2.1503
 // @description  openuserjs.org. Source code tab height fix (for Opera 12 and other css "calc" and "vh" unit unabled browsers)
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -30,7 +30,7 @@ if (editor) {
 function setEditorHeight() {
 	editor.style.setProperty("height", (document.documentElement.clientHeight * 100 / margins[1] - margins[2]) + "px");
 }
-function sendEvent(element, eventName){
+function sendEvent(node, eventName){
 	var event = document.createEvent("HTMLEvents");
 	event.initEvent(eventName, true, true);
 	node.dispatchEvent(event);
