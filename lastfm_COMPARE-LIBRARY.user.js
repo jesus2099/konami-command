@@ -22,7 +22,7 @@ var menus = page.querySelector("div.masthead-wrapper");
 var libtitle = document.querySelector("div#page div#content > header h1");
 var user = page.querySelector("nav div.masthead-right a[href^='/user/'].user-badge");
 if (page && user && menus) {
-	if (self != top && location.pathname.indexOf(user.getAttribute("href")) == 0 && parent && parent.document.querySelector("iframe[src='"+decodeURIComponent(location.href)+"'].j2lfm-cl")) {
+	if (self != top && location.pathname.indexOf(user.getAttribute("href")) == 0 && parent && parent.document.querySelector("iframe[src='"+decodeURIComponent(location.href).replace(/'/g,"\\'")+"'].j2lfm-cl")) {
 		//compare library iframe page (our library)
 		page.style.setProperty("width", "100%");
 		page.style.setProperty("margin", "0");
@@ -48,7 +48,9 @@ if (page && user && menus) {
 					if (libraryPadding[i][headerTypes[t]].node) libraryPadding[i][headerTypes[t]].height = parseInt(getComputedStyle(libraryPadding[i][headerTypes[t]].node).getPropertyValue("height"), 10);
 					if (libraryPadding[i][headerTypes[t]].height > libraryPadding[max][headerTypes[t]].height) max = i;
 				}
-				libraryPadding[max?0:1][headerTypes[t]].node.style.setProperty("min-height", libraryPadding[max?1:0][headerTypes[t]].height+"px");
+				if (libraryPadding[0][headerTypes[t]].height && libraryPadding[1][headerTypes[t]].height) {
+					libraryPadding[max?0:1][headerTypes[t]].node.style.setProperty("min-height", libraryPadding[max?1:0][headerTypes[t]].height+"px");
+				}
 			}
 		});
 		sendEvent(self, "resize");
