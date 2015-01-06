@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         lastfm. COMPARE LIBRARY
-// @version      2015.1.6.2343
+// @version      2015.1.7.49
 // @description  last.fm: Basic side by side comparison of any library page with ours.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -22,7 +22,7 @@ var menus = page.querySelector("div.masthead-wrapper");
 var libtitle = document.querySelector("div#page div#content > header h1");
 var user = page.querySelector("nav div.masthead-right a[href^='/user/'].user-badge");
 if (page && user && menus) {
-	var thisFrame = parent && parent.document.querySelector("iframe[src='"+decodeURIComponent(location.href).replace(/'/g,"\\'")+"'].j2lfm-cl");
+	var thisFrame = parent && parent.document.querySelector("iframe.j2lfm-cl");
 	if (self != top && location.pathname.indexOf(user.getAttribute("href")) == 0 && thisFrame) {
 		//FIGHTING *googleadservices.com/* !!!
 		parent.document.querySelector("html").style.removeProperty("display");
