@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         lastfm. COMPARE LIBRARY
-// @version      2015.1.6.1545
+// @version      2015.1.6.1947
 // @description  last.fm. Compare libraries with yours, side by side.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -39,15 +39,20 @@ if (page && user && menus) {
 		}
 		self.addEventListener("resize", function() {
 			//align both track lists
-			var albums = [{node:document.querySelector("div#libraryAlbums")}, {node:parent.document.querySelector("div#libraryAlbums")}];
-			var max = 0;
-			for (var a = 0; a < albums.length; a++) {
-				albums[a].height = parseInt(getComputedStyle(albums[a].node).getPropertyValue("height"), 10);
-				if (albums[a].height > albums[max].height) max = a;
+			var libraryPadding = [{root:page}, {root:parent.document.querySelector("div#page")}];
+			var headerTypes = ["Top", "Albums"];
+			for (var t = 0; t < headerTypes.length; t++) {
+				var max = 0;
+				for (var i = 0; i < libraryPadding.length; i++) {
+					libraryPadding[i][headerTypes[t]] = {"node": libraryPadding[i].root.querySelector("div#library"+headerTypes[t])};
+					if (libraryPadding[i][headerTypes[t]].node) libraryPadding[i][headerTypes[t]].height = parseInt(getComputedStyle(libraryPadding[i][headerTypes[t]].node).getPropertyValue("height"), 10);
+					if (libraryPadding[i][headerTypes[t]].height > libraryPadding[max][headerTypes[t]].height) max = i;
+				}
+				libraryPadding[max?0:1][headerTypes[t]].node.style.setProperty("min-height", libraryPadding[max?1:0][headerTypes[t]].height+"px");
 			}
-			albums[max?0:1].node.style.setProperty("min-height", albums[max?1:0].height+"px");
 		});
 		sendEvent(self, "resize");
+		sendEvent(parent, "resize");
 	} else if (libtitle && user && location.pathname.indexOf(user.getAttribute("href")) == -1) {
 		//library page (except ours)
 		var comparelib = document.createElement("a");
