@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         lastfm. COMPARE LIBRARY
-// @version      2015.1.6.1947
+// @version      2015.1.6.1952
 // @description  last.fm. Compare libraries with yours, side by side.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -57,8 +57,8 @@ if (page && user && menus) {
 		//library page (except ours)
 		var comparelib = document.createElement("a");
 		comparelib.style.setProperty("cursor", "pointer");
-		comparelib.setAttribute("title", location.pathname.replace(/^(\/user\/)([^/]+)/, "$1"+user.textContent.trim()));
-		comparelib.appendChild(document.createTextNode("compare"));
+		comparelib.setAttribute("title", location.protocol+"//"+location.host+location.pathname.replace(/^(\/user\/)([^/]+)/, "$1"+user.textContent.trim())+location.search+location.hash);
+		comparelib.appendChild(document.createTextNode("compare with mine"));
 		comparelib.addEventListener("mousedown", stop);
 		comparelib.addEventListener("click", function(e) {
 			this.parentNode.removeChild(this.previousSibling);
@@ -80,7 +80,7 @@ if (page && user && menus) {
 			frm.style.setProperty("margin", "0");
 			frm.style.setProperty("border", "0");
 			frm.style.setProperty("padding", "0");
-			frm.setAttribute("src", location.protocol+"//"+location.host+this.getAttribute("title"));
+			frm.setAttribute("src", this.getAttribute("title"));
 			self.addEventListener("resize", function() {
 				frm.style.setProperty("height", getComputedStyle(page).getPropertyValue("height"));
 			});
