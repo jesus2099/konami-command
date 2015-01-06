@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         lastfm. COMPARE LIBRARIES
+// @name         lastfm. COMPARE LIBRARY
 // @version      2015.1.6.1545
-// @description  last.fm. Compare others’ library with yours.
+// @description  last.fm. Compare libraries with yours, side by side.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/lastfm_COMPARE-LIBRARIES.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/lastfm_COMPARE-LIBRARIES.user.js
+// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/lastfm_COMPARE-LIBRARY.user.js
+// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/lastfm_COMPARE-LIBRARY.user.js
 // @author       Tristan “PATATE12” Daniel
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2015-01-06
@@ -18,14 +18,17 @@
 // ==/UserScript==
 "use strict";
 var page = document.querySelector("div#page");
+var menus = page.querySelector("div.masthead-wrapper");
 var libtitle = document.querySelector("div#page div#content > header h1");
-var user = document.querySelector("div#page nav div.masthead-right a[href^='/user/'].user-badge");
-if (page && user) {
+var user = page.querySelector("nav div.masthead-right a[href^='/user/'].user-badge");
+if (page && user && menus) {
 	if (self != top && location.pathname.indexOf(user.getAttribute("href")) == 0 && parent && parent.document.querySelector("iframe[src='"+decodeURIComponent(location.href)+"'].j2lfm-cl")) {
 		//compare library iframe page (our library)
 		page.style.setProperty("width", "100%");
 		page.style.setProperty("margin", "0");
 		page.style.setProperty("padding", "0");
+		menus.style.setProperty("visibility", "hidden");
+		document.body.style.setProperty("overflow-x", "hidden");
 		var hideStuff = document.querySelectorAll("div#page ~ *, iframe");
 		for (var s = 0; s < hideStuff.length; s++) {
 			hideStuff[s].style.setProperty("display", "none");
@@ -62,11 +65,11 @@ if (page && user) {
 			}
 			page.style.setProperty("display", "inline-block");
 			page.style.setProperty("width", "50%");
+			menus.style.setProperty("width", "200%");
 			page.style.setProperty("margin", "0");
 			page.style.setProperty("padding", "0");
 			var frm = document.body.insertBefore(document.createElement("iframe"), page.nextSibling);
 			frm.className = "j2lfm-cl";
-			frm.appendChild(document.createTextNode("PLEASE WAIT"));
 			frm.style.setProperty("display", "inline-block");
 			frm.style.setProperty("width", "50%");
 			frm.style.setProperty("margin", "0");
