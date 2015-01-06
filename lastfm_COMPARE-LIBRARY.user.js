@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         lastfm. COMPARE LIBRARY
-// @version      2015.1.6.2226
-// @description  last.fm. Compare libraries with yours, side by side.
+// @version      2015.1.6.2343
+// @description  last.fm: Basic side by side comparison of any library page with ours.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/lastfm_COMPARE-LIBRARY.user.js
@@ -24,6 +24,8 @@ var user = page.querySelector("nav div.masthead-right a[href^='/user/'].user-bad
 if (page && user && menus) {
 	var thisFrame = parent && parent.document.querySelector("iframe[src='"+decodeURIComponent(location.href).replace(/'/g,"\\'")+"'].j2lfm-cl");
 	if (self != top && location.pathname.indexOf(user.getAttribute("href")) == 0 && thisFrame) {
+		//FIGHTING *googleadservices.com/* !!!
+		parent.document.querySelector("html").style.removeProperty("display");
 		//compare library iframe page (our library)
 		page.style.setProperty("width", "100%");
 		page.style.setProperty("margin", "0");
@@ -33,7 +35,7 @@ if (page && user && menus) {
 		document.body.style.setProperty("overflow-x", "hidden");
 		document.body.style.setProperty("padding", "0");
 		document.body.style.setProperty("margin", "0");
-		var hideStuff = document.querySelectorAll("div#page ~ *, iframe");
+		var hideStuff = document.querySelectorAll("div#page ~ *, div[id^='LastAd_'], iframe");
 		for (var s = 0; s < hideStuff.length; s++) {
 			hideStuff[s].style.setProperty("display", "none");
 		}
@@ -73,7 +75,7 @@ if (page && user && menus) {
 			this.parentNode.removeChild(this.previousSibling);
 			this.parentNode.removeChild(this.nextSibling);
 			this.parentNode.removeChild(this);
-			var hideStuff = document.querySelectorAll("iframe");
+			var hideStuff = document.querySelectorAll("div[id^='LastAd_'], iframe");
 			for (var s = 0; s < hideStuff.length; s++) {
 				hideStuff[s].style.setProperty("display", "none");
 			}
