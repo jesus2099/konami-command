@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         lastfm. COMPARE LIBRARY
-// @version      2015.1.7.54
+// @version      2015.1.7.103
 // @description  last.fm: Basic side by side comparison of any library page with ours.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -83,6 +83,7 @@ if (page && user && menus) {
 			menus.style.setProperty("width", "200%");
 			page.style.setProperty("margin", "0");
 			page.style.setProperty("padding", "0");
+			page.querySelector("div#content").style.setProperty("padding", "0");
 			var frm = document.body.insertBefore(document.createElement("iframe"), page.nextSibling);
 			frm.className = "j2lfm-cl";
 			frm.setAttribute("scrolling", "no");
