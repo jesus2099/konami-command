@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         lastfm. COMPARE LIBRARY
-// @version      2015.1.7.103
+// @version      2015.1.7.1234
 // @description  last.fm: Basic side by side comparison of any library page with ours.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -34,6 +34,7 @@ if (page && user && menus) {
 		menus.style.setProperty("visibility", "hidden");
 		document.body.style.setProperty("padding", "0");
 		document.body.style.setProperty("margin", "0");
+		document.body.style.setProperty("border-left", "2px solid black");
 		var hideStuff = document.querySelectorAll("div#page ~ *, div[id^='LastAd_'], iframe");
 		for (var s = 0; s < hideStuff.length; s++) {
 			hideStuff[s].style.setProperty("display", "none");
