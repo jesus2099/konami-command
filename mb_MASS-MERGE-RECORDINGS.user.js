@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.1.7.1234
+// @version      2015.1.7.1632
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -86,8 +86,8 @@
 			params[step] += "&merge.edit_note=";
 			var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
 			if (paramsup != "") paramsup += "\n —\n";
-			paramsup += releaseInfoRow("source", swap.value=="no"?remoteRelease:localRelease);
-			paramsup += releaseInfoRow("target", swap.value=="no"?localRelease:remoteRelease);
+			paramsup += releaseInfoRow("source", swap.value=="no"?remoteRelease:localRelease, swap.value=="no"?recid2trackIndex.remote[from.value]:recid2trackIndex.local[from.value]);
+			paramsup += releaseInfoRow("target", swap.value=="no"?localRelease:remoteRelease, swap.value=="no"?recid2trackIndex.local[to.value]:recid2trackIndex.remote[to.value]);
 			var targetID = parseInt(to.value, 10);
 			var sourceID = parseInt(from.value, 10);
 			if (sourceID > targetID) {
@@ -98,8 +98,8 @@
 				var delta = Math.abs(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length - remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length);
 				if (delta <= safeLengthDelta*1000) paramsup += "👍 "+(delta==0?"Same":"Very close")+" '''track times''' "+(delta==0?"(in milliseconds)":"(within "+safeLengthDelta+" seconds)")+"\n";
 			}
-			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 Same '''release artist''' “'''"+localRelease.ac+"'''”\n";
-			if (localRelease.title == remoteRelease.title) paramsup += "👍 Same '''release title''' “'''"+localRelease.title+"'''”\n";
+			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 Same '''release artist''' “'''"+protectEditNoteText(localRelease.ac)+"'''”\n";
+			if (localRelease.title == remoteRelease.title) paramsup += "👍 Same '''release title''' “'''"+protectEditNoteText(localRelease.title)+"'''”\n";
 			if (localRelease.rg == remoteRelease.rg) paramsup += "👍 Same '''release group''' ("+MBS+"/release-group/"+localRelease.rg+")\n";
 			if (meta) paramsup += " —\n"+meta.n+" ("+meta.v+")";
 			params[step] += encodeURIComponent(paramsup);
@@ -107,8 +107,8 @@
 		infoMerge("#"+from.value+" to #"+to.value+" "+statuses[step]+"…");
 		currentButt.setAttribute("value", buttStatuses[step]+" "+step+"/2");
 		var xhr = new XMLHttpRequest();
-		function releaseInfoRow(hdr, rel) {
-			return hdr+": "+MBS+"/release/"+rel.mbid+" “'''"+rel.title+"'''”"+rel.comment+" ("+rel.tracks.length+" tracks) by '''"+rel.ac+"'''\n";
+		function releaseInfoRow(sourceOrTarget, rel, trackIndex) {
+			return sourceOrTarget+": "+MBS+"/release/"+rel.mbid+" #'''"+(trackIndex<9?"0":"")+(trackIndex+1)+"'''/"+(rel.tracks.length<10?"0":"")+rel.tracks.length+". “'''"+protectEditNoteText(rel.title)+"'''”"+protectEditNoteText(rel.comment)+" by '''"+protectEditNoteText(rel.ac)+"'''\n";
 		}
 		function FireFoxWorkAround(butt) {
 			enable(butt);
@@ -604,5 +604,8 @@
 			if (ac[c].joinPhrase != "") dom.appendChild(document.createTextNode(ac[c].joinPhrase));
 		}
 		return dom;
+	}
+	function protectEditNoteText(text) {
+		return text.replace(/\'/g, "&#x0027;");
 	}
 })();
