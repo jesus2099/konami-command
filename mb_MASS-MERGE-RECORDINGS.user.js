@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.1.9.1450
+// @version      2015.1.9.1736
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -269,6 +269,14 @@
 									}
 								}
 								jsonRelease = null;/*maybe it frees up memory*/
+								//(re)build negative startpos
+								var negativeOptions = startpos.querySelectorAll("option[value^='-']");
+								for (var nopt = 0; nopt < negativeOptions.length; nopt++) {
+									removeElement(negativeOptions[nopt]);
+								}
+								for (var rtrack = 0; rtrack < remoteRelease.tracks.length-1; rtrack++) {
+									addOption(startpos, 0-rtrack-1, 0-rtrack-1, true);
+								}
 								spreadTracks(e);
 							}
 						} else { infoMerge("This is not a valid release", false); }
@@ -354,7 +362,8 @@
 		return frg;
 	}
 	function spreadTracks(e) {
-		for (var ltrack=0, rtrack=0; ltrack < localRelease.tracks.length; ltrack++) {
+		var rtrack = startpos.value<0?0-startpos.value:0;
+		for (var ltrack=0; ltrack < localRelease.tracks.length; ltrack++) {
 			cleanTrack(localRelease.tracks[ltrack]);
 			if(ltrack >= startpos.value && rtrack < remoteRelease.tracks.length) {
 				var ntitl = "local recording #"+localRelease.tracks[ltrack].recid;
@@ -530,11 +539,11 @@
 		}
 		return input;
 	}
-	function addOption(sel, val, txt) {
-		var opt = document.createElement("option");
-		opt.setAttribute("value", val);
-		opt.appendChild(document.createTextNode(txt));
-		return sel.appendChild(opt);
+	function addOption(select, value, text, insert) {
+		var option = document.createElement("option");
+		option.setAttribute("value", value);
+		option.appendChild(document.createTextNode(text));
+		return insert&&select.firstChild?select.insertBefore(option, select.firstChild):select.appendChild(option);
 	}
 	function addAfter(n, e) {
 		if (n && e && e.parentNode) {
@@ -618,5 +627,8 @@
 		icon.className = iconCss;
 		icon.style.setProperty("margin-right", "4px");
 		return icon;
+	}
+	function removeElement(node) {
+		return node.parentNode.removeChild(node);
 	}
 })();
