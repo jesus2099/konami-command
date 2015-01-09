@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.1.9.1403
+// @version      2015.1.9.1450
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -265,7 +265,6 @@
 								for (var rd=0; rd < jsonRelease.mediums.length; rd++) {
 									for (var rt=0; rt < jsonRelease.mediums[rd].tracks.length; rt++) {
 										remoteRelease.tracks.push(jsonRelease.mediums[rd].tracks[rt]);
-										
 										recid2trackIndex.remote[jsonRelease.mediums[rd].tracks[rt].recording.id] = remoteRelease.tracks.length - 1;
 									}
 								}
@@ -385,6 +384,12 @@
 						this.style.setProperty("background-color", this.value==rem2loc?cOK:cInfo);
 					}, false);
 					var remrec = rmForm.appendChild(createA(remoteRelease.tracks[rtrack].number+". “", "/recording/"+remoteRelease.tracks[rtrack].recording.gid));
+					if (remoteRelease.tracks[rtrack].isDataTrack) {
+						remrec.parentNode.insertBefore(MBicon("data-track icon img"), remrec);
+					}
+					if (remoteRelease.tracks[rtrack].recording.video) {
+						remrec.parentNode.insertBefore(MBicon("video is-video icon img"), remrec);
+					}
 					var rectitle = remrec.appendChild(document.createElement("span"));
 					rectitle.appendChild(document.createTextNode(remoteRelease.tracks[rtrack].name));
 					remrec.appendChild(document.createTextNode("” "));
@@ -607,5 +612,11 @@
 	}
 	function protectEditNoteText(text) {
 		return text.replace(/\'/g, "&#x0027;");
+	}
+	function MBicon(iconCss) {
+		var icon = document.createElement("div");
+		icon.className = iconCss;
+		icon.style.setProperty("margin-right", "4px");
+		return icon;
 	}
 })();
