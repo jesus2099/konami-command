@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.1.7.1632
+// @version      2015.1.9.1403
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -232,7 +232,7 @@
 				recid2trackIndex.local[recid] = t;
 				addOption(startpos, t, d+"."+(dt<10?" ":"")+dt+". "+tracka.textContent);
 				t++;
-			} else {
+			} else if (!trs[itrs].querySelector("div.data-track")) {
 				d++; dt = 0;
 			}
 		}
