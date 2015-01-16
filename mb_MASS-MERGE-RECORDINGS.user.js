@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.1.9.1736
+// @version      2015.1.16.18.57
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -78,7 +78,6 @@
 			"add-to-merge="+to.value+"&add-to-merge="+from.value,
 			"merge.merging.0="+to.value+"&merge.target="+to.value+"&merge.merging.1="+from.value
 		];
-		document.title = "⌛"+(mergeQueue.length+1)+" ‐ "+dtitle;
 		disable(startpos);
 		disable(status);
 		if (step == 2) {
@@ -112,7 +111,7 @@
 		}
 		function FireFoxWorkAround(butt) {
 			enable(butt);
-			if (/*LAME*/navigator.userAgent.match(/firefox/i)) {
+			if (navigator.userAgent.match(/firefox/i)) {
 				butt.setAttribute("value", "FF delay…");
 				setTimeout(function() { butt.click(); }, 1000);
 			} else { butt.click(); }
@@ -170,6 +169,7 @@
 	function queueTrack() {
 		queuetrack.replaceChild(document.createTextNode(mergeQueue.length+" queued merge"+(mergeQueue.length>1?"s":"")), queuetrack.firstChild);
 		queuetrack.style.setProperty("display", mergeQueue.length>0?"block":"none");
+		document.title = "⌛"+(mergeQueue.length+1)+" ‐ "+dtitle;
 	}
 	function cleanTrack(track, ok) {
 		var rmForm = track.tr.querySelectorAll("td:not(.pos):not(.video) form."+MMRid);
@@ -238,8 +238,10 @@
 		}
 		prints(MMRdiv, "↙ Select start position (track):", true);
 		MMRdiv.appendChild(startpos);
-		prints(MMRdiv, ["", "Source release MBID or URL:"], true);
-		status = createInput("text", "status", "", "Source release MBID or URL");
+		prints(MMRdiv, ["", "Remote release "], false);
+		MMRdiv.appendChild(document.createElement("span")).appendChild(document.createTextNode("MBID or URL")).parentNode.className = "remote-release-link";
+		prints(MMRdiv, [":"], true);
+		status = createInput("text", "status", "", "Remote release MBID or URL");
 		status.style.setProperty("width", "100%");
 		status.addEventListener("input", function(e) {
 			var mbid = this.value.match(regex_MBID);
@@ -247,43 +249,54 @@
 				this.setAttribute("ref", this.value);
 				var url = "/release/"+mbid[0];
 				remoteRelease.mbid = mbid[0];
-				infoMerge("Fetching recordings…");
-				var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function(e) {
-					if (xhr.readyState == 4) {
-						if (xhr.status == 200) {
-							var jsonRelease = JSON.parse(xhr.responseText.match(/MB\.Release\.init\(([^<]+)\)/)[1].trim());
-							var rtitle = xhr.responseText.match(/<title>[^“]+“(.+)” \S+ (.+) - MusicBrainz<\/title>/)[1];
-							var rtitle = xhr.responseText.match(new RegExp("<title>"+sregex_title+"</title>"));
-							remoteRelease.rg = xhr.responseText.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
-							remoteRelease.title = rtitle[1];
-							remoteRelease.comment = xhr.responseText.match(/<h1>.+  <span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
-							if (remoteRelease.comment) remoteRelease.comment = " ("+remoteRelease.comment[1]+")"; else remoteRelease.comment = "";
-							remoteRelease.ac = rtitle[2];
-							if (jsonRelease) {
-								remoteRelease.tracks = [];
-								for (var rd=0; rd < jsonRelease.mediums.length; rd++) {
-									for (var rt=0; rt < jsonRelease.mediums[rd].tracks.length; rt++) {
-										remoteRelease.tracks.push(jsonRelease.mediums[rd].tracks[rt]);
-										recid2trackIndex.remote[jsonRelease.mediums[rd].tracks[rt].recording.id] = remoteRelease.tracks.length - 1;
+				if (remoteRelease.mbid != localRelease.mbid) {
+					infoMerge("Fetching recordings…");
+					var xhr = new XMLHttpRequest();
+					xhr.onreadystatechange = function(e) {
+						if (xhr.readyState == 4) {
+							if (xhr.status == 200) {
+								var jsonRelease = JSON.parse(xhr.responseText.match(/MB\.Release\.init\(([^<]+)\)/)[1].trim());
+								var rtitle = xhr.responseText.match(/<title>[^“]+“(.+)” \S+ (.+) - MusicBrainz<\/title>/)[1];
+								var rtitle = xhr.responseText.match(new RegExp("<title>"+sregex_title+"</title>"));
+								remoteRelease.rg = xhr.responseText.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
+								remoteRelease.title = rtitle[1];
+								remoteRelease.comment = xhr.responseText.match(/<h1>.+  <span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
+								if (remoteRelease.comment) remoteRelease.comment = " ("+remoteRelease.comment[1]+")"; else remoteRelease.comment = "";
+								remoteRelease.ac = rtitle[2];
+								if (jsonRelease) {
+									var mbidInfo = MMRdiv.querySelector(".remote-release-link");
+									removeChildren(mbidInfo);
+									prints(mbidInfo, "(");
+									mbidInfo.appendChild(createA(remoteRelease.mbid, url));
+									prints(mbidInfo, ")");
+									remoteRelease.tracks = [];
+									for (var rd=0; rd < jsonRelease.mediums.length; rd++) {
+										for (var rt=0; rt < jsonRelease.mediums[rd].tracks.length; rt++) {
+											remoteRelease.tracks.push(jsonRelease.mediums[rd].tracks[rt]);
+											recid2trackIndex.remote[jsonRelease.mediums[rd].tracks[rt].recording.id] = remoteRelease.tracks.length - 1;
+										}
 									}
+									jsonRelease = null;/*maybe it frees up memory*/
+									//(re)build negative startpos
+									var negativeOptions = startpos.querySelectorAll("option[value^='-']");
+									for (var nopt = 0; nopt < negativeOptions.length; nopt++) {
+										removeElement(negativeOptions[nopt]);
+									}
+									for (var rtrack = 0; rtrack < remoteRelease.tracks.length-1; rtrack++) {
+										addOption(startpos, 0-rtrack-1, 0-rtrack-1, true);
+									}
+									spreadTracks(e);
 								}
-								jsonRelease = null;/*maybe it frees up memory*/
-								//(re)build negative startpos
-								var negativeOptions = startpos.querySelectorAll("option[value^='-']");
-								for (var nopt = 0; nopt < negativeOptions.length; nopt++) {
-									removeElement(negativeOptions[nopt]);
-								}
-								for (var rtrack = 0; rtrack < remoteRelease.tracks.length-1; rtrack++) {
-									addOption(startpos, 0-rtrack-1, 0-rtrack-1, true);
-								}
-								spreadTracks(e);
+							} else {
+								infoMerge("This is not a valid release", false);
 							}
-						} else { infoMerge("This is not a valid release", false); }
-					}
-				};
-				xhr.open("GET", url, true);
-				xhr.send(null);
+						}
+					};
+					xhr.open("GET", url, true);
+					xhr.send(null);
+				} else {
+					infoMerge("Same release", false);
+				}
 			}
 		}, false);
 		MMRdiv.appendChild(status);
@@ -630,5 +643,8 @@
 	}
 	function removeElement(node) {
 		return node.parentNode.removeChild(node);
+	}
+	function removeChildren(p) {
+		while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
 	}
 })();
