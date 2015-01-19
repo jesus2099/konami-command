@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2015.1.19.1107
+// @version      2015.1.19.12.13
 // @description  music.goo.ne.jp, lyrics.gyao.yahoo.co.jp, kasi-time.com, lyric.kget.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @homepage     http://userscripts-mirror.org/scripts/show/91968
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -14,6 +14,7 @@
 // @grant        none
 // @include      http*://*uta-net.com/movie/*/
 // @include      http*://*uta-net.com/song/*/
+// @include      http*://joysound.com/ex/search/karaoke/_selSongNo_*_songwords.htm
 // @include      http*://petitlyrics.com/lyrics/*
 // @include      http://*utamap.com/*.php?surl=*
 // @include      http://j-lyric.net/artist/*/*.html
@@ -184,9 +185,25 @@
 				}
 			},
 		},
+			"joysound": {
+			"na": "JOYSOUND",
+			"kabe_css": ".songInfoWords",
+			"kabe_keep": true,
+			"direct_machine": function(e) {
+				if (kabe) {
+					var div = document.getElementById("songwordsFlash");
+					if (div) {
+						div.style.setProperty("min-width", "388px");
+						div.style.setProperty("overflow-y", "inherit");
+						div.style.setProperty("position", "inherit");
+					}
+					gogogo();
+				}
+			},
+		},
 	};
 	var kabe, mati;
-	var doko = location.href.match(/^https?:\/\/(?:www\.)?(music\.goo|lyrics\.gyao|rio\.yahooapis|kasi-time|kget|petitlyrics|utamap|uta-net|utaten|j-lyric)/);
+	var doko = location.href.match(/^https?:\/\/(?:www\.)?(music\.goo|lyrics\.gyao|rio\.yahooapis|kasi-time|kget|petitlyrics|utamap|uta-net|utaten|j-lyric|joysound)/);
 	var userjs_name = "PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞";
 	var iti = true;
 	if (document.head) {
@@ -224,6 +241,7 @@
 				kabe.style.setProperty("cursor", "text", "important");
 				var blocks = [
 					"contextmenu",
+					"copy",
 					"drag",
 					"dragend",
 					"dragenter",
@@ -310,8 +328,7 @@
 			else { div = kabe; }
 			div.style.setProperty("text-align", "left");
 			div.style.setProperty("color", "#030");
-			div.style.setProperty("background", "#efe");
-			div.style.setProperty("padding", "8px");
+			div.style.setProperty("background-color", "#efe");
 		}
 		if (kasimasin.kabe_keep == null || kasimasin.kabe_keep == false || err) {
 			kabe.style.setProperty("display", "none");
