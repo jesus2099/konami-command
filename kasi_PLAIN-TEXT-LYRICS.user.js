@@ -1,7 +1,8 @@
+(function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2015.1.19.12.13
-// @description  music.goo.ne.jp, lyrics.gyao.yahoo.co.jp, kasi-time.com, lyric.kget.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
+// @version      2015.1.19.13.42
+// @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @homepage     http://userscripts-mirror.org/scripts/show/91968
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -26,9 +27,99 @@
 // @include      http://www.kget.jp/lyric/*
 // @run-at       document-end
 // ==/UserScript==
-(function(){"use strict";
+	}};
+	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
+		var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+		while ((kv = row.exec(meta.rawmdb)) !== null) {
+			if (meta[kv[1]]) {
+				if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
+				meta[kv[1]].push(kv[2]);
+			} else meta[kv[1]] = kv[2];
+		}
+	}
 	var DEBUG = false;
 	var kasimasin = {
+		"j-lyric": {/*allow contextmenu*/
+			"na": "J-Lyric.net",
+			"kabe_css": "#lyricBody",
+			"kabe_keep": true,
+			"direct_machine": function(e) {
+				if (kabe) {
+					gogogo();
+				}
+			},
+		},
+		"joysound": {/*allow copy*/
+			"na": "JOYSOUND",
+			"kabe_css": ".songInfoWords",
+			"kabe_keep": true,
+			"direct_machine": function(e) {
+				if (kabe) {
+					var div = document.getElementById("songwordsFlash");
+					if (div) {
+						div.style.setProperty("min-width", "388px");
+						div.style.setProperty("overflow-y", "inherit");
+						div.style.setProperty("position", "inherit");
+					}
+					gogogo();
+				}
+			},
+		},
+		"kasi-time": {
+			"na": "歌詞タイム",
+			"kabe_css": "div.mainkashi",
+			"kabe_keep": true,
+			"init": function(start) {
+				if (start) {
+					machine();
+				}
+			},
+			"direct_machine": function(e) {
+				if (kabe) {
+					gogogo();
+				}
+			},
+		},
+		"kget": {
+			"na": "歌詞ＧＥＴ",
+			"kabe_css": "div#lyric-trunk",
+			"kabe_keep": true,
+			"direct_machine": function(e) {
+				if (kabe) {
+					gogogo();
+				}
+			},
+		},
+		"lyrics.gyao.yahoo": {
+			"na": "GyaO!歌詞",
+			"clean_url": "http://lyrics.gyao.yahoo.co.jp/ly/%uta%",
+			"kabe_css": "div.lyrics_detail > div.inner",
+			"kabe_keep": true,
+			"uta_re": /\/ly\/([^/]+)\/?$/,
+			"kasi_url": "http://rio.yahooapis.jp/RioWebService/V2/getLyrics?appid=7vOgnk6xg64IDggn6YEl3IQxmbj1qqkQzTpAx5nGwl9HnfPX3tZksE.oYhEw3zA-&lyrics_id=%uta%&results=1&multi_htmlspecialchars_flag=1",
+			"kasi_url_fix": [/(\?|&)multi_htmlspecialchars_flag=[01]/, ""],
+			"direct_machine": function(e) {
+				var iframe = document.createElement("iframe");
+				iframe.setAttribute("src", kasimasin.kasi_url);
+				iframe.style.setProperty("height", "600px");
+				iframe.style.setProperty("width", "100%");
+				gogogo(iframe);
+				mati.appendChild(document.createTextNode(" ↓ PLEASE CLICK ↓"));
+			},
+		},
+		"rio.yahooapis": {
+			"na": "ギャオ歌詞API",
+			"direct_machine": function(e) {
+				var alrt = "";
+				var tmp = document.querySelector("ResultSet > Result > Title"); if (tmp) { alrt += tmp.textContent+" / "; }
+				tmp = document.querySelector("ResultSet > Result > ArtistName"); if (tmp) { alrt += tmp.textContent+"\n\n"; }
+				tmp = document.querySelector("ResultSet > Result > WriterName"); if (tmp) { alrt += "作詞："+tmp.textContent+"\n"; }
+				tmp = document.querySelector("ResultSet > Result > ComposerName"); if (tmp) { alrt += "作曲："+tmp.textContent+"\n"; }
+				tmp = document.querySelector("ResultSet > Result > Lyrics"); if (tmp) { alrt += "\n"+tmp.textContent.replace(/\<br\>/gi, "\n"); }
+				document.addEventListener("click", function(e) { alert(alrt); }, false);
+				alert(alrt);
+			},
+		},
 		"music.goo": {
 			"na": "goo音楽",
 			"init": function(start) {
@@ -63,61 +154,6 @@
 					gogogo(kasi);
 				}
 				else { gogogo(null, "json"); }
-			},
-		},
-		"lyrics.gyao": {
-			"na": "GyaO!歌詞",
-			"clean_url": "http://lyrics.gyao.yahoo.co.jp/ly/%uta%",
-			"kabe_css": "div.lyrics_detail > div.inner",
-			"kabe_keep": true,
-			"uta_re": /\/ly\/([^/]+)\/?$/,
-			"kasi_url": "http://rio.yahooapis.jp/RioWebService/V2/getLyrics?appid=7vOgnk6xg64IDggn6YEl3IQxmbj1qqkQzTpAx5nGwl9HnfPX3tZksE.oYhEw3zA-&lyrics_id=%uta%&results=1&multi_htmlspecialchars_flag=1",
-			"kasi_url_fix": [/(\?|&)multi_htmlspecialchars_flag=[01]/, ""],
-			"direct_machine": function(e) {
-				var iframe = document.createElement("iframe");
-				iframe.setAttribute("src", kasimasin.kasi_url);
-				iframe.style.setProperty("height", "600px");
-				iframe.style.setProperty("width", "100%");
-				gogogo(iframe);
-				mati.appendChild(document.createTextNode(" ↓ PLEASE CLICK ↓"));
-			},
-		},
-		"rio.yahooapis": {
-			"na": "ギャオ歌詞API",
-			"direct_machine": function(e) {
-				var alrt = "";
-				var tmp = document.querySelector("ResultSet > Result > Title"); if (tmp) { alrt += tmp.textContent+" / "; }
-				tmp = document.querySelector("ResultSet > Result > ArtistName"); if (tmp) { alrt += tmp.textContent+"\n\n"; }
-				tmp = document.querySelector("ResultSet > Result > WriterName"); if (tmp) { alrt += "作詞："+tmp.textContent+"\n"; }
-				tmp = document.querySelector("ResultSet > Result > ComposerName"); if (tmp) { alrt += "作曲："+tmp.textContent+"\n"; }
-				tmp = document.querySelector("ResultSet > Result > Lyrics"); if (tmp) { alrt += "\n"+tmp.textContent.replace(/\<br\>/gi, "\n"); }
-				document.addEventListener("click", function(e) { alert(alrt); }, false);
-				alert(alrt);
-			},
-		},
-		"kasi-time": {
-			"na": "歌詞タイム",
-			"kabe_css": "div.mainkashi",
-			"kabe_keep": true,
-			"init": function(start) {
-				if (start) {
-					machine();
-				}
-			},
-			"direct_machine": function(e) {
-				if (kabe) {
-					gogogo();
-				}
-			},
-		},
-		"kget": {
-			"na": "歌詞ＧＥＴ",
-			"kabe_css": "div#lyric-trunk",
-			"kabe_keep": true,
-			"direct_machine": function(e) {
-				if (kabe) {
-					gogogo();
-				}
 			},
 		},
 		"petitlyrics": {
@@ -175,36 +211,15 @@
 				gogogo(xhr.responseText.replace(/^(.|\n|\r)+\n\n|\t.+|(\s|\n)+$/g, ""));
 			},
 		},
-		"j-lyric": {/*just reactivate contextmenu*/
-			"na": "J-Lyric.net",
-			"kabe_css": "#lyricBody",
-			"kabe_keep": true,
-			"direct_machine": function(e) {
-				if (kabe) {
-					gogogo();
-				}
-			},
-		},
-			"joysound": {
-			"na": "JOYSOUND",
-			"kabe_css": ".songInfoWords",
-			"kabe_keep": true,
-			"direct_machine": function(e) {
-				if (kabe) {
-					var div = document.getElementById("songwordsFlash");
-					if (div) {
-						div.style.setProperty("min-width", "388px");
-						div.style.setProperty("overflow-y", "inherit");
-						div.style.setProperty("position", "inherit");
-					}
-					gogogo();
-				}
-			},
-		},
 	};
 	var kabe, mati;
-	var doko = location.href.match(/^https?:\/\/(?:www\.)?(music\.goo|lyrics\.gyao|rio\.yahooapis|kasi-time|kget|petitlyrics|utamap|uta-net|utaten|j-lyric|joysound)/);
-	var userjs_name = "PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞";
+	var includes = [];
+	for (var i=0; i<meta.include.length; i++) {
+		var key = meta.include[i].replace(/^http[s\*]?:\/\/[\.\*]{0,2}(www\.)?|\.(com|co\.jp|ne\.jp|jp|net)\/{1}.*$/g, "");
+		if (includes.indexOf(key) == -1) includes.push(key);
+	}
+	db("includes:\n"+includes.join("\n"));
+	var doko = location.host.match(new RegExp("(?:www\\.)?("+includes.join("|")+")"));
 	var iti = true;
 	if (document.head) {
 		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
@@ -214,8 +229,8 @@
 	if (doko) {
 		doko = doko[1];
 		kasimasin = kasimasin[doko];
-		if (kasimasin.na) { userjs_name = kasimasin.na+" "+userjs_name; }
-		db(userjs_name+"\n"+location.href);
+		if (kasimasin.na) { meta.name = kasimasin.na+" "+meta.name; }
+		db(meta.name+"\n"+location.href);
 		var url;
 		if (kasimasin.uta_re && (url = location.href.match(kasimasin.uta_re))) {
 			kasimasin.uta = url[1];
@@ -264,7 +279,7 @@
 					}, true);
 				});
 				mati = document.createElement("div");
-				mati.appendChild(document.createTextNode(userjs_name+" "));
+				mati.appendChild(document.createTextNode(meta.name+" "));
 				mati.appendChild(document.createElement("strong")).appendChild(document.createTextNode("PLEASE WAIT"));
 				mati.style.setProperty("margin", "16px 0 0 0");
 				kabe.parentNode.insertBefore(mati, kabe);
