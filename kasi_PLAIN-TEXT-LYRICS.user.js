@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2015.1.19.13.42
+// @version      2015.1.19.14.6
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @homepage     http://userscripts-mirror.org/scripts/show/91968
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -115,7 +115,7 @@
 				tmp = document.querySelector("ResultSet > Result > ArtistName"); if (tmp) { alrt += tmp.textContent+"\n\n"; }
 				tmp = document.querySelector("ResultSet > Result > WriterName"); if (tmp) { alrt += "作詞："+tmp.textContent+"\n"; }
 				tmp = document.querySelector("ResultSet > Result > ComposerName"); if (tmp) { alrt += "作曲："+tmp.textContent+"\n"; }
-				tmp = document.querySelector("ResultSet > Result > Lyrics"); if (tmp) { alrt += "\n"+tmp.textContent.replace(/\<br\>/gi, "\n"); }
+				tmp = document.querySelector("ResultSet > Result > Lyrics"); if (tmp) { alrt += "\n"+tmp.textContent.replace(/<br>/gi, "\n"); }
 				document.addEventListener("click", function(e) { alert(alrt); }, false);
 				alert(alrt);
 			},
@@ -284,8 +284,8 @@
 				mati.style.setProperty("margin", "16px 0 0 0");
 				kabe.parentNode.insertBefore(mati, kabe);
 			}
+			var url;
 			if (kasimasin.kasi_url || kasimasin.kasi_css) {
-				var url;
 				if (kasimasin.kasi_url) {
 					if (kasimasin.kasi_url.match(/%uta%/) && kasimasin.uta) {
 						url = kasimasin.kasi_url.replace(/%uta%/g, kasimasin.uta);
@@ -295,7 +295,7 @@
 				}
 				else if (kasimasin.kasi_css && kasimasin.kasi_css.length == 2 && (url = document.querySelector(kasimasin.kasi_css[0]))) {
 					url = url.getAttribute(kasimasin.kasi_css[1]);
-					iti = false
+					iti = false;
 				}
 				if (url) { iti = false; }
 				else { return; }
@@ -333,7 +333,7 @@
 			mati.style.setProperty("cursor", "pointer");
 			mati.addEventListener("click", function(e) { iti = true; machine(); }, false);
 		}
-		if (err == null) {
+		if (err === null) {
 			var div;
 			if (ka) {
 				div = document.createElement("div");
@@ -345,7 +345,7 @@
 			div.style.setProperty("color", "#030");
 			div.style.setProperty("background-color", "#efe");
 		}
-		if (kasimasin.kabe_keep == null || kasimasin.kabe_keep == false || err) {
+		if (kasimasin.kabe_keep === null || kasimasin.kabe_keep === false || err) {
 			kabe.style.setProperty("display", "none");
 		}
 	}
@@ -370,9 +370,7 @@
 		var length = to?to-offset:null;
 	    var b = new Blob([new Uint8Array(ab, offset, length)]);
 	    var f = new FileReader();
-	    f.onload = function(e) {
-	        callback(e.target.result)
-	    }
+		f.onload = function(e) { callback(e.target.result); };
 	    f.readAsText(b);
 	}
 	function db(inf) {
