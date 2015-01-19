@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2014.3.21.1712
+// @version      2015.1.19.10.45
 // @description  music.goo.ne.jp, lyrics.gyao.yahoo.co.jp, kasi-time.com, lyric.kget.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @homepage     http://userscripts-mirror.org/scripts/show/91968
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -14,7 +14,7 @@
 // @grant        none
 // @include      http*://*uta-net.com/movie/*/
 // @include      http*://*uta-net.com/song/*/
-// @include      http*://petitlyrics.com/kashi/*
+// @include      http*://petitlyrics.com/lyrics/*
 // @include      http://*utamap.com/*.php?surl=*
 // @include      http://lyrics.gyao.yahoo.co.jp/ly/*
 // @include      http://music.goo.ne.jp/lyric/*
@@ -120,20 +120,14 @@
 		},
 		"petitlyrics": {
 			"na": "プチリリ",
-			"clean_url": "https://petitlyrics.com/kashi/%uta%",
-			"uta_re": /\/kashi\/(\d+)\/?$/,
+			"clean_url": "https://petitlyrics.com/lyrics/%uta%",
+			"uta_re": /\/lyrics\/(\d+)\/?$/,
 			"direct_machine": function(e) {
 				if (kabe) {
-					document.body.style.removeProperty("cursor");
-					kasimasin.submachine();
-					kabe.addEventListener("DOMNodeInserted", kasimasin.submachine, false);
+					gogogo(kabe.textContent);
 				}
 			},
-			"kabe_css": "div#lyrics_window",
-			"kabe_keep": true,
-			"submachine": function(e) {
-				gogogo();
-			},
+			"kabe_css": "canvas#lyrics",
 		},
 		"utamap": {
 			"na": "うたまっぷ",
