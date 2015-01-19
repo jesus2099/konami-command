@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2015.1.19.10.45
+// @version      2015.1.19.1107
 // @description  music.goo.ne.jp, lyrics.gyao.yahoo.co.jp, kasi-time.com, lyric.kget.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @homepage     http://userscripts-mirror.org/scripts/show/91968
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -16,6 +16,7 @@
 // @include      http*://*uta-net.com/song/*/
 // @include      http*://petitlyrics.com/lyrics/*
 // @include      http://*utamap.com/*.php?surl=*
+// @include      http://j-lyric.net/artist/*/*.html
 // @include      http://lyrics.gyao.yahoo.co.jp/ly/*
 // @include      http://music.goo.ne.jp/lyric/*
 // @include      http://rio.yahooapis.jp/RioWebService/V2/*
@@ -173,9 +174,19 @@
 				gogogo(xhr.responseText.replace(/^(.|\n|\r)+\n\n|\t.+|(\s|\n)+$/g, ""));
 			},
 		},
+		"j-lyric": {/*just reactivate contextmenu*/
+			"na": "J-Lyric.net",
+			"kabe_css": "#lyricBody",
+			"kabe_keep": true,
+			"direct_machine": function(e) {
+				if (kabe) {
+					gogogo();
+				}
+			},
+		},
 	};
 	var kabe, mati;
-	var doko = location.href.match(/^https?:\/\/(?:www\.)?(music\.goo|lyrics\.gyao|rio\.yahooapis|kasi-time|kget|petitlyrics|utamap|uta-net|utaten)/);
+	var doko = location.href.match(/^https?:\/\/(?:www\.)?(music\.goo|lyrics\.gyao|rio\.yahooapis|kasi-time|kget|petitlyrics|utamap|uta-net|utaten|j-lyric)/);
 	var userjs_name = "PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞";
 	var iti = true;
 	if (document.head) {
