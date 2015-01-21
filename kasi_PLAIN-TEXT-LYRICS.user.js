@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2015.1.19.14.6
+// @version      2015.1.21.15.40
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @homepage     http://userscripts-mirror.org/scripts/show/91968
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -333,7 +333,7 @@
 			mati.style.setProperty("cursor", "pointer");
 			mati.addEventListener("click", function(e) { iti = true; machine(); }, false);
 		}
-		if (err === null) {
+		if (err == null) {
 			var div;
 			if (ka) {
 				div = document.createElement("div");
@@ -345,7 +345,7 @@
 			div.style.setProperty("color", "#030");
 			div.style.setProperty("background-color", "#efe");
 		}
-		if (kasimasin.kabe_keep === null || kasimasin.kabe_keep === false || err) {
+		if (kasimasin.kabe_keep == null || kasimasin.kabe_keep == false || err) {
 			kabe.style.setProperty("display", "none");
 		}
 	}
