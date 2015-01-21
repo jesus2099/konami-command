@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2014.12.4.1241
+// @version      2015.1.21.11.16
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -329,7 +329,7 @@ var lookForOldestEdit = false;
 		var renderedID = (id+"").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
 		var a = createA(
 			renderedID,
-			"/search/edits?conditions.0.operator=%3D&conditions.0.field="+type+"&conditions.0.name="+renderedID+"&conditions.0.args.0="+id
+			"/search/edits?order=asc&conditions.0.operator=%3D&conditions.0.field="+type+"&conditions.0.name="+renderedID+"&conditions.0.args.0="+id
 		);
 		return a;
 	}
