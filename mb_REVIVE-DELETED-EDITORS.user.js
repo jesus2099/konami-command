@@ -27,7 +27,7 @@
 // @run-at       document-end
 // ==/UserScript==
 (function(){"use strict";
-	/* - --- - --- - --- - START OF CONFIGURATION - --- - --- http://musicbrainz.org/user/Deleted%20Editor%20%2332978- --- - */
+	/* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 	var regrets = {
 		  "Deleted Editor #32978": "tenebrous",         /*2003-12-13 - 2005-12-16*/
 		  "Deleted Editor #93418": "Rhymeless",         /*2005-02-08 - 2013-03-05*/
