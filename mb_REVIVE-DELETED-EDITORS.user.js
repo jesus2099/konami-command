@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2014.7.22.1249
+// @version      2015.1.23.15.0
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @homepage     http://userscripts-mirror.org/scripts/show/152545
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -29,23 +29,34 @@
 (function(){"use strict";
 	/* - --- - --- - --- - START OF CONFIGURATION - --- - --- http://musicbrainz.org/user/Deleted%20Editor%20%2332978- --- - */
 	var regrets = {
-		 "Deleted Editor #32978": "tenebrous",         /*2003-12-13 - 2005-12-16*/
-		 "Deleted Editor #93418": "Rhymeless",         /*2005-02-08 - 2013-03-05*/
-		 "Deleted Editor #95678": "brianfreud",        /*2005-02-18 - 2012-09-24*/
-		"Deleted Editor #129671": "Shlublu",           /*2005-06-30 - 2009-02-02*/
-		"Deleted Editor #157767": "michael",           /*2005-10-20 - 2010-01-05*/
-		"Deleted Editor #163497": "RedHotHeat",        /*2005-11-09 - 2012-07-12*/
-		"Deleted Editor #186010": "robojock",          /*2005-12-30 - 2012-11-29*/
-		"Deleted Editor #193948": "syserror",          /*2006-01-20 - 2008-01-27*/
-		"Deleted Editor #240330": "theirfour",         /*2006-07-03 - 2012-11-27*/
-		"Deleted Editor #313128": "mistoffeles",       /*2007-03-31 - 2009-02-06*/
-		"Deleted Editor #346478": "neothe0ne",         /*2007-08-31 - 2011-05-28*/
-		"Deleted Editor #386354": "grosnombril",       /*2008-03-04 - 2008-04-03*/
-		"Deleted Editor #420821": "kaik (aka. jozo)",  /*2008-09-10 - 2014-07-19 / 54b97c60-f768-42fa-a5ff-d4e7c173910e*/
-		"Deleted Editor #457889": "deivsonscherzinger",/*2009-04-12 - 2014-01-12*/
-		"Deleted Editor #629372": "nightspirit",       /*2012-04-04 - 2014-04-08*/
-		"Deleted Editor #701715": "remdia",            /*2013-01-07 - 2013-01-30*/
-		"jesus2099": "GOLD MASTER KING",
+		  "Deleted Editor #32978": "tenebrous",         /*2003-12-13 - 2005-12-16*/
+		  "Deleted Editor #93418": "Rhymeless",         /*2005-02-08 - 2013-03-05*/
+		  "Deleted Editor #95678": "brianfreud",        /*2005-02-18 - 2012-09-24*/
+		 "Deleted Editor #129671": "Shlublu",           /*2005-06-30 - 2009-02-02*/
+		 "Deleted Editor #157767": "michael",           /*2005-10-20 - 2010-01-05*/
+		 "Deleted Editor #163497": "RedHotHeat",        /*2005-11-09 - 2012-07-12*/
+		 "Deleted Editor #186010": "robojock",          /*2005-12-30 - 2012-11-29*/
+		 "Deleted Editor #193948": "syserror",          /*2006-01-20 - 2008-01-27*/
+		 "Deleted Editor #240330": "theirfour",         /*2006-07-03 - 2012-11-27*/
+		 "Deleted Editor #313128": "mistoffeles",       /*2007-03-31 - 2009-02-06*/
+		 "Deleted Editor #346478": "neothe0ne",         /*2007-08-31 - 2011-05-28*/
+		 "Deleted Editor #386354": "grosnombril",       /*2008-03-04 - 2008-04-03*/
+		 "Deleted Editor #420821": "kaik",              /*2008-09-10 - 2014-07-19 / jozo / 54b97c60-f768-42fa-a5ff-d4e7c173910e*/
+		 "Deleted Editor #450522": "dr_zepsuj",         /*2009-02-21 - */
+		 "Deleted Editor #457889": "deivsonscherzinger",/*2009-04-12 - 2014-01-12*/
+		 "Deleted Editor #629372": "nightspirit",       /*2012-04-04 - 2014-04-08*/
+		 "Deleted Editor #638936": "betegouveia",       /*2012-07-07 - 2014-12-21*/
+		 "Deleted Editor #639228": "ritaavenida ",      /*2012-07-08 - 2014-12-21*/
+		 "Deleted Editor #639231": "harrystykes",       /*2012-07-08 - 2014-12-21*/
+		 "Deleted Editor #639236": "niallhoran",        /*2012-07-08 - 2014-12-21*/
+		 "Deleted Editor #701715": "remdia",            /*2013-01-07 - 2013-01-30*/
+		 "Deleted Editor #774387": "Wanddis",           /*2013-06-06 - 2014-12-21*/
+		 "Deleted Editor #791672": "georg187",          /*2013-06-14 - */
+		 "Deleted Editor #800638": "nicolebahls",       /*2013-06-19 - 2014-12-21*/
+		 "Deleted Editor #809366": "xoxtina",           /*2013-06-23 - 2014-12-21*/
+		"Deleted Editor #1024627": "bvlgari",           /*2013-10-04 - 2014-12-21*/
+		"Deleted Editor #1288668": "khaleesi",          /*2014-06-29 - 2014-12-21*/
+ 		"jesus2099": "GOLD MASTER KING",
 		"%you%": "PROPHET PRINCE CHAMPION",
 	};
 	var mark /*of the life again*/ = "★";
