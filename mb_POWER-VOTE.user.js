@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2014.12.18.2003
+// @version      2015.1.23.19.2
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -205,7 +205,10 @@
 						if (!e.shiftKey) {
 							if (e.altKey && e.ctrlKey) {
 								if (this.className.match(/autoedit/)) autoedit = true;
-								else vote = editheader.parentNode.querySelector(voteCSS).getAttribute("value");
+								else {
+									vote = editheader.parentNode.querySelector(voteCSS);
+									if (vote) vote = vote.getAttribute("value");
+								}
 							}
 							else if (e.altKey) {
 								var edittype = editheader.getAttribute("class").match(/\W([a-z-]+)$/);
@@ -222,9 +225,11 @@
 						if (e.altKey || e.ctrlKey || e.shiftKey) {
 							var others = editform.querySelectorAll(editheadersel+" a."+userjs+(autoedit?".autoedit":"")+"[rel='"+(expand?"expand":"collapse")+"']");
 							for (var other = 0; other < others.length; other++) {
+								var ovote = getParent(others[other], "div", "edit-list").querySelector(voteCSS);
+								if (ovote) ovote = ovote.getAttribute("value");
 								if (
-									(!editor || editor == getParent(others[other], "div", "edit-header").querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/)[1] )
-									&& (!vote || vote == getParent(others[other], "div", "edit-list").querySelector(voteCSS).getAttribute("value") )
+									(!editor || editor == getParent(others[other], "div", "edit-header").querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/)[1])
+									&& (!vote || vote == ovote)
 								) {
 									click(others[other]);
 								}
