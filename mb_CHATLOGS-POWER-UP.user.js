@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2015.1.12.14.57
+// @version      2015.1.26.9.51
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -21,10 +21,6 @@
 	var userjs = "j2userjs127580";
 	var cat = location.href.match(/chatlogs\.musicbrainz\.org\/([^/]+)\/|mbja/);
 	cat = cat[1]?cat[1]:"musicbrainz-ja";
-	if (cat == "musicbrainz-ja" && !location.pathname.match(/^\/mbja\/chatlog.cgi\//) && document.getElementsByTagName("a").length > 4) {
-		location.replace(document.getElementsByTagName("a")[4].getAttribute("href"));
-		return;
-	}
 	var date = location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
 	if (date) date = date[1]+"-"+date[2]+"-"+date[3];
 	var entries = document.querySelectorAll("table#log th + td, dd");
