@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. DIRECT LINKS FROM YAHOO! MAIL (BASIC)
-// @version      2014.11.24.1443
+// @version      2014.11.28.11.57
 // @description  BACK FOR BASIC Y!MAIL only (/neo/b/) now. Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @homepage     http://userscripts-mirror.org/scripts/show/80308
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -35,13 +35,15 @@
 	/* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 	var userjs = "jesus2099userjs80308";
 	var edits = [];
-	var trigger = /^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/;
+	var editTrigger = /^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/;
+	var jiraTrigger = /^\[jira\] \w+: \(([A-Z][A-Z\d]*-\d+)\)/;
 	var triggerno = /^Someone has voted against your edit(?: #[0-9]+)?$/;
 	var triggernoextractorz = /<div class="plainMail">'(.+)' has voted against your edit #([0-9]+)/;
 	var edittypeextractor = /(deleted|merged) by edit #([0-9]+)/;
 	var idextractor = /by edit #([0-9]+)/;
 	var triggerResponseURL = /<input type="hidden" name="mid" value="([^"]+)"/;
 	var editurl = "//musicbrainz.org/edit/";
+	var jiraurl = "//tickets.musicbrainz.org/browse/";
 	for (var i=0; i<directlinks; i++) {
 		var lnk = document.querySelector("li#"+directlinks[i]+" a");
 		if (lnk) {
@@ -56,8 +58,19 @@
 		for (var i=0; i < emails.length; i++) {
 			var email = emails[i];
 			var emailtxt = email.getAttribute("title");
-			var editid = emailtxt.match(trigger);
-			if (editid) {
+			var editid = emailtxt.match(editTrigger);
+			var jiraid = emailtxt.match(jiraTrigger);
+			if (jiraid) {
+				jiraid = jiraid[1];
+				if (!edits[jiraid]) {
+					edits[jiraid] = email;
+					editlink(email, jiraurl+jiraid, false, jiraid);
+				} else {
+					edits[jiraid].style.backgroundColor = colourdupe;
+					email.style.backgroundColor = colourdupe;
+					editlink(email, jiraurl+jiraid, true, jiraid);
+				}
+			} else if (editid) {
 				editid = editid[editid.length-1];
 				email.replaceChild(document.createTextNode(emailtxt.substring(0,emailtxt.length-editid.length-2)), email.firstChild);
 				var emailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
@@ -172,7 +185,7 @@
 	function editlink(email, urlOrEditid, dupe, txt) {
 		var fragment = document.createDocumentFragment();
 		var a = document.createElement("a");
-		a.addEventListener("click", function(e){
+		a.addEventListener("click", function(e) {
 			var edits = getParent(this, "table", "tbldata").querySelectorAll("table#datatable > tbody > tr > td > h2 > a."+userjs+"new[href='"+this.getAttribute("href")+"']");
 			for (var e=0; e<edits.length; e++) {
 				edits[e].className = edits[e].className.replace(userjs+"new", userjs+"read");
