@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.1.27.15.1
+// @version      2015.1.29.2.27
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -42,7 +42,9 @@
 	var sidebar = document.getElementById("sidebar");
 	var recid2trackIndex = {remote:{}, local:{}};/*recid:tracks index*/
 	var mergeQueue = [];/*contains next mergeButts*/
-	var regex_MBID = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
+	var sregex_MBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+	var regex_MBID = new RegExp(regex_MBID, "i");
+	var css_track = "td:not(.pos):not(.video) a[href^='/recording/'], td:not(.pos):not(.video) a[href^='"+MBS+"/recording/']";
 	var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
 	var startpos, status, from, to, swap, editNote, queuetrack;
 	var rem2loc = "◀";
@@ -219,17 +221,26 @@
 		if (jsonRelease) jsonRelease = JSON.parse(jsonRelease[1]);
 		for (var itrs=0, t=0, d=0, dt=0; itrs<trs.length; itrs++) {
 			if (!trs[itrs].className.match(/subh/)) {
-				var tracka = trs[itrs].querySelector("td:not(.pos):not(.video) a[href^='/recording/']");
-				var recid = trs[itrs].querySelector("td.rating a.set-rating").getAttribute("href").match(/id=([0-9]+)/)[1];
-				localRelease.tracks.push({"tr": trs[itrs], "disc": d, "track": dt, "a": tracka, "recid": recid});
-				if (jsonRelease) {
-//					localRelease.tracks[localRelease.tracks.length-1] = jsonRelease.mediums[d-1].tracks[dt];
-					for (var key in jsonRelease.mediums[d-1].tracks[dt]) if (jsonRelease.mediums[d-1].tracks[dt].hasOwnProperty(key)) {
-						localRelease.tracks[localRelease.tracks.length-1][key] = jsonRelease.mediums[d-1].tracks[dt][key];
-					}
-				}
+				var tracka = trs[itrs].querySelector(css_track);
+				var recoid = trs[itrs].querySelector("td.rating a.set-rating").getAttribute("href").match(/id=([0-9]+)/)[1];
+				localRelease.tracks.push({
+					tr: trs[itrs],
+					disc: d,
+					track: dt,
+					a: tracka,
+					recid: recoid,
+					name: "toto",
+					artistCredit: "AC",
+					length: 0
+				});
+//				if (jsonRelease) {
+////					localRelease.tracks[localRelease.tracks.length-1] = jsonRelease.mediums[d-1].tracks[dt];
+//					for (var key in jsonRelease.mediums[d-1].tracks[dt]) if (jsonRelease.mediums[d-1].tracks[dt].hasOwnProperty(key)) {
+//						localRelease.tracks[localRelease.tracks.length-1][key] = jsonRelease.mediums[d-1].tracks[dt][key];
+//					}
+//				}
 				dt++;
-				recid2trackIndex.local[recid] = t;
+				recid2trackIndex.local[recoid] = t;
 				addOption(startpos, t, d+"."+(dt<10?" ":"")+dt+". "+tracka.textContent);
 				t++;
 			} else if (!trs[itrs].querySelector("div.data-track")) {
@@ -244,39 +255,60 @@
 		status = createInput("text", "status", "", "Remote release MBID or URL");
 		status.style.setProperty("width", "100%");
 		status.addEventListener("input", function(e) {
-			var mbid = this.value.match(regex_MBID);
+			var mbid = this.value.match(new RegExp("/release/("+sregex_MBID+")"));
 			if (mbid) {
 				this.setAttribute("ref", this.value);
-				var url = "/release/"+mbid[0];
-				remoteRelease.mbid = mbid[0];
+				var url = "/release/"+mbid[1];
+				remoteRelease.mbid = mbid[1];
 				if (remoteRelease.mbid != localRelease.mbid) {
 					infoMerge("Fetching recordings…");
 					var xhr = new XMLHttpRequest();
 					xhr.onreadystatechange = function(e) {
 						if (xhr.readyState == 4) {
 							if (xhr.status == 200) {
-								var jsonRelease = JSON.parse(xhr.responseText.match(/MB\.Release\.init\(([^<]+)\)/)[1].trim());
-								var rtitle = xhr.responseText.match(/<title>[^“]+“(.+)” \S+ (.+) - MusicBrainz<\/title>/)[1];
+								var recIDx5 = xhr.responseText.match(/entity_id=[0-9]+&amp;entity_type=recording/g);
+								var trackInfos = xhr.responseText.match(new RegExp("<a href=\""+MBS+"/recording/"+sregex_MBID+"\"><bdi>[^<]*</bdi></a>", "g"));
+								var trackTimes = xhr.responseText.match(/<td class="treleases">[^<]*<\/td>/g);
 								var rtitle = xhr.responseText.match(new RegExp("<title>"+sregex_title+"</title>"));
-								remoteRelease.rg = xhr.responseText.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
-								remoteRelease.title = rtitle[1];
-								remoteRelease.comment = xhr.responseText.match(/<h1>.+  <span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
-								if (remoteRelease.comment) remoteRelease.comment = " ("+remoteRelease.comment[1]+")"; else remoteRelease.comment = "";
-								remoteRelease.ac = rtitle[2];
-								if (jsonRelease) {
+								if (recIDx5 && trackInfos && trackTimes && rtitle) {
+									var recIDs = [];
+									for (var i5 = 0; i5 < recIDx5.length; i5 += 5) {
+										recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
+									}
+									remoteRelease.rg = xhr.responseText.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
+									remoteRelease.title = rtitle[1];
+									remoteRelease.comment = xhr.responseText.match(/<h1>.+  <span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
+									if (remoteRelease.comment) remoteRelease.comment = " ("+remoteRelease.comment[1]+")"; else remoteRelease.comment = "";
+									remoteRelease.ac = rtitle[2];
 									var mbidInfo = MMRdiv.querySelector(".remote-release-link");
 									removeChildren(mbidInfo);
 									prints(mbidInfo, "(");
 									mbidInfo.appendChild(createA(remoteRelease.mbid, url));
 									prints(mbidInfo, ")");
 									remoteRelease.tracks = [];
-									for (var rd=0; rd < jsonRelease.mediums.length; rd++) {
-										for (var rt=0; rt < jsonRelease.mediums[rd].tracks.length; rt++) {
-											remoteRelease.tracks.push(jsonRelease.mediums[rd].tracks[rt]);
-											recid2trackIndex.remote[jsonRelease.mediums[rd].tracks[rt].recording.id] = remoteRelease.tracks.length - 1;
-										}
+									for (var t = 0; t < recIDs.length; t++) {
+										remoteRelease.tracks.push({
+											number: 0,
+											name: trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1],
+											artistCredit: "AC",
+											length: trackTimes[t].match(/>([^<]*)</)[1],
+											recording: {
+												id: recIDs[t],
+												gid: trackInfos[t].match(/\/recording\/([^"]+)/)[1],
+												video: false,
+												editsPending: 0
+											},
+											isDataTrack: false
+										});
+										recid2trackIndex.remote[recIDs[t]] = t;
 									}
-									jsonRelease = null;/*maybe it frees up memory*/
+//									for (var rd=0; rd < jsonRelease.mediums.length; rd++) {
+//										for (var rt=0; rt < jsonRelease.mediums[rd].tracks.length; rt++) {
+//											remoteRelease.tracks.push(jsonRelease.mediums[rd].tracks[rt]);
+//											recid2trackIndex.remote[jsonRelease.mediums[rd].tracks[rt].recording.id] = remoteRelease.tracks.length - 1;
+//										}
+//									}
+//									jsonRelease = null;/*maybe it frees up memory*/
 									//(re)build negative startpos
 									var negativeOptions = startpos.querySelectorAll("option[value^='-']");
 									for (var nopt = 0; nopt < negativeOptions.length; nopt++) {
@@ -486,7 +518,7 @@
 					rmForm.appendChild(createA(remoteRelease.tracks[rtrack].name, localRelease.tracks[ltrack].a.getAttribute("href")));
 				}
 				if (!localRelease.tracks[ltrack].a.parentNode) {
-					localRelease.tracks[ltrack].a = localRelease.tracks[ltrack].tr.querySelector("td:not(.pos):not(.video) a[href^='/recording/']");
+					localRelease.tracks[ltrack].a = localRelease.tracks[ltrack].tr.querySelector(css_track);
 				}
 				var tracktd = getParent(localRelease.tracks[ltrack].a, "td");
 				var bestPos = tracktd.querySelector("td > span.mp");
@@ -619,6 +651,7 @@
 		return str;
 	}
 	function ac2dom(ac) {
+		if (typeof ac == "string") return document.createTextNode(ac);
 		var dom = document.createDocumentFragment();
 		for (var c=0; c<ac.length; c++) {
 			var a = createA(ac[c].name, "/artist/"+ac[c].artist.gid);
