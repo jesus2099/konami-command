@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.1.21.11.16
+// @version      2015.1.29.18.33
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -101,7 +101,12 @@ var lookForOldestEdit = false;
 				var oldestMBIDrow = rowid2row[minrowid+""];
 				ents[oldestMBIDrow].row.style.setProperty("text-shadow", "0px 0px 8px #0C0");
 				ents[oldestMBIDrow].rowidzone.style.setProperty("color", "#060");
-				ents[oldestMBIDrow].rowidzone.insertBefore(document.createTextNode("(oldest) "), ents[oldestMBIDrow].rowidzone.firstChild);
+				ents[oldestMBIDrow].rowidzone.insertBefore(document.createTextNode(" (oldest) "), ents[oldestMBIDrow].rowidzone.firstChild);
+				ents[oldestMBIDrow].rowidzone.insertBefore(createA("SORT!", null, "sort those rows (oldest ID first)"), ents[oldestMBIDrow].rowidzone.firstChild).addEventListener("click", function(e) {
+					this.parentNode.removeChild(this);
+					sortBy("rowid");
+				});
+				ents[oldestMBIDrow].rowidzone.querySelector("a[href$='conditions.0.args.0="+ents[oldestMBIDrow].rowid+"']").style.setProperty("background-color",  "#6F6");
 				ents[oldestMBIDrow].rad.click();
 			}
 			if (showEntityInfo) {
@@ -230,13 +235,13 @@ var lookForOldestEdit = false;
 					else {
 						if (ents[io].edit) {
 							oldestEnt = io;
-//							if (lastEnt < 0) { ents[io].rad.click(); }
+							if (lastEnt < 0) { ents[io].rad.click(); }
 							var ioeZone = document.getElementById(userjs+"oldestEdit"+io);
 							ioeZone.appendChild(document.createTextNode(" (oldest) "));
-//							ioeZone.appendChild(createA("SORT!", null, "sort those rows (oldest edit first)")).addEventListener("click", function(e) {
-//								this.parentNode.removeChild(this);
-//								sortByEdit();
-//							});
+							ioeZone.appendChild(createA("SORT!", null, "sort those rows (oldest edit first)")).addEventListener("click", function(e) {
+								this.parentNode.removeChild(this);
+								sortBy("edit");
+							});
 							document.getElementById(userjs+"oldestEditA"+io).style.setProperty("background-color",  "#6F6");
 						}
 						top.status = "";
@@ -250,33 +255,32 @@ var lookForOldestEdit = false;
 		xhr.open("GET", url, true);
 		xhr.send(null);
 	}
-//	function sortByEdit() {
-//		for (var ent=0; ent < ents.length; ent++) {
-//			if (!ents[ent].edit) {
-//				ents[ent].row.parentNode.appendChild(ents[ent].row.parentNode.removeChild(ents[ent].row));
-//			} else {
-//				var rows = ents[ent].row.parentNode.querySelectorAll("tr");
-//				for (var row=0; rows.length; row++) {
-//					var rowedit = rows[row].querySelector("a[id^='"+userjs+"oldestEdit'][href^='/edit/']");
-//					if (rowedit && (rowedit = parseInt(rowedit.textContent, 10)) && rowedit >= ents[ent].edit) {
-//						if (ents[ent].row != rows[row]) {
-//							ents[ent].row.parentNode.insertBefore(ents[ent].row.parentNode.removeChild(ents[ent].row), rows[row]);
-//							if (rowedit == ents[ent].edit) {
-//								var samesame = rows[row].querySelector("a[id^='"+userjs+"oldestEdit'][href^='/edit/']");
-//								samesame.style.setProperty("background-color", "silver");
-//								samesame.setAttribute("title", "same edit as above");
-//							}
-//						}
-//						break;
-//					}
-//				}
-//			}
-//		}
-//		var rows = ents[0].row.parentNode.getElementsByTagName(ents[0].row.tagName.toLowerCase());
-//		for (var row=0; row < rows.length; row++) {
-//			rows[row].className = rows[row].className.replace(/\b(even|odd)\b/, row%2?"even":"odd");
-//		}
-//	}
+	function sortBy(what) {
+		for (var ent=0; ent < ents.length; ent++) {
+			if (!ents[ent][what]) {
+				ents[ent].row.parentNode.appendChild(ents[ent].row.parentNode.removeChild(ents[ent].row));
+			} else {
+				var rows = ents[ent].row.parentNode.querySelectorAll("tr");
+				for (var row=0; rows.length; row++) {
+					var indexA = rows[row].querySelector(what=="edit"?("a[id^='"+userjs+"oldestEdit'][href^='/edit/']"):("td[id^='"+userjs+"rowID'] a[href^='/search/edits']"));
+					if (indexA && (index = parseInt(indexA.textContent.replace(/\D/g, ""), 10)) && index >= ents[ent][what]) {
+						if (ents[ent].row != rows[row]) {
+							ents[ent].row.parentNode.insertBefore(ents[ent].row.parentNode.removeChild(ents[ent].row), rows[row]);
+							if (index == ents[ent][what]) {
+								indexA.style.setProperty("background-color", "silver");
+								indexA.setAttribute("title", "same "+what.replace(/ID/, " ID")+" as above");
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		var rows = ents[0].row.parentNode.getElementsByTagName(ents[0].row.tagName.toLowerCase());
+		for (var row=0; row < rows.length; row++) {
+			rows[row].className = rows[row].className.replace(/\b(even|odd)\b/, row%2?"even":"odd");
+		}
+	}
 	function loadimg(txt) {
 		var img = document.createElement("img");
 		img.setAttribute("src", "/static/images/icons/loading.gif");
