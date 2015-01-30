@@ -95,7 +95,7 @@
 			if (sourceID > targetID) {
 				 paramsup += "👍 Targetting '''oldest [MBID]''' ("+format(to.value)+" ← "+format(from.value)+")"+"\n";
 			}
-			if (localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].name.toUpperCase() == remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].name.toUpperCase()) paramsup += "👍 Same '''track titles''' (case insensitive comparison)\n";
+			if (almostSame(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].name, remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].name)) paramsup += "👍 Same '''track titles''' (case insensitive comparison)\n";
 			if (typeof localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length == "number" && typeof remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length == "number") {
 				var delta = Math.abs(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length - remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length);
 				if (delta <= safeLengthDelta*1000) paramsup += "👍 "+(delta==0?"Same":"Very close")+" '''track times''' "+(delta==0?"(in milliseconds)":"(within "+safeLengthDelta+" seconds)")+"\n";
@@ -452,7 +452,7 @@
 					var rectitle = remrec.appendChild(document.createElement("span"));
 					rectitle.appendChild(document.createTextNode(remoteRelease.tracks[rtrack].name));
 					remrec.appendChild(document.createTextNode("” "));
-					if (remoteRelease.tracks[rtrack].name.toUpperCase().replace(/[^A-Z0-9]/g,"") == localRelease.tracks[ltrack].name.toUpperCase().replace(/[^A-Z0-9]/g,"")) {
+					if (almostSame(remoteRelease.tracks[rtrack].name, localRelease.tracks[ltrack].name)) {
 						rectitle.style.setProperty("background-color", cOK);
 						rectitle.setAttribute("title", "(almost) same title");
 					}
@@ -684,5 +684,13 @@
 	}
 	function removeChildren(p) {
 		while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
+	}
+	function almostSame(a, b) {
+		return fw2hw(a).toUpperCase().replace(/[\s\c]/g,"") == fw2hw(b).toUpperCase().replace(/[\s\c]/g,"");
+	}
+	function fw2hw(s) {
+		return s.replace(/[！-｝]/g, function(a) {
+			return String.fromCharCode(a.charCodeAt(0)-65248);
+		}).replace(/\u3000/g, "\u0020").replace(/～/g, "〜");
 	}
 })();
