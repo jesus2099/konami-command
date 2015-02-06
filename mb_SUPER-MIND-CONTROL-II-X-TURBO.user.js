@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.1.29.10.57
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP
+// @version      2015.2.6.17.18
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -1004,6 +1004,7 @@
 	j2setting("POWER_RELATE_TO_autoselect", true, true, "selects its current value for quick reset by typing");
 	j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the release editor by mistake. repairs the keyboard tab navigation to save button (MBS-3112) (for the new release editor, the tab order might not be perfectly chosen yet but submit comes first and cancel last)");
 	j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor"+j2superturbo.menu.expl+": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
+	j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
 	var enttype = location.href.match(new RegExp("^"+MBS+"/(artist|label|recording|release|release-group|work)/.*$"));
 	if (enttype) {
 		enttype = enttype[1];
@@ -1085,6 +1086,17 @@
 						} else { alert("Wrong date format"); }
 					}
 				}}}, ["Set selected works’ recording dates ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
+			}
+		}
+		/*================================================================ DISPLAY-
+		## UNLINK_ENTITY_HEADER ## (default off) Freso special request (https://gist.github.com/jesus2099/4111760)
+		=========================================================================*/
+		if (j2sets.UNLINK_ENTITY_HEADER) {
+			var h1link = document.querySelector("div#page h1 a[href='"+MBS+location.pathname.match(new RegExp("/"+enttype+"/"+stre_GUID))+"']");
+			if (h1link) {
+				h1link.parentNode.insertBefore(h1link.cloneNode(true), h1link).removeAttribute("href");
+				h1link.style.setProperty("position", "absolute");
+				h1link.style.setProperty("top", "-1000px");
 			}
 		}
 	}
