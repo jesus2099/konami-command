@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         github. INSTALL USER SCRIPT
-// @version      2014.11.19.2250
+// @version      2015.2.9.14.7
 // @description  github.com: Convenient direct “raw” download link (leftmost file icon) to “Install” user scripts from file lists
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -15,16 +15,20 @@
 // @include      https://github.com/*/*
 // @run-at       document-end
 // ==/UserScript==
-setInterval(function() {"use strict";
-	var ujs = document.querySelectorAll("table.files tbody a.js-directory-link[title$='.user.js']:not(.j2gIUS), table.files tbody a.js-directory-link[title$='.uc.js']:not(.j2gIUS), table.files tbody a.js-directory-link[title$='.uc.xul']:not(.j2gIUS)");
-	for (var i=0; i<ujs.length; i++) {
-		ujs[i].className += " j2gIUS";
-		var icon = ujs[i].parentNode.parentNode.parentNode.querySelector("td.icon span.octicon.octicon-file-text");
+"use strict";
+jQuery(document).on("pjax:end", changeStuff);
+changeStuff();
+function changeStuff() {
+	var fileTypes = [".user.js", ".uc.js", ".uc.xul"].map(function(fileType) { return "table.files tbody a.js-directory-link[title$='"+fileType+"']:not(.j2gIUS)"; });
+	var userscripts = document.querySelectorAll(fileTypes.join(", "));
+	for (var i=0; i<userscripts.length; i++) {
+		userscripts[i].className += " j2gIUS";
+		var icon = userscripts[i].parentNode.parentNode.parentNode.querySelector("td.icon span.octicon.octicon-file-text");
 		if (icon) {
 			var install = document.createElement("a");
 			install.className = "octicon octicon-file-code"; // https://octicons.github.com
-			install.setAttribute("href", ujs[i].getAttribute("href").replace(/(\/[^/]+\/[^/]+)\/blob\//, "$1/raw/"));
-			install.setAttribute("title", "Install “"+ujs[i].getAttribute("title")+"”");
+			install.setAttribute("href", userscripts[i].getAttribute("href").replace(/(\/[^/]+\/[^/]+)\/blob\//, "$1/raw/"));
+			install.setAttribute("title", "Install “"+userscripts[i].getAttribute("title")+"”");
 			install.style.setProperty("color", "green");
 			install.addEventListener("click", function(e) {
 				e.cancelBubble = true;
@@ -34,4 +38,4 @@ setInterval(function() {"use strict";
 			icon.parentNode.replaceChild(install, icon);
 		}
 	}
-}, 1000);
+}
