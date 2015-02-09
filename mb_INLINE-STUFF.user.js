@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2014.12.29.1731
+// @version      2015.1.31.2345
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -65,7 +65,9 @@ var releasewsURL = "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musi
 var str_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(str_GUID, "i");
 var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acoustid&mbid=%mbid&state=%state";
-var CSS_Arec = "td:not(.pos):not(.video) a[href^='/recording/']";
+var pssh = location.protocol+"//"+location.host;
+var css_recording = "td:not(.pos):not(.video) a[href^='"+pssh+"/recording/']";
+var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='"+pssh+"/work/']";
 var pleaseWaitFragment = null;
 var tracksHtml = null;
 var pagecat = location.href.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i)? "edits" : "release";
@@ -82,7 +84,7 @@ if (pagecat) {
 							toolzone = toolzone.appendChild(document.createElement("div"));
 							toolzone.className = userjs+"toolzone";
 							toolzone.style.setProperty("display", "none");
-							if (recUseInRelationshipLink && (rec = tracksHtml[ith].querySelector(CSS_Arec))) {
+							if (recUseInRelationshipLink && (rec = tracksHtml[ith].querySelector(css_recording))) {
 								toolzone.appendChild(createA(recUseInRelationshipLink, rec.getAttribute("href")+"/relate", "Use this recording in a relationship…"));
 							}
 							if (recAddToMergeLink && (rat = tracksHtml[ith].querySelector("span.star-rating a.set-rating"))) {
@@ -94,7 +96,7 @@ if (pagecat) {
 							toolzone.style.setProperty("display", "none");
 							toolzone.appendChild(createA("Edit", rec.getAttribute("href")+"/edit", "Edit this recording"));
 						}
-						if (works = tracksHtml[ith].querySelectorAll("td:not(.pos):not(.video) dl.ars > dd a[href^='/work/']")) {
+						if (works = tracksHtml[ith].querySelectorAll(css_work)) {
 							for (var w=0; w<works.length; w++) {
 								if (workid = works[w].getAttribute("href").match(new RegExp("/work/("+str_GUID+")$"))) {
 									if (!shownworks[workid[1]]) {
@@ -252,7 +254,7 @@ function isrcFish() {
 		}
 		acoustidFishBatch(acoustidNet);
 		for (var i=0 ; i < tracksHtml.length ; i++) {
-			var aRec = tracksHtml[i].querySelector("a[href^='/recording/']");
+			var aRec = tracksHtml[i].querySelector(css_recording);
 			if (aRec) {
 				var mbid = aRec.getAttribute("href").match(re_GUID);
 				var trackTitleCell = tracksHtml[i].querySelector("td:not(.pos):not(.video)");
@@ -514,7 +516,7 @@ function acoustidFishBatch(recids) {
 				}
 				for (var th = 0; th < tracksHtml.length; th++) {
 					if (
-						(recmbid = tracksHtml[th].querySelector(CSS_Arec)) && 
+						(recmbid = tracksHtml[th].querySelector(css_recording)) && 
 						(recmbid = recmbid.getAttribute("href").match(new RegExp("/("+str_GUID+")$"))) && 
 						(recmbid = recmbid[1]) && 
 						acoustids[recmbid].length > 0 &&
