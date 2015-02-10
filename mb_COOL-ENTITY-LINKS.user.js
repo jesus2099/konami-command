@@ -1,19 +1,21 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2014.11.14.2205
+// @version      2015.2.10.15.16
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COOL-ENTITY-LINKS.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COOL-ENTITY-LINKS.user.js
-// @author       PATATE12 aka. jesus2099/shamo
+// @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-04-24
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      http://*musicbrainz.org/*
-// @include      https://*musicbrainz.org/*
+// @include      http*://*musicbrainz.org/*
+// @include      http://*.mbsandbox.org/*
+// @exclude      *//*/*mbsandbox.org/*
+// @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
 (function(){"use strict";
@@ -38,7 +40,7 @@
 		"recording": {"path":"/recording/", "icon":"recording"},
 		"release": {"path":"/release/", "icon":"release"},
 		"release-group": {"path":"/release-group/", "icon":"release_group"},
-		"ticket": {"fullpath":"http://tickets.musicbrainz.org/browse/", "id":"[A-Za-z]+-[0-9]+", "label":"%id%", "HTTPonly":true},
+		"ticket": {"fullpath":"http://tickets.musicbrainz.org/browse/", "id":"[A-Za-z]+-[0-9]+", "HTTPonly":true},
 		"track": {"path":"/track/", "icon":"recording"},
 		"user": {"path":"/user/", "id":".+"},
 		"work": {"path":"/work/", "icon":"blank"},/*MBS-7070*/
@@ -110,7 +112,8 @@
 							as[a].setAttribute("href", href);
 						}
 						as[a].className += " "+userjs;
-						var text = (entities[ent].label?entities[ent].label.replace(/%id%/, id[1]):id[1]);
+						var text = unescape(id[1]);
+						if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);
 						if (text) {
 							as[a].replaceChild(document.createTextNode(text), as[a].firstChild);
 							as[a].setAttribute("title", ent);
