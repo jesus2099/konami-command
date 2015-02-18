@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2015.1.23.15.0
+// @version      2015.2.18.15.16
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @homepage     http://userscripts-mirror.org/scripts/show/152545
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_REVIVE-DELETED-EDITORS.user.js
-// @author       PATATE12 aka. jesus2099/shamo
+// @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-11-16
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
@@ -28,47 +28,47 @@
 // ==/UserScript==
 (function(){"use strict";
 	/* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
-	var regrets = {
-		  "Deleted Editor #32978": "tenebrous",         /*2003-12-13 - 2005-12-16*/
-		  "Deleted Editor #93418": "Rhymeless",         /*2005-02-08 - 2013-03-05*/
-		  "Deleted Editor #95678": "brianfreud",        /*2005-02-18 - 2012-09-24*/
-		 "Deleted Editor #129671": "Shlublu",           /*2005-06-30 - 2009-02-02*/
-		 "Deleted Editor #157767": "michael",           /*2005-10-20 - 2010-01-05*/
-		 "Deleted Editor #163497": "RedHotHeat",        /*2005-11-09 - 2012-07-12*/
-		 "Deleted Editor #186010": "robojock",          /*2005-12-30 - 2012-11-29*/
-		 "Deleted Editor #193948": "syserror",          /*2006-01-20 - 2008-01-27*/
-		 "Deleted Editor #240330": "theirfour",         /*2006-07-03 - 2012-11-27*/
-		 "Deleted Editor #313128": "mistoffeles",       /*2007-03-31 - 2009-02-06*/
-		 "Deleted Editor #346478": "neothe0ne",         /*2007-08-31 - 2011-05-28*/
-		 "Deleted Editor #386354": "grosnombril",       /*2008-03-04 - 2008-04-03*/
-		 "Deleted Editor #420821": "kaik",              /*2008-09-10 - 2014-07-19 / jozo / 54b97c60-f768-42fa-a5ff-d4e7c173910e*/
-		 "Deleted Editor #450522": "dr_zepsuj",         /*2009-02-21 - */
-		 "Deleted Editor #457889": "deivsonscherzinger",/*2009-04-12 - 2014-01-12*/
-		 "Deleted Editor #629372": "nightspirit",       /*2012-04-04 - 2014-04-08*/
-		 "Deleted Editor #638936": "betegouveia",       /*2012-07-07 - 2014-12-21*/
-		 "Deleted Editor #639228": "ritaavenida ",      /*2012-07-08 - 2014-12-21*/
-		 "Deleted Editor #639231": "harrystykes",       /*2012-07-08 - 2014-12-21*/
-		 "Deleted Editor #639236": "niallhoran",        /*2012-07-08 - 2014-12-21*/
-		 "Deleted Editor #701715": "remdia",            /*2013-01-07 - 2013-01-30*/
-		 "Deleted Editor #774387": "Wanddis",           /*2013-06-06 - 2014-12-21*/
-		 "Deleted Editor #791672": "georg187",          /*2013-06-14 - */
-		 "Deleted Editor #800638": "nicolebahls",       /*2013-06-19 - 2014-12-21*/
-		 "Deleted Editor #809366": "xoxtina",           /*2013-06-23 - 2014-12-21*/
-		"Deleted Editor #1024627": "bvlgari",           /*2013-10-04 - 2014-12-21*/
-		"Deleted Editor #1288668": "khaleesi",          /*2014-06-29 - 2014-12-21*/
+	var editors = {
+		  "32978": ["2003-12-13", "2005-12-16", "tenebrous"],
+		  "93418": ["2005-02-08", "2013-03-05", "Rhymeless"],
+		  "95678": ["2005-02-18", "2012-09-24", "brianfreud"],
+		 "129671": ["2005-06-30", "2009-02-02", "Shlublu"],
+		 "157767": ["2005-10-20", "2010-01-05", "michael"],
+		 "163497": ["2005-11-09", "2012-07-12", "RedHotHeat"],
+		 "186010": ["2005-12-30", "2012-11-29", "robojock"],
+		 "193948": ["2006-01-20", "2008-01-27", "syserror"],
+		 "240330": ["2006-07-03", "2012-11-27", "theirfour"],
+		 "273412": ["2006-10-28", "2011-02-25", "Sturla"],
+		 "313128": ["2007-03-31", "2009-02-06", "mistoffeles"],
+		 "346478": ["2007-08-31", "2011-05-28", "neothe0ne"],
+		 "386354": ["2008-03-04", "2008-04-03", "grosnombril"],
+		 "420821": ["2008-09-10", "2014-07-19", "kaik"], /*jozo / 54b97c60-f768-42fa-a5ff-d4e7c173910e*/
+		 "450522": ["2009-02-21", "2011-05-24", "dr_zepsuj"],
+		 "457889": ["2009-04-12", "2014-01-12", "deivsonscherzinger"],
+		 "629372": ["2012-04-04", "2014-04-08", "nightspirit"],
+		 "638936": ["2012-07-07", "2014-12-21", "betegouveia"],
+		 "639228": ["2012-07-08", "2014-12-21", "ritaavenida"],
+		 "639231": ["2012-07-08", "2014-12-21", "harrystykes"],
+		 "639236": ["2012-07-08", "2014-12-21", "niallhoran"],
+		 "701715": ["2013-01-07", "2013-01-30", "remdia"],
+		 "774387": ["2013-06-06", "2014-12-21", "Wanddis"],
+		 "791672": ["2013-06-14", "2013-12-08", "georg187"],
+		 "800638": ["2013-06-19", "2014-12-21", "nicolebahls"],
+		 "809366": ["2013-06-23", "2014-12-21", "xoxtina"],
+		"1024627": ["2013-10-04", "2014-12-21", "bvlgari"],
+		"1288668": ["2014-06-29", "2014-12-21", "khaleesi"],
  		"jesus2099": "GOLD MASTER KING",
 		"%you%": "PROPHET PRINCE CHAMPION",
 	};
-	var mark /*of the life again*/ = "★";
 	var standout /*from the crowd*/ = true;
 	/* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
-	var MBS = self.location.protocol+"//"+self.location.host;
+	var MBS = location.protocol+"//"+location.host;
 	var you = document.querySelector("div#header li.account a[href^='"+MBS+"/user/']");
 	if (document.querySelector("div#header li.account a[href='"+MBS+"/logout'], div#page") == null) { return; }
 	if (you) {
-		if (regrets["%you%"]) {
-			if (!regrets[you.textContent]) { regrets[you.textContent] = regrets["%you%"]; }
-			delete regrets["%you%"];
+		if (editors["%you%"]) {
+			if (!editors[you.textContent]) { editors[you.textContent] = editors["%you%"]; }
+			delete editors["%you%"];
 		}
 		if (standout) {
 			var ys = document.querySelectorAll("div#page a[href='"+you.getAttribute("href")+"']");
@@ -77,25 +77,41 @@
 			}
 		}
 	}
-	for (var user in regrets) { if (regrets.hasOwnProperty(user)) {
-		var deled = user.match(/^deleted editor #[0-9]+$/i);
-		document.title = deled?document.title.replace(new RegExp(user+"(”)?"), regrets[user]+"$1"+mark):document.title.replace(new RegExp("^Editor( “"+user+"”)"), regrets[user]+"$1");
-		if (deled) {
-			var as = document.querySelectorAll("a[href='"+MBS+"/user/"+escape(user)+"']");
+	for (var editor in editors) if (editors.hasOwnProperty(editor)) {
+		var deletedEditor = typeof editors[editor] != "string";
+		var editorName = deletedEditor?"Deleted Editor #"+editor:editor;
+		document.title = deletedEditor?document.title.replace(new RegExp(editorName+"(”)?"), editors[editor][2]+"$1"):document.title.replace(new RegExp("^Editor( “"+editorName+"”)"), editors[editor]+"$1");
+		if (deletedEditor) {
+			editors[editor].push(editors[editor][0]+"—"+editors[editor][1]);
+			var dur = (new Date(editors[editor][1]) - new Date(editors[editor][0])) / 1000 / 60 / 60 / 24;
+			var unit = "day";
+			if (dur % 30  < dur) {
+				if (dur % 365 < dur) {
+					dur /= 365;
+					unit = "year";
+				} else {
+					dur /= 30;
+					unit = "month";
+				}
+			}
+			dur = Math.round(dur);
+			editors[editor].push(dur+" "+unit+(dur==1?"":"s"));
+			var as = document.querySelectorAll("a[href='"+MBS+"/user/"+escape(editorName)+"']");
 			for (var a=0; a<as.length; a++) {
 				for (var n=0; n<as[a].childNodes.length; n++) {
-					if ((as[a].childNodes[n].nodeType == 3 || as[a].childNodes[n].tagName && as[a].childNodes[n].tagName == "BDI") && as[a].childNodes[n].textContent == user) {
-						as[a].replaceChild(document.createTextNode(regrets[user]), as[a].childNodes[n]);
+					if ((as[a].childNodes[n].nodeType == 3 || as[a].childNodes[n].tagName && as[a].childNodes[n].tagName == "BDI") && as[a].childNodes[n].textContent == editorName) {
+						as[a].replaceChild(document.createTextNode(editors[editor][2]), as[a].childNodes[n]);
 						as[a].style.setProperty("color", "darkred", "important");
-						addAfter(document.createTextNode(mark), as[a]);
-						as[a].setAttribute("title", user);
+						as[a].style.setProperty("text-decoration", "line-through");
+						as[a].setAttribute("title", editorName+"\n"+editors[editor][4]+" ("+editors[editor][3]+")");
 						as[a].className += "tooltip";
+						addAfter(document.createTextNode(" ("+editors[editor][4]+")"), as[a]);
 						break;
 					}
 				}
 			}
 		}
-		if (self.location.href.match(new RegExp("^"+MBS+"/user/"+escape(user)+"$"))) {
+		if (location.href.match(new RegExp("^"+MBS+"/user/"+escape(editorName)+"$"))) {
 			var dts = document.querySelectorAll("dl.profileinfo > dt");
 			for (var dt=0; dt<dts.length; dt++) {
 				if (dts[dt].textContent.match(/user type/i)) {
@@ -103,16 +119,30 @@
 					if (dd) {
 						dd.setAttribute("title", dd.textContent.trim());
 						removeChildren(dd);
-						dd.appendChild(document.createTextNode(deled?user:regrets[user]));
+						dd.appendChild(document.createTextNode(deletedEditor?editorName:editors[editor]));
 						dd.style.setProperty("font-weight", "bold");
 						dd.style.setProperty("text-shadow", "0 0 4px gold");
+					}
+				} else if (dts[dt].textContent.match(/member since/i)) {
+					if (deletedEditor) {
+						document.title = document.title.replace(new RegExp("(“"+editors[editor][2]+"”)"), "$1 ("+editors[editor][4]+")");
+						var dd = getSibling(dts[dt], "dd");
+						if (dd) {
+							var membershipTerm = document.createElement("dt");
+							membershipTerm.appendChild(document.createTextNode("Membership:"));
+							var membershipDefinition = document.createElement("dd");
+							membershipDefinition.appendChild(document.createTextNode(editors[editor][4]+" ("+editors[editor][3]+")"));
+							membershipDefinition.style.setProperty("font-weight", "bold");
+							membershipDefinition.style.setProperty("text-shadow", "0 0 4px gold");
+							addAfter(membershipDefinition, addAfter(membershipTerm, dd));
+						}
 					}
 					break;
 				}
 			}
 		}
-	} }
-	if (localStorage && self.location.pathname == "/search" && self.location.search.match(/query=deleted.editor.type=editor/i) && document.querySelector("div#header-menu li.account a[href$='/user/jesus2099']")) {
+	}
+	if (localStorage && location.pathname == "/search" && location.search.match(/query=deleted.editor.type=editor/i) && document.querySelector("div#header-menu li.account a[href$='/user/jesus2099']")) {
 		var lsmax = "jesus2099userjs152545debugmax";
 		var max = localStorage.getItem(lsmax);
 		max = max?parseInt(max, 10):0;max;
