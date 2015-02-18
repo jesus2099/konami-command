@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.2.18.16.14
+// @version      2015.2.18.16.36
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -1160,7 +1160,7 @@
 			for (var tp=0; tp<tps.length; tp++) {
 				if (!tps[tp].parentNode.querySelector("*."+userjs+"track-length-parser")) {
 					addAfter(createTag("input", {a:{type:"button","class":userjs+"track-length-parser",value:"Time Parser","_ctrlValue":"Erase times",title:"CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"},s:{"background-color":"yellow"},e:{
-						click:function(e){
+						click:function(e) {
 							var erase = this.value.match(/erase/i) || e.ctrlKey;
 							var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']", this, e);
 							var times = !erase && prompt("Track length parser\n\nPlease paste your huge text including track times below.\n“1:23” and “1′23″” and even incorrect “1’23”” and “1'23\"” will be parsed.\nYou can for instance copy from your foobar2000 tracklist, minc.or.jp, etc.\nWARNING. You must understand that all current times will be overwritten in the tracklist editor.");
@@ -1172,12 +1172,16 @@
 											time = times[t].match(/(\d+)\D+(\d+)/);
 											time = time[1]+":"+time[2];
 										}
-										inputs[i].value = time;
-										sendEvent(inputs[i], "change");
+										inputs[i].style.removeProperty("background-color");
+										if (inputs[i].value != time) {
+											inputs[i].value = time;
+											inputs[i].style.setProperty("background-color", erase?"pink":"yellow");
+											inputs[i].focus();
+											sendEvent(inputs[i], "change");
+										}
 									}
 								}
 							}
-							else alert("No changes.");
 						},
 						mouseover:TRACKLIST_TOOLS_buttonChange,
 						mouseout:TRACKLIST_TOOLS_buttonChange
