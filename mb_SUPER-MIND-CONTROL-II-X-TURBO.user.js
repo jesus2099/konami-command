@@ -1,14 +1,14 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.2.6.18.5
+// @version      2015.2.18.16.14
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
-// @author       PATATE12 aka. jesus2099/shamo
+// @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2010-09-09
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
@@ -82,10 +82,12 @@
 	j2superturbo.css = document.styleSheets[document.styleSheets.length-1];
 	var j2sets = {}, j2docs = {}, j2defs = {}, j2setsclean = [];
 	j2setting();
-	j2superturbo.menu.addItem(createTag("a",{a:{title:meta.description.replace(/^[^:]+: /,"").replace(/ \/ /g,"\n")},e:{click:function(e){
+	j2superturbo.menu.addItem(createTag("a",{a:{title:meta.description.replace(/^[^:]+: /,"").replace(/ \/ /g,"\n")},e:{click:function(e) {
+		var j2setsdiv = document.getElementById(userjs+"j2sets");
+		if (!j2setsdiv) {
 			j2setting();
 			if (j2sets) {
-				var j2setsdiv = document.body.appendChild(createTag("div",{a:{id:userjs+"j2sets"},s:{position:"fixed",overflow:"auto",top:"50px",right:"50px",bottom:"50px",left:"50px","background-color":"silver",border:"2px outset white",padding:"1em","z-index":"99"}},[
+				j2setsdiv = document.body.insertBefore(createTag("div",{a:{id:userjs+"j2sets"},s:{"background-color":"silver",border:"2px outset white",padding:"1em"}},[
 					createTag("p", {s:{"text-align":"right",margin:"0px"}}, [
 						createTag("a", {a:{href:meta.homepage,target:"_blank"}}, "HELP"),
 						" | ",
@@ -96,7 +98,7 @@
 						createTag("a", {e:{click:function(e){del(document.getElementById(userjs+"j2sets"));}}}, "CLOSE"),
 					]),
 					createTag("h4",{s:{"text-shadow":"0 0 8px white","font-size":"1.5em","margin-top":"0px"}},["██ ",createTag("a",{a:{href:meta.namespace,target:"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{e:{click:function(){location.reload();}}},"page reload")," to see the effect."])
-				]));
+				]), document.getElementById("page"));
 				var alphakeys = [];
 				for (var s in j2sets) { if (j2sets.hasOwnProperty(s)) {
 					if (j2setsclean.indexOf(s)<0) { delete j2sets[s]; }
@@ -113,8 +115,9 @@
 					tr.appendChild(createTag("td", {s:{"margin-bottom":".4em"}}, j2docit(j2docs[alphakeys[a]]).concat([" — ", createTag("a", {a:{href:meta.homepage+"#"+alphakeys[a].toLowerCase(),target:"_blank"}}, "more help…")])));
 				}
 			}
-		}}}, meta.name+" settings")
-	);
+		}
+		j2setsdiv.scrollIntoView();
+	}}}, meta.name+" settings"));
 	function bug(error) {
 		var title = "", alrt = meta.name+" ("+meta.version+")"+" ERROR";
 		if (error.module) {
@@ -1096,7 +1099,7 @@
 			if (h1link) {
 				h1link.parentNode.insertBefore(h1link.cloneNode(true), h1link).removeAttribute("href");
 				h1link.style.setProperty("position", "absolute");
-				h1link.style.setProperty("top", "-1000px");
+				h1link.style.setProperty("left", "-1000px");
 			}
 		}
 	}
