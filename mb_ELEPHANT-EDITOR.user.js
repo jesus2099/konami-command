@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2014.12.17.805
+// @version      2015.2.18.12.0
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_ELEPHANT-EDITOR.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_ELEPHANT-EDITOR.user.js
-// @author       PATATE12 aka. jesus2099/shamo
+// @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-01-13
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
@@ -61,6 +61,7 @@ var editsearchpage = (mb && location.href.match(/musicbrainz\.org\/.+(?:edits|su
 var re = (mb && document.querySelector("div#release-editor"));
 var save = editpage||editsearchpage?false:true;
 var content = document.getElementById(mb?"page":"content");
+var savedHeight = localStorage.getItem(userjs+"_savedHeight");
 if (content) {
 	var notetext = content.querySelectorAll("textarea"+(acoustid?"":".edit-note, textarea#edit-note-text"));
 	var reldates = [];
@@ -72,6 +73,23 @@ if (content) {
 		} else {
 			reldates = content.querySelectorAll("span.partial-date");
 		}
+		/*saving edit note size / 86px and 100% defaults for release editor*/
+		notetext.setAttribute("init-height", (notetext.offsetHeight?notetext.offsetHeight:86)+"px");
+		notetext.setAttribute("init-width", notetext.offsetWidth?notetext.offsetWidth+"px":"100%");
+		if (savedHeight) {
+			notetext.style.setProperty("height", savedHeight+"px");
+		}
+		notetext.addEventListener("mouseup", function(e) {
+			if (this.offsetHeight != savedHeight) {
+				localStorage.setItem(userjs+"_savedHeight", this.offsetHeight);
+			}
+		});
+		notetext.setAttribute("title", (notetext.getAttribute("title")?"\n":"")+"double‑click to reset size");
+		notetext.addEventListener("dblclick", function(e) {
+			localStorage.removeItem(userjs+"_savedHeight");
+			this.style.setProperty("height", this.getAttribute("init-height"));
+			this.style.setProperty("width", this.getAttribute("init-width"));
+		});
 	} else { notetext = false; }
 	var xdate = [];
 	var submitbtn = content.querySelector(mb?"form div.buttons button[type='submit'].submit.positive":"input[type='submit']");
