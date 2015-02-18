@@ -1,14 +1,14 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2014.11.17.1636
+// @version      2015.2.18.16.28
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @homepage     http://userscripts-mirror.org/scripts/show/126475
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
-// @author       PATATE12 aka. jesus2099/shamo
+// @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-02-22
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
@@ -41,8 +41,7 @@
 				this.parentNode.parentNode.style.removeProperty("left");
 				if (lsm) { unloadLS(); } else {
 					lskeys = [];
-					lsm = document.getElementById("page");
-					lsm = lsm.insertBefore(createTag("div", {a:{id:userjs+"lsm"}}, createTag("h2", {}, [
+					lsm = document.body.insertBefore(createTag("div", {a:{id:userjs+"lsm"}}, createTag("h2", {}, [
 						meta.name+" (",
 						createTag("a", {a:{title:"Add a new key"},e:{click:function(e){
 							loadLS();
@@ -71,13 +70,13 @@
 						"/",
 						createTag("a", {a:{title:"Close local storage manager"},e:{click:function(e){unloadLS();}}}, "close"),
 						")"
-					])), lsm.firstChild);
+					])), document.getElementById("page"));
 					if (self.opera) lsm.appendChild(createTag("p", {}, "☞ Opera 12 has its own local storage editor: CTRL+SHIFT+I (Dragon fly) > Storage > Local Storage."));
 					else if (navigator.userAgent.match(/firefox/i)) lsm.appendChild(createTag("p", {}, "☞ Firefox’s Firebug has its own local storage editor: DOM > localStorage."));
 					else if (navigator.userAgent.match(/chrom(ium|e)/i)) lsm.appendChild(createTag("p", {}, "☞ Chromium has its own local storage editor: F12 > Resources > Local Storage."));
 					document.addEventListener("storage", function(e) { loadLS(); }, false);/*does never trigger btw*/
 					loadLS();
-					lsm.parentNode.scrollIntoView();
+					lsm.scrollIntoView();
 				}
 			}}}, meta.name)
 		), j2set);
