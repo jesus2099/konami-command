@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2014.11.17.1803
+// @version      2015.2.20.15.50
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -111,9 +111,9 @@
 					document.createTextNode("⌛"),
 					createTag("img",
 						{"src":imgurl+"-250","alt":as[a].textContent},
-						{"vertical-align":"middle","display":"none","max-height":"20px","max-width":"20px","box-shadow":"1px 1px 4px black"},
+						{"vertical-align":"middle","display":"none","max-height":"20px","box-shadow":"1px 1px 4px black"},
 						{
-							"load":function(e){del(this.parentNode.firstChild);this.style.setProperty("display","inline");try{jQuery(this).animate({"max-height":BIG_SIZE,"max-width":BIG_SIZE},"fast");}catch(e){this.style.setProperty("max-height",BIG_SIZE);this.style.setProperty("max-width",BIG_SIZE);console.log(e.message+"!\n"+chrome);}},
+							"load":function(e){del(this.parentNode.firstChild);this.style.setProperty("display","inline");try{jQuery(this).animate({"max-height":BIG_SIZE},"fast");}catch(e){this.style.setProperty("max-height",BIG_SIZE);console.log(e.message+"!\n"+chrome);}},
 							"error":function(e){del(this.parentNode);},
 							"mouseover":updateA,
 							"mouseout":updateA
@@ -141,12 +141,10 @@
 					var s = (parseInt(BIG_SIZE, 10) - 8) + "px";
 					img.parentNode.style.setProperty("border", "4px solid "+colour);
 					img.style.setProperty("max-height", s);
-					img.style.setProperty("max-width", s);
 				}
 				else {
 					img.parentNode.style.removeProperty("border");
 					img.style.setProperty("max-height", BIG_SIZE);
-					img.style.setProperty("max-width", BIG_SIZE);
 				}
 			}
 		}
