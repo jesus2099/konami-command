@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2015.2.20.15.50
+// @version      2015.2.20.18.19
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -57,7 +57,7 @@
 	}
 /*---CONFIG-START---*/
 	var bigpics = true; /*displays big pics illustrated discography in main artist page*/
-	var smallpics = "right"; /*false, "left" or "right" : displays small pics for every releases and release groups, everywhere*/
+	var smallpics = true; /*displays small pics for every releases and release groups, everywhere*/
 	var forceHTTP = true; /*as long as HTTP is being faster on CAA (less latency), you can force it for CAA images even if when you are using HTTPS for musicbrainz*/
 	var colour = "yellow"; /*used for various mouse-over highlights*/
 /*---CONFIG-STOPR---*/
@@ -75,26 +75,27 @@
 	}
 	if (!location.pathname.match(/^\/$|^\/release\//)) for (var t=0; t<types.length; t++) {
 		var as = document.querySelectorAll("tr > td a[href*='musicbrainz.org/"+types[t]+"/'], div#page.fullwidth ul > li a[href*='musicbrainz.org/"+types[t]+"/']");
-		var istable = false;
+		var istable, artistcol;
 		for (var a=0; a<as.length; a++) {
 			if (a == 0) {
 				istable = getParent(as[0], "table");
-				if (istable) { istable = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
+				if (istable) { artistcol = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
 			}
 			var imgurl = CAA_URL.replace(/%type%/, types[t]).replace(/%mbid%/,as[a].getAttribute("href").match(new RegExp(RE_GUID)));
 			if (smallpics) {
+				var margin = "-12px 0px -14px 0px";
 				as[a].parentNode.insertBefore(
-					createTag("div",{},{"float":smallpics=="left"?"left":"right","margin-right":".5em"},{},[document.createTextNode("⌛"),
+					createTag("div",{},{"float":"right","margin-right":".5em"},{},[document.createTextNode("⌛"),
 						createTag("a",{"href":imgurl},{"display":"none"},{},[
 							createTag("img",
-								{"alt":as[a].textContent,"title":"click to enlarge","src":imgurl+"-250","_s":"_"},
-								{"cursor":"pointer","box-shadow":"1px 1px 4px black","margin":"-12px 0px -14px 0px","padding":"none","position":"relative"},
+								{"alt":as[a].textContent, "src":imgurl+"-250", "_size":"_", "_margin":margin, "_istable":istable?"1":"0"},
+								{"cursor":"pointer", "box-shadow":"1px 1px 4px black", "margin":margin, "padding":"none", "position":"relative", "z-index":"1"},
 								{
-									"click":function(e){big(e,this,SMALL_SIZE);},
 									"load":function(e){this.setAttribute("_height",this.height+"px");this.style.setProperty("height","0");del(this.parentNode.parentNode.firstChild);this.parentNode.style.setProperty("display","inline");big(e,this,SMALL_SIZE)},
 									"error":function(e){del(this.parentNode.parentNode);},
-									"mouseover":function(e){this.style.setProperty("z-index","1");this.parentNode.parentNode.nextSibling.style.setProperty("background-color",colour);},
-									"mouseout":function(e){this.style.removeProperty("z-index");this.parentNode.parentNode.nextSibling.style.removeProperty("background-color");}
+/*TODO: https://musicbrainz.org/artist/5441c29d-3602-4898-b1a1-b77fa23b8e50 “Sound + Vision” problem on thin images : mouseover on row instead of img*/
+									"mouseover":function(e){this.parentNode.parentNode.nextSibling.style.setProperty("background-color",colour);big(e,this,SMALL_SIZE);},
+									"mouseout":function(e){this.parentNode.parentNode.nextSibling.style.removeProperty("background-color");big(e,this,SMALL_SIZE);}
 								}
 							)
 						])
@@ -106,14 +107,14 @@
 			tr.addEventListener("mouseout", updateBig, false);
 			var box = getParent(as[a], "table") || getParent(as[a], "ul");
 			if (bigpics && imgurls.indexOf(imgurl) < 0 && (box = box.previousSibling.tagName == "DIV" && box.previousSibling.className == userjs+"bigbox"?box.previousSibling:box.parentNode.insertBefore(createTag("div",{"class":userjs+"bigbox"}),box))) {
-				var artisttd = istable && getSibling(getParent(as[a],"td"),"td");
+				var artisttd = artistcol && getSibling(getParent(as[a],"td"),"td");
 				box.appendChild(createTag("a",{"href":as[a].getAttribute("href"),"title":as[a].textContent+(artisttd?"\r\n"+artisttd.textContent.trim():"")},{"display":"inline-block","height":"100%","margin":"8px 8px 4px 4px"},{},[
 					document.createTextNode("⌛"),
 					createTag("img",
 						{"src":imgurl+"-250","alt":as[a].textContent},
 						{"vertical-align":"middle","display":"none","max-height":"20px","box-shadow":"1px 1px 4px black"},
 						{
-							"load":function(e){del(this.parentNode.firstChild);this.style.setProperty("display","inline");try{jQuery(this).animate({"max-height":BIG_SIZE},"fast");}catch(e){this.style.setProperty("max-height",BIG_SIZE);console.log(e.message+"!\n"+chrome);}},
+							"load":function(e){del(this.parentNode.firstChild);this.style.setProperty("display","inline");try{jQuery(this).animate({"max-height":BIG_SIZE},200);}catch(e){this.style.setProperty("max-height",BIG_SIZE);console.log(e.message+"!\n"+chrome);}},
 							"error":function(e){del(this.parentNode);},
 							"mouseover":updateA,
 							"mouseout":updateA
@@ -148,19 +149,27 @@
 			}
 		}
 	}
-	function big(e, o, s) {
-		if (!e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
-			var click = o.getAttribute("title"); click = click && click.match(/^click to (enlarge|shrink)$/);
-			var b = (o.getAttribute("_s")=="t");
-			var h = b?(o.getAttribute("_height")||"250px"):s;
-			try{jQuery(o).animate({"height": h}, "fast");}
-			catch(e){o.style.setProperty("height", h);console.log(e.message+"!\n"+chrome);}
-			if (click) {
-				o.setAttribute("_s", b?"o":"t");
-				o.setAttribute("title", o.getAttribute("title").replace(/\w+$/, b?"shrink":"enlarge"));
-				e.preventDefault();
-			}
+	function big(event, img, smallSize) {
+		var enlarge = (img.getAttribute("_size")=="small");
+		var height = enlarge?(img.getAttribute("_height")||"250px"):smallSize;
+		var margin = enlarge?img.getAttribute("_margin").replace(/-(\d+)px/g, function(match, a) { return "-"+(+a+125)+"px"; }).replace(/0px$/, "-125px").replace(/0px/, img.getAttribute("_istable")=="1"?"-60px":"-16px"):img.getAttribute("_margin");
+		if (enlarge) {
+			img.style.setProperty("z-index", "2");
 		}
+		img.setAttribute("_size", enlarge?"full":"small");
+		try {
+			jQuery(img).animate({"height": height, "margin": margin}, event.type=="load"?100:200, complete);
+		} catch(error) {
+			img.style.setProperty("height", height);
+			img.style.setProperty("margin", margin);
+			complete(img);
+			console.log(error.message+"!\n"+chrome);
+		}
+	}
+	function complete(fallback) {
+		var node = (this || fallback);
+		var enlarge = (node.getAttribute("_size") == "full");
+		node.style.setProperty("z-index", enlarge?"2":"1");
 	}
 	function del(o) {
 		return o.parentNode.removeChild(o);
