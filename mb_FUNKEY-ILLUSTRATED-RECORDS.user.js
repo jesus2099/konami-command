@@ -93,7 +93,7 @@
 									"click":function(e){big(e,this,SMALL_SIZE);},
 									"load":function(e){this.setAttribute("_height",this.height+"px");this.style.setProperty("height","0");del(this.parentNode.parentNode.firstChild);this.parentNode.style.setProperty("display","inline");big(e,this,SMALL_SIZE)},
 									"error":function(e){del(this.parentNode.parentNode);},
-									"mouseover":function(e){this.style.setProperty("z-index", "1");this.parentNode.parentNode.nextSibling.style.setProperty("background-color",colour);},
+									"mouseover":function(e){this.style.setProperty("z-index","1");this.parentNode.parentNode.nextSibling.style.setProperty("background-color",colour);},
 									"mouseout":function(e){this.style.removeProperty("z-index");this.parentNode.parentNode.nextSibling.style.removeProperty("background-color");}
 								}
 							)
@@ -138,13 +138,12 @@
 			img = document.querySelector("div."+userjs+"bigbox > a > img[src='"+img.getAttribute("src")+"']");
 			if (img) {
 				if (e.type == "mouseover") {
-					var s = (parseInt(BIG_SIZE, 10) - 8) + "px";
 					img.parentNode.style.setProperty("border", "4px solid "+colour);
-					img.style.setProperty("max-height", s);
+					img.parentNode.style.setProperty("margin", img.parentNode.style.getPropertyValue("margin").replace(/\.\d*/g, "").replace(/-?\d+/g, function(number) { return +number-4; }));
 				}
 				else {
 					img.parentNode.style.removeProperty("border");
-					img.style.setProperty("max-height", BIG_SIZE);
+					img.parentNode.style.setProperty("margin", img.parentNode.style.getPropertyValue("margin").replace(/\.\d*/g, "").replace(/-?\d+/g, function(number) { return +number+4; }));
 				}
 			}
 		}
