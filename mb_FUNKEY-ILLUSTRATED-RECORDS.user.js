@@ -64,7 +64,7 @@
 	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var userjs = "jesus2099userjs154481";
 	var CAA_URL = (forceHTTP?"http:":"")+"//coverartarchive.org/%type%/%mbid%/front";
-	var SMALL_SIZE = "19px";
+	var SMALL_SIZE = "42px";
 	var BIG_SIZE = "125px";
 	var types = ["release-group", "release"];
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -88,13 +88,13 @@
 						createTag("a",{"href":imgurl},{"display":"none"},{},[
 							createTag("img",
 								{"alt":as[a].textContent,"title":"click to enlarge","src":imgurl+"-250","_s":"_"},
-								{"cursor":"pointer","box-shadow":"1px 1px 4px black","margin":"none","padding":"none"},
+								{"cursor":"pointer","box-shadow":"1px 1px 4px black","margin":"-12px 0px -14px 0px","padding":"none","position":"relative"},
 								{
 									"click":function(e){big(e,this,SMALL_SIZE);},
 									"load":function(e){this.setAttribute("_height",this.height+"px");this.style.setProperty("height","0");del(this.parentNode.parentNode.firstChild);this.parentNode.style.setProperty("display","inline");big(e,this,SMALL_SIZE)},
 									"error":function(e){del(this.parentNode.parentNode);},
-									"mouseover":function(e){this.parentNode.parentNode.nextSibling.style.setProperty("background-color",colour);},
-									"mouseout":function(e){this.parentNode.parentNode.nextSibling.style.removeProperty("background-color");}
+									"mouseover":function(e){this.style.setProperty("z-index", "1");this.parentNode.parentNode.nextSibling.style.setProperty("background-color",colour);},
+									"mouseout":function(e){this.style.removeProperty("z-index");this.parentNode.parentNode.nextSibling.style.removeProperty("background-color");}
 								}
 							)
 						])
