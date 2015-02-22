@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2014.8.14.1705
+// @version      2015.2.22.22.22
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @homepage     http://userscripts-mirror.org/scripts/show/177655
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -26,8 +26,8 @@
 	var DEBUG = localStorage.getItem("jesus2099debug");
 	var shortcuts = {
 		"27": {"key":"ESC","button":["#top_backSearch", "td.main div.contentbuttonbar span.btn > input#cancelbuttontop[name='action_cancel_compose']", "td.navigation ul.folders li.selected > a"]},
-		"37": {"key":"←","button":"td.main > div.container > a.action.arrows.left, td.main div.contentnav > div.pagination > span#top_pagination > a + a"},
-		"39": {"key":"→","button":"td.main > div.container > a.action.arrows.right, td.main div.contentnav > div.pagination > span#top_pagination > span.pageno > a:not([href^='#'])"},
+		"37": {"key":"←","button":"td.main > div.container a#top_prev.action, td.main div.contentnav > div.pagination > span#top_pagination > a + a"},
+		"39": {"key":"→","button":"td.main > div.container a#top_next.action, td.main div.contentnav > div.pagination > span#top_pagination > span.pageno > a:not([href^='#'])"},
 		"46": {"key":"DEL","button":"td.main div.contentbuttonbar input[id='top_delete'][type='submit']"},
 		"CTRL+65": {"noreload":true,"key":"A","button":"td.main div.contentnav a#select_all.action"},
 		"65": {"key":"A","button":"td.main div.contentbuttonbar span.btn > input[type='submit'][name='action_msg_replyall']"},
