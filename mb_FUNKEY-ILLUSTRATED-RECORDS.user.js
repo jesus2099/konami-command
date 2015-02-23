@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2015.2.20.18.19
+// @version      2015.2.23.16.16
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -88,14 +88,14 @@
 					createTag("div",{},{"float":"right","margin-right":".5em"},{},[document.createTextNode("⌛"),
 						createTag("a",{"href":imgurl},{"display":"none"},{},[
 							createTag("img",
-								{"alt":as[a].textContent, "src":imgurl+"-250", "_size":"_", "_margin":margin, "_istable":istable?"1":"0"},
+								{"alt":as[a].textContent, "title":"click to enlarge", "src":imgurl+"-250", "_size":"_", "_margin":margin, "_istable":istable?"1":"0"},
 								{"cursor":"pointer", "box-shadow":"1px 1px 4px black", "margin":margin, "padding":"none", "position":"relative", "z-index":"1"},
 								{
-									"load":function(e){this.setAttribute("_height",this.height+"px");this.style.setProperty("height","0");del(this.parentNode.parentNode.firstChild);this.parentNode.style.setProperty("display","inline");big(e,this,SMALL_SIZE)},
+									"click":function(e){big(e,this,SMALL_SIZE);},
+									"load":function(e){this.setAttribute("_height",this.height+"px");this.setAttribute("_width",this.width+"px");this.style.setProperty("height","0");del(this.parentNode.parentNode.firstChild);this.parentNode.style.setProperty("display","inline");big(e,this,SMALL_SIZE)},
 									"error":function(e){del(this.parentNode.parentNode);},
-/*TODO: https://musicbrainz.org/artist/5441c29d-3602-4898-b1a1-b77fa23b8e50 “Sound + Vision” problem on thin images : mouseover on row instead of img*/
-									"mouseover":function(e){this.parentNode.parentNode.nextSibling.style.setProperty("background-color",colour);big(e,this,SMALL_SIZE);},
-									"mouseout":function(e){this.parentNode.parentNode.nextSibling.style.removeProperty("background-color");big(e,this,SMALL_SIZE);}
+									"mouseover":function(e){this.style.setProperty("z-index","2"); this.parentNode.parentNode.nextSibling.style.setProperty("background-color",colour);},
+									"mouseout":function(e){if(this.getAttribute("_size")!="full") this.style.setProperty("z-index","1"); this.parentNode.parentNode.nextSibling.style.removeProperty("background-color");}
 								}
 							)
 						])
@@ -150,25 +150,29 @@
 		}
 	}
 	function big(event, img, smallSize) {
-		var enlarge = (img.getAttribute("_size")=="small");
-		var height = enlarge?(img.getAttribute("_height")||"250px"):smallSize;
-		var margin = enlarge?img.getAttribute("_margin").replace(/-(\d+)px/g, function(match, a) { return "-"+(+a+125)+"px"; }).replace(/0px$/, "-125px").replace(/0px/, img.getAttribute("_istable")=="1"?"-60px":"-16px"):img.getAttribute("_margin");
-		if (enlarge) {
-			img.style.setProperty("z-index", "2");
-		}
-		img.setAttribute("_size", enlarge?"full":"small");
-		try {
-			jQuery(img).animate({"height": height, "margin": margin}, event.type=="load"?100:200, complete);
-		} catch(error) {
-			img.style.setProperty("height", height);
-			img.style.setProperty("margin", margin);
-			complete(img);
-			console.log(error.message+"!\n"+chrome);
+		if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+			event.preventDefault();
+			var enlarge = (img.getAttribute("_size")=="small");
+			var height = enlarge?(img.getAttribute("_height")||"250px"):smallSize;
+			var margin = enlarge?("-"+(parseInt(img.getAttribute("_height"), 10)/2)+"px -"+(parseInt(img.getAttribute("_width"), 10)/2)+"px"):img.getAttribute("_margin");
+			if (enlarge) {
+				img.style.setProperty("z-index", "2");
+			}
+			img.setAttribute("_size", enlarge?"full":"small");
+			try {
+				jQuery(img).animate({"height": height, "margin": margin}, event.type=="load"?100:200, complete);
+			} catch(error) {
+				img.style.setProperty("height", height);
+				img.style.setProperty("margin", margin);
+				complete(img);
+				console.log(error.message+"!\n"+chrome);
+			}
 		}
 	}
 	function complete(fallback) {
 		var node = (this || fallback);
 		var enlarge = (node.getAttribute("_size") == "full");
+		node.setAttribute("title", node.getAttribute("title").replace(/\w+$/, enlarge?"shrink":"enlarge"));
 		node.style.setProperty("z-index", enlarge?"2":"1");
 	}
 	function del(o) {
