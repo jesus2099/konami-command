@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2015.2.18.15.16
+// @version      2015.2.26.12.12
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @homepage     http://userscripts-mirror.org/scripts/show/152545
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -83,6 +83,7 @@
 		document.title = deletedEditor?document.title.replace(new RegExp(editorName+"(”)?"), editors[editor][2]+"$1"):document.title.replace(new RegExp("^Editor( “"+editorName+"”)"), editors[editor]+"$1");
 		if (deletedEditor) {
 			editors[editor].push(editors[editor][0]+"—"+editors[editor][1]);
+			editors[editor].push("→"+editors[editor][1].substring(0, 4));
 			var dur = (new Date(editors[editor][1]) - new Date(editors[editor][0])) / 1000 / 60 / 60 / 24;
 			var unit = "day";
 			if (dur % 30  < dur) {
@@ -103,9 +104,9 @@
 						as[a].replaceChild(document.createTextNode(editors[editor][2]), as[a].childNodes[n]);
 						as[a].style.setProperty("color", "darkred", "important");
 						as[a].style.setProperty("text-decoration", "line-through");
-						as[a].setAttribute("title", editorName+"\n"+editors[editor][4]+" ("+editors[editor][3]+")");
+						as[a].setAttribute("title", editorName+"\n"+editors[editor][5]+" ("+editors[editor][3]+")");
 						as[a].className += "tooltip";
-						addAfter(document.createTextNode(" ("+editors[editor][4]+")"), as[a]);
+						addAfter(document.createTextNode(" ("+editors[editor][5]+" "+editors[editor][4]+")"), as[a]);
 						break;
 					}
 				}
@@ -131,7 +132,7 @@
 							var membershipTerm = document.createElement("dt");
 							membershipTerm.appendChild(document.createTextNode("Membership:"));
 							var membershipDefinition = document.createElement("dd");
-							membershipDefinition.appendChild(document.createTextNode(editors[editor][4]+" ("+editors[editor][3]+")"));
+							membershipDefinition.appendChild(document.createTextNode(editors[editor][5]+" ("+editors[editor][3]+")"));
 							membershipDefinition.style.setProperty("font-weight", "bold");
 							membershipDefinition.style.setProperty("text-shadow", "0 0 4px gold");
 							addAfter(membershipDefinition, addAfter(membershipTerm, dd));
