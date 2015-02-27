@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. DIRECT LINKS FROM YAHOO! MAIL (BASIC)
-// @version      2014.11.28.11.57
+// @version      2015.2.25.20.9
 // @description  BACK FOR BASIC Y!MAIL only (/neo/b/) now. Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @homepage     http://userscripts-mirror.org/scripts/show/80308
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -36,7 +36,7 @@
 	var userjs = "jesus2099userjs80308";
 	var edits = [];
 	var editTrigger = /^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/;
-	var jiraTrigger = /^\[jira\] \w+: \(([A-Z][A-Z\d]*-\d+)\)/;
+	var jiraTrigger = /^\[jira\](?: \w+){1,3}: \(([A-Z][A-Z\d]*-\d+)\)/;
 	var triggerno = /^Someone has voted against your edit(?: #[0-9]+)?$/;
 	var triggernoextractorz = /<div class="plainMail">'(.+)' has voted against your edit #([0-9]+)/;
 	var edittypeextractor = /(deleted|merged) by edit #([0-9]+)/;
