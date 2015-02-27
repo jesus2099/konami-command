@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2015.2.18.15.16
+// @version      2015.2.26.17.45
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @homepage     http://userscripts-mirror.org/scripts/show/152545
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -42,14 +42,19 @@
 		 "313128": ["2007-03-31", "2009-02-06", "mistoffeles"],
 		 "346478": ["2007-08-31", "2011-05-28", "neothe0ne"],
 		 "386354": ["2008-03-04", "2008-04-03", "grosnombril"],
-		 "420821": ["2008-09-10", "2014-07-19", "kaik"], /*jozo / 54b97c60-f768-42fa-a5ff-d4e7c173910e*/
+		 "420821": ["2008-09-10", "2014-07-19", "kaik", "a.k.a. jozo or 54b97c60-f768-42fa-a5ff-d4e7c173910e"],
 		 "450522": ["2009-02-21", "2011-05-24", "dr_zepsuj"],
 		 "457889": ["2009-04-12", "2014-01-12", "deivsonscherzinger"],
+		 "619363": ["2012-01-02", "2013-01-15", "ra7h35m20s"],
 		 "629372": ["2012-04-04", "2014-04-08", "nightspirit"],
 		 "638936": ["2012-07-07", "2014-12-21", "betegouveia"],
 		 "639228": ["2012-07-08", "2014-12-21", "ritaavenida"],
 		 "639231": ["2012-07-08", "2014-12-21", "harrystykes"],
 		 "639236": ["2012-07-08", "2014-12-21", "niallhoran"],
+		 "692638": ["2012-11-23", "2013-06-25", "macs0647-jd"],
+		 "692651": ["2012-11-24", "2013-06-29", "devore_imperium", "or rama_3?"],
+		 "692817": ["2012-11-25", "2013-06-30", "rama_3", "or devore_imperium?"],
+		 "696572": ["2012-12-17", "2013-07-02", "commander.atvar"],
 		 "701715": ["2013-01-07", "2013-01-30", "remdia"],
 		 "774387": ["2013-06-06", "2014-12-21", "Wanddis"],
 		 "791672": ["2013-06-14", "2013-12-08", "georg187"],
@@ -82,32 +87,71 @@
 		var editorName = deletedEditor?"Deleted Editor #"+editor:editor;
 		document.title = deletedEditor?document.title.replace(new RegExp(editorName+"(”)?"), editors[editor][2]+"$1"):document.title.replace(new RegExp("^Editor( “"+editorName+"”)"), editors[editor]+"$1");
 		if (deletedEditor) {
-			editors[editor].push(editors[editor][0]+"—"+editors[editor][1]);
-			var dur = (new Date(editors[editor][1]) - new Date(editors[editor][0])) / 1000 / 60 / 60 / 24;
-			var unit = "day";
-			if (dur % 30  < dur) {
-				if (dur % 365 < dur) {
-					dur /= 365;
-					unit = "year";
-				} else {
-					dur /= 30;
-					unit = "month";
+			editors[editor] = {begin:editors[editor][0], end:editors[editor][1], namewas:editors[editor][2], comment:editors[editor][3]};
+			if (document.title.match(/^editor not found/i) && location.pathname.match("^/user/"+editors[editor].namewas)) {
+				var url = location.href.replace(editors[editor].namewas, escape(editorName));
+				var node = document.querySelector("div#page > h1");
+				if (node) {
+					node.replaceChild(document.createTextNode(" “"+editors[editor].namewas+"” → “"+editorName+"”"), node.firstChild);
+					node.insertBefore(document.createElement("img"), node.firstChild).setAttribute("src", "/static/images/icons/loading.gif");
 				}
-			}
-			dur = Math.round(dur);
-			editors[editor].push(dur+" "+unit+(dur==1?"":"s"));
-			var as = document.querySelectorAll("a[href='"+MBS+"/user/"+escape(editorName)+"']");
-			for (var a=0; a<as.length; a++) {
-				for (var n=0; n<as[a].childNodes.length; n++) {
-					if ((as[a].childNodes[n].nodeType == 3 || as[a].childNodes[n].tagName && as[a].childNodes[n].tagName == "BDI") && as[a].childNodes[n].textContent == editorName) {
-						as[a].replaceChild(document.createTextNode(editors[editor][2]), as[a].childNodes[n]);
-						as[a].style.setProperty("color", "darkred", "important");
-						as[a].style.setProperty("text-decoration", "line-through");
-						as[a].setAttribute("title", editorName+"\n"+editors[editor][4]+" ("+editors[editor][3]+")");
-						as[a].className += "tooltip";
-						addAfter(document.createTextNode(" ("+editors[editor][4]+")"), as[a]);
-						break;
+				node = document.querySelector("div#page > p");
+				if (node) {
+					removeChildren(node);
+					node.style.setProperty("color", "darkred");
+					node.appendChild(document.createTextNode("Please wait while you are redirected to the editor page ("+editors[editor].namewas+" has been renamed to "+editorName+")…"));
+				}
+				location.href = url;
+				return;
+			} else {
+				editors[editor].fullspan = editors[editor].begin+"—"+editors[editor].end;
+				editors[editor].shortend = "→"+editors[editor].end.substring(0, 4);
+				var dur = (new Date(editors[editor].end) - new Date(editors[editor].begin)) / 1000 / 60 / 60 / 24;
+				var unit = "day";
+				if (dur % 30  < dur) {
+					if (dur % 365 < dur) {
+						dur /= 365;
+						unit = "year";
+					} else {
+						dur /= 30;
+						unit = "month";
 					}
+				}
+				dur = Math.round(dur);
+				editors[editor].duration = dur+" "+unit+(dur==1?"":"s");
+				editors[editor].title = editorName+"\n"+editors[editor].namewas+(editors[editor].comment?" ("+editors[editor].comment+")":"")+"\n"+editors[editor].duration+" ("+editors[editor].fullspan+")";
+				var as = document.querySelectorAll("a[href='"+MBS+"/user/"+escape(editorName)+"']");
+				for (var a=0; a<as.length; a++) {
+					for (var n=0; n<as[a].childNodes.length; n++) {
+						if ((as[a].childNodes[n].nodeType == 3 || as[a].childNodes[n].tagName && as[a].childNodes[n].tagName == "BDI") && as[a].childNodes[n].textContent == editorName) {
+							as[a].replaceChild(document.createTextNode(editors[editor].namewas), as[a].childNodes[n]);
+							as[a].style.setProperty("color", "darkred", "important");
+							as[a].style.setProperty("text-decoration", "line-through");
+							as[a].setAttribute("title", editors[editor].title);
+							as[a].className += "tooltip";
+							addAfter(document.createTextNode(" ("+editors[editor].duration+" "+editors[editor].shortend+")"), as[a]);
+							break;
+						}
+					}
+				}
+				var inputs = document.querySelectorAll("form#edit-search li.condition span.field-editor > span.autocomplete.editor > input.name.ui-autocomplete-input.lookup-performed[value='"+editorName+"']");
+				for (var i=0; i < inputs.length; i++) {
+					inputs[i].setAttribute("_focus-value", inputs[i].value);
+					inputs[i].value = editors[editor].namewas;
+					inputs[i].setAttribute("title", editors[editor].title);
+					inputs[i].style.setProperty("color", "darkred");
+					inputs[i].setAttribute("_blur-value", inputs[i].value);
+					var swapValues = function(e) {
+						this.value = this.getAttribute("_"+e.type+"-value");
+					};
+					inputs[i].addEventListener("focus", swapValues);
+					inputs[i].addEventListener("blur", swapValues);
+					document.querySelector("form#edit-search").addEventListener("submit", function() {
+						var oldValues = document.querySelectorAll("input.name.ui-autocomplete-input.lookup-performed[_focus-value]");
+						for (var v=0; v < oldValues.length; v++) {
+							oldValues[v].value = oldValues[v].getAttribute("_focus-value");
+						}
+					});
 				}
 			}
 		}
@@ -125,16 +169,10 @@
 					}
 				} else if (dts[dt].textContent.match(/member since/i)) {
 					if (deletedEditor) {
-						document.title = document.title.replace(new RegExp("(“"+editors[editor][2]+"”)"), "$1 ("+editors[editor][4]+")");
-						var dd = getSibling(dts[dt], "dd");
-						if (dd) {
-							var membershipTerm = document.createElement("dt");
-							membershipTerm.appendChild(document.createTextNode("Membership:"));
-							var membershipDefinition = document.createElement("dd");
-							membershipDefinition.appendChild(document.createTextNode(editors[editor][4]+" ("+editors[editor][3]+")"));
-							membershipDefinition.style.setProperty("font-weight", "bold");
-							membershipDefinition.style.setProperty("text-shadow", "0 0 4px gold");
-							addAfter(membershipDefinition, addAfter(membershipTerm, dd));
+						document.title = document.title.replace(new RegExp("(“"+editors[editor].namewas+"”)"), "$1 ("+editors[editor].shortend+")");
+						dts[dt].parentNode.insertBefore(termDefinition("Membership", editors[editor].duration+" ("+editors[editor].fullspan+")"), dts[dt]);
+						if (editors[editor].comment) {
+							dts[dt].parentNode.insertBefore(termDefinition("Comment", editors[editor].comment), dts[dt]);
 						}
 					}
 					break;
@@ -156,6 +194,15 @@
 			}
 		}
 		if (nmax > max && confirm("store new max?")) { localStorage.setItem(lsmax, nmax); }
+	}
+	function termDefinition(term, definition) {
+		var dtdd = document.createDocumentFragment();
+		dtdd.appendChild(document.createElement("dt")).appendChild(document.createTextNode(term+":"));
+		var dd = dtdd.appendChild(document.createElement("dd"));
+		dd.appendChild(document.createTextNode(definition));
+		dd.style.setProperty("font-weight", "bold");
+		dd.style.setProperty("text-shadow", "0 0 4px gold");
+		return dtdd;
 	}
 	function removeChildren(p) {
 		while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
