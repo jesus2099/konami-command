@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2015.1.26.9.51
+// @version      2015.2.27.13.0
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -183,13 +183,13 @@
 				ctt.appendChild(tgtA);
 			}
 			separate(ctt);
-			ctt.appendChild(createA("#musicbrainz-ja", "http://hcm.fam.cx/mbja/chatlog.cgi/"+(location.pathname.match(/\d/)?(location.pathname.match(/[\d-]+(?=\/$|\.html$)/)+"").replace(/-/g, "/"):"")));
-			separate(ctt);
 			if (cat == "musicbrainz-devel") {
 				ctt.appendChild(document.createTextNode("#musicbrainz-devel"));
 			} else {
 				ctt.appendChild(tgtA);
 			}
+			separate(ctt);
+			ctt.appendChild(createA("#musicbrainz-ja", "http://hcm.fam.cx/mbja/chatlog.cgi/"+(location.pathname.match(/\d/)?(location.pathname.match(/[\d-]+(?=\/$|\.html$)/)+"").replace(/-/g, "/"):"")));
 		} else {
 			var path = "";
 			if (location.pathname.match(/\d/)) {
@@ -205,8 +205,10 @@
 				}
 			}
 			ctt.appendChild(createA("#musicbrainz", "https://chatlogs.musicbrainz.org/musicbrainz/"+path));
-			ctt.appendChild(document.createTextNode(" | #musicbrainz-ja | "));
+			separate(ctt);
 			ctt.appendChild(createA("#musicbrainz-devel", "https://chatlogs.musicbrainz.org/musicbrainz-devel/"+path));
+			separate(ctt);
+			ctt.appendChild(document.createTextNode("#musicbrainz-ja"));
 		}
 		/* prev./next day */
 		if (date) {
