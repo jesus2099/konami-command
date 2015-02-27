@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.2.25.16.7
+// @version      2015.2.27.10.25
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -1059,14 +1059,17 @@
 		if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/(add.*|"+stre_GUID+"/edit)$"))) {
 			var re = document.querySelector("div#release-editor");
 			if (re) {
-				re.addEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM, false);/*because jquery uses dirty innerHTML*/
+				re.addEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
+				re.addEventListener("mouseover", TRACKLIST_TOOLS_buttonHandler);
+				re.addEventListener("mouseout", TRACKLIST_TOOLS_buttonHandler);
+				re.addEventListener("click", TRACKLIST_TOOLS_buttonHandler);
 			}
 		}
 		if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/"+stre_GUID+"/edit-relationships$"))) {
 			var tabs, re = document.querySelector("div.rel-editor");
 			if (re && (tabs = re.querySelector("ul.tabs"))) {
 				j2superturbo.menu.addItem(createTag("a", {e:{click:function(e){
-					var text = prompt("I will remove the recording relationships that match the following text (ex.: “arrange”, “john”, “guitar”):");
+					var text = prompt("This will remove the recording relationships that match the following text (ex.: “arrange”, “john”, “guitar”):");
 					if (text && (text = text.trim()) && text != "") {
 						var ars = document.querySelectorAll("td.recording > div.ars > div.ar > span[class*='remove-button']");
 						for(var ar=0; ar<ars.length; ar++) {
@@ -1080,7 +1083,7 @@
 					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
 					if (date) {
 						if (date = date.match(new RegExp(re_date.ISO+"(?:.+"+re_date.ISO+")?"))) {
-							// jquery stuff from reosarevok https://chatlogs.musicbrainz.org/musicbrainz/2014/2014-07/2014-07-08.html#T14-46-11-334532 who got it from bitmap :)
+							// jquery stuff from bitmap via reosarevok https://chatlogs.musicbrainz.org/musicbrainz/2014/2014-07/2014-07-08.html#T14-46-11-334532 :)
 							try {
 								_($("td.works div.ar :checked")).map(ko.contextFor).pluck("$parent").each(function (a) { a.period.beginDate.year(date[2]); a.period.beginDate.month(date[3]); a.period.beginDate.day(date[4]); a.period.endDate.year(date[5]?date[6]:date[2]); a.period.endDate.month(date[5]?date[7]:date[3]); a.period.endDate.day(date[5]?date[8]:date[4]); });
 							} catch (e) {
@@ -1130,25 +1133,70 @@
 		}
 		TRACKLIST_TOOLS_calmDOMto = setTimeout(TRACKLIST_TOOLS_init, 100);
 	}
-	function TRACKLIST_TOOLS_buttonChange(e) {
-		var _value = this.getAttribute("_value");
-		var _ctrlValue = this.getAttribute("_ctrlValue");
-		switch (e.type) {
-			case "mouseover":
-				if (!_value) { this.setAttribute("_value", this.value); }
-				if (e.ctrlKey && _ctrlValue) {
-					this.style.setProperty("background-color", "pink");
-					this.value = _ctrlValue;
+	function TRACKLIST_TOOLS_buttonHandler(e) {
+		if (e.target.className.match(new RegExp("^"+userjs+"(search-replace|track-length-parser)$"))) {
+			if (e.type == "click") {
+				if (e.target.className == userjs+"search-replace") {
+					var searchrep = localStorage.getItem(userjs+"search-replace");
+					searchrep = searchrep?JSON.parse(searchrep):["",""];
+					if (searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /\"([^\"]+)\"/g\n\nor normal (case sensitive and global): My String", searchrep[0])) {
+						searchrep[1] = prompt("replace\n\nif it was a regex, you can use those $1 $2 $3 etc.: “$1”", searchrep[1]);
+						for (var t=0, tracks=TRACKLIST_TOOLS_getInputs("td.title > input.track-name[type='text']", e.target, e); t<tracks.length; t++) {
+							var val = searchrep[0].match(/^\/.+\/[gi]*$/)?tracks[t].value.replace(eval(searchrep[0]), searchrep[1]):tracks[t].value.split(searchrep[0]).join(searchrep[1]);
+							tracks[t].style.removeProperty("background-color");
+							if (tracks[t].value != val) {
+								tracks[t].value = val;
+								tracks[t].style.setProperty("background-color", "yellow");
+								tracks[t].focus();
+								sendEvent(tracks[t], "change");
+							}
+						}
+						localStorage.setItem(userjs+"search-replace", JSON.stringify(searchrep));
+					}
+				} else if (e.target.className == userjs+"track-length-parser") {
+					var erase = e.target.value.match(/erase/i) || e.ctrlKey;
+					var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']", e.target, e);
+					var times = !erase && prompt("Track length parser\n\nPlease paste your huge text including track times below.\n“1:23” and “1′23″” and even incorrect “1’23”” and “1'23\"” will be parsed.\nYou can for instance copy from your foobar2000 tracklist, minc.or.jp, etc.\nWARNING. You must understand that all current times will be overwritten in the tracklist editor.");
+					if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(/\b\d{1,3}[:′’']\d\d\b[″”"]?/g))) {
+						if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are "+times.length+" lengths detected in your text, butt\nthere are "+inputs.length+" tracks in the tracklist.\nAre you sure to go on?")) {
+							for (var t=0, i=0; (erase || t<times.length) && i<inputs.length; t++, i++) {
+								var time = "";
+								if (!erase) {
+									time = times[t].match(/(\d+)\D+(\d+)/);
+									time = time[1]+":"+time[2];
+								}
+								inputs[i].style.removeProperty("background-color");
+								if (inputs[i].value != time) {
+									inputs[i].value = time;
+									inputs[i].style.setProperty("background-color", erase?"pink":"yellow");
+									inputs[i].focus();
+									sendEvent(inputs[i], "change");
+								}
+							}
+						}
+					}
 				}
-				if (e.shiftKey) {
-					if (!(e.ctrlKey && _ctrlValue)) { this.style.setProperty("background-color", "gold"); }
-					this.value += " (all)";
+			} else if (e.type.match(/^mouse(over|out)$/)) {
+				var _value = e.target.getAttribute("_value");
+				var _ctrlValue = e.target.getAttribute("_ctrlValue");
+				switch (e.type) {
+					case "mouseover":
+						if (!_value) { e.target.setAttribute("_value", e.target.value); }
+						if (e.ctrlKey && _ctrlValue) {
+							e.target.style.setProperty("background-color", "pink");
+							e.target.value = _ctrlValue;
+						}
+						if (e.shiftKey) {
+							if (!(e.ctrlKey && _ctrlValue)) { e.target.style.setProperty("background-color", "gold"); }
+							e.target.value += " (all)";
+						}
+						break;
+					case "mouseout":
+						e.target.style.setProperty("background-color", "yellow");
+						e.target.value = _value;
+						break;
 				}
-				break;
-			case "mouseout":
-				this.style.setProperty("background-color", "yellow");
-				this.value = _value;
-				break;
+			}
 		}
 	}
 	function TRACKLIST_TOOLS_getInputs(inputCSS, obj, evt) {
@@ -1157,62 +1205,15 @@
 		return inputs.querySelectorAll("fieldset.advanced-disc "+inputCSS);
 	}
 	function TRACKLIST_TOOLS_init() {
-		TRACKLIST_TOOLS_calmDOMto = null;
+		re.removeEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
 		re.addEventListener("DOMNodeInserted", function(e) {
 			var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
 			for (var tp=0; tp<tps.length; tp++) {
 				if (!tps[tp].parentNode.querySelector("*."+userjs+"track-length-parser")) {
-					addAfter(createTag("input", {a:{type:"button","class":userjs+"track-length-parser",value:"Time Parser","_ctrlValue":"Erase times",title:"CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"},s:{"background-color":"yellow"},e:{
-						click:function(e) {
-							var erase = this.value.match(/erase/i) || e.ctrlKey;
-							var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']", this, e);
-							var times = !erase && prompt("Track length parser\n\nPlease paste your huge text including track times below.\n“1:23” and “1′23″” and even incorrect “1’23”” and “1'23\"” will be parsed.\nYou can for instance copy from your foobar2000 tracklist, minc.or.jp, etc.\nWARNING. You must understand that all current times will be overwritten in the tracklist editor.");
-							if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(/\b\d{1,3}[:′’']\d\d\b[″”"]?/g))) {
-								if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are "+times.length+" lengths detected in your text, butt\nthere are "+inputs.length+" tracks in the tracklist.\nAre you sure to go on?")) {
-									for (var t=0, i=0; (erase || t<times.length) && i<inputs.length; t++, i++) {
-										var time = "";
-										if (!erase) {
-											time = times[t].match(/(\d+)\D+(\d+)/);
-											time = time[1]+":"+time[2];
-										}
-										inputs[i].style.removeProperty("background-color");
-										if (inputs[i].value != time) {
-											inputs[i].value = time;
-											inputs[i].style.setProperty("background-color", erase?"pink":"yellow");
-											inputs[i].focus();
-											sendEvent(inputs[i], "change");
-										}
-									}
-								}
-							}
-						},
-						mouseover:TRACKLIST_TOOLS_buttonChange,
-						mouseout:TRACKLIST_TOOLS_buttonChange
-					}}), tps[tp]);
+					addAfter(createTag("input", {a:{type:"button","class":userjs+"track-length-parser",value:"Time Parser","_ctrlValue":"Erase times",title:"CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"},s:{"background-color":"yellow"}}), tps[tp]);
 				}
 				if (!tps[tp].parentNode.querySelector("*."+userjs+"search-replace")) {
-					addAfter(createTag("input", {a:{type:"button","class":userjs+"search-replace",value:"Search→replace",title:"SHIFT key to alter all open tracklists"},s:{"background-color":"yellow"},e:{
-						click:function(e){
-							var searchrep = localStorage.getItem(userjs+"search-replace");
-							searchrep = searchrep?JSON.parse(searchrep):["",""];
-							if (searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /\"([^\"]+)\"/g\n\nor normal (case sensitive and global): My String", searchrep[0])) {
-								searchrep[1] = prompt("replace\n\nif it was a regex, you can use those $1 $2 $3 etc.: “$1”", searchrep[1]);
-								for (var t=0, tracks=TRACKLIST_TOOLS_getInputs("td.title > input.track-name[type='text']", this, e); t<tracks.length; t++) {
-									var val = searchrep[0].match(/^\/.+\/[gi]*$/)?tracks[t].value.replace(eval(searchrep[0]), searchrep[1]):tracks[t].value.split(searchrep[0]).join(searchrep[1]);
-									tracks[t].style.removeProperty("background-color");
-									if (tracks[t].value != val) {
-										tracks[t].value = val;
-										tracks[t].style.setProperty("background-color", "yellow");
-										tracks[t].focus();
-										sendEvent(tracks[t], "change");
-									}
-								}
-								localStorage.setItem(userjs+"search-replace", JSON.stringify(searchrep));
-							}
-						},
-						mouseover:TRACKLIST_TOOLS_buttonChange,
-						mouseout:TRACKLIST_TOOLS_buttonChange
-					}}), tps[tp]);
+					addAfter(createTag("input", {a:{type:"button","class":userjs+"search-replace",value:"Search→replace",title:"SHIFT key to alter all open tracklists"},s:{"background-color":"yellow"}}), tps[tp]);
 				}
 			}
 		}, false);
