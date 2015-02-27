@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2015.2.23.16.16
+// @version      2015.2.27.22.34
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -75,11 +75,12 @@
 	}
 	if (!location.pathname.match(/^\/$|^\/release\//)) for (var t=0; t<types.length; t++) {
 		var as = document.querySelectorAll("tr > td a[href*='musicbrainz.org/"+types[t]+"/'], div#page.fullwidth ul > li a[href*='musicbrainz.org/"+types[t]+"/']");
-		var istable, artistcol;
-		for (var a=0; a<as.length; a++) {
-			if (a == 0) {
+		var istable, istablechecked, artistcol;
+		for (var a=0; a<as.length; a++) if (as[a].getAttribute("href").match(new RegExp("musicbrainz.org/"+types[t]+"/"+RE_GUID+"$"))) {
+			if (!istablechecked) {
 				istable = getParent(as[0], "table");
 				if (istable) { artistcol = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
+				istablechecked = true;
 			}
 			var imgurl = CAA_URL.replace(/%type%/, types[t]).replace(/%mbid%/,as[a].getAttribute("href").match(new RegExp(RE_GUID)));
 			if (smallpics) {
