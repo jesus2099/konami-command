@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.2.27.10.25
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / POWER_RELATE_TO. auto-focus and remember last used types in "relate to" inline search / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
+// @version      2015.3.1.10.45
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -1002,33 +1002,12 @@
 		}
 	}
 	/* --- ENTITY BONUS --- */
-	j2setting("POWER_RELATE_TO", true, true, "remembers last used search type (artist/release/track/label) for “Relate to …” inline AJAX search relationship creator. focuses its search field on click");
-	j2setting("POWER_RELATE_TO_autofocus", true, true, "focus text search field");
-	j2setting("POWER_RELATE_TO_autoselect", true, true, "selects its current value for quick reset by typing");
 	j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the release editor by mistake. repairs the keyboard tab navigation to save button (MBS-3112) (for the new release editor, the tab order might not be perfectly chosen yet but submit comes first and cancel last)");
 	j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor"+j2superturbo.menu.expl+": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 	j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
 	var enttype = location.href.match(new RegExp("^"+MBS+"/(area|artist|collection|label|place|recording|release|release-group|work)/.*$"));
 	if (enttype) {
 		enttype = enttype[1];
-		/*============================================== KEYBOARD+ MOUSE+ REMEMBER+
-		## POWER_RELATE_TO ##
-		=========================================================================*/
-		if (j2sets.POWER_RELATE_TO) {
-			var rta = document.querySelector("a.relate-to");
-			var rtd = document.querySelector("div.relate-to");
-			if (rta && rtd) {
-		/* MEMORY */
-				initsel(rtd.querySelector("select"), j2sets["POWER_RELATE_TO_"+enttype+"_type!"]);
-				if (enttype == "release") { initsel(rtd.querySelector("select.endpoint"), j2sets["POWER_RELATE_TO_"+enttype+"_endpoint!"]); }
-		/* AUTOFOCUS + AUTOSELECT */
-				var prtq = rtd.querySelector("input.name[type='text']");
-				if (prtq) {
-					rta.addEventListener("click", function(e) { if (j2sets.POWER_RELATE_TO_autofocus) { setTimeout(function(){prtq.focus();},0); } }, false);
-					prtq.addEventListener("focus", function(e) { if (j2sets.POWER_RELATE_TO_autofocus && j2sets.POWER_RELATE_TO_autoselect) { this.select(); } }, false);
-				}
-			}
-		}
 		/*======================================================== KEYBOARD+ MOUSE+
 		## RELEASE_EDITOR_PROTECTOR ##
 		=========================================================================*/
@@ -1110,22 +1089,6 @@
 		}
 	}
 	/* --- ENTITY BONUS functions --- */
-	function initsel(sel, val) {
-		if (sel) {
-			if (val) {
-				sel.value = val;
-				sendEvent(sel, "change");
-			}
-			sel.addEventListener("keypress", function(e) { sendEvent(this, "change"); }, false);
-			sel.addEventListener("change", function(e) {
-				j2setting("POWER_RELATE_TO_"+enttype+"_"+(this.className!="endpoint"?"type":"endpoint")+"!", this.value);
-				if (j2sets.POWER_RELATE_TO_autofocus) {
-					var prtq = this.parentNode.querySelector("input.name[type='text']");
-					if (prtq) { setTimeout(function(){prtq.focus();},0); }
-				}
-			}, false);
-		}
-	}
 	var TRACKLIST_TOOLS_calmDOMto;
 	function TRACKLIST_TOOLS_calmDOM() {
 		if (TRACKLIST_TOOLS_calmDOMto) {

@@ -27,7 +27,6 @@ Content
 1. [Settings](#settings)
   1. [RELEASE_CLONER](#release_cloner)
   1. [RADIO_DOUBLE_CLICK_SUBMIT](#radio_double_click_submit) ← <del>[RADIO DOUBLE‐CLICK SUBMIT][135557]</del>
-  1. [POWER_RELATE_TO](#power_relate_to) ← <del>[remember last “Relate to …” options + autofocus + autoselect][85790]</del>
   1. [RELEASE_EDITOR_PROTECTOR](#release_editor_protector) ← <del>[release editor tab index fix submit / cancel protector][111023]</del>
   1. [TRACKLIST_TOOLS](#tracklist_tools) ← <del>ex‐TRACK_LENGTH_PARSER + fixed [search→replace][8580947]</del>
   1. [ALIAS_SORT_NAME](#alias_sort_name) ← <del>add alias sort name</del>
@@ -75,14 +74,6 @@ remember to remove when this ticket is fixed).
 
 Submit forms when double clicking any of its radio buttons ([MBS-3229]).
 This leaves vote buttons out to [POWER VOTE][57765] script.
-
-### POWER_RELATE_TO
-
-![REMEMBER YAY][XZIZI]
-
-Remembers last used search type (artist/release/track/label) and end point 
-(release/recordings) for “Relate to …” inline AJAX search relationship 
-creator; Quickly get into search text field (autofocus/autoselect).
 
 ### RELEASE_EDITOR_PROTECTOR
 
@@ -223,7 +214,6 @@ hack that enabled Firefox+Greasemonkey, Chromium+Tampermonkey and the likes.
 [KvC7dX6]: http://i.imgur.com/KvC7dX6.png
 [l0zO9nk]: http://i.imgur.com/l0zO9nk.png
 [oOeRl7I]: http://i.imgur.com/oOeRl7I.png
-[XZIZI]: http://i.imgur.com/XZIZI.gif
 
 [opera]: http://opera.com/download/guide/?ver=12.17
 [violent monkey]: http://addons.opera.com/extensions/details/violent-monkey
@@ -241,7 +231,7 @@ hack that enabled Firefox+Greasemonkey, Chromium+Tampermonkey and the likes.
 [MBS-6837]: http://tickets.musicbrainz.org/browse/MBS-6837 "beta.mb→mb link (unset_beta=1) should stay on same page"
 
 [57765]: http://userscripts-mirror.org/scripts/show/57765
-[85790]: http://userscripts-mirror.org/scripts/show/85790 "mb. SUPER MIND CONTROL II X TURBO"
+[85790]: http://userscripts-mirror.org/scripts/show/85790 "“remember last "Relate to …" options + autofocus + autoselect”→“POWER_RELATE_TO”in“mb. SUPER MIND CONTROL II X TURBO”"
 [103422]: http://userscripts-mirror.org/scripts/show/103422
 [104480]: http://userscripts-mirror.org/scripts/show/104480
 [111023]: http://userscripts-mirror.org/scripts/show/111023
