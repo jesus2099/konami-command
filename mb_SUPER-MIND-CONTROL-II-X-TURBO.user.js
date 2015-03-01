@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.3.1.10.45
+// @version      2015.3.1.19.3
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -464,7 +464,7 @@
 	/*==================================================================== LINK+
 	## RETURN_TO_MB_PROPERLY ##
 	==========================================================================*/
-	j2setting("RETURN_TO_MB_PROPERLY", true, true, "fixes the “return to musicbrainz.org” normal server link that is in beta and test server banners (MBS-6837)");
+	j2setting("RETURN_TO_MB_PROPERLY", true, true, "fixes the “return to musicbrainz.org” normal server link that is in beta server banner (MBS-6837)");
 	if (j2sets.RETURN_TO_MB_PROPERLY && document.getElementsByClassName("server-details").length > 0) {
 		var a = document.querySelector("body > div.server-details > p > a[href^='//musicbrainz.org']");
 		if (a) {
@@ -834,7 +834,7 @@
 	/*==================================================================== LINK+
 	## SERVER_SWITCH ##
 	==========================================================================*/
-	j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta, test and mbsandboxes. look for the new top-right MBS menu");
+	j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta and mbsandboxes. look for the new top-right MBS menu");
 	j2setting("SERVER_SWITCH_mbsandbox", "[\"acid2\", \"ianmcorvidae\", \"bitmap\", \"nikki\", \"i18n\"]", true, "type an array of subdomains to .mbsandbox.org");
 	if (j2sets.SERVER_SWITCH) {
 		var menu = document.querySelector("div#header-menu ul.r");
@@ -855,7 +855,7 @@
 			}, false);
 			//MB.Control.HeaderMenu(menu);
 			menu = menu.firstChild.nextSibling;
-			var mbs = ["", "beta.", "test."];
+			var mbs = ["", "beta."];
 			for (var mb=0; mb<mbs.length; mb++) {
 				menu.appendChild(serverSwitch(mbs[mb]+"musicbrainz.org"));
 			}
