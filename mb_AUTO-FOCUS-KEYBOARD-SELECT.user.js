@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2014.11.24.1435
+// @version      2015.3.1.19.37
 // @description  musicbrainz.org: MOUSE-LESS EDITING ! Cleverly focuses fields in various musicbrainz edit pages and allows keyboard selection of relationship types as well as some release editor keyboard navigation performance features
 // @homepage     http://userscripts-mirror.org/scripts/show/135547
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -171,7 +171,7 @@ const experimentalTracklistEditorKeyboardNavUpDown = true; /* press UP↓/↑DOW
 				break;
 			case "/release/add":
 			case "/release/*/edit":
-				if (experimentalTracklistEditorKeyboardNavUpDown && (atl = document.querySelector("div.advanced-tracklist"))) {
+				if (experimentalTracklistEditorKeyboardNavUpDown && (atl = document.querySelector("div#tracklist"))) {
 					atl.addEventListener("focus", function(e) {
 						var tgt = e.target ;
 						if (tgt && tgt.className.match(/track-length/) && tgt.value.match(/^(NaN:aN|\?:\?\?)$/)) {
