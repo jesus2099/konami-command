@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2015.2.26.17.45
+// @version      2015.3.1.19.11
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @homepage     http://userscripts-mirror.org/scripts/show/152545
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -43,6 +43,7 @@
 		 "346478": ["2007-08-31", "2011-05-28", "neothe0ne"],
 		 "386354": ["2008-03-04", "2008-04-03", "grosnombril"],
 		 "420821": ["2008-09-10", "2014-07-19", "kaik", "a.k.a. jozo or 54b97c60-f768-42fa-a5ff-d4e7c173910e"],
+		 "448034": ["2009-02-07", "2012-03-05", "maviles"],
 		 "450522": ["2009-02-21", "2011-05-24", "dr_zepsuj"],
 		 "457889": ["2009-04-12", "2014-01-12", "deivsonscherzinger"],
 		 "619363": ["2012-01-02", "2013-01-15", "ra7h35m20s"],
