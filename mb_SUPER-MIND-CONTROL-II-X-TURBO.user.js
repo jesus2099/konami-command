@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.3.4.14.3
+// @version      2015.3.4.14.34
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -37,6 +37,7 @@
 			} else meta[kv[1]] = kv[2];
 		}
 	}
+	meta.icon = createTag("img", {a:{src:meta.icon}, s:{"vertical-align":"middle", "margin":"-8px 0"}});
 	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var userjs = "jesus2099userjs85790"/*have to keep this for legacy saved settings*/;
 	var MBS = location.protocol+"//"+location.host;
@@ -117,7 +118,7 @@
 			}
 		}
 		j2setsdiv.scrollIntoView();
-	}}}, meta.name+" settings"));
+	}}}, [meta.icon.cloneNode(), " “"+meta.name+"” settings"]));
 	function bug(error) {
 		var title = "", alrt = meta.name+" ("+meta.version+")"+" ERROR";
 		if (error.module) {
@@ -359,7 +360,7 @@
 						} else {
 							alert("Please select at least one release.");
 						}
-					}}}, ["Clone "+(rcwhere=="release"?"release":"selected releases")+" ", createTag("small", {s:{color:"grey"}}, "← RELEASE_CLONER™")]));
+					}}}, [meta.icon.cloneNode(), " Clone "+(rcwhere=="release"?"release":"selected releases")+" ", createTag("small", {s:{color:"grey"}}, "← RELEASE_CLONER™")]));
 			}
 		}
 	}
@@ -845,7 +846,7 @@
 				servname = servname[1];
 			}
 			else { servname = "MBS"; }
-			var menu = menu.appendChild(createTag("li", {}, [createTag("a", {a:{title:"Server Switch"}}, createTag("code", {}, servname)), document.createElement("ul")]));
+			var menu = menu.appendChild(createTag("li", {}, [createTag("a", {a:{title:"Server Switch"}}, createTag("code", {}, [meta.icon.cloneNode(), " ", servname])), document.createElement("ul")]));
 			menu.addEventListener("mouseover", function(e){
 				this.firstChild.nextSibling.style.setProperty("left", "inherit");
 				this.firstChild.nextSibling.style.setProperty("right", "0px");
@@ -1074,7 +1075,7 @@
 							}
 						}
 					}
-				}}}, ["Remove recording relationships ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
+				}}}, [meta.icon.cloneNode(), " Remove recording relationships ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
 				j2superturbo.menu.addItem(createTag("a", {e:{click:function(e){
 					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
 					if (date) {
@@ -1087,7 +1088,7 @@
 							}
 						} else { alert("Wrong date format"); }
 					}
-				}}}, ["Set selected works’ recording dates ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
+				}}}, [meta.icon.cloneNode(), " Set selected works’ recording dates ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
 			}
 		}
 		/*================================================================ DISPLAY-
