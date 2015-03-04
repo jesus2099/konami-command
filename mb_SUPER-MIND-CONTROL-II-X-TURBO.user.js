@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.3.4.11.32
+// @version      2015.3.4.13.50
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -97,7 +97,7 @@
 						" | ",
 						createTag("a", {e:{click:function(e){del(document.getElementById(userjs+"j2sets"));}}}, "CLOSE"),
 					]),
-					createTag("h4",{s:{"text-shadow":"0 0 8px white","font-size":"1.5em","margin-top":"0px"}},["██ ",createTag("a",{a:{href:meta.namespace,target:"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{e:{click:function(){location.reload();}}},"page reload")," to see the effect."])
+					createTag("h4",{s:{"text-shadow":"0 0 8px white","font-size":"1.5em","margin-top":"0px"}},["██ ",createTag("a",{a:{href:meta.namespace,target:"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{e:{click:function(){location.reload();}}},"PAGE RELOAD")," to see the effect."])
 				]), document.getElementById("page"));
 				var alphakeys = [];
 				for (var s in j2sets) { if (j2sets.hasOwnProperty(s)) {
@@ -192,6 +192,7 @@
 	j2setting("RELEASE_CLONER_release_event", false, true, "clones release event(s), package, catalogue number(s), etc. (not advised as those usually change for each edition)");
 	j2setting("RELEASE_CLONER_additional_information", false, true, "clones annotation and disambiguation (usually change for each edition)");
 	j2setting("RELEASE_CLONER_external_links", false, true, "(EXPERIMENTAL) clones URL relations (not advised as those usually change for each edition)");
+	j2setting("RELEASE_CLONER_tracktimes", false, true, "clones track times (mastering sometimes change for some edition)");
 	if (j2sets.RELEASE_CLONER && account) {
 		var rcwhere = location.pathname.match(new RegExp("^/((release(?!-group)|release-group|label)/"+stre_GUID+")|artist/"+stre_GUID+"/(releases)$"));
 		if (
@@ -213,7 +214,7 @@
 							}
 						}
 						if (crmbids.length > 0) {
-							var samerg = confirm("new release in same release group?");
+							var samerg = confirm("This will (you can change the settings):\n* "+(j2sets.RELEASE_CLONER_release_event?"":"NOT ")+"copy release events\n* "+(j2sets.RELEASE_CLONER_additional_information?"":"NOT ")+"copy additional information\n* "+(j2sets.RELEASE_CLONER_external_links?"":"NOT ")+"copy external links\n* "+(j2sets.RELEASE_CLONER_tracktimes?"":"NOT ")+"copy track times\n\nPlace the new release in same release group?");
 							for (var crr=crmbids.length-1; crr>=0; crr--) {
 								var xhr = new XMLHttpRequest();
 								xhr.onload = function(e) {
@@ -309,7 +310,7 @@
 												ok &= reled.add(trac[aci].parentNode.getAttribute("joinphrase"), "mediums."+resi+".track."+tr+".artist_credit.names."+aci+".join_phrase", {raw:true});
 											}
 											/* ws:artist-credit */
-											ok &= reled.add("track > length", "mediums."+resi+".track."+tr+".length", {node:tracks[tr]});
+											if (j2sets.RELEASE_CLONER_tracktimes) ok &= reled.add("track > length", "mediums."+resi+".track."+tr+".length", {node:tracks[tr]});
 										}
 									}
 									/* ws:medium-list */
