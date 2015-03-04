@@ -188,6 +188,9 @@ Merges both **MY NAME** user menu and **MY DATA** user menu into one /
 Wait sufficient time and reload when slow down! message. 
 Useful when opening many background tabs for later editing.
 
+There is now a frequent `read timeout` search error. 
+This module will retry those as well (and obviously faster than above case).
+
 ### SPOT_AC, SPOT_CAA and WARN_NEW_WINDOW
 
 Various user CSS (cf. settings for description).

@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.3.1.19.3
+// @version      2015.3.4.11.0
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -989,17 +989,33 @@
 	/*==========================================================================
 	## SLOW_DOWN_RETRY ##
 	==========================================================================*/
-	j2setting("SLOW_DOWN_RETRY", false, true, "gently auto-retries requests when MB overloading so you don’t have to do it yourself. just s(h)it back and relax");
-	if (j2sets.SLOW_DOWN_RETRY && document.title.match(/^slow down! - musicbrainz$/i)) {
-		var h1 = document.querySelector("div#content h1");
-		var sddelay = 20;
-		if (h1 && h1.textContent.match(/^slow down!$/i)) {
-			setInterval(function(e){
-				sddelay--;
-				h1.replaceChild(document.createTextNode("Slow down! (retrying"+(sddelay>0?" in "+sddelay+" second"+(sddelay!=1?"s":""):"…")+")"), h1.firstChild);
-				if (sddelay == 0) { location.reload(false); }
-			}, 1000);
+	j2setting("SLOW_DOWN_RETRY", false, true, "gently auto‐retries requests when MB overloading so you don’t have to do it yourself. also retries “read timeout” searches.");
+	if (j2sets.SLOW_DOWN_RETRY) {
+		var errortype = document.title.match(/^(slow down!|search error) - musicbrainz$/i);
+		if (errortype) {
+			var retrydelay=20;
+			switch (errortype[1]) {
+				case "slow down!":
+					retrydelay = 20;
+					break;
+				case "search error":
+					try {
+						if (document.querySelector("div#page > pre").textContent.indexOf("read timeout at") > -1) retrydelay = 2;
+					} catch(e){}
+					break;
+			}
+			if (retrydelay) {
+				document.querySelector("div#content h1").appendChild(createTag("fragment", {}, [" (retrying", createTag("span", {a:{"class":"countdown"}}, delayMsg(retrydelay)), ")"]));
+				setInterval(function(e) {
+					retrydelay--;
+					replaceChildren(document.createTextNode(delayMsg(retrydelay)), document.querySelector("div#content h1 > span.countdown"));
+					if (retrydelay == 0) { location.reload(false); }
+				}, 1000);
+			}
 		}
+	}
+	function delayMsg(sec) {
+		return sec>0?" in "+sec+" second"+(sec!=1?"s":""):"…";
 	}
 	/* --- ENTITY BONUS --- */
 	j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the release editor by mistake. repairs the keyboard tab navigation to save button (MBS-3112) (for the new release editor, the tab order might not be perfectly chosen yet but submit comes first and cancel last)");
@@ -1256,5 +1272,9 @@
 		} else {
 			return null;
 		}
+	}
+	function replaceChildren(newContent, parent) {
+		while (parent && parent.hasChildNodes()) { parent.removeChild(parent.firstChild); }
+		return parent.appendChild(newContent);
 	}
 })();
