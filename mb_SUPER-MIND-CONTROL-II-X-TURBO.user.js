@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.3.4.13.50
+// @version      2015.3.4.14.3
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -1095,13 +1095,15 @@
 		=========================================================================*/
 		if (j2sets.UNLINK_ENTITY_HEADER) {
 			var h1link = document.querySelector("div#page h1 a[href='"+MBS+location.pathname.match(new RegExp("/"+enttype+"/"+stre_GUID))+"']");
-			var h1 = getParent(h1link, "h1");
-			if (h1link && h1.firstChild.nodeType != 3) {
-				var unlinkH1Link = function() {
-					h1.removeEventListener("mouseover", unlinkH1Link);
-					h1link.removeAttribute("href");
-				};
-				h1.addEventListener("mouseover", unlinkH1Link);
+			if (h1link) {
+				var h1 = getParent(h1link, "h1");
+				if (h1.firstChild.nodeType != 3) {
+					var unlinkH1Link = function() {
+						h1.removeEventListener("mouseover", unlinkH1Link);
+						h1link.removeAttribute("href");
+					};
+					h1.addEventListener("mouseover", unlinkH1Link);
+				}
 			}
 		}
 	}
