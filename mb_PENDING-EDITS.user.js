@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2014.11.14.2211
+// @version      2015.3.6.16.6
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -133,10 +133,10 @@ It will add other request(s) to MB server, this is why it is an option.*/
 					}
 				}
 				if (this.status == 200) {
-					var editc = this.responseText.match(/found ([0-9]+) edit/i);
-					if (editc) { editc = parseInt(editc[1], 10); }
-					else { editc = 0; }
-					updateLink(xhrpe.object, editc);
+					var editc = this.responseText.match(/found (at least )?(\d+) edits?/i);
+					if (editc) { editc = [null, editc[1], parseInt(editc[2], 10)]; }
+					else { editc = [null, false, 0] }
+					updateLink(xhrpe.object, editc[2], editc[1]);
 				} else { updateLink(xhrpe.object, this); }
 			}
 		};
@@ -144,13 +144,14 @@ It will add other request(s) to MB server, this is why it is an option.*/
 		xhrPendingEdits[obj.base].xhr.setRequestHeader("base", obj.base);
 		xhrPendingEdits[obj.base].xhr.send(null);
 	}
-	function updateLink(obj, pecount) {
+	function updateLink(obj, pecount, more) {
 		var txt;
 		var tit = "pending edit";
 		var li = getParent(obj.openedits, "li");
 		var ret = li.querySelector("span."+userjs+"ret");
 		if (typeof pecount == "number") {
-			txt = (pecount!=500?pecount:pecount+"+");
+			txt = pecount;
+			if (more) txt += "+";
 			tit = txt+" "+tit+(pecount!=1?"s":"");
 			if (pecount == 0) {
 				mp(obj.openedits, false);
