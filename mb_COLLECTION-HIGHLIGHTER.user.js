@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2014.11.17.1629
+// @version      2015.3.14.23.9
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_COLLECTION-HIGHLIGHTER.user.js
-// @author       PATATE12 aka. jesus2099/shamo
+// @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-02-21
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
@@ -58,7 +58,7 @@
 		var userjs = "jesus2099userjs126380";
 		var DEBUG = false;
 		var dialogprefix = "..:: COLLECTION :: HIGHLIGHTER ::..\n\n";
-		var maxRetry = 5;
+		var maxRetry = 10;
 		var retryPause = 5000;
 		var slowDownStepAfterRetry = 200;
 		var retry = 0;
@@ -363,11 +363,12 @@
 				else {
 					if (retry++ < maxRetry ) {
 						MBWSRate += slowDownStepAfterRetry;
+						modal(true, "Error "+this.status+" ("+retry+"/"+maxRetry+")", 1);
 						debugRetry(this.status);
 						setTimeout(function() { loadCollection(mbid, ws, ws?offset:page); }, chrono(retryPause));
 					}
 					else {
-						end(false, "Too many errors (last "+this.status+" while loading collection).");
+						end(false, "Too many ("+maxRetry+") errors (last "+this.status+" while loading collection).");
 					}
 				}
 			}
@@ -455,7 +456,7 @@
 							setTimeout(function() { fetchReleasesStuff(i); }, chrono(retryPause));
 						}
 						else {
-							end(false, "Too many errors (last "+this.status+" while loading releases’ stuff).");
+							end(false, "Too many ("+maxRetry+") errors (last "+this.status+" while loading releases’ stuff).");
 						}
 					}
 				}
@@ -648,9 +649,9 @@
 		var selector = {
 			"release": "div#content table.tbl > tbody > tr > td a[href^='"+server+"/release/']",/*pwhere(lab,rec,rgr)*/
 			"release-group": "div.releaseheader a[href^='"+server+"/release-group/']",/*rel*/
-			"recording": ("div#content "+(pwhere?"[href^='"+server+"/recording/']":"table.tbl > tbody > tr > td span > a[href^='/recording/']")),/*pwhere(art,wrk)/rel*/
-			"artist": "div.releaseheader a[href^='"+server+"/artist/'], div#content table.tbl > tbody > tr > td[data-bind*='artistCredit'] a[href^='/artist/']",/*rel*/
-			"work": "div#content dd a[href^='/work/']",/*rel*/
+			"recording": ("div#content "+(pwhere?"[href^='"+server+"/recording/']":"table.tbl > tbody > tr > td > a[href^='"+server+"/recording/'], table.tbl > tbody > tr > td > span.mp > a[href^='"+server+"/recording/']")),/*pwhere(art,wrk)/rel*/
+			"artist": "div.releaseheader a[href^='"+server+"/artist/'], div#content table.tbl > tbody > tr > td > a[href^='"+server+"/artist/'], div#content table.tbl > tbody > tr > td > span.mp > a[href^='"+server+"/artist/']",/*rel*/
+			"work": "div#content div.ars > dl.ars > dd > a[href^='"+server+"/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='"+server+"/work/']",/*rel*/
 			"label": "div#sidebar > ul.links > li a[href^='"+server+"/label/']",/*rel*/
 		};
 		if (what) {
@@ -749,7 +750,7 @@
 									setTimeout(function() { stuffRemover(checks, p); }, chrono(retryPause));
 								}
 								else {
-									end(false, "Too many errors (last "+this.status+" while checking stuff to remove).");
+									end(false, "Too many ("+maxRetry+") errors (last "+this.status+" while checking stuff to remove).");
 								}
 							}
 						}/*4*/
