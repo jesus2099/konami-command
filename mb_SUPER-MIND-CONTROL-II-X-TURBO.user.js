@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.3.19.1258
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
+// @version      2015.3.20.1107
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -370,7 +370,7 @@
 	/*================================================================ KEYBOARD+
 	## ALIAS_SORT_NAME ##
 	==========================================================================*/
-	j2setting("ALIAS_SORT_NAME", true, true, "alias sort name will be prefilled as you type name, no more empty sort names");
+	j2setting("ALIAS_SORT_NAME", false, true, "IF YOU DON’T MIND, I WILL REMOVE THIS FEATURE (it seems obsolete to me now) — alias sort name will be prefilled as you type name, no more empty sort names");
 	if (j2sets.ALIAS_SORT_NAME && location.href.match(new RegExp("^"+MBS+"/(.+/add-alias|.+/alias/.+/edit)$"))) {
 		var aliasname, aliassortname, oldaliasname = "";
 		if ((aliasname = document.getElementById("id-edit-alias.name")) && (aliassortname = document.getElementById("id-edit-alias.sort_name"))) {
@@ -617,14 +617,13 @@
 	/*================================================================= DISPLAY-
 	## HIDE_RATINGS ##
 	==========================================================================*/
-	j2setting("HIDE_RATINGS", false, true, "hide those cute little stars — why would you want this (._.?)");
+	j2setting("HIDE_RATINGS", false, true, "hide those cute little stars and everything related to ratings in MB");
 	if (j2sets.HIDE_RATINGS) {
-		j2superturbo.addCSSRule("div#content table.tbl > * > tr > th.rating, div#content table.tbl > tbody > tr > td.rating, div#sidebar > h2.rating, div#sidebar > h2.rating + p { display: none; }");
+		j2superturbo.addCSSRule("div#content table.tbl > * > tr > th.rating, div#content table.tbl > tbody > tr > td.rating, div#sidebar > h2.rating, div#sidebar > h2.rating + p, div#page > div.tabs > ul.tabs > li:not(.sel) > a[href$='/ratings'], div#header-menu li.account a[href$='/ratings'] { display: none; }");
 		/*work around for missing rating classes (artist, collection)*/
 		var ratingIndex = document.querySelector("div#content table.tbl > tbody > tr > td:not(.rating) > span.inline-rating");
 		if (ratingIndex) {
-			ratingIndex = ratingIndex.parentNode.cellIndex;
-			j2superturbo.addCSSRule("div#content table.tbl > * > tr > *:nth-child("+(ratingIndex+1)+") { display: none; }");
+			j2superturbo.addCSSRule("div#content table.tbl > * > tr > *:nth-child("+(ratingIndex.parentNode.cellIndex+1)+") { display: none; }");
 		}
 	}
 	/*================================================================= DISPLAY+
