@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.3.6.15.45
+// @version      2015.3.19.12.49
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -76,8 +76,11 @@
 						return j2superturbo.menu.lastItem;
 					} else if (document.querySelector("div#header-menu")) bug({message:"Can’t add menu", report:true});
 				}
-			},
+			}
 		},
+		addCSSRule: function(CSSRule) {
+			j2superturbo.css.insertRule(CSSRule, j2superturbo.css.cssRules.length);
+		}
 	};
 	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 	j2superturbo.css = document.styleSheets[document.styleSheets.length-1];
@@ -587,7 +590,7 @@
 	j2setting("SPOT_AC", true, true, "name variations (Artist Credit, track name ≠ recording name, etc.) stand out");
 	j2setting("SPOT_AC_css", "border-bottom: 2px dashed maroon;", true, "CSS syntax (on “span.name-variation”)");
 	if (j2sets.SPOT_AC) {
-		j2superturbo.css.insertRule("span.name-variation { "+j2sets.SPOT_AC_css+" }", j2superturbo.css.cssRules.length);
+		j2superturbo.addCSSRule("span.name-variation { "+j2sets.SPOT_AC_css+" }");
 	}
 	/*================================================================= DISPLAY+
 	## SPOT_CAA ##
@@ -595,21 +598,34 @@
 	j2setting("SPOT_CAA", true, true, "cover art archive’s images stand out from other images. Allows spotting incorrectly padded CAA uploads and looks cool altogether");
 	j2setting("SPOT_CAA_css", "box-shadow: 0 0 8px black;", true, "CSS syntax (on “a.artwork-image > img”)");
 	if (j2sets.SPOT_CAA) {
-		j2superturbo.css.insertRule("a.artwork-image > span.cover-art-image > img[src*='//coverartarchive.org/'] { "+j2sets.SPOT_CAA_css+" }", j2superturbo.css.cssRules.length);
+		j2superturbo.addCSSRule("a.artwork-image > span.cover-art-image > img[src*='//coverartarchive.org/'] { "+j2sets.SPOT_CAA_css+" }");
 	}
 	/*================================================================= DISPLAY+
 	## WARN_NEW_WINDOW ##
 	==========================================================================*/
 	j2setting("WARN_NEW_WINDOW", true, true, "links that open in a new window will be marked with an icon");
 	if (j2sets.WARN_NEW_WINDOW) {
-		j2superturbo.css.insertRule("a[target='_blank']::after { margin: 0 2px 0 4px; content: url(data:image/gif;base64,R0lGODlhCwAKAPcAAOAaGv///////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAIALAAAAAALAAoAAAgpAAUIFACgoEEAAwkeLJgQYUODBBMqZOhwIEOBFTFWXAhRYkOJGTlmDAgAOw==); }", j2superturbo.css.cssRules.length);
+		j2superturbo.addCSSRule("a[target='_blank']::after { margin: 0 2px 0 4px; content: url(data:image/gif;base64,R0lGODlhCwAKAPcAAOAaGv///////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAIALAAAAAALAAoAAAgpAAUIFACgoEEAAwkeLJgQYUODBBMqZOhwIEOBFTFWXAhRYkOJGTlmDAgAOw==); }");
 	}
 	/*================================================================= DISPLAY+
 	## CENTER_FLAGS ##
 	==========================================================================*/
 	j2setting("CENTER_FLAGS", true, true, "vertically center flags");
 	if (j2sets.CENTER_FLAGS) {
-		j2superturbo.css.insertRule(".flag { background-origin: padding-box; background-position: 0% 84%; }", j2superturbo.css.cssRules.length);
+		j2superturbo.addCSSRule(".flag { background-origin: padding-box; background-position: 0% 84%; }");
+	}
+	/*================================================================= DISPLAY+
+	## RATINGS_ON_TOP ##
+	==========================================================================*/
+	j2setting("HIDE_RATINGS", false, true, "hide those cute little stars — why would you want this (._.?)");
+	if (j2sets.HIDE_RATINGS) {
+		j2superturbo.addCSSRule("div#content table.tbl > * > tr > th.rating, div#content table.tbl > tbody > tr > td.rating, div#sidebar > h2.rating, div#sidebar > h2.rating + p { display: none; }");
+		/*work around for missing rating classes (artist, collection)*/
+		var ratingIndex = document.querySelector("div#content table.tbl > tbody > tr > td:not(.rating) > span.inline-rating");
+		if (ratingIndex) {
+			ratingIndex = ratingIndex.parentNode.cellIndex;
+			j2superturbo.addCSSRule("div#content table.tbl > * > tr > *:nth-child("+(ratingIndex+1)+") { display: none; }");
+		}
 	}
 	/*================================================================= DISPLAY+
 	## RATINGS_ON_TOP ##
@@ -649,7 +665,7 @@
 				"background-color:"+j2sets.ROW_HIGHLIGHTER_colour+"!important"
 			]
 		};
-		j2superturbo.css.insertRule(hldrule.selector.join(",")+"{"+hldrule.rule.join(";")+"}", j2superturbo.css.cssRules.length);
+		j2superturbo.addCSSRule(hldrule.selector.join(",")+"{"+hldrule.rule.join(";")+"}");
 		ROW_HIGHLIGHTER_init();
 		document.body.addEventListener("DOMNodeInserted", ROW_HIGHLIGHTER_calmDOM, false);
 	}
