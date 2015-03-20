@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2015.2.27.22.34
+// @version      2015.3.20.1553
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -86,10 +86,10 @@
 			if (smallpics) {
 				var margin = "-12px 0px -14px 0px";
 				as[a].parentNode.insertBefore(
-					createTag("div",{},{"float":"right","margin-right":".5em"},{},[document.createTextNode("⌛"),
-						createTag("a",{"href":imgurl},{"display":"none"},{},[
+					createTag("div", {}, {"float":"right", "margin-right":".5em"}, {}, [document.createTextNode("⌛"),
+						createTag("a", {"href":imgurl}, {"display":"none"}, {}, [
 							createTag("img",
-								{"alt":as[a].textContent, "title":"click to enlarge", "src":imgurl+"-250", "_size":"_", "_margin":margin, "_istable":istable?"1":"0"},
+								{"alt":as[a].textContent, "class":userjs, "title":"click to enlarge", "src":imgurl+"-250", "_size":"_", "_margin":margin, "_istable":istable?"1":"0"},
 								{"cursor":"pointer", "box-shadow":"1px 1px 4px black", "margin":margin, "padding":"none", "position":"relative", "z-index":"1"},
 								{
 									"click":function(e){big(e,this,SMALL_SIZE);},
@@ -103,6 +103,11 @@
 					])
 				, as[a]);
 			}
+			document.body.addEventListener("click", function(e) {
+				for (var imgs = document.querySelectorAll("img[_size='full']."+userjs), i = 0; i < imgs.length; i++) {
+					big(e, imgs[i], SMALL_SIZE);
+				}
+			});
 			var tr = getParent(as[a], "tr") || getParent(as[a], "li");
 			tr.addEventListener("mouseover", updateBig, false);
 			tr.addEventListener("mouseout", updateBig, false);
@@ -152,7 +157,7 @@
 	}
 	function big(event, img, smallSize) {
 		if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
-			event.preventDefault();
+			stop(event);
 			var enlarge = (img.getAttribute("_size")=="small");
 			var height = enlarge?(img.getAttribute("_height")||"250px"):smallSize;
 			var margin = enlarge?("-"+(parseInt(img.getAttribute("_height"), 10)/2)+"px -"+(parseInt(img.getAttribute("_width"), 10)/2)+"px"):img.getAttribute("_margin");
@@ -213,5 +218,11 @@
 		} else {
 			return null;
 		}
+	}
+	function stop(e) {
+		e.cancelBubble = true;
+		if (e.stopPropagation) e.stopPropagation();
+		e.preventDefault();
+		return false;
 	}
 })();
