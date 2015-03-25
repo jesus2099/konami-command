@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.3.20.1107
+// @version      2015.3.25.1050
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -816,21 +816,22 @@
 			refines.appendChild(createTag("a", {a:{href: location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2]?"edits":(location.pathname.match(re_GUID)?"open_edits":"edits/open"))+location.search+location.hash}}, (refine[1]||refine[2]?"All ":"Open ")+"edits"));
 			if (
 				location.href.indexOf(account.getElementsByTagName("a")[0].getAttribute("href")) < 0 &&
-				(refine = document.querySelector("table.search-help td > a[href*='/search/edits?conditions.']")) &&
-				(id = refine.getAttribute("href").match(/user_id=(\d+)/) || localStorage.getItem(userjs+"me-userid"))
+				(refine = document.querySelector("table.search-help td > a[href^='"+MBS+"/search/edits?'][href*='user_id='][href*='&conditions.']")) &&
+				(refine = refine.getAttribute("href").replace(/form_only=yes/, "")) &&
+				(id = refine.match(/user_id=(\d+)/) || localStorage.getItem(userjs+"me-userid"))
 			) {
 				if (typeof id == "object") {
 					id = id[1];
-					if (id  != localStorage.getItem(userjs+"me-userid")) localStorage.setItem(userjs+"me-userid", id);
+					if (id != localStorage.getItem(userjs+"me-userid")) localStorage.setItem(userjs+"me-userid", id);
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a:{href: refine.getAttribute("href")+notme.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me"),")"]));
+					refines.appendChild(createTag("a", {a:{href: refine+notme.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me"),")"]));
 					novote = notme+novote;
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a:{href: refine.getAttribute("href")+novote.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me+not voted"),")"]));
+					refines.appendChild(createTag("a", {a:{href: refine+novote.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me+not voted"),")"]));
 				}
 				if (!location.pathname.match(/label|work/)) {
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a:{href: refine.getAttribute("href")+noPUID}}, ["Refine this search (",createTag("strong", null, "no PUID edits"),")"]));
+					refines.appendChild(createTag("a", {a:{href: refine+noPUID}}, ["Refine this search (",createTag("strong", null, "no PUID edits"),")"]));
 				}
 			}
 			if (refines.childElementCount > 0) {
