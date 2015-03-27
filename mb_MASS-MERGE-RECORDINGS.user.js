@@ -352,7 +352,6 @@
 				var recIDx5 = this.responseText.match(/entity_id=[0-9]+&amp;entity_type=recording/g);
 				var trackRows = this.responseText.match(/<tr.+>[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
 				var trackInfos = this.responseText.match(new RegExp("<a href=\""+MBS+"/recording/"+sregex_MBID+"\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
-				alert(trackInfos.length);
 				var trackTimes = this.responseText.match(/<td class="treleases">[^<]*<\/td>/g);
 				var rtitle = this.responseText.match(new RegExp("<title>"+sregex_title+"</title>"));
 				var releaseAC = this.responseText.match(/\s+Release by (<.+>)/);
@@ -374,7 +373,7 @@
 					remoteRelease.tracks = [];
 					for (var t = 0; t < recIDs.length; t++) {
 						remoteRelease.tracks.push({
-							number: 0,
+							number: trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\""+MBS+"/track/"+sregex_MBID+"\">(.*?)</a>"))[1],
 							name: trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1],
 							artistCredit: trackRows[t].match(/<td>/g).length>1?trackRows[t].match(/[\s\S]*(<td>[\s\S]+?<\/td>)/)[1]:releaseAC[1],
 							length: trackTimes[t].match(/>([^<]*)</)[1],
