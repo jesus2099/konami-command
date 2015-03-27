@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.3.6.18.23
+// @version      2015.3.27.1951
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -232,8 +232,8 @@
 					a: tracka,
 					recid: recoid,
 					name: trackname,
-					artistCredit: "toto",
-					length: "toto"
+					artistCredit: null,
+					length: null
 				});
 //				if (jsonRelease) {
 ////					localRelease.tracks[localRelease.tracks.length-1] = jsonRelease.mediums[d-1].tracks[dt];
@@ -346,15 +346,15 @@
 		return frg;
 	}
 	function loadReleasePage(mbid) {
-	}
-	function loadReleaseWS(mbid) {
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener("load", function(e) {
 			if (this.status == 200) {
 				var recIDx5 = this.responseText.match(/entity_id=[0-9]+&amp;entity_type=recording/g);
+				var trackRows = this.responseText.match(/<tr.+>[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
 				var trackInfos = this.responseText.match(new RegExp("<a href=\""+MBS+"/recording/"+sregex_MBID+"\"><bdi>[^<]*</bdi></a>", "g"));
 				var trackTimes = this.responseText.match(/<td class="treleases">[^<]*<\/td>/g);
 				var rtitle = this.responseText.match(new RegExp("<title>"+sregex_title+"</title>"));
+				var releaseAC = this.responseText.match(/\s+Release by (<.+>)/);
 				if (recIDx5 && trackInfos && trackTimes && rtitle) {
 					var recIDs = [];
 					for (var i5 = 0; i5 < recIDx5.length; i5 += 5) {
@@ -365,17 +365,17 @@
 					remoteRelease.comment = this.responseText.match(/<h1>.+  <span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
 					if (remoteRelease.comment) remoteRelease.comment = " ("+remoteRelease.comment[1]+")"; else remoteRelease.comment = "";
 					remoteRelease.ac = rtitle[2];
-					var mbidInfo = MMRdiv.querySelector(".remote-release-link");
+					var mbidInfo = document.getElementById(MMRid).querySelector(".remote-release-link");
 					removeChildren(mbidInfo);
 					prints(mbidInfo, "(");
-					mbidInfo.appendChild(createA(remoteRelease.id, url));
+					mbidInfo.appendChild(createA(remoteRelease.id, "/release/"+mbid));
 					prints(mbidInfo, ")");
 					remoteRelease.tracks = [];
 					for (var t = 0; t < recIDs.length; t++) {
 						remoteRelease.tracks.push({
 							number: 0,
 							name: trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1],
-							artistCredit: "toto",
+							artistCredit: trackRows[t].match(/<td>/g).length>1?trackRows[t].match(/[\s\S]*(<td>[\s\S]+?<\/td>)/)[1]:releaseAC[1],
 							length: trackTimes[t].match(/>([^<]*)</)[1],
 							recording: {
 								rowid: recIDs[t],
@@ -408,8 +408,10 @@
 				infoMerge("This is not a valid release", false);
 			}
 		});
-		xhr.open("GET", "/ws/2/release/"+mbid+"?inc=&fmt=json", true);
+		xhr.open("GET", "/release/"+mbid, true);
 		xhr.send(null);
+	}
+	function loadReleaseWS(mbid) {
 	}
 	function spreadTracks(e) {
 		var rtrack = startpos.value<0?0-startpos.value:0;
@@ -424,7 +426,8 @@
 				var rmForm = document.createElement("form");
 				rmForm.setAttribute("action", "/recording/merge");
 				rmForm.setAttribute("method", "post");
-				rmForm.setAttribute("title", "AC: "+ac2str(remoteRelease.tracks[rtrack].artistCredit)+"\nremote recording #"+remoteRelease.tracks[rtrack].recording.rowid);
+//				rmForm.setAttribute("title", "AC: "+ac2str(remoteRelease.tracks[rtrack].artistCredit)+"\nremote recording #"+remoteRelease.tracks[rtrack].recording.rowid);
+				rmForm.setAttribute("title", "remote recording #"+remoteRelease.tracks[rtrack].recording.rowid);
 				rmForm.setAttribute("class", MMRid);
 				rmForm.style.setProperty("display", "inline");
 				rmForm.appendChild(createInput("hidden", "merge.merging.0", localRelease.tracks[ltrack].recid));
@@ -462,24 +465,28 @@
 					var reclen = remrec.appendChild(document.createElement("span"));
 					reclen.style.setProperty("float", "right");
 					reclen.style.setProperty("font-family", "monospace");
-					reclen.appendChild(document.createTextNode(" "+time(remoteRelease.tracks[rtrack].length, true)));
-					if (typeof localRelease.tracks[ltrack].length == "number" && typeof remoteRelease.tracks[rtrack].length == "number") {
-						var delta = Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
-						if (delta != false && delta > safeLengthDelta*1000) {
-							if (delta >= 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
-								reclen.style.setProperty("color", "red");
-								reclen.style.setProperty("background-color", "black");
-								reclen.setAttribute("title", "MORE THAN "+15+" SECONDS DIFFERENCE");
-							} else {
-								reclen.style.setProperty("background-color", cNG);
-								reclen.setAttribute("title", "more than "+safeLengthDelta+" seconds difference");
-							}
-						} else {
-							reclen.style.setProperty("background-color", delta&&delta>500?cWarning:cOK);
-						}
-					}
+//					reclen.appendChild(document.createTextNode(" "+time(remoteRelease.tracks[rtrack].length, true)));
+					reclen.appendChild(document.createTextNode(" "+remoteRelease.tracks[rtrack].length));
+//					if (typeof localRelease.tracks[ltrack].length == "number" && typeof remoteRelease.tracks[rtrack].length == "number") {
+//						var delta = Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
+//						if (delta != false && delta > safeLengthDelta*1000) {
+//							if (delta >= 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
+//								reclen.style.setProperty("color", "red");
+//								reclen.style.setProperty("background-color", "black");
+//								reclen.setAttribute("title", "MORE THAN "+15+" SECONDS DIFFERENCE");
+//							} else {
+//								reclen.style.setProperty("background-color", cNG);
+//								reclen.setAttribute("title", "more than "+safeLengthDelta+" seconds difference");
+//							}
+//						} else {
+//							reclen.style.setProperty("background-color", delta&&delta>500?cWarning:cOK);
+//						}
+//					}
 					rmForm.appendChild(document.createTextNode(" by "));
-					rmForm.appendChild(ac2dom(remoteRelease.tracks[rtrack].artistCredit));
+//					rmForm.appendChild(ac2dom(remoteRelease.tracks[rtrack].artistCredit));
+					var AC = document.createElement("span");
+					AC.innerHTML = remoteRelease.tracks[rtrack].artistCredit;
+					rmForm.appendChild(AC);
 					var mergeButt = rmForm.appendChild(createInput("button", "", "Merge"));
 					mergeButt.setAttribute("class", MMRid+"mergebutt");
 					mergeButt.style.setProperty("background-color", cMerge);
