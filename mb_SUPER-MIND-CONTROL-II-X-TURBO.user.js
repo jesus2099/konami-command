@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.3.25.1050
+// @version      2015.3.27.1826
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -805,37 +805,50 @@
 	==========================================================================*/
 	j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” links excluding own edits or PUID edits, cross links between edits / open_edits, etc.");
 	if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/edits/)) {
-		var refine = location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
-		var searchHelp = document.querySelector("table.search-help > tbody");
-		var refines = document.createElement("td");
-		var id;
-		var notme = "&conditions.2099.field=editor&conditions.2099.operator=%21%3D&conditions.2099.name=COOLEST+EDITOR+2099&conditions.2099.args.0=%id%";
-		var novote = "&conditions.2098.field=vote&conditions.2098.operator=%3D&conditions.2098.voter_id=%id%&conditions.2098.args=no";
 		var noPUID = "&conditions.2097.field=type&conditions.2097.operator=%21%3D&conditions.2097.args=77&conditions.2097.args=113";
-		if (searchHelp && refine) {
-			refines.appendChild(createTag("a", {a:{href: location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2]?"edits":(location.pathname.match(re_GUID)?"open_edits":"edits/open"))+location.search+location.hash}}, (refine[1]||refine[2]?"All ":"Open ")+"edits"));
-			if (
-				location.href.indexOf(account.getElementsByTagName("a")[0].getAttribute("href")) < 0 &&
-				(refine = document.querySelector("table.search-help td > a[href^='"+MBS+"/search/edits?'][href*='user_id='][href*='&conditions.']")) &&
-				(refine = refine.getAttribute("href").replace(/form_only=yes/, "")) &&
-				(id = refine.match(/user_id=(\d+)/) || localStorage.getItem(userjs+"me-userid"))
-			) {
-				if (typeof id == "object") {
-					id = id[1];
-					if (id != localStorage.getItem(userjs+"me-userid")) localStorage.setItem(userjs+"me-userid", id);
-					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a:{href: refine+notme.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me"),")"]));
-					novote = notme+novote;
-					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a:{href: refine+novote.replace(/%id%/g, id)}}, ["Refine this search (",createTag("strong", null, "+not me+not voted"),")"]));
-				}
-				if (!location.pathname.match(/label|work/)) {
-					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a:{href: refine+noPUID}}, ["Refine this search (",createTag("strong", null, "no PUID edits"),")"]));
-				}
+		if (location.pathname.match(new RegExp("/[^/]+/"+stre_GUID+"$")) && !location.pathname.match(/label|work/)) {
+			var entityType = location.pathname.match(/[^/]+/); entityType = entityType?(entityType+"").replace(/-/, "_"):"";
+			var entityName = document.querySelector("div#content h1 a");
+			var entityID = document.querySelector("div#sidebar a[href^='"+MBS+"/"+entityType+"/merge_queue?add-to-merge=']");
+			var entityEdits = document.querySelector("div#sidebar a[href='"+MBS+location.pathname+"/edits']");
+			if (entityID && entityEdits && entityType && entityName) {
+				entityID = entityID.getAttribute("href").match(/\d+$/);
+				entityName = entityName.textContent;
+				var refine = "/search/edits?conditions.0.operator=%3D&conditions.0.field="+entityType+"&conditions.0.name="+encodeURIComponent(entityName)+"&conditions.0.args.0="+entityID+"&order=desc&combinator=and&negation=0";
+				addAfter(createTag("span", {}, [" (", createTag("a", {a:{title:"another cool search link", href:refine+noPUID}, s:{background:"#ff6"}}, "without PUIDs"), ")"]), entityEdits);
 			}
-			if (refines.childElementCount > 0) {
-				searchHelp.insertBefore(createTag("tr", {s:{"text-shadow":"0 0 8px purple"}}, [createTag("th", {}, "Cool link"+(refines.childElementCount>1?"s":"")+": "), refines]), searchHelp.firstChild);
+		} else {
+			var refine = location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
+			var searchHelp = document.querySelector("table.search-help > tbody");
+			if (searchHelp && refine) {
+				var refines = document.createElement("td");
+				var myID;
+				var notme = "&conditions.2099.field=editor&conditions.2099.operator=%21%3D&conditions.2099.name=COOLEST+EDITOR+2099&conditions.2099.args.0=%myID%";
+				var novote = "&conditions.2098.field=vote&conditions.2098.operator=%3D&conditions.2098.voter_id=%myID%&conditions.2098.args=no";
+				refines.appendChild(createTag("a", {a:{href: location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2]?"edits":(location.pathname.match(re_GUID)?"open_edits":"edits/open"))+location.search+location.hash}}, (refine[1]||refine[2]?"All ":"Open ")+"edits"));
+				if (
+					location.href.indexOf(account.getElementsByTagName("a")[0].getAttribute("href")) < 0 &&
+					(refine = document.querySelector("table.search-help td > a[href^='"+MBS+"/search/edits?'][href*='user_id='][href*='&conditions.']")) &&
+					(refine = refine.getAttribute("href").replace(/form_only=yes/, "")) &&
+					(myID = refine.match(/user_id=(\d+)/) || localStorage.getItem(userjs+"me-userid"))
+				) {
+					if (typeof myID == "object") {
+						myID = myID[1];
+						if (myID != localStorage.getItem(userjs+"me-userid")) localStorage.setItem(userjs+"me-userid", myID);
+						refines.appendChild(document.createTextNode(" | "));
+						refines.appendChild(createTag("a", {a:{href: refine+notme.replace(/%myID%/g, myID)}}, ["Refine this search (",createTag("strong", null, "+not me"),")"]));
+						novote = notme+novote;
+						refines.appendChild(document.createTextNode(" | "));
+						refines.appendChild(createTag("a", {a:{href: refine+novote.replace(/%myID%/g, myID)}}, ["Refine this search (",createTag("strong", null, "+not me+not voted"),")"]));
+					}
+					if (!location.pathname.match(/label|work/)) {
+						refines.appendChild(document.createTextNode(" | "));
+						refines.appendChild(createTag("a", {a:{href: refine+noPUID}}, ["Refine this search (",createTag("strong", null, "no PUID edits"),")"]));
+					}
+				}
+				if (refines.childElementCount > 0) {
+					searchHelp.insertBefore(createTag("tr", {s:{"text-shadow":"0 0 8px purple"}}, [createTag("th", {}, "Cool link"+(refines.childElementCount>1?"s":"")+": "), refines]), searchHelp.firstChild);
+				}
 			}
 		}
 	}
