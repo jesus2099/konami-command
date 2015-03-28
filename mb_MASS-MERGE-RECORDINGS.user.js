@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.3.27.2211
+// @version      2015.3.28.113
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -43,7 +43,7 @@
 	var recid2trackIndex = {remote:{}, local:{}};/*recid:tracks index*/
 	var mergeQueue = [];/*contains next mergeButts*/
 	var sregex_MBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
-	var regex_MBID = new RegExp(regex_MBID, "i");
+	var regex_MBID = new RegExp(sregex_MBID, "i");
 	var css_track = "div#content > table.medium > tbody > tr > td:not(.pos):not(.video) a[href^='/recording/'], td:not(.pos):not(.video) a[href^='"+MBS+"/recording/']";
 	css_track = css_track+", "+css_track.replace(MBS, "");/*in case those come back again to no-host URL in the future*/
 	var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
