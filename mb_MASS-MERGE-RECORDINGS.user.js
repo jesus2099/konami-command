@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.3.28.113
+// @version      2015.3.28.132
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -380,7 +380,7 @@
 							recording: {
 								rowid: recIDs[t],
 								id: trackInfos[t].match(/\/recording\/([^"]+)/)[1],
-								video: false,
+								video: trackRows[t].match(/<td[^>]+?is-video/),
 								editsPending: 0
 							},
 							isDataTrack: false
