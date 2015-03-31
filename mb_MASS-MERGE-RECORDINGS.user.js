@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.3.30.1600
+// @version      2015.3.31.1754
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -225,6 +225,8 @@
 				var tracka = trs[itrs].querySelector(css_track);
 				var recoid = trs[itrs].querySelector("td.rating a.set-rating").getAttribute("href").match(/id=([0-9]+)/)[1];
 				var trackname = tracka.textContent;
+				var trackLength = trs[itrs].querySelector("td.treleases").textContent.match(/(\d+:)?\d+:\d+/);
+				if (trackLength) trackLength = strtime2ms(trackLength[0]);
 				localRelease.tracks.push({
 					tr: trs[itrs],
 					disc: d,
@@ -233,7 +235,7 @@
 					recid: recoid,
 					name: trackname,
 					artistCredit: null,
-					length: null
+					length: trackLength
 				});
 //				if (jsonRelease) {
 ////					localRelease.tracks[localRelease.tracks.length-1] = jsonRelease.mediums[d-1].tracks[dt];
@@ -372,11 +374,13 @@
 					prints(mbidInfo, ")");
 					remoteRelease.tracks = [];
 					for (var t = 0; t < recIDs.length; t++) {
+						var trackLength = trackTimes[t].match(/(\d+:)?\d+:\d+/);
+						if (trackLength) trackLength = strtime2ms(trackLength[0]);
 						remoteRelease.tracks.push({
 							number: trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\""+MBS+"/track/"+sregex_MBID+"\">(.*?)</a>"))[1],
 							name: trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1],
 							artistCredit: trackRows[t].match(/<td>/g).length>1?trackRows[t].match(/[\s\S]*(<td>[\s\S]+?<\/td>)/)[1]:releaseAC[1],
-							length: trackTimes[t].match(/>([^<]*)</)[1],
+							length: trackLength,
 							recording: {
 								rowid: recIDs[t],
 								id: trackInfos[t].match(/\/recording\/([^"]+)/)[1],
@@ -465,23 +469,22 @@
 					var reclen = remrec.appendChild(document.createElement("span"));
 					reclen.style.setProperty("float", "right");
 					reclen.style.setProperty("font-family", "monospace");
-//					reclen.appendChild(document.createTextNode(" "+time(remoteRelease.tracks[rtrack].length, true)));
-					reclen.appendChild(document.createTextNode(" "+remoteRelease.tracks[rtrack].length));
-//					if (typeof localRelease.tracks[ltrack].length == "number" && typeof remoteRelease.tracks[rtrack].length == "number") {
-//						var delta = Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
-//						if (delta != false && delta > safeLengthDelta*1000) {
-//							if (delta >= 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
-//								reclen.style.setProperty("color", "red");
-//								reclen.style.setProperty("background-color", "black");
-//								reclen.setAttribute("title", "MORE THAN "+15+" SECONDS DIFFERENCE");
-//							} else {
-//								reclen.style.setProperty("background-color", cNG);
-//								reclen.setAttribute("title", "more than "+safeLengthDelta+" seconds difference");
-//							}
-//						} else {
-//							reclen.style.setProperty("background-color", delta&&delta>500?cWarning:cOK);
-//						}
-//					}
+					reclen.appendChild(document.createTextNode(" "+time(remoteRelease.tracks[rtrack].length, true)));
+					if (typeof localRelease.tracks[ltrack].length == "number" && typeof remoteRelease.tracks[rtrack].length == "number") {
+						var delta = Math.abs(localRelease.tracks[ltrack].length - remoteRelease.tracks[rtrack].length);
+						if (delta != false && delta > safeLengthDelta*1000) {
+							if (delta >= 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
+								reclen.style.setProperty("color", "red");
+								reclen.style.setProperty("background-color", "black");
+								reclen.setAttribute("title", "MORE THAN "+15+" SECONDS DIFFERENCE");
+							} else {
+								reclen.style.setProperty("background-color", cNG);
+								reclen.setAttribute("title", "more than "+safeLengthDelta+" seconds difference");
+							}
+						} else {
+							reclen.style.setProperty("background-color", delta&&delta>500?cWarning:cOK);
+						}
+					}
 					rmForm.appendChild(document.createTextNode(" by "));
 //					rmForm.appendChild(ac2dom(remoteRelease.tracks[rtrack].artistCredit));
 					var AC = document.createElement("span");
@@ -642,12 +645,21 @@
 	                return null;
 	        }
 	}
+	function strtime2ms(str) {/*temporary until WS available again*/
+		var time = str.split(":");
+		var ms = 0;
+		for (var mult = 1; time.length > 0; ) {
+			ms += time.pop() * mult * 1000;
+			mult *= 60;
+		}
+		return ms;
+	}
 	function time(_ms, pad) {/*from 166877*/
 		var ms = typeof _ms=="string"?parseInt(_ms,10):_ms;
 		if (ms > 0) {
 			var d = new Date();
 			d.setTime(ms);
-			return (pad&&d.getMinutes()<10?" ":"")+d.getMinutes()+":"+(d.getSeconds()<10?"0":"")+d.getSeconds()+(pad||d.getMilliseconds()>0?"."+(d.getMilliseconds()<100?"0":"")+(d.getMilliseconds()<10?"0":"")+d.getMilliseconds():"");
+			return /*milliseconds temporary hidden*/(d.getUTCHours()>0?d.getUTCHours()+":":"")+(pad&&d.getMinutes()<10?(d.getUTCHours()>0?"0":" "):"")+d.getMinutes()+":"+(d.getSeconds()<10?"0":"")+d.getSeconds()/*+(pad||d.getMilliseconds()>0?"."+(d.getMilliseconds()<100?"0":"")+(d.getMilliseconds()<10?"0":"")+d.getMilliseconds():"")*/;
 		}
 		return "?:??";
 	}
