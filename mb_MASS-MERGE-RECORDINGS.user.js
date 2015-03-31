@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.1.40
+// @version      2015.4.1.118
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -353,7 +353,7 @@
 			if (this.status == 200) {
 				var recIDx5 = this.responseText.match(/entity_id=[0-9]+&amp;entity_type=recording/g);
 				var trackRows = this.responseText.match(/<tr.+>[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
-				var trackInfos = this.responseText.match(new RegExp("<a href=\""+MBS+"/recording/"+sregex_MBID+"\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
+				var trackInfos = this.responseText.match(new RegExp("\\S<a href=\""+MBS+"/recording/"+sregex_MBID+"\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
 				var trackTimes = this.responseText.match(/<td class="treleases">[^<]*<\/td>/g);
 				var rtitle = this.responseText.match(new RegExp("<title>"+sregex_title+"</title>"));
 				var releaseAC = this.responseText.match(/\s+Release by (<.+>)/);
