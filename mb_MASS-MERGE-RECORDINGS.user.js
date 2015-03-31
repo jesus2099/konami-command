@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.3.31.1806
+// @version      2015.4.1.40
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -363,9 +363,9 @@
 						recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
 					}
 					remoteRelease["release-group"] = this.responseText.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
-					remoteRelease.title = rtitle[1];
+					remoteRelease.title = decodeHTMLEntities(rtitle[1]);
 					remoteRelease.comment = this.responseText.match(/<h1>.+  <span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
-					if (remoteRelease.comment) remoteRelease.comment = " ("+remoteRelease.comment[1]+")"; else remoteRelease.comment = "";
+					if (remoteRelease.comment) remoteRelease.comment = " ("+decodeHTMLEntities(remoteRelease.comment[1])+")"; else remoteRelease.comment = "";
 					remoteRelease.ac = rtitle[2];
 					var mbidInfo = document.getElementById(MMRid).querySelector(".remote-release-link");
 					removeChildren(mbidInfo);
@@ -378,7 +378,7 @@
 						if (trackLength) trackLength = strtime2ms(trackLength[0]);
 						remoteRelease.tracks.push({
 							number: trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\""+MBS+"/track/"+sregex_MBID+"\">(.*?)</a>"))[1],
-							name: trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1],
+							name: decodeHTMLEntities(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
 							artistCredit: trackRows[t].match(/<td>/g).length>1?trackRows[t].match(/[\s\S]*(<td>[\s\S]+?<\/td>)/)[1]:releaseAC[1],
 							length: trackLength,
 							recording: {
@@ -715,4 +715,9 @@
 			return String.fromCharCode(a.charCodeAt(0)-65248);
 		}).replace(/\u3000/g, "\u0020").replace(/\uff5e/g, "\u301c");
 	}
+	var decoder = document.createElement("b");
+	function decodeHTMLEntities(str) {
+		decoder.innerHTML = str;
+		return decoder.textContent;
+	};
 })();
