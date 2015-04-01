@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2015.4.1.1519
+// @version      2015.4.1.1544
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -290,12 +290,19 @@ function addExternalLink(text, target, begin, end, sntarget) {
 				li.appendChild(document.createTextNode(")"));
 			}
 			if (begin || end) {
-				var dates = " (";
-				if (begin) { dates += begin; }
-				if (begin != end) { dates += "—"; }
-				if (end && begin != end) { dates += end; }
-				dates += ")";
-				li.appendChild(document.createElement("span").appendChild(document.createTextNode(dates)).parentNode).style.setProperty("white-space", "nowrap");
+				var ardates = document.createElement("span");
+				ardates.style.setProperty("white-space", "nowrap");
+				ardates.appendChild(document.createTextNode(" ("));
+				if (!begin && end == "????") {
+					ardates.appendChild(endFragment(end, target));
+				} else {
+					if (begin) { ardates.appendChild(document.createTextNode(begin)); }
+					if (begin != end) { ardates.appendChild(document.createTextNode("—")); }
+					if (end && begin != end) { ardates.appendChild(endFragment(end, target)); }
+				}
+				ardates.appendChild(document.createTextNode(")"));
+				ardates.normalize();
+				li.appendChild(ardates);
 			}
 		}
 		var favurltest = (typeof target == "string")?target:target.action;
@@ -394,6 +401,16 @@ function loading(on) {
 			ldng.parentNode.removeChild(ldng);
 		}
 	}
+}
+function endFragment(endDate, url) {
+	var endBit = document.createDocumentFragment();
+	var endText= endDate=="????"?"ended":endDate;
+	if (!url.match(/\.archive\.org\//)) {
+		endBit.appendChild(createA(endText, "//wayback.archive.org/web/*/"+url.replace(/https?:\/\//, "")));
+	} else {
+		endBit.appendChild(document.createTextNode(endText));
+	}
+	return endBit;
 }
 function createA(text, link, title) {
 	var a = document.createElement("a");
