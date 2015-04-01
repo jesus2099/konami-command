@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2014.11.24.1504
+// @version      2015.4.1.1446
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -105,6 +105,15 @@ var userjs = "j2ujs108889";
 var sidebar = document.getElementById("sidebar");
 var arelsws = "/ws/2/artist/%artist-id%?inc=url-rels";
 var existingLinks, extlinks;
+var hrStyle = {css:""};
+for (var s = 0; s < document.styleSheets.length; s++)
+	for (var r = 0; r < document.styleSheets[s].cssRules.length; r++)
+		if (hrStyle.match = document.styleSheets[s].cssRules[r].cssText.match(/(#sidebar.+ul.+hr) {(.+)}/))
+			hrStyle.css += hrStyle.match[2];
+if (hrStyle.css) {
+	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
+	document.styleSheets[document.styleSheets.length-1].insertRule("div#sidebar ul.external_links hr {margin-top:8px!important;width:inherit!important;"+hrStyle.css+"}", 0);
+}
 function do108889() {
 	if (sidebar) {
 		var rgextrels = sidebar.querySelector("ul.external_links_2 > li");
@@ -264,16 +273,14 @@ function addExternalLink(text, target, begin, end, sntarget) {
 			form.appendChild(document.createTextNode("*"));
 			li = document.createElement("li");
 			li.appendChild(form);
-		}
-		else {
+		} else {
 			var exi = existingLinks.indexOf(target.trim().replace(/^https?:/,""));
 			if (exi == -1) {
 				existingLinks.push(target.trim().replace(/^https?:/,""));
 				li = document.createElement("li");
 				li.className = text;
 				li.appendChild(createA(text, target));
-			}
-			else {
+			} else {
 				newLink = false;
 				li = lis[exi];
 			}
@@ -288,7 +295,7 @@ function addExternalLink(text, target, begin, end, sntarget) {
 				if (begin != end) { dates += "—"; }
 				if (end && begin != end) { dates += end; }
 				dates += ")";
-				li.appendChild(document.createElement("span").appendChild(document.createTextNode(dates)).parentNode).style.whiteSpace = "nowrap";
+				li.appendChild(document.createElement("span").appendChild(document.createTextNode(dates)).parentNode).style.setProperty("white-space", "nowrap");
 			}
 		}
 		var favurltest = (typeof target == "string")?target:target.action;
@@ -309,28 +316,28 @@ function addExternalLink(text, target, begin, end, sntarget) {
 		favicontry[ifit].addEventListener("load", function (e) {
 			clearTimeout(this.to);
 			if (this.width == 16) {
-				this.li.style.backgroundImage = "url("+this.src+")";
+				this.li.style.setProperty("background-image", "url("+this.src+")");
 			}
 		}, false);
 		favicontry[ifit].li = li;
 		favicontry[ifit].src = favurlfound;
 		favicontry[ifit].to = setTimeout(function(){ favicontry[ifit].src = "/"; }, 5000);
-	}
-	else {
+	} else {
 		var li = document.createElement("li");
-		li.style.background = "transparent";
-		li.style.marginTop = ".5em";
 		li.appendChild(document.createTextNode(text));
+		li.style.setProperty("font-weight", "bold");
 		if (text.indexOf(" ") == 0) {
-			li.style.fontWeight = "bold";
+			li.style.setProperty("padding-top", "0px");
 			extlinks.insertBefore(li, extlinks.lastChild);
-		}
-		else {
+		} else {
+			li.style.setProperty("padding", "0px");
+			li.style.setProperty("float", "right");
 			extlinks.appendChild(li);
 		}
+		extlinks.insertBefore(document.createElement("hr"), li);
 	}
 	if (newLink) {
-		li.style.opacity = extlinksOpacity;
+		li.style.setProperty("opacity", extlinksOpacity);
 		if (target) { extlinks.appendChild(li); }
 	}
 	return newLink;
@@ -345,7 +352,7 @@ function error(code, text) {
 	var ldng = document.getElementById("jesus2099loading108889");
 	if (ldng) {
 		ldng.setAttribute("id", "jesus2099error108889");
-		ldng.style.background = "pink";
+		ldng.style.setProperty("background", "pink");
 		ldng.replaceChild(document.createTextNode("Error "+code), ldng.firstChild);
 		ldng.appendChild(createA("*", arelsws));
 		ldng.appendChild(document.createTextNode(" in "));
@@ -373,7 +380,7 @@ function loading(on) {
 		if (!ldng) {
 			var li = document.createElement("li");
 			li.setAttribute("id", "jesus2099loading108889");
-			li.style.background = "#ff6";
+			li.style.setProperty("background", "#ff6");
 			li.appendChild(document.createTextNode("loading…"));
 			var lis = extlinks.getElementsByTagName("li");
 			if (hideDupeRelationshipsLink && lis[lis.length-1].textContent.match(/View all relationships/)) {
@@ -394,7 +401,7 @@ function createA(text, link, title) {
 		a.setAttribute("href", link);
 	}
 	else {
-		a.style.cursor = "pointer";
+		a.style.setProperty("cursor", "pointer");
 	}
 	if (title){ a.setAttribute("title", title); }
 	a.appendChild(document.createTextNode(text));
