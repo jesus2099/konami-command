@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2015.4.1.1446
+// @version      2015.4.1.1519
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -37,7 +37,7 @@ var artist_autolinks = {
 		"Videos": "//duckduckgo.com/?q=%artist-name%+!v",
 	"Credits": null,
 		"SACEM (Interprète)": {"accept-charset":"ISO-8859-1", "action":"http://www.sacem.fr/oeuvres/oeuvre/rechercheOeuvre.do", "parameters":{"ftin":"true","tiers":"%artist-name%"}},
-		"SACEM (Auteur-Compositeur-Éditeur)": {"accept-charset":"ISO-8859-1", "action":"http://www.sacem.fr/oeuvres/oeuvre/rechercheOeuvre.do", "parameters":{"ftad":"true","tiers":"%artist-name%"}},
+		"SACEM (Auteur‐Compositeur‐Éditeur)": {"accept-charset":"ISO-8859-1", "action":"http://www.sacem.fr/oeuvres/oeuvre/rechercheOeuvre.do", "parameters":{"ftad":"true","tiers":"%artist-name%"}},
 		"JASRAC（アーティスト）": {"title":"requires JASRAC direct link", "method":"post", "accept-charset":"Shift_JIS", "enctype":"multipart/form-data", "action":"http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3", "parameters":{"IN_ARTIST_NAME_OPTION1":"0","IN_ARTIST_NAME1":"%artist-name%","IN_DEFAULT_WORKS_KOUHO_MAX":"100","IN_DEFAULT_WORKS_KOUHO_SEQ":"1","IN_DEFAULT_SEARCH_WORKS_NAIGAI":"0","RESULT_CURRENT_PAGE":"1"}},
 		"JASRAC（著作者）": {"title":"requires JASRAC direct link", "method":"post", "accept-charset":"Shift_JIS", "enctype":"multipart/form-data", "action":"http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3", "parameters":{"IN_KEN_NAME_OPTION1":"0","IN_KEN_NAME1":"%artist-family-name-first%","IN_KEN_NAME_JOB1":"0","IN_DEFAULT_WORKS_KOUHO_MAX":"100","IN_DEFAULT_WORKS_KOUHO_SEQ":"1","IN_DEFAULT_SEARCH_WORKS_NAIGAI":"0","RESULT_CURRENT_PAGE":"1"}},
 		"音楽の森（アーティスト）": "//www.minc.gr.jp/db/ArtNmSrch.aspx?ArtNm=%artist-name%",
@@ -59,15 +59,15 @@ var artist_autolinks = {
 		"VKDB": "//duckduckgo.com/?q=site:vkdb.jp+%artist-name%",
 	"Vietnamese stuff": null,
 		"vi.Wikipedia": "//vi.wikipedia.org/w/index.php?search=%artist-name%",
-		"nhạc số": "http://nhacso.net/tim-nghe-si/trang-1/%artist-name%.html",
+		"nhạc số": "http://nhacso.net/tim-kiem-nghe-si.html?keyName=%artist-name%",
 	"Korean stuff": null,
 		"maniadb": "http://www.maniadb.com/search.asp?sr=PO&q=%artist-name%",
 	"Other databases": null,
 		"AllMusic": "http://www.allmusic.com/search/artist/%artist-name%",
 		"Discogs": "http://www.discogs.com/search?q=%artist-name%&type=artist",
-		"ISNI": "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
-		"Rate Your Music": "http://rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
-		"Second hand songs": "http://www.secondhandsongs.com/cgi/topsearch.php?search_object=artist&search_text=%artist-name%",
+		"ISNI": "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
+		"Rate Your Music": "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
+		"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
 		"WhoSampled": "//www.whosampled.com/search/artists/?h=1&q=%artist-name%", 
 	"Other stuff": null,
 		"en.Wikipedia": "//en.wikipedia.org/w/index.php?search=%artist-name%",
