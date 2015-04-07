@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2015.3.1.19.11
+// @version      2015.4.8.1117
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @homepage     http://userscripts-mirror.org/scripts/show/152545
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -34,6 +34,7 @@
 		  "95678": ["2005-02-18", "2012-09-24", "brianfreud"],
 		 "129671": ["2005-06-30", "2009-02-02", "Shlublu"],
 		 "157767": ["2005-10-20", "2010-01-05", "michael"],
+		 "161352": ["2005-11-01", "2006-07-08", "claiborne"],
 		 "163497": ["2005-11-09", "2012-07-12", "RedHotHeat"],
 		 "186010": ["2005-12-30", "2012-11-29", "robojock"],
 		 "193948": ["2006-01-20", "2008-01-27", "syserror"],
@@ -61,8 +62,10 @@
 		 "791672": ["2013-06-14", "2013-12-08", "georg187"],
 		 "800638": ["2013-06-19", "2014-12-21", "nicolebahls"],
 		 "809366": ["2013-06-23", "2014-12-21", "xoxtina"],
+		 "984246": ["2013-09-14", "2015-03-25", "♀girls"],
 		"1024627": ["2013-10-04", "2014-12-21", "bvlgari"],
 		"1288668": ["2014-06-29", "2014-12-21", "khaleesi"],
+		"1304704": ["2014-10-12", "2015-03-22", "superpoota"],
  		"jesus2099": "GOLD MASTER KING",
 		"%you%": "PROPHET PRINCE CHAMPION",
 	};
