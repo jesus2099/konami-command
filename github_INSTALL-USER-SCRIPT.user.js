@@ -4,8 +4,8 @@
 // @description  bitbucket.org, github.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/bitbucket-github_INSTALL-USER-SCRIPT.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/bitbucket-github_INSTALL-USER-SCRIPT.user.js
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/bitbucket-github_INSTALL-USER-SCRIPT.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/bitbucket-github_INSTALL-USER-SCRIPT.user.js
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2014-11-14
