@@ -4,8 +4,8 @@
 // @description  last.fm: Basic side by side comparison of any library page with ours.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/lastfm_COMPARE-LIBRARY.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/lastfm_COMPARE-LIBRARY.user.js
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/lastfm_COMPARE-LIBRARY.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/lastfm_COMPARE-LIBRARY.user.js
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2015-01-06
