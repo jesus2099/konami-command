@@ -1,34 +1,57 @@
 // ==UserScript==
 // @name         github. INSTALL USER SCRIPT
-// @version      2015.2.9.14.7
-// @description  github.com: Convenient direct “raw” download link (leftmost file icon) to “Install” user scripts from file lists
+// @version      2015.4.10.1808
+// @description  bitbucket.org, github.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/github_INSTALL-USER-SCRIPT.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/github_INSTALL-USER-SCRIPT.user.js
-// @author       PATATE12 aka. jesus2099/shamo
+// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/bitbucket-github_INSTALL-USER-SCRIPT.user.js
+// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/bitbucket-github_INSTALL-USER-SCRIPT.user.js
+// @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2014-11-14
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      http://github.com/*/*
-// @include      https://github.com/*/*
+// @include      https://bitbucket.org/*
+// @include      https://github.com/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-jQuery(document).on("pjax:end", changeStuff);
+var supportedFileTypes = [".user.js", ".uc.js", ".uc.xul"];
+var host = {
+	"bitbucket.org": {
+		css: {
+			files: "table#source-list tbody td.filename a[title$='%fileType%']",
+			icon: "span.aui-icon.aui-icon-small.aui-iconfont-devtools-file",
+			newIcon: "aui-icon aui-icon-small aui-iconfont-devtools-clone", // https://docs.atlassian.com/aui/5.5.1/docs/icons.html
+		},
+		href: { match: /^(\/[^/]+\/[^/]+)\/src\/[0-9a-f]{40}\/(.+)\?at=(.+)$/, replace: "$1/raw/$3/$2" },
+	},
+	"github.com":    {
+		css: {
+			files: "table.files tbody a.js-directory-link[title$='%fileType%']",
+			icon: "td.icon span.octicon.octicon-file-text",
+			newIcon: "octicon octicon-cloud-download", // https://octicons.github.com
+		},
+		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
+		iconParentLevel: 3,
+	},
+};
+host = host[location.host];
+host.css.files = supportedFileTypes.map(function(fileType) { return host.css.files.replace(/%fileType%/g, fileType)+":not(.j2installUserScript)"; }).join(", ");
+jQuery(document).on("pjax:end", changeStuff); // https://github.com/defunkt/jquery-pjax#events
 changeStuff();
 function changeStuff() {
-	var fileTypes = [".user.js", ".uc.js", ".uc.xul"].map(function(fileType) { return "table.files tbody a.js-directory-link[title$='"+fileType+"']:not(.j2gIUS)"; });
-	var userscripts = document.querySelectorAll(fileTypes.join(", "));
-	for (var i=0; i<userscripts.length; i++) {
-		userscripts[i].className += " j2gIUS";
-		var icon = userscripts[i].parentNode.parentNode.parentNode.querySelector("td.icon span.octicon.octicon-file-text");
+	host.files = document.querySelectorAll(host.css.files);
+	for (var f = 0; f < host.files.length; f++) {
+		host.files[f].className += " j2installUserScript";
+		var icon = host.files[f];
+		if (host.iconParentLevel) for (var p = 0; p < host.iconParentLevel; p++) icon = icon.parentNode;
+		icon = icon.querySelector(host.css.icon);
 		if (icon) {
 			var install = document.createElement("a");
-			install.className = "octicon octicon-file-code"; // https://octicons.github.com
-			install.setAttribute("href", userscripts[i].getAttribute("href").replace(/(\/[^/]+\/[^/]+)\/blob\//, "$1/raw/"));
-			install.setAttribute("title", "Install “"+userscripts[i].getAttribute("title")+"”");
+			install.className = host.css.newIcon?host.css.newIcon:icon.className;
+			install.setAttribute("href", host.files[f].getAttribute("href").replace(host.href.match, host.href.replace));
+			install.setAttribute("title", "Install “"+host.files[f].getAttribute("title")+"”");
 			install.style.setProperty("color", "green");
 			install.addEventListener("click", function(e) {
 				e.cancelBubble = true;
