@@ -5,9 +5,9 @@
 // @homepage     http://userscripts-mirror.org/scripts/show/178037
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/www_HTTPS-REDIREKTOR.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/www_HTTPS-REDIREKTOR.user.js
-// @author       PATATE12 aka. jesus2099/shamo
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/www_HTTPS-REDIREKTOR.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/www_HTTPS-REDIREKTOR.user.js
+// @author       PATATE12
 // @contributor  Freso
 // @contributor  RaiuGekkou
 // @contributor  http://userscripts-mirror.org/topics/131180
