@@ -6,8 +6,8 @@
 // @homepage     http://userscripts-mirror.org/scripts/show/126475
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_LOCAL-STORAGE-MANAGER.user.js
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_LOCAL-STORAGE-MANAGER.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-02-22

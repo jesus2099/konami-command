@@ -1,13 +1,13 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.9.1226
+// @version      2015.4.9.1411
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/mb_MASS-MERGE-RECORDINGS.user.js
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-12-13
@@ -72,7 +72,7 @@
 	var safeLengthDelta = 4;
 	if (localRelease.comment) localRelease.comment = " ("+localRelease.comment.textContent+")"; else localRelease.comment = "";
 	var remoteRelease = {"tracks":[]};
-	sidebar.insertBefore(massMergeGUI(false), sidebar.querySelector("h2"));
+	sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2"));
 	var skipstep;
 	function mergeRecsStep(step) {
 		skipstep = false;
@@ -197,7 +197,7 @@
 			}
 		}
 	}
-	function massMergeGUI(show) {
+	function massMergeGUI() {
 		var MMRdiv = document.createElement("div");
 		MMRdiv.addEventListener("keydown", function(e) {
 			if (e.keyCode == 13 && (e.target == startpos || e.target == editNote && e.ctrlKey)) {

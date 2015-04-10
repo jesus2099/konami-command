@@ -4,9 +4,9 @@
 // @description  openuserjs.org. Source code tab height fix (for Opera 12 and other css "calc" and "vh" unit unabled browsers)
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/openuserjs_CODE-VIEW-HEIGHT-FIX.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/openuserjs_CODE-VIEW-HEIGHT-FIX.user.js
-// @author       Tristan “PATATE12” Daniel
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/openuserjs_CODE-VIEW-HEIGHT-FIX.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/openuserjs_CODE-VIEW-HEIGHT-FIX.user.js
+// @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2015-01-02
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
