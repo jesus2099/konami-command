@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.4.8.951
+// @version      2015.4.11.1308
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -1015,16 +1015,17 @@
 	==========================================================================*/
 	j2setting("SLOW_DOWN_RETRY", false, true, "gently auto‐retries requests when MB overloading so you don’t have to do it yourself. also retries “read timeout” searches.");
 	if (j2sets.SLOW_DOWN_RETRY) {
-		var errortype = document.title.match(/^(slow down!|search error) - musicbrainz$/i);
+		var errortype = document.title.match(/^(slow down!|search error|internal server error) - musicbrainz$/i);
 		if (errortype) {
 			var retrydelay;
 			switch (errortype[1].toLowerCase()) {
 				case "slow down!":
 					retrydelay = 20;
 					break;
+				case "internal server error":
 				case "search error":
 					try {
-						if (document.querySelector("div#page > pre").textContent.indexOf("read timeout at") > -1) retrydelay = 2;
+						if (document.querySelector("div#page pre").textContent.match(/canceling statement due to statement timeout at|read timeout at/)) retrydelay = 2;
 					} catch(e){}
 					break;
 			}
