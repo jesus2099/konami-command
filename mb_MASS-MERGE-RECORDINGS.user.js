@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.13.1313
+// @version      2015.4.13.1842
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -10,8 +10,8 @@
 // @compatible   firefox+greasemonkey
 // @compatible   chromium
 // @compatible   chromium+tampermonkey
-// @compatible   chrome
-// @compatible   chrome+tampermonkey
+// @compatible   chrome                not tested but chromium OK
+// @compatible   chrome+tampermonkey   not tested but chromium OK
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -588,6 +588,7 @@
 		if (!document.body.classList.contains(MMRid)) {
 			document.body.classList.add(MMRid);
 			var MMRdiv = document.getElementById(MMRid);
+			MMRdiv.removeEventListener("click", showGUI);
 			var firstElements = [];
 			for (var child = 0; sidebar.childNodes[child] != MMRdiv && child < sidebar.childNodes.length; child++) {
 				firstElements.unshift(sidebar.childNodes[child]);
