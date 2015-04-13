@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.13.1842
+// @version      2015.4.13.1922
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -62,7 +62,7 @@
 	var css = document.styleSheets[document.styleSheets.length-1];
 	css.insertRule("body."+MMRid+" div#"+MMRid+" > .main-shortcut { display: none; }", 0);
 	css.insertRule("body."+MMRid+" div#content table.tbl > * > tr > .rating { display: none; }", 0);
-	css.insertRule("body:not(."+MMRid+") div#"+MMRid+" { cursor: pointer; }", 0);
+	css.insertRule("body:not(."+MMRid+") div#"+MMRid+" { margin-top: 12px; cursor: pointer; }", 0);
 	css.insertRule("body:not(."+MMRid+") div#"+MMRid+" > :not(h2):not(.main-shortcut) { display: none; }", 0);
 	css.insertRule("body:not(."+MMRid+") div#"+MMRid+" input[name='status'] { font-size: 9px!important; background-color: #fcf; }", 0);
 	css.insertRule("div#"+MMRid+" { background-color: #fcf; text-shadow: 1px 1px 2px #663; padding: 4px; margin: 0px -6px 12px; border: 2px dotted white; }", 0);
@@ -82,13 +82,14 @@
 	var safeLengthDelta = 4;
 	if (localRelease.comment) localRelease.comment = " ("+localRelease.comment.textContent+")"; else localRelease.comment = "";
 	var remoteRelease = {"tracks":[]};
-	sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2"));
+	sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 	document.body.addEventListener("keydown", function(e) {
 		if (e.ctrlKey && e.shiftKey && e.keyCode == "77"/*CTRL+SHIFT+M*/) {
 			showGUI();
 			return stop(e);
 		}
 	});
+//	sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
 	var skipstep;
 	function mergeRecsStep(step) {
 		skipstep = false;
