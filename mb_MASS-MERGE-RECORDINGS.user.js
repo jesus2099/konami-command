@@ -1,10 +1,17 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.13.1213
+// @version      2015.4.13.1313
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12)
+// @compatible   opera+violentmonkey
+// @compatible   firefox+greasemonkey
+// @compatible   chromium
+// @compatible   chromium+tampermonkey
+// @compatible   chrome
+// @compatible   chrome+tampermonkey
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -53,11 +60,15 @@
 	var loc2rem = "▶";
 	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 	var css = document.styleSheets[document.styleSheets.length-1];
+	css.insertRule("body."+MMRid+" div#"+MMRid+" > .main-shortcut { display: none; }", 0);
 	css.insertRule("body."+MMRid+" div#content table.tbl > * > tr > .rating { display: none; }", 0);
-	css.insertRule("body."+MMRid+" div#sidebar div#"+MMRid+" { background-color: #fcf; text-shadow: 1px 1px 2px #663; padding: 4px; margin: 0px -6px 12px; border: 2px dotted white; }", 0);
-	css.insertRule("div#sidebar div#"+MMRid+" h2 { color: maroon; text-shadow: 2px 2px 4px #996; margin: 0px; }", 0);
-	css.insertRule("body:not(."+MMRid+") div#sidebar div#"+MMRid+" input[name='status'] { font-size: 9px!important; background-color: #fcf; }", 0);
-	css.insertRule("body:not(."+MMRid+") div#sidebar div#"+MMRid+" :not([name='status']) { display: none; }", 0);
+	css.insertRule("body:not(."+MMRid+") div#"+MMRid+" { cursor: pointer; }", 0);
+	css.insertRule("body:not(."+MMRid+") div#"+MMRid+" > :not(h2):not(.main-shortcut) { display: none; }", 0);
+	css.insertRule("body:not(."+MMRid+") div#"+MMRid+" input[name='status'] { font-size: 9px!important; background-color: #fcf; }", 0);
+	css.insertRule("div#"+MMRid+" { background-color: #fcf; text-shadow: 1px 1px 2px #663; padding: 4px; margin: 0px -6px 12px; border: 2px dotted white; }", 0);
+	css.insertRule("div#"+MMRid+" > .main-shortcut { margin: 0px; }", 0);
+	css.insertRule("div#"+MMRid+" h2 { color: maroon; text-shadow: 2px 2px 4px #996; margin: 0px; }", 0);
+	css.insertRule("div#"+MMRid+" kbd { background-color: silver; border: 2px grey outset; padding: 0px 4px; font-size: .8em; }", 0);
 	var dtitle = document.title;
 	var ltitle = dtitle.match(new RegExp("^"+sregex_title+"$"));
 	var localRelease = {
@@ -72,6 +83,12 @@
 	if (localRelease.comment) localRelease.comment = " ("+localRelease.comment.textContent+")"; else localRelease.comment = "";
 	var remoteRelease = {"tracks":[]};
 	sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2"));
+	document.body.addEventListener("keydown", function(e) {
+		if (e.ctrlKey && e.shiftKey && e.keyCode == "77"/*CTRL+SHIFT+M*/) {
+			showGUI();
+			return stop(e);
+		}
+	});
 	var skipstep;
 	function mergeRecsStep(step) {
 		skipstep = false;
@@ -197,29 +214,21 @@
 		}
 	}
 	function massMergeGUI() {
-		var MMRdiv = createTag("div", {a:{id:MMRid}, e:{keydown:function(e) {
-			if (e.keyCode == 13 && (e.target == startpos || e.target == editNote && e.ctrlKey)) {
-				document.getElementById(MMRid+"mergeallbutt").click();
-			}
-		}}}, [
+		var MMRdiv = createTag("div", {a:{id:MMRid}, e:{
+			keydown:function(e) {
+				if (e.keyCode == 13 && (e.target == startpos || e.target == editNote && e.ctrlKey)) {
+					document.getElementById(MMRid+"mergeallbutt").click();
+				}
+			},
+			click: showGUI
+		}}, [
 			createTag("h2", {}, meta.n),
 			createTag("p", {}, "version " + meta.v),
+			createTag("p", {a:{"class":"main-shortcut"}}, ["☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "SHIFT"), "+", createTag("kbd", {}, "M")]),
 			createTag("p", {s:{marginBottom: "0px!"}}, ["Remote release", createTag("span", {a:{"class":"remote-release-link"}}), ":"]),
 		]);
 		status = MMRdiv.appendChild(createInput("text", "status", "", meta.n+" remote release URL"));
 		status.style.setProperty("width", "100%");
-		status.addEventListener("focus", function(e) {
-			document.body.className += " "+MMRid;
-			var ratings = document.querySelectorAll
-			var MMRdiv = document.getElementById(MMRid);
-			var firstElements = [];
-			for (var child = 0; sidebar.childNodes[child] != MMRdiv && child < sidebar.childNodes.length; child++) {
-				firstElements.unshift(sidebar.childNodes[child]);
-			}
-			for (var elem = 0; elem < firstElements.length; elem++) {
-				addAfter(sidebar.removeChild(firstElements[elem]), MMRdiv);
-			}
-		});
 		status.addEventListener("input", function(e) {
 			var mbid = this.value.match(new RegExp("/release/("+sregex_MBID+")"));
 			if (mbid) {
@@ -282,7 +291,7 @@
 				d++; dt = 0;
 			}
 		}
-		MMRdiv.appendChild(createTag("p", {}, ["☞ arrow keys: shift up/down", document.createElement("br"), "☞ ENTER key: queue all"]));
+		MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "↑"), " / ", createTag("kbd", {}, "→"), " / ", createTag("kbd", {}, "↓"), " / ", createTag("kbd", {}, "←"), ": shift up/down", document.createElement("br"), "☞ ", createTag("kbd", {}, "ENTER"), ": queue all"]));
 		MMRdiv.appendChild(createTag("p", {s:{marginBottom: "0px"}}, "Merge edit notes:"));
 		var lastEditNote = (localStorage && localStorage.getItem(MMRid));
 		editNote = MMRdiv.appendChild(createInput("textarea", "merge.edit_note", lastEditNote?lastEditNote:""));
@@ -302,7 +311,7 @@
 				this.setAttribute("title", "Could not save to local storage");
 			}
 		}, false);
-		MMRdiv.appendChild(createTag("p", {}, "☞ CTRL+ENTER keys: queue all"));
+		MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "ENTER"), ": queue all"]));
 		MMRdiv.appendChild(createTag("p", {}, "Each recording merge will automatically target the oldest, unless direction is manually changed by clicking each arrow button or below batch button."));
 		from = MMRdiv.appendChild(createInput("hidden", "from", ""));
 		to = MMRdiv.appendChild(createInput("hidden", "to", ""));
@@ -575,6 +584,20 @@
 		else enable(mergeallbutt);
 		if (mergebutts > 0 && e && e.type && e.type == "load") startpos.focus();
 	}
+	function showGUI() {
+		if (!document.body.classList.contains(MMRid)) {
+			document.body.classList.add(MMRid);
+			var MMRdiv = document.getElementById(MMRid);
+			var firstElements = [];
+			for (var child = 0; sidebar.childNodes[child] != MMRdiv && child < sidebar.childNodes.length; child++) {
+				firstElements.unshift(sidebar.childNodes[child]);
+			}
+			for (var elem = 0; elem < firstElements.length; elem++) {
+				addAfter(sidebar.removeChild(firstElements[elem]), MMRdiv);
+			}
+		}
+		status.focus();
+	}
 	function disable(o, dis) {
 		if (!o.tagName && o.length) for (io=0; io<o.length; o++) disable(o[io], dis);
 		else if (dis == null || dis == true) o.setAttribute("disabled", "disabled");
@@ -733,5 +756,11 @@
 		}
 		if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.tagName) chldrn = [chldrn]; for(var child=0; child<chldrn.length; child++) t.appendChild(typeof chldrn[child]=="string"?document.createTextNode(chldrn[child]):chldrn[child]); t.normalize(); }
 		return t;
+	}
+	function stop(e) {
+		e.cancelBubble = true;
+		if (e.stopPropagation) e.stopPropagation();
+		e.preventDefault();
+		return false;
 	}
 })();
