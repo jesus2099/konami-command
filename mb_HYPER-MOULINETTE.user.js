@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2014.11.24.1451
+// @version      2015.4.16.1013
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -98,11 +98,7 @@
 				}
 				break;
 			}
-			var lastPage;
-			if ((lastPage = res.querySelector("p.pageselector > a:last-of-type")) && (lastPage = lastPage.getAttribute("href").match(/page=(\d+)/))) {
-				lastPage = parseInt(lastPage[1]);
-			}
-			if (iPage < lastPage) {
+			if (res.querySelector("ul.pagination > li:last-of-type > a")) {
 				loadForExtract(page.replace(/(page=)\d+$/, "$1"+(iPage+1)));
 			} else {
 				document.title = genuineTitle;
