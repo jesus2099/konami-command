@@ -1,9 +1,16 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2015.4.16.1013
+// @version      2015.4.16.1207
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12)             my own coding setup
+// @compatible   opera+violentmonkey   my own browsing setup
+// @compatible   firefox+greasemonkey  quickly tested
+// @compatible   chromium              quickly tested
+// @compatible   chromium+tampermonkey quickly tested
+// @compatible   chrome                same as chromium
+// @compatible   chrome+tampermonkey   same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_HYPER-MOULINETTE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_HYPER-MOULINETTE.user.js
@@ -28,8 +35,9 @@
 			} else meta[kv[1]] = kv[2];
 		}
 	}
+	meta.name = meta.name.substr("4");
 	var DEBUG = false;
-	meta.key = "jesus2099"+meta.name.replace(/^mb\. /, "").replace(/ /, "-");
+	meta.key = "jesus2099"+meta.name.replace(/ /, "-");
 	var MBS = self.location.protocol+"//"+self.location.host;
 	var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var re_GUID = new RegExp(stre_GUID);
@@ -80,7 +88,7 @@
 			var suffix = {1:"st",2:"nd",3:"rd",digit:sPage.match(/(?:^|[02-9])([123])$/)};
 			sPage = sPage+(suffix.digit?suffix[suffix.digit[1]]:"th")+" page";
 			var ploaded = modal(createTag("h4", {}, [createTag("a", {a:{href:loaders[this.getID()].url, target:"_blank"}}, sPage), " loaded"]));
-			document.title = sPage+" loaded (HYPER MOULINETTE) "+genuineTitle;
+			document.title = sPage+" loaded ("+meta.name+") "+genuineTitle;
 			var res = document.createElement("html"); res.innerHTML = this.responseText;
 			var releases;
 			for (var type in crawlType) if (crawlType.hasOwnProperty(type) && loaders[this.getID()].url.match(new RegExp(type))) {
