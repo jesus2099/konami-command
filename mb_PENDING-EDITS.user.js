@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.3.6.16.6
+// @version      2015.4.13.1313
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -45,8 +45,7 @@ It will add other request(s) to MB server, this is why it is an option.*/
 		entity.editinghistory = document.querySelector("div#sidebar ul.links a[href='"+MBS+entity.base+"/edits']");
 		if (entity.editinghistory) {
 			entity.ul = getParent(entity.editinghistory, "ul");
-		}
-		else {
+		} else {
 			entity.ul = document.querySelector("div#sidebar ul.links");
 			entity.editinghistory = createLink(entity, "edits");/*reverts MBS-57 drawback*/
 		}
@@ -105,8 +104,7 @@ It will add other request(s) to MB server, this is why it is an option.*/
 			else if (!art && typ == "edits") {
 				ent.ul.appendChild(document.createElement("hr"));
 				ent.ul.appendChild(newLink.parentNode.parentNode);
-			}
-			else { ent.ul.insertBefore(newLink.parentNode.parentNode, ent.li); }
+			} else { ent.ul.insertBefore(newLink.parentNode.parentNode, ent.li); }
 			return newLink;
 		}
 	}
@@ -133,10 +131,12 @@ It will add other request(s) to MB server, this is why it is an option.*/
 					}
 				}
 				if (this.status == 200) {
-					var editc = this.responseText.match(/found (at least )?(\d+) edits?/i);
-					if (editc) { editc = [null, editc[1], parseInt(editc[2], 10)]; }
-					else { editc = [null, false, 0] }
-					updateLink(xhrpe.object, editc[2], editc[1]);
+					var editc = this.responseText.match(/found (at least )?(\d+) edits?/i), editDetails;
+					if (editc) {
+						editc = [null, editc[1], parseInt(editc[2], 10)];
+						editDetails = this.responseText.match(/[^<>]+(?=<\/bdi><\/a><\/h2>)/g);
+					} else { editc = [null, false, 0]; }
+					updateLink(xhrpe.object, editc[2], editDetails, editc[1]);
 				} else { updateLink(xhrpe.object, this); }
 			}
 		};
@@ -144,7 +144,7 @@ It will add other request(s) to MB server, this is why it is an option.*/
 		xhrPendingEdits[obj.base].xhr.setRequestHeader("base", obj.base);
 		xhrPendingEdits[obj.base].xhr.send(null);
 	}
-	function updateLink(obj, pecount, more) {
+	function updateLink(obj, pecount, details, more) {
 		var txt;
 		var tit = "pending edit";
 		var li = getParent(obj.openedits, "li");
@@ -155,27 +155,31 @@ It will add other request(s) to MB server, this is why it is an option.*/
 			tit = txt+" "+tit+(pecount!=1?"s":"");
 			if (pecount == 0) {
 				mp(obj.openedits, false);
+			} else if (pecount > 0) {
+				mp(obj.openedits, true);
+				if (details.length > 0) {
+					tit += ":\n";
+					for (var d = 0; d < details.length; d++) {
+						tit += details[d].replace(/^Edit #\d+ /, "")+(d==details.length-1?"":"\n");
+					}
+				}
 			}
-			else if (pecount > 0) { mp(obj.openedits, true); }
-		}
-		else {
+		} else {
 			txt = pecount.status;
 			tit = pecount.responseText;
 			ret.style.setProperty("background-color", "pink");
 		}
 		ret.replaceChild(document.createTextNode(txt), ret.firstChild);
-		li.setAttribute("title", tit);
+		obj.openedits.setAttribute("title", tit);
 	}
 	function mp(o, set) {
 		var li = getParent(o, "li");
 		if (set == null) {
 			return li.firstChild.tagName == "SPAN" && li.firstChild.className == "mp";
-		}
-		else if (typeof set == "boolean" && li.firstChild.tagName == "SPAN") {
+		} else if (typeof set == "boolean" && li.firstChild.tagName == "SPAN") {
 			if (set && !mp(o)) {
 				li.firstChild.className = "mp";
-			}
-			else if (!set) {
+			} else if (!set) {
 				if (mp(o)) { li.firstChild.className = ""; }
 				o.style.setProperty("text-decoration", "line-through");
 				li.style.setProperty("opacity", ".5");
