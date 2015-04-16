@@ -125,7 +125,7 @@
 									}
 								}
 								var nows;
-								if (typeof opera != "undefined" && (nows = getParent(this, "tr")) && (nows = nows.querySelector("td+td+td")) && nows.textContent.match(/private/i)) {
+								if (typeof opera != "undefined" && (nows = getParent(this, "tr")) && nows.textContent.match(/\n\s*Private\s*\n/)) {
 									nows = true;
 								}
 								else { nows = false; }
