@@ -1,9 +1,17 @@
+(function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.4.16.1036
+// @version      2015.4.16.1207
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12)             my own coding setup
+// @compatible   opera+violentmonkey   my own browsing setup
+// @compatible   firefox+greasemonkey  quickly tested
+// @compatible   chromium              quickly tested
+// @compatible   chromium+tampermonkey quickly tested
+// @compatible   chrome                same as chromium
+// @compatible   chrome+tampermonkey   same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -44,7 +52,17 @@
 // @exclude      http*://*musicbrainz.org/collection/*/own_collection/*
 // @run-at       document-end
 // ==/UserScript==
-(function(){
+	}};
+	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
+		var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+		while ((kv = row.exec(meta.rawmdb)) !== null) {
+			if (meta[kv[1]]) {
+				if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
+				meta[kv[1]].push(kv[2]);
+			} else meta[kv[1]] = kv[2];
+		}
+	}
+	meta.name = meta.name.substr("4");
 	var host = (["musicbrainz.org", "beta.musicbrainz.org", "test.musicbrainz.org"].indexOf(location.host) != -1);
 	var cat = location.href.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|series|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 	if (host && cat) {
@@ -57,7 +75,7 @@
 		/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 		var userjs = "jesus2099userjs126380";
 		var DEBUG = false;
-		var dialogprefix = "..:: COLLECTION :: HIGHLIGHTER ::..\n\n";
+		var dialogprefix = "..:: "+meta.name.replace(/ /g, " :: ")+" ::..\n\n";
 		var maxRetry = 10;
 		var retryPause = 5000;
 		var slowDownStepAfterRetry = 200;
@@ -101,7 +119,7 @@
 			/*collection loader*/
 			xp = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th[contains(./text(), 'Collection')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			if (xp.snapshotLength > 0) {
-				xp.snapshotItem(0).parentNode.appendChild(createTag("th", {a:{colspan:"2"}}, "COLLECTION HIGHLIGHTER"));
+				xp.snapshotItem(0).parentNode.appendChild(createTag("th", {a:{colspan:"2"}}, meta.name));
 				var tbl = getParent(xp.snapshotItem(0), "table");
 				xp = document.evaluate("./xhtml:thead//xhtml:th[contains(./text(), 'Actions')]", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 				if (xp.snapshotLength > 0) {
@@ -127,8 +145,7 @@
 								var nows;
 								if (typeof opera != "undefined" && (nows = getParent(this, "tr")) && nows.textContent.match(/\n\s*Private\s*\n/)) {
 									nows = true;
-								}
-								else { nows = false; }
+								} else { nows = false; }
 								loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !nows, nows?1:0);
 							},
 							"Add this collection’s content to local storage ("+collid+")"
@@ -157,27 +174,21 @@
 							lab.style.setProperty("white-space", "nowrap");
 							lab.appendChild(concat([createTag("input", {"a":{"type":"checkbox", "name":cstuff}, "e":{"change":function(){localStorage.setItem(userjs+"cfg"+this.getAttribute("name"), this.checked?"1":"0");}}}), cstuff+"s "]));
 							var cfgcb = lab.querySelector("input[type='checkbox'][name='"+cstuff+"']");
-							/* defaults */
-							if (cstuff.match(/artist|recording|release(-group)?/)) {
+							if (cstuff.match(/artist|recording|release(-group)?/)) {/*defaults*/
 								cfgcb.setAttribute("checked", "checked");
 							}
-							/* forced */
-							if (cstuff.match(/release(-group)?/)) {
+							if (cstuff.match(/release(-group)?/)) {/*forced*/
 								lab.style.opacity = ".5";
 								cfgcb.setAttribute("disabled", "disabled");
-							}
-							/* read local storage stored settings */
-							else {
+							} else {/*read previous settings from local storage*/
 								var cfgstu = localStorage.getItem(userjs+"cfg"+cstuff);
 								if (cfgstu == "1") {
 									cfgcb.setAttribute("checked", "checked");
-								}
-								else if (cfgstu == "0") {
+								} else if (cfgstu == "0") {
 									cfgcb.removeAttribute("checked");
 								}
 							}
-							/* artist and work tracking requires recording tracking */
-							if (cstuff.match(/artist|work/)) {
+							if (cstuff.match(/artist|work/)) {/*artist and work tracking requires recording tracking*/
 								cfgcb.addEventListener("change", function(e) {
 									if (this.checked) {
 										var recording = this.parentNode.parentNode.querySelector("input[name='recording']");
@@ -185,8 +196,7 @@
 										sendEvent(recording, "change");
 									}
 								}, false);
-							}
-							else if (cstuff.match(/recording/)) {
+							} else if (cstuff.match(/recording/)) {
 								cfgcb.addEventListener("change", function(e) {
 									if (!this.checked) {
 										var artistwork = this.parentNode.parentNode.querySelectorAll("input[name='artist'], input[name='work']");
@@ -204,8 +214,7 @@
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			/*almost generic stuff highlighter*/
 			stuff = {};
 			self.addEventListener("load",function(e){
@@ -236,8 +245,7 @@
 									if (stuff[cstuff].rawids) {
 										stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
 										debug(" \n"+stuff[cstuff].ids.length+" "+cstuff.toUpperCase()+(stuff[cstuff].ids.length==1?"":"S")+" loaded from local storage ("+userjs+cstuff+"s)\nMatching: "+path, true);
-									}
-									else { debug(" \nNo "+cstuff.toUpperCase()+"S in local storage ("+userjs+cstuff+"s)", true); }
+									} else { debug(" \nNo "+cstuff.toUpperCase()+"S in local storage ("+userjs+cstuff+"s)", true); }
 									stuff[cstuff].loaded = true;
 								}
 								if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
@@ -246,8 +254,7 @@
 								}
 							}
 						}
-					}
-					else { skip = "1"; }
+					} else { skip = "1"; }
 					localStorage.setItem("jesus2099skip_linksdeco_"+cstuff, skip);
 				}
 			}
@@ -277,8 +284,7 @@
 		old = old?old[1]:document.title;
 		if (ldng) {
 			document.title = (pc?pc+"%":"⌛")+" Altering local collection… :: "+old;
-		}
-		else {
+		} else {
 			document.title = old;
 		}
 	}
@@ -310,8 +316,7 @@
 				if (this.status == 401) {
 					modal(true, concat(["NG.", "<br>", "Private collection problem, switching to slower mode…"]), 1);
 					loadCollection(mbid, false, 1);
-				}
-				else if (this.status == 200) {
+				} else if (this.status == 200) {
 					var re = ws?'<release id="('+strMBID+')">':'<td>(?:<span class="mp">)?<a href=".+musicbrainz.org/release/('+strMBID+')">(.+)</a>';
 					var rels = this.responseText.match(new RegExp(re, "g"));
 					if (rels) {
@@ -328,8 +333,7 @@
 					var ps, lastPage, nextPage;
 					if (ws && (lastPage = this.responseText.match(/<release-list count="(\d+)">/))) {
 						lastPage = Math.ceil(parseInt(lastPage[1], 10)/limit);
-					}
-					else if (!ws) {
+					} else if (!ws) {
 						var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
 						nextPage = responseDOM.querySelector("ul.pagination > li:last-of-type > a");
 					}
@@ -337,8 +341,7 @@
 						if (lastPage && page == 1) { modal(true, "(total "+lastPage+" pages)", 1); }
 						retry = 0;
 						setTimeout(function() { loadCollection(mbid, ws, ws?offset+limit:page+1); }, chrono(MBWSRate));
-					}
-					else if (lastPage && lastPage == page || !nextPage) {
+					} else if (lastPage && lastPage == page || !nextPage) {
 						modal(true, " ", 1);
 						if (stuff["release-tmp"].ids.length > 0) {
 							localStorage.setItem(userjs+"releases", stuff["release"].rawids);
@@ -346,25 +349,21 @@
 							modal(true, "OK.", 2);
 							retry = 0;
 							setTimeout(function() { fetchReleasesStuff(); }, chrono(MBWSRate));
-						}
-						else {
+						} else {
 							modal(true, "No new releases.", 2);
 							end(true);
 						}
 						stuff["release"].rawids = "";
-					}
-					else {
+					} else {
 						end(false, "Error while loading page "+page+(lastPage?"/"+lastPage:"")+".");
 					}
-				}
-				else {
+				} else {
 					if (retry++ < maxRetry ) {
 						MBWSRate += slowDownStepAfterRetry;
 						modal(true, "Error "+this.status+" ("+retry+"/"+maxRetry+")", 1);
 						debugRetry(this.status);
 						setTimeout(function() { loadCollection(mbid, ws, ws?offset:page); }, chrono(retryPause));
-					}
-					else {
+					} else {
 						end(false, "Too many ("+maxRetry+") errors (last "+this.status+" while loading collection).");
 					}
 				}
@@ -433,8 +432,7 @@
 						if (++i < stuff["release-tmp"].ids.length) {
 							retry = 0;
 							setTimeout(function() { fetchReleasesStuff(i); }, chrono(MBWSRate));
-						}
-						else {
+						} else {
 							modal(true, " ", 1);
 							delete(stuff["release-tmp"]);
 							for (var stu in stuff) if (stu != "release" && stuff.hasOwnProperty(stu)) {
@@ -445,14 +443,12 @@
 							}
 							end(true);
 						}
-					}
-					else {
+					} else {
 						if (retry++ < maxRetry ) {
 							MBWSRate += slowDownStepAfterRetry;
 							debugRetry(this.status);
 							setTimeout(function() { fetchReleasesStuff(i); }, chrono(retryPause));
-						}
-						else {
+						} else {
 							end(false, "Too many ("+maxRetry+") errors (last "+this.status+" while loading releases’ stuff).");
 						}
 					}
@@ -470,8 +466,7 @@
 			var del = delay+lastchrono-new Date().getTime();
 			del = del>0?del:0;
 			return del;
-		}
-		else {
+		} else {
 			lastchrono = new Date().getTime();
 			return lastchrono;
 		}
@@ -489,11 +484,10 @@
 		if (debugBuffer != "") { debug(""); }
 		if (ok) {
 			modal(true, concat(["<br>", "<hr>", "Collection succesfully loaded in local storage.", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
-		}
-		else {
+		} else {
 			modal(true, msg, 1).style.background = cERR;
 			alert(dialogprefix+msg);
-			modal(true, concat(["You can submit this error message to ", createA("jesus2099", "http://userscripts.org/scripts/discuss/126380"), " or just ", createA("reload this page", function(e){location.reload();}), "."]), 1);
+			modal(true, concat(["You can submit this error message to ", createA("jesus2099", meta.supportURL), " or just ", createA("reload this page", function(e){location.reload();}), "."]), 1);
 		}
 		closeButt();
 	}
@@ -633,8 +627,7 @@
 					modal(true, "Nothing has changed.", 1);
 					setTimeout(function(){modal(false)}, 1000);
 					return stop(e);
-				}
-				else {
+				} else {
 					modal(true, "Loading…", 1);
 				}
 			}, false);
@@ -653,8 +646,7 @@
 		};
 		if (what) {
 			return cont.querySelectorAll(selector[what]);
-		}
-		else {
+		} else {
 			var allrelsel = selector["release-group"];
 			if (stuff["recording"].ids) { allrelsel += ", " + selector["recording"]; }
 			if (stuff["label"].ids) { allrelsel += ", " + selector["label"]; }
@@ -730,8 +722,7 @@
 									if (p == 1) { modal(true, "(total "+lp+" pages but this check will stop as soon as it finds something)", 1); }
 									retry = 0;
 									setTimeout(function() { stuffRemover(checks, p+1); }, chrono(MBWSRate));
-								}
-								else {
+								} else {
 									modal(true, concat([createTag("span", {"s":{"color":"grey"}}, "not used any more: "), "removing…"]), 1);
 									stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID+"( |$)"), "");
 									localStorage.setItem(userjs+checkType+"s", stuff[checkType].rawids);
@@ -739,14 +730,12 @@
 									retry = 0;
 									setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
 								}
-							}/*200*/
-							else {
+							} else {
 								if (retry++ < maxRetry ) {
 									MBWSRate += slowDownStepAfterRetry;
 									debugRetry(this.status);
 									setTimeout(function() { stuffRemover(checks, p); }, chrono(retryPause));
-								}
-								else {
+								} else {
 									end(false, "Too many ("+maxRetry+") errors (last "+this.status+" while checking stuff to remove).");
 								}
 							}
@@ -756,14 +745,12 @@
 					chrono();
 					xhr.open("GET", url, true);
 					xhr.send(null);
-				}
-				else {
+				} else {
 					retry = 0;
 					setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
 				}
 			}
-		}
-		else {
+		} else {
 			setTitle(false);
 			if (altered) { lastLink(); } else { modal(false); }
 		}
@@ -771,14 +758,12 @@
 	function lastLink(href) {
 		if (href) {
 			localStorage.setItem(userjs+"lastlink", href);
-		}
-		else {
+		} else {
 			if (ll = localStorage.getItem(userjs+"lastlink")) {
 				localStorage.removeItem(userjs+"lastlink");
 				modal(true, "Loading…", 1);
 				setTimeout(function() { location.href = ll; }, chrono(MBWSRate));
-			}
-			else {
+			} else {
 				modal(true, " ", 1);
 				end(false, "Sorry, I’m lost. I don’t know what was the link you last clicked.");
 			}
@@ -792,8 +777,7 @@
 			if (!stay) {
 				a.setAttribute("target", "_blank");
 			}
-		}
-		else {
+		} else {
 			if (link && typeof link == "function") {
 				a.addEventListener("click", link, false);
 			}
@@ -819,8 +803,7 @@
 		if (n && e && e.parentNode) {
 			if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
 			else { return e.parentNode.appendChild(n); }
-		}
-		else { return null; }
+		} else { return null; }
 	}
 	function getParent(obj, tag, cls) {
 		var cur = obj;
@@ -828,12 +811,10 @@
 			cur = cur.parentNode;
 			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
 				return cur;
-			}
-			else {
+			} else {
 				return getParent(cur, tag, cls);
 			}
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -864,8 +845,7 @@
 		if (DEBUG) {
 			if (buffer) {
 				debugBuffer += txt+"\n";
-			}
-			else {
+			} else {
 				console.log(userjs+"(collec.HL)\n"+debugBuffer+txt);
 				debugBuffer = "";
 			}
