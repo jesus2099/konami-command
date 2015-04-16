@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.3.14.23.9
+// @version      2015.4.16.1036
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -312,9 +312,8 @@
 					loadCollection(mbid, false, 1);
 				}
 				else if (this.status == 200) {
-					var res = this.responseText;
 					var re = ws?'<release id="('+strMBID+')">':'<td>(?:<span class="mp">)?<a href=".+musicbrainz.org/release/('+strMBID+')">(.+)</a>';
-					var rels = res.match(new RegExp(re, "g"));
+					var rels = this.responseText.match(new RegExp(re, "g"));
 					if (rels) {
 						for (var rel=0; rel<rels.length; rel++) {
 							var release = rels[rel].match(new RegExp(re))[1];
@@ -326,22 +325,20 @@
 						}
 						modal(true, rels.length+" release"+(rels.length==1?"":"s")+" fetched.", 1);
 					}
-					var ps, lp;
-					if (ws && (lp = res.match(/<release-list count="(\d+)">/))) {
-						lp = Math.ceil(parseInt(lp[1], 10)/limit);
+					var ps, lastPage, nextPage;
+					if (ws && (lastPage = this.responseText.match(/<release-list count="(\d+)">/))) {
+						lastPage = Math.ceil(parseInt(lastPage[1], 10)/limit);
 					}
-					else if (!ws && (ps = res.match(/<p class="pageselector">/)) && (lp = res.match(/<a rel="xhv:last"[^>]+\?page=([0-9]+)">/))) {
-						lp = lp[1];
+					else if (!ws) {
+						var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
+						nextPage = responseDOM.querySelector("ul.pagination > li:last-of-type > a");
 					}
-					else {
-						lp = page;
-					}
-					if (lp > page) {
-						if (page == 1) { modal(true, "(total "+lp+" pages)", 1); }
+					if (lastPage && page < lastPage || nextPage) {
+						if (lastPage && page == 1) { modal(true, "(total "+lastPage+" pages)", 1); }
 						retry = 0;
 						setTimeout(function() { loadCollection(mbid, ws, ws?offset+limit:page+1); }, chrono(MBWSRate));
 					}
-					else if (page == 1 || lp == page) {
+					else if (lastPage && lastPage == page || !nextPage) {
 						modal(true, " ", 1);
 						if (stuff["release-tmp"].ids.length > 0) {
 							localStorage.setItem(userjs+"releases", stuff["release"].rawids);
@@ -357,7 +354,7 @@
 						stuff["release"].rawids = "";
 					}
 					else {
-						end(false, "Error while loading page "+page+"/"+lp+".");
+						end(false, "Error while loading page "+page+(lastPage?"/"+lastPage:"")+".");
 					}
 				}
 				else {
