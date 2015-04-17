@@ -10,8 +10,8 @@
 // @compatible   firefox+greasemonkey  quickly tested
 // @compatible   chromium              quickly tested
 // @compatible   chromium+tampermonkey quickly tested
-// @compatible   chrome                same as chromium
-// @compatible   chrome+tampermonkey   same as chromium
+// @compatible   chrome                tested with chromium
+// @compatible   chrome+tampermonkey   tested with chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_COLLECTION-HIGHLIGHTER.user.js
