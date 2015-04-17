@@ -1,17 +1,17 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.13.1922
+// @version      2015.4.17.1907
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)
-// @compatible   opera+violentmonkey
-// @compatible   firefox+greasemonkey
-// @compatible   chromium
-// @compatible   chromium+tampermonkey
-// @compatible   chrome                not tested but chromium OK
-// @compatible   chrome+tampermonkey   not tested but chromium OK
+// @compatible   opera(12)             my own coding setup
+// @compatible   opera+violentmonkey   my own browsing setup
+// @compatible   firefox+greasemonkey  quickly tested
+// @compatible   chromium              quickly tested
+// @compatible   chromium+tampermonkey quickly tested
+// @compatible   chrome                tested with chromium
+// @compatible   chrome+tampermonkey   tested with chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -115,20 +115,21 @@
 			if (paramsup != "") paramsup += "\n —\n";
 			paramsup += releaseInfoRow("source", swap.value=="no"?remoteRelease:localRelease, swap.value=="no"?recid2trackIndex.remote[from.value]:recid2trackIndex.local[from.value]);
 			paramsup += releaseInfoRow("target", swap.value=="no"?localRelease:remoteRelease, swap.value=="no"?recid2trackIndex.local[to.value]:recid2trackIndex.remote[to.value]);
+			paramsup += " —\n";
 			var targetID = parseInt(to.value, 10);
 			var sourceID = parseInt(from.value, 10);
 			if (sourceID > targetID) {
-				 paramsup += "👍 Targetting '''oldest [MBID]''' ("+format(to.value)+" ← "+format(from.value)+")"+"\n";
+				 paramsup += "👍 '''Targetting oldest [MBID]''' ("+format(to.value)+" ← "+format(from.value)+")"+"\n";
 			}
-			if (almostSame(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].name, remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].name)) paramsup += "👍 Same '''track titles''' (case insensitive comparison)\n";
+			if (almostSame(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].name, remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].name)) paramsup += "👍 '''Same track title''' (loose comparison)\n";
 			if (typeof localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length == "number" && typeof remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length == "number") {
 				var delta = Math.abs(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length - remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length);
-				if (delta <= safeLengthDelta*1000) paramsup += "👍 "+(delta==0?"Same":"Very close")+" '''track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"(within "+safeLengthDelta+" seconds)"/*)temporary*/+"\n";
+				if (delta <= safeLengthDelta*1000) paramsup += "👍 '''"+(delta==0?"Same":"Very close")+" track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"(within "+safeLengthDelta+" seconds)"/*)temporary*/+"\n";
 			}
-			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 Same '''release artist''' “'''"+protectEditNoteText(localRelease.ac)+"'''”\n";
-			if (localRelease.title == remoteRelease.title) paramsup += "👍 Same '''release title''' “'''"+protectEditNoteText(localRelease.title)+"'''”\n";
-			if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 Same '''release group''' ("+MBS+"/release-group/"+localRelease["release-group"]+")\n";
-			if (meta) paramsup += " —\n"+meta.n+" ("+meta.v+")";
+			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “"+protectEditNoteText(localRelease.ac)+"”\n";
+			if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “"+protectEditNoteText(localRelease.title)+"”\n";
+			if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' ("+MBS+"/release-group/"+localRelease["release-group"]+")\n";
+			paramsup += " —\n"+meta.n+" ("+meta.v+")";
 			params[step] += encodeURIComponent(paramsup);
 		}
 		infoMerge("#"+from.value+" to #"+to.value+" "+statuses[step]+"…");
@@ -756,7 +757,7 @@
 			}
 			if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) t.style.setProperty("cursor", "pointer");
 		}
-		if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.tagName) chldrn = [chldrn]; for(var child=0; child<chldrn.length; child++) t.appendChild(typeof chldrn[child]=="string"?document.createTextNode(chldrn[child]):chldrn[child]); t.normalize(); }
+		if (children) { var chldrn = children; if ((typeof chldrn).match(/number|string/) || chldrn.tagName) chldrn = [chldrn]; for(var child=0; child<chldrn.length; child++) t.appendChild((typeof chldrn[child]).match(/number|string/)?document.createTextNode(chldrn[child]):chldrn[child]); t.normalize(); }
 		return t;
 	}
 	function stop(e) {
