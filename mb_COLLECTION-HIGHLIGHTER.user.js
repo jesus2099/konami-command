@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.4.16.1207
+// @version      2015.4.17.1950
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -277,7 +277,10 @@
 		if (row && !h1 && !tabs && !(cat == "release" && page && clss(page, "box", "r") && stu == "recording") && stu.match(/^(release|recording|work|release-group)$/)) { clss(row, "row", "w"); }
 		if (!tabs) { clss(link, "item", "w"); }
 		if (cat == "edit" || h1) { clss(page, "box", "w"); }
-		else if (cat == "edits" && (edit = getParent(link, "div", "edit-list"))) { clss(edit, stu.match(/^(release|recording|release-group)$/)?"box":"row", "w"); }
+		else if (cat == "edits") {
+			var edit = getParent(link, "div", "edit-list");
+			if (edit) { clss(edit, stu.match(/^(release|recording|release-group)$/)?"box":"row", "w"); }
+		}
 	}
 	function setTitle(ldng, pc) {
 		var old = document.title.match(/ :: (.+)$/);
