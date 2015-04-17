@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.17.1907
+// @version      2015.4.17.1928
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -119,16 +119,22 @@
 			var targetID = parseInt(to.value, 10);
 			var sourceID = parseInt(from.value, 10);
 			if (sourceID > targetID) {
-				 paramsup += "👍 '''Targetting oldest [MBID]''' ("+format(to.value)+" ← "+format(from.value)+")"+"\n";
+				 paramsup += "👍 '''Targetting oldest [MBID]''' ("+format(to.value)+" ← "+format(from.value)+")"+"\n";
 			}
-			if (almostSame(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].name, remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].name)) paramsup += "👍 '''Same track title''' (loose comparison)\n";
-			if (typeof localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length == "number" && typeof remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length == "number") {
-				var delta = Math.abs(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]].length - remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].length);
-				if (delta <= safeLengthDelta*1000) paramsup += "👍 '''"+(delta==0?"Same":"Very close")+" track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"(within "+safeLengthDelta+" seconds)"/*)temporary*/+"\n";
+			var locTrack = localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]];
+			var remTrack = remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]];
+			if (locTrack.name == remTrack.name) paramsup += "👍 '''Same track title''' “"+protectEditNoteText(locTrack.name)+"”\n";
+			else if (locTrack.name.toUpperCase() == remTrack.name.toUpperCase()) paramsup += "👍 '''Same track title''' (case insensitive)\n";
+			else if (almostSame(locTrack.name, remTrack.name)) paramsup += "👍 '''Almost same track title''' (loose comparison)\n";
+			if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
+				var delta = Math.abs(locTrack.length - remTrack.length);
+				if (delta <= safeLengthDelta*1000) paramsup += "👍 '''"+(delta==0?"Same":"Very close")+" track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"(within "+safeLengthDelta+" seconds)"/*)temporary*/+"\n";
 			}
 			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “"+protectEditNoteText(localRelease.ac)+"”\n";
 			if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “"+protectEditNoteText(localRelease.title)+"”\n";
-			if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' ("+MBS+"/release-group/"+localRelease["release-group"]+")\n";
+			else if (localRelease.title.toUpperCase() == remoteRelease.title.toUpperCase()) paramsup += "👍 '''Same release title''' (case insensitive)\n";
+			else if (almostSame(localRelease.title, remoteRelease.title)) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
+			if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' ("+MBS+"/release-group/"+localRelease["release-group"]+")\n";
 			paramsup += " —\n"+meta.n+" ("+meta.v+")";
 			params[step] += encodeURIComponent(paramsup);
 		}
@@ -431,6 +437,11 @@
 					}
 					for (var rtrack = 0; rtrack < remoteRelease.tracks.length-1; rtrack++) {
 						addOption(startpos, 0-rtrack-1, 0-rtrack-1, true);
+					}
+					bestStartPosition:
+					for (var rem = 0; rem < remoteRelease.tracks.length; rem++) for (var loc = 0; loc < localRelease.tracks.length; loc++) if (almostSame(remoteRelease.tracks[rem].name, localRelease.tracks[loc].name)) {
+						startpos.value = loc - rem;
+						break bestStartPosition;
 					}
 					spreadTracks(e);
 				}
