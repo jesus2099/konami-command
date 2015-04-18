@@ -1,11 +1,18 @@
 // ==UserScript==
-// @name         github. INSTALL USER SCRIPT
-// @version      2015.4.10.1808
-// @description  bitbucket.org, github.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
+// @name         INSTALL USER SCRIPT
+// @version      2015.4.18.1127
+// @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12)             my own coding setup
+// @compatible   opera+violentmonkey   my own browsing setup
+// @compatible   firefox+greasemonkey  quickly tested
+// @compatible   chromium              quickly tested
+// @compatible   chromium+tampermonkey quickly tested
+// @compatible   chrome                tested with chromium
+// @compatible   chrome+tampermonkey   tested with chromium
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/bitbucket-github_INSTALL-USER-SCRIPT.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/bitbucket-github_INSTALL-USER-SCRIPT.user.js
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2014-11-14
@@ -13,6 +20,7 @@
 // @grant        none
 // @include      https://bitbucket.org/*
 // @include      https://github.com/*
+// @include      https://gitlab.com/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -26,7 +34,7 @@ var host = {
 		},
 		href: { match: /^(\/[^/]+\/[^/]+)\/src\/[0-9a-f]{40}\/(.+)\?at=(.+)$/, replace: "$1/raw/$3/$2" },
 	},
-	"github.com":    {
+	"github.com": {
 		css: {
 			files: "table.files tbody a.js-directory-link[title$='%fileType%']",
 			icon: "td.icon span.octicon.octicon-file-text",
@@ -34,6 +42,15 @@ var host = {
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
 		iconParentLevel: 3,
+	},
+	"gitlab.com": {
+		css: {
+			files: "table.tree-table tbody td.tree-item-file-name a[href$='%fileType%']",
+			icon: "i.fa.fa-file-o",
+			newIcon: "fa fa-download", // https://fortawesome.github.io/Font-Awesome/icons/
+		},
+		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
+		iconParentLevel: 2,
 	},
 };
 host = host[location.host];
