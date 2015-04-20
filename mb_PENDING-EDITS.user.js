@@ -34,9 +34,10 @@ It will add other request(s) to MB server, this is why it is an option.*/
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var loc, entity, checked = [], xhrPendingEdits = {};
 	var MBS = self.location.protocol+"//"+self.location.host;
+	var account = document.querySelector("div#header li.account a[href^='"+MBS+"/user/']");
 /*EDITING HISTORY*/
 	if (
-		document.querySelector("a[href='"+MBS+"/logout']") &&
+		account &&
 		document.querySelector("div#sidebar") &&
 		(loc = self.location.pathname.match(new RegExp("^/(area|artist|collection|label|place|release-group|release|recording|work|url)/("+RE_GUID+")"))) &&
 		(entity = document.querySelector("div#content > div.tabs > ul.tabs > li > a")) &&
@@ -134,7 +135,10 @@ It will add other request(s) to MB server, this is why it is an option.*/
 					var editc = this.responseText.match(/found (at least )?(\d+) edits?/i), editDetails;
 					if (editc) {
 						editc = [null, editc[1], parseInt(editc[2], 10)];
-						editDetails = this.responseText.match(/[^<>]+(?=<\/bdi><\/a><\/h2>)/g);
+						editDetails = {
+							types: this.responseText.match(/[^<>]+(?=<\/bdi><\/a><\/h2>)/g),
+							editors: this.responseText.match(new RegExp("Edit by <a href=\""+MBS+"/user/[^/]+\">", "g"))
+						};
 					} else { editc = [null, false, 0]; }
 					updateLink(xhrpe.object, editc[2], editDetails, editc[1]);
 				} else { updateLink(xhrpe.object, this); }
@@ -157,11 +161,15 @@ It will add other request(s) to MB server, this is why it is an option.*/
 				mp(obj.openedits, false);
 			} else if (pecount > 0) {
 				mp(obj.openedits, true);
-				if (details.length > 0) {
-					tit += ":\n";
-					for (var d = 0; d < details.length; d++) {
-						tit += details[d].replace(/^Edit #\d+ /, "")+(d==details.length-1?"":"\n");
+				if (details.types.length > 0 && details.types.length == details.editors.length) {
+					tit += ":\n\n";
+					for (var d = 0; d < details.types.length; d++) {
+						tit += details.types[d].replace(/^Edit #\d+ /, "");
+						if (details.editors[d].replace(/^.+\/user\/|">$/g, "") == account.getAttribute("href").match(/[^/]+$/)) tit += "*";
+						if (d != details.types.length-1) tit += "\n";
 					}
+					if (pecount > 50) tit += "\n…";
+					if (tit.match(/\*/)) tit += "\n\n*: my edits";
 				}
 			}
 		} else {
