@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.17.1928
+// @version      2015.4.20.1356
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -378,20 +378,21 @@
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener("load", function(e) {
 			if (this.status == 200) {
-				var recIDx5 = this.responseText.match(/entity_id=[0-9]+&amp;entity_type=recording/g);
-				var trackRows = this.responseText.match(/<tr.+>[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
-				var trackInfos = this.responseText.match(new RegExp("\\S<a href=\""+MBS+"/recording/"+sregex_MBID+"\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
-				var trackTimes = this.responseText.match(/<td class="treleases">[^<]*<\/td>/g);
-				var rtitle = this.responseText.match(new RegExp("<title>"+sregex_title+"</title>"));
-				var releaseAC = this.responseText.match(/\s+Release by (<.+>)/);
+				var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
+				var recIDx5 = releaseWithoutARs.match(/entity_id=[0-9]+&amp;entity_type=recording/g);
+				var trackRows = releaseWithoutARs.match(/<tr class="(even|odd)" id="[-\da-z]{36}">[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
+				var trackInfos = releaseWithoutARs.match(new RegExp("<a href=\""+MBS+"/recording/"+sregex_MBID+"\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
+				var trackTimes = releaseWithoutARs.match(/<td class="treleases">[^<]*<\/td>/g);
+				var rtitle = releaseWithoutARs.match(new RegExp("<title>"+sregex_title+"</title>"));
+				var releaseAC = releaseWithoutARs.match(/\s+Release by (<.+>)/);
 				if (recIDx5 && trackInfos && trackTimes && rtitle) {
 					var recIDs = [];
 					for (var i5 = 0; i5 < recIDx5.length; i5 += 5) {
 						recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
 					}
-					remoteRelease["release-group"] = this.responseText.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
+					remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
 					remoteRelease.title = decodeHTMLEntities(rtitle[1]);
-					remoteRelease.comment = this.responseText.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
+					remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
 					if (remoteRelease.comment) remoteRelease.comment = " ("+decodeHTMLEntities(remoteRelease.comment[1])+")"; else remoteRelease.comment = "";
 					remoteRelease.ac = rtitle[2];
 					var mbidInfo = document.getElementById(MMRid).querySelector(".remote-release-link");
