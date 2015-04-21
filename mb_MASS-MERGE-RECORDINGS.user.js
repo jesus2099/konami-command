@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.20.1622
+// @version      2015.4.21.2008
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -144,45 +144,36 @@
 		function releaseInfoRow(sourceOrTarget, rel, trackIndex) {
 			return sourceOrTarget+": "+MBS+"/release/"+rel.id+" #'''"+(trackIndex+1)+"'''/"+rel.tracks.length+". “'''"+protectEditNoteText(rel.title)+"'''”"+protectEditNoteText(rel.comment)+" by '''"+protectEditNoteText(rel.ac)+"'''\n";
 		}
-		function FireFoxWorkAround(butt) {
-			enable(butt);
-			if (navigator.userAgent.match(/firefox/i)) {
-				butt.setAttribute("value", "FF delay…");
-				setTimeout(function() { butt.click(); }, 1000);
-			} else { butt.click(); }
-		}
 		xhr.onreadystatechange = function(e) {
-			if (xhr.readyState == 4) {
-				if (xhr.status == 200) {
+			if (this.readyState == 4) {
+				if (this.status == 200) {
 					if (step < 2) {
 						mergeRecsStep(step+1);
 					} else {
-						remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].recording.editsPending++;
-						cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]], true);
-						infoMerge("#"+from.value+" to #"+to.value+" merged OK", true, true);
-						currentButt = null;
-						document.title = dtitle;
-						enable(startpos);
-						enable(status);
-						enable(editNote);
-						if (nextButt = mergeQueue.shift()) {
-							skipstep = true;
-							FireFoxWorkAround(nextButt);
+						var editID = this.responseText.match(new RegExp("<a href=\""+MBS+"/edit/(\\d+)\">edit</a> \\(#(\\d+)\\)"));
+						if (editID && editID[1] == editID[2]) {
+							remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]].recording.editsPending++;
+							cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value=="no"?to.value:from.value]], editID[1]);
+							infoMerge("#"+from.value+" to #"+to.value+" merged OK", true, true);
+							currentButt = null;
+							document.title = dtitle;
+							enable(startpos);
+							enable(status);
+							enable(editNote);
+							if (nextButt = mergeQueue.shift()) {
+								skipstep = true;
+								FireFoxWorkAround(nextButt);
+							} else {
+								var x = scrollX, y = scrollY;
+								startpos.focus();
+								scrollTo(x, y);
+							}
 						} else {
-							var x = scrollX, y = scrollY;
-							startpos.focus();
-							scrollTo(x, y);
+							tryAgain("Merge edit not found");
 						}
 					}
 				} else {
-					var errormsg = "Error "+xhr.status+", step "+(step+1)+"/3.";
-					if (currentButt) {
-						errormsg += " Retry in "+Math.ceil(coolos/1000)+" seconds.";
-						setTimeout(function(){
-							FireFoxWorkAround(currentButt);
-						}, coolos);
-					}
-					infoMerge(errormsg, false, true);
+					tryAgain("Error "+this.status+", step "+(step+1)+"/3.");
 				}
 			}
 		};
@@ -191,6 +182,23 @@
 		xhr.setRequestHeader("Content-length", params[step].length);
 		xhr.setRequestHeader("Connection", "close");
 		setTimeout(function(){ xhr.send(params[step]); }, rythm);
+	}
+	function tryAgain(errorText) {
+		var errormsg = errorText;
+		if (currentButt) {
+			errormsg += " Retry in "+Math.ceil(coolos/1000)+" seconds.";
+			setTimeout(function(){
+				FireFoxWorkAround(currentButt);
+			}, coolos);
+		}
+		infoMerge(errormsg, false, true);
+	}
+	function FireFoxWorkAround(butt) {
+		enable(butt);
+		if (navigator.userAgent.match(/firefox/i)) {
+			butt.setAttribute("value", "FF delay…");
+			setTimeout(function() { butt.click(); }, 1000);
+		} else { butt.click(); }
 	}
 	function infoMerge(msg, goodNews, reset) {
 		status.value = msg;
@@ -206,13 +214,17 @@
 		queuetrack.style.setProperty("display", mergeQueue.length>0?"block":"none");
 		document.title = "⌛"+(mergeQueue.length+1)+" ‐ "+dtitle;
 	}
-	function cleanTrack(track, ok) {
-		var rmForm = track.tr.querySelectorAll("td:not(.pos):not(.video) form."+MMRid);
-		for (var irf=0; irf<rmForm.length; irf++) {
-			rmForm[irf].parentNode.removeChild(rmForm[irf]);
-		}
-		if (ok) {
-			mp(track.tr.querySelector(css_track), true);
+	function cleanTrack(track, editID) {
+		var rmForm = track.tr.querySelector("td:not(.pos):not(.video) form."+MMRid);
+		if (rmForm) {
+			if (editID) {
+				mp(track.tr.querySelector(css_track), true);
+				removeChildren(rmForm);
+				mp(addAfter(createA("edit:"+editID, "/edit/"+editID), rmForm), true);
+				addAfter(document.createTextNode(" "), rmForm);
+			} else {
+				removeElement(rmForm);
+			}
 		} else {
 			var lengthcell = track.tr.querySelector("td.treleases");
 			if (track.length && lengthcell) {
