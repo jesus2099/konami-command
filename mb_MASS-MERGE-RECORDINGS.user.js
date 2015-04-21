@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.21.2109
+// @version      2015.4.22.23
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -90,25 +90,23 @@
 		}
 	});
 //	sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
-	var skipstep;
-	function mergeRecsStep(step) {
-		skipstep = false;
+	function mergeRecsStep(_step) {
+		var step = _step || 0;
 		var MMR = document.getElementById(MMRid);
 		var inputs = MMR.getElementsByTagName("input");
 		status = inputs[0];
 		from = inputs[1];
 		to = inputs[2];
-		var statuses = ["cancelling previous merges", "adding recs. to merge", "applying merge edit"];
-		var buttStatuses = ["Clearing…", "Stacking…", "Merging…"];
-		var urls = ["/recording/merge", "/recording/merge_queue", "/recording/merge"];
+		var statuses = ["adding recs. to merge", "applying merge edit"];
+		var buttStatuses = ["Stacking…", "Merging…"];
+		var urls = ["/recording/merge_queue", "/recording/merge"];
 		var params = [
-			"submit=cancel",
 			"add-to-merge="+to.value+"&add-to-merge="+from.value,
 			"merge.merging.0="+to.value+"&merge.target="+to.value+"&merge.merging.1="+from.value
 		];
 		disable(startpos);
 		disable(status);
-		if (step == 2) {
+		if (step == 1) {
 			disable(editNote);
 			params[step] += "&merge.edit_note=";
 			var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
@@ -139,7 +137,7 @@
 			params[step] += encodeURIComponent(paramsup);
 		}
 		infoMerge("#"+from.value+" to #"+to.value+" "+statuses[step]+"…");
-		currentButt.setAttribute("value", buttStatuses[step]+" "+step+"/2");
+		currentButt.setAttribute("value", buttStatuses[step]+" "+(step+1)+"/2");
 		var xhr = new XMLHttpRequest();
 		function releaseInfoRow(sourceOrTarget, rel, trackIndex) {
 			return sourceOrTarget+": "+MBS+"/release/"+rel.id+" #'''"+(trackIndex+1)+"'''/"+rel.tracks.length+". “'''"+protectEditNoteText(rel.title)+"'''”"+protectEditNoteText(rel.comment)+" by '''"+protectEditNoteText(rel.ac)+"'''\n";
@@ -147,7 +145,7 @@
 		xhr.onreadystatechange = function(e) {
 			if (this.readyState == 4) {
 				if (this.status == 200) {
-					if (step < 2) {
+					if (step < 1) {
 						mergeRecsStep(step+1);
 					} else {
 						var editID = this.responseText.match(new RegExp("<a href=\""+MBS+"/edit/(\\d+)\">edit</a> \\(#(\\d+)\\)"));
@@ -161,7 +159,6 @@
 							enable(status);
 							enable(editNote);
 							if (nextButt = mergeQueue.shift()) {
-								skipstep = true;
 								FireFoxWorkAround(nextButt);
 							} else {
 								var x = scrollX, y = scrollY;
@@ -173,7 +170,7 @@
 						}
 					}
 				} else {
-					tryAgain("Error "+this.status+", step "+(step+1)+"/3.");
+					tryAgain("Error "+this.status+", step "+(step+1)+"/2.");
 				}
 			}
 		};
@@ -557,7 +554,7 @@
 							to.value = mergeTo;
 							swap.value = (swapped?"yes":"no");
 							currentButt = this;
-							mergeRecsStep(skipstep?1:0);
+							mergeRecsStep();
 						} else if (mergeQueue.indexOf(this) == -1 && from.value != mergeFrom && to.value != mergeTo) {
 							this.value = "Unqueue";
 							enable(this);
