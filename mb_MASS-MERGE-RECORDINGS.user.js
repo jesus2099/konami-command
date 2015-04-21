@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.21.2008
+// @version      2015.4.21.2109
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -128,7 +128,7 @@
 			else if (almostSame(locTrack.name, remTrack.name)) paramsup += "👍 '''Almost same track title''' (loose comparison)\n";
 			if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
 				var delta = Math.abs(locTrack.length - remTrack.length);
-				if (delta <= safeLengthDelta*1000) paramsup += "👍 '''"+(delta==0?"Same":"Very close")+" track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"(within "+safeLengthDelta+" seconds)"/*)temporary*/+"\n";
+				if (delta <= safeLengthDelta*1000) paramsup += "👍 '''"+(delta==0?"Same":"Very close")+" track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"(within "+safeLengthDelta+" seconds, "+time((swap.value=="no"?locTrack:remTrack).length)+" ← "+time((swap.value=="no"?remTrack:locTrack).length)+")"/*)temporary*/+"\n";
 			}
 			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “"+protectEditNoteText(localRelease.ac)+"”\n";
 			if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “"+protectEditNoteText(localRelease.title)+"”\n";
