@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.22.23
+// @version      2015.4.22.108
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -90,6 +90,14 @@
 		}
 	});
 //	sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
+/* TODO before step 1, check
+	<form action="MBS/recording/merge" method="post">
+	<input type="radio" name="merge.target" value="1ST-ID"
+	<input type="radio" name="merge.target" value="2ND-ID"
+after step 1, check
+	on target recording page
+	optionnally has <a href="MBS/edit/(\d+)">edit</a> \(#(\d+)\)
+		where $1 == $2 (otherwise, another page has taken this notice but NP) */
 	function mergeRecsStep(_step) {
 		var step = _step || 0;
 		var MMR = document.getElementById(MMRid);
@@ -126,7 +134,7 @@
 			else if (almostSame(locTrack.name, remTrack.name)) paramsup += "👍 '''Almost same track title''' (loose comparison)\n";
 			if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
 				var delta = Math.abs(locTrack.length - remTrack.length);
-				if (delta <= safeLengthDelta*1000) paramsup += "👍 '''"+(delta==0?"Same":"Very close")+" track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"(within "+safeLengthDelta+" seconds, "+time((swap.value=="no"?locTrack:remTrack).length)+" ← "+time((swap.value=="no"?remTrack:locTrack).length)+")"/*)temporary*/+"\n";
+				if (delta <= safeLengthDelta*1000) paramsup += "👍 '''"+(delta==0?"Same":"Very close")+" track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"(within "+safeLengthDelta+" seconds: "+(time(locTrack.length)==time(remTrack.length)?time(locTrack.length):time((swap.value=="no"?locTrack:remTrack).length)+" ← "+time((swap.value=="no"?remTrack:locTrack).length))+")"/*)temporary*/+"\n";
 			}
 			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “"+protectEditNoteText(localRelease.ac)+"”\n";
 			if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “"+protectEditNoteText(localRelease.title)+"”\n";
