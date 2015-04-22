@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.4.21.1604
+// @version      2015.4.21.2254
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -1020,24 +1020,26 @@
 	/*==========================================================================
 	## SLOW_DOWN_RETRY ##
 	==========================================================================*/
-	j2setting("SLOW_DOWN_RETRY", false, true, "gently auto‐retries requests when MB overloading so you don’t have to do it yourself. also retries “read timeout” searches.");
+	j2setting("SLOW_DOWN_RETRY", false, true, "gently auto‐retries requests when MB overloading so you don’t have to do it yourself. also retries “read timeout” searches and “502 Bad Gateway”.");
 	if (j2sets.SLOW_DOWN_RETRY) {
-		var errortype = document.title.match(/^(slow down!|search error|internal server error) - musicbrainz$/i);
+		var errortype = document.title.match(/^(502 Bad Gateway|504 Gateway Time-out|internal server error|search error|slow down!)/i);
 		if (errortype) {
 			var retrydelay;
 			switch (errortype[1].toLowerCase()) {
 				case "slow down!":
 					retrydelay = 20;
 					break;
+				case "502 bad gateway":
+				case "504 gateway time-out":
+					if (checkError("body > center > h1", new RegExp("^"+errortype[1]+"$", "i"))) retrydelay = 2;
+					break;
 				case "internal server error":
 				case "search error":
-					try {
-						if (document.querySelector("div#page pre").textContent.match(/canceling statement due to statement timeout at|read timeout at/)) retrydelay = 2;
-					} catch(e){}
+					if (checkError("div#page pre", /canceling statement due to statement timeout at|read timeout at/)) retrydelay = 2;
 					break;
 			}
 			if (retrydelay) {
-				document.querySelector("div#page h1, div#content h1").appendChild(createTag("fragment", {}, [" (retrying", createTag("span", {a:{"class":"countdown"}}, delayMsg(retrydelay)), ")"]));
+				document.querySelector("div#page h1, div#content h1, h1").appendChild(createTag("fragment", {}, [" (retrying", createTag("span", {a:{"class":"countdown"}}, delayMsg(retrydelay)), ")"]));
 				setInterval(function(e) {
 					retrydelay--;
 					replaceChildren(document.createTextNode(delayMsg(retrydelay)), document.querySelector("h1 > span.countdown"));
@@ -1045,6 +1047,11 @@
 				}, 1000);
 			}
 		}
+	}
+	function checkError(css, content) {
+		try { if (document.querySelector(css).textContent.match(content)) return true; }
+		catch(e) {}
+		return false;
 	}
 	function delayMsg(sec) {
 		return sec>0?" in "+sec+" second"+(sec!=1?"s":""):"…";
