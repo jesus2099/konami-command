@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2015.4.1.1544
+// @version      2015.4.22.219
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -390,7 +390,7 @@ function loading(on) {
 			li.style.setProperty("background", "#ff6");
 			li.appendChild(document.createTextNode("loading…"));
 			var lis = extlinks.getElementsByTagName("li");
-			if (hideDupeRelationshipsLink && lis[lis.length-1].textContent.match(/View all relationships/)) {
+			if (hideDupeRelationshipsLink && lis.length > 0 && lis[lis.length-1].textContent.match(/View all relationships/)) {
 				extlinks.removeChild(lis[lis.length-1]);
 			}
 			extlinks.appendChild(li);
