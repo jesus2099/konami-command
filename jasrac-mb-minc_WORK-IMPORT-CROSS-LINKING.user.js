@@ -1,14 +1,21 @@
-(function(){"use strict";var meta={rawmdb:function(){
+(function(){"use strict";var meta=function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2014.12.19.757
+// @version      2015.4.9.1810
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12)             my own coding setup
+// @compatible   opera+violentmonkey   my own browsing setup
+// @compatible   firefox+greasemonkey  quickly tested
+// @compatible   chromium              quickly tested
+// @compatible   chromium+tampermonkey quickly tested
+// @compatible   chrome                tested with chromium
+// @compatible   chrome+tampermonkey   tested with chromium
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
-// @updateURL    https://raw.githubusercontent.com/jesus2099/konami-command/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
-// @author       PATATE12 aka. jesus2099/shamo
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
+// @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-01-14
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
@@ -19,16 +26,12 @@
 // @exclude      *://*musicbrainz.org/work/*edits*
 // @run-at       document-end
 // ==/UserScript==
-	}};
-	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-		var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
-		while ((kv = row.exec(meta.rawmdb)) !== null) {
-			if (meta[kv[1]]) {
-				if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
-				meta[kv[1]].push(kv[2]);
-			} else meta[kv[1]] = kv[2];
-		}
-	}
+};meta=meta.toString();meta={name:meta.match(/@name\s+(.+)/)[1],version:meta.match(/@version\s+(.+)/)[1],namespace:meta.match(/@namespace\s+(.+)/)[1]};
+/*
+	https://github.com/jesus2099/konami-command/issues/14
+	POST work credits NG https://chatlogs.musicbrainz.org/musicbrainz/2015/2015-04/2015-04-09.html#T16-34-38-396540
+	GET JASRAC ID (work attributes) NG http://tickets.musicbrainz.org/browse/MBS-8341
+*/
 	var MBS7313 = "This script became so broken with time.\n(ノ ゜Д゜)ノ 彡┻━┻ Work credits and aliases have been disabled until required enhancements are done.";
 	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var DEBUG = localStorage.getItem("jesus2099debug");
@@ -92,8 +95,7 @@
 				}
 				if (xhrWork.mbid && xhrWork.id && xhrWork.mbid == mbid[1]) {
 					xhrMachine();
-				}
-				else {
+				} else {
 					alert("Work create (or edit) error #"+this.status+".\n\n"+this.responseText);
 					h1.style.setProperty("background-color", "pink");
 					joblist = [];
@@ -268,16 +270,14 @@
 									if(type == "正題") {
 										if (!hastran) { hastran = true; }
 										tmptran += "\n"+ali+" ("+transtypes[itran]+")";
-									}
-									else {
+									} else {
 										if (type == "タイトルの続き") {
 											if (!ali.match(/^[－-]$/)) {
 												var prevalias = tmpali.substring(tmpali.lastIndexOf("\n")).split("◇");
 												prevalias[itran] += ali;
 												tmpali = tmpali.substring(0, tmpali.lastIndexOf("\n")) + prevalias.join("◇");
 											}
-										}
-										else {
+										} else {
 											if (!hasali) { hasali = true; }
 											tmpali += (itran>0?"◇":"\n")+ali;
 										}
@@ -331,15 +331,49 @@
 						if (isVocal) {
 							form.appendChild(createTag("input", {"type":"hidden", "name":"edit-work.type_id", "value":"17"}));
 							createWork += "&edit-work.type_id=17";
-						}
-						else {
+						} else {
 							form.appendChild(createTag("input", {"type":"hidden", "name":"edit-work.language_id", "value":"486"}));
 							createWork += "&edit-work.language_id=486";
 						}
+/*************** credits ************************** https://bitbucket.org/metabrainz/musicbrainz-server/pull-request/1393/MBS-7913-allow-seeding-of-non-URL-ARs-when-creating-non-Release-entities-via-URL-parameters */
+// https://musicbrainz.org/work/create?rels.0.target=24f1766e-9635-4d58-a4d4-9413f9f98a4c&rels.0.type=d59d99ea-23d4-4a80-b066-edca32ee158f&rels.0.attributes.0.type=a59c5830-5ec7-38fe-9a21-c7ea54f6650a&rels.0.attributes.0.credited_as=foo&rels.0.attributes.0.text_value=foo&rels.0.begin_date=1999-09-09&rels.0.end_date=1999-09-09&rels.0.ended=1&rels.0.direction=backward
+//&rels.0.target=24f1766e-9635-4d58-a4d4-9413f9f98a4c
+//&rels.0.type=d59d99ea-23d4-4a80-b066-edca32ee158f
+//&rels.0.attributes.0.type=a59c5830-5ec7-38fe-9a21-c7ea54f6650a
+//&rels.0.attributes.0.credited_as=foo
+//&rels.0.attributes.0.text_value=foo
+//&rels.0.begin_date=1999-09-09
+//&rels.0.end_date=1999-09-09
+//&rels.0.ended=1
+//&rels.0.direction=backward
+// artist-work publish https://musicbrainz.org/relationship/a442b140-830b-30b0-a4aa-2e36f098b6aa
+// artist-work lyrics 3e48faba-ec01-47fd-8e89-30e81161661c
+// artist-work compos d59d99ea-23d4-4a80-b066-edca32ee158f
+// label-work publish https://musicbrainz.org/relationship/05ee6f18-4517-342d-afdf-5897f64276e3
+// https://chatlogs.musicbrainz.org/musicbrainz/2015/2015-04/2015-04-09.html#T16-34-38-396540
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.0.target", "value":"瞬火"}));
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.0.type", "value":"3e48faba-ec01-47fd-8e89-30e81161661c"}));
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.0.direction", "value":"backward"}));
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.1.target", "value":"瞬火"}));
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.1.type", "value":"d59d99ea-23d4-4a80-b066-edca32ee158f"}));
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.1.direction", "value":"backward"}));
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.2.target", "value":"3d640d96-7fe9-469e-b7cc-56a1d37471d3"}));
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.2.target", "value":"セブンシーズミュージック"}));
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.2.source", "value":"セブンシーズミュージック"}));
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.2.type", "value":"05ee6f18-4517-342d-afdf-5897f64276e3"}));
+//						form.appendChild(createTag("input", {"type":"hidden", "name":"rels.2.direction", "value":"backward"}));
+// https://musicbrainz.org/work/create?rels.0.target=%E7%9E%AC%E7%81%AB&rels.0.type=3e48faba-ec01-47fd-8e89-30e81161661c&rels.1.target=%E7%9E%AC%E7%81%AB&rels.1.type=d59d99ea-23d4-4a80-b066-edca32ee158f&rels.2.target=%E3%82%BB%E3%83%96%E3%83%B3%E3%82%B7%E3%83%BC%E3%82%BA%E3%83%9F%E3%83%A5%E3%83%BC%E3%82%B8%E3%83%83%E3%82%AF&rels.2.type=05ee6f18-4517-342d-afdf-5897f64276e3
+//createWork += "&rels.0.target=%E7%9E%AC%E7%81%AB&rels.0.type=3e48faba-ec01-47fd-8e89-30e81161661c&rels.1.target=%E7%9E%AC%E7%81%AB&rels.1.type=d59d99ea-23d4-4a80-b066-edca32ee158f&rels.2.target=%E3%82%BB%E3%83%96%E3%83%B3%E3%82%B7%E3%83%BC%E3%82%BA%E3%83%9F%E3%83%A5%E3%83%BC%E3%82%B8%E3%83%83%E3%82%AF&rels.2.type=05ee6f18-4517-342d-afdf-5897f64276e3";
+	/*************** credits ***************************/
 						form.appendChild(createTag("input", {"type":"hidden", "name":"edit-work.edit_note", "value":summary}));
+//createWork += "&edit-work.edit_note="+encodeURIComponent(summary);
 						form.appendChild(createTag("a", {"title":MBS7313+"\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, {"background":background,"cursor":"pointer","text-decoration":"underline","color":"blue"}, {"click":function(e){
 							this.parentNode.setAttribute("target", e.shiftKey||e.ctrlKey?"_blank":"_self");
+//this.parentNode.action += "?rels.0.target=%E7%9E%AC%E7%81%AB&rels.0.type=3e48faba-ec01-47fd-8e89-30e81161661c&rels.1.target=%E7%9E%AC%E7%81%AB&rels.1.type=d59d99ea-23d4-4a80-b066-edca32ee158f&rels.2.target=%E3%82%BB%E3%83%96%E3%83%B3%E3%82%B7%E3%83%BC%E3%82%BA%E3%83%9F%E3%83%A5%E3%83%BC%E3%82%B8%E3%83%83%E3%82%AF&rels.2.type=05ee6f18-4517-342d-afdf-5897f64276e3";
+//alert(this.parentNode.action);
 							this.parentNode.submit();
+//open(this.parentNode.action);
+//open(createWork);
 							return stop(e);
 						}}, "Add to MB"));
 						sakuhin.parentNode.appendChild(document.createTextNode(" （"));
@@ -385,15 +419,13 @@
 						iswccode.insertBefore(createTag("sup", {}, {"float":"right"}), iswccode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "iswc", iswccode_v), "Search this ISWC in JASRAC"));
 						iswccode.insertBefore(createTag("sup", {}, {"float":"right"}), iswccode.firstChild).appendChild(createA("M", workLookupURL("mb", "iswc", iswccode_v.replace(/T- /, "T-")), "Search this ISWC in MusicBrainz"));
 					}
-				}
-				else {
+				} else {
 					var sakuhincodet = document.querySelectorAll("a[href^='SakCdInfo.aspx?SAKUHINCD='], a[href^='SakCDInfo.aspx?SAKUHINCD='], div#ctl00_ctl00_phMain_phDBMain_PanelDetail table.tbl > tbody > tr > td:nth-child(8)");
 					for (var st=0; st < sakuhincodet.length; st++) {
 						var sakuhincode = "", prec = sakuhincodet[st];
 						if (sakuhincodet[st].tagName == "A") {
 							sakuhincode += sakuhincodet[st].getAttribute("href").match(/.{8}$/);
-						}
-						else {
+						} else {
 							sakuhincode += sakuhincodet[st].textContent.trim().replace(/-/, "");
 							prec = prec.lastChild;
 						}
@@ -416,8 +448,7 @@
 								donecodes.push(ddcode);
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", ddcode)}, {"background":background}, {}, "JASRAC — "+ddcode)));
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", ddcode)}, {"background":background}, {}, "音楽の森 — "+ddcode)));
-							}
-							else {
+							} else {
 								if (confirm("Duplicate JASRAC ID detected in work attributes.\nDo you want to edit?")) {
 									location.href = location.pathname+"/edit";
 								}
@@ -432,8 +463,7 @@
 								donecodes.push(sakuhincode);
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", sakuhincode)}, {"background":background}, {}, "JASRAC — "+sakuhincode)));
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", sakuhincode)}, {"background":background}, {}, "音楽の森 — "+sakuhincode)));
-							}
-							else {
+							} else {
 								if (annotation.textContent.trim().match(new RegExp("^"+reAnnotCode+"( \\(MBS-7359\\))?$", "i"))) {
 									annotation.insertBefore(createTag("p", {}, {"background-color":"#ffc"}, {}, [createTag("img", {src: "/static/images/icons/loading.gif"}), " This JASRAC ID is now set as an attribute of this work: Removing obsolete annotation, please wait…"]), annotation.firstChild);
 									simpleXHR(
@@ -610,8 +640,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 							workattr[workattr.length-2].querySelector(workattrTypeCSS).value = "3";
 							workattr[workattr.length-2].querySelector(workattrValueCSS).value = xhrWork.code;
 							workattr[workattr.length-2].querySelector(workattrValueCSS).style.background = cWARN;
-						}
-						else {
+						} else {
 							xhrForm.form.querySelector(workattrCSS+" button.add-item").click();
 							var jasracidnew = xhrForm.form.querySelectorAll(workattrCSS+" > tbody > tr")[workattr.length-1];
 							jasracidnew.querySelector(workattrTypeCSS).value = "3";
@@ -634,8 +663,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 							else if (iiswcs[iiswcs.length-1].value == "") {
 								iiswcs[iiswcs.length-1].value = iswc;
 								iiswcs[iiswcs.length-1].style.background = cWARN;
-							}
-							else {
+							} else {
 								document.querySelector("form.edit-work div.form-row-text-list div.form-row-add button.nobutton.add").click();
 								var iswcn = document.querySelectorAll(insel)[iiswcs.length];
 								iswcn.style.background = cWARN;
@@ -648,8 +676,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 						teditnote.value = this.value;
 						this.style.background = cOK;
 						this.value = xhrWork.code+" "+sakuhin;
-					}
-					else {
+					} else {
 						icomment.style.background = "";
 						stypeid.style.background = "";
 						this.style.background = cERR;
@@ -689,8 +716,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 					alrows.push({"name":swapped, "sort-name":swapped, "type":"2"});
 					aldone.push(swapped);
 				}
-			}
-			else {
+			} else {
 				for (var a=0; a<3; a++) {
 					var swapped = swapTHE(alias[a], true);
 					if (!alias[a].match(/^[－-]?$/) && aldone.indexOf(swapped) == -1) {
@@ -822,8 +848,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 			if (lis.length == 1 && lis[0].textContent.match(/has no url relationships/i)) {
 				removeElement(lis[0]);
 			}
-		}
-		else if (!el && (sb = document.querySelector("div#sidebar"))) {
+		} else if (!el && (sb = document.querySelector("div#sidebar"))) {
 			var lu = sb.querySelector("div#sidebar > p.lastupdate");
 			if (lu) { lu = lu.previousSibling; }
 			else { lu = sb.lastChild; }
@@ -940,8 +965,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 					aliasTable([{"name":""}]);
 				}}, "add another alias"));
 				th.appendChild(document.createTextNode(")"));
-			}
-			else if (!add) {
+			} else if (!add) {
 				cont.appendChild(headr).firstChild.appendChild(createA((aliases.length>0?aliases.length:"no")+" existing aliase"+(aliases.length!=1?"s":""), "/work/"+xhrWork.mbid+"/aliases", "Work aliases page", "_blank"));
 			}
 		}
@@ -951,8 +975,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 			var td = tr.appendChild(createTag("td", null, null, null, add?createTag("input", {"name":"edit-alias.name","value":aliases[a].name,"title":aliases[a].name}, {"width":"10em"}):aliases[a].name));
 			if (add || aliases[a].name != aliases[a]["sort-name"]) {
 				tr.appendChild(createTag("td", null, null, null, add?createTag("input", {"name":"edit-alias.sort_name","value":aliases[a]["sort-name"]?aliases[a]["sort-name"]:""}, {"width":"10em"}):aliases[a]["sort-name"]));
-			}
-			else {
+			} else {
 				td.setAttribute("colspan", "2");
 			}
 			var se = tr.appendChild(createTag("td", null, null, null, add?createTag("select", {"name":"edit-alias.type_id"}, {"width":"8em"}, {"change":function(e){
@@ -977,8 +1000,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 					cb.checked = true;/*for display*/
 					cb.setAttribute("checked", "checked");/*for reset*/
 				}
-			}
-			else if (aliases[a].primary) {
+			} else if (aliases[a].primary) {
 				td.replaceChild(document.createTextNode("primary "+td.textContent), td.firstChild);
 				td.setAttribute("title", "primary");
 			}
@@ -1022,8 +1044,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 					}
 					addAfter(document.createTextNode(se.options[se.selectedIndex].textContent), se);
 					se.parentNode.replaceChild(createTag("input", {"type":"hidden", "name":se.getAttribute("name"), "value":se.value}), se);
-				}
-				else if (!clear && add) {
+				} else if (!clear && add) {
 					wname.focus();
 					wnameaddit.click();
 				}
@@ -1182,12 +1203,10 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		else {
 			if (joblist.length > 0) {
 				job = xhrJobs[joblist.shift()];
-			}
-			else if (xhrWork.mbid) {
+			} else if (xhrWork.mbid) {
 				self.location.href = "/work/"+xhrWork.mbid;
 				return;
-			}
-			else {
+			} else {
 				alert("MAXI ERROR NO MBID (OMG BBQ WTF?)\nMaybe reload everything and try again…");
 				disable(xhrForm.form, false);
 				return;
