@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.22.108
+// @version      2015.4.24.2029
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -54,6 +54,7 @@
 	var regex_MBID = new RegExp(sregex_MBID, "i");
 	var css_track = "div#content > table.medium > tbody > tr > td:not(.pos):not(.video) a[href^='/recording/'], td:not(.pos):not(.video) a[href^='"+MBS+"/recording/']";
 	css_track = css_track+", "+css_track.replace(MBS, "");/*in case those come back again to no-host URL in the future*/
+	var css_track_ac = "td:not([class]) + td:not([class])";
 	var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
 	var startpos, status, from, to, swap, editNote, queuetrack;
 	var rem2loc = "◀";
@@ -132,9 +133,10 @@ after step 1, check
 			if (locTrack.name == remTrack.name) paramsup += "👍 '''Same track title''' “"+protectEditNoteText(locTrack.name)+"”\n";
 			else if (locTrack.name.toUpperCase() == remTrack.name.toUpperCase()) paramsup += "👍 '''Same track title''' (case insensitive)\n";
 			else if (almostSame(locTrack.name, remTrack.name)) paramsup += "👍 '''Almost same track title''' (loose comparison)\n";
+			if (almostSame(html2text(locTrack.artistCredit), html2text(remTrack.artistCredit))) paramsup += "👍 '''Similar track artist credit ([AC])''' “"+html2text(locTrack.artistCredit)+"”\n";
 			if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
 				var delta = Math.abs(locTrack.length - remTrack.length);
-				if (delta <= safeLengthDelta*1000) paramsup += "👍 '''"+(delta==0?"Same":"Very close")+" track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"(within "+safeLengthDelta+" seconds: "+(time(locTrack.length)==time(remTrack.length)?time(locTrack.length):time((swap.value=="no"?locTrack:remTrack).length)+" ← "+time((swap.value=="no"?remTrack:locTrack).length))+")"/*)temporary*/+"\n";
+				if (delta <= safeLengthDelta*1000) paramsup += "👍 '''"+(delta==0?"Same":"Very close")+" track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"("+(time(locTrack.length)==time(remTrack.length)?time(locTrack.length):"within "+safeLengthDelta+" seconds: "+time((swap.value=="no"?locTrack:remTrack).length)+" ← "+time((swap.value=="no"?remTrack:locTrack).length))+")"/*)temporary*/+"\n";
 			}
 			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “"+protectEditNoteText(localRelease.ac)+"”\n";
 			if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “"+protectEditNoteText(localRelease.title)+"”\n";
@@ -292,6 +294,7 @@ after step 1, check
 				var trackname = tracka.textContent;
 				var trackLength = trs[itrs].querySelector("td.treleases").textContent.match(/(\d+:)?\d+:\d+/);
 				if (trackLength) trackLength = strtime2ms(trackLength[0]);
+				var trackAC = trs[itrs].querySelector(css_track_ac);
 				localRelease.tracks.push({
 					tr: trs[itrs],
 					disc: d,
@@ -299,7 +302,7 @@ after step 1, check
 					a: tracka,
 					recid: recoid,
 					name: trackname,
-					artistCredit: null,
+					artistCredit: trackAC?trackAC.innerHTML.trim():localRelease.ac,
 					length: trackLength
 				});
 //				if (jsonRelease) {
@@ -429,7 +432,7 @@ after step 1, check
 						remoteRelease.tracks.push({
 							number: trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\""+MBS+"/track/"+sregex_MBID+"\">(.*?)</a>"))[1],
 							name: decodeHTMLEntities(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
-							artistCredit: trackRows[t].match(/<td>/g).length>1?trackRows[t].match(/[\s\S]*(<td>[\s\S]+?<\/td>)/)[1]:releaseAC[1],
+							artistCredit: trackRows[t].match(/<td>/g).length>1?trackRows[t].match(/[\s\S]*<td>([\s\S]+?)<\/td>/)[1].trim():releaseAC[1],
 							length: trackLength,
 							recording: {
 								rowid: recIDs[t],
@@ -544,6 +547,7 @@ after step 1, check
 //					rmForm.appendChild(ac2dom(remoteRelease.tracks[rtrack].artistCredit));
 					var AC = document.createElement("span");
 					AC.innerHTML = remoteRelease.tracks[rtrack].artistCredit;
+					if (almostSame(html2text(localRelease.tracks[ltrack].artistCredit), html2text(remoteRelease.tracks[rtrack].artistCredit))) AC.style.setProperty("background-color", cOK);
 					rmForm.appendChild(AC);
 					var mergeButt = rmForm.appendChild(createInput("button", "", "Merge"));
 					mergeButt.setAttribute("class", MMRid+"mergebutt");
@@ -749,6 +753,9 @@ after step 1, check
 			if (ac[c].joinPhrase != "") dom.appendChild(document.createTextNode(ac[c].joinPhrase));
 		}
 		return dom;
+	}
+	function html2text(html) {
+		return html.replace(/<.+?>/g, "");
 	}
 	function protectEditNoteText(text) {
 		return text.replace(/\'/g, "&#x0027;");
