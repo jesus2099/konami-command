@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2015.4.8.1117
+// @version      2015.4.23.1319
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @homepage     http://userscripts-mirror.org/scripts/show/152545
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -58,6 +58,7 @@
 		 "692817": ["2012-11-25", "2013-06-30", "rama_3", "or devore_imperium?"],
 		 "696572": ["2012-12-17", "2013-07-02", "commander.atvar"],
 		 "701715": ["2013-01-07", "2013-01-30", "remdia"],
+		 "726919": ["2013-03-26", "2013-09-06", "dirkvd"],
 		 "774387": ["2013-06-06", "2014-12-21", "Wanddis"],
 		 "791672": ["2013-06-14", "2013-12-08", "georg187"],
 		 "800638": ["2013-06-19", "2014-12-21", "nicolebahls"],
