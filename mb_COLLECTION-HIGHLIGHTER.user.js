@@ -1,7 +1,7 @@
 (function(){var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.4.17.1950
+// @version      2015.4.26.1514
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -79,6 +79,7 @@
 		var maxRetry = 10;
 		var retryPause = 5000;
 		var slowDownStepAfterRetry = 200;
+		var css_nextPage = "ul.pagination > li:last-of-type > a";
 		var retry = 0;
 		var debugBuffer = "";
 		var cWARN = "gold";
@@ -338,7 +339,7 @@
 						lastPage = Math.ceil(parseInt(lastPage[1], 10)/limit);
 					} else if (!ws) {
 						var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
-						nextPage = responseDOM.querySelector("ul.pagination > li:last-of-type > a");
+						nextPage = responseDOM.querySelector(css_nextPage);
 					}
 					if (lastPage && page < lastPage || nextPage) {
 						if (lastPage && page == 1) { modal(true, "(total "+lastPage+" pages)", 1); }
@@ -708,10 +709,7 @@
 						if (this.readyState == 4) {
 							if (this.status == 200) {
 								var res = document.createElement("html"); res.innerHTML = this.responseText;
-								var lp = p;
-								if ((lplink = res.querySelector("p.pageselector > a:last-of-type")) && (plp = lplink.getAttribute("href").match(/\?page=([0-9]+)$/))) {
-									lp = parseInt(plp[1]);
-								}
+								var nextPage = res.querySelector(css_nextPage);
 								var mates = getStuffs(checkAgainst, res);
 								for (var m=0; m<mates.length; m++) {
 									if (stuff[checkAgainst].rawids.indexOf(mates[m].getAttribute("href").match(new RegExp(strMBID))) > -1) {
@@ -721,8 +719,8 @@
 										return;
 									}
 								}
-								if (lp > p) {
-									if (p == 1) { modal(true, "(total "+lp+" pages but this check will stop as soon as it finds something)", 1); }
+								if (nextPage) {
+									if (p == 1) { modal(true, "(several pages but this check will stop as soon as it finds something)", 1); }
 									retry = 0;
 									setTimeout(function() { stuffRemover(checks, p+1); }, chrono(MBWSRate));
 								} else {
