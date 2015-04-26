@@ -152,7 +152,7 @@
 							"Add this collection’s content to local storage ("+collid+")"
 						),
 						"/",
-						createA("re-load",
+						createA("re‐load",
 							function(e) {
 								var cmsg = "This will REPLACE your current loaded stuff.";
 								if (confirm(dialogprefix+cmsg)) {
@@ -467,7 +467,7 @@
 	var lastchrono;
 	function chrono(delay) {
 		if (delay) {
-			var del = delay+lastchrono-new Date().getTime();
+			var del = delay + lastchrono - new Date().getTime();
 			del = del>0?del:0;
 			return del;
 		} else {
@@ -632,7 +632,7 @@
 					setTimeout(function(){modal(false)}, 1000);
 					return stop(e);
 				} else {
-					modal(true, "Loading…", 1);
+					modal(true, "Re‐loading page…", 1);
 				}
 			}, false);
 			decorate("collection", link);
@@ -720,7 +720,7 @@
 									}
 								}
 								if (nextPage) {
-									if (p == 1) { modal(true, "(several pages but this check will stop as soon as it finds something)", 1); }
+									if (p == 1) { modal(true, createTag("span", {"s":{"color":"grey"}}, "(several pages but this check will stop as soon as it finds something)"), 1); }
 									retry = 0;
 									setTimeout(function() { stuffRemover(checks, p+1); }, chrono(MBWSRate));
 								} else {
@@ -762,7 +762,7 @@
 		} else {
 			if (ll = localStorage.getItem(userjs+"lastlink")) {
 				localStorage.removeItem(userjs+"lastlink");
-				modal(true, "Loading…", 1);
+				modal(true, "Re‐loading page…", 1);
 				setTimeout(function() { location.href = ll; }, chrono(MBWSRate));
 			} else {
 				modal(true, " ", 1);
