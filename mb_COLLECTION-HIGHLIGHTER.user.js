@@ -1,4 +1,4 @@
-(function(){"use strict";var meta={rawmdb:function(){
+(function(){var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
 // @version      2015.4.17.1950
