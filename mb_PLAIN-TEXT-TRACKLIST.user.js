@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2015.4.22.220
+// @version      2015.4.27.1515
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @homepage     http://userscripts-mirror.org/scripts/show/89036
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -13,9 +13,13 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @include      http*://*musicbrainz.org/release/*
+// @include      http://*.mbsandbox.org/release/*
+// @exclude      *//*/*mbsandbox.org/*
+// @exclude      *//*/*musicbrainz.org/*
+// @exclude      *.org/release/*/*
 // @run-at       document-end
 // ==/UserScript==
-(function(){
+(function(){"use strict";
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - 
 patterns	: tweak the result tracklist using \n for new lines [normal tracklist, various artists (VA) tracklist]
 nextDisc	: used to show when going next medium/tracklist in multi-discs releases */
@@ -34,7 +38,7 @@ var patterns = {
 	],
 };
 var nextDisc = "\n";
-/* -- following only applies to REtools in classic.musicbrainz.org --
+/*☠☠DEAD CODE☠☠ -- following only applies to REtools in classic.musicbrainz.org --
 colour		: just put "" for standard stylings
 background	: 
 border		: 
@@ -44,7 +48,7 @@ var colour = "black";
 var background = "#ff6";
 var border = "";
 var padding = "0 4px";
-var REtools = { /*DEAD CODE*/
+var REtools = {
 	"jan with JOShinweb" : "http://joshinweb.jp/dp/%barcode%.html", 
 	"catnum with JOShinweb" : "http://joshinweb.jp/cdshops/Dps?KEY=RECODE&FM=0&KEYWORD=%catnum%", 
 	"catnum with CDJOurnal" : "http://search.cdjournal.com/disc/?t=2&na=%catnum1%&nb=%catnum2%", 
@@ -52,17 +56,13 @@ var REtools = { /*DEAD CODE*/
 	"jan with AMAzon Japan" : "http://amazon.jp/s/?url=search-alias%3Dpopular&field-keywords=%barcode%", 
 	"catnum with Google" : "http://google.com/search?q=%catnum%", 
 	"jan with Google" : "http://google.com/search?q=%barcode%", 
-};
+};/*☠☠DEAD CODE☠☠*/
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
-var debugging = false;
-var j2ujsID = "jesus2099userjs89036";
-var content = document.getElementById("page");
+var userjs = "jesus2099plainTextTracklist";
+var tracks = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]");
 var indexes = { "catnum" : 3, "barcode" : 4 };
-var sidebar = document.getElementById("sidebar");
-var CSS_TR_track = "div#content > table.tbl > tbody > tr[id]";
-var CSS_A_recording = "td:not(.pos):not(.video) a[href^='/recording/']";
 /* ## PLAIN TEXT TRACKLIST ## */
-function textTracklist(patt) {
+function textTracklist(tracks, patt) {
 	var pattern = patterns[patt][0];
 	var replaces = [
 	    [/%artist%/g, "artist"],
@@ -71,30 +71,25 @@ function textTracklist(patt) {
 	    [/%tracknumber%/g, "tracknumber"],
 	];
 	var tracklist = "";
-	var tracksHtml = null;
-	tracksHtml = content.querySelectorAll(CSS_TR_track);
-	if (tracksHtml.length > 0) {
-		for (var i=0 ; i < tracksHtml.length ; i++) {
-			var tracknumber = tracksHtml[i].querySelector("td.pos").textContent.trim();
-			if (tracknumber == "1" && i != 0) { tracklist += nextDisc; }
-			var title = (tracksHtml[i].querySelector(CSS_A_recording).textContent);
-			var artist;
-			if (trackartist = tracksHtml[i].querySelector("td[data-bind*='artistCredit']")) {
-				artist = trackartist.textContent;
-				pattern = patterns[patt][1];
-			}
-			var length = tracksHtml[i].querySelector("td.treleases").textContent.replace(/[^0-9:(?)]/g, "");
-			var txt = pattern;
-			for (var j=0; j < replaces.length; j++) {
-				txt = txt.replace(replaces[j][0], eval(replaces[j][1]));
-			}
-			tracklist += txt.replace(" (?:??)", "");
+	for (var i=0 ; i < tracks.length ; i++) {
+		var tracknumber = tracks[i].querySelector("td.pos").textContent.trim();
+		if (tracknumber == "1" && i != 0) { tracklist += nextDisc; }
+		var title = (tracks[i].querySelector("td:not(.pos):not(.video) a[href^='"+location.protocol+"//"+location.host+"/recording/']").textContent);
+		var artist = tracks[i].querySelector("td:not([class]) + td:not([class])");
+		if (artist) {
+			artist = artist.textContent.trim();
+			pattern = patterns[patt][1];
 		}
+		var length = tracks[i].querySelector("td.treleases").textContent.replace(/[^0-9:(?)]/g, "");
+		var txt = pattern;
+		for (var j=0; j < replaces.length; j++) {
+			txt = txt.replace(replaces[j][0], eval(replaces[j][1]));
+		}
+		tracklist += txt.replace(" (?:??)", "");
 	}
-	debug("tracklist\n"+tracklist);
 	return tracklist;
 }
-if (content && content.querySelector(CSS_TR_track)) {
+if (tracks.length > 0) {
 	for (var p in patterns) if (patterns.hasOwnProperty(p)) {
 		var fragment= document.createDocumentFragment();
 		var a = document.createElement("a");
@@ -115,20 +110,21 @@ if (content && content.querySelector(CSS_TR_track)) {
 			coolstuff("div", "50", 100, "black", ".6").addEventListener("click", function(e) {
 				this.parentNode.removeChild(this.nextSibling);
 				this.parentNode.removeChild(this);
-			}, false);
+			});
 			var thisisit = coolstuff("textarea", "55", 80);
 			thisisit.style.setProperty("font-family", "sans-serif");
 			thisisit.addEventListener("keypress", function(e) {
 				if (e.keyCode == 27) { this.previousSibling.click(); }
-			}, false);
-			thisisit.appendChild(document.createTextNode(textTracklist(this.getAttribute("rel"))));
+			});
+			thisisit.appendChild(document.createTextNode(textTracklist(tracks, this.getAttribute("rel"))));
 			thisisit.setAttribute("title", "press ESC to close");
 			thisisit.select();
-		}, false);
+		});
 		a.appendChild(document.createTextNode(p));
 		a.setAttribute("rel", p);
-		if (sidebar && (relprop = sidebar.querySelector("dl.properties"))) {
-			var tlddid = j2ujsID+"tracklists";
+		var relprop = sidebar.querySelector("div#sidebar dl.properties");
+		if (relprop) {
+			var tlddid = userjs+"tracklists";
 			var tldd = relprop.querySelector("dd#"+tlddid);
 			var sep = ", ";
 			if (!tldd) {
@@ -142,7 +138,7 @@ if (content && content.querySelector(CSS_TR_track)) {
 		}
 	}
 }
-/* ## RELEASE EVENT TOOLS ## classic.mb only DEAD CODE */
+/*☠☠DEAD CODE☠☠ ## RELEASE EVENT TOOLS ## classic.mb only*/
 if (false && REtools) {
 	var REfound = document.evaluate("//table[@class='eventslist']//tr", content, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 	for (var ire=1; ire < REfound.snapshotLength; ire++) {
@@ -211,5 +207,5 @@ function debug(coucou) {
 		try { console.log(dbgtxt);
 		} catch(e) {alert(dbgtxt);}
 	}
-}
+}/*☠☠DEAD CODE☠☠*/
 })();
