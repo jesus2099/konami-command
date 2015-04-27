@@ -1,7 +1,7 @@
 (function(){var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.4.26.1514
+// @version      2015.4.27.1101
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -94,22 +94,29 @@
 		j2ss.insertRule("."+userjs+"HLrow ."+userjs+"HLitem { border: 0; padding: 0; }", j2ss.cssRules.length);
 		var server = location.protocol+"//"+location.host;
 		var collectionsID = localStorage.getItem(userjs+"collections") || "";
+		var releaseID;
 		var stuff, collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
 		var strType = "release-group|recording|label|artist|work";
 		var strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 		cat = cat[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
 		debug("CAT: "+cat);
 		var xp, i;
-		if (cat == "release") {
+		if (cat == "release" && (releaseID = location.pathname.match(new RegExp(strMBID)))) {
+			releaseID = releaseID[0];
+			var mainReleasePage = location.pathname.match(new RegExp("^/release/"+strMBID+"$"));
 			var colls = document.querySelectorAll("div#sidebar a[href*='/own_collection/add?release='], div#sidebar a[href*='/own_collection/remove?release=']");
 			for (var coll=0; coll<colls.length; coll++) {
 				if (collectionsID.indexOf(colls[coll].getAttribute("href").match(new RegExp(strMBID))) > -1) {
-					collectionUpdater(colls[coll], colls[coll].getAttribute("href").match(/add|remove/).toString());
+					if (mainReleasePage) {
+						collectionUpdater(colls[coll], colls[coll].getAttribute("href").match(/add|remove/).toString());
+					} else {
+						addAfter(createTag("div", {s:{textShadow:"0 0 8px "+highlightColour}}, ["(please go to ", createTag("a", {a:{href:"/release/"+releaseID}}, "main release page"), " for this button to auto‐update your collection highlighter)"]), colls[coll])
+					}
 				}
 			}
-			if (lili = document.querySelector("div#sidebar > h2.collections + ul.links")) {
+			if (mainReleasePage && (lili = document.querySelector("div#sidebar > h2.collections + ul.links"))) {
 				var buttxt = " this release to your local collection highlighter,\r\nwithout changing its status among you MB collection(s)";
-				var lili = lili.insertBefore(document.createElement("li"), lili.firstChild);
+				lili = lili.insertBefore(document.createElement("li"), lili.firstChild);
 				lili.appendChild(document.createTextNode("Force highlight "));
 				collectionUpdater(lili.appendChild(createA("ON", location.href, "Add"+buttxt, true)), "add");
 				lili.appendChild(document.createTextNode(" / "));
@@ -589,7 +596,7 @@
 					stuff[stu].rawids = localStorage.getItem(userjs+stu+"s");
 					stuff[stu].ids = stuff[stu].rawids!=null?(stuff[stu].rawids.length>0?stuff[stu].rawids.split(" "):[]):null;
 				}
-				if (stuff["release"].ids && (releaseID = location.pathname.match(new RegExp(strMBID)))) {
+				if (stuff["release"].ids && releaseID) {
 					setTitle(true);
 					var checks = getStuffs();
 					switch (action) {
@@ -792,12 +799,12 @@
 		if(t.tagName) {
 			if (gadgets) {
 				for (var attri in gadgets.a) if (gadgets.a.hasOwnProperty(attri)) t.setAttribute(attri, gadgets.a[attri]);
-				for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) t.style.setProperty(style.replace(/!/,""), gadgets.s[style], style.match(/!/)?"important":"");
+				for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) t.style.setProperty(style.replace(/!/g,"").replace(/[A-Z]/g,"-$&").toLowerCase(), gadgets.s[style].replace(/!/g,""), style.match(/!/)||gadgets.s[style].match(/!/)?"important":"");
 				for (var event in gadgets.e) if (gadgets.e.hasOwnProperty(event)) t.addEventListener(event, gadgets.e[event], false);
 			}
 			if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) t.style.setProperty("cursor", "pointer");
 		}
-		if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.nodeType) { chldrn = [chldrn]; } for(var child=0; child<chldrn.length; child++) { t.appendChild(typeof chldrn[child]=="string"?document.createTextNode(chldrn[child]):chldrn[child]); } t.normalize(); }
+		if (children) { var chldrn = children; if ((typeof chldrn).match(/number|string/) || chldrn.tagName) chldrn = [chldrn]; for(var child=0; child<chldrn.length; child++) t.appendChild((typeof chldrn[child]).match(/number|string/)?document.createTextNode(chldrn[child]):chldrn[child]); t.normalize(); }
 		return t;
 	}
 	function addAfter(n, e) {
