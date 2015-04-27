@@ -38,29 +38,9 @@ var patterns = {
 	],
 };
 var nextDisc = "\n";
-/*☠☠DEAD CODE☠☠ -- following only applies to REtools in classic.musicbrainz.org --
-colour		: just put "" for standard stylings
-background	: 
-border		: 
-padding		: bla bla proutor
-REtools		: add your catalogue number or bar code searches here */
-var colour = "black";
-var background = "#ff6";
-var border = "";
-var padding = "0 4px";
-var REtools = {
-	"jan with JOShinweb" : "http://joshinweb.jp/dp/%barcode%.html", 
-	"catnum with JOShinweb" : "http://joshinweb.jp/cdshops/Dps?KEY=RECODE&FM=0&KEYWORD=%catnum%", 
-	"catnum with CDJOurnal" : "http://search.cdjournal.com/disc/?t=2&na=%catnum1%&nb=%catnum2%", 
-	"catnum with AMAzon Japan" : "http://amazon.jp/s/?url=search-alias%3Dpopular&field-keywords=%catnum%", 
-	"jan with AMAzon Japan" : "http://amazon.jp/s/?url=search-alias%3Dpopular&field-keywords=%barcode%", 
-	"catnum with Google" : "http://google.com/search?q=%catnum%", 
-	"jan with Google" : "http://google.com/search?q=%barcode%", 
-};/*☠☠DEAD CODE☠☠*/
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099plainTextTracklist";
 var tracks = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]");
-var indexes = { "catnum" : 3, "barcode" : 4 };
 /* ## PLAIN TEXT TRACKLIST ## */
 function textTracklist(tracks, patt) {
 	var pattern = patterns[patt][0];
@@ -138,74 +118,4 @@ if (tracks.length > 0) {
 		}
 	}
 }
-/*☠☠DEAD CODE☠☠ ## RELEASE EVENT TOOLS ## classic.mb only*/
-if (false && REtools) {
-	var REfound = document.evaluate("//table[@class='eventslist']//tr", content, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-	for (var ire=1; ire < REfound.snapshotLength; ire++) {
-		var tmp;
-		var catnum = null;
-		var catnum1 = null;
-		var catnum2 = null;
-		tmp = REfound.snapshotItem(ire).getElementsByTagName("td")[indexes.catnum].firstChild.nodeValue;
-		if (tmp != "-") {
-			catnum = tmp;
-			tmp = catnum.split("-", 2);
-			if (tmp.length == 2) {
-				catnum1 = tmp[0];
-				catnum2 = tmp[1];
-			}
-		}
-		var barcode = null;
-		tmp = REfound.snapshotItem(ire).getElementsByTagName("td")[indexes.barcode].firstChild.nodeValue;
-		if (tmp != "-") {
-			barcode = tmp;
-		}
-		debug("release event\ncatnum  : "+catnum+"\ncatnum1 : "+catnum1+"\ncatnum2 : "+catnum2+"\nbarcode : "+barcode);
-		for (var tool in REtools) if (REtools.hasOwnProperty(tool)) {
-			addTool(REfound.snapshotItem(ire), tool, REtools[tool], catnum, catnum1, catnum2, barcode);
-		}
-	}
-}
-function addTool(pRE, pLABEL, pURL, pCATNUM, pCATNUM1, pCATNUM2, pBARCODE) {
-	var linkPos = null;
-	var isBC = (pURL.indexOf("%barcode%") >= 0 && pBARCODE);
-	var isCN = (pURL.indexOf("%catnum%") >= 0 && pCATNUM);
-	var isCN1 = (pURL.indexOf("%catnum1%") >= 0 && pCATNUM1);
-	var isCN2 = (pURL.indexOf("%catnum2%") >= 0 && pCATNUM2);
-	if (isBC) { linkPos = "barcode"; }
-	else if (isCN || (isCN1 && isCN2)) { linkPos = "catnum"; }
-	debug(pLABEL+"\n"+pURL+(isBC?"\nisBC":"")+(isCN?"\nisCN":"")+(isCN1?"\nisCN1":"")+(isCN2?"\nisCN2":""));
-	if (linkPos) {
-		var prevTR = getPreviousTR(pRE);
-		if (prevTR.className != j2ujsID) {
-			prevTR = document.createElement("tr");
-			prevTR.className = j2ujsID;
-			for (var iactd=0; iactd < 6; iactd++) { prevTR.appendChild(document.createElement("td")); }
-			pRE.parentNode.insertBefore(prevTR, pRE);
-		}
-		var REcell = prevTR.getElementsByTagName("td")[indexes[linkPos]];
-		REcell.appendChild(document.createTextNode(" "));
-		var a = document.createElement("a");
-		a.setAttribute("title", pLABEL.toLowerCase());
-		a.setAttribute("href", pURL.replace(/%catnum%/g, pCATNUM).replace(/%catnum1%/g, pCATNUM1).replace(/%catnum2%/g, pCATNUM2).replace(/%barcode%/g, pBARCODE));
-		a.style.color = colour;
-		a.style.background = background;
-		a.style.border = border;
-		a.style.padding = padding;
-		a.appendChild(document.createTextNode(pLABEL.replace(/[^A-Z0-9]/g, "")));
-		REcell.appendChild(a);
-	}
-}
-function getPreviousTR(thisTR) {
-	var prevTR = thisTR.previousSibling;
-	while (prevTR.tagName != "TR") {/*infinite loop hazard*/ prevTR = prevTR.previousSibling; }
-	return prevTR;
-}
-function debug(coucou) {
-	if (debugging) {
-		var dbgtxt = "89036: " + coucou;
-		try { console.log(dbgtxt);
-		} catch(e) {alert(dbgtxt);}
-	}
-}/*☠☠DEAD CODE☠☠*/
 })();
