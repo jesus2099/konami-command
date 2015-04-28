@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.28.1205
+// @version      2015.4.28.1620
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -45,6 +45,7 @@
 	var rythm = 1000;
 	var coolos = 5000;
 	var currentButt;
+	var KBD = {ENTER:13, M:77};
 	var MMRid = "MMR2099userjs120382";
 	var MBS = location.protocol+"//"+location.host;
 	var sidebar = document.getElementById("sidebar");
@@ -85,7 +86,7 @@
 	var remoteRelease = {"tracks":[]};
 	sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 	document.body.addEventListener("keydown", function(e) {
-		if (e.ctrlKey && e.shiftKey && e.keyCode == "77"/*CTRL+SHIFT+M*/) {
+		if (e.ctrlKey && e.shiftKey && e.keyCode == KBD.M) {
 			showGUI();
 			return stop(e);
 		}
@@ -245,7 +246,7 @@ after step 1, check
 	function massMergeGUI() {
 		var MMRdiv = createTag("div", {a:{id:MMRid}, e:{
 			keydown:function(e) {
-				if (e.keyCode == 13 && (e.target == startpos || e.target == editNote && e.ctrlKey)) {
+				if (e.keyCode == KBD.ENTER && (e.target == startpos || e.target == editNote && e.ctrlKey)) {
 					document.getElementById(MMRid+"mergeallbutt").click();
 				}
 			},
@@ -283,6 +284,12 @@ after step 1, check
 				}
 			}
 		}}}));
+		if (navigator.userAgent.match(/firefox/i)) startpos.addEventListener("keyup", function(e) {
+			if (e.keyCode != KBD.ENTER) {
+				this.blur();
+				this.focus();
+			}
+		});
 		var trs = document.querySelectorAll("div#content > table.tbl > tbody > tr");
 //		var jsonRelease, scripts = document.querySelectorAll("script:not([src])");
 //		for (var s=0; s < scripts.length && !jsonRelease; s++) {
