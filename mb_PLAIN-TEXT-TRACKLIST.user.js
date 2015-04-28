@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2015.4.27.1515
+// @version      2015.4.28.1748
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @homepage     http://userscripts-mirror.org/scripts/show/89036
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -102,7 +102,7 @@ if (tracks.length > 0) {
 		});
 		a.appendChild(document.createTextNode(p));
 		a.setAttribute("rel", p);
-		var relprop = sidebar.querySelector("div#sidebar dl.properties");
+		var relprop = document.querySelector("div#sidebar dl.properties");
 		if (relprop) {
 			var tlddid = userjs+"tracklists";
 			var tldd = relprop.querySelector("dd#"+tlddid);
