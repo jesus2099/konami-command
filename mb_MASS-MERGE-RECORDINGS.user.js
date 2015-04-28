@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.24.2029
+// @version      2015.4.28.902
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -547,7 +547,12 @@ after step 1, check
 //					rmForm.appendChild(ac2dom(remoteRelease.tracks[rtrack].artistCredit));
 					var AC = document.createElement("span");
 					AC.innerHTML = remoteRelease.tracks[rtrack].artistCredit;
-					if (almostSame(html2text(localRelease.tracks[ltrack].artistCredit), html2text(remoteRelease.tracks[rtrack].artistCredit))) AC.style.setProperty("background-color", cOK);
+					if (almostSame(html2text(localRelease.tracks[ltrack].artistCredit), html2text(remoteRelease.tracks[rtrack].artistCredit))) {
+						for (var spanMp = AC.querySelectorAll("span.mp"), m = 0; m < spanMp.length; m++) {
+							spanMp[m].classList.remove("mp");
+						}
+						AC.style.setProperty("background-color", cOK);
+					}
 					rmForm.appendChild(AC);
 					var mergeButt = rmForm.appendChild(createInput("button", "", "Merge"));
 					mergeButt.setAttribute("class", MMRid+"mergebutt");
