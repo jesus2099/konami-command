@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.28.902
+// @version      2015.4.28.1205
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -132,8 +132,10 @@ after step 1, check
 			var remTrack = remoteRelease.tracks[recid2trackIndex.remote[swap.value=="no"?from.value:to.value]];
 			if (locTrack.name == remTrack.name) paramsup += "👍 '''Same track title''' “"+protectEditNoteText(locTrack.name)+"”\n";
 			else if (locTrack.name.toUpperCase() == remTrack.name.toUpperCase()) paramsup += "👍 '''Same track title''' (case insensitive)\n";
-			else if (almostSame(locTrack.name, remTrack.name)) paramsup += "👍 '''Almost same track title''' (loose comparison)\n";
-			if (almostSame(html2text(locTrack.artistCredit), html2text(remTrack.artistCredit))) paramsup += "👍 '''Similar track artist credit ([AC])''' “"+html2text(locTrack.artistCredit)+"”\n";
+			else if (almostSame(locTrack.name, remTrack.name)) paramsup += "👍 '''Similar track title''' (loose comparison)\n";
+			if (locTrack.artistCredit == remTrack.artistCredit) paramsup += "👍 '''Same track artist credit ([AC])''' “"+html2text(locTrack.artistCredit)+"”\n";
+			else if (html2text(locTrack.artistCredit).toUpperCase() == html2text(remTrack.artistCredit).toUpperCase()) paramsup += "👍 '''Same track artist credit ([AC]) (case insensitive)'''\n";
+			else if (almostSame(html2text(locTrack.artistCredit), html2text(remTrack.artistCredit))) paramsup += "👍 '''Similar track artist credit ([AC])''' “"+html2text(locTrack.artistCredit)+"”\n";
 			if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
 				var delta = Math.abs(locTrack.length - remTrack.length);
 				if (delta <= safeLengthDelta*1000) paramsup += "👍 '''"+(delta==0?"Same":"Very close")+" track times''' "+/*temporary hidden until milliseconds are back(delta==0?"(in milliseconds)":*/"("+(time(locTrack.length)==time(remTrack.length)?time(locTrack.length):"within "+safeLengthDelta+" seconds: "+time((swap.value=="no"?locTrack:remTrack).length)+" ← "+time((swap.value=="no"?remTrack:locTrack).length))+")"/*)temporary*/+"\n";
