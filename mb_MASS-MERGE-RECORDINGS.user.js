@@ -135,7 +135,7 @@ after step 1, check
 			else if (locTrack.name.toUpperCase() == remTrack.name.toUpperCase()) paramsup += "👍 '''Same track title''' (case insensitive)\n";
 			else if (almostSame(locTrack.name, remTrack.name)) paramsup += "👍 '''Similar track title''' (loose comparison)\n";
 			if (locTrack.artistCredit == remTrack.artistCredit) paramsup += "👍 '''Same track artist credit ([AC])''' “"+html2text(locTrack.artistCredit)+"”\n";
-			else if (html2text(locTrack.artistCredit).toUpperCase() == html2text(remTrack.artistCredit).toUpperCase()) paramsup += "👍 '''Same track artist credit ([AC]) (case insensitive)'''\n";
+			else if (html2text(locTrack.artistCredit).toUpperCase() == html2text(remTrack.artistCredit).toUpperCase()) paramsup += "👍 '''Same track artist credit ([AC])''' (case insensitive)\n";
 			else if (almostSame(html2text(locTrack.artistCredit), html2text(remTrack.artistCredit))) paramsup += "👍 '''Similar track artist credit ([AC])''' “"+html2text(locTrack.artistCredit)+"”\n";
 			if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
 				var delta = Math.abs(locTrack.length - remTrack.length);
