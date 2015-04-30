@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2015.2.18.12.0
+// @version      2015.4.30.1642
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -273,7 +273,7 @@ function createTag(tag, gadgets, children) {
 	return t;
 }
 function createButtor(label, width) {
-	var butt = createTag("input", {a:{type:"button",value:label,tabindex:"-1"}, s:{display:"inline",padding:"2px","float":"none"}});
+	var butt = createTag("input", {a:{type:"button",value:label,tabindex:"-1","class":"styled-button"}, s:{display:"inline",padding:"2px","float":"none"}});
 	if (width) { butt.style.setProperty("width", width); }
 	return butt;
 }
