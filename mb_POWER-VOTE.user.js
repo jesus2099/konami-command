@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2015.1.23.19.2
+// @version      2015.4.30.1619
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -46,8 +46,8 @@
 		var voteColours = true;
 		/* - --- - --- - --- - END  OF  CONFIGURATION - --- - --- - --- - */
 		var userjs = "jesus2099userjs57765";
-		var FFF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);/*FFF has bugs*/
-		if (FFF) { FFF = {"1":"#b1ebb0", "0":"#ebb1ba", "-1":"#f2f0a5"}; }
+		var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);/*FF has bugs*/
+		if (FF) { FF = {"1":"#b1ebb0", "0":"#ebb1ba", "-1":"#f2f0a5"}; }
 		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 		var j2css = document.styleSheets[document.styleSheets.length-1];
 		j2css.insertRule("div.edit-list."+userjs+"force, div.edit-list."+userjs+"ninja > div.edit-actions, div.edit-list."+userjs+"ninja > div.edit-details, div.edit-list."+userjs+"ninja > div.edit-notes { overflow: hidden !important; height: 0 !important; !important; padding: 0 !important; margin: 0 !important; }", j2css.cssRules.length);
@@ -89,10 +89,10 @@
 		for (var i = 0; i < inputs.length; i++) {
 			if (onlySubmitTabIndexed) { inputs[i].setAttribute("tabindex", "-1"); }
 			radios.push(inputs[i]);
-			if (voteColours) {/*FFF is LIFO*/
+			if (voteColours) {/*FF is LIFO*/
 				inputs[i].addEventListener("change", function(e) {
 					var actions = getParent(this, "div", "edit-actions");
-					if (this.value != -2) { actions.style.setProperty("background-color", FFF?FFF[this.value]:self.getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color")); }
+					if (this.value != -2) { actions.style.setProperty("background-color", FF?FF[this.value]:self.getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color")); }
 					else { actions.style.removeProperty("background-color"); }
 				}, false);
 				if (inputs[i].checked) { sendEvent(inputs[i], "change"); }
@@ -311,20 +311,18 @@
 		return obj;
 	}
 	function shortcut(vote, txt) {
-		var button = document.createElement("input");
-		button.setAttribute("type", "button");
+		var button = document.createElement("button");
 		if (onlySubmitTabIndexed) { button.setAttribute("tabindex", "-1"); }
-		button.style.setProperty("padding", "0 3px");
-		button.style.setProperty("margin", "0");
+		button.style.setProperty("padding", FF?"0 2px":"0 3px");
+		button.style.setProperty("margin", FF?"0 3px 0 0":"0 3px");
 		button.style.setProperty("float", "none");
-		button.appendChild( document.createTextNode(txt) );
-		button.setAttribute("value", txt);
+		button.appendChild(document.createTextNode(txt));
 		button.addEventListener("click", function(e) { doitdoit(e, vote); }, false);
 		return button;
 	}
 	function doitdoit(e, vote, min, max) {
 		if (vote != "omgcancel") {
-			for (i = (min?min+(FFF?0:1):0); i < (max?max+1:radios.length); i++) {/*FFF shift+click label NG*/
+			for (i = (min?min+(FF?0:1):0); i < (max?max+1:radios.length); i++) {/*FF shift+click label NG*/
 				if (radios[i].getAttribute("value") == vote && !radios[i].checked && !ninja(e, getParent(radios[i], "div", "edit-list")) && (e.shiftKey || isOkToVote(radios[i]))) {
 					click(radios[i]);
 				}
