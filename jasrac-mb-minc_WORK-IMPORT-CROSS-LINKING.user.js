@@ -297,6 +297,7 @@
 						summary += "※ Imported from '''JASRAC''' ('''JA'''panese '''S'''ociety for '''R'''ights of '''A'''uthors, '''C'''omposers and publishers)\n"+userjsname+"\n";
 						summary += "'''JASRAC''' work page: "+workLookupURL("jasrac", "code", sakuhinCode)+spam+"\n";
 						summary += "音楽の森（mirror）: "+workLookupURL("minc", "code", sakuhinCode)+" ← needs account";
+						summary = toHankaku(summary);
 						td.appendChild(document.createTextNode("click to select → "));
 						var ta = createTag("textarea", {"name":"tsummary"}, {}, {}, summary);
 						ta.setAttribute("id", ta.getAttribute("name"));
@@ -1257,4 +1258,24 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 	function replaceElement(newElement, oldElement) {
 		oldElement.parentNode.replaceChild(newElement, oldElement);
 	}
+	function toHankaku(chars) {
+	        var halfwidth = '';
+	        chars = chars + '';
+	        for(var i=0, l=chars.length; i<l; i++) {
+	            var c = chars[i].charCodeAt(0);
+	            if (c >= 0xff01 && c <= 0xff5d && c != 0xff02 && c != 0xff07 && c != 0xff3c) {  /* all except <"> <'> <\> <~> */
+	                c = c - 0xfee0;
+	            } else if (((c >= 0xff21 && c <= 0xff3a) || (c >= 0xff41 && c <= 0xff5a))) {   /* alpha */
+	                c = c - 0xfee0;
+	            } else if ((c >= 0xff10 && c <= 0xff19)) { /* num */
+	                c = c - 0xfee0;
+	            } else if ((c == 0x3000)) {    /* space */
+	                c = 0x20;
+	            } else if ((c == 0x2212)) {    /* MINUS SIGN */
+	                c = 0x2d;
+	            }
+	            halfwidth += String.fromCharCode(c);
+	        }
+	        return halfwidth;
+	    }
 })();
