@@ -1,7 +1,7 @@
 (function(){var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.5.12.1623
+// @version      2015.5.12.2332
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -804,7 +804,7 @@
 			}
 			if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) t.style.setProperty("cursor", "pointer");
 		}
-		if (children) { var chldrn = children; if ((typeof chldrn).match(/number|string/) || chldrn.tagName) chldrn = [chldrn]; for(var child=0; child<chldrn.length; child++) t.appendChild((typeof chldrn[child]).match(/number|string/)?document.createTextNode(chldrn[child]):chldrn[child]); t.normalize(); }
+		if (children) { var chldrn = children; if ((typeof chldrn).match(/number|string/) || chldrn.nodeType) chldrn = [chldrn]; for(var child=0; child<chldrn.length; child++) t.appendChild((typeof chldrn[child]).match(/number|string/)?document.createTextNode(chldrn[child]):chldrn[child]); t.normalize(); }
 		return t;
 	}
 	function addAfter(n, e) {
