@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2015.1.31.2345
+// @version      2015.5.12.1623
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -65,9 +65,9 @@ var releasewsURL = "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musi
 var str_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(str_GUID, "i");
 var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acoustid&mbid=%mbid&state=%state";
-var pssh = location.protocol+"//"+location.host;
-var css_recording = "td:not(.pos):not(.video) a[href^='"+pssh+"/recording/']";
-var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='"+pssh+"/work/']";
+var MBS = location.protocol+"//"+location.host;
+var css_recording = "td:not(.pos):not(.video) > a[href^='"+MBS+"/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='"+MBS+"/recording/']";
+var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='"+MBS+"/work/']";
 var pleaseWaitFragment = null;
 var tracksHtml = null;
 var pagecat = location.href.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i)? "edits" : "release";
