@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.4.28.1620
+// @version      2015.5.12.1623
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -53,8 +53,7 @@
 	var mergeQueue = [];/*contains next mergeButts*/
 	var sregex_MBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var regex_MBID = new RegExp(sregex_MBID, "i");
-	var css_track = "div#content > table.medium > tbody > tr > td:not(.pos):not(.video) a[href^='/recording/'], td:not(.pos):not(.video) a[href^='"+MBS+"/recording/']";
-	css_track = css_track+", "+css_track.replace(MBS, "");/*in case those come back again to no-host URL in the future*/
+	var css_track = "td:not(.pos):not(.video) > a[href^='"+MBS+"/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='"+MBS+"/recording/']";
 	var css_track_ac = "td:not([class]) + td:not([class])";
 	var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
 	var startpos, status, from, to, swap, editNote, queuetrack;
