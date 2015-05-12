@@ -1,7 +1,7 @@
 (function(){var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.4.27.1101
+// @version      2015.5.12.1623
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -650,7 +650,7 @@
 		var selector = {
 			"release": "div#content table.tbl > tbody > tr > td a[href^='"+server+"/release/']",/*pwhere(lab,rec,rgr)*/
 			"release-group": "div.releaseheader a[href^='"+server+"/release-group/']",/*rel*/
-			"recording": ("div#content "+(pwhere?"[href^='"+server+"/recording/']":"table.tbl > tbody > tr > td > a[href^='"+server+"/recording/'], table.tbl > tbody > tr > td > span.mp > a[href^='"+server+"/recording/']")),/*pwhere(art,wrk)/rel*/
+			"recording": (pwhere?"div#content [href^='"+server+"/recording/']":"table.medium > tbody > tr > td:not(.pos):not(.video) > a[href^='"+server+"/recording/'], table.medium > tbody > tr > td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='"+server+"/recording/']"),/*pwhere(art,wrk)/rel*/
 			"artist": "div.releaseheader a[href^='"+server+"/artist/'], div#content table.tbl > tbody > tr > td > a[href^='"+server+"/artist/'], div#content table.tbl > tbody > tr > td > span.mp > a[href^='"+server+"/artist/']",/*rel*/
 			"work": "div#content div.ars > dl.ars > dd > a[href^='"+server+"/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='"+server+"/work/']",/*rel*/
 			"label": "div#sidebar > ul.links > li a[href^='"+server+"/label/']",/*rel*/
