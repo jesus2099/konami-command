@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.4.30.1652
+// @version      2015.5.12.1057
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -44,6 +44,7 @@
 			} else meta[kv[1]] = kv[2];
 		}
 	}
+	meta.name = meta.name.substr(4).replace(/\s/g, "\u00a0");
 	meta.icon = createTag("img", {a:{src:meta.icon}, s:{"vertical-align":"middle", "margin":"-8px 0"}});
 	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var userjs = "jesus2099userjs85790"/*have to keep this for legacy saved settings*/;
@@ -128,7 +129,7 @@
 			}
 		}
 		j2setsdiv.scrollIntoView();
-	}}}, [meta.icon.cloneNode(), meta.name.substr(3)+" ("+meta.version+")"]));
+	}}}, [meta.icon.cloneNode(), " "+meta.name+" ("+meta.version+")"]));
 	function bug(error) {
 		var title = "", alrt = meta.name+" ("+meta.version+")"+" ERROR";
 		if (error.module) {
@@ -345,7 +346,7 @@
 											}
 											/* ws:url-rels */
 										}
-										ok &= reled.add("\n —\n"+MBS+"/release/"+crmbids[crr]+" cloned using '''RELEASE_CLONER'''™\n※ part of "+meta.namespace+" '''"+meta.name+"''' ("+meta.version+")", "edit_note", {raw:true,multiline:true});
+										ok &= reled.add("\n —\n"+MBS+"/release/"+crmbids[crr]+" cloned using "+meta.name+"’s '''RELEASE_CLONER''' ("+meta.version+")", "edit_note", {raw:true,multiline:true});
 										/* fin */
 										if (ok) document.body.appendChild(reled.form).submit();
 										else sendEvent(this, "error");
