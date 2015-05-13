@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.5.13.1213
+// @version      2015.5.13.1420
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -459,7 +459,7 @@ after step 1, check
 //										}
 //									}
 //									jsonRelease = null;/*maybe it frees up memory*/
-					//(re)build negative startpos
+					/*(re)build negative startpos*/
 					var negativeOptions = startpos.querySelectorAll("option[value^='-']");
 					for (var nopt = 0; nopt < negativeOptions.length; nopt++) {
 						removeElement(negativeOptions[nopt]);
@@ -467,11 +467,7 @@ after step 1, check
 					for (var rtrack = 0; rtrack < remoteRelease.tracks.length-1; rtrack++) {
 						addOption(startpos, 0-rtrack-1, 0-rtrack-1, true);
 					}
-					bestStartPosition:
-					for (var rem = 0; rem < remoteRelease.tracks.length; rem++) for (var loc = 0; loc < localRelease.tracks.length; loc++) if (almostSame(remoteRelease.tracks[rem].name, localRelease.tracks[loc].name)) {
-						startpos.value = loc - rem;
-						break bestStartPosition;
-					}
+					startpos.value = bestStartPosition();
 					spreadTracks(e);
 				}
 			} else {
@@ -480,6 +476,12 @@ after step 1, check
 		});
 		xhr.open("GET", "/release/"+mbid, true);
 		xhr.send(null);
+	}
+	function bestStartPosition(pLoc) {
+		for (var loc = (typeof pLoc!="undefined"?pLoc:0); loc < (typeof pLoc!="undefined"?pLoc+1:localRelease.tracks.length); loc++) for (var rem = 0; rem < remoteRelease.tracks.length; rem++) if (almostSame(localRelease.tracks[loc].name, remoteRelease.tracks[rem].name)) {
+			return loc - rem;
+		}
+		return 0;
 	}
 	function loadReleaseWS(mbid) {
 	}
