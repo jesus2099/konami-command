@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.5.13.1219
+// @version      2015.5.15.1555
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -534,10 +534,7 @@ after step 1, check
 		var mergebutts = document.getElementsByClassName(MMRid+"mergebutt").length;
 		infoMerge("Recordings loaded, "+mergebutts+" ready to merge", true);
 		var mergeallbutt = document.getElementById(MMRid+"mergeallbutt");
-		mergeallbutt.value = mergeallbutt.getAttribute("ref").replace(/all/, mergebutts);
-		if (mergebutts == 1) mergeallbutt.value = mergeallbutt.value.replace(/recs/, "rec");
-		if (mergebutts == 0) disable(mergeallbutt);
-		else enable(mergeallbutt);
+		disable(mergeallbutt, mergebutts < 1);
 		if (mergebutts > 0 || !e || !e.type || e.type != "load") startpos.focus();
 	}
 	function buildMergeForm(loc, rem) {
