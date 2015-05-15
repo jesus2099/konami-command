@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.5.13.1142
+// @version      2015.5.13.1157
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -538,7 +538,7 @@ after step 1, check
 		if (mergebutts == 1) mergeallbutt.value = mergeallbutt.value.replace(/recs/, "rec");
 		if (mergebutts == 0) disable(mergeallbutt);
 		else enable(mergeallbutt);
-		if (mergebutts > 0 && e && e.type && e.type == "load") startpos.focus();
+		if (mergebutts > 0 || !e || !e.type || e.type != "load") startpos.focus();
 	}
 	function buildMergeForm(loc, rem) {
 		var locTrack = localRelease.tracks[loc];
