@@ -1,9 +1,16 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.5.15.1609
-// @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
+// @version      2015.5.15.1925
+// @description  musicbrainz.org: Merge helper highlights last clicked, show info, indicates oldest MBID (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12)             my own coding setup
+// @compatible   opera+violentmonkey   my own browsing setup
+// @compatible   firefox+greasemonkey  quickly tested
+// @compatible   chromium              quickly tested
+// @compatible   chromium+tampermonkey quickly tested
+// @compatible   chrome                tested with chromium
+// @compatible   chrome+tampermonkey   tested with chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js
@@ -21,10 +28,6 @@
 (function(){
 /* -------- CONFIG START ---- */
 var showEntityInfo = true;
-/*	lookForOldestEdit is DEPRECATED in favour of oldest rowid = oldest MBID. 
-	i will remove it completely during 2015 except if popular request to keep it or change it.
-	I re‐activate it for a little (https://chatlogs.musicbrainz.org/musicbrainz/2015/2015-05/2015-05-15.html#T13-41-15-348740) */
-var lookForOldestEdit = true;
 /* -------- CONFIG  END  ---- */
 	var userjs = "j2userjs124579";
 	var rembid = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
@@ -55,10 +58,7 @@ var lookForOldestEdit = true;
 				if (showEntityInfo && etype.match(/(release|release-group)/)) {
 					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
 				} else { showEntityInfo = false; }
-				tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Row ID")).parentNode.style.setProperty("text-align", "right");
-				if (lookForOldestEdit) {
-					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Oldest found edit"));
-				}
+				tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("DB row ID (MBID birth date)")).parentNode.style.setProperty("text-align", "right");
 			}
 			var rowIDzone = [];
 			for (var row=0; row<entityRows.length; row++) {
@@ -94,9 +94,6 @@ var lookForOldestEdit = true;
 					ents[row].rowidzone.style.setProperty("text-align", "right");
 					ents[row].rowidzone.appendChild(rowIDLink(etype.replace(/-/, "_"), rad.value));
 				}
-				if (lookForOldestEdit) {
-					addZone(entityRows[row], "oldestEdit"+row);
-				}
 			}
 			if (minrowid) {
 				var oldestMBIDrow = rowid2row[minrowid+""];
@@ -112,9 +109,6 @@ var lookForOldestEdit = true;
 			}
 			if (showEntityInfo) {
 				entInfo();
-			}
-			if (lookForOldestEdit) {
-				oldestEdit();
 			}
 		}
 	}
@@ -203,59 +197,6 @@ var lookForOldestEdit = true;
 		xhr.open("GET", url, true);
 		xhr.send(null);
 	}
-	function oldestEdit(current, oldest) {
-		var ioe = current?current:0, io = current&&oldest?oldest:0;
-		var oeZone = document.getElementById(userjs+"oldestEdit"+ioe);
-		oeZone.appendChild(loadimg("edits"));
-		var url = "/search/edits?order=asc&conditions.0.field="+etype.replace(/-/, "_")+"&conditions.0.operator=%3D&conditions.0.name=toto&conditions.0.args.0="+ents[ioe].rad.value;
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if (this.readyState == 4) {
-				removeChildren(oeZone);
-				if (this.status == 200) {
-					var res = document.createElement("html"); res.innerHTML = this.responseText;
-					if ((edit = res.querySelector("div#content div.edit-list h2 a[href*='musicbrainz.org/edit/']")) && (editid = edit.getAttribute("href").match(/[0-9]+$/)) && (edittype = edit.textContent.match(/- (.+)$/)) && (edittype = edittype[1].toUpperCase())) {
-						ents[ioe].edit = parseInt(editid, 10);
-						if (!ents[io].edit || ents[io].edit > ents[ioe].edit) { io = ioe; }
-						var span = document.createElement("span");
-						span.appendChild(document.createTextNode("edit:"));
-						span.appendChild(createA(editid, "/edit/"+editid)).setAttribute("id", userjs+"oldestEditA"+ioe);
-						oeZone.setAttribute("title", edittype);
-						if (editor = res.querySelector("div#content div.edit-list h2 + p.subheader > a[href*='musicbrainz.org/user/']")) {
-							oeZone.setAttribute("title", edittype+" / "+editor.textContent);
-						}
-						stackInfo(oeZone, span);
-					}
-					else {
-						stackInfo(oeZone, "(no edits found)");
-						oeZone.style.setProperty("opacity", ".5");
-					}
-					if (++ioe<ents.length) {
-						oldestEdit(ioe, io);
-					}
-					else {
-						if (ents[io].edit) {
-							oldestEnt = io;
-							if (lastEnt < 0) { ents[io].rad.click(); }
-							var ioeZone = document.getElementById(userjs+"oldestEdit"+io);
-							ioeZone.appendChild(document.createTextNode(" (oldest) "));
-							ioeZone.appendChild(createA("SORT!", null, "sort those rows (oldest edit first)")).addEventListener("click", function(e) {
-								this.parentNode.removeChild(this);
-								sortBy("edit");
-							});
-							document.getElementById(userjs+"oldestEditA"+io).style.setProperty("background-color",  "#6F6");
-						}
-						top.status = "";
-					}
-				}
-				else {
-					stackInfo(oeZone, "Error "+this.status+" fetching oldest entity history #"+ioe);
-				}
-			}
-		};
-		xhr.open("GET", url, true);
-		xhr.send(null);
-	}
 	function sortBy(what) {
 		for (var ent=0; ent < ents.length; ent++) {
 			if (!ents[ent][what]) {
@@ -263,7 +204,7 @@ var lookForOldestEdit = true;
 			} else {
 				var rows = ents[ent].row.parentNode.querySelectorAll("tr");
 				for (var row=0; rows.length; row++) {
-					var indexA = rows[row].querySelector(what=="edit"?("a[id^='"+userjs+"oldestEdit'][href^='/edit/']"):("td[id^='"+userjs+"rowID'] a[href^='/search/edits']"));
+					var indexA = rows[row].querySelector("td[id^='"+userjs+"rowID'] a[href^='/search/edits']");
 					if (indexA && (index = parseInt(indexA.textContent.replace(/\D/g, ""), 10)) && index >= ents[ent][what]) {
 						if (ents[ent].row != rows[row]) {
 							ents[ent].row.parentNode.insertBefore(ents[ent].row.parentNode.removeChild(ents[ent].row), rows[row]);
