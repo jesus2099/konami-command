@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.5.13.1611
+// @version      2015.5.13.1142
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -56,7 +56,7 @@
 	var css_track = "td:not(.pos):not(.video) > a[href^='"+MBS+"/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='"+MBS+"/recording/']";
 	var css_track_ac = "td:not([class]) + td:not([class])";
 	var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
-	var startpos, status, from, to, swap, editNote, queuetrack, shuffled, shuffle, restore;
+	var startpos, status, from, to, swap, editNote, queuetrack, shuffled = false, shuffle, restore;
 	var rem2loc = "◀";
 	var loc2rem = "▶";
 	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
@@ -251,7 +251,7 @@ after step 1, check
 				if (rem !== null) {
 					var rem = 0-rem+loc;
 					if (matchedRemoteTracks.indexOf(rem) < 0) {
-						matchedRemoteTracks.pop(rem);
+						matchedRemoteTracks.push(rem);
 						buildMergeForm(loc, rem);
 					}
 				}
@@ -499,7 +499,8 @@ after step 1, check
 						addOption(startpos, 0-rtrack-1, 0-rtrack-1, true);
 					}
 					startpos.value = bestStartPosition() || 0;
-					spreadTracks(e);
+					if (shuffled) restore.click();
+					else spreadTracks(e);
 				}
 			} else {
 				infoMerge("This is not a valid release", false);
