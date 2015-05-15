@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.1.29.18.33
+// @version      2015.5.15.1609
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, retrieve oldest edit (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -22,8 +22,9 @@
 /* -------- CONFIG START ---- */
 var showEntityInfo = true;
 /*	lookForOldestEdit is DEPRECATED in favour of oldest rowid = oldest MBID. 
-	i will remove it completely during 2015 except if popular request to keep it or change it. */
-var lookForOldestEdit = false;
+	i will remove it completely during 2015 except if popular request to keep it or change it.
+	I re‐activate it for a little (https://chatlogs.musicbrainz.org/musicbrainz/2015/2015-05/2015-05-15.html#T13-41-15-348740) */
+var lookForOldestEdit = true;
 /* -------- CONFIG  END  ---- */
 	var userjs = "j2userjs124579";
 	var rembid = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
@@ -54,9 +55,9 @@ var lookForOldestEdit = false;
 				if (showEntityInfo && etype.match(/(release|release-group)/)) {
 					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
 				} else { showEntityInfo = false; }
-				tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("MBID birth date (row ID)")).parentNode.style.setProperty("text-align", "right");
+				tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Row ID")).parentNode.style.setProperty("text-align", "right");
 				if (lookForOldestEdit) {
-					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("First found edit (deprecated)"));
+					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Oldest found edit"));
 				}
 			}
 			var rowIDzone = [];
