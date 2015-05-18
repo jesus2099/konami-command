@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.5.15.1925
+// @version      2015.5.18.1542
 // @description  musicbrainz.org: Merge helper highlights last clicked, show info, indicates oldest MBID (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -41,7 +41,7 @@
 		if (mergeForm) {
 			/*	entity merge pages progressively abandon ul layout in favour of table.tbl
 				* area			ul (but only for admins)
-				* artist		table.tbl
+				* artist		ul
 				* event			table.tbl
 				* label			table.tbl
 				* place			table.tbl
@@ -55,10 +55,13 @@
 			var entityRows = mergeForm.getElementsByTagName("li");
 			if (tbl) {
 				entityRows = mergeForm.querySelectorAll("form > table > tbody > tr");
+				var headers = tbl.querySelector("thead tr");
 				if (showEntityInfo && mergeType.match(/(release|release-group)/)) {
-					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
+					headers.appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
 				} else { showEntityInfo = false; }
-				tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("DB row ID (MBID birth date)")).parentNode.style.setProperty("text-align", "right");
+				headers.appendChild(document.createElement("th")).appendChild(document.createTextNode("MBID age (row ID)")).parentNode.style.setProperty("text-align", "right");
+				var batchRemove = headers.appendChild(document.createElement("th")).appendChild(createA("Remove selected entities", null, "Remove selected "+mergeType+"s from merge"));
+				batchRemove.addEventListener("click", removeFromMerge);
 			}
 			var rowIDzone = [];
 			for (var row=0; row<entityRows.length; row++) {
@@ -93,6 +96,17 @@
 					ents[row].rowidzone = addZone(entityRows[row], "rowID"+row);
 					ents[row].rowidzone.style.setProperty("text-align", "right");
 					ents[row].rowidzone.appendChild(rowIDLink(mergeType.replace(/-/, "_"), rad.value));
+					var removeZone = addZone(entityRows[row], "remove"+row);
+					var batchRemove = document.createElement("label");
+					var removeCB = batchRemove.appendChild(document.createElement("input"));
+					removeCB.setAttribute("type", "checkbox");
+					removeCB.setAttribute("ref", "remove");
+					removeCB.setAttribute("value", rad.value);
+					batchRemove.appendChild(document.createTextNode("remove"));
+					removeZone.appendChild(batchRemove);
+					removeZone.appendChild(document.createTextNode(" ("));
+					removeZone.appendChild(createA("now", null, "remove this and selected "+mergeType+"s from merge")).addEventListener("click", removeFromMerge);
+					removeZone.appendChild(document.createTextNode(")"));
 				}
 			}
 			if (minrowid) {
@@ -221,6 +235,20 @@
 		var rows = ents[0].row.parentNode.getElementsByTagName(ents[0].row.tagName.toLowerCase());
 		for (var row=0; row < rows.length; row++) {
 			rows[row].className = rows[row].className.replace(/\b(even|odd)\b/, row%2?"even":"odd");
+		}
+	}
+	function removeFromMerge(event) {
+		if (event.target.parentNode.getAttribute("id").indexOf(userjs+"remove") == 0) {
+			var cb = event.target.parentNode.querySelector("input[type='checkbox'][ref='remove']:not(:checked)");
+			if (cb) cb.checked = true;
+		}
+		var checkedRemoves = mergeForm.querySelectorAll("[id^='"+userjs+"remove'] input[type='checkbox'][ref='remove']:checked");
+		var href = "?submit=remove";
+		if (checkedRemoves.length > 0) {
+			for (var cb = 0; cb < checkedRemoves.length; cb++) {
+				href += "&remove="+checkedRemoves[cb].value;
+			}
+			location.href = href;
 		}
 	}
 	function loadimg(txt) {
