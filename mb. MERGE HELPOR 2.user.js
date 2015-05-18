@@ -84,8 +84,7 @@
 								for (var td=0; td<tds.length; td++) {
 									tds[td].style.setProperty("background-color", "#FF6");
 								}
-							}
-							else {
+							} else {
 								entityRows[row].style.setProperty("background-color", "#FF6");
 							}
 							entityRows[row].style.setProperty("border", "thin dashed black");
@@ -202,8 +201,7 @@
 					if (++iei<ents.length) {
 						entInfo(iei);
 					}
-				}
-				else {
+				} else {
 					stackInfo(eiZone, "Error "+this.status+" fetching "+mergeType+" #"+iei+" info");
 				}
 			}
@@ -243,8 +241,8 @@
 			if (cb) cb.checked = true;
 		}
 		var checkedRemoves = mergeForm.querySelectorAll("[id^='"+userjs+"remove'] input[type='checkbox'][ref='remove']:checked");
-		var href = "?submit=remove";
 		if (checkedRemoves.length > 0) {
+			var href = "?submit=remove";
 			for (var cb = 0; cb < checkedRemoves.length; cb++) {
 				href += "&remove="+checkedRemoves[cb].value;
 			}
@@ -280,8 +278,7 @@
 		var a = document.createElement("a");
 		if (link) {
 			a.setAttribute("href", link);
-		}
-		else {
+		} else {
 			a.style.setProperty("cursor", "pointer");
 		}
 		if (title){ a.setAttribute("title", title); }
