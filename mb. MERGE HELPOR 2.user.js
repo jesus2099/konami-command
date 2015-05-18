@@ -25,20 +25,20 @@
 // @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
-(function(){
-/* -------- CONFIG START ---- */
-var showEntityInfo = true;
-/* -------- CONFIG  END  ---- */
+(function(){"use strict";
 	var userjs = "j2userjs124579";
 	var rembid = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
-	if (etype = self.location.pathname.match(/\/(.+)\/merge/)) {
-		etype = etype[1].replace(/_/, "-");
+	var mergeType = location.pathname.match(/\/(.+)\/merge/);
+	if (mergeType) {
+		var showEntityInfo = true;
+		mergeType = mergeType[1].replace(/_/, "-");
 		var ents = [];
 		var lastEnt = -1;
 		var oldestEnt = -1;
 		var minrowid;
 		var rowid2row = {};
-		if (mergeForm = document.querySelector("div#content > form[action*='/merge']")) {
+		var mergeForm = document.querySelector("div#content > form[action*='/merge']");
+		if (mergeForm) {
 			/*	entity merge pages progressively abandon ul layout in favour of table.tbl
 				* area			ul (but only for admins)
 				* artist		table.tbl
@@ -55,7 +55,7 @@ var showEntityInfo = true;
 			var entityRows = mergeForm.getElementsByTagName("li");
 			if (tbl) {
 				entityRows = mergeForm.querySelectorAll("form > table > tbody > tr");
-				if (showEntityInfo && etype.match(/(release|release-group)/)) {
+				if (showEntityInfo && mergeType.match(/(release|release-group)/)) {
 					tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
 				} else { showEntityInfo = false; }
 				tbl.querySelector("thead tr").appendChild(document.createElement("th")).appendChild(document.createTextNode("DB row ID (MBID birth date)")).parentNode.style.setProperty("text-align", "right");
@@ -92,7 +92,7 @@ var showEntityInfo = true;
 					}
 					ents[row].rowidzone = addZone(entityRows[row], "rowID"+row);
 					ents[row].rowidzone.style.setProperty("text-align", "right");
-					ents[row].rowidzone.appendChild(rowIDLink(etype.replace(/-/, "_"), rad.value));
+					ents[row].rowidzone.appendChild(rowIDLink(mergeType.replace(/-/, "_"), rad.value));
 				}
 			}
 			if (minrowid) {
@@ -116,8 +116,8 @@ var showEntityInfo = true;
 		var iei = current?current:0;
 		var eiZone = document.getElementById(userjs+"entInfo"+iei);
 		eiZone.appendChild(loadimg("info"));
-		var url = "/ws/2/"+etype+"/"+ents[iei].a.getAttribute("href").match(rembid)+"?inc=";
-		switch (etype) {
+		var url = "/ws/2/"+mergeType+"/"+ents[iei].a.getAttribute("href").match(rembid)+"?inc=";
+		switch (mergeType) {
 			case "artist":
 				url += "release-groups+works+recordings";
 				break;
@@ -134,9 +134,9 @@ var showEntityInfo = true;
 				removeChildren(eiZone);
 				if (this.status == 200) {
 					var res = this.responseXML, tmp;
-					switch (etype) {
+					switch (mergeType) {
 						case "artist":
-							var tmp = res.evaluate(".//mb:country/text()", res, nsr, XPathResult.ANY_TYPE, null);
+							var tmp = res.evaluate(".//mb:country/text()", res, nsr, XPathResult.ANY_TYPE, null), tmp2;
 							while (tmp2 = tmp.iterateNext()) {
 								stackInfo(eiZone, tmp2.nodeValue);
 							}
@@ -190,7 +190,7 @@ var showEntityInfo = true;
 					}
 				}
 				else {
-					stackInfo(eiZone, "Error "+this.status+" fetching "+etype+" #"+iei+" info");
+					stackInfo(eiZone, "Error "+this.status+" fetching "+mergeType+" #"+iei+" info");
 				}
 			}
 		};
@@ -204,7 +204,7 @@ var showEntityInfo = true;
 			} else {
 				var rows = ents[ent].row.parentNode.querySelectorAll("tr");
 				for (var row=0; rows.length; row++) {
-					var indexA = rows[row].querySelector("td[id^='"+userjs+"rowID'] a[href^='/search/edits']");
+					var indexA = rows[row].querySelector("td[id^='"+userjs+"rowID'] a[href^='/search/edits']"), index;
 					if (indexA && (index = parseInt(indexA.textContent.replace(/\D/g, ""), 10)) && index >= ents[ent][what]) {
 						if (ents[ent].row != rows[row]) {
 							ents[ent].row.parentNode.insertBefore(ents[ent].row.parentNode.removeChild(ents[ent].row), rows[row]);
