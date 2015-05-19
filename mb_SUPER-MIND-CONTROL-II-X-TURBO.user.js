@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.5.12.1844
+// @version      2015.5.19.1718
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -1186,7 +1186,7 @@
 						localStorage.setItem(userjs+"search-replace", JSON.stringify(searchrep));
 					}
 				} else if (e.target.className == userjs+"track-length-parser") {
-					var erase = e.target.value.match(/erase/i) || e.ctrlKey;
+					var erase = e.target.textContent.match(/erase/i) || e.ctrlKey;
 					var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']", e.target, e);
 					var times = !erase && prompt("Track length parser\n\nPlease paste your huge text including track times below.\n“1:23” and “1′23″” and even incorrect “1’23”” and “1'23\"” will be parsed.\nYou can for instance copy from your foobar2000 tracklist, minc.or.jp, etc.\nWARNING. You must understand that all current times will be overwritten in the tracklist editor.");
 					if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(/\b\d{1,3}[:′’']\d\d\b[″”"]?/g))) {
@@ -1209,23 +1209,23 @@
 					}
 				}
 			} else if (e.type.match(/^mouse(over|out)$/)) {
-				var _value = e.target.getAttribute("_value");
-				var _ctrlValue = e.target.getAttribute("_ctrlValue");
+				var _text = e.target.getAttribute("_text");
+				var _ctrlText = e.target.getAttribute("_ctrlText");
 				switch (e.type) {
 					case "mouseover":
-						if (!_value) { e.target.setAttribute("_value", e.target.value); }
-						if (e.ctrlKey && _ctrlValue) {
+						if (!_text) { e.target.setAttribute("_text", e.target.textContent); }
+						if (e.ctrlKey && _ctrlText) {
 							e.target.style.setProperty("background-color", "pink");
-							e.target.value = _ctrlValue;
+							e.target.replaceChild(document.createTextNode(_ctrlText), e.target.firstChild);
 						}
 						if (e.shiftKey) {
-							if (!(e.ctrlKey && _ctrlValue)) { e.target.style.setProperty("background-color", "gold"); }
-							e.target.value += " (all)";
+							if (!(e.ctrlKey && _ctrlText)) { e.target.style.setProperty("background-color", "gold"); }
+							e.target.replaceChild(document.createTextNode(e.target.textContent+" (all)"), e.target.firstChild);
 						}
 						break;
 					case "mouseout":
 						e.target.style.setProperty("background-color", "yellow");
-						e.target.value = _value;
+						e.target.replaceChild(document.createTextNode(_text), e.target.firstChild);
 						break;
 				}
 			}
@@ -1242,7 +1242,7 @@
 			var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
 			for (var tp=0; tp<tps.length; tp++) {
 				if (!tps[tp].parentNode.querySelector("."+userjs+"track-length-parser")) {
-					addAfter(createTag("button", {a:{type:"button","class":userjs+"track-length-parser","_ctrlValue":"Erase times",title:"CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"},s:{"background-color":"yellow"}}, "Time Parser"), tps[tp]);
+					addAfter(createTag("button", {a:{type:"button","class":userjs+"track-length-parser","_ctrlText":"Erase times",title:"CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"},s:{"background-color":"yellow"}}, "Time Parser"), tps[tp]);
 				}
 				if (!tps[tp].parentNode.querySelector("."+userjs+"search-replace")) {
 					addAfter(createTag("button", {a:{type:"button","class":userjs+"search-replace",title:"SHIFT key to alter all open tracklists"},s:{"background-color":"yellow"}}, "Search→replace"), tps[tp]);
