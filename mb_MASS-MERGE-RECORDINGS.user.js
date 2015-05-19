@@ -377,10 +377,10 @@ after step 1, check
 			this.style.removeProperty("background-color");
 			this.removeAttribute("title");
 		}, false);
-		var saveEditNoteButt = createInput("button", "", "Save");
+		var saveEditNoteButt = createInput("button", "", "Save edit note");
 		saveEditNoteButt.setAttribute("title", "Save edit note text to local storage for next time");
 		saveEditNoteButt.addEventListener("click", saveEditNote);
-		var loadEditNoteButt = createInput("button", "", "Load");
+		var loadEditNoteButt = createInput("button", "", "Load edit note");
 		loadEditNoteButt.setAttribute("title", "Reload edit note text from local storage");
 		loadEditNoteButt.addEventListener("click", loadEditNote);
 		MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "ENTER"), ": queue all", document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "S"), ": ", saveEditNoteButt, document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "O"), ": ", loadEditNoteButt]));
