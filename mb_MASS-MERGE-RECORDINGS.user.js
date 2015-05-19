@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.5.19.1548
+// @version      2015.5.19.1628
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -45,7 +45,7 @@
 	var rythm = 1000;
 	var coolos = 5000;
 	var currentButt;
-	var KBD = {ENTER:13, M:77};
+	var KBD = {ENTER:13, M:77, O:79, S:83};
 	var MMRid = "MMR2099userjs120382";
 	var MBS = location.protocol+"//"+location.host;
 	var sidebar = document.getElementById("sidebar");
@@ -270,6 +270,13 @@ after step 1, check
 			keydown:function(e) {
 				if (e.keyCode == KBD.ENTER && (e.target == startpos || e.target == editNote && e.ctrlKey)) {
 					document.getElementById(MMRid+"mergeallbutt").click();
+				} else if (e.target == editNote && e.ctrlKey) {
+					switch (e.keyCode) {
+						case KBD.S:
+							return saveEditNote(e);
+						case KBD.O:
+							return loadEditNote(e);
+					}
 				}
 			},
 			click: showGUI
@@ -364,21 +371,17 @@ after step 1, check
 		editNote = MMRdiv.appendChild(createInput("textarea", "merge.edit_note", lastEditNote?lastEditNote:""));
 		editNote.style.setProperty("width", "100%");
 		editNote.setAttribute("rows", "5");
-		editNote.addEventListener("select", function(e) {
+		editNote.addEventListener("input", function(e) {
 			this.style.removeProperty("background-color");
 			this.removeAttribute("title");
 		}, false);
-		editNote.addEventListener("change", function(e) {
-			if (localStorage) {
-				localStorage.setItem(MMRid, this.value);
-				this.style.setProperty("background-color", cOK);
-				this.setAttribute("title", "Saved to local storage");
-			} else {
-				this.style.setProperty("background-color", cInfo);
-				this.setAttribute("title", "Could not save to local storage");
-			}
-		}, false);
-		MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "ENTER"), ": queue all"]));
+		var saveEditNoteButt = createInput("button", "", "Save");
+		saveEditNoteButt.setAttribute("title", "Save edit note text to local storage for next time");
+		saveEditNoteButt.addEventListener("click", saveEditNote);
+		var loadEditNoteButt = createInput("button", "", "Load");
+		loadEditNoteButt.setAttribute("title", "Reload edit note text from local storage");
+		loadEditNoteButt.addEventListener("click", loadEditNote);
+		MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "ENTER"), ": queue all", document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "S"), ": ", saveEditNoteButt, document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "O"), ": ", loadEditNoteButt]));
 		MMRdiv.appendChild(createTag("p", {}, "Each recording merge will automatically target the oldest, unless direction is manually changed by clicking each arrow button or below batch button."));
 		from = MMRdiv.appendChild(createInput("hidden", "from", ""));
 		to = MMRdiv.appendChild(createInput("hidden", "to", ""));
@@ -393,7 +396,7 @@ after step 1, check
 			this.value = this.value.replace(/\w+$/, swap.value=="no"?"remote":"local");
 			this.style.setProperty("background-color", swap.value=="no"?cInfo:cOK);
 		}, false);
-		resetAllDirButt = createInput("button", "", "Reset all merge directions to oldest");
+		var resetAllDirButt = createInput("button", "", "Reset all merge directions to oldest");
 		resetAllDirButt.addEventListener("click", function(e) {
 			var allbutts = document.querySelectorAll("input."+MMRid+"dirbutt:not([disabled])");
 			for (var iab=0; iab < allbutts.length; iab++) {
@@ -687,6 +690,32 @@ after step 1, check
 			}
 		}
 		status.focus();
+	}
+	function saveEditNote(event) {
+		if (localStorage) {
+			localStorage.setItem(MMRid, editNote.value);
+			editNote.style.setProperty("background-color", cOK);
+			editNote.setAttribute("title", "Saved to local storage");
+		} else {
+			editNote.style.setProperty("background-color", cInfo);
+			editNote.setAttribute("title", "Could not save to local storage");
+		}
+		return stop(event);
+	}
+	function loadEditNote(event) {
+		if (localStorage) {
+			var savedEditNote = localStorage.getItem(MMRid);
+			if (savedEditNote) {
+				var previousState = { selectionStart:editNote.selectionStart, selectionEnd:editNote.selectionEnd, scrollTop:editNote.scrollTop };
+				editNote.value = savedEditNote;
+				editNote.selectionStart = previousState.selectionStart;
+				editNote.selectionEnd = previousState.selectionEnd;
+				editNote.scrollTop = previousState.scrollTop;
+				editNote.style.setProperty("background-color", cOK);
+				editNote.setAttribute("title", "Reloaded from local storage");
+			}
+		}
+		return stop(event);
 	}
 	function disable(o, dis) {
 		if (!o.tagName && o.length) for (io=0; io<o.length; o++) disable(o[io], dis);
