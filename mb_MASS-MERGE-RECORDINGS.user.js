@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.5.19.1934
+// @version      2015.5.20.1644
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -219,7 +219,7 @@ after step 1, check
 	function queueTrack() {
 		queuetrack.replaceChild(document.createTextNode(mergeQueue.length+" queued merge"+(mergeQueue.length>1?"s":"")), queuetrack.firstChild);
 		queuetrack.style.setProperty("display", mergeQueue.length>0?"block":"none");
-		document.title = "⌛"+(mergeQueue.length+1)+" ‐ "+dtitle;
+		document.title = (mergeQueue.length+1)+"⌛ "+dtitle;
 	}
 	function cleanTrack(track, editID) {
 		var rmForm = track.tr.querySelector("td:not(.pos):not(.video) form."+MMRid);
@@ -241,8 +241,7 @@ after step 1, check
 		}
 	}
 	function shuffleRestore(event) {
-		shuffled = event.target == shuffle;
-		shuffleRestoreEnable();
+		shuffleRestoreEnable(event.target == shuffle);
 		if (shuffled) {
 			var matchedRemoteTracks = [];
 			for (var loc = 0; loc < localRelease.tracks.length; loc++) {
@@ -260,7 +259,8 @@ after step 1, check
 			spreadTracks(event);
 		}
 	}
-	function shuffleRestoreEnable() {
+	function shuffleRestoreEnable(on) {
+		if (typeof on != "undefined") shuffled = on;
 		disable(startpos, shuffled);
 		disable(shuffle, shuffled);
 		disable(restore, !shuffled);
@@ -289,8 +289,7 @@ after step 1, check
 		status = MMRdiv.appendChild(createInput("text", "status", "", meta.n+" remote release URL"));
 		status.style.setProperty("width", "100%");
 		status.addEventListener("input", function(e) {
-			shuffled = false;
-			shuffleRestoreEnable();
+			shuffleRestoreEnable(false);
 			var mbid = this.value.match(new RegExp("/release/("+sregex_MBID+")"));
 			if (mbid) {
 				this.setAttribute("ref", this.value);
@@ -369,18 +368,25 @@ after step 1, check
 		restore.addEventListener("click", shuffleRestore);
 		MMRdiv.appendChild(createTag("p", {}, [shuffle, restore]));
 		MMRdiv.appendChild(createTag("p", {s:{marginBottom: "0px"}}, "Merge edit notes:"));
+		editNote = MMRdiv.appendChild(createInput("textarea", "merge.edit_note"));
 		var lastEditNote = (localStorage && localStorage.getItem(MMRid));
-		editNote = MMRdiv.appendChild(createInput("textarea", "merge.edit_note", lastEditNote?lastEditNote:""));
+		if (lastEditNote) {
+			editNote.appendChild(document.createTextNode(lastEditNote));
+			editNote.style.setProperty("background-color", cOK);
+			editNote.selectionEnd = 0;
+		}
 		editNote.style.setProperty("width", "100%");
 		editNote.setAttribute("rows", "5");
 		editNote.addEventListener("input", function(e) {
 			this.style.removeProperty("background-color");
 			this.removeAttribute("title");
-		}, false);
+		});
 		var saveEditNoteButt = createInput("button", "", "Save edit note");
+		saveEditNoteButt.setAttribute("tabindex", "-1");
 		saveEditNoteButt.setAttribute("title", "Save edit note text to local storage for next time");
 		saveEditNoteButt.addEventListener("click", saveEditNote);
 		var loadEditNoteButt = createInput("button", "", "Load edit note");
+		loadEditNoteButt.setAttribute("tabindex", "-1");
 		loadEditNoteButt.setAttribute("title", "Reload edit note text from local storage");
 		loadEditNoteButt.addEventListener("click", loadEditNote);
 		MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "ENTER"), ": queue all", document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "S"), ": ", saveEditNoteButt, document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "O"), ": ", loadEditNoteButt]));
@@ -707,11 +713,7 @@ after step 1, check
 		if (localStorage) {
 			var savedEditNote = localStorage.getItem(MMRid);
 			if (savedEditNote) {
-				var previousState = { selectionStart:editNote.selectionStart, selectionEnd:editNote.selectionEnd, scrollTop:editNote.scrollTop };
 				editNote.value = savedEditNote;
-				editNote.selectionStart = previousState.selectionStart;
-				editNote.selectionEnd = previousState.selectionEnd;
-				editNote.scrollTop = previousState.scrollTop;
 				editNote.style.setProperty("background-color", cOK);
 				editNote.setAttribute("title", "Reloaded from local storage");
 			}
