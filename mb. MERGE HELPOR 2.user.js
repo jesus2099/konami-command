@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.5.18.1542
-// @description  musicbrainz.org: Merge helper highlights last clicked, show info, indicates oldest MBID (in artist/release/release-group/work/recording merges)
+// @version      2015.5.22.1053
+// @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12)             my own coding setup
@@ -104,7 +104,7 @@
 					batchRemove.appendChild(document.createTextNode("remove"));
 					removeZone.appendChild(batchRemove);
 					removeZone.appendChild(document.createTextNode(" ("));
-					removeZone.appendChild(createA("now", null, "remove this and selected "+mergeType+"s from merge")).addEventListener("click", removeFromMerge);
+					removeZone.appendChild(createA("now", null, "remove this and all selected "+mergeType+"s from merge")).addEventListener("click", removeFromMerge);
 					removeZone.appendChild(document.createTextNode(")"));
 				}
 			}
@@ -236,7 +236,8 @@
 		}
 	}
 	function removeFromMerge(event) {
-		if (event.target.parentNode.getAttribute("id").indexOf(userjs+"remove") == 0) {
+		var isCB = event.target.parentNode.getAttribute("id");
+		if (isCB && isCB.indexOf(userjs+"remove") == 0) {
 			var cb = event.target.parentNode.querySelector("input[type='checkbox'][ref='remove']:not(:checked)");
 			if (cb) cb.checked = true;
 		}
