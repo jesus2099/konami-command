@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.5.22.1053
+// @version      2015.5.26.1506
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -30,13 +30,12 @@
 	var rembid = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
 	var mergeType = location.pathname.match(/\/(.+)\/merge/);
 	if (mergeType) {
-		var showEntityInfo = true;
 		mergeType = mergeType[1].replace(/_/, "-");
-		var ents = [];
-		var lastEnt = -1;
+		var showEntityInfo = true;
+		var entities = {};
 		var oldestEnt = -1;
 		var minrowid;
-		var rowid2row = {};
+		var mbid2rowid = {};
 		var mergeForm = document.querySelector("div#content > form[action*='/merge']");
 		if (mergeForm) {
 			/*	entity merge pages progressively abandon ul layout in favour of table.tbl
@@ -64,21 +63,19 @@
 				batchRemove.addEventListener("click", removeFromMerge);
 			}
 			var rowIDzone = [];
-			for (var row=0; row<entityRows.length; row++) {
+			for (var row = 0; row < entityRows.length; row++) {
 				var a = entityRows[row].querySelector("a");
 				var rad = entityRows[row].querySelector("input[type='radio']");
-				if (showEntityInfo) {
-					addZone(entityRows[row], "entInfo"+row);
-				}
 				if (a && rad) {
-					rowid2row[rad.value] = row;
-					ents.push({a:a, rad:rad, row:entityRows[row], rowid:parseInt(rad.value,10)});
-					minrowid = row==0?ents[row].rowid:Math.min(minrowid, ents[row].rowid);
+					if (showEntityInfo) {
+						addZone(entityRows[row], "entInfo"+rad.value);
+					}
+					entities[rad.value] = {a:a, rad:rad, row:entityRows[row], rowid:parseInt(rad.value, 10)};
+					minrowid = row==0?entities[rad.value].rowid:Math.min(minrowid, entities[rad.value].rowid);
 					if (document.referrer) {
 						var lmbid = a.getAttribute("href").match(rembid);
 						var rmbid = document.referrer.match(rembid);
-						if (rmbid && lmbid+"" == rmbid+"") {
-							lastEnt = ents.length - 1;
+						if (lmbid && rmbid && lmbid[0] == rmbid[0]) {
 							if (tbl) {
 								var tds = entityRows[row].querySelectorAll("td");
 								for (var td=0; td<tds.length; td++) {
@@ -92,9 +89,9 @@
 							rad.click();
 						}
 					}
-					ents[row].rowidzone = addZone(entityRows[row], "rowID"+row);
-					ents[row].rowidzone.style.setProperty("text-align", "right");
-					ents[row].rowidzone.appendChild(rowIDLink(mergeType.replace(/-/, "_"), rad.value));
+					entities[rad.value].rowidzone = addZone(entityRows[row], "rowID"+row);
+					entities[rad.value].rowidzone.style.setProperty("text-align", "right");
+					entities[rad.value].rowidzone.appendChild(rowIDLink(mergeType.replace(/-/, "_"), rad.value));
 					var removeZone = addZone(entityRows[row], "remove"+row);
 					var batchRemove = document.createElement("label");
 					var removeCB = batchRemove.appendChild(document.createElement("input"));
@@ -109,118 +106,125 @@
 				}
 			}
 			if (minrowid) {
-				var oldestMBIDrow = rowid2row[minrowid+""];
-				ents[oldestMBIDrow].row.style.setProperty("text-shadow", "0px 0px 8px #0C0");
-				ents[oldestMBIDrow].rowidzone.style.setProperty("color", "#060");
-				ents[oldestMBIDrow].rowidzone.insertBefore(document.createTextNode(" (oldest) "), ents[oldestMBIDrow].rowidzone.firstChild);
-				ents[oldestMBIDrow].rowidzone.insertBefore(createA("SORT!", null, "sort those rows (oldest ID first)"), ents[oldestMBIDrow].rowidzone.firstChild).addEventListener("click", function(e) {
-					this.parentNode.removeChild(this);
-					sortBy("rowid");
-				});
-				ents[oldestMBIDrow].rowidzone.querySelector("a[href$='conditions.0.args.0="+ents[oldestMBIDrow].rowid+"']").style.setProperty("background-color",  "#6F6");
-				ents[oldestMBIDrow].rad.click();
+				minrowid += "";
+				entities[minrowid].row.style.setProperty("text-shadow", "0px 0px 8px #0C0");
+				entities[minrowid].rowidzone.style.setProperty("color", "#060");
+				entities[minrowid].rowidzone.insertBefore(document.createTextNode(" (oldest) "), entities[minrowid].rowidzone.firstChild);
+				if (mergeType != "artist") {
+					entities[minrowid].rowidzone.insertBefore(createA("SORT!", null, "sort those rows (oldest ID first)"), entities[minrowid].rowidzone.firstChild).addEventListener("click", function(e) {
+						this.parentNode.removeChild(this);
+						sortBy("rowid");
+					});
+				}
+				entities[minrowid].rowidzone.querySelector("a[href$='conditions.0.args.0="+entities[minrowid].rowid+"']").style.setProperty("background-color",  "#6F6");
+				entities[minrowid].rad.click();
 			}
 			if (showEntityInfo) {
-				entInfo();
+				loadEntInfo();
 			}
 		}
 	}
-	function entInfo(current) {
-		var iei = current?current:0;
-		var eiZone = document.getElementById(userjs+"entInfo"+iei);
-		eiZone.appendChild(loadimg("info"));
-		var url = "/ws/2/"+mergeType+"/"+ents[iei].a.getAttribute("href").match(rembid)+"?inc=";
-		switch (mergeType) {
-			case "artist":
-				url += "release-groups+works+recordings";
-				break;
-			case "release":
-				url += "release-groups";
-				break;
-			case "release-group":
-				url += "releases";
-				break;
-		}
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if (this.readyState == 4) {
-				removeChildren(eiZone);
-				if (this.status == 200) {
-					var res = this.responseXML, tmp;
-					switch (mergeType) {
-						case "artist":
-							var tmp = res.evaluate(".//mb:country/text()", res, nsr, XPathResult.ANY_TYPE, null), tmp2;
-							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(eiZone, tmp2.nodeValue);
-							}
-							var tmp = res.evaluate(".//mb:work-list", res, nsr, XPathResult.ANY_TYPE, null);
-							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(eiZone, tmp2.getAttribute("count")+" works");
-							}
-							var tmp = res.evaluate(".//mb:release-group-list", res, nsr, XPathResult.ANY_TYPE, null);
-							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(eiZone, tmp2.getAttribute("count")+" records");
-							}
-							var tmp = res.evaluate(".//mb:recording-list", res, nsr, XPathResult.ANY_TYPE, null);
-							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(eiZone, tmp2.getAttribute("count")+" recs");
-							}
-							break;
-						case "release":
-							var tmp = res.evaluate(".//mb:status/text()", res, nsr, XPathResult.ANY_TYPE, null);
-							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(eiZone, tmp2.nodeValue);
-							}
-							var tmp = res.evaluate(".//mb:language/text()", res, nsr, XPathResult.ANY_TYPE, null);
-							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(eiZone, tmp2.nodeValue);
-							}
-							var tmp = res.evaluate(".//mb:script/text()", res, nsr, XPathResult.ANY_TYPE, null);
-							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(eiZone, tmp2.nodeValue);
-							}
-							var tmp = res.evaluate(".//mb:release-group", res, nsr, XPathResult.ANY_TYPE, null);
-							while (tmp2 = tmp.iterateNext()) {
-								var span = document.createElement("span");
-								fill(span, "in ", createA(tmp2.getElementsByTagName("title")[0].textContent.replace(/\s/g, " "), "/release-group/"+tmp2.getAttribute("id")), "");
-								var count = parseInt(tmp2.getAttribute("count"));
-								stackInfo(eiZone, span);
-							}
-							break;
-						case "release-group":
-							var tmp = res.evaluate(".//mb:first-release-date/text()", res, nsr, XPathResult.ANY_TYPE, null);
-							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(eiZone, tmp2.nodeValue);
-							}
-							break;
-					}
-					if (!eiZone.hasChildNodes()) {
-						stackInfo(eiZone, "no info");
-						eiZone.style.setProperty("opacity", ".5");
-					}
-					if (++iei<ents.length) {
-						entInfo(iei);
-					}
-				} else {
-					stackInfo(eiZone, "Error "+this.status+" fetching "+mergeType+" #"+iei+" info");
-				}
+	function loadEntInfo() {
+		var entInfoZone = mergeForm.querySelector("[id^='"+userjs+"entInfo']:not([class])") || mergeForm.querySelector("[id^='"+userjs+"entInfo']:not([class~='ok'])");
+		if (entInfoZone) {
+			var rowid = entInfoZone.getAttribute("id").match(/\d+$/)[0];
+			entInfoZone.appendChild(loadimg("info"));
+			var mbid = entities[rowid].a.getAttribute("href").match(rembid)[0];
+			mbid2rowid[mbid] = rowid;
+			var url = "/ws/2/"+mergeType+"/"+mbid+"?inc=";
+			switch (mergeType) {
+				case "artist":
+					url += "release-groups+works+recordings";
+					break;
+				case "release":
+					url += "release-groups";
+					break;
+				case "release-group":
+					url += "releases";
+					break;
 			}
-		};
-		xhr.open("GET", url, true);
-		xhr.send(null);
+			var xhr = new XMLHttpRequest();
+			xhr.id = rowid;
+			xhr.addEventListener("load", function() {
+				var entInfoZone = document.getElementById(userjs+"entInfo"+this.id);
+				if (entInfoZone) {
+					removeChildren(entInfoZone);
+					if (this.status == 200) {
+						entInfoZone.className = "ok";
+						var res = this.responseXML, tmp, tmp2;
+						switch (mergeType) {
+							case "artist":
+								tmp = res.evaluate(".//mb:country/text()", res, nsr, XPathResult.ANY_TYPE, null);
+								while (tmp2 = tmp.iterateNext()) {
+									stackInfo(entInfoZone, tmp2.nodeValue);
+								}
+								tmp = res.evaluate(".//mb:work-list", res, nsr, XPathResult.ANY_TYPE, null);
+								while (tmp2 = tmp.iterateNext()) {
+									stackInfo(entInfoZone, tmp2.getAttribute("count")+" works");
+								}
+								tmp = res.evaluate(".//mb:release-group-list", res, nsr, XPathResult.ANY_TYPE, null);
+								while (tmp2 = tmp.iterateNext()) {
+									stackInfo(entInfoZone, tmp2.getAttribute("count")+" records");
+								}
+								tmp = res.evaluate(".//mb:recording-list", res, nsr, XPathResult.ANY_TYPE, null);
+								while (tmp2 = tmp.iterateNext()) {
+									stackInfo(entInfoZone, tmp2.getAttribute("count")+" recs");
+								}
+								break;
+							case "release":
+								tmp = res.evaluate(".//mb:status/text()", res, nsr, XPathResult.ANY_TYPE, null);
+								while (tmp2 = tmp.iterateNext()) {
+									stackInfo(entInfoZone, tmp2.nodeValue);
+								}
+								tmp = res.evaluate(".//mb:language/text()", res, nsr, XPathResult.ANY_TYPE, null);
+								while (tmp2 = tmp.iterateNext()) {
+									stackInfo(entInfoZone, tmp2.nodeValue);
+								}
+								tmp = res.evaluate(".//mb:script/text()", res, nsr, XPathResult.ANY_TYPE, null);
+								while (tmp2 = tmp.iterateNext()) {
+									stackInfo(entInfoZone, tmp2.nodeValue);
+								}
+								tmp = res.evaluate(".//mb:release-group", res, nsr, XPathResult.ANY_TYPE, null);
+								while (tmp2 = tmp.iterateNext()) {
+									var span = document.createElement("span");
+									fill(span, "in ", createA(tmp2.getElementsByTagName("title")[0].textContent.replace(/\s/g, " "), "/release-group/"+tmp2.getAttribute("id")), "");
+									stackInfo(entInfoZone, span);
+								}
+								break;
+							case "release-group":
+								tmp = res.evaluate(".//mb:first-release-date/text()", res, nsr, XPathResult.ANY_TYPE, null);
+								while (tmp2 = tmp.iterateNext()) {
+									stackInfo(entInfoZone, tmp2.nodeValue);
+								}
+								break;
+						}
+						if (!entInfoZone.hasChildNodes()) {
+							stackInfo(entInfoZone, "no info");
+							entInfoZone.style.setProperty("opacity", ".5");
+						}
+					} else {
+						entInfoZone.className = "ng";
+						stackInfo(entInfoZone, "Error "+this.status+" fetching "+mergeType+" #"+id+" info");
+					}
+				}
+				loadEntInfo();
+			});
+			xhr.open("GET", url, true);
+			xhr.send(null);
+		}
 	}
 	function sortBy(what) {
-		for (var ent=0; ent < ents.length; ent++) {
-			if (!ents[ent][what]) {
-				ents[ent].row.parentNode.appendChild(ents[ent].row.parentNode.removeChild(ents[ent].row));
+		for (var rowid in entities) if (entities.hasOwnProperty(rowid)) {
+			if (!entities[rowid][what]) {
+				entities[rowid].row.parentNode.appendChild(entities[rowid].row.parentNode.removeChild(entities[rowid].row));
 			} else {
-				var rows = ents[ent].row.parentNode.querySelectorAll("tr");
+				var rows = entities[rowid].row.parentNode.querySelectorAll("tr");
 				for (var row=0; rows.length; row++) {
 					var indexA = rows[row].querySelector("td[id^='"+userjs+"rowID'] a[href^='/search/edits']"), index;
-					if (indexA && (index = parseInt(indexA.textContent.replace(/\D/g, ""), 10)) && index >= ents[ent][what]) {
-						if (ents[ent].row != rows[row]) {
-							ents[ent].row.parentNode.insertBefore(ents[ent].row.parentNode.removeChild(ents[ent].row), rows[row]);
-							if (index == ents[ent][what]) {
+					if (indexA && (index = parseInt(indexA.textContent.replace(/\D/g, ""), 10)) && index >= entities[rowid][what]) {
+						if (entities[rowid].row != rows[row]) {
+							entities[rowid].row.parentNode.insertBefore(entities[rowid].row.parentNode.removeChild(entities[rowid].row), rows[row]);
+							if (index == entities[rowid][what]) {
 								indexA.style.setProperty("background-color", "silver");
 								indexA.setAttribute("title", "same "+what.replace(/ID/, " ID")+" as above");
 							}
@@ -230,10 +234,7 @@
 				}
 			}
 		}
-		var rows = ents[0].row.parentNode.getElementsByTagName(ents[0].row.tagName.toLowerCase());
-		for (var row=0; row < rows.length; row++) {
-			rows[row].className = rows[row].className.replace(/\b(even|odd)\b/, row%2?"even":"odd");
-		}
+		oddEvenRowsRedraw();
 	}
 	function removeFromMerge(event) {
 		var isCB = event.target.parentNode.getAttribute("id");
@@ -246,8 +247,19 @@
 			var href = "?submit=remove";
 			for (var cb = 0; cb < checkedRemoves.length; cb++) {
 				href += "&remove="+checkedRemoves[cb].value;
+				delete entities[checkedRemoves[cb].value];
+				checkedRemoves[cb].parentNode.parentNode.parentNode.parentNode.removeChild(checkedRemoves[cb].parentNode.parentNode.parentNode);
 			}
-			location.href = href;
+			oddEvenRowsRedraw();
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", href, true);
+			xhr.send(null);
+		}
+	}
+	function oddEvenRowsRedraw() {
+		var rows = mergeForm.querySelectorAll("form > table > tbody > tr");
+		for (var row=0; row < rows.length; row++) {
+			rows[row].className = rows[row].className.replace(/\b(even|odd)\b/, row%2?"even":"odd");
 		}
 	}
 	function loadimg(txt) {
