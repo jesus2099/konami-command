@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.5.26.1506
+// @version      2015.5.27.105
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -204,7 +204,7 @@
 						}
 					} else {
 						entInfoZone.className = "ng";
-						stackInfo(entInfoZone, "Error "+this.status+" fetching "+mergeType+" #"+id+" info");
+						stackInfo(entInfoZone, "Error "+this.status+" fetching "+mergeType+" #"+this.id+" info");
 					}
 				}
 				loadEntInfo();
