@@ -33,9 +33,7 @@
 		mergeType = mergeType[1].replace(/_/, "-");
 		var showEntityInfo = true;
 		var entities = {};
-		var oldestEnt = -1;
 		var minrowid;
-		var mbid2rowid = {};
 		var mergeForm = document.querySelector("div#content > form[action*='/merge']");
 		if (mergeForm) {
 			/*	entity merge pages progressively abandon ul layout in favour of table.tbl
@@ -130,7 +128,6 @@
 			var rowid = entInfoZone.getAttribute("id").match(/\d+$/)[0];
 			entInfoZone.appendChild(loadimg("info"));
 			var mbid = entities[rowid].a.getAttribute("href").match(rembid)[0];
-			mbid2rowid[mbid] = rowid;
 			var url = "/ws/2/"+mergeType+"/"+mbid+"?inc=";
 			switch (mergeType) {
 				case "artist":
