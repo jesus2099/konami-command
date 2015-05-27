@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.5.19.1718
+// @version      2015.5.27.1706
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -72,6 +72,16 @@
 	};
 	re_date.ISO = "("+re_date.YYYY+"(?:-"+re_date.MM+"(?:-"+re_date.DD+")?)?)";
 	var account = document.querySelector("div#header-menu li.account");
+	if (account) {
+		var a = account.querySelector("a[href^='"+MBS+"/user/']");
+		account = {
+			item: account,
+			name: a.textContent,
+			href: a.getAttribute("href"),
+			pathname: a.getAttribute("href").substr(MBS.length),
+			menu: account.querySelector("ul")
+		}
+	}
 	/*==========================================================================
 	## CONFIGURATORZ ##
 	find this script settings in MB "About" menu
@@ -847,7 +857,7 @@
 				var novote = "&conditions.2098.field=vote&conditions.2098.operator=%3D&conditions.2098.voter_id=%myID%&conditions.2098.args=no";
 				refines.appendChild(createTag("a", {a:{href: location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2]?"edits":(location.pathname.match(re_GUID)?"open_edits":"edits/open"))+location.search+location.hash}}, (refine[1]||refine[2]?"All ":"Open ")+"edits"));
 				if (
-					location.href.indexOf(account.getElementsByTagName("a")[0].getAttribute("href")) < 0 &&
+					location.href.indexOf(account.pathname) < 0 &&
 					(refine = document.querySelector("table.search-help td > a[href^='"+MBS+"/search/edits?'][href*='user_id='][href*='&conditions.']")) &&
 					(refine = refine.getAttribute("href").replace(/form_only=yes/, "")) &&
 					(myID = refine.match(/user_id=(\d+)/) || localStorage.getItem(userjs+"me-userid"))
@@ -942,16 +952,15 @@
 	j2setting("TAG_SWITCH", true, true, "makes tag pages better titled and adds switches between your tags and others’ tags");
 	j2setting("TAG_SWITCH_prefer_my_tags", false, true, "sidebar tag links will link your own tags (if any) instead of global");
 	if (j2sets.TAG_SWITCH && account) {
-		var me = account.querySelector("a");
 		var tagscope = location.href.replace(new RegExp("^"+MBS+"|[?#].*$","g"),"").match(/(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 		if (tagscope) {
 			var h1 = document.querySelector("h1");
 			var tags = tagscope[0].match(/tags$/);
-			if (h1 && me) {
+			if (h1 && account.pathname) {
 				var tagswitches = [];
 				var scope = typeof tagscope[1]=="string"?decodeURIComponent(tagscope[1]):"";
-				if (scope != me.textContent) {
-					tagswitches.push([me.getAttribute("href")+(tags?"/tags":tagscope[2]), (scope==""?"only ":"")+"mine"]);
+				if (scope != account.name) {
+					tagswitches.push([account.pathname+(tags?"/tags":tagscope[2]), (scope==""?"only ":"")+"mine"]);
 				}
 				if (scope != "") {
 					tagswitches.push([MBS+(tags?"/tags":tagscope[2]), "everyone’s"]);
@@ -962,9 +971,24 @@
 			}
 		}
 		if (j2sets.TAG_SWITCH_prefer_my_tags && sidebar) {
-			for (var t=0, mytags=sidebar.querySelector("div#sidebar-tags input.tag-input"), tags=sidebar.querySelectorAll("div#sidebar-tags span.tags a"); mytags && t<tags.length; t++) {
-				if (mytags.value.match(new RegExp("(^| )"+tags[t].textContent+"(,|$)"))) {
-					tags[t].setAttribute("href", tags[t].getAttribute("href").replace(MBS, me.getAttribute("href")));
+			j2superturbo.addCSSRule("span.tags a[href^='/user/'] { background-color: #ff6 }");
+			updateTags();
+		}
+	}
+	function updateTags(event) {
+		var header = sidebar.querySelector("div#sidebar-tags h2");
+		var tags = sidebar.querySelector("div#sidebar-tags span.tags");
+		var mytags = sidebar.querySelector("div#sidebar-tags input.tag-input");
+		if (header && tags && mytags) {
+			if (!event) {
+				header.appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right", "cursor":"help"}}, ["↙ others’, ", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), ""]));
+				tags.addEventListener("DOMNodeInserted", updateTags);
+				mytags.addEventListener("change", function (e) { this.value = this.value.toLowerCase().replace(/\s+/g, " "); });
+			}
+			tags = tags.querySelectorAll("a:not([href^='/user/'])");
+			for (var t = 0; t < tags.length; t++) {
+				if (mytags.value.match(new RegExp("(^|,)\\s*"+tags[t].textContent+"\\s*(,|$)", "i"))) {
+					tags[t].setAttribute("href", tags[t].getAttribute("href").replace(MBS, account.pathname));
 				}
 			}
 		}
@@ -1022,11 +1046,10 @@
 	var data = document.querySelector("div#header-menu li.data");
 	var datas = data?data.querySelectorAll("div#header-menu li.data > ul > li"):null;
 	if (j2sets.MERGE_USER_MENUS && account && data && datas.length > 0) {
-		var accountul = account.querySelector("ul");
 		data.style.setProperty("display", "none");
-		accountul.insertBefore(createTag("li",{a:{"class":"separator"}}), accountul.firstChild);
+		account.menu.insertBefore(createTag("li",{a:{"class":"separator"}}), account.menu.firstChild);
 		for (var d=datas.length-1; d > -1; d--) {
-			accountul.insertBefore(datas[d].cloneNode(true), accountul.firstChild);
+			account.menu.insertBefore(datas[d].cloneNode(true), account.menu.firstChild);
 		}
 	}
 	if (location.pathname.match(/\/account\/preferences$/)) {
