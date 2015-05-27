@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2015.3.20.1553
+// @version      2015.5.27.1310
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -161,7 +161,7 @@
 	}
 	function big(event, img, smallSize) {
 		if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
-			stop(event);
+			if (event.target.className == userjs) stop(event);
 			var enlarge = (img.getAttribute("_size")=="small");
 			var height = enlarge?(img.getAttribute("_height")||"250px"):smallSize;
 			var margin = enlarge?("-"+(parseInt(img.getAttribute("_height"), 10)/2)+"px -"+(parseInt(img.getAttribute("_width"), 10)/2)+"px"):img.getAttribute("_margin");
