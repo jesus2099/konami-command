@@ -48,6 +48,16 @@
 	meta.icon = createTag("img", {a:{src:meta.icon}, s:{"vertical-align":"middle", "margin":"-8px 0"}});
 	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var userjs = "jesus2099userjs85790"/*have to keep this for legacy saved settings*/;
+	var KEYCODES = {
+		ENTER:           0x0D,
+		C:               0x43,
+		M:               0x4D,
+		O:               0x4F,
+		S:               0x53,
+		"NUMPAD-MINUS":  0x6D,
+		"NUMPAD-DOT":    0x6E,
+		"NUMPAD-DIVIDE": 0x6F,
+	};
 	var MBS = location.protocol+"//"+location.host;
 	var sidebar = document.getElementById("sidebar");
 	var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -182,7 +192,7 @@
 				inp.setAttribute("type", "text");
 				inp.setAttribute("value", val);
 				inp.style.setProperty("margin-left", "4px");
-				inp.addEventListener("keypress", function(e){if(e.keyCode==13){this.blur();del(getParent(this,"div"))}}, false);
+				inp.addEventListener("keypress", function(e){if(e.keyCode==KEYCODES.ENTER){this.blur();del(getParent(this,"div"))}}, false);
 				break;
 		}
 		return lbl;
@@ -434,7 +444,7 @@
 			stats[9].parentNode.parentNode.insertBefore(
 				createTag("tr", null, [
 					createTag("th", null, "Ranked total"),
-					createTag("th", {a:{colspan:"2"}}, createTag("a", {a:{href:"/statistics/editors",title:"see editor rankings"},s:{cursor:"help"}}, separ1000(0+yes+no+appr)+" ("+pc(yes+no+appr,yes+no+abs+appr)+")"))
+					createTag("th", {a:{colspan:"2"}}, createTag("a", {a:{href:"/statistics/editors",title:"see editor rankings"},s:{cursor:"help"}}, separ1000(0+yes+no+appr)+" ("+percentage(yes+no+appr,yes+no+abs+appr)+")"))
 				]),
 				stats[9].parentNode
 			);
@@ -445,9 +455,9 @@
 	}
 	function writeStat(stats, i, stat, total) {
 		var a = stats[i].getElementsByTagName("a")[0];
-		a.replaceChild(document.createTextNode(pc(stat,total)), a.firstChild);
+		a.replaceChild(document.createTextNode(percentage(stat,total)), a.firstChild);
 	}
-	function pc(p, c) {
+	function percentage(p, c) {
 		return (c==0?0:Math.round(10000*p/c)/100)+"%";
 	}
 	function separ1000(n) {
@@ -563,7 +573,7 @@
 						},
 						focus:function(e){this.select();},
 						keydown:function(e) {
-							if (!e.ctrlKey && !e.shiftKey && e.keyCode == /*c*/67) {
+							if (!e.ctrlKey && !e.shiftKey && e.keyCode == KEYCODES.C) {
 								stop(e);
 								var ph = ["YYYY", "MM", "DD"];
 								for (var p=0; p<ph.length; p++) {
@@ -587,7 +597,7 @@
 		}
 	}
 	function EASY_DATE_nextField(event) {
-		if (!event.ctrlKey && !event.shiftKey && (event.keyCode == /*-*/109 || event.keyCode == /*/*/111 || event.keyCode == /*.*/110)) {
+		if (!event.ctrlKey && !event.shiftKey && (event.keyCode == KEYCODES["NUMPAD-MINUS"] || event.keyCode == KEYCODES["NUMPAD-DIVIDE"] || event.keyCode == KEYCODES["NUMPAD-DOT"])) {
 			var nextField = this.parentNode.querySelector("input[placeholder='"+(this.getAttribute("placeholder")=="MM"?"DD":"MM")+"']");
 			nextField.focus();
 			nextField.select();
@@ -758,7 +768,7 @@
 	j2setting("CONTROL_ENTER_SUBMIT", true, true, "hit CTRL+ENTER keys when you’re in a text area to submit the current form");
 	if (j2sets.CONTROL_ENTER_SUBMIT) {
 		document.body.addEventListener("keydown", function(e){
-			if (e.target.tagName && e.target.tagName == "TEXTAREA" && e.ctrlKey && e.keyCode == 13)
+			if (e.target.tagName && e.target.tagName == "TEXTAREA" && e.ctrlKey && e.keyCode == KEYCODES.ENTER)
 				parentFormSubmit(e.target, e);
 		});
 	}
@@ -1145,7 +1155,7 @@
 			var h1link = document.querySelector("div#page h1 a[href='"+MBS+location.pathname.match(new RegExp("/"+enttype+"/"+stre_GUID))+"']");
 			if (h1link) {
 				var h1 = getParent(h1link, "h1");
-				if (h1.firstChild.nodeType != 3) {
+				if (h1.firstChild.nodeType != Node.TEXT_NODE) {
 					var unlinkH1Link = function() {
 						h1.removeEventListener("mouseover", unlinkH1Link);
 						h1link.removeAttribute("href");
