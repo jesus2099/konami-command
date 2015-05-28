@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.5.28.1146
+// @version      2015.5.28.1540
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -227,7 +227,9 @@ after step 1, check
 			if (editID) {
 				mp(track.tr.querySelector(css_track), true);
 				removeChildren(rmForm);
-				mp(addAfter(createA("edit:"+editID, "/edit/"+editID), rmForm), true);
+				var newEditLink = createA("edit:"+editID, "/edit/"+editID);
+				addAfter(createTag("span", {s:{opacity:".5"}}, [" (", newEditLink, ")"]), rmForm);
+				mp(newEditLink, true);
 				addAfter(document.createTextNode(" "), rmForm);
 			} else {
 				removeElement(rmForm);
