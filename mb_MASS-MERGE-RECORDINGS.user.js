@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.5.20.1644
+// @version      2015.5.28.1146
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -532,7 +532,7 @@ after step 1, check
 		for (var ltrack=0; ltrack < localRelease.tracks.length; ltrack++) {
 			cleanTrack(localRelease.tracks[ltrack]);
 			if(ltrack >= startpos.value && rtrack < remoteRelease.tracks.length) {
-				var ntitl = "local recording #"+localRelease.tracks[ltrack].recid;
+				var ntitl = "local recording #"+format(localRelease.tracks[ltrack].recid);
 				var ntit = localRelease.tracks[ltrack].a.getAttribute("title");
 				if (!ntit || (ntit && !ntit.match(new RegExp(ntitl)))) {
 					localRelease.tracks[ltrack].a.setAttribute("title", (ntit?ntit+" — ":"")+ntitl);
@@ -554,7 +554,7 @@ after step 1, check
 		rmForm.setAttribute("action", "/recording/merge");
 		rmForm.setAttribute("method", "post");
 //		rmForm.setAttribute("title", "AC: "+ac2str(remTrack.artistCredit)+"\nremote recording #"+remTrack.recording.rowid);
-		rmForm.setAttribute("title", "remote recording #"+remTrack.recording.rowid);
+		rmForm.setAttribute("title", "remote recording #"+format(remTrack.recording.rowid));
 		rmForm.setAttribute("class", MMRid);
 		rmForm.style.setProperty("display", "inline");
 		rmForm.appendChild(createInput("hidden", "merge.merging.0", locTrack.recid));
