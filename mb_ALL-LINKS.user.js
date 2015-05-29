@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2015.4.22.219
+// @version      2015.5.29.1715
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -294,11 +294,11 @@ function addExternalLink(text, target, begin, end, sntarget) {
 				ardates.style.setProperty("white-space", "nowrap");
 				ardates.appendChild(document.createTextNode(" ("));
 				if (!begin && end == "????") {
-					ardates.appendChild(endFragment(end, target));
+					ardates.appendChild(archivedDate(end, target));
 				} else {
-					if (begin) { ardates.appendChild(document.createTextNode(begin)); }
+					if (begin) { ardates.appendChild(archivedDate(begin, target)); }
 					if (begin != end) { ardates.appendChild(document.createTextNode("—")); }
-					if (end && begin != end) { ardates.appendChild(endFragment(end, target)); }
+					if (end && begin != end) { ardates.appendChild(archivedDate(end, target)); }
 				}
 				ardates.appendChild(document.createTextNode(")"));
 				ardates.normalize();
@@ -402,15 +402,18 @@ function loading(on) {
 		}
 	}
 }
-function endFragment(endDate, url) {
-	var endBit = document.createDocumentFragment();
-	var endText= endDate=="????"?"ended":endDate;
+function archivedDate(date, url) {
+	var text = date=="????"?"ended":date.replace(/-/g, "‐");
 	if (!url.match(/\.archive\.org\//)) {
-		endBit.appendChild(createA(endText, "//wayback.archive.org/web/*/"+url.replace(/https?:\/\//, "")));
+		var archiveStamp = "*";
+		if (date != "????") {
+			archiveStamp = date.replace(/\D/g, "");
+			while (archiveStamp.length < 14) archiveStamp += "0";
+		}
+		return createA(text, "//wayback.archive.org/web/"+archiveStamp+"/"+url.replace(/https?:\/\//, ""), "Internet Archive Wayback Machine capture");
 	} else {
-		endBit.appendChild(document.createTextNode(endText));
+		return document.createTextNode(text);
 	}
-	return endBit;
 }
 function createA(text, link, title) {
 	var a = document.createElement("a");
