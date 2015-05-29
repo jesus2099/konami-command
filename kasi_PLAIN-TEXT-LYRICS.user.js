@@ -152,8 +152,7 @@
 						kasi += json[k];
 					}
 					gogogo(kasi);
-				}
-				else { gogogo(null, "json"); }
+				} else { gogogo(null, "json"); }
 			},
 		},
 		"petitlyrics": {
@@ -237,8 +236,7 @@
 		}
 		if (kasimasin.clean_url && (url = kasimasin.clean_url.replace(/%uta%/g, kasimasin.uta)) && url != location.href) {
 			location.href = url;
-		}
-		else {
+		} else {
 			if (kasimasin.init) { kasimasin.init(true); }
 			else { machine(); }
 		}
@@ -271,7 +269,7 @@
 					"mouseup",
 					"selectstart"
 				];
-				blocks.forEach(function(event){
+				blocks.forEach(function(event) {
 					document.body.addEventListener(event, function(e) {
 						e.cancelBubble = true;
 						if (e.stopPropagation) e.stopPropagation();
@@ -289,11 +287,9 @@
 				if (kasimasin.kasi_url) {
 					if (kasimasin.kasi_url.match(/%uta%/) && kasimasin.uta) {
 						url = kasimasin.kasi_url.replace(/%uta%/g, kasimasin.uta);
-					}
-					else { url = kasimasin.kasi_url; }
+					} else { url = kasimasin.kasi_url; }
 					iti = false;
-				}
-				else if (kasimasin.kasi_css && kasimasin.kasi_css.length == 2 && (url = document.querySelector(kasimasin.kasi_css[0]))) {
+				} else if (kasimasin.kasi_css && kasimasin.kasi_css.length == 2 && (url = document.querySelector(kasimasin.kasi_css[0]))) {
 					url = url.getAttribute(kasimasin.kasi_css[1]);
 					iti = false;
 				}
@@ -319,8 +315,7 @@
 				if (kasimasin.xhr_overrideMimeType) { xhr.overrideMimeType(kasimasin.xhr_overrideMimeType); }
 				xhr.send(null);
 				db(kasimasin.na+"\n"+url);
-			}
-			else if (kasimasin.direct_machine) {
+			} else if (kasimasin.direct_machine) {
 				kasimasin.direct_machine();
 			}
 		}
@@ -339,8 +334,7 @@
 				div = document.createElement("div");
 				div.appendChild(ka);
 				kabe.parentNode.insertBefore(div, kabe);
-			}
-			else { div = kabe; }
+			} else { div = kabe; }
 			div.style.setProperty("text-align", "left");
 			div.style.setProperty("color", "#030");
 			div.style.setProperty("background-color", "#efe");
