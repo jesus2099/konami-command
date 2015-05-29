@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.5.27.1706
+// @version      2015.5.29.1422
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -1160,12 +1160,18 @@
 					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
 					if (date) {
 						if (date = date.match(new RegExp(re_date.ISO+"(?:.+"+re_date.ISO+")?"))) {
-							// jquery stuff from bitmap via reosarevok https://chatlogs.musicbrainz.org/musicbrainz/2014/2014-07/2014-07-08.html#T14-46-11-334532 :)
-							try {
-								_($("td.works div.ar :checked")).map(ko.contextFor).pluck("$parent").each(function (a) { a.period.beginDate.year(date[2]); a.period.beginDate.month(date[3]); a.period.beginDate.day(date[4]); a.period.endDate.year(date[5]?date[6]:date[2]); a.period.endDate.month(date[5]?date[7]:date[3]); a.period.endDate.day(date[5]?date[8]:date[4]); });
-							} catch (e) {
-								alert(e.message+"!\n\n“Set selected works’ recording dates” can’t work.\n"+chrome);
-							}
+							MB.relationshipEditor.UI.checkedWorks().forEach(function(work) {
+								work.relationships().forEach(function(relationship) {
+									if (relationship.entityTypes == "recording-work") {
+										relationship.period.beginDate.year(date[2]);
+										relationship.period.beginDate.month(date[3]);
+										relationship.period.beginDate.day(date[4]);
+										relationship.period.endDate.year(date[5]?date[6]:date[2]);
+										relationship.period.endDate.month(date[5]?date[7]:date[3]);
+										relationship.period.endDate.day(date[5]?date[8]:date[4]);
+									}
+								});
+							});
 						} else { alert("Wrong date format"); }
 					}
 				}}}, [meta.icon.cloneNode(), " Set selected works’ recording dates ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
