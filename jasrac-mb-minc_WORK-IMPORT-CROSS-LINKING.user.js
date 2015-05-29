@@ -41,8 +41,8 @@
 	var reISWC = "T- ?\\d{3}\\.\\d{3}.\\d{3}-\\d";
 	var reCode = "\\d[A-Z\\d]\\d-\\d{4}-\\d";
 	var reAnnotCode = "(?:jasrac|作品コード)\\W+("+reCode+")";
-	var MBS = self.location.protocol+"//"+self.location.host;
-	var pagecat = self.location.href.match(new RegExp("(jasrac(?=\\.or\\.jp)|minc(?=\\.gr\\.jp)|work(/"+RE_GUID+"/edit$|/create)|work)"));
+	var MBS = location.protocol+"//"+location.host;
+	var pagecat = location.href.match(new RegExp("(jasrac(?=\\.or\\.jp)|minc(?=\\.gr\\.jp)|work(/"+RE_GUID+"/edit$|/create)|work)"));
 	var oldTitle = document.title;
 	var spam = " ← needs ''JASRAC direct links enabler'' ("+meta.namespace+")";
 	var xhrForm = {}, xhrWork = {}, h1, iname;
@@ -64,7 +64,7 @@
 						xhrWork.aliases = res.aliases;
 						xhrWork.annotation = res.annotation?res.annotation:"";
 						var code = xhrWork.annotation.match(new RegExp(reAnnotCode, "i"));
-						iname.parentNode.parentNode.insertBefore(createTag("div", {"class":"row"}, null, null, [createTag("label", null, null, null, "JASRAC作品コード:"), createTag("b", null, {"background-color":background}, null, code?createA(code[1], workLookupURL("jasrac", "code", code[1]), "JASRAC work code from annotation", "_blank"):"なし")]), /*xhrForm.name*/iname.parentNode);
+						insertBefore(createTag("div", {"class":"row"}, null, null, [createTag("label", null, null, null, "JASRAC作品コード:"), createTag("b", null, {"background-color":background}, null, code?createA(code[1], workLookupURL("jasrac", "code", code[1]), "JASRAC work code from annotation", "_blank"):"なし")]), /*xhrForm.name*/iname.parentNode);
 						aliasTable();
 					}
 					document.title = oldTitle;
@@ -75,7 +75,7 @@
 			"method": "post",
 			"async": true,
 			"init": function(xhr) {
-				xhrJobs["work-create/edit"].info = (self.location.href.match(/work\/create$/)?"create":"edit")+" work";
+				xhrJobs["work-create/edit"].info = (location.pathname.match(/^\/work\/create/)?"create":"edit")+" work";
 				xhrJobs["work-create/edit"].url = xhrForm.form.getAttribute("action");
 				var inps = xhrForm.form.querySelectorAll("form > div > fieldset:not(."+userjs+") input[name]:not([name='']):not([type='button']), form > div > fieldset:not(."+userjs+") textarea[name], form > div > fieldset:not(."+userjs+") select[name]");
 				xhrJobs["work-create/edit"].params = "";
@@ -88,7 +88,7 @@
 				xhrWork.id = this.responseText.match(new RegExp("<a[^>]+/work/merge_queue\\?add-to-merge=([0-9]+)\""));
 				if (!xhrWork.edit && mbid) {
 					xhrWork.mbid = mbid[1];
-					if (location.pathname.match(/work\/create$/) && h1) {
+					if (location.pathname.match(/^\/work\/create/) && h1) {
 						h1.appendChild(document.createTextNode(" "));
 						h1.appendChild(createA(iname.value, "/work/"+xhrWork.mbid, null, "_blank"));
 					}
@@ -391,7 +391,7 @@
 						suppo.appendChild(createA("M", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz"));
 						span.appendChild(document.createTextNode(" "));
 						span.appendChild(document.createTextNode(workName));
-						sakuhin = sakuhin.parentNode.replaceChild(span, sakuhin);
+						sakuhin = replaceElement(span, sakuhin); /*TODO replaceChild returns sakuhin already (removed element), no ?*/
 				/* -- vv ------ iswc links ------ vv -- */
 						if (iswc) {
 							addAfter(createTag("sup"), iswcLink[iswcLink.length-1].parentNode.parentNode.lastChild).appendChild(createA("M", workLookupURL("mb", "iswc", iswc), "Search this ISWC in MusicBrainz"));
@@ -410,14 +410,14 @@
 					var sakuhincode_v = getSibling(sakuhincode, "td").textContent.match(new RegExp(reCode))+"";
 					iswccode = getParent(iswccode, "th");
 					var iswccode_v = getSibling(iswccode, "td").textContent.match(new RegExp(reISWC));
-					sakuhinmei.insertBefore(createTag("sup", {}, {"float":"right"}), sakuhinmei.firstChild).appendChild(createA("J", workLookupURL("jasrac", "name", sakuhinmei_v), "Search this work name in JASRAC"));
-					sakuhinmei.insertBefore(createTag("sup", {}, {"float":"right"}), sakuhinmei.firstChild).appendChild(createA("M", workLookupURL("mb", "name", sakuhinmei_v), "Search this work name in MusicBrainz"));
-					sakuhincode.insertBefore(createTag("sup", {}, {"float":"right"}), sakuhincode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "code", sakuhincode_v), "Go to this work in JASRAC"));
-					sakuhincode.insertBefore(createTag("sup", {}, {"float":"right"}), sakuhincode.firstChild).appendChild(createA("M", workLookupURL("mb", "code", sakuhincode_v), "Search this work code in MusicBrainz"));
+					insertBefore(createTag("sup", {}, {"float":"right"}), sakuhinmei.firstChild).appendChild(createA("J", workLookupURL("jasrac", "name", sakuhinmei_v), "Search this work name in JASRAC"));
+					insertBefore(createTag("sup", {}, {"float":"right"}), sakuhinmei.firstChild).appendChild(createA("M", workLookupURL("mb", "name", sakuhinmei_v), "Search this work name in MusicBrainz"));
+					insertBefore(createTag("sup", {}, {"float":"right"}), sakuhincode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "code", sakuhincode_v), "Go to this work in JASRAC"));
+					insertBefore(createTag("sup", {}, {"float":"right"}), sakuhincode.firstChild).appendChild(createA("M", workLookupURL("mb", "code", sakuhincode_v), "Search this work code in MusicBrainz"));
 					if (iswccode_v) {
 						iswccode_v += "";
-						iswccode.insertBefore(createTag("sup", {}, {"float":"right"}), iswccode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "iswc", iswccode_v), "Search this ISWC in JASRAC"));
-						iswccode.insertBefore(createTag("sup", {}, {"float":"right"}), iswccode.firstChild).appendChild(createA("M", workLookupURL("mb", "iswc", iswccode_v.replace(/T- /, "T-")), "Search this ISWC in MusicBrainz"));
+						insertBefore(createTag("sup", {}, {"float":"right"}), iswccode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "iswc", iswccode_v), "Search this ISWC in JASRAC"));
+						insertBefore(createTag("sup", {}, {"float":"right"}), iswccode.firstChild).appendChild(createA("M", workLookupURL("mb", "iswc", iswccode_v.replace(/T- /, "T-")), "Search this ISWC in MusicBrainz"));
 					}
 				} else {
 					var sakuhincodet = document.querySelectorAll("a[href^='SakCdInfo.aspx?SAKUHINCD='], a[href^='SakCDInfo.aspx?SAKUHINCD='], div#ctl00_ctl00_phMain_phDBMain_PanelDetail table.tbl > tbody > tr > td:nth-child(8)");
@@ -443,7 +443,7 @@
 						var dt = getSibling(dd, "dt", null, true);
 						if (dt && dt.textContent.match(/jasrac id/i)) {
 							var ddcode = dd.textContent.trim();
-							dd.replaceChild(createTag("a", {"href":workLookupURL("jasrac", "code", ddcode)}, {}, {}, ddcode), dd.firstChild);
+							replaceElement(createTag("a", {"href":workLookupURL("jasrac", "code", ddcode)}, {}, {}, ddcode), dd.firstChild);
 							if (donecodes.indexOf(ddcode) < 0) {
 								donecodes.push(ddcode);
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", ddcode)}, {"background":background}, {}, "JASRAC — "+ddcode)));
@@ -465,7 +465,7 @@
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", sakuhincode)}, {"background":background}, {}, "音楽の森 — "+sakuhincode)));
 							} else {
 								if (annotation.textContent.trim().match(new RegExp("^"+reAnnotCode+"( \\(MBS-7359\\))?$", "i"))) {
-									annotation.insertBefore(createTag("p", {}, {"background-color":"#ffc"}, {}, [createTag("img", {src: "/static/images/icons/loading.gif"}), " This JASRAC ID is now set as an attribute of this work: Removing obsolete annotation, please wait…"]), annotation.firstChild);
+									insertBefore(createTag("p", {}, {"background-color":"#ffc"}, {}, [createTag("img", {src: "/static/images/icons/loading.gif"}), " This JASRAC ID is now set as an attribute of this work: Removing obsolete annotation, please wait…"]), annotation.firstChild);
 									simpleXHR(
 										{method:"post", action:location.pathname+"/edit_annotation?edit-annotation.text=&edit-annotation.changelog=Removing+obsolete+JASRAC+ID+annotation&edit-annotation.edit_note=The+same+JASRAC+ID+is+now+set+as+an+attribute+to+this+work+(self+cleaning)."},
 										function() {
@@ -499,7 +499,7 @@
 				break;
 			case "work/edit":
 				xhrWork.edit = true;
-				xhrWork.mbid = self.location.pathname.match(new RegExp(RE_GUID));
+				xhrWork.mbid = location.pathname.match(new RegExp(RE_GUID));
 				xhrMachine(xhrJobs["workinfo-get"]);
 			case "work/create":
 				h1 = document.querySelector("h1");
@@ -565,7 +565,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+"≠"+inputs.length+")\n*
 					}
 				}, false);*/
 				xhrForm.submit = xhrForm.form.querySelector("div.row button.submit.positive[type='submit']");
-				xhrForm.submit.parentNode.insertBefore(createTag("input", {"type":"reset","value":"Reset","title":"reset form values","tabindex":"-1"}, {"float":"left","font-size":".77em","height":"16px","width":"32px","margin":"0 8px","border":"1px solid #ccc"}), xhrForm.submit);
+				insertBefore(createTag("input", {"type":"reset","value":"Reset","title":"reset form values","tabindex":"-1"}, {"float":"left","font-size":".77em","height":"16px","width":"32px","margin":"0 8px","border":"1px solid #ccc"}), xhrForm.submit);
 				xhrForm.originalInputs = {inputs:[], values:[], css:"form > div > fieldset:not(."+userjs+") input:not([type='button']), form > div > fieldset:not(."+userjs+") select"};
 				xhrForm.originalInputs.inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
 				for (var i=0; i<xhrForm.originalInputs.inputs.length; i++) {
@@ -581,7 +581,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 					xhrWork.code = sakuhin[2];
 					var err = iname.parentNode.querySelector("ul.errors li");
 					if (err && err.textContent.match(/name field is required/i)) {
-						err.replaceChild(document.createTextNode("Please review work name and everything else before submitting this work"), err.firstChild);
+						replaceElement(document.createTextNode("Please review work name and everything else before submitting this work"), err.firstChild);
 					}
 //					workSortName(teditnote.value);
 //					workCredits(teditnote.value);
@@ -689,7 +689,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		}
 	}
 	function MBlinks() {
-		return (xhrWork.id&&self.location.href.match(/work\/create$/)?"MB add work edit: "+MBS+"/search/edits?combinator=and&conditions.0.field=work&conditions.0.operator=%3D&conditions.0.name="+(iname.value?encodeURIComponent(iname.value):"TA+GUEULE")+"&conditions.0.args.0="+xhrWork.id[1]+"&conditions.1.field=type&conditions.1.operator=%3D&conditions.1.args=41\n":"")+"MB work edit history: "+MBS+"/work/"+xhrWork.mbid+"/edits";
+		return (xhrWork.id&&location.href.match(/^\/work\/create/)?"MB add work edit: "+MBS+"/search/edits?combinator=and&conditions.0.field=work&conditions.0.operator=%3D&conditions.0.name="+(iname.value?encodeURIComponent(iname.value):"TA+GUEULE")+"&conditions.0.args.0="+xhrWork.id[1]+"&conditions.1.field=type&conditions.1.operator=%3D&conditions.1.args=41\n":"")+"MB work edit history: "+MBS+"/work/"+xhrWork.mbid+"/edits";
 	}
 	function workSortName(txt) {
 		var sortname = txt.match(/(.+) \(''yomikata''\)/);
@@ -791,7 +791,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 						var rla = this.nextSibling;
 						if (rla && rla.tagName == "A") {
 							rla.setAttribute("href", href);
-							rla.replaceChild(document.createTextNode(name.value), rla.firstChild);
+							replaceElement(document.createTextNode(name.value), rla.firstChild);
 						} else { addAfter(createA(name.value, href, null, "_blank"), this).style.setProperty("white-space", "nowrap"); }
 					});
 					if (ctype.length == 1 || c > 0) {
@@ -891,10 +891,10 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		
 	}
 	function nameConform(n) {
-		return hw2fw(n.toUpperCase().replace(/^(A|THE|UN|UNE|L) (.+)$/, "$2 $1"));
+		return halfwidthToFullwidth(n.toUpperCase().replace(/^(A|THE|UN|UNE|L) (.+)$/, "$2 $1"));
 	}
 	function swapTHE(n, swap) {
-		return fw2hw(n.replace(/^(.+)\s{2}(A|THE|UN|UNE|L)$/i, swap?"$2 $1":"$1, $2")).replace(/\w\(/g, " (").replace(/\)\w/g, ") ").trim();
+		return fullwidthToHalfwidth(n.replace(/^(.+)\s{2}(A|THE|UN|UNE|L)$/i, swap?"$2 $1":"$1, $2")).replace(/\w\(/g, " (").replace(/\)\w/g, ") ").trim();
 	}
 	function toCamelCase(s) {
 		return s.toLowerCase().replace(/\b(.)/g, function($1) { return $1.toUpperCase(); });
@@ -1001,7 +1001,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 					cb.setAttribute("checked", "checked");/*for reset*/
 				}
 			} else if (aliases[a].primary) {
-				td.replaceChild(document.createTextNode("primary "+td.textContent), td.firstChild);
+				replaceElement(document.createTextNode("primary "+td.textContent), td.firstChild);
 				td.setAttribute("title", "primary");
 			}
 			tr.appendChild(createTag("td", null, null, null, add?createTag("input", {"type":"checkbox","title":"add this work alias?","class":userjs+"addit"}):""));
@@ -1043,7 +1043,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 						wname.setAttribute("readonly", "readonly");
 					}
 					addAfter(document.createTextNode(se.options[se.selectedIndex].textContent), se);
-					se.parentNode.replaceChild(createTag("input", {"type":"hidden", "name":se.getAttribute("name"), "value":se.value}), se);
+					replaceElement(createTag("input", {"type":"hidden", "name":se.getAttribute("name"), "value":se.value}), se);
 				} else if (!clear && add) {
 					wname.focus();
 					wnameaddit.click();
@@ -1130,9 +1130,6 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		var ae = xhrForm.form.querySelector("div.auto-editor > input[type='checkbox'][name='edit-work.as_auto_editor']");
 		return (ae && ae.checked);
 	}
-	function trim(s) {
-		return s.replace(/^\s\s*/, "").replace(/\s\s*$/, "");
-	}
 	function removeChildren(p) {
 		while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
 	}
@@ -1185,18 +1182,18 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 	function fixSTR(s) {
 		return s.replace(/(^|◇)[＊*]/g, "$1").replace(/～/g, "〜");
 	}
-	function fw2hw(s) {
+	function fullwidthToHalfwidth(s) {
 		return s.replace(/[！-｝]/g, function(a) {
 			return String.fromCharCode(a.charCodeAt(0)-65248);
 		}).replace(/\u3000/g, "\u0020").replace(/～/g, "〜");
 	}
-	function hw2fw(s) {
+	function halfwidthToFullwidth(s) {
 		return s.replace(/[!-}]/g, function(a) {
 			return String.fromCharCode(a.charCodeAt(0)+65248);
 		}).replace(/\u0020/g, "\u3000");
 	}
-	function d2h(d) { return d.toString(16); }
-	function h2d(h) { return parseInt(h, 16); }
+	function decToHex(d) { return d.toString(16); }
+	function hexToDec(h) { return parseInt(h, 16); }
 	function xhrMachine(_job) {
 		var job;
 		if (_job) { job = _job; }
@@ -1204,7 +1201,7 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 			if (joblist.length > 0) {
 				job = xhrJobs[joblist.shift()];
 			} else if (xhrWork.mbid) {
-				self.location.href = "/work/"+xhrWork.mbid;
+				location.href = "/work/"+xhrWork.mbid;
 				return;
 			} else {
 				alert("MAXI ERROR NO MBID (OMG BBQ WTF?)\nMaybe reload everything and try again…");
@@ -1271,9 +1268,9 @@ console.log(i+"("+xhrForm.originalInputs.inputs.length+")\n*"+xhrForm.originalIn
 		xhr.send(request.params);
 	}
 	function removeElement(element) {
-		element.parentNode.removeChild(element);
+		return element.parentNode.removeChild(element);
 	}
 	function replaceElement(newElement, oldElement) {
-		oldElement.parentNode.replaceChild(newElement, oldElement);
+		return oldElement.parentNode.replaceChild(newElement, oldElement);
 	}
 })();
