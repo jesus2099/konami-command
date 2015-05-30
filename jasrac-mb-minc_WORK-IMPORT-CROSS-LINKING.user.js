@@ -1,7 +1,7 @@
 (function(){"use strict";var meta=function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2015.5.30.234
+// @version      2015.5.30.313
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -242,14 +242,16 @@
 						}
 						var perf = tables[6];
 						if (perf) {
-							var tmpperf = "\n'''PERFORMERS'''\n";
-							var isperf = true;
 							var perfs = perf.getElementsByTagName("tr");
-							for (var iperf=3; iperf < perfs.length; iperf++) {
+							var max = Math.min(perfs.length, 13);
+							var tmpperf = "\n'''PERFORMERS'''"+(perfs.length>max?" (more than 10)":"")+"\n";
+							var isperf = true;
+							for (var iperf = 3; iperf < max; iperf++) {
 								var artist = perfs[iperf].getElementsByTagName("td")[1].textContent.trim();
 								if (artist == "") { isperf = false; break; }
-								tmpperf += (iperf>3?"／":"")+artist;
+								tmpperf += (iperf>3?"\n":"")+fullwidthToHalfwidth(artist);
 							}
+							if (perfs.length > max) tmpperf += "\n…";
 							if (isperf) { summary += tmpperf+"\n"; }
 						}
 						var alias = tables[5];
@@ -811,7 +813,7 @@
 		if (r) r = parseInt(r[1], 10) + 1;
 		for (var credtype in credtypes) if (credtypes.hasOwnProperty(credtype)) {
 			var ctype = credtypes[credtype].type?[credtypes[credtype]]:credtypes[credtype];
-			for (var c=0; c<ctype.length; c++) {
+			for (var c = 0; c < ctype.length; c++) {
 				var credit, credits = new RegExp("^"+credtype+"：([^\u00a0]+)(?:\u00a0（.+）)?$", "igm");
 				while (credit = credits.exec(source)) {
 					credit = credit[1].trim();
