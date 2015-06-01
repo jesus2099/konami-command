@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.5.28.1540
+// @version      2015.6.2.108
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -55,6 +55,7 @@
 	var regex_MBID = new RegExp(sregex_MBID, "i");
 	var css_track = "td:not(.pos):not(.video) > a[href^='"+MBS+"/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='"+MBS+"/recording/']";
 	var css_track_ac = "td:not([class]) + td:not([class])";
+	var css_collapsed_medium = "div#content > table.tbl > thead > tr > th > a.expand-medium > span.expand-triangle";
 	var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
 	var startpos, status, from, to, swap, editNote, queuetrack, shuffled = false, shuffle, restore;
 	var rem2loc = "◀";
@@ -84,6 +85,23 @@
 	if (localRelease.comment) localRelease.comment = " ("+localRelease.comment.textContent+")"; else localRelease.comment = "";
 	var remoteRelease = {"tracks":[]};
 	sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
+	var collapsedMediums = document.querySelectorAll(css_collapsed_medium);	
+	if (collapsedMediums.length > 1) {
+		var tracklistHeader = document.querySelector("h2.tracklist");
+		if (tracklistHeader) {
+			tracklistHeader.appendChild(createTag("span", {a:{title:"by and for "+meta.n}, s:{color:"#999", "opacity":".5"}}, [" (", createTag("a", {a:{ref:"▶"}}, "expand"), "/", createTag("a", {a:{ref:"▼"}}, "collapse"), " all mediums)"]));
+			tracklistHeader.addEventListener("click", function(event) {
+				if (event.target.tagName == "A") {
+					var state = event.target.getAttribute("ref");
+					for (var collapsedMediums = document.querySelectorAll(css_collapsed_medium), a = collapsedMediums.length-1; a >= 0; a--) {
+						if (collapsedMediums[a].textContent.trim() == state) {
+							collapsedMediums[a].click();
+						}
+					}
+				}
+			});
+		}
+	}
 	document.body.addEventListener("keydown", function(e) {
 		if (e.ctrlKey && e.shiftKey && e.keyCode == KBD.M) {
 			showGUI();
@@ -294,6 +312,47 @@ after step 1, check
 			shuffleRestoreEnable(false);
 			var mbid = this.value.match(new RegExp("/release/("+sregex_MBID+")"));
 			if (mbid) {
+				localRelease.tracks = [];
+				recid2trackIndex.local = {};
+				removeChildren(startpos);
+				var trs = document.querySelectorAll("div#content > table.tbl > tbody > tr");
+		//		var jsonRelease, scripts = document.querySelectorAll("script:not([src])");
+		//		for (var s=0; s < scripts.length && !jsonRelease; s++) {
+		//			jsonRelease = scripts[s].textContent.match(/MB\.Release\.init\(([^<]+)\)/);
+		//		}
+		//		if (jsonRelease) jsonRelease = JSON.parse(jsonRelease[1]);
+				for (var itrs=0, t=0, d=0, dt=0; itrs<trs.length; itrs++) {
+					if (!trs[itrs].className.match(/subh/)) {
+						var tracka = trs[itrs].querySelector(css_track);
+						var recoid = trs[itrs].querySelector("td.rating a.set-rating").getAttribute("href").match(/id=([0-9]+)/)[1];
+						var trackname = tracka.textContent;
+						var trackLength = trs[itrs].querySelector("td.treleases").textContent.match(/(\d+:)?\d+:\d+/);
+						if (trackLength) trackLength = strtime2ms(trackLength[0]);
+						var trackAC = trs[itrs].querySelector(css_track_ac);
+						localRelease.tracks.push({
+							tr: trs[itrs],
+							disc: d,
+							track: dt,
+							a: tracka,
+							recid: recoid,
+							name: trackname,
+							artistCredit: trackAC?trackAC.innerHTML.trim():localRelease.ac,
+							length: trackLength
+						});
+		//				if (jsonRelease) {
+		////					localRelease.tracks[localRelease.tracks.length-1] = jsonRelease.mediums[d-1].tracks[dt];
+		//					for (var key in jsonRelease.mediums[d-1].tracks[dt]) if (jsonRelease.mediums[d-1].tracks[dt].hasOwnProperty(key)) {
+		//						localRelease.tracks[localRelease.tracks.length-1][key] = jsonRelease.mediums[d-1].tracks[dt][key];
+		//					}
+		//				}
+						dt++;
+						recid2trackIndex.local[recoid] = t;
+						addOption(startpos, t, d+"."+(dt<10?" ":"")+dt+". "+trackname);
+						t++;
+					} else if (!trs[itrs].querySelector("div.data-track")) {
+						d++; dt = 0;
+					}
+				}
 				this.setAttribute("ref", this.value);
 				remoteRelease.id = mbid[1];
 				infoMerge("Fetching recordings…");
@@ -322,44 +381,6 @@ after step 1, check
 				this.focus();
 			}
 		});
-		var trs = document.querySelectorAll("div#content > table.tbl > tbody > tr");
-//		var jsonRelease, scripts = document.querySelectorAll("script:not([src])");
-//		for (var s=0; s < scripts.length && !jsonRelease; s++) {
-//			jsonRelease = scripts[s].textContent.match(/MB\.Release\.init\(([^<]+)\)/);
-//		}
-//		if (jsonRelease) jsonRelease = JSON.parse(jsonRelease[1]);
-		for (var itrs=0, t=0, d=0, dt=0; itrs<trs.length; itrs++) {
-			if (!trs[itrs].className.match(/subh/)) {
-				var tracka = trs[itrs].querySelector(css_track);
-				var recoid = trs[itrs].querySelector("td.rating a.set-rating").getAttribute("href").match(/id=([0-9]+)/)[1];
-				var trackname = tracka.textContent;
-				var trackLength = trs[itrs].querySelector("td.treleases").textContent.match(/(\d+:)?\d+:\d+/);
-				if (trackLength) trackLength = strtime2ms(trackLength[0]);
-				var trackAC = trs[itrs].querySelector(css_track_ac);
-				localRelease.tracks.push({
-					tr: trs[itrs],
-					disc: d,
-					track: dt,
-					a: tracka,
-					recid: recoid,
-					name: trackname,
-					artistCredit: trackAC?trackAC.innerHTML.trim():localRelease.ac,
-					length: trackLength
-				});
-//				if (jsonRelease) {
-////					localRelease.tracks[localRelease.tracks.length-1] = jsonRelease.mediums[d-1].tracks[dt];
-//					for (var key in jsonRelease.mediums[d-1].tracks[dt]) if (jsonRelease.mediums[d-1].tracks[dt].hasOwnProperty(key)) {
-//						localRelease.tracks[localRelease.tracks.length-1][key] = jsonRelease.mediums[d-1].tracks[dt][key];
-//					}
-//				}
-				dt++;
-				recid2trackIndex.local[recoid] = t;
-				addOption(startpos, t, d+"."+(dt<10?" ":"")+dt+". "+trackname);
-				t++;
-			} else if (!trs[itrs].querySelector("div.data-track")) {
-				d++; dt = 0;
-			}
-		}
 		MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "↑"), " / ", createTag("kbd", {}, "→"), " / ", createTag("kbd", {}, "↓"), " / ", createTag("kbd", {}, "←"), ": shift up/down", document.createElement("br"), "☞ ", createTag("kbd", {}, "ENTER"), ": queue all"]));
 		shuffle = createInput("button", "", "Match unordered track titles");
 		shuffle.setAttribute("title", "Find matching local title for each remote title");
@@ -513,6 +534,8 @@ after step 1, check
 					}
 					startpos.value = bestStartPosition() || 0;
 					spreadTracks(e);
+				} else if(releaseWithoutARs.match(/<a class="expand-medium"/g).length > 10) {
+						infoMerge("11+ medium releases can only be used as local", false);
 				}
 			} else {
 				infoMerge("This is not a valid release", false);
