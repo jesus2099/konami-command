@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.6.2.1234
+// @version      2015.6.2.1609
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -34,6 +34,7 @@
 		var showEntityInfo = true;
 		var entities = {};
 		var minrowid;
+		var lastCB;
 		var mergeForm = document.querySelector("div#content > form[action*='/merge']");
 		if (mergeForm) {
 			/*	entity merge pages progressively abandon ul layout in favour of table.tbl
@@ -96,6 +97,7 @@
 					removeCB.setAttribute("type", "checkbox");
 					removeCB.setAttribute("ref", "remove");
 					removeCB.setAttribute("value", rad.value);
+					batchRemove.addEventListener("click", rangeClick);
 					batchRemove.appendChild(document.createTextNode("remove"));
 					removeZone.appendChild(batchRemove);
 					removeZone.appendChild(document.createTextNode(" ("));
@@ -230,6 +232,26 @@
 			}
 		}
 		oddEvenRowsRedraw();
+	}
+	function rangeClick(event) {
+		if (event.target.tagName == "LABEL") {
+			if (event.shiftKey && lastCB && event.target.firstChild != lastCB && event.target.firstChild.checked != lastCB.checked) {
+				var CBs = event.target.parentNode.parentNode.parentNode.querySelectorAll("td[id^='"+userjs+"remove']  > label > input[type='checkbox'][ref='remove']");
+				var found;
+				for (var cb = 0; cb < CBs.length; cb++) {
+					if (found) {
+						if (CBs[cb] != lastCB && CBs[cb] != event.target.firstChild) {
+							CBs[cb].checked = lastCB.checked;
+						} else break;
+					} else if (CBs[cb] == lastCB || CBs[cb] == event.target.firstChild) {
+						found = true;
+					}
+				}
+				lastCB = null;
+			} else {
+				lastCB = event.target.firstChild;
+			}
+		}
 	}
 	function removeFromMerge(event) {
 		var isCB = event.target.parentNode.getAttribute("id");
