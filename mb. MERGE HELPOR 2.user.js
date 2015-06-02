@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.5.27.105
+// @version      2015.6.2.1234
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -108,12 +108,10 @@
 				entities[minrowid].row.style.setProperty("text-shadow", "0px 0px 8px #0C0");
 				entities[minrowid].rowidzone.style.setProperty("color", "#060");
 				entities[minrowid].rowidzone.insertBefore(document.createTextNode(" (oldest) "), entities[minrowid].rowidzone.firstChild);
-				if (mergeType != "artist") {
-					entities[minrowid].rowidzone.insertBefore(createA("SORT!", null, "sort those rows (oldest ID first)"), entities[minrowid].rowidzone.firstChild).addEventListener("click", function(e) {
-						this.parentNode.removeChild(this);
-						sortBy("rowid");
-					});
-				}
+				entities[minrowid].rowidzone.insertBefore(createA("SORT!", null, "sort those rows (oldest ID first)"), entities[minrowid].rowidzone.firstChild).addEventListener("click", function(e) {
+					this.parentNode.removeChild(this);
+					sortBy("rowid");
+				});
 				entities[minrowid].rowidzone.querySelector("a[href$='conditions.0.args.0="+entities[minrowid].rowid+"']").style.setProperty("background-color",  "#6F6");
 				entities[minrowid].rad.click();
 			}
@@ -215,9 +213,9 @@
 			if (!entities[rowid][what]) {
 				entities[rowid].row.parentNode.appendChild(entities[rowid].row.parentNode.removeChild(entities[rowid].row));
 			} else {
-				var rows = entities[rowid].row.parentNode.querySelectorAll("tr");
-				for (var row=0; rows.length; row++) {
-					var indexA = rows[row].querySelector("td[id^='"+userjs+"rowID'] a[href^='/search/edits']"), index;
+				var rows = entities[rowid].row.parentNode.querySelectorAll("tr, li");
+				for (var row=0; row < rows.length; row++) {
+					var indexA = rows[row].querySelector("[id^='"+userjs+"rowID'] a[href^='/search/edits']"), index;
 					if (indexA && (index = parseInt(indexA.textContent.replace(/\D/g, ""), 10)) && index >= entities[rowid][what]) {
 						if (entities[rowid].row != rows[row]) {
 							entities[rowid].row.parentNode.insertBefore(entities[rowid].row.parentNode.removeChild(entities[rowid].row), rows[row]);
