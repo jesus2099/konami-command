@@ -57,7 +57,11 @@
 				if (showEntityInfo && mergeType.match(/(release|release-group)/)) {
 					headers.appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
 				} else { showEntityInfo = false; }
-				headers.appendChild(document.createElement("th")).appendChild(document.createTextNode("MBID age (row ID)")).parentNode.style.setProperty("text-align", "right");
+				var rowids = document.createElement("th");
+				rowids.setAttribute("id", userjs+"rowidsHeader");
+				rowids.style.setProperty("text-align", "right");
+				rowids.appendChild(document.createTextNode("MBID age (row ID) "));
+				headers.appendChild(rowids);
 				var batchRemove = headers.appendChild(document.createElement("th")).appendChild(createA("Remove selected entities", null, "Remove selected "+mergeType+"s from merge"));
 				batchRemove.addEventListener("click", removeFromMerge);
 			}
@@ -110,10 +114,13 @@
 				entities[minrowid].row.style.setProperty("text-shadow", "0px 0px 8px #0C0");
 				entities[minrowid].rowidzone.style.setProperty("color", "#060");
 				entities[minrowid].rowidzone.insertBefore(document.createTextNode(" (oldest) "), entities[minrowid].rowidzone.firstChild);
-				entities[minrowid].rowidzone.insertBefore(createA("SORT!", null, "sort those rows (oldest ID first)"), entities[minrowid].rowidzone.firstChild).addEventListener("click", function(e) {
-					this.parentNode.removeChild(this);
+				var sortButton = createA("SORT!", null, "sort those "+mergeType+"s (oldest ID first)");
+				var rowidsHeader = document.getElementById(userjs+"rowidsHeader");
+				sortButton.addEventListener("click", function(e) {
 					sortBy("rowid");
 				});
+				if (rowidsHeader) rowidsHeader.appendChild(sortButton);
+				else mergeForm.insertBefore(sortButton, mergeForm.firstChild);
 				entities[minrowid].rowidzone.querySelector("a[href$='conditions.0.args.0="+entities[minrowid].rowid+"']").style.setProperty("background-color",  "#6F6");
 				entities[minrowid].rad.click();
 			}
