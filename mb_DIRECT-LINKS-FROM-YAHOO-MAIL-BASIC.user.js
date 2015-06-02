@@ -1,12 +1,14 @@
 // ==UserScript==
-// @name         mb. DIRECT LINKS FROM YAHOO! MAIL (BASIC)
-// @version      2015.2.25.20.9
-// @description  BACK FOR BASIC Y!MAIL only (/neo/b/) now. Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
+// @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
+// @version      2015.6.2.1007
+// @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @homepage     http://userscripts-mirror.org/scripts/show/80308
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12)             my own coding setup
+// @compatible   opera+violentmonkey   my own browsing setup
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_DIRECT-LINKS-FROM-YAHOO-MAIL-BASIC.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_DIRECT-LINKS-FROM-YAHOO-MAIL-BASIC.user.js
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2010-06-28
@@ -43,7 +45,7 @@
 	var idextractor = /by edit #([0-9]+)/;
 	var triggerResponseURL = /<input type="hidden" name="mid" value="([^"]+)"/;
 	var editurl = "//musicbrainz.org/edit/";
-	var jiraurl = "//tickets.musicbrainz.org/browse/";
+	var jiraurl = "http://tickets.musicbrainz.org/browse/";
 	for (var i=0; i<directlinks; i++) {
 		var lnk = document.querySelector("li#"+directlinks[i]+" a");
 		if (lnk) {
