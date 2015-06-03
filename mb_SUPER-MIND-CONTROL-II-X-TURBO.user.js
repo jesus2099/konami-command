@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.6.3.1154
+// @version      2015.6.3.1616
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -981,7 +981,7 @@
 		var mytags = sidebar.querySelector("div#sidebar-tags input.tag-input");
 		if (header && tags && mytags) {
 			if (!event) {
-				header.appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right", "cursor":"help"}}, ["↙ others’, ", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), ""]));
+				header.appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right", "cursor":"help"}}, ["↙", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), " and others’"]));
 				tags.addEventListener("DOMNodeInserted", updateTags);
 				mytags.addEventListener("change", function (e) { this.value = this.value.toLowerCase().replace(/\s+/g, " "); });
 			}

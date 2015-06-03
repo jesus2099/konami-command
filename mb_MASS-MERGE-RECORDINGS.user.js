@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.6.3.1555
+// @version      2015.6.3.1616
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -102,10 +102,10 @@
 			});
 		}
 	}
-	document.body.addEventListener("keydown", function(e) {
-		if (e.ctrlKey && e.shiftKey && e.keyCode == KBD.M) {
+	document.body.addEventListener("keydown", function(event) {
+		if (event.ctrlKey && event.shiftKey && event.keyCode == KBD.M) {
 			prepareLocalRelease();
-			return stop(e);
+			return stop(event);
 		}
 	});
 //	sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
@@ -170,7 +170,7 @@ after step 1, check
 		function releaseInfoRow(sourceOrTarget, rel, trackIndex) {
 			return sourceOrTarget+": "+MBS+"/release/"+rel.id+" #'''"+(trackIndex+1)+"'''/"+rel.tracks.length+". “'''"+protectEditNoteText(rel.title)+"'''”"+protectEditNoteText(rel.comment)+" by '''"+protectEditNoteText(rel.ac)+"'''\n";
 		}
-		xhr.onreadystatechange = function(e) {
+		xhr.onreadystatechange = function(event) {
 			if (this.readyState == 4) {
 				if (this.status == 200) {
 					if (step < 1) {
@@ -287,15 +287,15 @@ after step 1, check
 	}
 	function massMergeGUI() {
 		var MMRdiv = createTag("div", {a:{id:MMRid}, e:{
-			keydown:function(e) {
-				if (e.keyCode == KBD.ENTER && (e.target == startpos || e.target == editNote && e.ctrlKey)) {
+			keydown:function(event) {
+				if (event.keyCode == KBD.ENTER && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
 					document.getElementById(MMRid+"mergeallbutt").click();
-				} else if (e.target == editNote && e.ctrlKey) {
-					switch (e.keyCode) {
+				} else if (event.target == editNote && event.ctrlKey) {
+					switch (event.keyCode) {
 						case KBD.S:
-							return saveEditNote(e);
+							return saveEditNote(event);
 						case KBD.O:
-							return loadEditNote(e);
+							return loadEditNote(event);
 					}
 				}
 			},
@@ -308,7 +308,7 @@ after step 1, check
 		]);
 		status = MMRdiv.appendChild(createInput("text", "status", "", meta.n+" remote release URL"));
 		status.style.setProperty("width", "100%");
-		status.addEventListener("input", function(e) {
+		status.addEventListener("input", function(event) {
 			shuffleRestoreEnable(false);
 			var mbid = this.value.match(new RegExp("/release/("+sregex_MBID+")(/disc/(\\d+))?"));
 			if (mbid) {
@@ -365,19 +365,19 @@ after step 1, check
 		MMRdiv.appendChild(createTag("p", {}, "Herebelow, you can shift the alignement of local and remote tracklists."));
 		MMRdiv.appendChild(createTag("p", {s:{marginBottom: "0px"}}, "Start position:"));
 		/*track parsing*/
-		startpos = MMRdiv.appendChild(createTag("select", {s:{fontSize:".8em", width:"100%"}, e:{change:function(e) {
+		startpos = MMRdiv.appendChild(createTag("select", {s:{fontSize:".8em", width:"100%"}, e:{change:function(event) {
 			/* hitting ENTER on a once changed <select> triggers onchange even if no recent change */
 			if (this.getAttribute("previousValue") != this.value) {
 				this.setAttribute("previousValue", this.value);
 				if (remoteRelease.id && remoteRelease.tracks.length > 0) {
-					spreadTracks(e);
+					spreadTracks(event);
 				} else {
 					status.focus();
 				}
 			}
 		}}}));
-		if (navigator.userAgent.match(/firefox/i)) startpos.addEventListener("keyup", function(e) {
-			if (e.keyCode != KBD.ENTER) {
+		if (navigator.userAgent.match(/firefox/i)) startpos.addEventListener("keyup", function(event) {
+			if (event.keyCode != KBD.ENTER) {
 				this.blur();
 				this.focus();
 			}
@@ -401,7 +401,7 @@ after step 1, check
 		}
 		editNote.style.setProperty("width", "100%");
 		editNote.setAttribute("rows", "5");
-		editNote.addEventListener("input", function(e) {
+		editNote.addEventListener("input", function(event) {
 			this.style.removeProperty("background-color");
 			this.removeAttribute("title");
 		});
@@ -420,7 +420,7 @@ after step 1, check
 		swap = MMRdiv.appendChild(createInput("hidden", "swap", "yes"));
 		var changeAllDirButt = createInput("button", "", "Change all merge targets to "+(swap.value=="no"?"remote":"local"));
 		changeAllDirButt.style.setProperty("background-color", cOK);
-		changeAllDirButt.addEventListener("click", function(e) {
+		changeAllDirButt.addEventListener("click", function(event) {
 			var allbutts = document.querySelectorAll("input."+MMRid+"dirbutt:not([disabled])");
 			var direction = this.value.match(/local/)?rem2loc:loc2rem;
 			for (var iab=0; iab < allbutts.length; iab++) if (allbutts[iab].value != direction) allbutts[iab].click();
@@ -429,7 +429,7 @@ after step 1, check
 			this.style.setProperty("background-color", swap.value=="no"?cInfo:cOK);
 		}, false);
 		var resetAllDirButt = createInput("button", "", "Reset all merge directions to oldest");
-		resetAllDirButt.addEventListener("click", function(e) {
+		resetAllDirButt.addEventListener("click", function(event) {
 			var allbutts = document.querySelectorAll("input."+MMRid+"dirbutt:not([disabled])");
 			for (var iab=0; iab < allbutts.length; iab++) {
 				var remoteRowID = parseInt(allbutts[iab].parentNode.querySelector("input[name='merge.merging.1']").value, 10);
@@ -445,7 +445,7 @@ after step 1, check
 		queueAllButt.setAttribute("ref", queueAllButt.value);
 		queueAllButt.setAttribute("id", MMRid+"mergeallbutt");
 		queueAllButt.style.setProperty("background-color", cMerge);
-		queueAllButt.addEventListener("click", function(e) {
+		queueAllButt.addEventListener("click", function(event) {
 			var allbutts = document.getElementsByClassName(MMRid+"mergebutt");
 			for (var iab=0; iab<allbutts.length; iab++) {
 				if (allbutts[iab].value == "Merge") allbutts[iab].click();
@@ -453,7 +453,7 @@ after step 1, check
 		}, false);
 		var emptyQueueButt = createInput("button", "", "Empty merge queue");
 		emptyQueueButt.style.setProperty("background-color", cCancel);
-		emptyQueueButt.addEventListener("click", function(e) {
+		emptyQueueButt.addEventListener("click", function(event) {
 			if (mergeQueue.length > 0) {
 				while (mergeQueue.length > 0) {
 					var unqueuedbutt = mergeQueue.shift()
@@ -470,7 +470,8 @@ after step 1, check
 	}
 	function loadReleasePage() {
 		var xhr = new XMLHttpRequest();
-		xhr.addEventListener("load", function(e) {
+		xhr.addEventListener("load", function() { infoMerge("Error #"+this.status+": "+this.statusText, false); });
+		xhr.addEventListener("load", function(event) {
 			if (this.status == 200) {
 				var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
 				var recIDx5 = releaseWithoutARs.match(/entity_id=[0-9]+&amp;entity_type=recording/g);
@@ -537,7 +538,7 @@ after step 1, check
 						addOption(startpos, 0-rtrack-1, 0-rtrack-1, true);
 					}
 					startpos.value = bestStartPosition() || 0;
-					spreadTracks(e);
+					spreadTracks(event);
 				} else if(releaseWithoutARs.match(/<a class="expand-medium"/g).length > 10) {
 					var disc = prompt("11+ medium releases can only be used as local release.\nDo you want to load one of its mediums?\n\nNext time you can directly paste the medium link ("+MBS+"/release/"+remoteRelease.id+"/disc/1).", "1");
 					if (disc && disc.match(/^\d+$/)) {
@@ -562,7 +563,7 @@ after step 1, check
 	}
 	function loadReleaseWS(mbid) {
 	}
-	function spreadTracks(e) {
+	function spreadTracks(event) {
 		var rtrack = startpos.value<0?0-startpos.value:0;
 		for (var ltrack=0; ltrack < localRelease.tracks.length; ltrack++) {
 			cleanTrack(localRelease.tracks[ltrack]);
@@ -580,7 +581,7 @@ after step 1, check
 		infoMerge("Recordings loaded, "+mergebutts+" ready to merge", true);
 		var mergeallbutt = document.getElementById(MMRid+"mergeallbutt");
 		disable(mergeallbutt, mergebutts < 1);
-		if (mergebutts > 0 || !e || !e.type || e.type != "load") startpos.focus();
+		if (mergebutts > 0 || !event || !event.type || event.type != "load") startpos.focus();
 	}
 	function buildMergeForm(loc, rem) {
 		var locTrack = localRelease.tracks[loc];
@@ -603,7 +604,7 @@ after step 1, check
 			dirButt.style.setProperty("background-color", swap.value=="no"?cOK:cInfo);
 			dirButt.style.setProperty("padding", "0 1em .5em 1em");
 			dirButt.style.setProperty("margin", "0 4px");
-			dirButt.addEventListener("click", function(e) {
+			dirButt.addEventListener("click", function(event) {
 				this.value = this.value==rem2loc?loc2rem:rem2loc;
 				this.style.setProperty("background-color", this.value==rem2loc?cOK:cInfo);
 			}, false);
@@ -658,7 +659,7 @@ after step 1, check
 			mergeButt.setAttribute("class", MMRid+"mergebutt");
 			mergeButt.style.setProperty("background-color", cMerge);
 			mergeButt.style.setProperty("float", "right");
-			mergeButt.addEventListener("click", function(e) {
+			mergeButt.addEventListener("click", function(event) {
 				disable(this);
 				var swapbutt = this.parentNode.getElementsByTagName("input")[4];
 				disable(swapbutt)
@@ -800,7 +801,7 @@ after step 1, check
 		input.setAttribute("name", name);
 		input.style.setProperty("font-size", ".8em");
 		if (type == "text") {
-			input.addEventListener("focus", function(e) {
+			input.addEventListener("focus", function(event) {
 				this.select();
 			}, false);
 		}
@@ -932,10 +933,10 @@ after step 1, check
 		if (children) { var chldrn = children; if ((typeof chldrn).match(/number|string/) || chldrn.tagName) chldrn = [chldrn]; for(var child=0; child<chldrn.length; child++) t.appendChild((typeof chldrn[child]).match(/number|string/)?document.createTextNode(chldrn[child]):chldrn[child]); t.normalize(); }
 		return t;
 	}
-	function stop(e) {
-		e.cancelBubble = true;
-		if (e.stopPropagation) e.stopPropagation();
-		e.preventDefault();
+	function stop(event) {
+		event.cancelBubble = true;
+		if (event.stopPropagation) event.stopPropagation();
+		event.preventDefault();
 		return false;
 	}
 })();
