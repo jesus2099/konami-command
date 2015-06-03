@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.5.29.1422
+// @version      2015.6.3.1154
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -987,7 +987,7 @@
 			}
 			tags = tags.querySelectorAll("a:not([href^='/user/'])");
 			for (var t = 0; t < tags.length; t++) {
-				if (mytags.value.match(new RegExp("(^|,)\\s*"+tags[t].textContent+"\\s*(,|$)", "i"))) {
+				if (mytags.value.match(new RegExp("(^|,)\\s*"+escapeRegExp(tags[t].textContent)+"\\s*(,|$)", "i"))) {
 					tags[t].setAttribute("href", tags[t].getAttribute("href").replace(MBS, account.pathname));
 				}
 			}
@@ -1368,5 +1368,9 @@
 	function replaceChildren(newContent, parent) {
 		while (parent && parent.hasChildNodes()) { parent.removeChild(parent.firstChild); }
 		return parent.appendChild(newContent);
+	}
+	/* from https://developer.mozilla.org/docs/Web/JavaScript/Guide/Regular_Expressions */
+	function escapeRegExp(string){
+		return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	}
 })();
