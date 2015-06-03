@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.6.2.108
+// @version      2015.6.3.1555
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -89,7 +89,7 @@
 	if (collapsedMediums.length > 1) {
 		var tracklistHeader = document.querySelector("h2.tracklist");
 		if (tracklistHeader) {
-			tracklistHeader.appendChild(createTag("span", {a:{title:"by and for "+meta.n}, s:{color:"#999", "opacity":".5"}}, [" (", createTag("a", {a:{ref:"▶"}}, "expand"), "/", createTag("a", {a:{ref:"▼"}}, "collapse"), " all mediums)"]));
+			tracklistHeader.appendChild(createTag("span", {a:{title:"by and for "+meta.n}, s:{color:"#999", "opacity":".5"}}, [" (", createTag("a", {a:{ref:"▶", id:MMRid+"expand"}}, "expand"), "/", createTag("a", {a:{ref:"▼"}}, "collapse"), " all mediums)"]));
 			tracklistHeader.addEventListener("click", function(event) {
 				if (event.target.tagName == "A") {
 					var state = event.target.getAttribute("ref");
@@ -104,7 +104,7 @@
 	}
 	document.body.addEventListener("keydown", function(e) {
 		if (e.ctrlKey && e.shiftKey && e.keyCode == KBD.M) {
-			showGUI();
+			prepareLocalRelease();
 			return stop(e);
 		}
 	});
@@ -299,7 +299,7 @@ after step 1, check
 					}
 				}
 			},
-			click: showGUI
+			click: prepareLocalRelease
 		}}, [
 			createTag("h2", {}, meta.n),
 			createTag("p", {}, "version " + meta.v),
@@ -310,7 +310,7 @@ after step 1, check
 		status.style.setProperty("width", "100%");
 		status.addEventListener("input", function(e) {
 			shuffleRestoreEnable(false);
-			var mbid = this.value.match(new RegExp("/release/("+sregex_MBID+")"));
+			var mbid = this.value.match(new RegExp("/release/("+sregex_MBID+")(/disc/(\\d+))?"));
 			if (mbid) {
 				localRelease.tracks = [];
 				recid2trackIndex.local = {};
@@ -355,9 +355,10 @@ after step 1, check
 				}
 				this.setAttribute("ref", this.value);
 				remoteRelease.id = mbid[1];
+				remoteRelease.disc = mbid[2] || "";
 				infoMerge("Fetching recordings…");
-				loadReleasePage(mbid[1]);
-				loadReleaseWS(mbid[1]);
+				loadReleasePage();
+				loadReleaseWS();
 			}
 		});
 		MMRdiv.appendChild(createTag("p", {}, "Once you paste the remote release URL or MBID, all its recordings will be loaded and made available for merge with the local recordings in the left hand tracklist."));
@@ -467,7 +468,7 @@ after step 1, check
 		queuetrack = MMRdiv.appendChild(createTag("div", {s:{textAlign:"center", backgroundColor:cInfo, display:"none"}}, "\u00A0"));
 		return MMRdiv;
 	}
-	function loadReleasePage(mbid) {
+	function loadReleasePage() {
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener("load", function(e) {
 			if (this.status == 200) {
@@ -490,13 +491,16 @@ after step 1, check
 					remoteRelease.ac = rtitle[2];
 					var mbidInfo = document.getElementById(MMRid).querySelector(".remote-release-link");
 					removeChildren(mbidInfo);
-					mbidInfo.setAttribute("title", mbid);
+					mbidInfo.setAttribute("title", remoteRelease.id+remoteRelease.disc);
 					if (remoteRelease.id == localRelease.id) {
-						mbidInfo.appendChild(document.createTextNode(" (same)"));
+						mbidInfo.appendChild(document.createTextNode(" (same"+(remoteRelease.disc?","+remoteRelease.disc.replace(/\//g, " "):"")+")"));
 					} else {
 						mbidInfo.appendChild(document.createTextNode(" “"));
-						mbidInfo.appendChild(createA(remoteRelease.id==localRelease.id?"same":remoteRelease.title, "/release/"+mbid));
+						mbidInfo.appendChild(createA(remoteRelease.id==localRelease.id?"same":remoteRelease.title, "/release/"+remoteRelease.id+remoteRelease.disc));
 						mbidInfo.appendChild(document.createTextNode("”" + remoteRelease.comment));
+						if (remoteRelease.disc) {
+							mbidInfo.appendChild(document.createTextNode(" ("+remoteRelease.disc.substr(1).replace(/\//, " ")+")"));
+						}
 					}
 					remoteRelease.tracks = [];
 					for (var t = 0; t < recIDs.length; t++) {
@@ -535,13 +539,19 @@ after step 1, check
 					startpos.value = bestStartPosition() || 0;
 					spreadTracks(e);
 				} else if(releaseWithoutARs.match(/<a class="expand-medium"/g).length > 10) {
+					var disc = prompt("11+ medium releases can only be used as local release.\nDo you want to load one of its mediums?\n\nNext time you can directly paste the medium link ("+MBS+"/release/"+remoteRelease.id+"/disc/1).", "1");
+					if (disc && disc.match(/^\d+$/)) {
+						remoteRelease.disc = "/disc/"+disc;
+						loadReleasePage();
+					} else {
 						infoMerge("11+ medium releases can only be used as local", false);
+					}
 				}
 			} else {
 				infoMerge("This is not a valid release", false);
 			}
 		});
-		xhr.open("GET", "/release/"+mbid, true);
+		xhr.open("GET", "/release/"+remoteRelease.id+remoteRelease.disc, true);
 		xhr.send(null);
 	}
 	function bestStartPosition(pLoc) {
@@ -703,6 +713,21 @@ after step 1, check
 			}
 		}
 	}
+	function prepareLocalRelease() {
+		if (document.querySelectorAll(css_collapsed_medium).length > 10) {
+			document.getElementById(MMRid+"expand").click();
+			setTimeout(loadingAllMediums, 10);
+		} else {
+			showGUI();
+		}
+	}
+	function loadingAllMediums() {
+		if (document.querySelector("table.tbl > tbody > tr > td > div.loading-message")) {
+			setTimeout(loadingAllMediums, 200);
+		} else {
+			showGUI();
+		}
+	}
 	function showGUI() {
 		if (!document.body.classList.contains(MMRid)) {
 			document.body.classList.add(MMRid);
@@ -712,7 +737,7 @@ after step 1, check
 				MMRdiv.style.setProperty("margin-top", tracklistTop.offsetTop+"px");
 				tracklistTop.scrollIntoView();
 			}
-			MMRdiv.removeEventListener("click", showGUI);
+			MMRdiv.removeEventListener("click", prepareLocalRelease);
 			var firstElements = [];
 			for (var child = 0; sidebar.childNodes[child] != MMRdiv && child < sidebar.childNodes.length; child++) {
 				firstElements.unshift(sidebar.childNodes[child]);
