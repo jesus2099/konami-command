@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.6.4.1432
+// @version      2015.6.4.1234
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -563,20 +563,9 @@
 							}
 						},
 						focus:function(e){this.select();},
-						keydown:function(e) {
-							if (!e.ctrlKey && !e.shiftKey && e.keyCode == KEYCODES.C) {
-								stop(e);
-								var ph = ["YYYY", "MM", "DD"];
-								for (var p=0; p<ph.length; p++) {
-									var inps = this.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='"+ph[p]+"']");
-									var downwards = (this.parentNode == inps[0].parentNode);
-									inps[downwards?1:0].value = inps[downwards?0:1].value;
-									sendEvent(inps[downwards?1:0], "change");
-								}
-							}
-						}
+						keydown:[EASY_DATE_cloneDate, EASY_DATE_nextField]
 					}}
-				), years[y]).addEventListener("keydown", EASY_DATE_nextField);
+				), years[y]);
 			years[y].className += " "+userjs+"easydate";
 			years[y].style.setProperty("display", "none");
 			years[y].addEventListener("change", function(e) {
@@ -584,12 +573,26 @@
 					this.nextSibling.value = this.value;
 				}
 			}, false);
+			years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_cloneDate);
+			years[y].parentNode.querySelector("input[placeholder='DD']").addEventListener("keydown", EASY_DATE_cloneDate);
 			years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_nextField);
+		}
+	}
+	function EASY_DATE_cloneDate(event) {
+		if (!event.ctrlKey && !event.shiftKey && event.keyCode == KEYCODES.C) {
+			stop(event);
+			var ph = ["YYYY", "MM", "DD"];
+			for (var p = 0; p < ph.length; p++) {
+				var inps = this.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='" + ph[p] + "']");
+				var downwards = (this.parentNode == inps[0].parentNode);
+				inps[downwards?1:0].value = inps[downwards?0:1].value;
+				sendEvent(inps[downwards?1:0], "change");
+			}
 		}
 	}
 	function EASY_DATE_nextField(event) {
 		if (!event.ctrlKey && !event.shiftKey && (event.keyCode == KEYCODES["NUMPAD-MINUS"] || event.keyCode == KEYCODES["NUMPAD-DIVIDE"] || event.keyCode == KEYCODES["NUMPAD-DOT"])) {
-			var nextField = this.parentNode.querySelector("input[placeholder='"+(this.getAttribute("placeholder")=="MM"?"DD":"MM")+"']");
+			var nextField = this.parentNode.querySelector("input[placeholder='" + (this.getAttribute("placeholder")=="MM"?"DD":"MM") + "']");
 			nextField.focus();
 			nextField.select();
 			return stop(event);
@@ -1296,9 +1299,9 @@
 		var t = (tag=="fragment"?document.createDocumentFragment():document.createElement(tag));
 		if(t.tagName) {
 			if (gadgets) {
-				for (var attri in gadgets.a) { if (gadgets.a.hasOwnProperty(attri)) { t.setAttribute(attri, gadgets.a[attri]); } }
-				for (var style in gadgets.s) { if (gadgets.s.hasOwnProperty(style)) { t.style.setProperty(style.replace(/!/,""), gadgets.s[style], style.match(/!/)?"important":""); } }
-				for (var event in gadgets.e) { if (gadgets.e.hasOwnProperty(event)) { t.addEventListener(event, gadgets.e[event], false); } }
+				for (var attri in gadgets.a) if (gadgets.a.hasOwnProperty(attri)) { t.setAttribute(attri, gadgets.a[attri]); }
+				for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) { t.style.setProperty(style.replace(/!/,""), gadgets.s[style], style.match(/!/)?"important":""); }
+				for (var event in gadgets.e) if (gadgets.e.hasOwnProperty(event)) { var evts = gadgets.e[event]; if (!Array.isArray(gadgets.e[event])) { evts = [evts]; } for (var evt = 0; evt < evts.length; evt++) { t.addEventListener(event, evts[evt]); } }
 			}
 			if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) { t.style.setProperty("cursor", "pointer"); }
 		}

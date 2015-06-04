@@ -3,7 +3,7 @@
 
 Some [musicbrainz.org](http://musicbrainz.org) power‐ups (mbsandbox.org too).
 
-:gem: new **EASY_DATE**®, **TRACKLIST_TOOLS** and **MBSANDBOX.ORG** suppert !
+:gem: updated [**TAG_TOOLS**](#tag_tools) suppert !
 
 * **Install** from [Greasy Fork], 
   from [OpenUserJS] or 
