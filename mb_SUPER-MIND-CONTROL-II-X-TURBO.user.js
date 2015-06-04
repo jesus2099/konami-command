@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.6.4.1234
+// @version      2015.6.4.1626
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -566,7 +566,7 @@
 						keydown:[EASY_DATE_cloneDate, EASY_DATE_nextField]
 					}}
 				), years[y]);
-			years[y].className += " "+userjs+"easydate";
+			years[y].classList.add(userjs+"easydate");
 			years[y].style.setProperty("display", "none");
 			years[y].addEventListener("change", function(e) {
 				if (this.nextSibling.value != this.value) {
@@ -702,12 +702,11 @@
 		}
 	}
 	function ROW_HIGHLIGHTER_refresh(e) {
-		var cls = " "+userjs+"rowhld";
 		var row = [this.parentNode];
 		if (row[0]) {
 			if (location.pathname.match(new RegExp("^/release/(add|"+stre_GUID+"/edit)$"))) {/*release-editor hacks*/
 				if (getParent(this, "div", null, "recordings")/*Recordings*/ && this.tagName == "TD") {
-					if (!row[0].className.match(/\btrack\b/)) {
+					if (!row[0].classList.contains("track")) {
 						row[0] = getSibling(row[0], "tr", "track", true);
 					}
 					row.push(getSibling(row[0], "tr", "artist"));
@@ -722,8 +721,7 @@
 				];
 			}
 			for (var r=0; r<row.length; r++) { if (row[r]) {
-				if (e.type.match(/over/)) row[r].className += cls;
-				else row[r].className = row[r].className.split(cls).join("");
+				row[r].classList.toggle(userjs+"rowhld");
 			} }
 		}
 	}
@@ -1202,7 +1200,7 @@
 	function TRACKLIST_TOOLS_buttonHandler(e) {
 		if (e.target.className.match(new RegExp("^"+userjs+"(search-replace|track-length-parser)$"))) {
 			if (e.type == "click") {
-				if (e.target.className == userjs+"search-replace") {
+				if (e.target.classList.contains(userjs+"search-replace")) {
 					var searchrep = localStorage.getItem(userjs+"search-replace");
 					searchrep = searchrep?JSON.parse(searchrep):["",""];
 					if (
@@ -1221,7 +1219,7 @@
 						}
 						localStorage.setItem(userjs+"search-replace", JSON.stringify(searchrep));
 					}
-				} else if (e.target.className == userjs+"track-length-parser") {
+				} else if (e.target.classList.contains(userjs+"track-length-parser")) {
 					var erase = e.target.textContent.match(/erase/i) || e.ctrlKey;
 					var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']", e.target, e);
 					var times = !erase && prompt("Track length parser\n\nPlease paste your huge text including track times below.\n“1:23” and “1′23″” and even incorrect “1’23”” and “1'23\"” will be parsed.\nYou can for instance copy from your foobar2000 tracklist, minc.or.jp, etc.\nWARNING. You must understand that all current times will be overwritten in the tracklist editor.");
@@ -1334,7 +1332,7 @@
 		var cur = obj;
 		if (cur.parentNode) {
 			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*"))) && (!id || cur.getAttribute && cur.getAttribute("id") == id)) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls)) && (!id || cur.getAttribute && cur.getAttribute("id") == id)) {
 				return cur;
 			} else {
 				return getParent(cur, tag, cls, id);
@@ -1353,7 +1351,7 @@
 		var cur = obj;
 		var max = _max!=null?_max:1;
 		if (cur = prev?cur.previousSibling:cur.nextSibling) {
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else if (max > 0){
 				return getSibling(cur, tag, cls, prev, _max!=null?max-1:false);

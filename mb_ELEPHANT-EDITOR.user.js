@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2015.4.30.1642
+// @version      2015.6.4.1626
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -322,7 +322,7 @@ function getParent(obj, tag, cls) {
 	var cur = obj;
 	if (cur.parentNode) {
 		cur = cur.parentNode;
-		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 			return cur;
 		} else {
 			return getParent(cur, tag, cls);

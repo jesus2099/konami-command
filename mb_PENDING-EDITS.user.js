@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.4.120.1623
+// @version      2015.6.4.1626
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -183,12 +183,12 @@ It will add other request(s) to MB server, this is why it is an option.*/
 	function mp(o, set) {
 		var li = getParent(o, "li");
 		if (set == null) {
-			return li.firstChild.tagName == "SPAN" && li.firstChild.className == "mp";
+			return li.firstChild.tagName == "SPAN" && li.firstChild.classList.contains("mp");
 		} else if (typeof set == "boolean" && li.firstChild.tagName == "SPAN") {
 			if (set && !mp(o)) {
 				li.firstChild.className = "mp";
 			} else if (!set) {
-				if (mp(o)) { li.firstChild.className = ""; }
+				if (mp(o)) { li.firstChild.classList.remove("mp"); }
 				o.style.setProperty("text-decoration", "line-through");
 				li.style.setProperty("opacity", ".5");
 			}
@@ -234,7 +234,7 @@ It will add other request(s) to MB server, this is why it is an option.*/
 		var cur = obj;
 		if (cur.parentNode) {
 			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else {
 				return getParent(cur, tag, cls);

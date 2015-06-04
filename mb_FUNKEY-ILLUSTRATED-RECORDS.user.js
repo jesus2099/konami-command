@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2015.5.27.1310
+// @version      2015.6.4.1626
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -116,7 +116,7 @@
 			tr.addEventListener("mouseover", updateBig, false);
 			tr.addEventListener("mouseout", updateBig, false);
 			var box = getParent(as[a], "table") || getParent(as[a], "ul");
-			if (bigpics && imgurls.indexOf(imgurl) < 0 && (box = box.previousSibling.tagName == "DIV" && box.previousSibling.className == userjs+"bigbox"?box.previousSibling:box.parentNode.insertBefore(createTag("div",{"class":userjs+"bigbox"}),box))) {
+			if (bigpics && imgurls.indexOf(imgurl) < 0 && (box = box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs+"bigbox")?box.previousSibling:box.parentNode.insertBefore(createTag("div",{"class":userjs+"bigbox"}),box))) {
 				var artisttd = artistcol && getSibling(getParent(as[a],"td"),"td");
 				box.appendChild(createTag("a",{"href":as[a].getAttribute("href"),"title":as[a].textContent+(artisttd?"\r\n"+artisttd.textContent.trim():"")},{"display":"inline-block","height":"100%","margin":"8px 8px 4px 4px"},{},[
 					document.createTextNode("⌛"),
@@ -161,7 +161,7 @@
 	}
 	function big(event, img, smallSize) {
 		if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
-			if (event.target.className == userjs) stop(event);
+			if (event.target.classList.contains(userjs)) stop(event);
 			var enlarge = (img.getAttribute("_size")=="small");
 			var height = enlarge?(img.getAttribute("_height")||"250px"):smallSize;
 			var margin = enlarge?("-"+(parseInt(img.getAttribute("_height"), 10)/2)+"px -"+(parseInt(img.getAttribute("_width"), 10)/2)+"px"):img.getAttribute("_margin");
@@ -202,7 +202,7 @@
 		var cur = obj;
 		if (cur.parentNode) {
 			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else {
 				return getParent(cur, tag, cls);
@@ -214,7 +214,7 @@
 	function getSibling(obj, tag, cls, prev) {
 		var cur = obj;
 		if (cur = prev?cur.previousSibling:cur.nextSibling) {
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else {
 				return getSibling(cur, tag, cls, prev);

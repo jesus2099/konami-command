@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PUNBB FORUMS ENHANCER
-// @version      2014.11.24.1511
+// @version      2015.6.4.1626
 // @description  BBCode markup buttons (bold, italic, url, etc.) with keyboard shortcut keys and restore accesskey on preview and submit too in musicbrainz forums + Hide some forums from new posts page
 // @homepage     http://userscripts-mirror.org/scripts/show/125668
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -146,7 +146,7 @@
 		var cur = obj;
 		if (cur.parentNode) {
 			cur = cur.parentNode;
-			if (cur.tagName.toUpperCase() == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName.toUpperCase() == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else {
 				return getParent(cur, tag, cls);

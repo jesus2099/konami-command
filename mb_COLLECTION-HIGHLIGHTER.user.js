@@ -1,7 +1,7 @@
 (function(){var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.5.12.2332
+// @version      2015.6.4.2302
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -270,24 +270,16 @@
 		}
 	}
 	function decorate(stu, link) {
-		function clss(o, c, rwd) {
-			var cl = userjs+"HL"+c;
-			switch (rwd) {
-				case "r": return (o.className.indexOf(cl) != -1);
-				case "w": if (!clss(o, c, "r")) { o.className += " "+cl; } return;
-				case "d": o.className = o.className.replace(cl, ""); return;
-			}
-		}
 		var page = document.getElementById("page");
 		var h1 = getParent(link, "h1");
 		var tabs = getParent(link, "div", "tabs");
 		var row = !getParent(link, "ul") && !getParent(link, "dl") && getParent(link, "tr");
-		if (row && !h1 && !tabs && !(cat == "release" && page && clss(page, "box", "r") && stu == "recording") && stu.match(/^(release|recording|work|release-group)$/)) { clss(row, "row", "w"); }
-		if (!tabs) { clss(link, "item", "w"); }
-		if (cat == "edit" || h1) { clss(page, "box", "w"); }
+		if (row && !h1 && !tabs && !(cat == "release" && page && page.classList.contains("box") && stu == "recording") && stu.match(/^(release|recording|work|release-group)$/)) { row.classList.add("row"); }
+		if (!tabs) { link.classList.add("item"); }
+		if (cat == "edit" || h1) { page.classList.add("box"); }
 		else if (cat == "edits") {
 			var edit = getParent(link, "div", "edit-list");
-			if (edit) { clss(edit, stu.match(/^(release|recording|release-group)$/)?"box":"row", "w"); }
+			if (edit) { edit.classList.add(stu.match(/^(release|recording|release-group)$/)?"box":"row"); }
 		}
 	}
 	function setTitle(ldng, pc) {
@@ -817,7 +809,7 @@
 		var cur = obj;
 		if (cur.parentNode) {
 			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else {
 				return getParent(cur, tag, cls);
