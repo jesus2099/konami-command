@@ -934,7 +934,7 @@
 	## TAG_TOOLS ##
 	==========================================================================*/
 	j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global and will display more than your 5 first tags");
-	if (j2sets.TAG_TOOLS && account) {
+	if (j2sets.TAG_TOOLS && account && sidebar) {
 		var tagscope = location.href.replace(new RegExp("^"+MBS+"|[?#].*$","g"),"").match(/(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 		if (tagscope) {
 			var h1 = document.querySelector("h1");
