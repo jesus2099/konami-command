@@ -983,7 +983,7 @@
 			if (!event) {
 				header.appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right", "cursor":"help"}}, ["↙", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), " and others’"]));
 				tags.addEventListener("DOMNodeInserted", updateTags);
-				mytags.addEventListener("change", function (e) { this.value = this.value.toLowerCase().replace(/\s+/g, " "); });
+				mytags.addEventListener("change", function (event) { this.value = this.value.trim().toLowerCase().split(/\s*,\s*/).sort().join(", "); });
 			}
 			tags = tags.querySelectorAll("a:not([href^='/user/'])");
 			for (var t = 0; t < tags.length; t++) {
