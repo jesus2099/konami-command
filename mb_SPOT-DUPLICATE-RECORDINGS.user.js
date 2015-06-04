@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SPOT DUPLICATE RECORDINGS
-// @version      2014.11.24.1447
+// @version      2015.6.4.1626
 // @description  musicbrainz.org: Spot recordings that are linked multiple times to the same work
 // @homepage     http://userscripts-mirror.org/scripts/show/106145
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -26,8 +26,8 @@
 		for (var alllinks=tables[it].getElementsByTagName("a"), parsedlinks=[], i=0; i < alllinks.length; i++) {
 			var href = alllinks[i].getAttribute("href");
 			var pn = alllinks[i].parentNode;
-			if (pn.tagName.toLowerCase() == "span" && pn.className.indexOf("mp") >= 0) { pn = pn.parentNode; }
-			if (href && href.match(/\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) && pn.tagName.toLowerCase() != "h1" && pn.parentNode.className.indexOf("tabs") < 0 && pn.className.indexOf("pageselector") < 0) {
+			if (pn.tagName.toLowerCase() == "span" && pn.classList.contains("mp")) { pn = pn.parentNode; }
+			if (href && href.match(/\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) && pn.tagName.toLowerCase() != "h1" && !pn.parentNode.classList.contains("tabs") && !pn.classList.contains("pageselector")) {
 				if (parsedlinks[href]) { /*dupelink*/
 					if (!parsedlinks[href].dup) {
 						parsedlinks[href].obj.parentNode.insertBefore(dupetxt(parsedlinks[href].idx), parsedlinks[href].obj);
@@ -62,7 +62,7 @@
 	        var cur = obj;
 	        if (cur.parentNode) {
 	                cur = cur.parentNode;
-	                if (cur.tagName.toUpperCase() == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+	                if (cur.tagName.toUpperCase() == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 	                        return cur;
 	                } else {
 	                        return getParent(cur, tag, cls);

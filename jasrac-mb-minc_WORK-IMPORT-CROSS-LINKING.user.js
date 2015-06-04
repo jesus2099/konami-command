@@ -1,7 +1,7 @@
 (function(){"use strict";var meta=function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2015.5.30.313
+// @version      2015.6.4.1626
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -113,7 +113,7 @@
 				var reli = 0;
 				for (var inp=0; inp<inps.length; inp++) {
 					var input = inps[inp];
-					if (input.className.match(/lookup-performed/)) {
+					if (input.classList.contains("lookup-performed")) {
 						var row = getParent(input, "div", "row");
 						var rel = "&rel-editor.rels."+(reli++)+".";
 						xhrJobs["batch-relationship-create"].params += 
@@ -784,7 +784,7 @@
 							var gidv = this.querySelector("input.gid").value;
 							var others = document.querySelectorAll("div#"+userjs+"wcs span.autocomplete");
 							for (var ot=0; ot<others.length; ot++) {
-								if (others[ot].className.indexOf(userjs+"manu") < 0 && others[ot].querySelector("input.name").getAttribute("ref") == name.getAttribute("ref") && !others[ot].querySelector("input.name").className.match(/lookup-performed/)) {
+								if (!others[ot].classList.contains(userjs+"manu") && others[ot].querySelector("input.name").getAttribute("ref") == name.getAttribute("ref") && !others[ot].querySelector("input.name").classList.contains("lookup-performed")) {
 									MBlookups[ot].options.select(document.createEvent("HTMLEvents"), {"item":{"name":name.value, "id":this.querySelector("input.id").value, "gid":gidv}});
 								}
 							}
@@ -1164,7 +1164,7 @@
 		var cur = obj;
 		if (cur.parentNode) {
 			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else {
 				return getParent(cur, tag, cls);
@@ -1176,7 +1176,7 @@
 	function getSibling(obj, tag, cls, prev) {
 		var cur = obj;
 		if (cur = prev?cur.previousSibling:cur.nextSibling) {
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else {
 				return getSibling(cur, tag, cls, prev);

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2015.4.23.1319
+// @version      2015.6.4.1626
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @homepage     http://userscripts-mirror.org/scripts/show/152545
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -133,7 +133,7 @@
 							as[a].style.setProperty("color", "darkred", "important");
 							as[a].style.setProperty("text-decoration", "line-through");
 							as[a].setAttribute("title", editors[editor].title);
-							as[a].className += "tooltip";
+							as[a].classList.add("tooltip");
 							addAfter(document.createTextNode(" ("+editors[editor].duration+" "+editors[editor].shortend+")"), as[a]);
 							break;
 						}
@@ -215,7 +215,7 @@
 	function getSibling(obj, tag, cls, prev) {
 		var cur = obj;
 		if (cur = prev?cur.previousSibling:cur.nextSibling) {
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else {
 				return getSibling(cur, tag, cls, prev);

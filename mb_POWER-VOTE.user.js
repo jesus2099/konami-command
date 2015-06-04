@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2015.4.30.1725
+// @version      2015.6.4.2302
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -71,8 +71,7 @@
 						}
 					}
 				}
-			}
-			else {
+			} else {
 				lockform();
 				this.submit();
 			}
@@ -82,7 +81,7 @@
 		}
 		for (var rac = editform.querySelectorAll("tr.rename-artist-credits > td"), r=0; r<rac.length; r++) {
 			if (rac[r].textContent.match(/jah?|yes|s[íì]|oui|voor|kyllä|ναι|はい/i)) {
-				rac[r].parentNode.className += " "+userjs+"yes";
+				rac[r].parentNode.classList.add(userjs+"yes");
 			}
 		}
 		inputs = editform.querySelectorAll("div.voteopts input[type='radio']");
@@ -121,12 +120,10 @@
 								if (xhredito) {
 									xhredito = getParent(xhredito, "div", "edit-list");
 								}
-							}
-							else { errmsg = "Unknown edit\n"+errmsg; }
+							} else { errmsg = "Unknown edit\n"+errmsg; }
 							if (xhr.status == 200 && pendingXHRvote > 0 && xhredito) {
 								del(xhredito);
-							}
-							else {
+							} else {
 								if (xhredito) {
 									ninja(e, xhredito, false, "force");
 									xhredito.style.setProperty("background-color", "pink");
@@ -157,8 +154,7 @@
 						doitdoit(e, rad.value, Math.min(radios.indexOf(rad), radios.indexOf(lastradio)), Math.max(radios.indexOf(rad), radios.indexOf(lastradio)));
 						rangeclick = true;
 						lastradio = null;
-					}
-					else {
+					} else {
 						lastradio = rad;
 					}
 				}
@@ -185,11 +181,11 @@
 					var collexpa = collexp.appendChild(document.createElement("a").appendChild(document.createTextNode(collapse[0])).parentNode);
 					collexp.style.setProperty("float", "right");
 					collexpa.className = userjs;
-					if (eheader.querySelectorAll("td.vote-count > div > strong").length == 1) collexpa.className += " autoedit";
+					if (eheader.querySelectorAll("td.vote-count > div > strong").length == 1) collexpa.classList.add("autoedit");
 					collexpa.style.setProperty("cursor", "pointer");
 					collexpa.style.setProperty("font-size", "2em");
 					pd(collexpa, "mousedown");
-					collexpa.setAttribute("title", "collapse same EDITOR edits: CTRL+click\n\ncollapse same TYPE edits: ALT+click\n\ncollapse "+(collexpa.className.match(/autoedit/)?"auto":"same VOTED ")+"edits: CTRL+ALT+click\n\ncollapse ALL edits: SHIFT+click");
+					collexpa.setAttribute("title", "collapse same EDITOR edits: CTRL+click\n\ncollapse same TYPE edits: ALT+click\n\ncollapse "+(collexpa.classList.contains("autoedit")?"auto":"same VOTED ")+"edits: CTRL+ALT+click\n\ncollapse ALL edits: SHIFT+click");
 					collexpa.setAttribute("rel", "collapse");
 					collexpa.addEventListener("click", function(e) {
 						var expand = (this.getAttribute("rel") == "expand");
@@ -204,19 +200,17 @@
 						var autoedit = false;
 						if (!e.shiftKey) {
 							if (e.altKey && e.ctrlKey) {
-								if (this.className.match(/autoedit/)) autoedit = true;
+								if (this.classList.contains("autoedit")) autoedit = true;
 								else {
 									vote = editheader.parentNode.querySelector(voteCSS);
 									if (vote) vote = vote.getAttribute("value");
 								}
-							}
-							else if (e.altKey) {
+							} else if (e.altKey) {
 								var edittype = editheader.getAttribute("class").match(/\W([a-z-]+)$/);
 								if (edittype) {
 									editheadersel += "."+edittype[1];
 								}
-							}
-							else if (e.ctrlKey) {
+							} else if (e.ctrlKey) {
 								if (editor = editheader.querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/)) {
 									editor = editor[1];
 								}
@@ -253,8 +247,7 @@
 			if (offset != 0) {
 				self.scrollTo(0, self.pageYOffset + offset);
 			}
-		}
-		else if (scrollToEdits) {
+		} else if (scrollToEdits) {
 			var foundcount = document.querySelector("div#page div.search-toggle > p > strong");
 			var navpages = document.querySelector("div#edits > p.pageselector > em");
 			var addedStuff;
@@ -338,7 +331,7 @@
 		var cur = obj;
 		if (cur.parentNode) {
 			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else {
 				return getParent(cur, tag, cls);
@@ -392,42 +385,29 @@
 			if (e.detail > 0 && !e.altKey && !e.ctrlKey && !e.shiftKey) {
 				if (n) {
 					try { jQwtf.hide(100); } catch(e) { for(var j=0; j<jQwtf.length; j++) jQwtf[j].style.setProperty("display", "none"); }
-				}
-				else {
+				} else {
 					try {
 						jQuery(o).removeClass(userjs+"ninja");
 						jQwtf.show(100);
 					} catch(e) {
 						for(var j=0; j<jQwtf.length; j++) {
-							cssClass(jQwtf[j], "-"+userjs+"ninja");
+							jQwtf[j].classList.remove(userjs+"ninja");
 							jQwtf[j].style.setProperty("display", "block");
 						}
 					}
 				}
-			}
-			else {
+			} else {
 				try { jQwtf.css("display", n?"none":""); } catch(e) { for(var j=0; j<jQwtf.length; j++) jQwtf[j].style.setProperty("display", n?"none":""); }
-				cssClass(o, (n?"+":"-")+userjs+cls);
+				if (n) o.classList.add(userjs+cls);
+				else o.classList.remove(userjs+cls);
 			}
-		}
-		else return cssClass(o, "?"+userjs+cls);
-	}
-	function cssClass(o, a) {
-		var cls_str = a.substr(1);
-		var cls_reg = new RegExp("(\\s|^)"+cls_str+"(\\s|$)");
-		switch (a.substr(0,1)) {
-			case "?": return o.className.match(cls_reg);
-			case "+": if (!cssClass(o, "?"+cls_str)) o.className += " "+cls_str; return o.className;
-			case "-": if (cssClass(o, "?"+cls_str)) o.className = o.className.replace(cls_reg, " "); return o.className;
-			default: return null;
-		}
+		} else return o.classList.contains(userjs+cls);
 	}
 	function lockform(lo) {
 		if (typeof lo != "boolean" || lo == true) {
 			submitButton.setAttribute("disabled", "disabled");
 			if (submitClone) submitClone.setAttribute("disabled", "disabled");
-		}
-		else {
+		} else {
 			submitButton.removeAttribute("disabled");
 			if (submitClone) submitClone.removeAttribute("disabled");
 		}

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2015.2.27.13.0
+// @version      2015.6.4.1626
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -302,9 +302,9 @@
 					for (var sub=0; sub<subs.length; sub++) {
 						var dd = getSibling(nicks[nick], "dd");
 						if (subs[sub].match(/\w+/) && dd.textContent.match(new RegExp(subs[sub], "i"))) {
-							dd.className += " nick-"+subs[sub]+" ";
+							dd.classList.add("nick-"+subs[sub]);
 						} else {
-							dd.className = dd.className.replace(subs[sub], "");
+							dd.classList.remove(subs[sub]);
 						}
 					}
 				}
@@ -344,7 +344,7 @@
 	function getSibling(obj, tag, cls, prev) {
 		var cur = obj;
 		if (cur = prev?cur.previousSibling:cur.nextSibling) {
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 				return cur;
 			} else {
 				return getSibling(cur, tag, cls, prev);

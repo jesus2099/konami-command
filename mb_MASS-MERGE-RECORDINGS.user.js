@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.6.3.1616
+// @version      2015.6.4.1626
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -322,7 +322,7 @@ after step 1, check
 		//		}
 		//		if (jsonRelease) jsonRelease = JSON.parse(jsonRelease[1]);
 				for (var itrs=0, t=0, d=0, dt=0; itrs<trs.length; itrs++) {
-					if (!trs[itrs].className.match(/subh/)) {
+					if (!trs[itrs].classList.contains("subh")) {
 						var tracka = trs[itrs].querySelector(css_track);
 						var recoid = trs[itrs].querySelector("td.rating a.set-rating").getAttribute("href").match(/id=([0-9]+)/)[1];
 						var trackname = tracka.textContent;
@@ -819,7 +819,7 @@ after step 1, check
 	}
 	function mp(o, set) {
 		if (set == null || typeof set != "boolean") {
-			return o.parentNode.tagName == "SPAN" && o.parentNode.className == "mp";
+			return o.parentNode.tagName == "SPAN" && o.parentNode.classList.contains("mp");
 		} else if (set && !mp(o)) {
 			var smp = document.createElement("span");
 			smp.className = "mp";
@@ -833,7 +833,7 @@ after step 1, check
 	        var cur = obj;
 	        if (cur.parentNode) {
 	                cur = cur.parentNode;
-	                if (cur.tagName.toUpperCase() == tag.toUpperCase() && (!cls || cls && cur.className.match(new RegExp("\\W*"+cls+"\\W*")))) {
+	                if (cur.tagName.toUpperCase() == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 	                        return cur;
 	                } else {
 	                        return getParent(cur, tag, cls);

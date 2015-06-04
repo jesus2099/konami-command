@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         priceminister. FULL PRICES
-// @version      2014.8.14.1555
+// @version      2015.6.4.1626
 // @description  Affiche les prix totaux (incl. frais de port)
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -25,7 +25,7 @@
 			if (total.valuetag) total.value = total.valuetag.textContent.match(/[\d,\.]+/);
 			fdp.valuetag = fdp.tag.querySelector("b.value, span[class*='value']");
 			if (fdp.valuetag) fdp.value = fdp.valuetag.textContent.match(/[\d,\.]+/);
-			if (!fdp.tag.className.match(/freeShipping/) && fdp.value && total.value) {
+			if (!fdp.tag.classList.contains("freeShipping") && fdp.value && total.value) {
 				var normal = (""+fdp.value).match(/,/);
 				if (normal) {
 					total.value = (""+total.value).replace(",", ".");

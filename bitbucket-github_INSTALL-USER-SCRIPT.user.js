@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2015.4.18.1127
+// @version      2015.6.4.1626
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12)             my own coding setup
@@ -60,7 +60,7 @@ changeStuff();
 function changeStuff() {
 	host.files = document.querySelectorAll(host.css.files);
 	for (var f = 0; f < host.files.length; f++) {
-		host.files[f].className += " j2installUserScript";
+		host.files[f].classList.add("j2installUserScript");
 		var icon = host.files[f];
 		if (host.iconParentLevel) for (var p = 0; p < host.iconParentLevel; p++) icon = icon.parentNode;
 		icon = icon.querySelector(host.css.icon);
