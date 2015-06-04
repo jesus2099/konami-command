@@ -1,8 +1,8 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.6.4.1234
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
+// @version      2015.6.4.1432
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12)             my own coding setup
@@ -386,25 +386,6 @@
 						}
 					}}}, [meta.icon.cloneNode(), " Clone "+(rcwhere=="release"?"release":"selected releases")+" ", createTag("small", {s:{color:"grey"}}, "← RELEASE_CLONER™")]));
 			}
-		}
-	}
-	/*================================================================ KEYBOARD+
-	## ALIAS_SORT_NAME ##
-	==========================================================================*/
-	j2setting("ALIAS_SORT_NAME", false, true, "IF YOU DON’T MIND, I WILL REMOVE THIS FEATURE (it seems obsolete to me now) — alias sort name will be prefilled as you type name, no more empty sort names");
-	if (j2sets.ALIAS_SORT_NAME && location.href.match(new RegExp("^"+MBS+"/(.+/add-alias|.+/alias/.+/edit)$"))) {
-		var aliasname, aliassortname, oldaliasname = "";
-		if ((aliasname = document.getElementById("id-edit-alias.name")) && (aliassortname = document.getElementById("id-edit-alias.sort_name"))) {
-			if (location.href.match(/add-alias$/)) { aliassortname.value = aliasname.value; }
-			aliasname.style.setProperty("background-color", "#eef");
-			oldaliasname = aliasname.value;
-			aliasname.focus();
-			aliasname.addEventListener("keyup", function(e) {
-				if (aliassortname.value == oldaliasname || aliassortname.value == "") {
-					aliassortname.value = aliasname.value;
-				}
-				oldaliasname = aliasname.value;
-			}, false);
 		}
 	}
 	/*================================================================= DISPLAY+
@@ -896,7 +877,7 @@
 	## SERVER_SWITCH ##
 	==========================================================================*/
 	j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta and mbsandboxes. look for the new top-right MBS menu");
-	j2setting("SERVER_SWITCH_mbsandbox", "[\"acid2\", \"ianmcorvidae\", \"bitmap\", \"nikki\", \"i18n\"]", true, "type an array of subdomains to .mbsandbox.org");
+	j2setting("SERVER_SWITCH_mbsandbox", "[\"ianmcorvidae\", \"bitmap\", \"nikki\", \"i18n\"]", true, "type an array of subdomains to .mbsandbox.org");
 	if (j2sets.SERVER_SWITCH) {
 		var menu = document.querySelector("div#header-menu ul.r");
 		if (menu) {
@@ -947,11 +928,10 @@
 		return li;
 	}
 	/*==================================================================== LINK+
-	## TAG_SWITCH ##
+	## TAG_TOOLS ##
 	==========================================================================*/
-	j2setting("TAG_SWITCH", true, true, "makes tag pages better titled and adds switches between your tags and others’ tags");
-	j2setting("TAG_SWITCH_prefer_my_tags", false, true, "sidebar tag links will link your own tags (if any) instead of global");
-	if (j2sets.TAG_SWITCH && account) {
+	j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global and will display more than your 5 first tags");
+	if (j2sets.TAG_TOOLS && account) {
 		var tagscope = location.href.replace(new RegExp("^"+MBS+"|[?#].*$","g"),"").match(/(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 		if (tagscope) {
 			var h1 = document.querySelector("h1");
@@ -970,10 +950,8 @@
 				tagswitch(h1, tagswitches);
 			}
 		}
-		if (j2sets.TAG_SWITCH_prefer_my_tags && sidebar) {
-			j2superturbo.addCSSRule("span.tags a[href^='/user/'] { background-color: #ff6 }");
-			updateTags();
-		}
+		j2superturbo.addCSSRule("span.tags a[href^='/user/'] { background-color: #ff6 }");
+		updateTags();
 	}
 	function updateTags(event) {
 		var header = sidebar.querySelector("div#sidebar-tags h2");
