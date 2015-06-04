@@ -30,12 +30,11 @@ Content
   1. [CONTROL_ENTER_SUBMIT](#control_enter_submit)
   1. [RELEASE_EDITOR_PROTECTOR](#release_editor_protector) ← <del>[release editor tab index fix submit / cancel protector][111023]</del>
   1. [TRACKLIST_TOOLS](#tracklist_tools) ← <del>ex‐TRACK_LENGTH_PARSER + fixed [search→replace][8580947]</del>
-  1. [ALIAS_SORT_NAME](#alias_sort_name) ← <del>add alias sort name</del> (**OBSOLETE?**)
   1. [LAST_SEEN_EDIT](#last_seen_edit)
   1. [COOL_SEARCH_LINKS](#cool_search_links)
   1. [COPY_TOC](#copy_toc) ← <del>[re‐lookup DiscID][104480]</del>
   1. [SERVER_SWITCH](#server_switch) ← <del>[ngs/test/classic musicbrainz switcher][103422]</del>
-  1. [TAG_SWITCH](#tag_switch)
+  1. [TAG_TOOLS](#tag_tools)
   1. [USER_STATS](#user_stats)
   1. [RETURN_TO_MB_PROPERLY](#return_to_mb_properly) ([MBS-6837] fix)
   1. [CHECK_ALL_SUBSCRIPTIONS](#check_all_subscriptions) ← <del>[check all subscriptions][122083]</del>
@@ -113,15 +112,6 @@ Avoid release edits accidental cancellations in RE’s last tab
 * (Mass) **remove recording relationships** and **Set selected works date** 
   in relationship editor.
 
-### ALIAS_SORT_NAME
-
-**IF YOU DON’T MIND, I WILL REMOVE THIS FEATURE (it seems obsolete to me now)**
-
-(default off)
-
-Copy as you type it alias name into alias sort name (only if the situation 
-allows it and is appropriate) instead of letting empty sort name.
-
 ### LAST_SEEN_EDIT
 
 (default off)
@@ -147,12 +137,15 @@ page, so you can copy the Disc ID to another edition release.
 You can switch between various MusicBrainz servers (you can edit the list 
 of servers for mbsandbox.org).
 
-### TAG_SWITCH
+### TAG_TOOLS
 
 ![three situations WOW][l0zO9nk]
 
-Allows to jump from your (or other’s) tags and everyone’s tags and vice versa 
-with only the magic of one click.
+On tag page: Allows to jump from your (or other’s) tags and everyone’s 
+tags and vice versa with only the magic of one click.
+
+On all pages (sidebar): Your own tags stand out and all of them are displayed
+(not only your first 5 tags).
 
 ### USER_STATS
 
