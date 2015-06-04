@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.6.3.1616
+// @version      2015.6.4.1234
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / ALIAS_SORT_NAME. clever auto fill in / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_SWITCH / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -978,20 +978,36 @@
 	function updateTags(event) {
 		var header = sidebar.querySelector("div#sidebar-tags h2");
 		var tags = sidebar.querySelector("div#sidebar-tags span.tags");
-		var mytags = sidebar.querySelector("div#sidebar-tags input.tag-input");
-		if (header && tags && mytags) {
+		var mytagseditor = sidebar.querySelector("div#sidebar-tags input.tag-input");
+		if (header && tags && mytagseditor) {
 			if (!event) {
 				header.appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right", "cursor":"help"}}, ["↙", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), " and others’"]));
 				tags.addEventListener("DOMNodeInserted", updateTags);
-				mytags.addEventListener("change", function (event) { this.value = this.value.trim().toLowerCase().split(/\s*,\s*/).sort().join(", "); });
+				mytagseditor.addEventListener("change", function (event) { this.value = this.value.replace(/^[\s,]*|[\s,]*$/, "").toLowerCase().split(/\s*,\s*/).sort().join(", "); });
 			}
-			tags = tags.querySelectorAll("a:not([href^='/user/'])");
-			for (var t = 0; t < tags.length; t++) {
-				if (mytags.value.match(new RegExp("(^|,)\\s*"+escapeRegExp(tags[t].textContent)+"\\s*(,|$)", "i"))) {
-					tags[t].setAttribute("href", tags[t].getAttribute("href").replace(MBS, account.pathname));
+			var mytags = mytagseditor.value.split(/\s*,\s*/);
+			for (var t = 0; t < mytags.length; t++) {
+				var a, tagpath = "/tag/" + encodeTagLikeMBS(mytags[t]);
+				if (event) {
+					if (event.target && event.target.tagName == "A" && event.target.getAttribute("href") == MBS + tagpath) {
+						a = event.target;
+					}
+				} else {
+					a = tags.querySelector("a[href='" + MBS + tagpath + "']");
+				}
+				if (a) {
+					a.setAttribute("href", a.getAttribute("href").replace(MBS, account.pathname));
+				} else if (!event) {
+					var myhref = account.pathname + tagpath;
+					if (!tags.querySelector("a[href='" + myhref + "']")) {
+						tags.insertBefore(createTag("fragment", {}, [createTag("a", {a:{href:myhref}}, mytags[t]), ", "]), tags.querySelector("a:last-of-type"));
+					}
 				}
 			}
 		}
+	}
+	function encodeTagLikeMBS(tag) {
+		return encodeURI(tag).replace(/\//g, "%2F");
 	}
 	function tagswitch(cont, urltxt) {
 		var switcht = h1.appendChild(createTag("span", {s:{color:"grey","text-shadow":"1px 1px 2px silver"}}, " (see "));
