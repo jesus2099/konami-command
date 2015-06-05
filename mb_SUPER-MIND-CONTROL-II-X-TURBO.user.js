@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.6.4.1626
+// @version      2015.6.5.1003
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -932,7 +932,7 @@
 	## TAG_TOOLS ##
 	==========================================================================*/
 	j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global and will display more than your 5 first tags");
-	if (j2sets.TAG_TOOLS && account && sidebar) {
+	if (j2sets.TAG_TOOLS && account) {
 		var tagscope = location.href.replace(new RegExp("^"+MBS+"|[?#].*$","g"),"").match(/(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 		if (tagscope) {
 			var h1 = document.querySelector("h1");
@@ -955,9 +955,9 @@
 		updateTags();
 	}
 	function updateTags(event) {
-		var header = sidebar.querySelector("div#sidebar-tags h2");
-		var tags = sidebar.querySelector("div#sidebar-tags span.tags");
-		var mytagseditor = sidebar.querySelector("div#sidebar-tags input.tag-input");
+		var header = document.querySelector("div#sidebar-tags h2");
+		var tags = document.querySelector("div#sidebar-tags span.tags");
+		var mytagseditor = document.querySelector("div#sidebar-tags input.tag-input");
 		if (header && tags && mytagseditor) {
 			if (!event) {
 				header.appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right", "cursor":"help"}}, ["↙", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), " and others’"]));
@@ -965,7 +965,7 @@
 				mytagseditor.addEventListener("change", function (event) { this.value = this.value.replace(/^[\s,]*|[\s,]*$/, "").toLowerCase().split(/\s*,\s*/).sort().join(", "); });
 			}
 			var mytags = mytagseditor.value.split(/\s*,\s*/);
-			for (var t = 0; t < mytags.length; t++) {
+			for (var t = 0; t < mytags.length; t++) if (mytags[t] != "") {
 				var a, tagpath = "/tag/" + encodeTagLikeMBS(mytags[t]);
 				if (event) {
 					if (event.target && event.target.tagName == "A" && event.target.getAttribute("href") == MBS + tagpath) {
