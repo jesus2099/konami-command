@@ -1140,6 +1140,7 @@
 		if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/"+stre_GUID+"/edit-relationships$"))) {
 			var tabs, re = document.querySelector("div.rel-editor");
 			if (re && (tabs = re.querySelector("ul.tabs"))) {
+				/* :::: MASS REMOVE RECORDING RELATIONSHIPS :::: */
 				j2superturbo.menu.addItem(createTag("a", {e:{click:function(e){
 					var text = prompt("This will remove the recording relationships that match the following text (ex.: “arrange”, “john”, “guitar”):");
 					if (text && (text = text.trim()) && text != "") {
@@ -1151,6 +1152,7 @@
 						}
 					}
 				}}}, [meta.icon.cloneNode(), " Remove recording relationships ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
+				/* :::: MASS SET WORKS’ RECORDING DATES :::: */
 				j2superturbo.menu.addItem(createTag("a", {e:{click:function(e){
 					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
 					if (date) {
@@ -1200,6 +1202,7 @@
 	function TRACKLIST_TOOLS_buttonHandler(e) {
 		if (e.target.className.match(new RegExp("^"+userjs+"(search-replace|track-length-parser)$"))) {
 			if (e.type == "click") {
+				/* :::: TRACK NAME SEARCH→REPLACE :::: */
 				if (e.target.classList.contains(userjs+"search-replace")) {
 					var searchrep = localStorage.getItem(userjs+"search-replace");
 					searchrep = searchrep?JSON.parse(searchrep):["",""];
@@ -1219,6 +1222,7 @@
 						}
 						localStorage.setItem(userjs+"search-replace", JSON.stringify(searchrep));
 					}
+				/* :::: TRACK LENGTH PARSER :::: */
 				} else if (e.target.classList.contains(userjs+"track-length-parser")) {
 					var erase = e.target.textContent.match(/erase/i) || e.ctrlKey;
 					var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']", e.target, e);
