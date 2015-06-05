@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.6.2.1609
+// @version      2015.6.5.1210
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -114,12 +114,12 @@
 				entities[minrowid].row.style.setProperty("text-shadow", "0px 0px 8px #0C0");
 				entities[minrowid].rowidzone.style.setProperty("color", "#060");
 				entities[minrowid].rowidzone.insertBefore(document.createTextNode(" (oldest) "), entities[minrowid].rowidzone.firstChild);
-				var sortButton = createA("SORT!", null, "sort those "+mergeType+"s (oldest ID first)");
 				var rowidsHeader = document.getElementById(userjs+"rowidsHeader");
+				var sortButton = createA(rowidsHeader?rowidsHeader.textContent:"SORT!", null, "Sort those "+mergeType+"s (oldest ID first)");
 				sortButton.addEventListener("click", function(e) {
 					sortBy("rowid");
 				});
-				if (rowidsHeader) rowidsHeader.appendChild(sortButton);
+				if (rowidsHeader) rowidsHeader.replaceChild(sortButton, rowidsHeader.firstChild);
 				else mergeForm.insertBefore(sortButton, mergeForm.firstChild);
 				entities[minrowid].rowidzone.querySelector("a[href$='conditions.0.args.0="+entities[minrowid].rowid+"']").style.setProperty("background-color",  "#6F6");
 				entities[minrowid].rad.click();
