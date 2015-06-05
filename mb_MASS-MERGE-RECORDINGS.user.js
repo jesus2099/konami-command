@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.6.4.1626
+// @version      2015.6.5.1818
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -89,17 +89,8 @@
 	if (collapsedMediums.length > 1) {
 		var tracklistHeader = document.querySelector("h2.tracklist");
 		if (tracklistHeader) {
-			tracklistHeader.appendChild(createTag("span", {a:{title:"by and for "+meta.n}, s:{color:"#999", "opacity":".5"}}, [" (", createTag("a", {a:{ref:"▶", id:MMRid+"expand"}}, "expand"), "/", createTag("a", {a:{ref:"▼"}}, "collapse"), " all mediums)"]));
-			tracklistHeader.addEventListener("click", function(event) {
-				if (event.target.tagName == "A") {
-					var state = event.target.getAttribute("ref");
-					for (var collapsedMediums = document.querySelectorAll(css_collapsed_medium), a = collapsedMediums.length-1; a >= 0; a--) {
-						if (collapsedMediums[a].textContent.trim() == state) {
-							collapsedMediums[a].click();
-						}
-					}
-				}
-			});
+			tracklistHeader.appendChild(createTag("span", {a:{title:"by and for "+meta.n}, s:{color:"#999", "opacity":".5"}}, [" (", createTag("a", {a:{ref:"▶"}}, "expand"), "/", createTag("a", {a:{ref:"▼"}}, "collapse"), " all mediums)"]));
+			tracklistHeader.addEventListener("click", function(event) { if (event.target.tagName == "A") expandCollapseAllMediums(event.target.getAttribute("ref")); });
 		}
 	}
 	document.body.addEventListener("keydown", function(event) {
@@ -470,7 +461,7 @@ after step 1, check
 	}
 	function loadReleasePage() {
 		var xhr = new XMLHttpRequest();
-		xhr.addEventListener("load", function() { infoMerge("Error #"+this.status+": "+this.statusText, false); });
+		xhr.addEventListener("error", function() { infoMerge("Error #"+this.status+": "+this.statusText, false); });
 		xhr.addEventListener("load", function(event) {
 			if (this.status == 200) {
 				var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
@@ -714,13 +705,16 @@ after step 1, check
 			}
 		}
 	}
-	function prepareLocalRelease() {
-		if (document.querySelectorAll(css_collapsed_medium).length > 10) {
-			document.getElementById(MMRid+"expand").click();
-			setTimeout(loadingAllMediums, 10);
-		} else {
-			showGUI();
+	function expandCollapseAllMediums(clickThis) {
+		if (clickThis) for (var collapsedMediums = document.querySelectorAll(css_collapsed_medium), a = collapsedMediums.length-1; a >= 0; a--) {
+			if (collapsedMediums[a].textContent.trim() == clickThis) {
+				collapsedMediums[a].click();
+			}
 		}
+	}
+	function prepareLocalRelease() {
+		expandCollapseAllMediums("▶");
+		setTimeout(loadingAllMediums, 10);
 	}
 	function loadingAllMediums() {
 		if (document.querySelector("table.tbl > tbody > tr > td > div.loading-message")) {
