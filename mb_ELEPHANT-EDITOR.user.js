@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2015.6.4.1626
+// @version      2015.6.5.1111
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -73,22 +73,17 @@ if (content) {
 		} else {
 			reldates = content.querySelectorAll("span.partial-date");
 		}
-		/*saving edit note size / 86px and 100% defaults for release editor*/
-		notetext.setAttribute("init-height", (notetext.offsetHeight?notetext.offsetHeight:86)+"px");
-		notetext.setAttribute("init-width", notetext.offsetWidth?notetext.offsetWidth+"px":"100%");
 		if (savedHeight) {
 			notetext.style.setProperty("height", savedHeight+"px");
+			addAfter(createTag("div", {s:{"text-align":"right"}}, createTag("a", {e:{click:function(event) {
+				localStorage.removeItem(userjs+"_savedHeight");
+				this.parentNode.replaceChild(document.createTextNode("Size reset! It will take effect at next page load."), this);
+			}}}, "↖Reset size")), notetext);
 		}
-		notetext.addEventListener("mouseup", function(e) {
+		notetext.addEventListener("mouseup", function(event) {
 			if (this.offsetHeight != savedHeight) {
 				localStorage.setItem(userjs+"_savedHeight", this.offsetHeight);
 			}
-		});
-		notetext.setAttribute("title", (notetext.getAttribute("title")?"\n":"")+"double‑click to reset size");
-		notetext.addEventListener("dblclick", function(e) {
-			localStorage.removeItem(userjs+"_savedHeight");
-			this.style.setProperty("height", this.getAttribute("init-height"));
-			this.style.setProperty("width", this.getAttribute("init-width"));
 		});
 	} else { notetext = false; }
 	var xdate = [];
