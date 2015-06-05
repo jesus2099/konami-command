@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.6.5.1210
+// @version      2015.6.6.6
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -243,7 +243,7 @@
 	function rangeClick(event) {
 		if (event.target.tagName == "LABEL") {
 			if (event.shiftKey && lastCB && event.target.firstChild != lastCB && event.target.firstChild.checked != lastCB.checked) {
-				var CBs = event.target.parentNode.parentNode.parentNode.querySelectorAll("td[id^='"+userjs+"remove']  > label > input[type='checkbox'][ref='remove']");
+				var CBs = event.target.parentNode.parentNode.parentNode.querySelectorAll("[id^='"+userjs+"remove']  > label > input[type='checkbox'][ref='remove']");
 				var found;
 				for (var cb = 0; cb < CBs.length; cb++) {
 					if (found) {
