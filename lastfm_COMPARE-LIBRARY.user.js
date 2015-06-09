@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         lastfm. COMPARE LIBRARY
-// @version      2015.1.7.1234
+// @version      2015.6.9.1234
 // @description  last.fm: Basic side by side comparison of any library page with ours.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -18,9 +18,9 @@
 // ==/UserScript==
 "use strict";
 var page = document.querySelector("div#page");
-var menus = page.querySelector("div.masthead-wrapper");
+var menus = page && page.querySelector("div.masthead-wrapper");
 var libtitle = document.querySelector("div#page div#content > header h1");
-var user = page.querySelector("nav div.masthead-right a[href^='/user/'].user-badge");
+var user = page && page.querySelector("nav div.masthead-right a[href^='/user/'].user-badge");
 if (page && user && menus) {
 	var thisFrame = parent && parent.document.querySelector("iframe.j2lfm-cl");
 	if (self != top && location.pathname.indexOf(user.getAttribute("href")) == 0 && thisFrame) {
@@ -59,6 +59,11 @@ if (page && user && menus) {
 				}
 				if (libraryPadding[0][headerTypes[t]].height && libraryPadding[1][headerTypes[t]].height) {
 					libraryPadding[max?0:1][headerTypes[t]].node.style.setProperty("min-height", libraryPadding[max?1:0][headerTypes[t]].height+"px");
+				}
+			}
+			for (var i = 0; i < libraryPadding.length; i++) {
+				if (!libraryPadding[i][headerTypes[1]].height && libraryPadding[i][headerTypes[0]].height && libraryPadding[i?0:1][headerTypes[1]].height) {
+					libraryPadding[i][headerTypes[0]].node.style.setProperty("min-height", (libraryPadding[i][headerTypes[0]].height + libraryPadding[i?0:1][headerTypes[1]].height) + "px");
 				}
 			}
 			thisFrame.style.setProperty("min-height", Math.max(parseInt(getComputedStyle(document.body).getPropertyValue("height"), 10)+27, parseInt(getComputedStyle(libraryPadding[1].root).getPropertyValue("height"), 10))+"px");
