@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.6.5.1003
+// @version      2015.6.11.1513
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / RETURN_TO_MB_PROPERLY / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -960,22 +960,24 @@
 		var mytagseditor = document.querySelector("div#sidebar-tags input.tag-input");
 		if (header && tags && mytagseditor) {
 			if (!event) {
-				header.appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right", "cursor":"help"}}, ["↙", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), " and others’"]));
+				header.appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right"}}, ["↙", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), " (all) and others’"]));
 				tags.addEventListener("DOMNodeInserted", updateTags);
-				mytagseditor.addEventListener("change", function (event) { this.value = this.value.replace(/^[\s,]*|[\s,]*$/, "").toLowerCase().split(/\s*,\s*/).sort().join(", "); });
+				mytagseditor.addEventListener("change", function (event) { this.value = this.value.replace(/^[\s,]*|[\s,]*$/g, "").toLowerCase().split(/\s*,\s*/).sort().filter(function(e,i,a){return i==a.indexOf(e)}).join(", "); });
+			} /*MBS-8337*/ else if (event.target && event.target.tagName == "A") {
+				event.target.setAttribute("href", event.target.getAttribute("href").replace(/%3A/g, ":"));
 			}
-			var mytags = mytagseditor.value.split(/\s*,\s*/);
+			var mytags = mytagseditor.value.trim().split(/\s*,\s*/);
 			for (var t = 0; t < mytags.length; t++) if (mytags[t] != "") {
-				var a, tagpath = "/tag/" + encodeTagLikeMBS(mytags[t]);
+				var a = null, tagpath = "/tag/" + encodeTagLikeMBS(mytags[t]);
 				if (event) {
 					if (event.target && event.target.tagName == "A" && event.target.getAttribute("href") == MBS + tagpath) {
 						a = event.target;
 					}
 				} else {
-					a = tags.querySelector("a[href='" + MBS + tagpath + "']");
+					a = tags.querySelector("a[href='" + MBS + tagpath/*MBS-8337*/.replace(/%25/g, "%") + "']");
 				}
 				if (a) {
-					a.setAttribute("href", a.getAttribute("href").replace(MBS, account.pathname));
+					a.setAttribute("href", account.pathname + tagpath);
 				} else if (!event) {
 					var myhref = account.pathname + tagpath;
 					if (!tags.querySelector("a[href='" + myhref + "']")) {
