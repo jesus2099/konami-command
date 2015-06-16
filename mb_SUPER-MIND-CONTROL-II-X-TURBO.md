@@ -36,7 +36,6 @@ Content
   1. [SERVER_SWITCH](#server_switch) ← <del>[ngs/test/classic musicbrainz switcher][103422]</del>
   1. [TAG_TOOLS](#tag_tools)
   1. [USER_STATS](#user_stats)
-  1. [RETURN_TO_MB_PROPERLY](#return_to_mb_properly) ([MBS-6837] fix)
   1. [CHECK_ALL_SUBSCRIPTIONS](#check_all_subscriptions) ← <del>[check all subscriptions][122083]</del>
   1. [EASY_DATE](#easy_date) ← [Kejo feature request][193018], very basic [paste‐a‐date!][121217]‐like ([MBS-1197])
   1. [ROW_HIGHLIGHTER](#row_highlighter)
@@ -152,12 +151,6 @@ On all pages (sidebar): Your own tags stand out and all of them are displayed
 [![Freso stats][KvC7dX6]](https://musicbrainz.org/user/Freso)
 
 Adds more stats and vote search links to user pages.
-
-### RETURN_TO_MB_PROPERLY
-
-When you are on a beta or a test server, the link back to normal MB is now 
-fixed so that you stay on the same page on your way back to normal 
-musicbrainz.org server (instead of being dumped on the top home page).
 
 ### CHECK_ALL_SUBSCRIPTIONS
 
