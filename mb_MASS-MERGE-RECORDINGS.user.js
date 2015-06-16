@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.6.16.813
+// @version      2015.6.16.1934
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -570,7 +570,7 @@ after step 1, check
 			}
 		}
 		var mergebutts = document.getElementsByClassName(MMRid+"mergebutt").length;
-		infoMerge("☞ " + mergebutts + " recording" + (mergebutts==1?"":"s") + " ready to merge (out of " + remoteRelease.tracks.length + ")", mergebutts > 0);
+		infoMerge("☞ " + mergebutts + " recording" + (mergebutts==1?"":"s") + " ready to merge (" + (remoteRelease.tracks.length - mergebutts) + " left)", mergebutts > 0);
 		var mergeallbutt = document.getElementById(MMRid+"mergeallbutt");
 		disable(mergeallbutt, mergebutts < 1);
 		if (mergebutts > 0 || !event || !event.type || event.type != "load") startpos.focus();

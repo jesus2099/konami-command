@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2015.6.4.1626
+// @version      2015.6.16.1934
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @homepage     http://userscripts-mirror.org/scripts/show/152545
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -81,10 +81,9 @@
 			delete editors["%you%"];
 		}
 		if (standout) {
-			var ys = document.querySelectorAll("div#page a[href='"+you.getAttribute("href")+"']");
-			for (var y=0; y<ys.length; y++) {
-				ys[y].style.setProperty("background-color", "yellow");
-			}
+			document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
+			var css = document.styleSheets[document.styleSheets.length-1];
+			css.insertRule("div#page a[href='"+you.getAttribute("href")+"'] { background-color: yellow; }", 0);
 		}
 	}
 	for (var editor in editors) if (editors.hasOwnProperty(editor)) {
