@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.6.5.1818
+// @version      2015.6.16.813
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -266,6 +266,7 @@ after step 1, check
 					}
 				}
 			}
+			infoMerge("☞ " + matchedRemoteTracks.length + " remote track" + (matchedRemoteTracks.length==1?"":"s") + " matched  (" + (remoteRelease.tracks.length - matchedRemoteTracks.length) + " left)", matchedRemoteTracks.length > 0);
 		} else {
 			spreadTracks(event);
 		}
@@ -377,7 +378,7 @@ after step 1, check
 		shuffle = createInput("button", "", "Match unordered track titles");
 		shuffle.setAttribute("title", "Find matching local title for each remote title");
 		shuffle.addEventListener("click", shuffleRestore);
-		restore = createInput("button", "", "Restore");
+		restore = createInput("button", "", "Sequential");
 		disable(restore);
 		restore.setAttribute("title", "Restore remote tracks order");
 		restore.addEventListener("click", shuffleRestore);
@@ -569,7 +570,7 @@ after step 1, check
 			}
 		}
 		var mergebutts = document.getElementsByClassName(MMRid+"mergebutt").length;
-		infoMerge("Recordings loaded, "+mergebutts+" ready to merge", true);
+		infoMerge("☞ " + mergebutts + " recording" + (mergebutts==1?"":"s") + " ready to merge (out of " + remoteRelease.tracks.length + ")", mergebutts > 0);
 		var mergeallbutt = document.getElementById(MMRid+"mergeallbutt");
 		disable(mergeallbutt, mergebutts < 1);
 		if (mergebutts > 0 || !event || !event.type || event.type != "load") startpos.focus();
