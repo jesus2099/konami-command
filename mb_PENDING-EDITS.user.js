@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.6.17.1626
+// @version      2015.6.18.123
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -163,19 +163,22 @@ It will add other request(s) to MB server, this is why it is an option.*/
 				mp(obj.openedits, true);
 				if (details.types.length > 0 && details.types.length == details.editors.length) {
 					tit += ":\n\n";
-					var titarray = [], dupcount = 0;
+					var titarray = [], dupcount = 0, dupreset;
 					for (var d = 0; d < details.types.length; d++) {
 						var thistit = details.types[d].replace(/^Edit #\d+ /, "");
 						if (details.editors[d].replace(/^.+\/user\/|">$/g, "") == account.getAttribute("href").match(/[^/]+$/)) thistit += "*";
-						if (thistit == titarray[titarray.length - 1]) {
-							dupcount++;
-						} else {
-							if (dupcount > 0) {
-								titarray[titarray.length - 1] += " (×"+dupcount+")";
-							}
+						if (thistit != titarray[titarray.length - 1]) {
 							titarray.push(thistit);
+							if (d > 0) dupreset = true;
+						} else {
+							dupcount++;
+						}
+						var last = (d == details.types.length - 1);
+						if (dupcount > 0 && (dupreset || last)) {
+							titarray[titarray.length - 2 + (!dupreset && last ? 1 : 0)] += " (×" + (dupcount + 1) + ")";
 							dupcount = 0;
 						}
+						dupreset = false;
 					}
 					tit += titarray.join("\n");
 					if (pecount > 50) tit += "\n…";
