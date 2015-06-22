@@ -1,7 +1,7 @@
 (function(){"use strict";var meta=function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2015.6.4.1626
+// @version      2015.6.22.2222
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -32,11 +32,10 @@
 	POST work credits NG https://chatlogs.musicbrainz.org/musicbrainz/2015/2015-04/2015-04-09.html#T16-34-38-396540
 	GET JASRAC ID (work attributes) NG http://tickets.musicbrainz.org/browse/MBS-8341
 */
-	var MBS7313 = "This script has been partially fixed now but is back to VERY EXPERIMENTAL status!\r\n(ノ ゜Д゜)ノ 彡┻━┻ Work credits are back on import (not on edit yet). Aliases are still disabled (maybe forever?).\r\nIt only works in beta ATM, further cleanup will occur when MBS-8341 will go live.";
+	var MBS7313 = "This script has been partially fixed now but is back to VERY EXPERIMENTAL status!\r\n(ノ ゜Д゜)ノ 彡┻━┻ Work credits are back on import (not on edit yet). Aliases are still disabled (maybe forever?).";
 	var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
 	var DEBUG = localStorage.getItem("jesus2099debug");
 	var userjs = "jesus2099userjs94676";
-	var userjsname = meta.name+" '''"+meta.version+"''' ("+meta.namespace+")";
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var reISWC = "T- ?\\d{3}\\.\\d{3}.\\d{3}-\\d";
 	var reCode = "\\d[A-Z\\d]\\d-\\d{4}-\\d";
@@ -44,7 +43,6 @@
 	var MBS = location.protocol+"//"+location.host;
 	var pagecat = location.href.match(new RegExp("(jasrac(?=\\.or\\.jp)|minc(?=\\.gr\\.jp)|work(/"+RE_GUID+"/edit$|/create)|work)"));
 	var oldTitle = document.title;
-	var spam = " ← needs ''JASRAC direct links enabler'' ("+meta.namespace+")";
 	var xhrForm = {}, xhrWork = {}, h1, iname;
 	var MBlookups = [];
 	var joblist = [];
@@ -160,7 +158,7 @@
 			"init": function(xhr) {
 				xhrJobs["annotation-add"].url = "/work/"+xhrWork.mbid+"/edit_annotation";
 				var curl = workLookupURL("jasrac", "code", xhrWork.code);
-				xhrJobs["annotation-add"].params = "edit-annotation.text="+encodeURIComponent("JASRAC: '''"+xhrWork.code+"''' ([http://tickets.musicbrainz.org/browse/MBS-7359|MBS-7359])"+(xhrWork.annotation?"\n"+xhrWork.annotation:""))+"&edit-annotation.changelog="+encodeURIComponent("JASRAC: "+xhrWork.code+" (MBS-7359)")+"&edit-annotation.edit_note="+encodeURIComponent("JASRAC: '''"+xhrWork.code+"''' ("+curl+")"+spam+"\nStill needed for JASRAC auto‐linking (until http://tickets.musicbrainz.org/browse/MBS-7359).\n\n"+MBlinks());
+				xhrJobs["annotation-add"].params = "edit-annotation.text="+encodeURIComponent("JASRAC: '''"+xhrWork.code+"''' ([http://tickets.musicbrainz.org/browse/MBS-7359|MBS-7359])"+(xhrWork.annotation?"\n"+xhrWork.annotation:""))+"&edit-annotation.changelog="+encodeURIComponent("JASRAC: "+xhrWork.code+" (MBS-7359)")+"&edit-annotation.edit_note="+encodeURIComponent("JASRAC: '''"+xhrWork.code+"''' ("+curl+") ← requires '''JASRAC direct links enabler'''\nStill needed for JASRAC auto‐linking (until http://tickets.musicbrainz.org/browse/MBS-7359).\n\n"+MBlinks());
 			},
 		},
 		"alias-add":{
@@ -209,7 +207,7 @@
 						workName = fixSTR(tmp[2]);
 						sakuhinCode = tmp[1];
 						document.title = workName+"　"+sakuhinCode+"　"+document.title;
-						createWork += encodeURIComponent(fullwidthToHalfwidth(workName));
+						createWork += encodeURIComponent(fullwidthToHalfwidth(workName)).replace(/%20/g, "+");
 						summary += workName+" (work code '''"+sakuhinCode+"'''/"+sakuhinCode.replace(/-/g, "");
 						var iswcLink = work.getElementsByTagName("a");
 						if (iswcLink.length > 3) {
@@ -225,26 +223,29 @@
 								for (var icred=2; icred < credtr.length; icred++) {
 									var credtd = credtr[icred].getElementsByTagName("td");
 									if (credtd) {
-										var credtype = credtd[2].textContent.trim();
-										var credtrust = credtd[4].textContent.trim(); if (credtrust != "") { credtrust = "\u00a0（信託状況："+credtrust/*+(!credtrust.match(/全信託/)?"sic":"")*/; }
-										var credmngr = credtd[5].textContent.trim(); if (credmngr != "") { credtrust += (credtrust!=""?"／":"（")+credmngr; }
-										if (credtrust != "") { credtrust += "）"; }
-										tmpcred += credtype+"："+credtd[1].textContent.trim()+credtrust+"\n";
-										if (!isVocal && credtype.indexOf(hasLyrics)!=-1) {
+										var credit = {role:credtd[2].textContent.trim(), who:credtd[1].textContent.trim()};
+										credit["trust"] = credtd[4].textContent.trim(); if (credit.trust != "") { credit.trust = "\u00a0（信託状況：" + credit.trust /*+(!credit.trust.match(/全信託/)?"sic":"")*/; }
+										credit["manager"] = credtd[5].textContent.trim(); if (credit.manager != "") { credit.trust += (credit.trust!=""?"／":"（") + credit.manager; }
+										if (credit.trust != "") { credit.trust += "）"; }
+										if (!isVocal && credit.role.indexOf(hasLyrics) > -1) {
 											isVocal = true;
+										}
+										credit["line"] = credit.role + "：" + credit.who + credit.trust + "\n";
+										if (credit.who != "UNKNOWN PUBLISHER" && tmpcred.indexOf(credit.line) < 0) {
+											tmpcred += credit.line;
 										}
 									}
 								}
 							}
 							if (tmpcred != "") {
-								summary += "\n'''CREDITS'''\n"+tmpcred;
+								summary += "\n'''CREDITS'''\n" + tmpcred;
 							}
 						}
 						var perf = tables[6];
 						if (perf) {
 							var perfs = perf.getElementsByTagName("tr");
 							var max = Math.min(perfs.length, 13);
-							var tmpperf = "\n'''PERFORMERS'''"+(perfs.length>max?" (more than 10)":"")+"\n";
+							var tmpperf = "\n'''PERFORMERS'''" + (perfs.length>max?" ("+(perfs.length-3)+")":"") + "\n";
 							var isperf = true;
 							for (var iperf = 3; iperf < max; iperf++) {
 								var artist = perfs[iperf].getElementsByTagName("td")[1].textContent.trim();
@@ -296,9 +297,7 @@
 						td.setAttribute("colspan", "3");
 						td.style.setProperty("text-align", "center");
 						td.style.setProperty("background-image", "/eJwid/img/kokoronelogo_A-2out.jpg");
-						summary += "※ Imported from '''JASRAC''' ('''JA'''panese '''S'''ociety for '''R'''ights of '''A'''uthors, '''C'''omposers and publishers)\n"+userjsname+"\n";
-						summary += "'''JASRAC''' work page: "+workLookupURL("jasrac", "code", sakuhinCode)+spam+"\n";
-						summary += "音楽の森（mirror）: "+workLookupURL("minc", "code", sakuhinCode)+" ← needs account";
+						summary += "※ '''JASRAC work importer''' ("+meta.version+")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account";
 						td.appendChild(document.createTextNode("click to select → "));
 						var ta = createTag("textarea", {"name":"tsummary"}, {}, {}, summary);
 						ta.setAttribute("id", ta.getAttribute("name"));
@@ -344,11 +343,7 @@
 							"訳詞": { nomatch:/^権利者　/, type:"3e48faba-ec01-47fd-8e89-30e81161661c", translated:"1" },
 							"補詞": { nomatch:/^権利者　/, type:"3e48faba-ec01-47fd-8e89-30e81161661c", additional:"1" },
 							"作曲": { nomatch:/^権利者　/, type:"d59d99ea-23d4-4a80-b066-edca32ee158f" },
-							"作曲作詞": [
-								{ type: "a255bca1-b157-4518-9108-7b147dc3fc68" },
-								{ type: "3e48faba-ec01-47fd-8e89-30e81161661c" },
-								{ type: "d59d99ea-23d4-4a80-b066-edca32ee158f" }
-							]
+							"作曲作詞": { type: "a255bca1-b157-4518-9108-7b147dc3fc68" }
 						}, summary, createWork);
 						createWork += getWorkCredits({
 							/*label-work*/
@@ -356,17 +351,17 @@
 							"訳詞": { match:/^権利者　(.+)$/, type:"05ee6f18-4517-342d-afdf-5897f64276e3" },
 							"補詞": { match:/^権利者　(.+)$/, type:"05ee6f18-4517-342d-afdf-5897f64276e3" },
 							"作曲": { match:/^権利者　㈱?(.+)$/, type:"05ee6f18-4517-342d-afdf-5897f64276e3" },
-							"出版者":{ type:"05ee6f18-4517-342d-afdf-5897f64276e3" },
-							"サブ出版":{ type:"05ee6f18-4517-342d-afdf-5897f64276e3" }
+							"出版者": { type:"05ee6f18-4517-342d-afdf-5897f64276e3" },
+							"サブ出版": { type:"05ee6f18-4517-342d-afdf-5897f64276e3" }
 						}, summary, createWork);
 						form.appendChild(createTag("input", {"type":"hidden", "name":"edit-work.edit_note", "value":summary}));
-						createWork += "&edit-work.edit_note="+encodeURIComponent(summary);
+						createWork += "&edit-work.edit_note=" + encodeURIComponent(summary).replace(/%20/g, "+");
 //						form.appendChild(createTag("a", {"title":MBS7313+"\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, {"background":background,"cursor":"pointer","text-decoration":"underline","color":"blue"}, {"click":function(e){
 //							this.parentNode.setAttribute("target", e.shiftKey||e.ctrlKey?"_blank":"_self");
 //							this.parentNode.submit();
 //							return stop(e);
 //						}}, "Add to MB"));
-						form.appendChild(createTag("a", {href:createWork.replace(/\/\//, "//beta."), title:MBS7313+"\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, {"background":background,"cursor":"pointer","text-decoration":"underline","color":"blue"}, null, "Add to beta.MB"))
+						form.appendChild(createTag("a", {href:createWork, title:MBS7313+"\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, {"background":background,"cursor":"pointer","text-decoration":"underline","color":"blue"}, null, "Add to MusicBrainz"))
 						sakuhin.parentNode.appendChild(document.createTextNode(" （"));
 						sakuhin.parentNode.appendChild(form);
 						sakuhin.parentNode.appendChild(document.createTextNode("）"));
@@ -555,7 +550,7 @@
 					}
 				}, false);*/
 				xhrForm.submit = xhrForm.form.querySelector("div.row button.submit.positive[type='submit']");
-				insertBefore(createTag("input", {"type":"reset","value":"Reset","title":"reset form values","tabindex":"-1"}, {"float":"left","font-size":".77em","height":"16px","width":"32px","margin":"0 8px","border":"1px solid #ccc"}), xhrForm.submit);
+				insertBefore(createTag("input", {"type":"reset","value":"Reset","title":"reset form values","tabindex":"-1","class":"styled-button"}, {"float":"left","font-size":".77em","height":"16px","width":"32px","margin":"0 8px","border":"1px solid #ccc"}), xhrForm.submit);
 				xhrForm.originalInputs = {inputs:[], values:[], css:"form > div > fieldset:not(."+userjs+") input:not([type='button']), form > div > fieldset:not(."+userjs+") select"};
 				xhrForm.originalInputs.inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
 				for (var i=0; i<xhrForm.originalInputs.inputs.length; i++) {
@@ -1118,12 +1113,12 @@
 		return weirdo;
 	}
 	function createButtor(type) {
-		return createTag("input", {"type":"button", "value":type.charAt(0).toUpperCase(), "title":type, "tabindex":"-1"}, {"width":"10px", "padding": "1px 8px"}, {"click":function(e){
+		return createTag("input", {"type":"button", "value":type.charAt(0).toUpperCase(), "title":type, "tabindex":"-1", "class":"styled-button"}, {"width":"10px", "padding": "1px 8px"}, {"click":function(e){
 			setType(this.getAttribute("title"));
 		}});
 	}
 	function createButtol(txt, val) {
-		return createTag("input", {"type":"button", "value":txt, "title":val, "tabindex":"-1"}, {"width":"10px", "padding": "1px 8px", "float": "none"}, {"click":function(e){
+		return createTag("input", {"type":"button", "value":txt, "title":val, "tabindex":"-1", "class":"styled-button"}, {"width":"10px", "padding": "1px 8px", "float": "none"}, {"click":function(e){
 			var slang;
 			var title = this.getAttribute("title");
 			if (title && title.length > 0 && (slang = getSibling(this.parentNode, "select", null, true))) {
