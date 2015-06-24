@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.6.16.1934
+// @version      2015.6.24.1234
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -472,6 +472,7 @@ after step 1, check
 				var trackTimes = releaseWithoutARs.match(/<td class="treleases">[^<]*<\/td>/g);
 				var rtitle = releaseWithoutARs.match(new RegExp("<title>"+sregex_title+"</title>"));
 				var releaseAC = releaseWithoutARs.match(/\s+Release by (<.+>)/);
+				var discount = releaseWithoutARs.match(/<a class="expand-medium"/g).length;
 				if (recIDx5 && trackInfos && trackTimes && rtitle) {
 					var recIDs = [];
 					for (var i5 = 0; i5 < recIDx5.length; i5 += 5) {
@@ -484,15 +485,15 @@ after step 1, check
 					remoteRelease.ac = rtitle[2];
 					var mbidInfo = document.getElementById(MMRid).querySelector(".remote-release-link");
 					removeChildren(mbidInfo);
-					mbidInfo.setAttribute("title", remoteRelease.id+remoteRelease.disc);
+					mbidInfo.setAttribute("title", remoteRelease.id + remoteRelease.disc);
 					if (remoteRelease.id == localRelease.id) {
-						mbidInfo.appendChild(document.createTextNode(" (same"+(remoteRelease.disc?","+remoteRelease.disc.replace(/\//g, " "):"")+")"));
+						mbidInfo.appendChild(document.createTextNode(" (same"+(remoteRelease.disc?", "+remoteRelease.disc.substr(1).replace(/\//, "\u00a0")+"/"+discount:"")+")"));
 					} else {
 						mbidInfo.appendChild(document.createTextNode(" “"));
-						mbidInfo.appendChild(createA(remoteRelease.id==localRelease.id?"same":remoteRelease.title, "/release/"+remoteRelease.id+remoteRelease.disc));
+						mbidInfo.appendChild(createA(remoteRelease.id==localRelease.id?"same":remoteRelease.title, "/release/" + remoteRelease.id));
 						mbidInfo.appendChild(document.createTextNode("”" + remoteRelease.comment));
 						if (remoteRelease.disc) {
-							mbidInfo.appendChild(document.createTextNode(" ("+remoteRelease.disc.substr(1).replace(/\//, " ")+")"));
+							mbidInfo.appendChild(createTag("fragment", null, [" (", createA(remoteRelease.disc.substr(1).replace(/\//, "\u00a0"), "/release/" + remoteRelease.id + remoteRelease.disc + "#" + remoteRelease.disc.replace(/\//g, "")),  "/" + discount + ")"]));
 						}
 					}
 					remoteRelease.tracks = [];
@@ -531,20 +532,20 @@ after step 1, check
 					}
 					startpos.value = bestStartPosition() || 0;
 					spreadTracks(event);
-				} else if(releaseWithoutARs.match(/<a class="expand-medium"/g).length > 10) {
-					var disc = prompt("11+ medium releases can only be used as local release.\nDo you want to load one of its mediums?\n\nNext time you can directly paste the medium link ("+MBS+"/release/"+remoteRelease.id+"/disc/1).", "1");
-					if (disc && disc.match(/^\d+$/)) {
+				} else if(discount > 10) {
+					var disc = prompt("This release has " + discount + " discs.\n11+ disc releases can only be used as local release.\nDo you want to load one of its mediums?\n\nNext time you can directly paste the medium link (" + MBS + "/release/" + remoteRelease.id + "/disc/1).", "1");
+					if (disc && disc.match(/^\d+$/) && disc > 0 && disc <= discount) {
 						remoteRelease.disc = "/disc/"+disc;
 						loadReleasePage();
 					} else {
-						infoMerge("11+ medium releases can only be used as local", false);
+						infoMerge("Disc number out of bounds (1–" + discount + ") or unreadable.", false);
 					}
 				}
 			} else {
 				infoMerge("This is not a valid release", false);
 			}
 		});
-		xhr.open("GET", "/release/"+remoteRelease.id+remoteRelease.disc, true);
+		xhr.open("GET", "/release/" + remoteRelease.id + remoteRelease.disc, true);
 		xhr.send(null);
 	}
 	function bestStartPosition(pLoc) {
