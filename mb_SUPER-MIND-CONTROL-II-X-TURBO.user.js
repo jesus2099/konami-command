@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.6.16.2222
+// @version      2015.7.1.1558
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -919,7 +919,7 @@
 	/*==================================================================== LINK+
 	## TAG_TOOLS ##
 	==========================================================================*/
-	j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global and will display more than your 5 first tags");
+	j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global");
 	if (j2sets.TAG_TOOLS && account) {
 		var tagscope = location.href.replace(new RegExp("^"+MBS+"|[?#].*$","g"),"").match(/(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 		if (tagscope) {
@@ -939,44 +939,30 @@
 				tagswitch(h1, tagswitches);
 			}
 		}
-		j2superturbo.addCSSRule("span.tags a[href^='/user/'] { background-color: #ff6 }");
+		j2superturbo.addCSSRule("div#sidebar-tags ul.tag-list a[href^='/user/'] { background-color: #ff6 }");
 		updateTags();
 	}
 	function updateTags(event) {
-		var header = document.querySelector("div#sidebar-tags h2");
-		var tags = document.querySelector("div#sidebar-tags span.tags");
-		var mytagseditor = document.querySelector("div#sidebar-tags input.tag-input");
-		if (header && tags && mytagseditor) {
+		var tagZone = document.querySelector("div#sidebar-tags");
+		var tagList = document.querySelector("div#sidebar-tags ul.tag-list");
+		if (tagZone && tagList) {
 			if (!event) {
-				header.appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right"}}, ["↙", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), " (all) and others’"]));
-				tags.addEventListener("DOMNodeInserted", updateTags);
-				mytagseditor.addEventListener("change", function (event) { this.value = this.value.replace(/^[\s,]*|[\s,]*$/g, "").toLowerCase().split(/\s*,\s*/).sort().filter(function(e,i,a){return i==a.indexOf(e)}).join(", "); });
-			} /*MBS-8337*/ else if (event.target && event.target.tagName == "A") {
-				event.target.setAttribute("href", event.target.getAttribute("href").replace(/%3A/g, ":"));
-			}
-			var mytags = mytagseditor.value.trim().split(/\s*,\s*/);
-			for (var t = 0; t < mytags.length; t++) if (mytags[t] != "") {
-				var a = null, tagpath = "/tag/" + encodeTagLikeMBS(mytags[t]);
-				if (event) {
-					if (event.target && event.target.tagName == "A" && event.target.getAttribute("href") == MBS + tagpath) {
-						a = event.target;
-					}
-				} else {
-					a = tags.querySelector("a[href='" + MBS + tagpath/*MBS-8337*/.replace(/%25/g, "%") + "']");
+				getSibling(tagZone, "h2", null, true).appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right"}}, ["↙", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), " and others’"]));
+				tagList.addEventListener("DOMNodeInserted", updateTags);
+				var mytags = document.querySelectorAll("div#sidebar-tags ul.tag-list > li > span.tag-upvoted");
+				for (var t = 0; t < mytags.length; t++) {
+					ownifyTag(mytags[t].previousSibling);
 				}
-				if (a) {
-					a.setAttribute("href", account.pathname + tagpath);
-				} else if (!event) {
-					var myhref = account.pathname + tagpath;
-					if (!tags.querySelector("a[href='" + myhref + "']")) {
-						tags.insertBefore(createTag("fragment", {}, [createTag("a", {a:{href:myhref}}, mytags[t]), ", "]), tags.querySelector("a:last-of-type"));
-					}
+			} else if (event.target) {
+				var newTag = event.target.querySelector("span.tag-upvoted") && event.target.querySelector("a[href^='/tag/']");
+				if (newTag) {
+					ownifyTag(newTag);
 				}
 			}
 		}
 	}
-	function encodeTagLikeMBS(tag) {
-		return encodeURI(tag).replace(/\//g, "%2F");
+	function ownifyTag(tag) {
+		tag.setAttribute("href", account.pathname + tag.getAttribute("href"));
 	}
 	function tagswitch(cont, urltxt) {
 		var switcht = h1.appendChild(createTag("span", {s:{color:"grey","text-shadow":"1px 1px 2px silver"}}, " (see "));
