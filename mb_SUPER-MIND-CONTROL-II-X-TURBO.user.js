@@ -1,17 +1,15 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.7.1.1558
+// @version      2015.7.2.1555
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)             my own coding setup
-// @compatible   opera+violentmonkey   my own browsing setup
-// @compatible   firefox+greasemonkey  quickly tested
-// @compatible   chromium              quickly tested
-// @compatible   chromium+tampermonkey quickly tested
-// @compatible   chrome                tested with chromium
-// @compatible   chrome+tampermonkey   tested with chromium
+// @compatible   opera(12)                my own coding setup
+// @compatible   opera(12)+violentmonkey  my own browsing setup
+// @compatible   firefox+greasemonkey     quickly tested
+// @compatible   chromium+tampermonkey    quickly tested
+// @compatible   chrome+tampermonkey      tested with chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
@@ -394,6 +392,8 @@
 	j2setting("USER_STATS", true, true, "adds convenient edit stats to user page (percentage of yes/no voted edits)");
 	if (j2sets.USER_STATS && location.pathname.match(/^\/user\/[^/]+$/)) {
 		var stats = document.querySelectorAll("table.statistics > tbody > tr > td:last-child");
+		var editorPathname = location.pathname.lastIndexOf("/") + 1;
+		editorPathname = location.pathname.substr(0, editorPathname) + encodeURIComponent(location.pathname.substr(editorPathname));
 		if (stats.length > 0) {
 			var accepted = readStat(stats, 0);
 			var autoedits = readStat(stats, 1);
@@ -407,35 +407,35 @@
 			stats[2].parentNode.parentNode.insertBefore(
 				createTag("tr", null, [
 					createTag("th", null, "Ranked total"),
-					createTag("th", null, createTag("a", {a:{href:"/statistics/editors",title:"see editor rankings"},s:{cursor:"help"}}, separ1000(0+accepted+autoedits)))
+					createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, separ1000(0 + accepted + autoedits)))
 				]),
 				stats[2].parentNode
 			);
 			stats[6].parentNode.parentNode.insertBefore(
 				createTag("tr", null, [
 					createTag("th", null, "Total"),
-					createTag("th", null, createTag("a", {a:{href:location.pathname+"/edits"}}, separ1000(0+accepted+autoedits+voteddown+failed+open+cancelled)))
+					createTag("th", null, createTag("a", {a: {href: editorPathname + "/edits"}}, separ1000(0 + accepted + autoedits + voteddown + failed + open + cancelled)))
 				]),
 				stats[6].parentNode
 			);
 			var votes = stats[6].getElementsByTagName("a")[0].getAttribute("href");
 			votes = votes.replace(/conditions\.0\.field=editor/, "conditions.0.field=vote");
-			votes = votes.replace(/conditions\.0\.name=[^&]+/, "conditions.0.voter_id="+votes.match(/conditions\.0\.args\.0=(\d+)/)[1]);
+			votes = votes.replace(/conditions\.0\.name=[^&]+/, "conditions.0.voter_id=" + votes.match(/conditions\.0\.args\.0=(\d+)/)[1]);
 			votes = votes.replace(/conditions\.0\.args\.0=\d+/, "conditions.0.args=%vote%");
 			votes = votes.replace(/\?conditions\.1[^&]+&/, "?");
 			votes = votes.replace(/conditions\.1[^&]+/g, "");
 			for (var i = 7; i < stats.length; i++) {
 				var vote = stats[i];
-				vote.replaceChild(createTag("a", {a:{href:votes.replace(/%vote%/, {7:1, 8:0, 9:-1, 10:2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
+				vote.replaceChild(createTag("a", {a: {href: votes.replace(/%vote%/, {7:1, 8:0, 9:-1, 10:2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
 			}
 			var yes = readStat(stats, 7);
 			var no = readStat(stats, 8);
 			var abs = readStat(stats, 9);
-			var appr = stats.length>10?readStat(stats, 10):0;
+			var appr = stats.length>10 ? readStat(stats, 10) : 0;
 			stats[9].parentNode.parentNode.insertBefore(
 				createTag("tr", null, [
 					createTag("th", null, "Ranked total"),
-					createTag("th", {a:{colspan:"2"}}, createTag("a", {a:{href:"/statistics/editors",title:"see editor rankings"},s:{cursor:"help"}}, separ1000(0+yes+no+appr)+" ("+percentage(yes+no+appr,yes+no+abs+appr)+")"))
+					createTag("th", {a: {colspan: "2"}}, createTag("a", {a: {href: "/statistics/editors", title :"see editor rankings"}, s: {cursor: "help"}}, separ1000(0 + yes + no + appr) + " (" + percentage(yes + no + appr, yes + no + abs + appr) + ")"))
 				]),
 				stats[9].parentNode
 			);
@@ -449,10 +449,10 @@
 		a.replaceChild(document.createTextNode(percentage(stat,total)), a.firstChild);
 	}
 	function percentage(p, c) {
-		return (c==0?0:Math.round(10000*p/c)/100)+"%";
+		return (c == 0 ? 0 : Math.round(10000 * p / c) / 100) + "%";
 	}
 	function separ1000(n) {
-		return (""+n).replace(/(\d)(\d{3})$/, "$1,$2");
+		return ("" + n).replace(/(\d)(\d{3})$/, "$1,$2");
 	}
 	/*==========================================================================
 	## MAX_RECENT_ENTITIES ##
