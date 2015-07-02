@@ -1,17 +1,15 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.6.24.1234
+// @version      2015.7.2.1811
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)             my own coding setup
-// @compatible   opera+violentmonkey   my own browsing setup
-// @compatible   firefox+greasemonkey  quickly tested
-// @compatible   chromium              quickly tested
-// @compatible   chromium+tampermonkey quickly tested
-// @compatible   chrome                tested with chromium
-// @compatible   chrome+tampermonkey   tested with chromium
+// @compatible   opera(12)                my own coding setup
+// @compatible   opera(12)+violentmonkey  my own browsing setup
+// @compatible   firefox+greasemonkey     quickly tested
+// @compatible   chromium+tampermonkey    quickly tested
+// @compatible   chrome+tampermonkey      tested with chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -64,6 +62,7 @@
 	var css = document.styleSheets[document.styleSheets.length-1];
 	css.insertRule("body."+MMRid+" div#"+MMRid+" > .main-shortcut { display: none; }", 0);
 	css.insertRule("body."+MMRid+" div#content table.tbl > * > tr > .rating { display: none; }", 0);
+	css.insertRule("body."+MMRid+" div#content table.tbl > tbody > tr > td > div.ars { display: none; }", 0);
 	css.insertRule("body:not(."+MMRid+") div#"+MMRid+" { margin-top: 12px; cursor: pointer; }", 0);
 	css.insertRule("body:not(."+MMRid+") div#"+MMRid+" > :not(h2):not(.main-shortcut) { display: none; }", 0);
 	css.insertRule("body:not(."+MMRid+") div#"+MMRid+" input[name='status'] { font-size: 9px!important; background-color: #fcf; }", 0);
@@ -731,7 +730,7 @@ after step 1, check
 			var MMRdiv = document.getElementById(MMRid);
 			var tracklistTop = document.querySelector("h2.tracklist");
 			if (tracklistTop && tracklistTop.offsetTop) {
-				MMRdiv.style.setProperty("margin-top", tracklistTop.offsetTop+"px");
+				MMRdiv.style.setProperty("margin-top", (tracklistTop.offsetTop - startpos.offsetTop + MMRdiv.offsetTop) + "px");
 				tracklistTop.scrollIntoView();
 			}
 			MMRdiv.removeEventListener("click", prepareLocalRelease);
