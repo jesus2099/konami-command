@@ -1,8 +1,7 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2015.7.2.1555
+// @version      2015.7.3.1020
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
-// @homepage     http://userscripts-mirror.org/scripts/show/152545
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12)                my own coding setup
 // @compatible   opera(12)+violentmonkey  my own browsing setup
@@ -15,7 +14,7 @@
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-11-16
-// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @icon         data:image/gif;base64,R0lGODlhEAAQAOMMAAAAAP8A/wJR1MosEqGhBPyZUAD/APW1hQD///vPp///AP7++P///////////////yH5BAEKAA8ALAAAAAAQABAAAARbUMlJq0Ll6AN6z0liYNnWLV84FmUBLIsAAyqpuTEgA4VomzFUyMfaaDy9WhFw/PRoK6Zn2lFyqNio58DKSAEjQnczPtTEN+ww3AIMBrM1Qpxxud80VWDP7/sNEQA7
 // @grant        none
 // @include      http*://*musicbrainz.org/*edits*
 // @include      http*://*musicbrainz.org/artist/*
@@ -64,19 +63,17 @@
 		 "774387": ["2013-06-06", "2014-12-21", "Wanddis"],
 		 "984246": ["2013-09-14", "2015-03-25", "♀girls"],
 		"1304704": ["2014-10-12", "2015-03-22", "superpoota"],
-		/* spammers, mistakes, duplicates, duplicate accounts, etc. */
+		/* mistakes, duplicate accounts, etc. */
 		 "639228": ["2012-07-08", "2014-12-21", "ritaavenida", "betegouveia sockpuppet"],
 		 "639229": ["2012-07-08", "2013-07-12", null, "betegouveia sockpuppet"],
 		 "639231": ["2012-07-08", "2014-12-21", "harrystykes", "betegouveia sockpuppet"],
 		 "639236": ["2012-07-08", "2014-12-21", "niallhoran", "betegouveia sockpuppet"],
-		 "791672": ["2013-06-14", "2013-12-08", "georg187", "only test edits"],
+		 "791672": ["2013-06-14", "2013-12-08", "georg187", "only some test edits"],
 		 "800638": ["2013-06-19", "2014-12-21", "nicolebahls", "betegouveia sockpuppet"],
 		 "809366": ["2013-06-23", "2014-12-21", "xoxtina", "betegouveia sockpuppet"],
 		"1024627": ["2013-10-04", "2014-12-21", "bvlgari", "betegouveia sockpuppet"],
 		"1288668": ["2014-06-29", "2014-12-21", "khaleesi", "betegouveia sockpuppet"],
 		"1306704": ["2014-10-22", "2014-10-24", null, "betegouveia sockpuppet"], /* LOL https://musicbrainz.org/edit/29794898 */
-		"1370982": ["2015-06-25", "2015-06-25", "alendra", "advertising"],
-		"1371302": ["2015-06-26", "2015-07-02", "taci234", "advertising"],
 		/* funny stuff */
 		"jesus2099": "GOLD MASTER KING",
 		"%you%": "PROPHET PRINCE CHAMPION",
