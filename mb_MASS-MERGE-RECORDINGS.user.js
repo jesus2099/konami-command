@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.7.2.1811
+// @version      2015.7.3.1106
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -16,7 +16,7 @@
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-12-13
-// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @icon         data:image/gif;base64,R0lGODlhEAAQAOMMAAAAAP8A/wJR1MosEqGhBPyZUAD/APW1hQD///vPp///AP7++P///////////////yH5BAEKAA8ALAAAAAAQABAAAARbUMlJq0Ll6AN6z0liYNnWLV84FmUBLIsAAyqpuTEgA4VomzFUyMfaaDy9WhFw/PRoK6Zn2lFyqNio58DKSAEjQnczPtTEN+ww3AIMBrM1Qpxxud80VWDP7/sNEQA7
 // @grant        none
 // @include      http*://*musicbrainz.org/release/*
 // @include      http://*.mbsandbox.org/release/*
@@ -730,7 +730,10 @@ after step 1, check
 			var MMRdiv = document.getElementById(MMRid);
 			var tracklistTop = document.querySelector("h2.tracklist");
 			if (tracklistTop && tracklistTop.offsetTop) {
-				MMRdiv.style.setProperty("margin-top", (tracklistTop.offsetTop - startpos.offsetTop + MMRdiv.offsetTop) + "px");
+				var margin = tracklistTop.offsetTop - startpos.offsetTop + MMRdiv.offsetTop;
+				if (margin > 0) {
+					MMRdiv.style.setProperty("margin-top", margin + "px");
+				}
 				tracklistTop.scrollIntoView();
 			}
 			MMRdiv.removeEventListener("click", prepareLocalRelease);
