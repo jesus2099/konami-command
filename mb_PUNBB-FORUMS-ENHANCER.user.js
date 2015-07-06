@@ -20,6 +20,7 @@
 // @include      http://forums.musicbrainz.org/edit.php*
 // @include      http://forums.musicbrainz.org/post.php*
 // @include      http://forums.musicbrainz.org/search.php?action=show_new*
+// @include      http://forums.musicbrainz.org/viewforum.php*
 // @include      http://forums.musicbrainz.org/viewtopic.php*
 // @run-at       document-end
 // ==/UserScript==
@@ -47,22 +48,25 @@
 			}
 		}
 	} else {
+		if (location.pathname.match(/^\/view(forum|topic)\.php$/) && document.title.match(/ \(Page 1\) — /) && !document.head.querySelector("link[rel='next']")) {
+			document.title = document.title.replace(" (Page 1) — ", " — ");
+		}
 /*add some markup tools on new/edit post page*/
-		var texttools = {
-			"bold":       { pattern: "[b]%s[/b]", accesskey: "b" },
-			"underlined": { pattern: "[u]%s[/u]", accesskey: "u" },
-			"italic":     { pattern: "[i]%s[/i]", accesskey: "i" },
-			"colour":     { pattern: "[color=%p]%s[/color]", accesskey: "r", prompt: "Type colour (red, #ff6, #ccff33, etc.)" },
-			"url":        { pattern: "[url=%p]%s[/url]", accesskey: "l", prompt: "Type an URL (or delete if you already have selected an URL)", "default": "http://" },
-			"e-mail":     { pattern: "[email=%p]%s[/email]", accesskey: "e", prompt: "Type an e-mail address (or delete if you already have selected an address)", "default": "@" },
-			"img":        { pattern: "[img]%s[/img]", accesskey: "g" },
-			"header":     { pattern: "[h]%s[/h]", accesskey: "h" },
-			"quote":      { pattern: "[quote=%p]%s[/quote]", accesskey: "q", prompt: "Type the name of the quoted person (optional)" },
-			"code":       { pattern: "[code]%s[/code]", accesskey: "o" },
-		};
 		var textarea, form, submittedButt;
-		var operaAccessKeyHack = {};
 		if ((textarea = document.querySelector("textarea[name='req_message']")) && (form = getParent(textarea, "form"))) {
+			var operaAccessKeyHack = {};
+			var texttools = {
+				"bold":       { pattern: "[b]%s[/b]", accesskey: "b" },
+				"underlined": { pattern: "[u]%s[/u]", accesskey: "u" },
+				"italic":     { pattern: "[i]%s[/i]", accesskey: "i" },
+				"colour":     { pattern: "[color=%p]%s[/color]", accesskey: "r", prompt: "Type colour (red, #ff6, #ccff33, etc.)" },
+				"url":        { pattern: "[url=%p]%s[/url]", accesskey: "l", prompt: "Type an URL (or delete if you already have selected an URL)", "default": "http://" },
+				"e-mail":     { pattern: "[email=%p]%s[/email]", accesskey: "e", prompt: "Type an e-mail address (or delete if you already have selected an address)", "default": "@" },
+				"img":        { pattern: "[img]%s[/img]", accesskey: "g" },
+				"header":     { pattern: "[h]%s[/h]", accesskey: "h" },
+				"quote":      { pattern: "[quote=%p]%s[/quote]", accesskey: "q", prompt: "Type the name of the quoted person (optional)" },
+				"code":       { pattern: "[code]%s[/code]", accesskey: "o" },
+			};
 			var tt = createTag("div", {s: {"line-height": "2em"}}, "BBCode tools: ");
 			if (typeof opera != "undefined" && operaAccessKeyHack) {
 				textarea.addEventListener("keydown", function(event) {
