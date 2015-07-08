@@ -654,21 +654,21 @@
 	j2setting("ROW_HIGHLIGHTER_colour", "#fcf", true, "use any CSS colour code or name");
 	if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+)$/i)) {
 		var hldrule = {
-			selector:[
-				"tr."+userjs+"rowhld th",
-				"tr."+userjs+"rowhld td",
-				"div#release-editor > div#tracklist tr."+userjs+"rowhld td input",
-				"table.details td > span."+userjs+"rowhld",
-				"table.details td > span."+userjs+"rowhld a",
-				"table.details th."+userjs+"rowhld"
+			selector: [
+				"tr." + userjs + "rowhld th",
+				"tr." + userjs + "rowhld td",
+				"div#release-editor > div#tracklist tr." + userjs + "rowhld td input",
+				"table.details td > span." + userjs + "rowhld",
+				"table.details td > span." + userjs + "rowhld a",
+				"table.details th." + userjs + "rowhld"
 			],
-			rule:[
-				"background-color:"+j2sets.ROW_HIGHLIGHTER_colour+"!important"
+			rule: [
+				"background-color:" + j2sets.ROW_HIGHLIGHTER_colour + "!important"
 			]
 		};
-		j2superturbo.addCSSRule(hldrule.selector.join(",")+"{"+hldrule.rule.join(";")+"}");
+		j2superturbo.addCSSRule(hldrule.selector.join(",") + "{" + hldrule.rule.join(";") + "}");
 		ROW_HIGHLIGHTER_init();
-		document.body.addEventListener("DOMNodeInserted", ROW_HIGHLIGHTER_calmDOM, false);
+		document.body.addEventListener("DOMNodeInserted", ROW_HIGHLIGHTER_calmDOM);
 	}
 	var ROW_HIGHLIGHTER_calmDOMto;
 	function ROW_HIGHLIGHTER_calmDOM() {
@@ -680,19 +680,19 @@
 	function ROW_HIGHLIGHTER_init() {
 		ROW_HIGHLIGHTER_calmDOMto = null;
 		var tds = document.querySelectorAll("table:not(#batch-tools):not(.advanced-format):not(.artist-credit):not(.details) > tbody > tr:not(.track-artist-credit) > *, table.details td > span");
-		for (var td=0; td<tds.length; td++) {
-			tds[td].removeEventListener("mouseover", ROW_HIGHLIGHTER_refresh, false);
-			tds[td].removeEventListener("mouseout", ROW_HIGHLIGHTER_refresh, false);
+		for (var td = 0; td < tds.length; td++) {
+			tds[td].removeEventListener("mouseover", ROW_HIGHLIGHTER_refresh);
+			tds[td].removeEventListener("mouseout", ROW_HIGHLIGHTER_refresh);
 			/*sorry for the remove/add hack but it seems MBS still uses some
 			innerHTML="<bla></bla>" which breaks event listeners, parentality, etc.*/
-			tds[td].addEventListener("mouseover", ROW_HIGHLIGHTER_refresh, false);
-			tds[td].addEventListener("mouseout", ROW_HIGHLIGHTER_refresh, false);
+			tds[td].addEventListener("mouseover", ROW_HIGHLIGHTER_refresh);
+			tds[td].addEventListener("mouseout", ROW_HIGHLIGHTER_refresh);
 		}
 	}
-	function ROW_HIGHLIGHTER_refresh(e) {
+	function ROW_HIGHLIGHTER_refresh(event) {
 		var row = [this.parentNode];
 		if (row[0]) {
-			if (location.pathname.match(new RegExp("^/release/(add|"+stre_GUID+"/edit)$"))) {/*release-editor hacks*/
+			if (location.pathname.match(new RegExp("^/release/(add|" + stre_GUID + "/edit)$"))) {/*release-editor hacks*/
 				if (getParent(this, "div", null, "recordings")/*Recordings*/ && this.tagName == "TD") {
 					if (!row[0].classList.contains("track")) {
 						row[0] = getSibling(row[0], "tr", "track", true);
@@ -700,17 +700,20 @@
 					row.push(getSibling(row[0], "tr", "artist"));
 					row.push(getSibling(row[1], "tr", null, false, 4));
 				}
-			}
-			else if (this.tagName == "SPAN") {/*AR list hacks*/
+			} else if (this.tagName == "SPAN") {/*AR list hacks*/
 				row = [
 					this,
-					this.style.getPropertyValue("float")=="right"?getSibling(this, "span", false, true):getSibling(this, "span", false),
+					this.style.getPropertyValue("float") == "right" ? getSibling(this, "span", false, true) : getSibling(this, "span", false),
 					getSibling(this.parentNode, "th", null, true)
 				];
 			}
-			for (var r=0; r<row.length; r++) { if (row[r]) {
-				row[r].classList.toggle(userjs+"rowhld");
-			} }
+			for (var r = 0; r < row.length; r++) if (row[r]) {
+				if (event.type == "mouseover") {
+					row[r].classList.add(userjs + "rowhld");
+				} else if (event.type == "mouseout") {
+					row[r].classList.remove(userjs + "rowhld");
+				}
+			}
 		}
 	}
 	/*=================================================================== MOUSE+
