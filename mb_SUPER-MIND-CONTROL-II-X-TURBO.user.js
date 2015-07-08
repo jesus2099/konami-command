@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.7.2.1555
+// @version      2015.7.6.1617
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -1175,19 +1175,19 @@
 		}
 		TRACKLIST_TOOLS_calmDOMto = setTimeout(TRACKLIST_TOOLS_init, 100);
 	}
-	function TRACKLIST_TOOLS_buttonHandler(e) {
-		if (e.target.className.match(new RegExp("^"+userjs+"(search-replace|track-length-parser)$"))) {
-			if (e.type == "click") {
+	function TRACKLIST_TOOLS_buttonHandler(event) {
+		if (event.target.className.match(new RegExp("^" + userjs + "(search-replace|track-length-parser)$"))) {
+			if (event.type == "click") {
 				/* :::: TRACK NAME SEARCH→REPLACE :::: */
-				if (e.target.classList.contains(userjs+"search-replace")) {
-					var searchrep = localStorage.getItem(userjs+"search-replace");
-					searchrep = searchrep?JSON.parse(searchrep):["",""];
+				if (event.target.classList.contains(userjs + "search-replace")) {
+					var searchrep = localStorage.getItem(userjs + "search-replace");
+					searchrep = searchrep ? JSON.parse(searchrep) : ["", ""];
 					if (
 						(searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /\"([^\"]+)\"/g\n\nor normal (case sensitive and global): My String", searchrep[0]))
 						&& (searchrep[1] = prompt("replace\n\nif it was a regex, you can use those $1 $2 $3 etc.: “$1”", searchrep[1])) != null
 					) {
-						for (var t=0, tracks=TRACKLIST_TOOLS_getInputs("td.title > input.track-name[type='text']", e.target, e); t<tracks.length; t++) {
-							var val = searchrep[0].match(/^\/.+\/[gi]*$/)?tracks[t].value.replace(eval(searchrep[0]), searchrep[1]):tracks[t].value.split(searchrep[0]).join(searchrep[1]);
+						for (var t = 0, tracks = TRACKLIST_TOOLS_getInputs("td.title > input.track-name[type='text']", event.target, event); t < tracks.length; t++) {
+							var val = searchrep[0].match(/^\/.+\/[gi]*$/) ? tracks[t].value.replace(eval(searchrep[0]), searchrep[1]) : tracks[t].value.split(searchrep[0]).join(searchrep[1]);
 							tracks[t].style.removeProperty("background-color");
 							if (tracks[t].value != val) {
 								tracks[t].value = val;
@@ -1196,25 +1196,31 @@
 								sendEvent(tracks[t], "change");
 							}
 						}
-						localStorage.setItem(userjs+"search-replace", JSON.stringify(searchrep));
+						localStorage.setItem(userjs + "search-replace", JSON.stringify(searchrep));
 					}
 				/* :::: TRACK LENGTH PARSER :::: */
-				} else if (e.target.classList.contains(userjs+"track-length-parser")) {
-					var erase = e.target.textContent.match(/erase/i) || e.ctrlKey;
-					var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']", e.target, e);
+				} else if (event.target.classList.contains(userjs + "track-length-parser")) {
+					var erase = event.target.textContent.match(/erase/i) || event.ctrlKey;
+					var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']:not(.disabled-hint)", event.target, event);
+					var distitle = document.querySelector("td.length > input.track-length[type='text'].disabled-hint");
 					var times = !erase && prompt("Track length parser\n\nPlease paste your huge text including track times below.\n“1:23” and “1′23″” and even incorrect “1’23”” and “1'23\"” will be parsed.\nYou can for instance copy from your foobar2000 tracklist, minc.or.jp, etc.\nWARNING. You must understand that all current times will be overwritten in the tracklist editor.");
-					if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(/\b\d{1,3}[:′’']\d\d\b[″”"]?/g))) {
-						if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are "+times.length+" lengths detected in your text, butt\nthere are "+inputs.length+" tracks in the tracklist.\nAre you sure to go on?")) {
-							for (var t=0, i=0; (erase || t<times.length) && i<inputs.length; t++, i++) {
+					if (inputs.length == 0 && distitle) {
+						distitle = distitle.getAttribute("title") || "No track length found.";
+						event.target.setAttribute("disabled", "disabled");
+						event.target.setAttribute("title", distitle);
+						alert(distitle);
+					} else if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(/\b\d{1,3}[:′’']\d\d\b[″”"]?/g))) {
+						if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are " + times.length + " lengths detected in your text, butt\nthere are " + inputs.length + " tracks in the tracklist.\nAre you sure to go on?")) {
+							for (var t = 0, i = 0; (erase || t < times.length) && i < inputs.length; t++, i++) {
 								var time = "";
 								if (!erase) {
 									time = times[t].match(/(\d+)\D+(\d+)/);
-									time = time[1]+":"+time[2];
+									time = time[1] + ":" + time[2];
 								}
 								inputs[i].style.removeProperty("background-color");
 								if (inputs[i].value != time) {
 									inputs[i].value = time;
-									inputs[i].style.setProperty("background-color", erase?"pink":"yellow");
+									inputs[i].style.setProperty("background-color", erase ? "pink" : "yellow");
 									inputs[i].focus();
 									sendEvent(inputs[i], "change");
 								}
@@ -1222,24 +1228,24 @@
 						}
 					}
 				}
-			} else if (e.type.match(/^mouse(over|out)$/)) {
-				var _text = e.target.getAttribute("_text");
-				var _ctrlText = e.target.getAttribute("_ctrlText");
-				switch (e.type) {
+			} else if (event.type.match(/^mouse(over|out)$/)) {
+				var _text = event.target.getAttribute("_text");
+				var _ctrlText = event.target.getAttribute("_ctrlText");
+				switch (event.type) {
 					case "mouseover":
-						if (!_text) { e.target.setAttribute("_text", e.target.textContent); }
-						if (e.ctrlKey && _ctrlText) {
-							e.target.style.setProperty("background-color", "pink");
-							e.target.replaceChild(document.createTextNode(_ctrlText), e.target.firstChild);
+						if (!_text) { event.target.setAttribute("_text", event.target.textContent); }
+						if (event.ctrlKey && _ctrlText) {
+							event.target.style.setProperty("background-color", "pink");
+							event.target.replaceChild(document.createTextNode(_ctrlText), event.target.firstChild);
 						}
-						if (e.shiftKey) {
-							if (!(e.ctrlKey && _ctrlText)) { e.target.style.setProperty("background-color", "gold"); }
-							e.target.replaceChild(document.createTextNode(e.target.textContent+" (all)"), e.target.firstChild);
+						if (event.shiftKey) {
+							if (!(event.ctrlKey && _ctrlText)) { event.target.style.setProperty("background-color", "gold"); }
+							event.target.replaceChild(document.createTextNode(event.target.textContent + " (all)"), event.target.firstChild);
 						}
 						break;
 					case "mouseout":
-						e.target.style.setProperty("background-color", "yellow");
-						e.target.replaceChild(document.createTextNode(_text), e.target.firstChild);
+						event.target.style.setProperty("background-color", "yellow");
+						event.target.replaceChild(document.createTextNode(_text), event.target.firstChild);
 						break;
 				}
 			}
@@ -1248,18 +1254,18 @@
 	function TRACKLIST_TOOLS_getInputs(inputCSS, obj, evt) {
 		var inputs = getParent(obj, "fieldset", "advanced-disc");
 		if (obj.value.match(/\(all\)/i) || evt.shiftKey) { inputs = inputs.parentNode; }
-		return inputs.querySelectorAll("fieldset.advanced-disc "+inputCSS);
+		return inputs.querySelectorAll("fieldset.advanced-disc " + inputCSS);
 	}
 	function TRACKLIST_TOOLS_init() {
 		re.removeEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
 		re.addEventListener("DOMNodeInserted", function(e) {
 			var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
 			for (var tp=0; tp<tps.length; tp++) {
-				if (!tps[tp].parentNode.querySelector("."+userjs+"track-length-parser")) {
-					addAfter(createTag("button", {a:{type:"button","class":userjs+"track-length-parser","_ctrlText":"Erase times",title:"CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"},s:{"background-color":"yellow"}}, "Time Parser"), tps[tp]);
+				if (!tps[tp].parentNode.querySelector("." + userjs + "track-length-parser")) {
+					addAfter(createTag("button", {a: {type: "button", "class": userjs + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {"background-color": "yellow"}}, "Time Parser"), tps[tp]);
 				}
-				if (!tps[tp].parentNode.querySelector("."+userjs+"search-replace")) {
-					addAfter(createTag("button", {a:{type:"button","class":userjs+"search-replace",title:"SHIFT key to alter all open tracklists"},s:{"background-color":"yellow"}}, "Search→replace"), tps[tp]);
+				if (!tps[tp].parentNode.querySelector("." + userjs + "search-replace")) {
+					addAfter(createTag("button", {a: {type: "button", "class": userjs + "search-replace", title: "SHIFT key to alter all open tracklists"}, s: {"background-color": "yellow"}}, "Search→replace"), tps[tp]);
 				}
 			}
 		}, false);
