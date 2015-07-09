@@ -1,15 +1,13 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2015.6.4.1626
+// @version      2015.7.9.1213
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)             my own coding setup
-// @compatible   opera+violentmonkey   my own browsing setup
-// @compatible   firefox+greasemonkey  quickly tested
-// @compatible   chromium              quickly tested
-// @compatible   chromium+tampermonkey quickly tested
-// @compatible   chrome                tested with chromium
-// @compatible   chrome+tampermonkey   tested with chromium
+// @compatible   opera(12)                my own coding setup
+// @compatible   opera(12)+violentmonkey  my own browsing setup
+// @compatible   firefox+greasemonkey     quickly tested
+// @compatible   chromium+tampermonkey    quickly tested
+// @compatible   chrome+tampermonkey      tested with chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js
@@ -33,6 +31,7 @@ var host = {
 			newIcon: "aui-icon aui-icon-small aui-iconfont-devtools-clone", // https://docs.atlassian.com/aui/5.5.1/docs/icons.html
 		},
 		href: { match: /^(\/[^/]+\/[^/]+)\/src\/[0-9a-f]{40}\/(.+)\?at=(.+)$/, replace: "$1/raw/$3/$2" },
+		unnestIcon: true,
 	},
 	"github.com": {
 		css: {
@@ -75,7 +74,12 @@ function changeStuff() {
 				if (e.stopPropagation) e.stopPropagation();
 				return false;
 			});
-			icon.parentNode.replaceChild(install, icon);
+			if (host.unnestIcon) {
+				host.files[f].parentNode.insertBefore(install, host.files[f]);
+				icon.parentNode.removeChild(icon);
+			} else {
+				icon.parentNode.replaceChild(install, icon);
+			}
 		}
 	}
 }
