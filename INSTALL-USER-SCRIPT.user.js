@@ -45,7 +45,7 @@ var host = {
 	"gitlab.com": {
 		css: {
 			files: "table.tree-table tbody td.tree-item-file-name a[href$='%fileType%']",
-			icon: "i.fa.fa-file-o",
+			icon: "i.fa[class*='fa-file-']",
 			newIcon: "fa fa-download", /* https://fortawesome.github.io/Font-Awesome/icons/ */
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
