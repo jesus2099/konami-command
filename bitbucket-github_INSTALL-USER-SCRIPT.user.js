@@ -14,7 +14,7 @@
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2014-11-14
-// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @icon         data:image/gif;base64,R0lGODlhEAAQAOMMAAAAAP8A/wJR1MosEqGhBPyZUAD/APW1hQD///vPp///AP7++P///////////////yH5BAEKAA8ALAAAAAAQABAAAARbUMlJq0Ll6AN6z0liYNnWLV84FmUBLIsAAyqpuTEgA4VomzFUyMfaaDy9WhFw/PRoK6Zn2lFyqNio58DKSAEjQnczPtTEN+ww3AIMBrM1Qpxxud80VWDP7/sNEQA7
 // @grant        none
 // @include      https://bitbucket.org/*
 // @include      https://github.com/*
@@ -28,7 +28,7 @@ var host = {
 		css: {
 			files: "table#source-list tbody td.filename a[title$='%fileType%']",
 			icon: "span.aui-icon.aui-icon-small.aui-iconfont-devtools-file",
-			newIcon: "aui-icon aui-icon-small aui-iconfont-devtools-clone", // https://docs.atlassian.com/aui/5.5.1/docs/icons.html
+			newIcon: "aui-icon aui-icon-small aui-iconfont-devtools-clone", /* https://docs.atlassian.com/aui/5.5.1/docs/icons.html */
 		},
 		href: { match: /^(\/[^/]+\/[^/]+)\/src\/[0-9a-f]{40}\/(.+)\?at=(.+)$/, replace: "$1/raw/$3/$2" },
 		unnestIcon: true,
@@ -37,7 +37,7 @@ var host = {
 		css: {
 			files: "table.files tbody a.js-directory-link[title$='%fileType%']",
 			icon: "td.icon span.octicon.octicon-file-text",
-			newIcon: "octicon octicon-cloud-download", // https://octicons.github.com
+			newIcon: "octicon octicon-cloud-download", /* https://octicons.github.com */
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
 		iconParentLevel: 3,
@@ -46,32 +46,36 @@ var host = {
 		css: {
 			files: "table.tree-table tbody td.tree-item-file-name a[href$='%fileType%']",
 			icon: "i.fa.fa-file-o",
-			newIcon: "fa fa-download", // https://fortawesome.github.io/Font-Awesome/icons/
+			newIcon: "fa fa-download", /* https://fortawesome.github.io/Font-Awesome/icons/ */
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
 		iconParentLevel: 2,
 	},
 };
 host = host[location.host];
-host.css.files = supportedFileTypes.map(function(fileType) { return host.css.files.replace(/%fileType%/g, fileType)+":not(.j2installUserScript)"; }).join(", ");
-jQuery(document).on("pjax:end", changeStuff); // https://github.com/defunkt/jquery-pjax#events
+host.css.files = supportedFileTypes.map(function(fileType) { return host.css.files.replace(/%fileType%/g, fileType) + ":not(.j2installUserScript)"; }).join(", ");
+jQuery(document).on("pjax:end", changeStuff); /* https://github.com/defunkt/jquery-pjax#events */
 changeStuff();
 function changeStuff() {
 	host.files = document.querySelectorAll(host.css.files);
 	for (var f = 0; f < host.files.length; f++) {
 		host.files[f].classList.add("j2installUserScript");
 		var icon = host.files[f];
-		if (host.iconParentLevel) for (var p = 0; p < host.iconParentLevel; p++) icon = icon.parentNode;
+		if (host.iconParentLevel) for (var p = 0; p < host.iconParentLevel; p++) {
+			icon = icon.parentNode; 
+		}
 		icon = icon.querySelector(host.css.icon);
 		if (icon) {
 			var install = document.createElement("a");
 			install.className = host.css.newIcon?host.css.newIcon:icon.className;
 			install.setAttribute("href", host.files[f].getAttribute("href").replace(host.href.match, host.href.replace));
-			install.setAttribute("title", "Install “"+host.files[f].getAttribute("title")+"”");
+			install.setAttribute("title", "Install “" + host.files[f].getAttribute("title") + "”");
 			install.style.setProperty("color", "green");
 			install.addEventListener("click", function(e) {
 				e.cancelBubble = true;
-				if (e.stopPropagation) e.stopPropagation();
+				if (e.stopPropagation) {
+					e.stopPropagation();
+				}
 				return false;
 			});
 			if (host.unnestIcon) {
