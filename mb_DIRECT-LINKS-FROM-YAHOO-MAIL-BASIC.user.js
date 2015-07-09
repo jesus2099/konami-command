@@ -30,7 +30,7 @@
 	   It will remove AJAX from those links so that the page reloads and the script is re-run.
 	   It shouldn’t be required any more with current ymail BASIC
 	   set an empty array [] to disable */
-	var directlinks = [];//["inbox", /*"draft", "bulk",*/ "trash", "%Musibrainz%", "%Any Other e-mail Folder (see yahoo source page for ID)%"];
+	var directlinks = [];/*["inbox", /--*"draft", "bulk",*--/ "trash", "%Musibrainz%", "%Any Other e-mail Folder (see yahoo source page for ID)%"];*/
 	var loadingtxt = "⌛ loading…";
 	var edittypes = { "deleted":"×", "merged":"+" };
 	var markReadEditsForDeletion = true;

@@ -173,13 +173,13 @@ const experimentalTracklistEditorKeyboardNavUpDown = true; /* press UP↓/↑DOW
 			case "/release/*/edit":
 				if (experimentalTracklistEditorKeyboardNavUpDown && (atl = document.querySelector("div#tracklist"))) {
 					atl.addEventListener("focus", function(e) {
-						var tgt = e.target ;
+						var tgt = e.target;
 						if (tgt && tgt.classList.contains("track-length") && tgt.value.match(/^(NaN:aN|\?:\?\?)$/)) {
 							tgt.value = "";
 						}
 					}, true);
 					atl.addEventListener("keyup", function(e) {
-						var tgt = e.target ;
+						var tgt = e.target;
 						var val;
 						if (tgt && tgt.classList.contains("track-length") && (val = tgt.value.match(/(\d+)[^\d]+(\d+)/))) {
 							tgt.value = val[1]+":"+val[2];
