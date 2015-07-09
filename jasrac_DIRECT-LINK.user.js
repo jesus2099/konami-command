@@ -22,6 +22,31 @@
 // ==/UserScript==
 (function(){"use strict";
 	var as, home = "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=F00100";
+	/* mark visited links */
+	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
+	var j2css = document.styleSheets[document.styleSheets.length - 1];
+	j2css.insertRule("a:visited { color: #800080; }", 0);
+	/* highlight current row */
+	var rows = document.querySelectorAll("table.contentsTable > tbody > tr");
+	if (rows.length > 0) {
+		rows[0].parentNode.parentNode.addEventListener("mouseover", rowHighlight);
+		rows[0].parentNode.parentNode.addEventListener("mouseout", rowHighlight);
+	}
+	/* use regular latin characters, etc. */
+	var cells = document.getElementsByTagName("td");
+	for (var c = 0; c < cells.length; c++) if (!cells[c].textContent.match(/\d[A-Z\d]\d-\d{4}-\d/)) {
+		var text, textNode = cells[c];
+		while (textNode && textNode.nodeType != Node.TEXT_NODE) {
+			textNode = textNode.firstChild;
+		}
+		if (textNode) {
+			var text = formatText(textNode.textContent);
+			if (text != textNode.textContent) {
+				textNode.parentNode.replaceChild(document.createTextNode(text), textNode);
+			}
+		}
+	}
+	/* make connection, etc. */
 	if (self == top && document.body.textContent.match(/接続が切断されました。再度、了承画面からお願い致します。|システムエラーです。(.+)/) && (as = document.querySelectorAll("body > a")).length == 1 && as[0].textContent.match(/作品データベース検索サービスへ/) && as[0].getAttribute("target").match(/_top/i)) {
 		removeChildren(document.body);
 		var toto = document.body.appendChild(createTag("div", {}, {"background-color": "purple", border: ".5em solid black", color: "white", "font-size": "2em", "font-weight": "bold", margin: "1em", padding: "2em", "text-align": "center", "text-shadow": "1px 2px 2px black"}, {}, document.createTextNode("接続中")));
@@ -44,19 +69,16 @@
 				}
 			}
 		} catch(error) {}
-		document.body.appendChild(createTag("a", {href: home}, {"background-color": "#ff6", "font-weight": "bold", position: "fixed", top: "0", right: "49%", padding: "0 4px 4px 4px", border: "2px solid orange", "border-top": "none"}, {click: function(event) { hashome(true); }, mouseover: function(event) { this.replaceChild(hashome(), this.firstChild); }}, hashome()));
+		document.body.appendChild(createTag("a", {href: home}, {"background-color": "#ff9", "font-weight": "bold", position: "fixed", top: "0", right: "49%", padding: "0 4px 4px 4px", border: "2px solid orange", "border-top": "none"}, {click: function(event) { hasHome(true); }, mouseover: function(event) { this.replaceChild(hasHome(), this.firstChild); }}, hasHome()));
 		var works = document.querySelectorAll("table.contentsTable td > a[name='AUTO_JUMP'][target='_blank']");
 		for (var a = 0; a < works.length; a++) {
 			works[a].removeAttribute("target");
 		}
 	} else if (location.pathname == "/eJwid/main.jsp") {
-		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-		var j2css = document.styleSheets[document.styleSheets.length - 1];
-		j2css.insertRule("a:visited { color: #800080; }", 0);
 		var results = document.querySelector("select[name='IN_DEFAULT_WORKS_KOUHO_MAX']");
 		if (results) { results.selectedIndex = results.options.length - 1; }
 	}
-	function hashome(action) {
+	function hasHome(action) {
 		var has = false;
 		try {
 			if (self.opener != null && self.opener.innerWidth > 0 && self.opener.top.location.href == home) {
@@ -69,6 +91,22 @@
 		} else {
 			return document.createTextNode(has ? "CLOSE" : "HOME");
 		}
+	}
+	function rowHighlight(event) {
+		var row;
+		if (event.target.tagName == "TD") {
+			row = event.target.parentNode;
+		} else if (event.target.tagName == "A") {
+			row = event.target.parentNode.parentNode;
+		}
+		if (row) {
+			row.style.setProperty("background-color", event.type == "mouseover" ? "#ff9" : "inherit")
+		}
+	}
+	function formatText(string) {
+		return string.replace(/[＂＃＄％＇＊＋，－．０１２３４５６７８９＠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ＾＿｀ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ]/g, function(character) {
+			return String.fromCharCode(character.charCodeAt(0) - 65248);
+		}).replace(/\u3000/g, "\u0020").replace(/～/g, "〜").replace(/-/g, "‐").replace(/'/g, "’");
 	}
 	function removeChildren(p) {
 		while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
