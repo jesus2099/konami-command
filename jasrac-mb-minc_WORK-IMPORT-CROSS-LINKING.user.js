@@ -356,11 +356,11 @@
 						}, summary, createWork);
 						form.appendChild(createTag("input", {"type":"hidden", "name":"edit-work.edit_note", "value":summary}));
 						createWork += "&edit-work.edit_note=" + encodeURIComponent(summary).replace(/%20/g, "+");
-//						form.appendChild(createTag("a", {"title":MBS7313+"\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, {"background":background,"cursor":"pointer","text-decoration":"underline","color":"blue"}, {"click":function(e){
-//							this.parentNode.setAttribute("target", e.shiftKey||e.ctrlKey?"_blank":"_self");
-//							this.parentNode.submit();
-//							return stop(e);
-//						}}, "Add to MB"));
+/*						form.appendChild(createTag("a", {"title":MBS7313+"\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, {"background":background,"cursor":"pointer","text-decoration":"underline","color":"blue"}, {"click":function(e){
+							this.parentNode.setAttribute("target", e.shiftKey||e.ctrlKey?"_blank":"_self");
+							this.parentNode.submit();
+							return stop(e);
+						}}, "Add to MB"));*/
 						form.appendChild(createTag("a", {href:createWork, title:MBS7313+"\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, {"background":background,"cursor":"pointer","text-decoration":"underline","color":"blue"}, null, "Add to MusicBrainz"))
 						sakuhin.parentNode.appendChild(document.createTextNode(" （"));
 						sakuhin.parentNode.appendChild(form);
@@ -562,8 +562,8 @@
 				var teditnote = document.getElementById("id-edit-work.edit_note");
 				if (document.referrer.match(/jasrac\.or\.jp/) && (sakuhin = teditnote.value.match(new RegExp("^(.+) \\(work code '''("+reCode+")'''")))) {
 					xhrWork.code = sakuhin[2];
-//					workSortName(teditnote.value);
-//					workCredits(teditnote.value);
+/*					workSortName(teditnote.value);
+					workCredits(teditnote.value);*/
 				}
 				iname.addEventListener("focus", function(e){ this.style.background = ""; }, false);
 				icomment.addEventListener("focus", function(e){ this.style.background = ""; }, false);
@@ -650,8 +650,8 @@
 							}
 						}
 						setType(this.value.indexOf(hasLyrics)!=-1?vocal:instrumental);
-//						workSortName(this.value);
-//						workCredits(this.value);
+/*						workSortName(this.value);
+						workCredits(this.value);*/
 						teditnote.value = this.value;
 						this.style.background = cOK;
 						this.value = xhrWork.code+" "+sakuhin;

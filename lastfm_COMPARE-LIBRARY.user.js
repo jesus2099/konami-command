@@ -24,9 +24,9 @@ var user = page && page.querySelector("nav div.masthead-right a[href^='/user/'].
 if (page && user && menus) {
 	var thisFrame = parent && parent.document.querySelector("iframe.j2lfm-cl");
 	if (self != top && location.pathname.indexOf(user.getAttribute("href")) == 0 && thisFrame) {
-		//FIGHTING *googleadservices.com/* !!!
+		/* FIGHTING *googleadservices.com/* !!! */
 		parent.document.querySelector("html").style.removeProperty("display");
-		//compare library iframe page (our library)
+		/* compare library iframe page (our library) */
 		page.style.setProperty("width", "100%");
 		page.style.setProperty("margin", "0");
 		page.style.setProperty("padding", "0");
@@ -44,7 +44,7 @@ if (page && user && menus) {
 			fixTargets[a].setAttribute("target", "_PARENT");
 		}
 		self.addEventListener("resize", function() {
-			//align both track lists
+			/* align both track lists */
 			var libraryPadding = [{root:page}, {root:parent.document.querySelector("div#page")}];
 			var headerTypes = ["Top", "Albums"];
 			for (var t = 0; t < headerTypes.length; t++) {
@@ -70,7 +70,7 @@ if (page && user && menus) {
 		});
 		sendEvent(self, "resize");
 	} else if (libtitle && user && location.pathname.indexOf(user.getAttribute("href")) == -1) {
-		//library page (except ours)
+		/* library page (except ours) */
 		var comparelib = document.createElement("a");
 		comparelib.style.setProperty("cursor", "pointer");
 		comparelib.setAttribute("title", location.protocol+"//"+location.host+location.pathname.replace(/^(\/user\/)([^/]+)/, "$1"+user.textContent.trim())+location.search+location.hash);

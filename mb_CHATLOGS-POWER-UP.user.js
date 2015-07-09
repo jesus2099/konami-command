@@ -378,7 +378,7 @@
 	function linkify() {
 		/*linkify http://userscripts.org/scripts/show/1295 adapt*/
 		var urlRegex = /\b(https?:\/\/[^\s\"\<\>]+)/ig;/*/\b(https?:\/\/[^\s+\"\<\>]+)/ig;*/
-		// tags we will scan looking for un-hyperlinked urls
+		/* tags we will scan looking for un-hyperlinked urls */
 		var allowedParents = [
 			/*"abbr", "acronym", "address", "applet", "b", "bdo", "big", "blockquote", "body", 
 			"caption", "center", "cite", "code", */"dd"/*, "del", "div", "dfn", "dt", "em", 
