@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.7.8.1044
+// @version      2015.7.10.222
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -18,6 +18,7 @@
 // @since        2010-09-09
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER!.js?version=61166
 // @include      http*://*musicbrainz.org/*
 // @include      http://*.mbsandbox.org/*
 // @exclude      *//*/*mbsandbox.org/*
@@ -1282,19 +1283,6 @@
 			else { return e.parentNode.appendChild(n); }
 		} else { return null; }
 	}
-	function createTag(tag, gadgets, children) {
-		var t = (tag=="fragment"?document.createDocumentFragment():document.createElement(tag));
-		if(t.tagName) {
-			if (gadgets) {
-				for (var attri in gadgets.a) if (gadgets.a.hasOwnProperty(attri)) { t.setAttribute(attri, gadgets.a[attri]); }
-				for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) { t.style.setProperty(style.replace(/!/,""), gadgets.s[style], style.match(/!/)?"important":""); }
-				for (var event in gadgets.e) if (gadgets.e.hasOwnProperty(event)) { var evts = gadgets.e[event]; if (!Array.isArray(gadgets.e[event])) { evts = [evts]; } for (var evt = 0; evt < evts.length; evt++) { t.addEventListener(event, evts[evt]); } }
-			}
-			if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) { t.style.setProperty("cursor", "pointer"); }
-		}
-		if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.tagName) { chldrn = [chldrn]; } for(var child=0; child<chldrn.length; child++) { t.appendChild(typeof chldrn[child]=="string"?document.createTextNode(chldrn[child]):chldrn[child]); } t.normalize(); }
-		return t;
-	}
 	function del(o) {
 		return o.parentNode.removeChild(o);
 	}
@@ -1330,12 +1318,6 @@
 			return null;
 		}
 	}
-	function stop(e) {
-		e.cancelBubble = true;
-		if (e.stopPropagation) e.stopPropagation();
-		e.preventDefault();
-		return false;
-	}
 	function getSibling(obj, tag, cls, prev, _max) {
 		var cur = obj;
 		var max = _max!=null?_max:1;
@@ -1348,13 +1330,5 @@
 		} else {
 			return null;
 		}
-	}
-	function replaceChildren(newContent, parent) {
-		while (parent && parent.hasChildNodes()) { parent.removeChild(parent.firstChild); }
-		return parent.appendChild(newContent);
-	}
-	/* from https://developer.mozilla.org/docs/Web/JavaScript/Guide/Regular_Expressions */
-	function escapeRegExp(string){
-		return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	}
 })();
