@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.7.3.1106
+// @version      2015.7.29.1400
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -63,6 +63,7 @@
 	var startpos, status, from, to, swap, editNote, queuetrack, shuffled = false, shuffle, restore;
 	var rem2loc = "◀";
 	var loc2rem = "▶";
+	var retry = {count: 0};
 	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 	var css = document.styleSheets[document.styleSheets.length-1];
 	css.insertRule("body." + MMRid + " div#" + MMRid + " > .main-shortcut { display: none; }", 0);
@@ -157,6 +158,9 @@ after step 1, check
 			else if (almostSame(localRelease.title, remoteRelease.title)) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
 			if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' (" + MBS + "/release-group/" + localRelease["release-group"] + ")\n";
 			paramsup += " —\n" + meta.n + " (" + meta.v + ")";
+			if (retry.count > 0) {
+				paramsup += " — '''retry'''" + (retry.count > 1 ? " #" + retry.count : "") + " (" + protectEditNoteText(retry.message) + ")";
+			}
 			params[step] += encodeURIComponent(paramsup);
 		}
 		infoMerge("#" + from.value + " to #" + to.value + " " + statuses[step] + "…");
@@ -176,6 +180,7 @@ after step 1, check
 							remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]].recording.editsPending++;
 							cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]], editID[1]);
 							infoMerge("#" + from.value + " to #" + to.value + " merged OK", true, true);
+							retry.count = 0;
 							currentButt = null;
 							document.title = dtitle;
 							shuffleRestoreEnable();
@@ -189,10 +194,14 @@ after step 1, check
 								scrollTo(x, y);
 							}
 						} else {
-							tryAgain("Merge edit not found");
+							retry.count++;
+							retry.message = "Merge edit not found";
+							tryAgain(retry.message);
 						}
 					}
 				} else {
+					retry.count++;
+					retry.message = "Error " + this.status + ": " + this.statusText;
 					tryAgain("Error " + this.status + ", step " + (step + 1) + "/2.");
 				}
 			}
@@ -207,7 +216,7 @@ after step 1, check
 		var errormsg = errorText;
 		if (currentButt) {
 			errormsg += " Retry in " + Math.ceil(coolos/1000) + " seconds.";
-			setTimeout(function(){
+			setTimeout(function() {
 				FireFoxWorkAround(currentButt);
 			}, coolos);
 		}
