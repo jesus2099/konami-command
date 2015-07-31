@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         USO to USMO
-// @version      2015.7.31.1204
+// @version      2015.7.31.2222
 // @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -17,10 +17,10 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @grant        none
 // @exclude      http://userscripts-mirror.org/*
-// @run-at       document-end
+// @run-at       document-start
 // ==/UserScript==
 "use strict";
-document.body.addEventListener("mousedown", uso2usmo);
+document.addEventListener("mousedown", uso2usmo);
 function uso2usmo(event) {
 	var element = event.target || event.srcElement;
 	if (element && element.tagName == "A") {
