@@ -4,10 +4,10 @@
 // @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)+violentmonkey  my own browsing setup
-// @compatible   firefox+greasemonkey     quickly tested
-// @compatible   chromium+tampermonkey    quickly tested
-// @compatible   chrome+tampermonkey      should be same as chromium
+// @compatible   opera(12.17)+violentmonkey  my own browsing setup
+// @compatible   firefox(39)+greasemonkey    quickly tested
+// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/USO-to-USMO.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/USO-to-USMO.user.js
