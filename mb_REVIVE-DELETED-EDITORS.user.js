@@ -1,13 +1,12 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2015.7.28.709
+// @version      2015.8.2.1829
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)                my own coding setup
-// @compatible   opera(12)+violentmonkey  my own browsing setup
-// @compatible   firefox+greasemonkey     quickly tested
-// @compatible   chromium+tampermonkey    quickly tested
-// @compatible   chrome+tampermonkey      tested with chromium
+// @compatible   opera(12.17)+violentmonkey  my own browsing setup
+// @compatible   firefox(39)+greasemonkey    quickly tested
+// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_REVIVE-DELETED-EDITORS.user.js
@@ -65,6 +64,7 @@
 		 "726919": ["2013-03-26", "2013-09-06", "dirkvd"],
 		 "774387": ["2013-06-06", "2014-12-21", "Wanddis"],
 		 "984246": ["2013-09-14", "2015-03-25", "♀girls"],
+		"1220077": ["2014-01-24", "2014-06-11", "DCEX"],
 		"1304704": ["2014-10-12", "2015-03-22", "superpoota"],
 		/* mistakes, duplicate accounts, etc. */
 		 "639228": ["2012-07-08", "2014-12-21", "ritaavenida", "betegouveia sockpuppet"],
