@@ -1,17 +1,14 @@
 (function(){var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.6.5.1122
+// @version      2015.8.3.1111
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)             my own coding setup
-// @compatible   opera+violentmonkey   my own browsing setup
-// @compatible   firefox+greasemonkey  quickly tested
-// @compatible   chromium              quickly tested
-// @compatible   chromium+tampermonkey quickly tested
-// @compatible   chrome                tested with chromium
-// @compatible   chrome+tampermonkey   tested with chromium
+// @compatible   opera(12.17)+violentmonkey  my own browsing setup
+// @compatible   firefox(39)+greasemonkey    quickly tested
+// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -698,7 +695,7 @@
 						checkAgainst = "recording";
 						break;
 				}
-				if (stuff[checkType].rawids.indexOf(checkID) > -1) {
+				if (stuff[checkAgainst].rawids && stuff[checkType].rawids.indexOf(checkID) > -1) {
 					var url = "/"+checkType+"/"+checkID;
 					if (checkType == "artist") { url += "/recordings"; }
 					url += "?page="+p;
@@ -746,6 +743,12 @@
 					xhr.open("GET", url, true);
 					xhr.send(null);
 				} else {
+					if (!stuff[checkAgainst].rawids) {/* Protection for some edge cases of new script using old script data */
+						modal(true, concat([createTag("span", {s: {color: "grey"}}, ["no ", checkAgainst, "s at all (", createA("//github.com/jesus2099/konami-command/issues/87", "#87"), "): "]), "removing…"]), 1);
+						stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
+						localStorage.setItem(userjs + checkType + "s", stuff[checkType].rawids);
+						altered = true;
+					}
 					retry = 0;
 					setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
 				}
