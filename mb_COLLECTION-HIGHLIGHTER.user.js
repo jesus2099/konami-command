@@ -1,7 +1,7 @@
 (function(){var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.8.3.1111
+// @version      2015.8.3.1122
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -139,34 +139,34 @@
 					}
 					var loadButt = [
 						createA("Load",
-							function(e) {
-								var opts = document.querySelectorAll("td."+userjs+" input[type='checkbox']");
+							function(event) {
+								var opts = document.querySelectorAll("td." + userjs + " input[type='checkbox']:checked");
 								stuff = {};
-								for (var opt=0; opt<opts.length; opt++) {
-									if (opts[opt].checked) {
-										stuff[opts[opt].getAttribute("name")] = {};
-									}
+								for (var opt = 0; opt < opts.length; opt++) {
+									stuff[opts[opt].getAttribute("name")] = {};
 								}
-								var nows;
-								if (typeof opera != "undefined" && (nows = getParent(this, "tr")) && nows.textContent.match(/\n\s*Private\s*\n/)) {
-									nows = true;
-								} else { nows = false; }
-								loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !nows, nows?1:0);
+								var noWS;
+								if (typeof opera != "undefined" && (noWS = getParent(this, "tr")) && noWS.textContent.match(/\n\s*Private\s*\n/)) {
+									noWS = true;
+								} else {
+									noWS = false;
+								}
+								loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !noWS, noWS ? 1 : 0);
 							},
-							"Add this collection’s content to local storage ("+collid+")"
+							"Add this collection’s content to local storage (" + collid + ")"
 						),
 						"/",
 						createA("re‐load",
-							function(e) {
+							function(event) {
 								var cmsg = "This will REPLACE your current loaded stuff.";
 								if (confirm(dialogprefix+cmsg)) {
-									for (var stu=0; stu<collectedStuff.length; stu++) {
-										localStorage.removeItem(userjs+collectedStuff[stu]+"s");
+									for (var stu = 0; stu < collectedStuff.length; stu++) {
+										localStorage.removeItem(userjs + collectedStuff[stu] + "s");
 									}
-									this.previousSibling.previousSibling.click();
+									this.previousSibling.previousSibling.click();/*Load*/
 								}
 							},
-							"Replace local storage with this collection’s content ("+collid+")"
+							"Replace local storage with this collection’s content (" + collid + ")"
 						)
 					];
 					xp.snapshotItem(i).appendChild(document.createElement("td")).appendChild(concat(loadButt));
