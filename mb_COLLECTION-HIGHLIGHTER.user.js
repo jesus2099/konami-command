@@ -1,7 +1,7 @@
 (function(){var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.8.3.1122
+// @version      2015.8.4.1632
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -635,14 +635,14 @@
 		}
 	}
 	function getStuffs(what, pwhere) {
-		var cont = pwhere?pwhere:document;
+		var cont = pwhere ? pwhere : document;
 		var selector = {
-			"release": "div#content table.tbl > tbody > tr > td a[href^='"+server+"/release/']",/*pwhere(lab,rec,rgr)*/
-			"release-group": "div.releaseheader a[href^='"+server+"/release-group/']",/*rel*/
-			"recording": (pwhere?"div#content [href^='"+server+"/recording/']":"table.medium > tbody > tr > td:not(.pos):not(.video) > a[href^='"+server+"/recording/'], table.medium > tbody > tr > td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='"+server+"/recording/']"),/*pwhere(art,wrk)/rel*/
-			"artist": "div.releaseheader a[href^='"+server+"/artist/'], div#content table.tbl > tbody > tr > td > a[href^='"+server+"/artist/'], div#content table.tbl > tbody > tr > td > span.mp > a[href^='"+server+"/artist/']",/*rel*/
-			"work": "div#content div.ars > dl.ars > dd > a[href^='"+server+"/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='"+server+"/work/']",/*rel*/
-			"label": "div#sidebar > ul.links > li a[href^='"+server+"/label/']",/*rel*/
+			"release": "div#content table.tbl > tbody > tr > td a[href^='" + server + "/release/']", /*pwhere(lab,rec,rgr)*/
+			"release-group": "div.releaseheader a[href^='" + server + "/release-group/']", /*rel*/
+			"recording": (pwhere ? "div#content [href^='" + server + "/recording/']" : "table.medium > tbody > tr > td:not(.pos):not(.video) > a[href^='" + server + "/recording/'], table.medium > tbody > tr > td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='" + server + "/recording/']"), /*pwhere(art,wrk)/rel*/
+			"artist": "div.releaseheader a[href^='" + server + "/artist/'], div#content table.tbl > tbody > tr > td > a[href^='" + server + "/artist/'], div#content table.tbl > tbody > tr > td > span > a[href^='" + server + "/artist/'], div#content table.tbl > tbody > tr > td > span > span > a[href^='" + server + "/artist/']", /*rel*/
+			"work": "div#content div.ars > dl.ars > dd > a[href^='" + server + "/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='" + server + "/work/']", /*rel*/
+			"label": "div#sidebar > ul.links > li a[href^='" + server + "/label/']", /*rel*/
 		};
 		if (what) {
 			return cont.querySelectorAll(selector[what]);
@@ -660,16 +660,16 @@
 			return all;
 		}
 		function pathname(href) {
-			return href.match(new RegExp("/[^/]+/"+strMBID))+"";
+			return href.match(new RegExp("/[^/]+/" + strMBID)) + "";
 		}
 		function basicOnly(nodes, parr) {
-			var arr = parr?parr:[];
+			var arr = parr ? parr : [];
 			var hrefs = [];
-			for (var a=0; a<arr.length; a++) {
+			for (var a = 0; a < arr.length; a++) {
 				hrefs.push(pathname(arr[a].getAttribute("href")));
 			}
-			for (var n=0; n<nodes.length; n++) {
-				if (nodes[n].getAttribute && (href = pathname(nodes[n].getAttribute("href"))) && href.match(new RegExp(strMBID+"$")) && hrefs.indexOf(href) == -1) {
+			for (var n = 0; n < nodes.length; n++) {
+				if (nodes[n].getAttribute && (href = pathname(nodes[n].getAttribute("href"))) && href.match(new RegExp(strMBID + "$")) && hrefs.indexOf(href) == -1) {
 					hrefs.push(href);
 					arr.push(nodes[n]);
 				}
