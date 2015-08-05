@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.7.10.222
+// @version      2015.8.5.1555
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -17,7 +17,15 @@
 // @since        2010-09-09
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=61166
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=66008&v=2015.8.5.1555
+//               addAfter(newNode, existingNode)
+//               createTag(tag, gadgets, children)
+//               getParent(startingNode, searchedTag, searchedCssClass, searchedId)
+//               getSibling(startingNode, searchedTag, searchedCssClass, previous, maximumDistance)
+//               removeNode(node)
+//               replaceChildren(newContent, parent)
+//               sendEvent(node, eventName)
+//               stop(event)
 // @include      http*://*musicbrainz.org/*
 // @include      http://*.mbsandbox.org/*
 // @exclude      *//*/*mbsandbox.org/*
@@ -125,7 +133,7 @@
 						" | ",
 						createTag("a", {e:{click:function(e){if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")){localStorage.removeItem(userjs+"settings");location.reload();}}}}, "RESET"),
 						" | ",
-						createTag("a", {e:{click:function(e){del(document.getElementById(userjs+"j2sets"));}}}, "CLOSE"),
+						createTag("a", {e:{click:function(e){removeNode(document.getElementById(userjs+"j2sets"));}}}, "CLOSE"),
 					]),
 					createTag("h4",{s:{"text-shadow":"0 0 8px white","font-size":"1.5em","margin-top":"0px"}},["██ ",createTag("a",{a:{href:meta.namespace,target:"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{e:{click:function(){location.reload();}}},"PAGE RELOAD")," to see the effect."])
 				]), document.getElementById("page"));
@@ -200,7 +208,7 @@
 				inp.setAttribute("type", "text");
 				inp.setAttribute("value", val);
 				inp.style.setProperty("margin-left", "4px");
-				inp.addEventListener("keypress", function(e){if(e.keyCode==KEYCODES.ENTER){this.blur();del(getParent(this,"div"))}}, false);
+				inp.addEventListener("keypress", function(e){if(e.keyCode==KEYCODES.ENTER){this.blur();removeNode(getParent(this,"div"))}}, false);
 				break;
 		}
 		return lbl;
@@ -1272,62 +1280,5 @@
 				}
 			}
 		}, false);
-	}
-	/*==========================================================================
-	## MY COMMON CRAP : https://github.com/jesus2099/javascript-patate12chips ##
-	==========================================================================*/
-	function addAfter(n, e) {
-		if (n && e && e.parentNode) {
-			if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
-			else { return e.parentNode.appendChild(n); }
-		} else { return null; }
-	}
-	function del(o) {
-		return o.parentNode.removeChild(o);
-	}
-	function sendEvent(n, _e){
-		var e = _e.toLowerCase();
-		var ev;
-		if (e.match(/click|mouse/)) {
-			var params = {};
-			params.mods = [];
-			if (e.match(/\+/)) {
-				params.mods = e.split("+");
-				e = params.mods.pop();
-			}
-			ev = document.createEvent("MouseEvents");
-			ev.initMouseEvent(e, true, true, self, 0, 0, 0, 0, 0, params.mods.indexOf("ctrl")>-1, params.mods.indexOf("alt")>-1, params.mods.indexOf("shift")>-1, params.mods.indexOf("meta")>-1, 0, null);
-		}
-		else {
-			ev = document.createEvent("HTMLEvents");
-			ev.initEvent(e, true, true);
-		}
-		n.dispatchEvent(ev);
-	}
-	function getParent(obj, tag, cls, id) {
-		var cur = obj;
-		if (cur.parentNode) {
-			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls)) && (!id || cur.getAttribute && cur.getAttribute("id") == id)) {
-				return cur;
-			} else {
-				return getParent(cur, tag, cls, id);
-			}
-		} else {
-			return null;
-		}
-	}
-	function getSibling(obj, tag, cls, prev, _max) {
-		var cur = obj;
-		var max = _max!=null?_max:1;
-		if (cur = prev?cur.previousSibling:cur.nextSibling) {
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-				return cur;
-			} else if (max > 0){
-				return getSibling(cur, tag, cls, prev, _max!=null?max-1:false);
-			}
-		} else {
-			return null;
-		}
 	}
 })();
