@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.6.18.123
+// @version      2015.8.5.1555
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -17,6 +17,10 @@
 // @since        2009-02-09
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @grant        none
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=66008&v=2015.8.5.1555
+//               addAfter(newNode, existingNode)
+//               createTag(tag, gadgets, children)
+//               getParent(startingNode, searchedTag, searchedCssClass, searchedId)
 // @include      http*://*musicbrainz.org/area/*
 // @include      http*://*musicbrainz.org/artist/*
 // @include      http*://*musicbrainz.org/collection/*
@@ -115,23 +119,21 @@ It will add other request(s) to MB server, this is why it is an option.*/
 	}
 	function createLink(ent, typ, art) {
 		if (ent == entity.openedits && typ == "open_edits" && art == null && ent.parentNode.tagName == "LI") {
-			var smp = document.createElement("span");
-			smp.className = "mp";
+			var smp = createTag("span", {a: {class: "mp"}});
 			ent.parentNode.replaceChild(smp.appendChild(ent.cloneNode(true)).parentNode, ent);
 			return smp.firstChild;
 		} else {
 			var obj = art || ent;
 			var txt = (typ == "edits" ? "editing\u00a0history" : "open\u00a0edits");
 			txt = (art ? obj.name + " " + txt : txt.substr(0, 1).toUpperCase() + txt.substr(1));
-			var newLink = document.createElement("li").appendChild(document.createElement("span")).appendChild(document.createElement("a")).appendChild(document.createTextNode(txt)).parentNode;
-			newLink.setAttribute("href", obj.base + "/" + typ);
+			var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: obj.base + "/" + typ}}, txt)));
 			if (art) {
-				addAfter(newLink.parentNode.parentNode, ent.li);
+				addAfter(newLink, ent.li);
 			} else if (!art && typ == "edits") {
 				ent.ul.appendChild(document.createElement("hr"));
-				ent.ul.appendChild(newLink.parentNode.parentNode);
+				ent.ul.appendChild(newLink);
 			} else {
-				ent.ul.insertBefore(newLink.parentNode.parentNode, ent.li);
+				ent.ul.insertBefore(newLink, ent.li);
 			}
 			return newLink;
 		}
@@ -141,8 +143,7 @@ It will add other request(s) to MB server, this is why it is an option.*/
 		var count = smp.querySelector("span." + userjs + "count");
 		if (!count) {
 			smp.appendChild(document.createTextNode("\u00a0("));
-			count = smp.appendChild(document.createElement("span")).appendChild(document.createTextNode("⌛")).parentNode;
-			count.className = userjs + "count";
+			smp.appendChild(createTag("span", {a: {class: userjs + "count"}}, "⌛"));
 			smp.appendChild(document.createTextNode(")"));
 		}
 		xhrPendingEdits[obj.base] = {
@@ -278,24 +279,5 @@ It will add other request(s) to MB server, this is why it is an option.*/
 			}
 		}
 		return foundartist;
-	}
-	function getParent(obj, tag, cls) {
-		var cur = obj;
-		if (cur.parentNode) {
-			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-				return cur;
-			} else {
-				return getParent(cur, tag, cls);
-			}
-		} else {
-			return null;
-		}
-	}
-	function addAfter(n, e) {
-		if (n && e && e.parentNode) {
-			if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
-			else { return e.parentNode.appendChild(n); }
-		} else { return null; }
 	}
 })();
