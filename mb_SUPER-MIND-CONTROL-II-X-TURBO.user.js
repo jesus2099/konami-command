@@ -86,7 +86,7 @@
 			href: a.getAttribute("href"),
 			pathname: a.getAttribute("href").substr(MBS.length),
 			menu: account.querySelector("ul")
-		}
+		};
 	}
 	/*==========================================================================
 	## CONFIGURATORZ ##
