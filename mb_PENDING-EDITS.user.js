@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.8.5.1555
+// @version      2015.8.6.1049
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -57,7 +57,7 @@ It will add other request(s) to MB server, this is why it is an option.*/
 /*END OF CONFIGURATION - --- - --- - --- - */
 	var userjs = "jesus2099userjs42102";
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
-	var loc, entity, checked = [], xhrPendingEdits = {};
+var loc, pageEntity, checked = [], xhrPendingEdits = {};
 	var MBS = location.protocol + "//" + location.host;
 	var account = document.querySelector("div#header li.account a[href^='" + MBS + "/user/']");
 /*EDITING HISTORY*/
@@ -66,26 +66,26 @@ It will add other request(s) to MB server, this is why it is an option.*/
 		(account = unescape(account.getAttribute("href").match(/[^/]+$/))) &&
 		document.querySelector("div#sidebar") &&
 		(loc = location.pathname.match(new RegExp("^/(area|artist|collection|event|label|place|release-group|release|recording|series|work|url)/(" + RE_GUID + ")"))) &&
-		(entity = document.querySelector("div#content > div.tabs > ul.tabs > li > a")) &&
-		(entity = a2obj(entity))
+		(pageEntity = document.querySelector("div#content > div.tabs > ul.tabs > li > a")) &&
+		(pageEntity = a2obj(pageEntity))
 	) {
-		entity.editinghistory = document.querySelector("div#sidebar ul.links a[href='" + MBS + entity.base + "/edits']");
-		if (entity.editinghistory) {
-			entity.ul = getParent(entity.editinghistory, "ul");
+		pageEntity.editinghistory = document.querySelector("div#sidebar ul.links a[href='" + MBS + pageEntity.base + "/edits']");
+		if (pageEntity.editinghistory) {
+			pageEntity.ul = getParent(pageEntity.editinghistory, "ul");
 		} else {
-			entity.ul = document.querySelector("div#sidebar ul.links");
-			entity.editinghistory = createLink(entity, "edits"); /*reverts MBS-57 drawback*/
+			pageEntity.ul = document.querySelector("div#sidebar ul.links");
+			pageEntity.editinghistory = createLink(pageEntity, "edits"); /*reverts MBS-57 drawback*/
 		}
-		entity.li = getParent(entity.editinghistory, "li");
+		pageEntity.li = getParent(pageEntity.editinghistory, "li");
 /*OPEN EDITS*/
-		entity.openedits = document.querySelector("div#sidebar a[href='" + MBS + entity.base + "/open_edits']");
-		if (entity.openedits) {
-			entity.openedits = createLink(entity.openedits, "open_edits"); /*fixes MBS-2298*/
+		pageEntity.openedits = document.querySelector("div#sidebar a[href='" + MBS + pageEntity.base + "/open_edits']");
+		if (pageEntity.openedits) {
+			pageEntity.openedits = createLink(pageEntity.openedits, "open_edits"); /*fixes MBS-2298*/
 		} else {
-			entity.openedits = createLink(entity, "open_edits"); /*fixes MBS-3386*/
+			pageEntity.openedits = createLink(pageEntity, "open_edits"); /*fixes MBS-3386*/
 		}
-		checked.push(entity.base);
-		checkOpenEdits(entity);
+		checked.push(pageEntity.base);
+		checkOpenEdits(pageEntity);
 /*ARTIST LINKS*/
 		if (addArtistLinks && !/(area|artist|collection|label)/.test(loc[1])) {
 			var artists;
@@ -108,34 +108,34 @@ It will add other request(s) to MB server, this is why it is an option.*/
 					var art = a2obj(artists[arti]);
 					if (checked.indexOf(art.base) < 0) {
 						checked.push(art.base);
-						art.editinghistory = createLink(entity, "edits", art);
-						art.openedits = createLink(entity, "open_edits", art);
-						addAfter(document.createElement("hr"), entity.li);
+						art.editinghistory = createLink(pageEntity, "edits", art);
+						art.openedits = createLink(pageEntity, "open_edits", art);
+						addAfter(document.createElement("hr"), pageEntity.li);
 						checkOpenEdits(art);
 					}
 				}
 			}
 		}
 	}
-	function createLink(ent, typ, art) {
-		if (ent == entity.openedits && typ == "open_edits" && art == null && ent.parentNode.tagName == "LI") {
-			var smp = createTag("span", {a: {class: "mp"}});
-			ent.parentNode.replaceChild(smp.appendChild(ent.cloneNode(true)).parentNode, ent);
-			return smp.firstChild;
+	function createLink(entity, historyType, associatedArtist) {
+		if (entity == pageEntity.openedits && historyType == "open_edits" && !associatedArtist && entity.parentNode.tagName == "LI") {
+			var pendingEditsMarkedLink = createTag("span", {a: {class: "mp"}});
+			entity.parentNode.replaceChild(pendingEditsMarkedLink.appendChild(entity.cloneNode(true)).parentNode, entity);
+			return pendingEditsMarkedLink.firstChild;
 		} else {
-			var obj = art || ent;
-			var txt = (typ == "edits" ? "editing\u00a0history" : "open\u00a0edits");
-			txt = (art ? obj.name + " " + txt : txt.substr(0, 1).toUpperCase() + txt.substr(1));
-			var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: obj.base + "/" + typ}}, txt)));
-			if (art) {
-				addAfter(newLink, ent.li);
-			} else if (!art && typ == "edits") {
-				ent.ul.appendChild(document.createElement("hr"));
-				ent.ul.appendChild(newLink);
+			var currentEntity = associatedArtist || entity;
+			var linkLabel = (historyType == "edits" ? "editing\u00a0history" : "open\u00a0edits");
+			linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2, offset, string) { return g1.toUpperCase() + g2; });
+			var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel)));
+			if (associatedArtist) {
+				addAfter(newLink, entity.li);
+			} else if (!associatedArtist && historyType == "edits") {
+				entity.ul.appendChild(document.createElement("hr"));
+				entity.ul.appendChild(newLink);
 			} else {
-				ent.ul.insertBefore(newLink, ent.li);
+				entity.ul.insertBefore(newLink, entity.li);
 			}
-			return newLink;
+			return newLink.firstChild.firstChild;
 		}
 	}
 	function checkOpenEdits(obj) {
