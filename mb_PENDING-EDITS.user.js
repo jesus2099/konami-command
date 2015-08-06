@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.8.6.1049
+// @version      2015.8.6.1453
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own browsing setup
-// @compatible   firefox(39)+greasemonkey    quickly tested
-// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey    quickly tested, long time ago
+// @compatible   chromium(46)+tampermonkey   quickly tested, long time ago
 // @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PENDING-EDITS.user.js
@@ -50,17 +50,17 @@
 // @run-at       document-end
 // ==/UserScript==
 (function(){"use strict";
-/*START OF CONFIGURATION - --- - --- - --- - */
-/*true: show additional artist "editing history" and "open edits" links on some non artist pages.
-It will add other request(s) to MB server, this is why it is an option.*/
+/* START OF CONFIGURATION - --- - --- - --- - */
+/* true: show additional artist "editing history" and "open edits" links on some non artist pages.
+         It will add other request(s) to MB server, this is why it is an option. */
 	var addArtistLinks = true;
-/*END OF CONFIGURATION - --- - --- - --- - */
+/* END OF CONFIGURATION - --- - --- - --- - */
 	var userjs = "jesus2099userjs42102";
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var loc, pageEntity, checked = [], xhrPendingEdits = {};
 	var MBS = location.protocol + "//" + location.host;
 	var account = document.querySelector("div#header li.account a[href^='" + MBS + "/user/']");
-/*EDITING HISTORY*/
+/* EDITING HISTORY */
 	if (
 		account &&
 		(account = unescape(account.getAttribute("href").match(/[^/]+$/))) &&
@@ -77,7 +77,7 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 			pageEntity.editinghistory = createLink(pageEntity, "edits"); /*reverts MBS-57 drawback*/
 		}
 		pageEntity.li = getParent(pageEntity.editinghistory, "li");
-/*OPEN EDITS*/
+/* OPEN EDITS */
 		pageEntity.openedits = document.querySelector("div#sidebar a[href='" + MBS + pageEntity.base + "/open_edits']");
 		if (pageEntity.openedits) {
 			pageEntity.openedits = createLink(pageEntity.openedits, "open_edits"); /*fixes MBS-2298*/
@@ -86,7 +86,7 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 		}
 		checked.push(pageEntity.base);
 		checkOpenEdits(pageEntity);
-/*ARTIST LINKS*/
+/* ASSOCIATED ARTIST LINKS */
 		if (addArtistLinks && !/(area|artist|collection|label)/.test(loc[1])) {
 			var artists;
 			switch (loc[1]) {
@@ -179,18 +179,16 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 		xhrPendingEdits[obj.base].xhr.send(null);
 	}
 	function updateLink(obj, pecount, details, more) {
-		var txt;
-		var tit;
+		var countText;
+		var liTitle;
 		var li = getParent(obj.openedits, "li");
 		var count = li.querySelector("span." + userjs + "count");
 		if (typeof pecount == "number") {
-			txt = pecount;
-			if (more) txt += "+";
-			var countTitle = (txt != 0 ? txt : "no") + " pending edit" + (txt != 1 ? "s" : "");
-			count.setAttribute("title", countTitle);
+			countText = pecount;
+			if (more) countText += "+";
 			if (pecount == 0) {
 				mp(obj.openedits, false);
-				tit = countTitle;
+				liTitle = "no pending edits";
 			} else if (pecount > 0) {
 				mp(obj.openedits, true);
 				if (details.types.length > 0 && details.types.length == details.editors.length) {
@@ -216,18 +214,25 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 						}
 						dupreset = false;
 					}
-					tit = titarray.join("\r\n");
-					if (pecount > 50) tit += "\r\n…";
+					liTitle = titarray.join("\r\n");
+					if (pecount == 1) {
+						liTitle = liTitle.replace(/^- /, "");
+					} else if (pecount > 1) {
+						liTitle = "newest edit on top:\r\n \r\n" + liTitle;
+						if (pecount > 50) {
+							liTitle += "\r\n…";
+						}
+					}
 				}
 			}
 		} else {
-			txt = pecount.status;
-			tit = pecount.responseText;
+			countText = pecount.status;
+			liTitle = pecount.responseText;
 			count.style.setProperty("background-color", "pink");
 		}
-		count.replaceChild(document.createTextNode(txt), count.firstChild);
-		if (tit) {
-			obj.openedits.setAttribute("title", tit);
+		count.replaceChild(document.createTextNode(countText), count.firstChild);
+		if (liTitle) {
+			li.setAttribute("title", liTitle);
 		}
 	}
 	function mp(o, set) {
