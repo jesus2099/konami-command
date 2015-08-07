@@ -1,7 +1,7 @@
 (function(){var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.8.4.1632
+// @version      2015.8.7.1515
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -16,7 +16,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-02-21
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=66467&v=2015.8.7.1339
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=66488&v=2015.8.7.1515
 // @grant        none
 // @include      http*://*musicbrainz.org/*edits*
 // @include      http*://*musicbrainz.org/*votes*
