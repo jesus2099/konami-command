@@ -3,7 +3,7 @@
 // @version      2015.8.2.1829
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own browsing setup
+// @compatible   opera(12.17)+violentmonkey  my own setup
 // @compatible   firefox(39)+greasemonkey    quickly tested
 // @compatible   chromium(46)+tampermonkey   quickly tested
 // @compatible   chrome+tampermonkey         should be same as chromium

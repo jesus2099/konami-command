@@ -2,10 +2,11 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
 // @version      2015.8.7.1533
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own browsing setup
+// @compatible   opera(12.17)+violentmonkey  my own setup
 // @compatible   firefox(39)+greasemonkey    quickly tested
 // @compatible   chromium(46)+tampermonkey   quickly tested
 // @compatible   chrome+tampermonkey         should be same as chromium

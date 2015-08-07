@@ -4,7 +4,7 @@
 // @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own browsing setup
+// @compatible   opera(12.17)+violentmonkey  my own setup
 // @compatible   firefox(39)+greasemonkey    quickly tested
 // @compatible   chromium(46)+tampermonkey   quickly tested
 // @compatible   chrome+tampermonkey         should be same as chromium
