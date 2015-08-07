@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SPOT DUPLICATE RECORDINGS
-// @version      2015.8.7.1642
+// @version      2015.8.7.1709
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SPOT-DUPLICATE-RECORDINGS.user.js
 // @description  musicbrainz.org: Spot recordings that are linked multiple times to the same work
 // @homepage     http://userscripts-mirror.org/scripts/show/106145
@@ -40,7 +40,7 @@ for (var tables = document.querySelectorAll("div#content table > tbody"), it = 0
 		}
 		if (
 			href
-			&& href.match(/\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/)
+			&& href.match(/\/recording|work\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/)
 			&& parent.tagName != "H1"
 			&& !parent.parentNode.classList.contains("tabs")
 			&& !parent.classList.contains("pageselector")
@@ -59,7 +59,7 @@ for (var tables = document.querySelectorAll("div#content table > tbody"), it = 0
 }
 function dupetxt(txt) {
 	return createTag("span", {
-			a: {class: userjs + "-" + txt},
+			a: {class: userjs + txt.replace(/[#/]/g, "-")},
 			s: {backgroundColor: "yellow", color: "red", padding: "0 4px"},
 			e: {mouseover: dupeHighlight, mouseout: dupeHighlight}
 		}, "duplicate " + txt);
