@@ -18,9 +18,6 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @grant        none
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=66008&v=2015.8.5.1555
-//               addAfter(newNode, existingNode)
-//               createTag(tag, gadgets, children)
-//               getParent(startingNode, searchedTag, searchedCssClass, searchedId)
 // @include      http*://*musicbrainz.org/area/*
 // @include      http*://*musicbrainz.org/artist/*
 // @include      http*://*musicbrainz.org/collection/*

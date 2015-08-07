@@ -18,14 +18,6 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=66008&v=2015.8.5.1555
-//               addAfter(newNode, existingNode)
-//               createTag(tag, gadgets, children)
-//               getParent(startingNode, searchedTag, searchedCssClass, searchedId)
-//               getSibling(startingNode, searchedTag, searchedCssClass, previous, maximumDistance)
-//               removeNode(node)
-//               replaceChildren(newContent, parent)
-//               sendEvent(node, eventName)
-//               stop(event)
 // @include      http*://*musicbrainz.org/*
 // @include      http://*.mbsandbox.org/*
 // @exclude      *//*/*mbsandbox.org/*
