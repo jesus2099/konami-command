@@ -17,6 +17,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-12-13
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=66467&v=2015.8.7.1339
 // @grant        none
 // @include      http*://*musicbrainz.org/release/*
 // @include      http://*.mbsandbox.org/release/*
@@ -123,12 +124,9 @@ after step 1, check
 			"add-to-merge=" + to.value + "&add-to-merge=" + from.value,
 			"merge.merging.0=" + to.value + "&merge.target=" + to.value + "&merge.merging.1=" + from.value
 		];
-		disable(shuffle);
-		disable(restore);
-		disable(startpos);
-		disable(status);
+		disableInputs([shuffle, restore, startpos, status]);
 		if (step == 1) {
-			disable(editNote);
+			disableInputs(editNote);
 			params[step] += "&merge.edit_note=";
 			var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
 			if (paramsup != "") paramsup += "\n —\n";
@@ -138,7 +136,7 @@ after step 1, check
 			var targetID = parseInt(to.value, 10);
 			var sourceID = parseInt(from.value, 10);
 			if (sourceID > targetID) {
-				 paramsup += "👍 '''Targetting oldest [MBID]''' (" + format(to.value) + " ← " + format(from.value) + ")" + "\n";
+				paramsup += "👍 '''Targetting oldest [MBID]''' (" + format(to.value) + " ← " + format(from.value) + ")" + "\n";
 			}
 			var locTrack = localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]];
 			var remTrack = remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]];
@@ -184,8 +182,7 @@ after step 1, check
 							currentButt = null;
 							document.title = dtitle;
 							shuffleRestoreEnable();
-							enable(status);
-							enable(editNote);
+							enableInputs([status, editNote]);
 							if (nextButt = mergeQueue.shift()) {
 								FireFoxWorkAround(nextButt);
 							} else {
@@ -223,7 +220,7 @@ after step 1, check
 		infoMerge(errormsg, false, true);
 	}
 	function FireFoxWorkAround(butt) {
-		enable(butt);
+		enableInputs(butt);
 		if (navigator.userAgent.match(/firefox/i)) {
 			butt.setAttribute("value", "FF delay…");
 			setTimeout(function() { butt.click(); }, 1000);
@@ -254,7 +251,7 @@ after step 1, check
 				mp(newEditLink, true);
 				addAfter(document.createTextNode(" "), rmForm);
 			} else {
-				removeElement(rmForm);
+				removeNode(rmForm);
 			}
 		} else {
 			var lengthcell = track.tr.querySelector("td.treleases");
@@ -286,9 +283,8 @@ after step 1, check
 	}
 	function shuffleRestoreEnable(on) {
 		if (typeof on != "undefined") shuffled = on;
-		disable(startpos, shuffled);
-		disable(shuffle, shuffled);
-		disable(restore, !shuffled);
+		disableInputs([startpos, shuffle], shuffled);
+		enableInputs(restore, shuffled);
 	}
 	function massMergeGUI() {
 		var MMRdiv = createTag("div", {a: {id: MMRid}, e: {
@@ -392,7 +388,7 @@ after step 1, check
 		shuffle.setAttribute("title", "Find matching local title for each remote title");
 		shuffle.addEventListener("click", shuffleRestore);
 		restore = createInput("button", "", "Sequential");
-		disable(restore);
+		disableInputs(restore);
 		restore.setAttribute("title", "Restore remote tracks order");
 		restore.addEventListener("click", shuffleRestore);
 		MMRdiv.appendChild(createTag("p", {}, [shuffle, restore]));
@@ -463,7 +459,7 @@ after step 1, check
 				while (mergeQueue.length > 0) {
 					var unqueuedbutt = mergeQueue.shift()
 					unqueuedbutt.style.setProperty("background-color", cMerge);
-					enable(unqueuedbutt);
+					enableInputs(unqueuedbutt);
 					unqueuedbutt.value = "Merge";
 				}
 				queueTrack();
@@ -538,7 +534,7 @@ after step 1, check
 					/*(re)build negative startpos*/
 					var negativeOptions = startpos.querySelectorAll("option[value^='-']");
 					for (var nopt = 0; nopt < negativeOptions.length; nopt++) {
-						removeElement(negativeOptions[nopt]);
+						removeNode(negativeOptions[nopt]);
 					}
 					for (var rtrack = 0; rtrack < remoteRelease.tracks.length-1; rtrack++) {
 						addOption(startpos, 0-rtrack-1, 0-rtrack-1, true);
@@ -586,7 +582,7 @@ after step 1, check
 		var mergebutts = document.getElementsByClassName(MMRid + "mergebutt").length;
 		infoMerge("☞ " + mergebutts + " recording" + (mergebutts == 1 ? "" : "s") + " ready to merge (" + (remoteRelease.tracks.length - mergebutts) + " left)", mergebutts > 0);
 		var mergeallbutt = document.getElementById(MMRid + "mergeallbutt");
-		disable(mergeallbutt, mergebutts < 1);
+		disableInputs(mergeallbutt, mergebutts < 1);
 		if (mergebutts > 0 || !event || !event.type || event.type != "load") startpos.focus();
 	}
 	function buildMergeForm(loc, rem) {
@@ -666,9 +662,9 @@ after step 1, check
 			mergeButt.style.setProperty("background-color", cMerge);
 			mergeButt.style.setProperty("float", "right");
 			mergeButt.addEventListener("click", function(event) {
-				disable(this);
+				disableInputs(this);
 				var swapbutt = this.parentNode.getElementsByTagName("input")[4];
-				disable(swapbutt)
+				disableInputs(swapbutt)
 				this.style.setProperty("background-color", cInfo);
 				var swapped = (swapbutt.value == loc2rem);
 				var mergeFrom = this.parentNode.getElementsByTagName("input")[swapped ? 0 : 2].value;
@@ -681,18 +677,15 @@ after step 1, check
 					mergeRecsStep();
 				} else if (mergeQueue.indexOf(this) == -1 && from.value != mergeFrom && to.value != mergeTo) {
 					this.value = "Unqueue";
-					enable(this);
-					enable(swapbutt);
+					enableInputs([this, swapbutt]);
 					mergeQueue.push(this);
 				} else if ((where = mergeQueue.indexOf(this)) > -1) {
 					mergeQueue.splice(where, 1);
 					this.value = "Merge";
-					enable(this);
-					enable(swapbutt);
+					enableInputs([this, swapbutt]);
 					this.style.setProperty("background-color", cInfo);
 				} else {
-					enable(this);
-					enable(swapbutt);
+					enableInputs([this, swapbutt]);
 					this.style.setProperty("background-color", cWarning);
 					this.value += " error?";
 				}
@@ -783,14 +776,6 @@ after step 1, check
 		}
 		return stop(event);
 	}
-	function disable(o, dis) {
-		if (!o.tagName && o.length) for (io = 0; io < o.length; o++) disable(o[io], dis);
-		else if (dis == null || dis == true) o.setAttribute("disabled", "disabled");
-		else o.removeAttribute("disabled");
-	}
-	function enable (o) {
-		disable(o, false);
-	}
 	function createA(text, link) {
 		var a = document.createElement("a");
 		if (link) {
@@ -823,12 +808,6 @@ after step 1, check
 		var option = createTag("option", {a: {value: value}}, text);
 		return insert&&select.firstChild ? select.insertBefore(option, select.firstChild) : select.appendChild(option);
 	}
-	function addAfter(n, e) {
-		if (n && e && e.parentNode) {
-			if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
-			else { return e.parentNode.appendChild(n); }
-		} else { return null; }
-	}
 	function mp(o, set) {
 		if (set == null || typeof set != "boolean") {
 			return o.parentNode.tagName == "SPAN" && o.parentNode.classList.contains("mp");
@@ -840,19 +819,6 @@ after step 1, check
 		} else if (!set && mp(o)) {
 			o.parentNode.parentNode.replaceChild(o.cloneNode(true), o.parentNode)
 		}
-	}
-	function getParent(obj, tag, cls) {
-	        var cur = obj;
-	        if (cur.parentNode) {
-	                cur = cur.parentNode;
-	                if (cur.tagName.toUpperCase() == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-	                        return cur;
-	                } else {
-	                        return getParent(cur, tag, cls);
-	                }
-	        } else {
-	                return null;
-	        }
 	}
 	function strtime2ms(str) {/*temporary until WS available again*/
 		var time = str.split(":");
@@ -910,12 +876,6 @@ after step 1, check
 		icon.style.setProperty("margin-right", "4px");
 		return icon;
 	}
-	function removeElement(node) {
-		return node.parentNode.removeChild(node);
-	}
-	function removeChildren(p) {
-		while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
-	}
 	function almostSame(a, b) {
 		return looseTitle(a) == looseTitle(b);
 	}
@@ -936,23 +896,4 @@ after step 1, check
 		decoder.innerHTML = str;
 		return decoder.textContent;
 	};
-	function createTag(tag, gadgets, children) {
-		var t = (tag == "fragment" ? document.createDocumentFragment() : document.createElement(tag));
-		if(t.tagName) {
-			if (gadgets) {
-				for (var attri in gadgets.a) if (gadgets.a.hasOwnProperty(attri)) t.setAttribute(attri, gadgets.a[attri]);
-				for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) t.style.setProperty(style.replace(/!/g, "").replace(/[A-Z]/g, "-$&").toLowerCase(), gadgets.s[style].replace(/!/g, ""), style.match(/!/)||gadgets.s[style].match(/!/) ? "important" : "");
-				for (var event in gadgets.e) if (gadgets.e.hasOwnProperty(event)) t.addEventListener(event, gadgets.e[event], false);
-			}
-			if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) t.style.setProperty("cursor", "pointer");
-		}
-		if (children) { var chldrn = children; if ((typeof chldrn).match(/number|string/) || chldrn.tagName) chldrn = [chldrn]; for(var child = 0; child < chldrn.length; child++) t.appendChild((typeof chldrn[child]).match(/number|string/) ? document.createTextNode(chldrn[child]) : chldrn[child]); t.normalize(); }
-		return t;
-	}
-	function stop(event) {
-		event.cancelBubble = true;
-		if (event.stopPropagation) event.stopPropagation();
-		event.preventDefault();
-		return false;
-	}
 })();

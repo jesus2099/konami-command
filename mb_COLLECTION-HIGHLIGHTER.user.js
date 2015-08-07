@@ -15,7 +15,8 @@
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-02-21
-// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=66467&v=2015.8.7.1339
 // @grant        none
 // @include      http*://*musicbrainz.org/*edits*
 // @include      http*://*musicbrainz.org/*votes*
@@ -789,38 +790,6 @@
 		if (title){ a.setAttribute("title", title); }
 		return a;
 	}
-	function createTag(tag, gadgets, children) {
-		var t = (tag=="fragment"?document.createDocumentFragment():document.createElement(tag));
-		if(t.tagName) {
-			if (gadgets) {
-				for (var attri in gadgets.a) if (gadgets.a.hasOwnProperty(attri)) t.setAttribute(attri, gadgets.a[attri]);
-				for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) t.style.setProperty(style.replace(/!/g,"").replace(/[A-Z]/g,"-$&").toLowerCase(), gadgets.s[style].replace(/!/g,""), style.match(/!/)||gadgets.s[style].match(/!/)?"important":"");
-				for (var event in gadgets.e) if (gadgets.e.hasOwnProperty(event)) t.addEventListener(event, gadgets.e[event], false);
-			}
-			if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) t.style.setProperty("cursor", "pointer");
-		}
-		if (children) { var chldrn = children; if ((typeof chldrn).match(/number|string/) || chldrn.nodeType) chldrn = [chldrn]; for(var child=0; child<chldrn.length; child++) t.appendChild((typeof chldrn[child]).match(/number|string/)?document.createTextNode(chldrn[child]):chldrn[child]); t.normalize(); }
-		return t;
-	}
-	function addAfter(n, e) {
-		if (n && e && e.parentNode) {
-			if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
-			else { return e.parentNode.appendChild(n); }
-		} else { return null; }
-	}
-	function getParent(obj, tag, cls) {
-		var cur = obj;
-		if (cur.parentNode) {
-			cur = cur.parentNode;
-			if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-				return cur;
-			} else {
-				return getParent(cur, tag, cls);
-			}
-		} else {
-			return null;
-		}
-	}
 	function concat(tstuff) {
 		var concats = document.createDocumentFragment();
 		var stuff = tstuff;
@@ -838,12 +807,6 @@
 		}
 		return concats;
 	}
-	function stop(e) {
-		e.cancelBubble = true;
-		if (e.stopPropagation) e.stopPropagation();
-		e.preventDefault();
-		return false;
-	}
 	function debug(txt, buffer) {
 		if (DEBUG) {
 			if (buffer) {
@@ -858,15 +821,10 @@
 		debug("Error "+status+"\nRetrying ("+retry+"/"+maxRetry+") in "+retryPause+" ms\nSlowing down, new rate: "+(MBWSRate-slowDownStepAfterRetry)+"+"+slowDownStepAfterRetry+" = "+MBWSRate+" ms");
 	}
 	function nsr(prefix) {
-	  var ns = {
-	    "xhtml": "http://www.w3.org/1999/xhtml",
-	    "mb": "http://musicbrainz.org/ns/mmd-2.0#",
-	  };
-	  return ns[prefix] || null;
-	}
-	function sendEvent(n, e){
-		var ev = document.createEvent("HTMLEvents");
-		ev.initEvent(e.toLowerCase(), true, true);
-		n.dispatchEvent(ev);
+		var ns = {
+			xhtml: "http://www.w3.org/1999/xhtml",
+			mb: "http://musicbrainz.org/ns/mmd-2.0#",
+		};
+		return ns[prefix] || null;
 	}
 })();
