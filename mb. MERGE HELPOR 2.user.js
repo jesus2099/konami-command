@@ -1,16 +1,14 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
 // @version      2015.6.6.6
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list (in artist/release/release-group/work/recording merges)
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)             my own coding setup
-// @compatible   opera+violentmonkey   my own browsing setup
-// @compatible   firefox+greasemonkey  quickly tested
-// @compatible   chromium              quickly tested
-// @compatible   chromium+tampermonkey quickly tested
-// @compatible   chrome                tested with chromium
-// @compatible   chrome+tampermonkey   tested with chromium
+// @compatible   opera(12.17)+violentmonkey  my own setup
+// @compatible   firefox(39)+greasemonkey    quickly tested
+// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js

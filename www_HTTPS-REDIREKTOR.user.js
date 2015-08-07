@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         www. HTTPS REDIREKTOR
 // @version      2014.11.17.1518
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/www_HTTPS-REDIREKTOR.user.js
 // @description  redirect to HTTPS in some websites. keep hash. avoid infinite loops (Opera speed-up tip: save as bla.js instead of bla.user.js)
 // @homepage     http://userscripts-mirror.org/scripts/show/178037
 // @supportURL   https://github.com/jesus2099/konami-command/issues
