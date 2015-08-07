@@ -2,13 +2,14 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
 // @version      2015.6.4.1626
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)
-// @compatible   opera+violentmonkey
-// @compatible   firefox+greasemonkey
-// @compatible   chrome+tampermonkey Also works without Tampermonkey but without animations
+// @compatible   opera(12.17)+violentmonkey  my own setup
+// @compatible   firefox(39)+greasemonkey    quickly tested
+// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js

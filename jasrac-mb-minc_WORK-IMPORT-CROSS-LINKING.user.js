@@ -2,16 +2,14 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
 // @version      2015.6.22.2222
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)             my own coding setup
-// @compatible   opera+violentmonkey   my own browsing setup
-// @compatible   firefox+greasemonkey  quickly tested
-// @compatible   chromium              quickly tested
-// @compatible   chromium+tampermonkey quickly tested
-// @compatible   chrome                tested with chromium
-// @compatible   chrome+tampermonkey   tested with chromium
+// @compatible   opera(12.17)+violentmonkey  my own setup
+// @compatible   firefox(39)+greasemonkey    quickly tested
+// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js

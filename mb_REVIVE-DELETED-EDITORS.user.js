@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
 // @version      2015.8.2.1829
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12.17)+violentmonkey  my own setup

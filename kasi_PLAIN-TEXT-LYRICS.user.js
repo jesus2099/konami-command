@@ -2,9 +2,14 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
 // @version      2015.1.21.15.40
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/kasi_PLAIN-TEXT-LYRICS.user.js
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @homepage     http://userscripts-mirror.org/scripts/show/91968
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12.17)+violentmonkey  my own setup
+// @compatible   firefox(39)+greasemonkey    quickly tested
+// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/kasi_PLAIN-TEXT-LYRICS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/kasi_PLAIN-TEXT-LYRICS.user.js
