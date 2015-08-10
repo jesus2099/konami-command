@@ -1,16 +1,21 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
 // @version      2015.5.29.1715
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey    tested sometimes
+// @compatible   chromium(46)+tampermonkey   tested sometimes
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ALL-LINKS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ALL-LINKS.user.js
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-08-02
-// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @grant        none
 // @include      http*://*musicbrainz.org/artist/*
 // @exclude      http*://*musicbrainz.org/artist/*/edit
@@ -18,10 +23,10 @@
 // @include      http*://*musicbrainz.org/release/*
 // @run-at       document-end
 // ==/UserScript==
-(function(){
+"use strict";
 /* hint for Opera 12 users allow opera:config#UserPrefs|Allowscripttolowerwindow and opera:config#UserPrefs|Allowscripttoraisewindow */
 /*------------settings*/
-var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/;/*U+2FA1D is currently out of js range*/
+var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; /*U+2FA1D is currently out of js range*/
 var autolinksOpacity = ".5"; /*can be dimmer than existing links*/
 /*
 	%artist-id% (MBID)
@@ -98,29 +103,28 @@ var favicons = {
 	"yahoo.": "http://blogs.yahoo.co.jp/favicon.ico",
 };
 var guessOtherFavicons = true;
-var hideAffiliates = true;
-var hideDupeRelationshipsLink = true; /*"View all relationships" link = "Relationships" tab*/
 /*------------end of settings (don't edit below) */
 var userjs = "j2ujs108889";
 var sidebar = document.getElementById("sidebar");
 var arelsws = "/ws/2/artist/%artist-id%?inc=url-rels";
 var existingLinks, extlinks;
-var hrStyle = {css:""};
+var hrStyle = {css: ""};
+main();
 for (var s = 0; s < document.styleSheets.length; s++)
 	for (var r = 0; r < document.styleSheets[s].cssRules.length; r++)
 		if (hrStyle.match = document.styleSheets[s].cssRules[r].cssText.match(/(#sidebar.+ul.+hr) {(.+)}/))
 			hrStyle.css += hrStyle.match[2];
 if (hrStyle.css) {
 	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-	document.styleSheets[document.styleSheets.length-1].insertRule("div#sidebar ul.external_links hr {margin-top:8px!important;width:inherit!important;"+hrStyle.css+"}", 0);
+	document.styleSheets[document.styleSheets.length - 1].insertRule("div#sidebar ul.external_links hr { margin-top:8px!important; width:inherit!important; " + hrStyle.css + "}", 0);
 }
-function do108889() {
+function main() {
 	if (sidebar) {
 		var rgextrels = sidebar.querySelector("ul.external_links_2 > li");
 		if (rgextrels && (rgextrels = rgextrels.parentNode) && rgextrels.previousSibling.tagName == "UL") {
 			rgextrels.parentNode.insertBefore(document.createElement("h2"), rgextrels).appendChild(document.createTextNode("Release group external links"));
 		}
-		var artistid = self.location.href.match(/musicbrainz.org\/artist\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
+		var artistid = location.href.match(/musicbrainz.org\/artist\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
 		var artistname = document.querySelector("div#content > div.artistheader > h1 a, div#content > div.artistheader > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
 		var artistsortname, artistsortnameSwapped = "";
 		if (artistid && artistname) {
@@ -128,31 +132,38 @@ function do108889() {
 			arelsws = arelsws.replace(/%artist-id%/, artistid);
 			artistsortname = artistname.getAttribute("title");
 			var tmpsn = artistsortname.split(",");
-			for (var isn=tmpsn.length-1; isn>=0; isn--) {
+			for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
 				artistsortnameSwapped += tmpsn[isn].trim();
-				if (isn != 0) {artistsortnameSwapped += " "; }
+				if (isn != 0) {
+					artistsortnameSwapped += " ";
+				}
 			}
 			artistname = artistname.textContent.trim();
 			extlinks = sidebar.getElementsByClassName("external_links");
-			if (extlinks && extlinks.length>0) {
+			if (extlinks && extlinks.length > 0) {
 				extlinks = extlinks[0];
 				loading(true);
 				/*attached missing links*/
 				var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function(e) {
+				xhr.onreadystatechange = function(event) {
 					if (xhr.readyState == 4) {
 						if (xhr.status == 200) {
 							loading(false);
 							var res = xhr.responseXML;
-							var urls = res.evaluate("//mb:relation-list[@target-type='url']/mb:relation", res, nsr, XPathResult.ANY_TYPE, null);
+							var url, urls = res.evaluate("//mb:relation-list[@target-type='url']/mb:relation", res, nsr, XPathResult.ANY_TYPE, null);
 							var haslinks = false;
 							while (url = urls.iterateNext()) {
 								var target = res.evaluate("./mb:target", url, nsr, XPathResult.ANY_TYPE, null);
 								var turl = target.iterateNext();
 								var begin, end;
-								if (begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) { begin = begin.textContent; }
-								if (end = res.evaluate("./mb:end", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) { end = end.textContent; }
-								else if (res.evaluate("./mb:ended", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) { end = "????"; }
+								if (begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+									begin = begin.textContent;
+								}
+								if (end = res.evaluate("./mb:end", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+									end = end.textContent;
+								} else if (res.evaluate("./mb:ended", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+									end = "????";
+								}
 								if (turl) {
 									if (addExternalLink(url.getAttribute("type"), turl.textContent, begin, end)) {
 										if (!haslinks) {
@@ -175,13 +186,13 @@ function do108889() {
 											sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
 										}
 										target = target.replace(/%artist-name%/, encodeURIComponent(artistname));
-										target = target.replace(/%artist-family-name-first%/, encodeURIComponent(artistname.match(nonLatinName)?artistname:artistsortname));
+										target = target.replace(/%artist-family-name-first%/, encodeURIComponent(artistname.match(nonLatinName) ? artistname : artistsortname));
 									}
 									else {
 										var aname = target["accept-charset"];
-										aname = aname&&aname.match(/iso-8859/i)&&artistname!=artistsortnameSwapped&&artistname.match(nonLatinName)?artistsortnameSwapped:artistname;
+										aname = aname && aname.match(/iso-8859/i) && artistname != artistsortnameSwapped && artistname.match(nonLatinName) ? artistsortnameSwapped : artistname;
 										for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
-											target.parameters[param] = target.parameters[param].replace(/%artist-id%/, artistid).replace(/%artist-name%/, aname).replace(/%artist-family-name-first%/, artistname.match(nonLatinName)?artistname:artistsortname);
+											target.parameters[param] = target.parameters[param].replace(/%artist-id%/, artistid).replace(/%artist-name%/, aname).replace(/%artist-family-name-first%/, artistname.match(nonLatinName) ? artistname : artistsortname);
 										}
 									}
 								}
@@ -194,7 +205,7 @@ function do108889() {
 							}
 						} else if (xhr.status >= 400) {
 							var txt = xhr.responseText.match(/<error><text>(.+)<\/text><text>/);
-							txt = txt?txt[1]:"";
+							txt = txt ? txt[1] : "";
 							error(xhr.status, txt);
 						}
 					}
@@ -203,12 +214,6 @@ function do108889() {
 				xhr.send(null);
 			}
 		}/*artist*/
-		if (hideAffiliates) {
-			var affs = document.getElementById("sidebar-affiliates");
-			if (affs) {
-				affs.parentNode.removeChild(affs);
-			}
-		}
 	}
 }
 var favicontry = [];
@@ -218,9 +223,11 @@ function addExternalLink(text, target, begin, end, sntarget) {
 	var lis = extlinks.getElementsByTagName("li");
 	if (!existingLinks) {
 		existingLinks = [];
-		for (ilis=0; ilis<lis.length; ilis++) {
+		for (var ilis = 0; ilis < lis.length; ilis++) {
 			var lisas = lis[ilis].getElementsByTagName("a");
-			if (lisas.length>0) { existingLinks.push(lisas[0].getAttribute("href").trim().replace(/^https?:/,"")); }
+			if (lisas.length>0) {
+				existingLinks.push(lisas[0].getAttribute("href").trim().replace(/^https?:/,""));
+			}
 		}
 	}
 	if (target) {
@@ -231,11 +238,11 @@ function addExternalLink(text, target, begin, end, sntarget) {
 			if (target.title) {
 				form.style.setProperty("cursor", "help");
 			}
-			var info = "\n"+target.action;
+			var info = "\r\n" + target.action;
 			for (var attr in target) if (target.hasOwnProperty(attr)) {
 				if (attr == "parameters") {
 					for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
-						info += "\n"+param+"="+target.parameters[param];
+						info += "\r\n" + param + "=" + target.parameters[param];
 						var input = document.createElement("input");
 						input.setAttribute("type", "hidden");
 						input.setAttribute("name", param);
@@ -243,26 +250,28 @@ function addExternalLink(text, target, begin, end, sntarget) {
 						form.appendChild(input);
 					}
 				} else {
-					if (attr.match(/accept-charset|enctype|method/)) { info = target[attr]+" "+info; }
+					if (attr.match(/accept-charset|enctype|method/)) {
+						info = target[attr] + " " + info;
+					}
 					form.setAttribute(attr, target[attr]);
 				}
 			}
 			var a = createA(text);
 			a.setAttribute("title", info);
-			a.addEventListener("mousedown", function (e) {
-				e.preventDefault();
-				if (e.button == 1) {
+			a.addEventListener("mousedown", function (event) {
+				event.preventDefault();
+				if (event.button == 1) {
 					this.parentNode.setAttribute("target", weirdobg());
 					this.parentNode.submit();
 				}
 			}, false);
-			a.addEventListener("click", function (e) {
-				if (e.button == 0) {
+			a.addEventListener("click", function (event) {
+				if (event.button == 0) {
 					/*lame browsers;)*/
 					if (typeof opera == "undefined") {
-						if (e.shiftKey) {
+						if (event.shiftKey) {
 							this.parentNode.setAttribute("target", "_blank");
-						} else if (e.ctrlKey) {
+						} else if (event.ctrlKey) {
 							this.parentNode.setAttribute("target", weirdobg());
 						}
 					}
@@ -305,7 +314,7 @@ function addExternalLink(text, target, begin, end, sntarget) {
 				li.appendChild(ardates);
 			}
 		}
-		var favurltest = (typeof target == "string")?target:target.action;
+		var favurltest = (typeof target == "string") ? target : target.action;
 		var favurlfound = false;
 		for (var part in favicons) if (favicons.hasOwnProperty(part)) {
 			if (favurltest.indexOf(part) != -1) {
@@ -314,18 +323,18 @@ function addExternalLink(text, target, begin, end, sntarget) {
 			}
 		}
 		if (guessOtherFavicons && !favurlfound) {
-			favurlfound = favurltest.substr(0, favurltest.indexOf("/", 7))+"/favicon.ico";
+			favurlfound = favurltest.substr(0, favurltest.indexOf("/", 7)) + "/favicon.ico";
 		}
 		var ifit = favicontry.length;
 		favicontry[ifit] = new Image();
-		/*favicontry.addEventListener("error", function (e) {
-		}, false);*/
-		favicontry[ifit].addEventListener("load", function (e) {
+		/*favicontry.addEventListener("error", function (event) {
+		});*/
+		favicontry[ifit].addEventListener("load", function (event) {
 			clearTimeout(this.to);
 			if (this.width == 16) {
-				this.li.style.setProperty("background-image", "url("+this.src+")");
+				this.li.style.setProperty("background-image", "url(" + this.src + ")");
 			}
-		}, false);
+		});
 		favicontry[ifit].li = li;
 		favicontry[ifit].src = favurlfound;
 		favicontry[ifit].to = setTimeout(function(){ favicontry[ifit].src = "/"; }, 5000);
@@ -350,67 +359,63 @@ function addExternalLink(text, target, begin, end, sntarget) {
 	return newLink;
 }
 function weirdobg() {
-	var weirdo = userjs+(new Date().getTime());
-	try { self.open("", weirdo).blur(); } catch(e) {}
+	var weirdo = userjs + (new Date().getTime());
+	try { open("", weirdo).blur(); } catch(error) {}
 	self.focus();
 	return weirdo;
 }
 function error(code, text) {
-	var ldng = document.getElementById("jesus2099loading108889");
+	var ldng = document.getElementById(userjs + "-loading");
 	if (ldng) {
-		ldng.setAttribute("id", "jesus2099error108889");
+		ldng.setAttribute("id", userjs + "-error");
 		ldng.style.setProperty("background", "pink");
-		ldng.replaceChild(document.createTextNode("Error "+code), ldng.firstChild);
+		ldng.replaceChild(document.createTextNode("Error " + code), ldng.firstChild);
 		ldng.appendChild(createA("*", arelsws));
 		ldng.appendChild(document.createTextNode(" in "));
-		ldng.appendChild(createA("all links", "http://userscripts.org/scripts/show/108889"));
+		ldng.appendChild(createA("all links", "http://userscripts-mirror.org/scripts/show/108889"));
 		ldng.appendChild(document.createTextNode(" ("));
 		var retrybtn = createA("retry");
-		retrybtn.addEventListener("click", function (e) {
-			var err = document.getElementById("jesus2099error108889");
+		retrybtn.addEventListener("click", function (event) {
+			var err = document.getElementById(userjs + "-error");
 			if (err) { err.parentNode.removeChild(err); }
 			do108889();
-		}, false);
+		});
 		ldng.appendChild(retrybtn);
 		ldng.appendChild(document.createTextNode(")"));
 		ldng.appendChild(document.createElement("br"));
 		ldng.appendChild(document.createElement("i").appendChild(document.createTextNode(text)));
-	}
-	else {
+	} else {
 		loading(true);
 		error(code, text);
 	}
 }
 function loading(on) {
-	var ldng = document.getElementById("jesus2099loading108889");
-	if (on) {
-		if (!ldng) {
-			var li = document.createElement("li");
-			li.setAttribute("id", "jesus2099loading108889");
-			li.style.setProperty("background", "#ff6");
-			li.appendChild(document.createTextNode("loading…"));
-			var lis = extlinks.getElementsByTagName("li");
-			if (hideDupeRelationshipsLink && lis.length > 0 && lis[lis.length-1].textContent.match(/View all relationships/)) {
-				extlinks.removeChild(lis[lis.length-1]);
-			}
-			extlinks.appendChild(li);
+	var ldng = document.getElementById(userjs + "-loading");
+	if (on && !ldng) {
+		var li = document.createElement("li");
+		li.setAttribute("id", userjs + "-loading");
+		var img = document.createElement("img");
+		img.setAttribute("src", "/static/images/icons/loading.gif");
+		img.setAttribute("alt", "loading all links…");
+		li.appendChild(img);
+		extlinks.appendChild(li);
+		li = extlinks.querySelector("ul.external_links > li.all-relationships");
+		if (li) {
+			li.style.setProperty("display", "none");
 		}
-	}
-	else {
-		if (ldng) {
-			ldng.parentNode.removeChild(ldng);
-		}
+	} else if (ldng && !on) {
+		ldng.parentNode.removeChild(ldng);
 	}
 }
 function archivedDate(date, url) {
-	var text = date=="????"?"ended":date.replace(/-/g, "‐");
+	var text = date == "????" ? "ended" : date.replace(/-/g, "‐");
 	if (!url.match(/\.archive\.org\//)) {
 		var archiveStamp = "*";
 		if (date != "????") {
 			archiveStamp = date.replace(/\D/g, "");
 			while (archiveStamp.length < 14) archiveStamp += "0";
 		}
-		return createA(text, "//wayback.archive.org/web/"+archiveStamp+"/"+url.replace(/https?:\/\//, ""), "Internet Archive Wayback Machine capture");
+		return createA(text, "//wayback.archive.org/web/" + archiveStamp + "/" + url.replace(/https?:\/\//, ""), "Internet Archive Wayback Machine capture");
 	} else {
 		return document.createTextNode(text);
 	}
@@ -419,8 +424,7 @@ function createA(text, link, title) {
 	var a = document.createElement("a");
 	if (link) {
 		a.setAttribute("href", link);
-	}
-	else {
+	} else {
 		a.style.setProperty("cursor", "pointer");
 	}
 	if (title){ a.setAttribute("title", title); }
@@ -435,5 +439,3 @@ function nsr(prefix) {
 			return null;
 	}
 }
-do108889();
-})();
