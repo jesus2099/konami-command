@@ -1,16 +1,22 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
 // @version      2015.6.5.1111
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey    tested sometimes
+// @compatible   chromium(46)+tampermonkey   tested sometimes
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-01-13
-// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=67045&v=2015.8.10.952
 // @grant        none
 // @include      http*://*musicbrainz.org/*/add-alias
 // @include      http*://*musicbrainz.org/*/change-quality
@@ -36,10 +42,9 @@
 // @include      http*://*musicbrainz.org/release/add*
 // @include      http*://*musicbrainz.org/work/*/add-iswc
 // @include      http*://acoustid.org/edit/*
-// @exclude      http*://classic.musicbrainz.org*
 // @run-at       document-end
 // ==/UserScript==
-(function(){
+"use strict";
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 var textLabels = ["n-1", "n-2", "n-3", "n-4", "n-5", "n-6", "n-7", "n-8", "n-9", "n-10"]; /* maximum 10 labels empty [] will skip buttons */
 var delLabel = "×";
@@ -59,11 +64,11 @@ var mb = !acoustid;
 var editpage = (mb && location.href.match(/musicbrainz\.org\/edit\/\d+($|[?#&])/));
 var editsearchpage = (mb && location.href.match(/musicbrainz\.org\/.+(?:edits|subscribed)/));
 var re = (mb && document.querySelector("div#release-editor"));
-var save = editpage||editsearchpage?false:true;
-var content = document.getElementById(mb?"page":"content");
+var save = editpage || editsearchpage ? false : true;
+var content = document.getElementById(mb ? "page" : "content");
 var savedHeight = localStorage.getItem(userjs+"_savedHeight");
 if (content) {
-	var notetext = content.querySelectorAll("textarea"+(acoustid?"":".edit-note, textarea#edit-note-text"));
+	var notetext = content.querySelectorAll("textarea" + (acoustid ? "" : ".edit-note, textarea#edit-note-text"));
 	var reldates = [];
 	if (notetext.length == 1) {
 		notetext = notetext[0];
@@ -75,7 +80,7 @@ if (content) {
 		}
 		if (savedHeight) {
 			notetext.style.setProperty("height", savedHeight+"px");
-			addAfter(createTag("div", {s:{"text-align":"right"}}, createTag("a", {e:{click:function(event) {
+			addAfter(createTag("div", {s: {textAlign: "right"}}, createTag("a", {e: {click: function(event) {
 				localStorage.removeItem(userjs+"_savedHeight");
 				this.parentNode.replaceChild(document.createTextNode("Size reset! It will take effect at next page load."), this);
 			}}}, "↖Reset size")), notetext);
@@ -87,7 +92,7 @@ if (content) {
 		});
 	} else { notetext = false; }
 	var xdate = [];
-	var submitbtn = content.querySelector(mb?"form div.buttons button[type='submit'].submit.positive":"input[type='submit']");
+	var submitbtn = content.querySelector(mb ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
 	if (re) submitbtn = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
 	if (reldates.length == 2) {
 		xdate = [
@@ -116,9 +121,9 @@ if (content) {
 			var removeLabels = ["label-id-ar.edit_note", "label-id-edit_note", "label-id-edit-artist.edit_note", "label-id-edit-label.edit_note", "label-id-edit-recording.edit_note", "label-id-edit-release-group.edit_note", "label-id-edit-url.edit_note", "label-id-edit-work.edit_note"];
 			for (var l=0; l<removeLabels.length; l++) if (label = document.getElementById(removeLabels[l])) label.parentNode.removeChild(label);
 		}
-		var buttons = createTag("div", {a:{"class":"buttons"}});
-		var savecb = buttons.appendChild(createTag("label", {a:{title:"saves edit note on page unload"}, s:{"background-color":(save?cOK:cWARN),"min-width":"0",margin:"0"}, e:{"click":function(e){if(e.shiftKey){sendEvent(submitbtn, "click");}}}}));
-		savecb = savecb.appendChild(createTag("input", {a:{type:"checkbox","class":"jesus2099remember",tabindex:"-1"}, s:{display:"inline"}, e:{"change":function(e){save=this.checked;this.parentNode.style.setProperty("background-color",save?cOK:cWARN);}}}));
+		var buttons = createTag("div", {a: {class: "buttons"}});
+		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(e) { if(e.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
+		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(e) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); }}}));
 		savecb.checked = save;
 		savecb.parentNode.appendChild(document.createTextNode(" remember  "));
 		for (var ni = 0; ni < textLabels.length; ni++) {
@@ -168,7 +173,7 @@ if (content) {
 					butt.setAttribute("value", butt.getAttribute("title").replace(/-null/g, ""));
 					butt.addEventListener("click", function(e) {
 						var xdymd = this.getAttribute("title").match(/^(.*)-(.*)-(.*)$/);
-						for (var iixd=0, acts=["YYYY","MM","DD"]; iixd<3; iixd++) {
+						for (var iixd = 0, acts = ["YYYY", "MM", "DD"]; iixd < 3; iixd++) {
 							var input = this.parentNode.querySelector("input[placeholder='"+acts[iixd]+"']");
 							input.value = xdymd[iixd+1].match(/^\d+$/);
 							sendEvent(input, "change");
@@ -193,8 +198,8 @@ if (content) {
 				buttcd.addEventListener("click", function(e) {
 					var src = copyDateLabels.indexOf(this.getAttribute("value"));
 					for (var icdymd=1; icdymd<4; icdymd++) {
-						xdate[src==1?0:1][icdymd].value = xdate[src][icdymd].value;
-						sendEvent(xdate[src==1?0:1][icdymd], "change");
+						xdate[src == 1 ? 0 : 1][icdymd].value = xdate[src][icdymd].value;
+						sendEvent(xdate[src == 1 ? 0 : 1][icdymd], "change");
 					}
 					focusYYYY(xdate[src][1]);
 				}, false);/*onclick*/
@@ -254,21 +259,8 @@ function saveNote() {
 		}
 	}
 }
-function createTag(tag, gadgets, children) {
-	var t = (tag=="fragment"?document.createDocumentFragment():document.createElement(tag));
-	if(t.tagName) {
-		if (gadgets) {
-			for (var attri in gadgets.a) if (gadgets.a.hasOwnProperty(attri)) { t.setAttribute(attri, gadgets.a[attri]); }
-			for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) { t.style.setProperty(style.replace(/!/g,""), gadgets.s[style].replace(/!/g,""), style.match(/!/)||gadgets.s[style].match(/!/)?"important":""); }
-			for (var event in gadgets.e) if (gadgets.e.hasOwnProperty(event)) { t.addEventListener(event, gadgets.e[event], false); }
-		}
-		if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) t.style.setProperty("cursor", "pointer");
-	}
-	if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.tagName) { chldrn = [chldrn]; } for(var child=0; child<chldrn.length; child++) { t.appendChild(typeof chldrn[child]=="string"?document.createTextNode(chldrn[child]):chldrn[child]); } t.normalize(); }
-	return t;
-}
 function createButtor(label, width) {
-	var butt = createTag("input", {a:{type:"button",value:label,tabindex:"-1","class":"styled-button"}, s:{display:"inline",padding:"2px","float":"none"}});
+	var butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
 	if (width) { butt.style.setProperty("width", width); }
 	return butt;
 }
@@ -296,7 +288,7 @@ function createClearButtor(input) {
 						xdate[id][nii].value = "";
 						sendEvent(xdate[id][nii], "change");
 					}
-					if (e.shiftKey) { sendEvent(document.getElementById(userjs+"deldate"+(id==0?1:0)), "click"); }
+					if (e.shiftKey) { sendEvent(document.getElementById(userjs + "deldate" + (id == 0 ? 1 : 0)), "click"); }
 					focusYYYY(xdate[id][1]);
 					e.cancelBubble = true;
 					if (e.stopPropagation) e.stopPropagation();
@@ -307,48 +299,9 @@ function createClearButtor(input) {
 			break;
 	}
 }
-function addAfter(n, e) {
-	if (n && e && e.parentNode) {
-		if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
-		else { return e.parentNode.appendChild(n); }
-	} else { return null; }
-}
-function getParent(obj, tag, cls) {
-	var cur = obj;
-	if (cur.parentNode) {
-		cur = cur.parentNode;
-		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-			return cur;
-		} else {
-			return getParent(cur, tag, cls);
-		}
-	} else {
-		return null;
-	}
-}
-function sendEvent(n, _e){
-	var e = _e.toLowerCase();
-	var ev;
-	if (e.match(/click|mouse/)) {
-		var params = {};
-		params.mods = [];
-		if (e.match(/\+/)) {
-			params.mods = e.split("+");
-			e = params.mods.pop();
-		}
-		ev = document.createEvent("MouseEvents");
-		ev.initMouseEvent(e, true, true, self, 0, 0, 0, 0, 0, params.mods.indexOf("ctrl")>-1, params.mods.indexOf("alt")>-1, params.mods.indexOf("shift")>-1, params.mods.indexOf("meta")>-1, 0, null);
-	}
-	else {
-		ev = document.createEvent("HTMLEvents");
-		ev.initEvent(e, true, true);
-	}
-	n.dispatchEvent(ev);
-}
 function focusYYYY(input) {
 	if(input.style.getPropertyValue("display") == "none" && input.nextSibling.getAttribute("placeholder") == "YYY+")/*EASY_DATE*/
 		input.nextSibling.focus();
 	else
 		input.focus();
 }
-})();
