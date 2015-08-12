@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.8.7.1533
+// @version      2015.8.12.1632
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -345,7 +345,7 @@ function loadCollection(mbid, ws, po) {
 					modal(true, " ", 1);
 					if (stuff["release-tmp"].ids.length > 0) {
 						localStorage.setItem(userjs + "releases", stuff["release"].rawids);
-						modal(true, concat([createTag("strong", {}, stuff["release"].ids.length + " release" + (stuff["release"].ids.length == 1 ? "" : "s")), " saved into local storage (" + userjs + "releases)… "]));
+						modal(true, concat([createTag("b", {}, stuff["release"].ids.length + " release" + (stuff["release"].ids.length == 1 ? "" : "s")), " saved into local storage (" + userjs + "releases)… "]));
 						modal(true, "OK.", 2);
 						retry = 0;
 						setTimeout(function() { fetchReleasesStuff(); }, chrono(MBWSRate));
@@ -438,7 +438,7 @@ function fetchReleasesStuff(pi) {
 						for (var stu in stuff) if (stu != "release" && stuff.hasOwnProperty(stu)) {
 							localStorage.setItem(userjs + stu + "s", stuff[stu].rawids);
 							stuff[stu].rawids = "";
-							modal(true, concat([createTag("strong", {}, stuff[stu].ids.length + " " + stu + (stuff[stu].ids.length == 1 ? "" : "s")), " saved into local storage (" + userjs + stu + "s)… "]));
+							modal(true, concat([createTag("b", {}, stuff[stu].ids.length + " " + stu + (stuff[stu].ids.length == 1 ? "" : "s")), " saved into local storage (" + userjs + stu + "s)… "]));
 							modal(true, "OK.", 1);
 						}
 						end(true);
@@ -600,15 +600,16 @@ function collectionUpdater(link, action) {
 				switch (action) {
 					case "add":
 						if (stuff["release"].rawids.indexOf(releaseID) == -1) {
-							modal(true, concat([createTag("strong", {}, "Adding this release"), " to loaded collection…"]), 1);
+							modal(true, concat([createTag("b", {}, "Adding this release"), " to loaded collection…"]), 1);
 							stuff["release"].rawids += releaseID + " ";
 							localStorage.setItem(userjs + "releases", stuff["release"].rawids);
+							altered = true;
 						}
 						for (var c = 0; c < checks.length; c++) {
 							if (match = checks[c].getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"))) {
 								var type = match[1], mbid = match[2];
 								if (stuff[type].ids && stuff[type].rawids.indexOf(mbid) < 0 && (type != "artist" || skipArtists.indexOf(mbid) < 0)) {
-									modal(true, concat([createTag("strong", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1);
+									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1);
 									stuff[type].rawids += mbid + " ";
 									localStorage.setItem(userjs + type + "s", stuff[type].rawids);
 									altered = true;
@@ -619,7 +620,7 @@ function collectionUpdater(link, action) {
 						break;
 					case "remove":
 						if (stuff["release"].rawids.indexOf(releaseID) > -1) {
-							modal(true, concat([createTag("strong", {}, "Removing this release"), " from loaded collection…"]), 1);
+							modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
 							stuff["release"].rawids = stuff["release"].rawids.replace(new RegExp(releaseID + "( |$)"), "");
 							localStorage.setItem(userjs + "releases", stuff["release"].rawids);
 							altered = true;
@@ -718,7 +719,7 @@ function stuffRemover(checks, pp) {
 							var mates = getStuffs(checkAgainst, res);
 							for (var m = 0; m < mates.length; m++) {
 								if (stuff[checkAgainst].rawids.indexOf(mates[m].getAttribute("href").match(new RegExp(strMBID))) > -1) {
-									modal(true, createTag("span", {s: {color: "grey"}}, "still used: keeping."), 1);
+									modal(true, createTag("span", {s: {color: "grey"}}, ["still used by ", createA(mates[m].textContent, mates[m].getAttribute("href"), checkAgainst), ": keeping."]), 1);
 									retry = 0;
 									setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
 									return;
@@ -729,7 +730,7 @@ function stuffRemover(checks, pp) {
 								retry = 0;
 								setTimeout(function() { stuffRemover(checks, p + 1); }, chrono(MBWSRate));
 							} else {
-								modal(true, concat([createTag("span", {s: {color: "grey"}}, "not used any more: "), "removing…"]), 1);
+								modal(true, concat([createTag("span", {s: {color: "grey"}}, "not used any more: "), createTag("b", {}, "removing"), "…"]), 1);
 								stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
 								localStorage.setItem(userjs + checkType + "s", stuff[checkType].rawids);
 								altered = true;
