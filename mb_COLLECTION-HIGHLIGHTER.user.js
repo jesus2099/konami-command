@@ -130,10 +130,6 @@ if (host && cat) {
 		if (xp.snapshotLength > 0) {
 			xp.snapshotItem(0).parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, meta.name));
 			var tbl = getParent(xp.snapshotItem(0), "table");
-			xp = document.evaluate("./xhtml:thead//xhtml:th[contains(./text(), 'Actions')]", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-			if (xp.snapshotLength > 0) {
-				xp.snapshotItem(0).style.setProperty("width", "");
-			}
 			xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			for (var i = 0; i < xp.snapshotLength; i++) {
 				var coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
