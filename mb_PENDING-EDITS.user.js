@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.8.6.1453
+// @version      2015.8.14.1040
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey    quickly tested
-// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey    tested sometimes
+// @compatible   chromium(46)+tampermonkey   tested sometimes
 // @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PENDING-EDITS.user.js
@@ -57,7 +57,7 @@
 var loc, pageEntity, checked = [], xhrPendingEdits = {};
 	var MBS = location.protocol + "//" + location.host;
 	var account = document.querySelector("div#header li.account a[href^='" + MBS + "/user/']");
-/* EDITING HISTORY */
+//EDITING HISTORY
 	if (
 		account &&
 		(account = unescape(account.getAttribute("href").match(/[^/]+$/))) &&
@@ -71,19 +71,24 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 			pageEntity.ul = getParent(pageEntity.editinghistory, "ul");
 		} else {
 			pageEntity.ul = document.querySelector("div#sidebar ul.links");
-			pageEntity.editinghistory = createLink(pageEntity, "edits"); /*reverts MBS-57 drawback*/
+			pageEntity.editinghistory = createLink(pageEntity, "edits");//reverts MBS-57 drawback
 		}
 		pageEntity.li = getParent(pageEntity.editinghistory, "li");
-/* OPEN EDITS */
+//OPEN EDITS
 		pageEntity.openedits = document.querySelector("div#sidebar a[href='" + MBS + pageEntity.base + "/open_edits']");
 		if (pageEntity.openedits) {
-			pageEntity.openedits = createLink(pageEntity.openedits, "open_edits"); /*fixes MBS-2298*/
+			pageEntity.openedits.removeAttribute("title");//removing useless tooltip (artist disambiguation or swapped sort name) that is masking our useful tooltip
+			if (pageEntity.openedits.parentNode.tagName == "LI") {//fixes MBS-2298 (mark open_edits as having pending edits)
+				var pendingEditsMarkedLink = createTag("span", {a: {class: "mp"}});
+				pageEntity.openedits.parentNode.replaceChild(pendingEditsMarkedLink.appendChild(pageEntity.openedits.cloneNode(true)).parentNode, pageEntity.openedits);
+				pageEntity.openedits = pendingEditsMarkedLink.firstChild;//restore node parental context
+			}
 		} else {
-			pageEntity.openedits = createLink(pageEntity, "open_edits"); /*fixes MBS-3386*/
+			pageEntity.openedits = createLink(pageEntity, "open_edits");//fixes MBS-3386
 		}
 		checked.push(pageEntity.base);
 		checkOpenEdits(pageEntity);
-/* ASSOCIATED ARTIST LINKS */
+//ASSOCIATED ARTIST LINKS
 		if (addArtistLinks && !/(area|artist|collection|label)/.test(loc[1])) {
 			var artists;
 			switch (loc[1]) {
@@ -115,25 +120,19 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 		}
 	}
 	function createLink(entity, historyType, associatedArtist) {
-		if (entity == pageEntity.openedits && historyType == "open_edits" && !associatedArtist && entity.parentNode.tagName == "LI") {
-			var pendingEditsMarkedLink = createTag("span", {a: {class: "mp"}});
-			entity.parentNode.replaceChild(pendingEditsMarkedLink.appendChild(entity.cloneNode(true)).parentNode, entity);
-			return pendingEditsMarkedLink.firstChild;
+		var currentEntity = associatedArtist || entity;
+		var linkLabel = (historyType == "edits" ? "editing\u00a0history" : "open\u00a0edits");
+		linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2, offset, string) { return g1.toUpperCase() + g2; });
+		var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel)));
+		if (associatedArtist) {
+			addAfter(newLink, entity.li);
+		} else if (!associatedArtist && historyType == "edits") {
+			entity.ul.appendChild(document.createElement("hr"));
+			entity.ul.appendChild(newLink);
 		} else {
-			var currentEntity = associatedArtist || entity;
-			var linkLabel = (historyType == "edits" ? "editing\u00a0history" : "open\u00a0edits");
-			linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2, offset, string) { return g1.toUpperCase() + g2; });
-			var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel)));
-			if (associatedArtist) {
-				addAfter(newLink, entity.li);
-			} else if (!associatedArtist && historyType == "edits") {
-				entity.ul.appendChild(document.createElement("hr"));
-				entity.ul.appendChild(newLink);
-			} else {
-				entity.ul.insertBefore(newLink, entity.li);
-			}
-			return newLink.firstChild.firstChild;
+			entity.ul.insertBefore(newLink, entity.li);
 		}
+		return newLink.firstChild.firstChild;
 	}
 	function checkOpenEdits(obj) {
 		var smp = getParent(obj.openedits, "li").firstChild;
@@ -234,7 +233,7 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 	}
 	function mp(o, set) {
 		var li = getParent(o, "li");
-		if (set == null) {
+		if (typeof set == "undefined") {
 			return li.firstChild.tagName == "SPAN" && li.firstChild.classList.contains("mp");
 		} else if (typeof set == "boolean" && li.firstChild.tagName == "SPAN") {
 			if (set && !mp(o)) {
@@ -262,7 +261,7 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 			var type = sections[sec].textContent.match(/^(.+):$/);
 			if (type && type[1] == "recordings") {
 				found = sections[sec];
-				break; /*TODO: fallback to live / instr / etc.*/
+				break;//TODO: fallback to live / instr / etc.
 			}
 		}
 		if (found) {
