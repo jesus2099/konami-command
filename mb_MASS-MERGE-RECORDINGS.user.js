@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.8.10.952
+// @version      2015.8.14.1245
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -276,7 +276,7 @@ after step 1, check
 					}
 				}
 			}
-			infoMerge("☞ " + matchedRemoteTracks.length + " remote track" + (matchedRemoteTracks.length == 1 ? "" : "s") + " matched  (" + (remoteRelease.tracks.length - matchedRemoteTracks.length) + " left)", matchedRemoteTracks.length > 0);
+			infoMerge("☞ " + matchedRemoteTracks.length + " remote track title" + (matchedRemoteTracks.length == 1 ? "" : "s") + " matched  (" + (remoteRelease.tracks.length - matchedRemoteTracks.length) + " left)", matchedRemoteTracks.length > 0);
 		} else {
 			spreadTracks(event);
 		}
@@ -580,7 +580,9 @@ after step 1, check
 			}
 		}
 		var mergebutts = document.getElementsByClassName(MMRid + "mergebutt").length;
-		infoMerge("☞ " + mergebutts + " recording" + (mergebutts == 1 ? "" : "s") + " ready to merge (" + (remoteRelease.tracks.length - mergebutts) + " left)", mergebutts > 0);
+		var outOfView = Math.max(0, parseInt(startpos.value, 10) + remoteRelease.tracks.length - localRelease.tracks.length);
+		if (startpos.value < 0) outOfView -= startpos.value;
+		infoMerge("☞ " + mergebutts + " recording" + (mergebutts == 1 ? "" : "s") + " ready to merge" + (outOfView > 0 ? " (" + outOfView + " out of view)" : ""), mergebutts > 0);
 		var mergeallbutt = document.getElementById(MMRid + "mergeallbutt");
 		disableInputs(mergeallbutt, mergebutts < 1);
 		if (mergebutts > 0 || !event || !event.type || event.type != "load") startpos.focus();
