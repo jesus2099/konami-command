@@ -102,7 +102,6 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 					break;
 				case "work":
 					artists = workMainArtist();
-					if (artists) artists = [artists];
 					break;
 			}
 			if (artists && artists.length && artists.length > 0) {
@@ -255,7 +254,7 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 		};
 	}
 	function workMainArtist() {
-		var allArtists = {}, foundArtist;
+		var allArtists = {}, foundArtists = []
 		var artists = document.querySelectorAll("div#content > table > tbody td a[href^='" + MBS + "/artist/']");
 		for (var a = 0; a < artists.length; a++) {
 			var href = artists[a].getAttribute("href");
@@ -266,14 +265,18 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 			if (getParent(artists[a], "table", "tbl")) allArtists[href].push(artists[a]);//boost performers
 		}
 		var max = 0;
-		for (var w in allArtists) if (allArtists.hasOwnProperty(w) && allArtists[w].length > max) {
-			max = allArtists[w].length;
-			foundArtist = allArtists[w][0];
+		for (var w in allArtists) if (allArtists.hasOwnProperty(w)) {
+			if (allArtists[w].length > max) {
+				max = allArtists[w].length;
+				foundArtists = [allArtists[w][0]];
+			} else if (allArtists[w].length == max) {
+				foundArtists.push(allArtists[w][0]);
+			}
 		}
-		if (foundArtist) {
-			var noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + foundArtist.getAttribute("href") + "']");
-			foundArtist = noNameVariationArtist || foundArtist;
+		for (var f = 0; f < foundArtists.length; f++) {
+			var noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + foundArtists[f].getAttribute("href") + "']");
+			foundArtists[f] = noNameVariationArtist || foundArtists[f];
 		}
-		return foundArtist;
+		return foundArtists;
 	}
 })();
