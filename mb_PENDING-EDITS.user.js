@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.8.14.1652
+// @version      2015.8.14.1666
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -138,7 +138,7 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 		var count = smp.querySelector("span." + userjs + "count");
 		if (!count) {
 			smp.appendChild(document.createTextNode("\u00a0("));
-			smp.appendChild(createTag("span", {a: {class: userjs + "count"}}, "⌛"));
+			smp.appendChild(createTag("span", {a: {class: userjs + "count"}}, createTag("img", {a: {alt: "⌛ loading…", height: "12px", src: "/static/images/icons/loading.gif"}})));
 			smp.appendChild(document.createTextNode(")"));
 		}
 		xhrPendingEdits[obj.base] = {
