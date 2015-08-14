@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.8.14.1138
+// @version      2015.8.14.1652
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -101,7 +101,7 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 					artists = document.querySelectorAll("div#content a[href^='" + MBS + "/artist/'], div#content a[href^='" + MBS + "/label/']");
 					break;
 				case "work":
-					artists = workMainArtist();
+					artists = workMainArtists();
 					break;
 			}
 			if (artists && artists.length && artists.length > 0) {
@@ -253,30 +253,46 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 			base: a.getAttribute("href").match(new RegExp("^" + MBS + "(/[^/]+/" + RE_GUID + ")"))[1]
 		};
 	}
-	function workMainArtist() {
-		var allArtists = {}, foundArtists = []
-		var artists = document.querySelectorAll("div#content > table > tbody td a[href^='" + MBS + "/artist/']");
-		for (var a = 0; a < artists.length; a++) {
-			var href = artists[a].getAttribute("href");
-			if (!allArtists[href]) {
-				allArtists[href] = [];
+	function workMainArtists() {
+		var writers = document.querySelectorAll("div#content > table.details > tbody td a[href^='" + MBS + "/artist/']");
+		var groupedWriters = {};
+		for (var w = 0; w < writers.length; w++) {
+			var href = writers[w].getAttribute("href");
+			if (!groupedWriters[href]) {
+				groupedWriters[href] = [];
 			}
-			allArtists[href].push(artists[a]);
-			if (getParent(artists[a], "table", "tbl")) allArtists[href].push(artists[a]);//boost performers
+			groupedWriters[href].push(writers[w]);
 		}
+		var performers = document.querySelectorAll("div#content > table.tbl > tbody td a[href^='" + MBS + "/artist/']");
+		var groupedPerformers = {};
+		for (var p = 0; p < performers.length; p++) {
+			var href = performers[p].getAttribute("href");
+			if (!groupedPerformers[href]) {
+				groupedPerformers[href] = [];
+			}
+			groupedPerformers[href].push(performers[p]);
+		}
+		var mainArtists = [];
 		var max = 0;
-		for (var w in allArtists) if (allArtists.hasOwnProperty(w)) {
-			if (allArtists[w].length > max) {
-				max = allArtists[w].length;
-				foundArtists = [allArtists[w][0]];
-			} else if (allArtists[w].length == max) {
-				foundArtists.push(allArtists[w][0]);
+		//find most frequent performer(s)
+		for (var href in groupedPerformers) if (groupedPerformers.hasOwnProperty(href)) {
+			if (groupedPerformers[href].length > max) {
+				max = groupedPerformers[href].length;
+				mainArtists = [groupedPerformers[href][0]];
+			} else if (groupedPerformers[href].length == max) {
+				//take first æquo artist(s) too
+				mainArtists.push(groupedPerformers[href][0]);
 			}
 		}
-		for (var f = 0; f < foundArtists.length; f++) {
-			var noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + foundArtists[f].getAttribute("href") + "']");
-			foundArtists[f] = noNameVariationArtist || foundArtists[f];
+		//take all singer/song‐writers; take all writers if no performers
+		for (var href in groupedWriters) if (groupedWriters.hasOwnProperty(href) && (groupedPerformers[href] || performers.length < 1)) {
+			mainArtists.push(groupedWriters[href][0]);
 		}
-		return foundArtists;
+		//get artist main names whenever possible
+		for (var f = 0; f < mainArtists.length; f++) {
+			var noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + mainArtists[f].getAttribute("href") + "']");
+			mainArtists[f] = noNameVariationArtist || mainArtists[f];
+		}
+		return mainArtists;
 	}
 })();
