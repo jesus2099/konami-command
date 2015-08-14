@@ -101,7 +101,7 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 					artists = document.querySelectorAll("div#content a[href^='" + MBS + "/artist/'], div#content a[href^='" + MBS + "/label/']");
 					break;
 				case "work":
-					artists = workMainPerformer();
+					artists = workMainArtist();
 					if (artists) artists = [artists];
 					break;
 			}
@@ -254,20 +254,21 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 			base: a.getAttribute("href").match(new RegExp("^" + MBS + "(/[^/]+/" + RE_GUID + ")"))[1]
 		};
 	}
-	function workMainPerformer() {
-		var allPerformers = {}, foundArtist;
-		var performers = document.querySelectorAll("div#content > table.tbl > tbody td a[href^='" + MBS + "/artist/']");
-		for (var p = 0; p < performers.length; p++) {
-			var href = performers[p].getAttribute("href");
-			if (!allPerformers[href]) {
-				allPerformers[href] = [];
+	function workMainArtist() {
+		var allArtists = {}, foundArtist;
+		var artists = document.querySelectorAll("div#content > table > tbody td a[href^='" + MBS + "/artist/']");
+		for (var a = 0; a < artists.length; a++) {
+			var href = artists[a].getAttribute("href");
+			if (!allArtists[href]) {
+				allArtists[href] = [];
 			}
-			allPerformers[href].push(performers[p]);
+			allArtists[href].push(artists[a]);
+			if (getParent(artists[a], "table", "tbl")) allArtists[href].push(artists[a]);//boost performers
 		}
 		var max = 0;
-		for (var w in allPerformers) if (allPerformers.hasOwnProperty(w) && allPerformers[w].length > max) {
-			max = allPerformers[w].length;
-			foundArtist = allPerformers[w][0];
+		for (var w in allArtists) if (allArtists.hasOwnProperty(w) && allArtists[w].length > max) {
+			max = allArtists[w].length;
+			foundArtist = allArtists[w][0];
 		}
 		if (foundArtist) {
 			var noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + foundArtist.getAttribute("href") + "']");
