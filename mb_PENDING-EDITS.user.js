@@ -255,7 +255,7 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 		};
 	}
 	function workMainPerformer() {
-		var allPerformers = {}, foundartist;
+		var allPerformers = {}, foundArtist;
 		var performers = document.querySelectorAll("div#content > table.tbl > tbody td a[href^='" + MBS + "/artist/']");
 		for (var p = 0; p < performers.length; p++) {
 			var href = performers[p].getAttribute("href");
@@ -267,8 +267,12 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 		var max = 0;
 		for (var w in allPerformers) if (allPerformers.hasOwnProperty(w) && allPerformers[w].length > max) {
 			max = allPerformers[w].length;
-			foundartist = allPerformers[w][0];
+			foundArtist = allPerformers[w][0];
 		}
-		return foundartist;
+		if (foundArtist) {
+			var noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + foundArtist.getAttribute("href") + "']");
+			foundArtist = noNameVariationArtist || foundArtist;
+		}
+		return foundArtist;
 	}
 })();
