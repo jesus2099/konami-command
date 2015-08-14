@@ -255,29 +255,19 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 		};
 	}
 	function workMainPerformer() {
-		var sections = document.querySelectorAll("div#content > table.details th");
-		var found, fartists = {}, foundartist;
-		for (var sec = 0; sec < sections.length; sec++) {
-			var type = sections[sec].textContent.match(/^(.+):$/);
-			if (type && type[1] == "recordings") {
-				found = sections[sec];
-				break;//TODO: fallback to live / instr / etc.
+		var allPerformers = {}, foundartist;
+		var performers = document.querySelectorAll("div#content > table.tbl > tbody td a[href^='" + MBS + "/artist/']");
+		for (var p = 0; p < performers.length; p++) {
+			var href = performers[p].getAttribute("href");
+			if (!allPerformers[href]) {
+				allPerformers[href] = [];
 			}
+			allPerformers[href].push(performers[p]);
 		}
-		if (found) {
-			var perfs = getParent(found, "tr").querySelectorAll("td a[href^='" + MBS + "/artist/']");
-			for (var perf = 0; perf < perfs.length; perf++) {
-				var href = perfs[perf].getAttribute("href");
-				if (!fartists[href]) {
-					fartists[href] = [];
-				}
-				fartists[href].push(perfs[perf]);
-			}
-			var max = 0;
-			for (var w in fartists) if (fartists.hasOwnProperty(w) && fartists[w].length > max) {
-				max = fartists[w].length;
-				foundartist = fartists[w][0];
-			}
+		var max = 0;
+		for (var w in allPerformers) if (allPerformers.hasOwnProperty(w) && allPerformers[w].length > max) {
+			max = allPerformers[w].length;
+			foundartist = allPerformers[w][0];
 		}
 		return foundartist;
 	}
