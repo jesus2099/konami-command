@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2015.6.5.1111
+// @version      2015.6.14.1302
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
@@ -146,6 +146,7 @@ if (content) {
 				}, false);/*onclick*/
 			}
 			buttons.appendChild(butt);
+			buttons.appendChild(document.createTextNode(" "));
 		}
 		buttons.appendChild(createClearButtor("notetext"));
 		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
