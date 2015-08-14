@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2015.6.4.1626
+// @version      2015.8.14.1426
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -258,20 +258,20 @@ function isrcFish() {
 			if (aRec) {
 				var mbid = aRec.getAttribute("href").match(re_GUID);
 				var trackTitleCell = tracksHtml[i].querySelector("td:not(.pos):not(.video)");
-				var trackLinksCell = tracksHtml[i].querySelector("td.links");
 				if (isrcNet[mbid].length > 0) {
 					insertBeforeARS(trackTitleCell, createStuffFragment("ISRC", isrcNet[mbid], shownisrcs, isrcURL, null, mbid));
 				}
-				if (aRec.textContent != recnameNet[mbid].name) {
+				var sameCompleteName = aRec.textContent == recnameNet[mbid].name + " (" + recnameNet[mbid].comment + ")";
+				if (aRec.textContent != recnameNet[mbid].name && !sameCompleteName) {
 					var ntit = aRec.getAttribute("title");
-					ntit = (ntit?ntit+" —\u00a0":"")+"track name: "+aRec.textContent+"\n≠rec. name: "+recnameNet[mbid].name;
+					ntit = (ntit ? ntit + " —\u00a0" : "") + "track name: " + aRec.textContent + "\r\n≠rec. name: " + recnameNet[mbid].name;
 					aRec.setAttribute("title", ntit);
-					if (markTrackRecNameDiff != null) {
-						if (typeof markTrackRecNameDiff == "string" && markTrackRecNameDiff != "") {
+					if (markTrackRecNameDiff) {
+						if (typeof markTrackRecNameDiff == "string") {
 							var patf = document.createDocumentFragment();
 							var patt = markTrackRecNameDiff.replace(/%track-name%/ig, aRec.textContent).replace(/%recording-name%/ig, recnameNet[mbid].name).split("%br%");
-							for (var p=0; p<patt.length; p++) {
-								if (p>0) { patf.appendChild(document.createElement("br")); }
+							for (var p = 0; p < patt.length; p++) {
+								if (p > 0) { patf.appendChild(document.createElement("br")); }
 								patf.appendChild(document.createTextNode(patt[p]));
 							}
 							aRec.replaceChild(patf, aRec.firstChild);
@@ -280,10 +280,10 @@ function isrcFish() {
 						aRec.style.setProperty("color", "maroon");
 					}
 				}
-				if (markTrackRecNameDiff != null && recnameNet[mbid].comment) {
+				if (markTrackRecNameDiff && recnameNet[mbid].comment && !sameCompleteName) {
 					var recdis = document.createElement("span");
-					recdis.className = userjs+"recdis";
-					recdis.appendChild(document.createTextNode(" ("+recnameNet[mbid].comment+")"));
+					recdis.className = userjs + "recdis";
+					recdis.appendChild(document.createTextNode(" (" + recnameNet[mbid].comment + ")"));
 					addAfter(recdis, aRec);
 				}
 			}
