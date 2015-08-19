@@ -126,10 +126,10 @@ if (host && cat) {
 	}
 	if (cat == "collections") {
 		/*collection loader*/
-		var xp = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th[contains(./text(), 'Collection')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-		if (xp.snapshotLength > 0) {
-			xp.snapshotItem(0).parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, meta.name));
-			var tbl = getParent(xp.snapshotItem(0), "table");
+		var xp1 = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th[contains(./text(), 'Collection')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+		for(tbl_idx=0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
+			xp1.snapshotItem(tbl_idx).parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, meta.name));
+			var tbl = getParent(xp1.snapshotItem(tbl_idx), "table");
 			xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			for (var i = 0; i < xp.snapshotLength; i++) {
 				var coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
