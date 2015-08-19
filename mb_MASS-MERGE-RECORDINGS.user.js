@@ -1,7 +1,7 @@
 (function(){var meta=function(){
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.8.14.1313
+// @version      2015.8.19.1402
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -61,7 +61,8 @@
 	var css_track_ac = "td:not([class]) + td:not([class])";
 	var css_collapsed_medium = "div#content > table.tbl > thead > tr > th > a.expand-medium > span.expand-triangle";
 	var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
-	var startpos, status, from, to, swap, editNote, queuetrack, shuffled = false, shuffle, restore;
+	var startpos, status, from, to, swap, editNote, queuetrack;
+	var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
 	var rem2loc = "◀";
 	var loc2rem = "▶";
 	var retry = {count: 0};
@@ -124,7 +125,7 @@ after step 1, check
 			"add-to-merge=" + to.value + "&add-to-merge=" + from.value,
 			"merge.merging.0=" + to.value + "&merge.target=" + to.value + "&merge.merging.1=" + from.value
 		];
-		disableInputs([shuffle, restore, startpos, status]);
+		disableInputs([matchMode.sequential, matchMode.title, matchMode.titleAndAC, startpos, status]);
 		if (step == 1) {
 			disableInputs(editNote);
 			params[step] += "&merge.edit_note=";
@@ -181,7 +182,7 @@ after step 1, check
 							retry.count = 0;
 							currentButt = null;
 							document.title = dtitle;
-							shuffleRestoreEnable();
+							updateMatchModeDisplay();
 							enableInputs([status, editNote]);
 							if (nextButt = mergeQueue.shift()) {
 								FireFoxWorkAround(nextButt);
@@ -261,30 +262,33 @@ after step 1, check
 			}
 		}
 	}
-	function shuffleRestore(event) {
-		shuffleRestoreEnable(event.target == shuffle);
-		if (shuffled) {
+	function changeMatchMode(event) {
+		matchMode.current = event.target;
+		updateMatchModeDisplay();
+		if (matchMode.current == matchMode.sequential) {
+			spreadTracks(event);
+		} else {
 			var matchedRemoteTracks = [];
 			for (var loc = 0; loc < localRelease.tracks.length; loc++) {
 				cleanTrack(localRelease.tracks[loc]);
-				var rem = bestStartPosition(loc);
+				var rem = bestStartPosition(loc, matchMode.current == matchMode.titleAndAC);
 				if (rem !== null) {
-					var rem = 0-rem + loc;
+					var rem = 0 - rem + loc;
 					if (matchedRemoteTracks.indexOf(rem) < 0) {
 						matchedRemoteTracks.push(rem);
 						buildMergeForm(loc, rem);
 					}
 				}
 			}
-			infoMerge("☞ " + matchedRemoteTracks.length + " remote track title" + (matchedRemoteTracks.length == 1 ? "" : "s") + " matched  (" + (remoteRelease.tracks.length - matchedRemoteTracks.length) + " left)", matchedRemoteTracks.length > 0);
-		} else {
-			spreadTracks(event);
+			var notMatched = remoteRelease.tracks.length - matchedRemoteTracks.length;
+			infoMerge((notMatched == 0 ? "All" : "☞") + " " + matchedRemoteTracks.length + " remote track title" + (matchedRemoteTracks.length == 1 ? "" : "s") + " matched" + (notMatched > 0 ? " (" + notMatched + " left)" : ""), matchedRemoteTracks.length > 0);
 		}
 	}
-	function shuffleRestoreEnable(on) {
-		if (typeof on != "undefined") shuffled = on;
-		disableInputs([startpos, shuffle], shuffled);
-		enableInputs(restore, shuffled);
+	function updateMatchModeDisplay() {
+		for (var mode in matchMode) if (matchMode.hasOwnProperty(mode)) {
+			disableInputs(matchMode[mode], matchMode[mode] == matchMode.current);
+		}
+		enableInputs(startpos, matchMode.sequential == matchMode.current);
 	}
 	function massMergeGUI() {
 		var MMRdiv = createTag("div", {a: {id: MMRid}, e: {
@@ -310,7 +314,8 @@ after step 1, check
 		status = MMRdiv.appendChild(createInput("text", "status", "", meta.n + " remote release URL"));
 		status.style.setProperty("width", "100%");
 		status.addEventListener("input", function(event) {
-			shuffleRestoreEnable(false);
+			matchMode.current = matchMode.sequential;
+			updateMatchModeDisplay();
 			var mbid = this.value.match(new RegExp("/release/(" + sregex_MBID + ")(/disc/(\\d+))?"));
 			if (mbid) {
 				localRelease.tracks = [];
@@ -384,14 +389,18 @@ after step 1, check
 			}
 		});
 		MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "↑"), " / ", createTag("kbd", {}, "→"), " / ", createTag("kbd", {}, "↓"), " / ", createTag("kbd", {}, "←"), ": shift up/down", document.createElement("br"), "☞ ", createTag("kbd", {}, "ENTER"), ": queue all"]));
-		shuffle = createInput("button", "", "Match unordered track titles");
-		shuffle.setAttribute("title", "Find matching local title for each remote title");
-		shuffle.addEventListener("click", shuffleRestore);
-		restore = createInput("button", "", "Sequential");
-		disableInputs(restore);
-		restore.setAttribute("title", "Restore remote tracks order");
-		restore.addEventListener("click", shuffleRestore);
-		MMRdiv.appendChild(createTag("p", {}, [shuffle, restore]));
+		matchMode.sequential = createInput("button", "", "Sequential");
+		matchMode.sequential.setAttribute("title", "Restore remote tracks order");
+		matchMode.sequential.addEventListener("click", changeMatchMode);
+		matchMode.title = createInput("button", "", "Match unordered track titles");
+		matchMode.title.setAttribute("title", "Find matching local title for each remote title");
+		matchMode.title.addEventListener("click", changeMatchMode);
+		matchMode.titleAndAC = createInput("button", "", "Match unordered track titles and artist credits");
+		matchMode.titleAndAC.setAttribute("title", "Find matching local title for each remote title with same artist credit");
+		matchMode.titleAndAC.addEventListener("click", changeMatchMode);
+		matchMode.current = matchMode.sequential;
+		disableInputs(matchMode.sequential);
+		MMRdiv.appendChild(createTag("p", {}, [matchMode.sequential, matchMode.title, matchMode.titleAndAC]));
 		MMRdiv.appendChild(createTag("p", {s: {marginBottom: "0px"}}, "Merge edit notes:"));
 		editNote = MMRdiv.appendChild(createInput("textarea", "merge.edit_note"));
 		var lastEditNote = (localStorage && localStorage.getItem(MMRid));
@@ -557,9 +566,17 @@ after step 1, check
 		xhr.open("GET", "/release/" + remoteRelease.id + remoteRelease.disc, true);
 		xhr.send(null);
 	}
-	function bestStartPosition(pLoc) {
-		for (var loc = (typeof pLoc != "undefined" ? pLoc : 0); loc < (typeof pLoc != "undefined" ? pLoc + 1 : localRelease.tracks.length); loc++) for (var rem = 0; rem < remoteRelease.tracks.length; rem++) if (almostSame(localRelease.tracks[loc].name, remoteRelease.tracks[rem].name)) {
-			return loc - rem;
+	function bestStartPosition(localTrack, matchAC) {
+		var singleTrackMode = typeof localTrack != "undefined";
+		for (var loc = singleTrackMode ? localTrack : 0; loc < (singleTrackMode ? localTrack + 1 : localRelease.tracks.length); loc++) {
+			for (var rem = 0; rem < remoteRelease.tracks.length; rem++) {
+				if (
+					almostSame(localRelease.tracks[loc].name, remoteRelease.tracks[rem].name)
+					&& (!matchAC || almostSame(html2text(localRelease.tracks[loc].artistCredit), html2text(remoteRelease.tracks[rem].artistCredit)))
+				) {
+					return loc - rem;
+				}
+			}
 		}
 		return null;
 	}
