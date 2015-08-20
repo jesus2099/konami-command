@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.8.12.1632
+// @version      2015.8.20.1739
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -126,10 +126,10 @@ if (host && cat) {
 	}
 	if (cat == "collections") {
 		/*collection loader*/
-		var xp1 = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th[contains(./text(), 'Collection')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+		var xp1 = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th/text()[contains(., 'Veröffentlichungen') or contains(., 'Väljalasked') or contains(., 'Releases') or contains(., 'Publicaciones') or contains(., 'Parutions') or contains(., 'Pubblicazioni') or contains(., 'Uitgaves') or contains(., 'Julkaisut') or contains(., 'Κυκλοφορίες') or contains(., 'リリース')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		for(tbl_idx=0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
-			xp1.snapshotItem(tbl_idx).parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, meta.name));
-			var tbl = getParent(xp1.snapshotItem(tbl_idx), "table");
+			xp1.snapshotItem(tbl_idx).parentNode.parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, meta.name));
+			var tbl = getParent(xp1.snapshotItem(tbl_idx).parentNode, "table");
 			xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			for (var i = 0; i < xp.snapshotLength; i++) {
 				var coll = xp.snapshotItem(i).getElementsByTagName("a")[0];

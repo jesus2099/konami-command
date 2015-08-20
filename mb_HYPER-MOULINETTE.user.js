@@ -1,16 +1,14 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2015.4.16.1207
+// @version      2015.8.20.1748
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_HYPER-MOULINETTE.user.js
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)             my own coding setup
-// @compatible   opera+violentmonkey   my own browsing setup
-// @compatible   firefox+greasemonkey  quickly tested
-// @compatible   chromium              quickly tested
-// @compatible   chromium+tampermonkey quickly tested
-// @compatible   chrome                tested with chromium
-// @compatible   chrome+tampermonkey   tested with chromium
+// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey    tested sometimes
+// @compatible   chromium(46)+tampermonkey   tested sometimes
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_HYPER-MOULINETTE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_HYPER-MOULINETTE.user.js
@@ -38,7 +36,7 @@
 	meta.name = meta.name.substr("4");
 	var DEBUG = false;
 	meta.key = "jesus2099"+meta.name.replace(/ /, "-");
-	var MBS = self.location.protocol+"//"+self.location.host;
+	var MBS = location.protocol + "//" + location.host;
 	var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var re_GUID = new RegExp(stre_GUID);
 	var account = document.querySelector("div#header-menu li.account");
@@ -50,13 +48,18 @@
 	var genuineTitle = document.title;
 	/*==========================================================================
 	## MENU ITEM ##
-	find this script in MB "Editing" menu
+	find this script in front of release collections
 	==========================================================================*/
-	if (self.location.href.match(/\/collections/) && document.querySelector("h1").textContent == account.querySelector("a").textContent) {
-		var hdr = document.querySelector("table.tbl > thead > tr").appendChild(createTag("th", {a:{"class":"hypermouli-header"}}, [meta.name.replace(/.+\. /, "")+(self.opera?" (does not work in Opera!)":""),createTag("br"),meta.description.replace(/.+:/, "")]));
-		var colls = document.querySelectorAll("table.tbl > tbody > tr");
-		for (var c=0; c<colls.length; c++) {
-			colls[c].appendChild(createTag("td", {}, [createTag("a", {e:{click:mouli}}, "Put"), " | ", createTag("a", {e:{click:mouli}}, "Delete")]));
+	if (location.href.match(/\/collections/) && document.querySelector("h1").textContent == account.querySelector("a").textContent) {
+		var collectionHeaders = document.querySelectorAll("table.tbl > thead > tr")
+		for (var th = 0; th < collectionHeaders.length; th++) {
+			if (collectionHeaders[th].textContent.match(/Veröffentlichungen|Väljalasked|Releases|Publicaciones|Parutions|Pubblicazioni|Uitgaves|Julkaisut|Κυκλοφορίες|リリース/i)) {
+				collectionHeaders[th].appendChild(createTag("th", {a: {class: "hypermouli-header"}}, [meta.name.replace(/.+\. /, "") + (self.opera ? " (does not work in Opera!)" : ""), createTag("br"), meta.description.replace(/.+:/, "")]));
+				var columns = collectionHeaders[th].parentNode.parentNode.querySelectorAll("table.tbl > tbody > tr");
+				for (var c = 0; c < columns.length; c++) {
+					columns[c].appendChild(createTag("td", {}, [createTag("a", {e: {click: mouli}}, "Put"), " | ", createTag("a", {e: {click: mouli}}, "Delete")]));
+				}
+			}
 		}
 	}
 	/*==========================================================================
