@@ -1,8 +1,13 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2015.3.16.10.58
-// @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. focus the captcha field.
+// @version      2015.8.21
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/freenode_WEBCHAT-CONNECT.user.js
+// @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. cleverly focus first empty field.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
+// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey    tested sometimes
+// @compatible   chromium(46)+tampermonkey   tested sometimes
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/freenode_WEBCHAT-CONNECT.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/freenode_WEBCHAT-CONNECT.user.js
@@ -15,22 +20,17 @@
 // @include      https://webchat.freenode.net/
 // @run-at       document-end
 // ==/UserScript==
-(function(){"use strict";
-	var userjs = { name: "freenode. WEBCHAT CONNECT", key:"j2fwc" };
-	var channels = "github, last.fm, musicbrainz";
+setTimeout(function() {
+	"use strict";
+	var userjs = {name: "freenode. WEBCHAT CONNECT", key: "j2fwc"};
+	var channels = "#github, #last.fm, ##musicbrainz-lol, #musicbrainz";
 	var inputs = document.getElementsByTagName("input");
-	var recaptchaParent = document.querySelector("div.qwebirc-qui table.qwebirc-loginbox div#recaptcha_image");
-	var recaptcha = document.querySelector("input#recaptcha_response_field");
-	if (document.body.textContent.trim().match(/^412 - Precondition Failed$/) || !recaptchaParent) { location.reload(); }
-	else if (document.getElementsByTagName("frameset").length == 0 && inputs && inputs[0] && inputs[1] && recaptcha) {
-		setTimeout(function() {
-			if (
-				!(document.querySelector("div.bottomboundpanel") && document.querySelector("div.bottomboundpanel").style.getPropertyValue("display") != "none") &&
-				!recaptchaParent.querySelector("img#recaptcha_challenge_image")
-			) {
-				location.reload();
-			}
-		}, 4000);
+	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
+	var css = document.styleSheets[document.styleSheets.length - 1];
+	css.insertRule(".topic { font-size: .8em; }", 0);
+	if (document.body.textContent.trim().match(/^412 - Precondition Failed$/) || !document.body.textContent.match(/connect.+nickname.+channels/i)) {
+		location.reload();
+	} else if (document.getElementsByTagName("frameset").length == 0 && inputs && inputs[0] && inputs[1]) {
 		self.addEventListener("focus", cleverFocus);
 		storify(inputs[0], "nickname");
 		storify(inputs[1], "channels");
@@ -38,30 +38,28 @@
 		inputs[1].style.setProperty("width", "100%");
 		inputs[1].setAttribute("placeholder", channels);
 		inputs[1].parentNode.style.setProperty("border-bottom", "1px dashed black");
-		inputs[1].parentNode.parentNode.setAttribute("title", "example: « "+channels+" »");
+		inputs[1].parentNode.parentNode.setAttribute("title", "example: « " + channels + " »");
 	}
-	function cleverFocus(e) {
+	function cleverFocus(event) {
 		if (document.querySelector("table.qwebirc-loginbox")) {
-			for (var i=0; i<2; i++) {
+			for (var i = 0; i < 2; i++) {
 				if (inputs[i].value.trim().length == 0) {
 					inputs[i].focus();
 					return inputs[i];
 				}
 			}
-			recaptcha.focus();
-			return recaptcha;
 		}
 	}
 	function storify(field, key) {
-		var _key = userjs.key+"_"+key;
+		var _key = userjs.key + "_" + key;
 		field.setAttribute("ref", _key);
 		field.value = localStorage.getItem(_key);
-		field.addEventListener("change", function(e) {
+		field.addEventListener("change", function(event) {
 			var key = this.getAttribute("ref");
-			if (key && key.match(new RegExp("^"+userjs.key+"_\\w+"))) {
+			if (key && key.match(new RegExp("^" + userjs.key + "_\\w+"))) {
 				if (key.match(/channels/)) { this.value = this.value.replace(/[\s:;]/g, ", ").replace(/(, ?){2,}/g, ", ").replace(/^,|,$/g, ""); }
 				localStorage.setItem(key, this.value);
 			}
 		});
 	}
-})();
+}, 1000);
