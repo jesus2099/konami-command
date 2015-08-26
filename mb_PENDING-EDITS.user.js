@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.8.14.1816
+// @version      2015.8.26
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -210,13 +210,13 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 						dupreset = false;
 					}
 					liTitle = titarray.join("\r\n");
-					if (pecount == 1) {
+					if (titarray.length < 2) {
 						liTitle = liTitle.replace(/^- /, "");
-					} else if (pecount > 1) {
-						liTitle = "newest edit on top:\r\n \r\n" + liTitle;
+					} else {
 						if (pecount > 50) {
 							liTitle += "\r\n…";
 						}
+						liTitle += "\r\n \r\n(oldest edit on bottom)";
 					}
 				}
 			}
