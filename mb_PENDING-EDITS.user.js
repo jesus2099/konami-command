@@ -210,12 +210,13 @@
 						dupreset = false;
 					}
 					liTitle = titarray.join("\r\n");
-					if (titarray.length < 2) {
+					if (titarray.length < 2 && pecount <= 50) {
 						liTitle = liTitle.replace(/^- /, "");
-					} else {
-						if (pecount > 50) {
-							liTitle += "\r\n…";
-						}
+					}
+					if (pecount > 50) {
+						liTitle += "\r\n- …";
+					}
+					if (titarray.length > 1) {
 						liTitle += "\r\n \r\n(oldest edit on bottom)";
 					}
 				}
