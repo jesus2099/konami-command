@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2015.6.14.1302
+// @version      2018.8.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
@@ -16,7 +16,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-01-13
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=67045&v=2015.8.10.952
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
 // @grant        none
 // @include      http*://*musicbrainz.org/*/add-alias
 // @include      http*://*musicbrainz.org/*/change-quality
@@ -66,7 +66,7 @@ var editsearchpage = (mb && location.href.match(/musicbrainz\.org\/.+(?:edits|su
 var re = (mb && document.querySelector("div#release-editor"));
 var save = editpage || editsearchpage ? false : true;
 var content = document.getElementById(mb ? "page" : "content");
-var savedHeight = localStorage.getItem(userjs+"_savedHeight");
+var savedHeight = localStorage.getItem(userjs + "_savedHeight");
 if (content) {
 	var notetext = content.querySelectorAll("textarea" + (acoustid ? "" : ".edit-note, textarea#edit-note-text"));
 	var reldates = [];
@@ -79,15 +79,15 @@ if (content) {
 			reldates = content.querySelectorAll("span.partial-date");
 		}
 		if (savedHeight) {
-			notetext.style.setProperty("height", savedHeight+"px");
+			notetext.style.setProperty("height", savedHeight + "px");
 			addAfter(createTag("div", {s: {textAlign: "right"}}, createTag("a", {e: {click: function(event) {
-				localStorage.removeItem(userjs+"_savedHeight");
+				localStorage.removeItem(userjs + "_savedHeight");
 				this.parentNode.replaceChild(document.createTextNode("Size reset! It will take effect at next page load."), this);
 			}}}, "↖Reset size")), notetext);
 		}
 		notetext.addEventListener("mouseup", function(event) {
 			if (this.offsetHeight != savedHeight) {
-				localStorage.setItem(userjs+"_savedHeight", this.offsetHeight);
+				localStorage.setItem(userjs + "_savedHeight", this.offsetHeight);
 			}
 		});
 	} else { notetext = false; }
@@ -112,18 +112,27 @@ if (content) {
 	}
 	if (notetext) {
 		if (mb) {
-			if (carcan = getParent(notetext, "div", "half-width")) {
+			var carcan = getParent(notetext, "div", "half-width");
+			if (carcan) {
 				if (re) carcan.style.setProperty("width", "inherit");
-				else notetext.parentNode.style.setProperty("width", carcan.parentNode.offsetWidth+"px");
-				if (xdate[0] && (fs = getParent(xdate[0][1], "fieldset"))) { fs.style.setProperty("width", carcan.parentNode.offsetWidth+"px"); }
+				else notetext.parentNode.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
+				if (xdate[0]) {
+					var fs = getParent(xdate[0][1], "fieldset");
+					if (fs) {
+						fs.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
+					}
+				} 
 			}
 			notetext.style.setProperty("width", "98%");
 			var removeLabels = ["label-id-ar.edit_note", "label-id-edit_note", "label-id-edit-artist.edit_note", "label-id-edit-label.edit_note", "label-id-edit-recording.edit_note", "label-id-edit-release-group.edit_note", "label-id-edit-url.edit_note", "label-id-edit-work.edit_note"];
-			for (var l=0; l<removeLabels.length; l++) if (label = document.getElementById(removeLabels[l])) label.parentNode.removeChild(label);
+			for (var l = 0; l < removeLabels.length; l++) {
+				var label = document.getElementById(removeLabels[l]);
+				if (label) label.parentNode.removeChild(label);
+			}
 		}
 		var buttons = createTag("div", {a: {class: "buttons"}});
-		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(e) { if(e.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
-		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(e) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); }}}));
+		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if(event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
+		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); }}}));
 		savecb.checked = save;
 		savecb.parentNode.appendChild(document.createTextNode(" remember  "));
 		for (var ni = 0; ni < textLabels.length; ni++) {
@@ -134,15 +143,14 @@ if (content) {
 			if (!lastnotetext) {
 				butt.setAttribute("disabled", "true");
 				butt.style.setProperty("opacity", ".5");
-			}
-			else {
+			} else {
 				butt.setAttribute("title", lastnotetext);
 				butt.setAttribute("value", lastnotetext.replace(/(http:\/\/|https:\/\/|www\.|[\n\r])/gi, "").substr(0, 6));
-				butt.addEventListener("click", function(e) {
+				butt.addEventListener("click", function(event) {
 					notetext.value = this.getAttribute("title");
 					sendEvent(notetext, "change");
 					notetext.focus();
-					if (e.shiftKey) { sendEvent(submitbtn, "click"); }
+					if (event.shiftKey) { sendEvent(submitbtn, "click"); }
 				}, false);/*onclick*/
 			}
 			buttons.appendChild(butt);
@@ -151,7 +159,7 @@ if (content) {
 		buttons.appendChild(createClearButtor("notetext"));
 		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
 		notetext.parentNode.insertBefore(buttons, notetext);
-		var lastnotetext = localStorage.getItem(notetextStorage+"00");
+		var lastnotetext = localStorage.getItem(notetextStorage + "00");
 		if (!editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
 			notetext.value = lastnotetext;
 			sendEvent(notetext, "change");
@@ -159,28 +167,27 @@ if (content) {
 		if (reldates.length == 2) {
 			createClearButtor("dates");
 			/*date memories*/
-			for (var ixd=0; ixd<xdate.length; ixd++) {
-				var lastdatey = localStorage.getItem(xdate[ixd][0]+"_y");
-				var lastdatem = localStorage.getItem(xdate[ixd][0]+"_m");
-				var lastdated = localStorage.getItem(xdate[ixd][0]+"_d");
+			for (var ixd = 0; ixd < xdate.length; ixd++) {
+				var lastdatey = localStorage.getItem(xdate[ixd][0] + "_y");
+				var lastdatem = localStorage.getItem(xdate[ixd][0] + "_m");
+				var lastdated = localStorage.getItem(xdate[ixd][0] + "_d");
 				var butt = createButtor(textLabels[0]);
 				butt.setAttribute("id", xdate[ixd][0]);
 				if (!lastdatey) {
 					butt.setAttribute("disabled", "true");
 					butt.style.setProperty("opacity", ".5");
-				}
-				else {
+				} else {
 					butt.setAttribute("title", lastdatey+"-"+lastdatem+"-"+lastdated);
 					butt.setAttribute("value", butt.getAttribute("title").replace(/-null/g, ""));
-					butt.addEventListener("click", function(e) {
+					butt.addEventListener("click", function(event) {
 						var xdymd = this.getAttribute("title").match(/^(.*)-(.*)-(.*)$/);
 						for (var iixd = 0, acts = ["YYYY", "MM", "DD"]; iixd < 3; iixd++) {
-							var input = this.parentNode.querySelector("input[placeholder='"+acts[iixd]+"']");
-							input.value = xdymd[iixd+1].match(/^\d+$/);
+							var input = this.parentNode.querySelector("input[placeholder='" + acts[iixd] + "']");
+							input.value = xdymd[iixd + 1].match(/^\d+$/);
 							sendEvent(input, "change");
 							if (iixd == 0) focusYYYY(input);
 						}
-						if (e.shiftKey) {
+						if (event.shiftKey) {
 							sendEvent(this.parentNode.getElementsByTagName("input")[3], "click");
 						}
 					}, false);/*onclick*/
@@ -193,12 +200,12 @@ if (content) {
 				}
 			}
 			/*copy dates*/
-			for (var icd=0; icd < 2; icd++) {
+			for (var icd = 0; icd < 2; icd++) {
 				var buttcd = createButtor(copyDateLabels[icd]);
 				buttcd.setAttribute("title", copyDateLabels[2]);
-				buttcd.addEventListener("click", function(e) {
+				buttcd.addEventListener("click", function(event) {
 					var src = copyDateLabels.indexOf(this.getAttribute("value"));
-					for (var icdymd=1; icdymd<4; icdymd++) {
+					for (var icdymd = 1; icdymd < 4; icdymd++) {
 						xdate[src == 1 ? 0 : 1][icdymd].value = xdate[src][icdymd].value;
 						sendEvent(xdate[src == 1 ? 0 : 1][icdymd], "change");
 					}
@@ -221,36 +228,34 @@ function saveNote() {
 			var ls00 = localStorage.getItem(notetextStorage+"00");
 			if (save && thisnotetext != ls00) {
 				if (ls00 != "") {
-					for (var isav=textLabels.length-1; isav > 0 ; isav--) {
-						var prev = localStorage.getItem(notetextStorage+"0"+(isav-1));
+					for (var isav = textLabels.length - 1; isav > 0 ; isav--) {
+						var prev = localStorage.getItem(notetextStorage + "0" + (isav - 1));
 						if (prev) {
-							localStorage.setItem(notetextStorage+"0"+isav, localStorage.getItem(notetextStorage+"0"+(isav-1)));
+							localStorage.setItem(notetextStorage + "0" + isav, localStorage.getItem(notetextStorage + "0" + (isav - 1)));
 						}
 					}
 				}
-				localStorage.setItem(notetextStorage+"00", thisnotetext);
+				localStorage.setItem(notetextStorage + "00", thisnotetext);
 			}
 		}
 		if (reldates.length == 2) {
-			for (var ixd=0; ixd<xdate.length; ixd++) {
+			for (var ixd = 0; ixd < xdate.length; ixd++) {
 				var ndy = xdate[ixd][1].value;
 				var ndm = xdate[ixd][2].value;
 				var ndd = xdate[ixd][3].value;
 				if (ndy.match(/^\d{4}$/)) {
 					localStorage.setItem(xdate[ixd][0], "1");
-					localStorage.setItem(xdate[ixd][0]+"_y", ndy);
+					localStorage.setItem(xdate[ixd][0] + "_y", ndy);
 					if (ndm.match(/^\d{1,2}$/)) {
-						localStorage.setItem(xdate[ixd][0]+"_m", ndm);
+						localStorage.setItem(xdate[ixd][0] + "_m", ndm);
 						if (ndd.match(/^\d{1,2}$/)) {
-							localStorage.setItem(xdate[ixd][0]+"_d", ndd);
+							localStorage.setItem(xdate[ixd][0] + "_d", ndd);
+						} else {
+							localStorage.removeItem(xdate[ixd][0] + "_d");
 						}
-						else {
-							localStorage.removeItem(xdate[ixd][0]+"_d");
-						}
-					}
-					else {
-						localStorage.removeItem(xdate[ixd][0]+"_m");
-						localStorage.removeItem(xdate[ixd][0]+"_d");
+					} else {
+						localStorage.removeItem(xdate[ixd][0] + "_m");
+						localStorage.removeItem(xdate[ixd][0] + "_d");
 					}
 				}
 				else if (ndy.trim() == "") {
@@ -269,30 +274,30 @@ function createClearButtor(input) {
 	switch (input) {
 		case "notetext":
 			var butt = createButtor(delLabel, "25px");
-			butt.addEventListener("click", function(e) {
+			butt.addEventListener("click", function(event) {
 				notetext.value = "";
 				sendEvent(notetext, "change");
 				notetext.focus();
-				if (e.shiftKey) { sendEvent(submitbtn, "click"); }
+				if (event.shiftKey) { sendEvent(submitbtn, "click"); }
 			}, false);/*onclick*/
 			butt.style.setProperty("color", "red");
 			butt.style.setProperty("background-color", cWARN);
 			return butt;
 			break;
 		case "dates":
-			for (var i=0; i<2; i++) {
+			for (var i = 0; i < 2; i++) {
 				var butt = createButtor(delLabel, "25px");
-				butt.setAttribute("id", userjs+"deldate"+i);
-				butt.addEventListener("click", function(e) {
-					var id = this.getAttribute("id").charAt((userjs+"deldate").length);
-					for (var nii=1; nii<4; nii++) {
+				butt.setAttribute("id", userjs + "deldate" + i);
+				butt.addEventListener("click", function(event) {
+					var id = this.getAttribute("id").charAt((userjs + "deldate").length);
+					for (var nii = 1; nii < 4; nii++) {
 						xdate[id][nii].value = "";
 						sendEvent(xdate[id][nii], "change");
 					}
-					if (e.shiftKey) { sendEvent(document.getElementById(userjs + "deldate" + (id == 0 ? 1 : 0)), "click"); }
+					if (event.shiftKey) { sendEvent(document.getElementById(userjs + "deldate" + (id == 0 ? 1 : 0)), "click"); }
 					focusYYYY(xdate[id][1]);
-					e.cancelBubble = true;
-					if (e.stopPropagation) e.stopPropagation();
+					event.cancelBubble = true;
+					if (event.stopPropagation) event.stopPropagation();
 				}, false);/*onclick*/
 				addAfter(butt, xdate[i][3]);
 				addAfter(document.createTextNode(" "), xdate[i][3]);
