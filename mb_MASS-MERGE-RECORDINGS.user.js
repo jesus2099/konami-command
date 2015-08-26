@@ -1,3 +1,4 @@
+"use strict";
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
@@ -184,7 +185,8 @@ function mergeRecsStep(_step) {
 						document.title = dtitle;
 						updateMatchModeDisplay();
 						enableInputs([status, editNote]);
-						if (nextButt = mergeQueue.shift()) {
+						var nextButt = mergeQueue.shift();
+						if (nextButt) {
 							FireFoxWorkAround(nextButt);
 						} else {
 							var x = scrollX, y = scrollY;
@@ -688,6 +690,7 @@ function buildMergeForm(loc, rem) {
 			var swapped = (swapbutt.value == loc2rem);
 			var mergeFrom = this.parentNode.getElementsByTagName("input")[swapped ? 0 : 2].value;
 			var mergeTo = this.parentNode.getElementsByTagName("input")[swapped ? 2 : 0].value;
+			var queuedItem;
 			if (from.value == "") {
 				from.value = mergeFrom;
 				to.value = mergeTo;
@@ -698,8 +701,8 @@ function buildMergeForm(loc, rem) {
 				this.value = "Unqueue";
 				enableInputs([this, swapbutt]);
 				mergeQueue.push(this);
-			} else if ((where = mergeQueue.indexOf(this)) > -1) {
-				mergeQueue.splice(where, 1);
+			} else if ((queuedItem = mergeQueue.indexOf(this)) > -1) {
+				mergeQueue.splice(queuedItem, 1);
 				this.value = "Merge";
 				enableInputs([this, swapbutt]);
 				this.style.setProperty("background-color", cInfo);
@@ -721,7 +724,8 @@ function buildMergeForm(loc, rem) {
 	var tracktd = getParent(locTrack.a, "td");
 	var bestPos = tracktd.querySelector("td > span.mp");
 	bestPos = bestPos ? bestPos : locTrack.a;
-	if (recdis = tracktd.querySelector("span.userjs81127recdis")) { bestPos = recdis; }
+	var recdis = tracktd.querySelector("span.userjs81127recdis");
+	if (recdis) { bestPos = recdis; }
 	addAfter(rmForm, bestPos);
 	if (remTrack.recording.rowid != locTrack.recid) {
 		var remoteRowID = parseInt(remTrack.recording.rowid, 10);
