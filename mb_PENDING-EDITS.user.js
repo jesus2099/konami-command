@@ -46,7 +46,7 @@
 // @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
-(function(){"use strict";
+"use strict";
 /* START OF CONFIGURATION - --- - --- - --- - */
 /* true: show additional artist "editing history" and "open edits" links on some non artist pages.
          It will add other request(s) to MB server, this is why it is an option. */
@@ -54,7 +54,7 @@
 /* END OF CONFIGURATION - --- - --- - --- - */
 	var userjs = "jesus2099userjs42102";
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
-var loc, pageEntity, checked = [], xhrPendingEdits = {};
+	var loc, pageEntity, checked = [], xhrPendingEdits = {};
 	var MBS = location.protocol + "//" + location.host;
 	var account = document.querySelector("div#header li.account a[href^='" + MBS + "/user/']");
 //EDITING HISTORY
@@ -295,4 +295,3 @@ var loc, pageEntity, checked = [], xhrPendingEdits = {};
 		}
 		return mainArtists;
 	}
-})();
