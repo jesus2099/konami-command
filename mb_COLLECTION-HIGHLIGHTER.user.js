@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2018.8.27.1300
+// @version      2018.8.27.1404
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -130,7 +130,7 @@ if (host && cat) {
 	if (cat == "collections") {
 		/*collection loader*/
 		var xp1 = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th/text()[contains(., 'Veröffentlichungen') or contains(., 'Väljalasked') or contains(., 'Releases') or contains(., 'Publicaciones') or contains(., 'Parutions') or contains(., 'Pubblicazioni') or contains(., 'Uitgaves') or contains(., 'Julkaisut') or contains(., 'Κυκλοφορίες') or contains(., 'リリース')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-		for(tbl_idx=0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
+		for (var tbl_idx = 0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
 			xp1.snapshotItem(tbl_idx).parentNode.parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, meta.name));
 			var tbl = getParent(xp1.snapshotItem(tbl_idx).parentNode, "table");
 			xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -533,7 +533,7 @@ function modal(show, txt, brs, gauge) {
 		gaug.appendChild(document.createTextNode("\u00a0"));
 	}
 	if (show && obj && txt) {
-		if (gauge && (pc = )) {
+		if (gauge) {
 			var pc = Math.floor(100 * gauge[0] / gauge[1]);
 			if (pc) {
 				var gau = obj.firstChild;
