@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2018.8.27
+// @version      2018.8.27.1300
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -115,13 +115,16 @@ if (host && cat) {
 				}
 			}
 		}
-		if (mainReleasePage && (lili = document.querySelector("div#sidebar > h2.collections + ul.links"))) {
-			var buttxt = " this release to your local collection highlighter,\r\nwithout changing its status among you MB collection(s)";
-			lili = lili.insertBefore(document.createElement("li"), lili.firstChild);
-			lili.appendChild(document.createTextNode("Force highlight "));
-			collectionUpdater(lili.appendChild(createA("ON", location.href, "Add" + buttxt, true)), "add");
-			lili.appendChild(document.createTextNode(" / "));
-			collectionUpdater(lili.appendChild(createA("OFF", location.href, "Remove" + buttxt.replace(" to ", " from "), true)), "remove");
+		if (mainReleasePage) {
+			var lili = document.querySelector("div#sidebar > h2.collections + ul.links");
+			if (lili) {
+				var buttxt = " this release to your local collection highlighter,\r\nwithout changing its status among you MB collection(s)";
+				lili = lili.insertBefore(document.createElement("li"), lili.firstChild);
+				lili.appendChild(document.createTextNode("Force highlight "));
+				collectionUpdater(lili.appendChild(createA("ON", location.href, "Add" + buttxt, true)), "add");
+				lili.appendChild(document.createTextNode(" / "));
+				collectionUpdater(lili.appendChild(createA("OFF", location.href, "Remove" + buttxt.replace(" to ", " from "), true)), "remove");
+			}
 		}
 	}
 	if (cat == "collections") {
@@ -530,22 +533,25 @@ function modal(show, txt, brs, gauge) {
 		gaug.appendChild(document.createTextNode("\u00a0"));
 	}
 	if (show && obj && txt) {
-		if (gauge && (pc = Math.floor(100 * gauge[0] / gauge[1]))) {
-			var gau = obj.firstChild;
-			if (gaugeto || gau.style.getPropertyValue("display") == "none") {
-				clearTimeout(gaugeto);
-				gaugeto = null;
-				gau.style.setProperty("display", "block");
-			}
-			gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge[0] / gauge[1]) + "px");
-			gau.lastChild.replaceChild(document.createTextNode(gauge[0] + "/" + gauge[1] + " (" + pc + "%) approx. remaining " + sInt2msStr(Math.ceil((gauge[1] - gauge[0]) * MBWSRate / 1000))), gau.lastChild.firstChild);
-			setTitle(true, pc);
-			if (gauge[0] >= gauge[1]) {
-				gaugeto = setTimeout(function() {
-					if (obj = document.getElementById(userjs + "modal")) {
-						obj.firstChild.style.setProperty("display", "none");
-					}
-				}, 4000);
+		if (gauge && (pc = )) {
+			var pc = Math.floor(100 * gauge[0] / gauge[1]);
+			if (pc) {
+				var gau = obj.firstChild;
+				if (gaugeto || gau.style.getPropertyValue("display") == "none") {
+					clearTimeout(gaugeto);
+					gaugeto = null;
+					gau.style.setProperty("display", "block");
+				}
+				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge[0] / gauge[1]) + "px");
+				gau.lastChild.replaceChild(document.createTextNode(gauge[0] + "/" + gauge[1] + " (" + pc + "%) approx. remaining " + sInt2msStr(Math.ceil((gauge[1] - gauge[0]) * MBWSRate / 1000))), gau.lastChild.firstChild);
+				setTitle(true, pc);
+				if (gauge[0] >= gauge[1]) {
+					gaugeto = setTimeout(function() {
+						if (obj = document.getElementById(userjs + "modal")) {
+							obj.firstChild.style.setProperty("display", "none");
+						}
+					}, 4000);
+				}
 			}
 		}
 		var br = 0;
@@ -606,7 +612,8 @@ function collectionUpdater(link, action) {
 							altered = true;
 						}
 						for (var c = 0; c < checks.length; c++) {
-							if (match = checks[c].getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"))) {
+							var match = checks[c].getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
+							if (match) {
 								var type = match[1], mbid = match[2];
 								if (stuff[type].ids && stuff[type].rawids.indexOf(mbid) < 0 && (type != "artist" || skipArtists.indexOf(mbid) < 0)) {
 									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1);
@@ -679,18 +686,23 @@ function getStuffs(what, pwhere) {
 			hrefs.push(pathname(arr[a].getAttribute("href")));
 		}
 		for (var n = 0; n < nodes.length; n++) {
-			if (nodes[n].getAttribute && (href = pathname(nodes[n].getAttribute("href"))) && href.match(new RegExp(strMBID + "$")) && hrefs.indexOf(href) == -1) {
-				hrefs.push(href);
-				arr.push(nodes[n]);
+			if (nodes[n].getAttribute) {
+				var href = pathname(nodes[n].getAttribute("href"));
+				if (href && href.match(new RegExp(strMBID + "$")) && hrefs.indexOf(href) == -1) {
+					hrefs.push(href);
+					arr.push(nodes[n]);
+				}
 			}
 		}
 		return arr;
 	}
 }
 function stuffRemover(checks, pp) {
-	if (check = checks[0]) {
+	var check = checks[0];
+	if (check) {
 		var p = pp ? pp : 1;
-		if (checkMatch = check.getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"))) {
+		var checkMatch = check.getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
+		if (checkMatch) {
 			var checkType = checkMatch[1];
 			var checkID = checkMatch[2]
 			var checkAgainst;
@@ -772,7 +784,8 @@ function lastLink(href) {
 	if (href) {
 		localStorage.setItem(userjs + "lastlink", href);
 	} else {
-		if (ll = localStorage.getItem(userjs + "lastlink")) {
+		var ll = localStorage.getItem(userjs + "lastlink");
+		if (ll) {
 			localStorage.removeItem(userjs + "lastlink");
 			modal(true, "Re‐loading page…", 1);
 			setTimeout(function() { location.href = ll; }, chrono(MBWSRate));
