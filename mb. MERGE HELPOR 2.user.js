@@ -2,7 +2,7 @@
 // @name         mb. MERGE HELPOR 2
 // @version      2015.8.28
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
-// @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list (in artist/release/release-group/work/recording merges)
+// @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12.17)+violentmonkey  my own setup
@@ -17,8 +17,8 @@
 // @since        2012-01-31
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      http*://*musicbrainz.org/*/merge*
-// @include      http://*.mbsandbox.org/*/merge*
+// @include      http*://*musicbrainz.org/*
+// @include      http://*.mbsandbox.org/*
 // @exclude      *//*/*mbsandbox.org/*
 // @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
@@ -26,8 +26,9 @@
 "use strict";
 var userjs = "j2userjs124579";
 var rembid = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
-var mergeType = location.pathname.match(/\/(.+)\/merge/);
+var mergeType = location.pathname.match(/^\/(.+)\/merge/);
 if (mergeType) {
+	/* main merge tool */
 	mergeType = mergeType[1].replace(/_/, "-");
 	var showEntityInfo = true;
 	var entities = {};
@@ -125,6 +126,45 @@ if (mergeType) {
 		if (showEntityInfo) {
 			loadEntInfo();
 		}
+	}
+} else {
+	/* merge queue (clear before add) tool */
+	var mergeButton = document.querySelector("div#content > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit']");
+	if (mergeButton) {
+		/* clear merge queue and add new stuff to merge queue within only one click */
+		var reMergeButton = mergeButton.cloneNode();
+		reMergeButton.replaceChild(document.createTextNode("Clear queue then " + mergeButton.textContent.toLowerCase()), reMergeButton.firstChild);
+		reMergeButton.setAttribute("ref", reMergeButton.textContent);
+		reMergeButton.setAttribute("title", "You don’t need this if you are adding a different type of entities.");
+		reMergeButton.style.setProperty("cursor", "help");
+		reMergeButton.style.setProperty("background-color", "gold");
+		reMergeButton.addEventListener("click", function(event) {
+			if (this.parentNode.parentNode.parentNode.querySelector("table.tbl input[name='add-to-merge']:checked")) {
+				reMergeButton.replaceChild(document.createTextNode("Clearing merge queue…"), reMergeButton.firstChild);
+				reMergeButton.style.setProperty("text-decoration", "blink");
+				var xhr = new XMLHttpRequest();
+				xhr.addEventListener("load", function() {
+					if (this.status == 200) {
+						reMergeButton.replaceChild(document.createTextNode("Adding for merging…"), reMergeButton.firstChild);
+						mergeButton.click();
+					} else {
+						reMergeButton.style.removeProperty("text-decoration");
+						reMergeButton.style.setProperty("background-color", "pink");
+						reMergeButton.replaceChild(document.createTextNode(reMergeButton.getAttribute("ref") + " (error " + this.status + ": “" + this.statusText + "”)"), reMergeButton.firstChild);
+					}
+				});
+				xhr.open("GET", mergeButton.parentNode.parentNode.parentNode.getAttribute("action").replace(/_queue$/, "?submit=cancel"), true);
+				xhr.send(null);
+			}
+			return stop(event);
+		});
+		mergeButton.parentNode.insertBefore(reMergeButton, mergeButton);
+		/* don’t reload page for nothing when nothing is checked */
+		mergeButton.addEventListener("click", function(event) {
+			if (!this.parentNode.parentNode.parentNode.querySelector("table.tbl input[name='add-to-merge']:checked")) {
+				return stop(event);
+			}
+		});
 	}
 }
 function loadEntInfo() {
@@ -338,4 +378,10 @@ function rowIDLink(type, id) {
 		"/search/edits?order=asc&conditions.0.operator=%3D&conditions.0.field="+type+"&conditions.0.name="+renderedID+"&conditions.0.args.0="+id
 	);
 	return a;
+}
+function stop(event) {
+	event.cancelBubble = true;
+	if (event.stopPropagation) event.stopPropagation();
+	event.preventDefault();
+	return false;
 }
