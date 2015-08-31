@@ -732,7 +732,7 @@ function buildMergeForm(loc, rem) {
 				swap.value = (swapped ? "yes" : "no");
 				currentButt = this;
 				mergeRecsStep();
-			} else if (retry.count > 0 || mergeQueue.indexOf(this) == -1 && from.value != mergeFrom && to.value != mergeTo) {
+			} else if (retry.count > 0 || mergeQueue.indexOf(this) == -1) {
 				/* if a merge is ongoing or a retry is pending, queue this one */
 				this.value = "Unqueue";
 				enableInputs([this, swapbutt]);
