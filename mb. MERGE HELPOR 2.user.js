@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.8.28
+// @version      2015.8.31
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -137,19 +137,19 @@ if (mergeType) {
 		reMergeButton.setAttribute("ref", reMergeButton.textContent);
 		reMergeButton.setAttribute("title", "You don’t need this if you are adding a different type of entities.");
 		reMergeButton.style.setProperty("cursor", "help");
-		reMergeButton.style.setProperty("background-color", "gold");
+		reMergeButton.style.setProperty("background-color", "#ff3");
 		reMergeButton.addEventListener("click", function(event) {
 			if (this.parentNode.parentNode.parentNode.querySelector("table.tbl input[name='add-to-merge']:checked")) {
 				reMergeButton.replaceChild(document.createTextNode("Clearing merge queue…"), reMergeButton.firstChild);
-				reMergeButton.style.setProperty("text-decoration", "blink");
+				reMergeButton.style.setProperty("background-image", "url(data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP/MAP///////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQJBQAAACwAAAAAEAAQAAACIQyOF8uW2NpTcU1Q7czu8fttGTiK1YWdZISWprTCL9NGBQAh+QQJBQAAACwAAAAAEAAQAAACIIQdqXm9285TEc1QwcV1Zz19lxhmo1l2aXSqD7lKrXMWACH5BAkFAAAALAAAAAAQABAAAAIhRI4Hy5bY2lNxzVDtzO7x+20ZOIrVhZ1khJamtMIv00YFACH5BAkFAAAALAAAAAAQABAAAAIgjA2peb3bzlMRTVDDxXVnPX2XGGajWXZpdKoPuUqtcxYAOw==)");
 				var xhr = new XMLHttpRequest();
-				xhr.addEventListener("load", function() {
+				xhr.addEventListener("load", function(event) {
+					reMergeButton.style.removeProperty("background-image");
 					if (this.status == 200) {
 						reMergeButton.replaceChild(document.createTextNode("Adding for merging…"), reMergeButton.firstChild);
 						mergeButton.click();
 					} else {
-						reMergeButton.style.removeProperty("text-decoration");
-						reMergeButton.style.setProperty("background-color", "pink");
+						reMergeButton.style.setProperty("background-color", "#fcc");
 						reMergeButton.replaceChild(document.createTextNode(reMergeButton.getAttribute("ref") + " (error " + this.status + ": “" + this.statusText + "”)"), reMergeButton.firstChild);
 					}
 				});
