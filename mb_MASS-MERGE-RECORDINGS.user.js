@@ -62,7 +62,7 @@ var css_track = "td:not(.pos):not(.video) > a[href^='" + MBS + "/recording/'], t
 var css_track_ac = "td:not([class]) + td:not([class])";
 var css_collapsed_medium = "div#content > table.tbl > thead > tr > th > a.expand-medium > span.expand-triangle";
 var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
-var startpos, status, from, to, swap, editNote, queuetrack;
+var startpos, status, from, to, swap, editNote, queuetrack, queueAll;
 var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
 var rem2loc = "◀";
 var loc2rem = "▶";
@@ -178,7 +178,7 @@ function mergeRecsStep(_step) {
 					var editID = this.responseText.match(new RegExp("<a href=\"" + MBS + "/edit/(\\d+)\">edit</a> \\(#(\\d+)\\)"));
 					if (editID && editID[1] == editID[2]) {
 						remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]].recording.editsPending++;
-						cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]], editID[1]);
+						cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]], editID[1], retry.count);
 						infoMerge("#" + from.value + " to #" + to.value + " merged OK", true, true);
 						retry.count = 0;
 						currentButt = null;
@@ -284,6 +284,9 @@ function changeMatchMode(event) {
 		}
 		var notMatched = remoteRelease.tracks.length - matchedRemoteTracks.length;
 		infoMerge((notMatched == 0 ? "All" : "☞") + " " + matchedRemoteTracks.length + " remote track title" + (matchedRemoteTracks.length == 1 ? "" : "s") + " matched" + (notMatched > 0 ? " (" + notMatched + " left)" : ""), matchedRemoteTracks.length > 0);
+		if (matchedRemoteTracks.length > 0) {
+			queueAll.focus();
+		}
 	}
 }
 function updateMatchModeDisplay() {
@@ -296,7 +299,7 @@ function massMergeGUI() {
 	var MMRdiv = createTag("div", {a: {id: MMRid}, e: {
 		keydown: function(event) {
 			if (event.keyCode == KBD.ENTER && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
-				document.getElementById(MMRid + "mergeallbutt").click();
+				queueAll.click();
 			} else if (event.target == editNote && event.ctrlKey) {
 				switch (event.keyCode) {
 					case KBD.S:
@@ -453,11 +456,10 @@ function massMergeGUI() {
 	});
 	MMRdiv.appendChild(createTag("p", {}, [changeAllDirButt, resetAllDirButt]));
 	MMRdiv.appendChild(createTag("p", {}, "You can add/remove recordings to/from the merge queue by clicking their merge buttons or add them all at once with the button below."));
-	var queueAllButt = createInput("button", "", "Merge all found recordings");
-	queueAllButt.setAttribute("ref", queueAllButt.value);
-	queueAllButt.setAttribute("id", MMRid + "mergeallbutt");
-	queueAllButt.style.setProperty("background-color", cMerge);
-	queueAllButt.addEventListener("click", function(event) {
+	queueAll = createInput("button", "", "Merge all found recordings");
+	queueAll.setAttribute("ref", queueAll.value);
+	queueAll.style.setProperty("background-color", cMerge);
+	queueAll.addEventListener("click", function(event) {
 		var allbutts = document.getElementsByClassName(MMRid + "mergebutt");
 		for (var iab = 0; iab < allbutts.length; iab++) {
 			if (allbutts[iab].value == "Merge") allbutts[iab].click();
@@ -476,7 +478,7 @@ function massMergeGUI() {
 			queueTrack();
 		}
 	});
-	MMRdiv.appendChild(createTag("p", {}, [queueAllButt, emptyQueueButt]));
+	MMRdiv.appendChild(createTag("p", {}, [queueAll, emptyQueueButt]));
 	queuetrack = MMRdiv.appendChild(createTag("div", {s: {textAlign: "center", backgroundColor: cInfo, display: "none"}}, "\u00A0"));
 	return MMRdiv;
 }
@@ -602,8 +604,7 @@ function spreadTracks(event) {
 	var outOfView = Math.max(0, parseInt(startpos.value, 10) + remoteRelease.tracks.length - localRelease.tracks.length);
 	if (startpos.value < 0) outOfView -= startpos.value;
 	infoMerge("☞ " + mergebutts + " recording" + (mergebutts == 1 ? "" : "s") + " ready to merge" + (outOfView > 0 ? " (" + outOfView + " out of view)" : ""), mergebutts > 0);
-	var mergeallbutt = document.getElementById(MMRid + "mergeallbutt");
-	disableInputs(mergeallbutt, mergebutts < 1);
+	disableInputs(queueAll, mergebutts < 1);
 	if (mergebutts > 0 || !event || !event.type || event.type != "load") startpos.focus();
 }
 function buildMergeForm(loc, rem) {
