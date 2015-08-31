@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.8.31
+// @version      2015.8.31.1952
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -62,7 +62,7 @@ var css_track = "td:not(.pos):not(.video) > a[href^='" + MBS + "/recording/'], t
 var css_track_ac = "td:not([class]) + td:not([class])";
 var css_collapsed_medium = "div#content > table.tbl > thead > tr > th > a.expand-medium > span.expand-triangle";
 var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
-var startpos, status, from, to, swap, editNote, queuetrack, queueAll;
+var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
 var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
 var rem2loc = "◀";
 var loc2rem = "▶";
@@ -74,7 +74,7 @@ css.insertRule("body." + MMRid + " div#content table.tbl > * > tr > .rating { di
 css.insertRule("body." + MMRid + " div#content table.tbl > tbody > tr > td > div.ars { display: none; }", 0);
 css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " { margin-top: 12px; cursor: pointer; }", 0);
 css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " > :not(h2):not(.main-shortcut) { display: none; }", 0);
-css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " input[name='status'] { font-size: 9px!important; background-color: #fcf; }", 0);
+css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " input[name='mergeStatus'] { font-size: 9px!important; background-color: #fcf; }", 0);
 css.insertRule("div#" + MMRid + " { background-color: #fcf; text-shadow: 1px 1px 2px #663; padding: 4px; margin: 0px -6px 12px; border: 2px dotted white; }", 0);
 css.insertRule("div#" + MMRid + " > .main-shortcut { margin: 0px; }", 0);
 css.insertRule("div#" + MMRid + " h2 { color: maroon; text-shadow: 2px 2px 4px #996; margin: 0px; }", 0);
@@ -126,7 +126,7 @@ function mergeRecsStep(_step) {
 		"add-to-merge=" + to.value + "&add-to-merge=" + from.value,
 		"merge.merging.0=" + to.value + "&merge.target=" + to.value + "&merge.merging.1=" + from.value
 	];
-	disableInputs([matchMode.sequential, matchMode.title, matchMode.titleAndAC, startpos, status]);
+	disableInputs([matchMode.sequential, matchMode.title, matchMode.titleAndAC, startpos, mergeStatus]);
 	if (step == 1) {
 		disableInputs(editNote);
 		params[step] += "&merge.edit_note=";
@@ -226,7 +226,7 @@ function nextButt(editID) {
 	currentButt = null;
 	document.title = dtitle;
 	updateMatchModeDisplay();
-	enableInputs([status, editNote]);
+	enableInputs([mergeStatus, editNote]);
 	var nextButt = mergeQueue.shift();
 	if (nextButt) {
 		FireFoxWorkAround(nextButt);
@@ -254,9 +254,9 @@ function FireFoxWorkAround(butt) {
 	} else { butt.click(); }
 }
 function infoMerge(msg, goodNews, reset) {
-	status.value = msg;
-	if (goodNews != null) { status.style.setProperty("background-color", goodNews ? cOK : cNG); }
-	else { status.style.setProperty("background-color", cInfo); }
+	mergeStatus.value = msg;
+	if (goodNews != null) { mergeStatus.style.setProperty("background-color", goodNews ? cOK : cNG); }
+	else { mergeStatus.style.setProperty("background-color", cInfo); }
 	if (reset) {
 		from.value = "";
 		to.value = "";
@@ -349,9 +349,9 @@ function massMergeGUI() {
 		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", createTag("kbd", {}, "CTRL"), " + ", createTag("kbd", {}, "SHIFT"), "+", createTag("kbd", {}, "M")]),
 		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release", createTag("span", {a: {"class": "remote-release-link"}}), ":"]),
 	]);
-	status = MMRdiv.appendChild(createInput("text", "status", "", meta.n + " remote release URL"));
-	status.style.setProperty("width", "100%");
-	status.addEventListener("input", function(event) {
+	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", meta.n + " remote release URL"));
+	mergeStatus.style.setProperty("width", "100%");
+	mergeStatus.addEventListener("input", function(event) {
 		matchMode.current = matchMode.sequential;
 		updateMatchModeDisplay();
 		var mbid = this.value.match(new RegExp("/release/(" + sregex_MBID + ")(/disc/(\\d+))?"));
@@ -416,7 +416,7 @@ function massMergeGUI() {
 			if (remoteRelease.id && remoteRelease.tracks.length > 0) {
 				spreadTracks(event);
 			} else {
-				status.focus();
+				mergeStatus.focus();
 			}
 		}
 	}}}));
@@ -813,7 +813,7 @@ function showGUI() {
 			addAfter(sidebar.removeChild(firstElements[elem]), MMRdiv);
 		}
 	}
-	status.focus();
+	mergeStatus.focus();
 }
 function saveEditNote(event) {
 	if (localStorage) {
