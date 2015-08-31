@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.8.27
+// @version      2015.8.31
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -43,7 +43,7 @@ var cCancel = "#cfc";
 meta.n = meta.n.substr(4);
 if (document.getElementsByClassName("account").length < 1) { return; }
 var rythm = 1000;
-var coolos = 5000;
+var coolos = 2000;
 var currentButt;
 var KBD = {
 	ENTER: 13,
@@ -215,7 +215,7 @@ function mergeRecsStep(_step) {
 function tryAgain(errorText) {
 	var errormsg = errorText;
 	if (currentButt) {
-		errormsg += " Retry in " + Math.ceil(coolos/1000) + " seconds.";
+		errormsg += " Retry in " + Math.ceil(coolos / 1000) + " seconds.";
 		setTimeout(function() {
 			FireFoxWorkAround(currentButt);
 		}, coolos);
