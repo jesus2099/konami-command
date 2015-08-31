@@ -243,7 +243,7 @@ function queueTrack() {
 	queuetrack.style.setProperty("display", mergeQueue.length > 0 ? "block" : "none");
 	document.title = (mergeQueue.length + 1) + "⌛ " + dtitle;
 }
-function cleanTrack(track, editID) {
+function cleanTrack(track, editID, retryCount) {
 	var rmForm = track.tr.querySelector("td:not(.pos):not(.video) form." + MMRid);
 	if (rmForm) {
 		if (editID) {
@@ -251,6 +251,15 @@ function cleanTrack(track, editID) {
 			removeChildren(rmForm);
 			var newEditLink = createA("edit:" + editID, "/edit/" + editID);
 			addAfter(createTag("span", {s: {opacity: ".5"}}, [" (", newEditLink, ")"]), rmForm);
+			if (typeof retryCount == "number" && retryCount > 0) {
+				var retryLabel = "retr";
+				if (retryCount > 1 ) {
+					retryLabel = retryCount + " " + retryLabel + "ies";
+				} else {
+					retryLabel += "y";
+				}
+				addAfter(createA(retryLabel, track.a.getAttribute("href") + "/edits"), newEditLink);
+			}
 			mp(newEditLink, true);
 			addAfter(document.createTextNode(" "), rmForm);
 		} else {
