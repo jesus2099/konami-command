@@ -439,7 +439,7 @@ function massMergeGUI() {
 		swap.value = direction == rem2loc ? "no" : "yes";
 		this.value = this.value.replace(/\w+$/, swap.value == "no" ? "remote" : "local");
 		this.style.setProperty("background-color", swap.value == "no" ? cInfo : cOK);
-	}, false);
+	});
 	var resetAllDirButt = createInput("button", "", "Reset all merge directions to oldest");
 	resetAllDirButt.addEventListener("click", function(event) {
 		var allbutts = document.querySelectorAll("input." + MMRid + "dirbutt:not([disabled])");
@@ -462,7 +462,7 @@ function massMergeGUI() {
 		for (var iab = 0; iab < allbutts.length; iab++) {
 			if (allbutts[iab].value == "Merge") allbutts[iab].click();
 		}
-	}, false);
+	});
 	var emptyQueueButt = createInput("button", "", "Empty merge queue");
 	emptyQueueButt.style.setProperty("background-color", cCancel);
 	emptyQueueButt.addEventListener("click", function(event) {
@@ -475,7 +475,7 @@ function massMergeGUI() {
 			}
 			queueTrack();
 		}
-	}, false);
+	});
 	MMRdiv.appendChild(createTag("p", {}, [queueAllButt, emptyQueueButt]));
 	queuetrack = MMRdiv.appendChild(createTag("div", {s: {textAlign: "center", backgroundColor: cInfo, display: "none"}}, "\u00A0"));
 	return MMRdiv;
@@ -630,7 +630,7 @@ function buildMergeForm(loc, rem) {
 		dirButt.addEventListener("click", function(event) {
 			this.value = this.value == rem2loc ? loc2rem : rem2loc;
 			this.style.setProperty("background-color", this.value == rem2loc ? cOK : cInfo);
-		}, false);
+		});
 		var remrec = rmForm.appendChild(createA(remTrack.number + ". “", "/recording/" + remTrack.recording.id));
 		if (remTrack.isDataTrack) {
 			remrec.parentNode.insertBefore(MBicon("data-track icon img"), remrec);
@@ -692,27 +692,31 @@ function buildMergeForm(loc, rem) {
 			var mergeTo = this.parentNode.getElementsByTagName("input")[swapped ? 2 : 0].value;
 			var queuedItem;
 			if (from.value == "") {
+				/* if no merge is ongoing, launch this merge */
 				from.value = mergeFrom;
 				to.value = mergeTo;
 				swap.value = (swapped ? "yes" : "no");
 				currentButt = this;
 				mergeRecsStep();
 			} else if (mergeQueue.indexOf(this) == -1 && from.value != mergeFrom && to.value != mergeTo) {
+				/* if a merge is ongoing, queue this one */
 				this.value = "Unqueue";
 				enableInputs([this, swapbutt]);
 				mergeQueue.push(this);
 			} else if ((queuedItem = mergeQueue.indexOf(this)) > -1) {
+				/* unqueue this one */
 				mergeQueue.splice(queuedItem, 1);
 				this.value = "Merge";
 				enableInputs([this, swapbutt]);
 				this.style.setProperty("background-color", cInfo);
 			} else {
+				/* shit happens */
 				enableInputs([this, swapbutt]);
 				this.style.setProperty("background-color", cWarning);
 				this.value += " error?";
 			}
 			queueTrack();
-		}, false);
+		});
 	} else {
 		rmForm.style.setProperty("background-color", cCancel);
 		rmForm.appendChild(document.createTextNode(" (same recording) "));
@@ -823,7 +827,7 @@ function createInput(type, name, value, placeholder) {
 	if (type == "text") {
 		input.addEventListener("focus", function(event) {
 			this.select();
-		}, false);
+		});
 	}
 	return input;
 }
