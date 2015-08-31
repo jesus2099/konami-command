@@ -177,32 +177,17 @@ function mergeRecsStep(_step) {
 				} else {
 					var editID = this.responseText.match(new RegExp("<a href=\"" + MBS + "/edit/(\\d+)\">edit</a> \\(#(\\d+)\\)"));
 					if (editID && editID[1] == editID[2]) {
-						remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]].recording.editsPending++;
-						cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]], editID[1], retry.count);
-						infoMerge("#" + from.value + " to #" + to.value + " merged OK", true, true);
-						retry.count = 0;
-						currentButt = null;
-						document.title = dtitle;
-						updateMatchModeDisplay();
-						enableInputs([status, editNote]);
-						var nextButt = mergeQueue.shift();
-						if (nextButt) {
-							FireFoxWorkAround(nextButt);
-						} else {
-							var x = scrollX, y = scrollY;
-							startpos.focus();
-							scrollTo(x, y);
-						}
+						nextButt(editID[1]);
 					} else {
 						retry.count++;
 						retry.message = "Merge edit not found";
-						tryAgain(retry.message);
+						checkMerge(retry.message);
 					}
 				}
 			} else {
 				retry.count++;
 				retry.message = "Error " + this.status + ": " + this.statusText;
-				tryAgain("Error " + this.status + ", step " + (step + 1) + "/2.");
+				checkMerge("Error " + this.status + ", step " + (step + 1) + "/2.");
 			}
 		}
 	};
@@ -212,10 +197,49 @@ function mergeRecsStep(_step) {
 	xhr.setRequestHeader("Connection", "close");
 	setTimeout(function(){ xhr.send(params[step]); }, rythm);
 }
+function checkMerge(errorText) {
+	infoMerge("Checking merge (" + errorText + ")…", false);
+	var xhr = new XMLHttpRequest();
+	xhr.addEventListener("load", function(event) {
+		var retryStep = 0;
+		if (this.status == 200 && typeof this.responseText == "string") {
+			if (this.responseText.match(/class="edit-list"/)) {
+				var editID = this.responseText.match(/>Edit #(\d+)/);
+				if (editID) {
+					nextButt(editID[1]);
+				}
+			}
+			if (this.responseText.match(new RegExp("id=\"remove." + from.value + "\"")) && this.responseText.match(new RegExp("id=\"remove." + to.value + "\""))) {
+				mergeRecsStep(1);
+			}
+		}
+		tryAgain(errorText);
+	});
+	xhr.open("GET", "/search/edits?negation=0&combinator=and&conditions.0.field=recording&conditions.0.operator=%3D&conditions.0.name=" + from.value + "&conditions.0.args.0=" + from.value + "&conditions.1.field=recording&conditions.1.operator=%3D&conditions.1.name=" + to.value + "&conditions.1.args.0=" + to.value + "&conditions.2.field=type&conditions.2.operator=%3D&conditions.2.args=74&conditions.3.field=status&conditions.3.operator=%3D&conditions.3.args=1", true);
+	xhr.send(null);
+}
+function nextButt(editID) {
+	remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]].recording.editsPending++;
+	cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]], editID, retry.count);
+	infoMerge("#" + from.value + " to #" + to.value + " merged OK", true, true);
+	retry.count = 0;
+	currentButt = null;
+	document.title = dtitle;
+	updateMatchModeDisplay();
+	enableInputs([status, editNote]);
+	var nextButt = mergeQueue.shift();
+	if (nextButt) {
+		FireFoxWorkAround(nextButt);
+	} else {
+		var x = scrollX, y = scrollY;
+		startpos.focus();
+		scrollTo(x, y);
+	}
+}
 function tryAgain(errorText) {
-	var errormsg = errorText;
+	var errormsg = errorText || retry.message;
 	if (currentButt) {
-		errormsg += " Retry in " + Math.ceil(coolos / 1000) + " seconds.";
+		errormsg = "Retry in " + Math.ceil(coolos / 1000) + " seconds (" + errormsg + ").";
 		setTimeout(function() {
 			FireFoxWorkAround(currentButt);
 		}, coolos);
