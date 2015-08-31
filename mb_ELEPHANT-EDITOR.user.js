@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2015.8.31
+// @version      2015.8.31.1945
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
@@ -216,7 +216,7 @@ if (content) {
 			}
 		}
 	}
-	if (location.href.match(/edit-relationships$/) {
+	if (location.href.match(/edit-relationships$/)) {
 		var sub = document.querySelector("div#content.rel-editor > form > div.row.no-label.buttons > button.submit.positive[type='submit']");
 		if (sub) {
 			sub.addEventListener("click", saveNote, false);
