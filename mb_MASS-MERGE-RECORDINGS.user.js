@@ -205,7 +205,7 @@ function mergeRecsStep(_step) {
 	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	xhr.setRequestHeader("Content-length", params[step].length);
 	xhr.setRequestHeader("Connection", "close");
-	setTimeout(function(){ xhr.send(params[step]); }, chrono(MBSminimumDelay));
+	setTimeout(function() { xhr.send(params[step]); }, chrono(MBSminimumDelay));
 }
 function checkMerge(errorText) {
 	retry.checking = true;
@@ -230,7 +230,7 @@ function checkMerge(errorText) {
 		retry.checking = false;
 	});
 	xhr.open("GET", "/search/edits?negation=0&combinator=and&conditions.0.field=recording&conditions.0.operator=%3D&conditions.0.name=" + from.value + "&conditions.0.args.0=" + from.value + "&conditions.1.field=recording&conditions.1.operator=%3D&conditions.1.name=" + to.value + "&conditions.1.args.0=" + to.value + "&conditions.2.field=type&conditions.2.operator=%3D&conditions.2.args=74&conditions.3.field=status&conditions.3.operator=%3D&conditions.3.args=1", true);
-	xhr.send(null);
+	setTimeout(function() { xhr.send(null); }, chrono(MBSminimumDelay));
 }
 function nextButt(editID) {
 	remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]].recording.editsPending++;
@@ -289,8 +289,24 @@ function cleanTrack(track, editID, retryCount) {
 		if (editID) {
 			mp(track.tr.querySelector(css_track), true);
 			var noPendingOpenEdits = document.querySelector("div#sidebar :not(.mp) > a[href='" + MBS + "/release/" + localRelease.id + "/open_edits']");
+			var mb_PENDING_EDITS = document.querySelectorAll("div#sidebar .jesus2099userjs42102count");
+			for (var counts = 0; counts < mb_PENDING_EDITS.length; counts++) {
+				var currentCount = mb_PENDING_EDITS[counts].textContent.trim();
+				if ((currentCount = currentCount.match(/^\d+$/)) && mb_PENDING_EDITS[counts].style.getPropertyValue("background-color") != "pink") {
+					mb_PENDING_EDITS[counts].replaceChild(document.createTextNode(parseInt(currentCount, 10) + 1), mb_PENDING_EDITS[counts].firstChild);
+				}
+			}
 			if (noPendingOpenEdits) {
-				mp(noPendingOpenEdits, true);
+				if (mb_PENDING_EDITS.length > 0) {
+					noPendingOpenEdits.parentNode.classList.add("mp");
+					noPendingOpenEdits.style.removeProperty("text-decoration");
+					for (var counts = 0; counts < mb_PENDING_EDITS.length; counts++) {
+						mb_PENDING_EDITS[counts].parentNode.parentNode.removeAttribute("title")
+						mb_PENDING_EDITS[counts].parentNode.parentNode.style.removeProperty("opacity")
+					}
+				} else {
+					mp(noPendingOpenEdits, true);
+				}
 			}
 			removeChildren(rmForm);
 			if (typeof editID == "number" || typeof retryCount == "number" && retryCount > 0) {
@@ -541,8 +557,17 @@ function massMergeGUI() {
 	return MMRdiv;
 }
 function loadReleasePage() {
+	for (var ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
+		/*should probably remove some in spreadTracks() etc.*/
+		cleanTrack(localRelease.tracks[ltrack]);
+	}
+	var mbidInfo = document.getElementById(MMRid).querySelector(".remote-release-link");
+	removeChildren(mbidInfo);
+	mbidInfo.setAttribute("title", remoteRelease.id + remoteRelease.disc);
+	mbidInfo.appendChild(document.createTextNode(" "));
+	mbidInfo.appendChild(createA(remoteRelease.id.match(/[\w\d]+/), "/release/" + remoteRelease.id));
 	var xhr = new XMLHttpRequest();
-	xhr.addEventListener("error", function() { infoMerge("Error #" + this.status + ": “" + this.statusText + "”", false); });
+	xhr.addEventListener("error", function() { infoMerge("Error " + this.status + ": “" + this.statusText + "”", false); });
 	xhr.addEventListener("load", function(event) {
 		if (this.status == 200) {
 			var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
@@ -563,14 +588,12 @@ function loadReleasePage() {
 				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
 				if (remoteRelease.comment) remoteRelease.comment = " (" + decodeHTMLEntities(remoteRelease.comment[1]) + ")"; else remoteRelease.comment = "";
 				remoteRelease.ac = rtitle[2];
-				var mbidInfo = document.getElementById(MMRid).querySelector(".remote-release-link");
 				removeChildren(mbidInfo);
-				mbidInfo.setAttribute("title", remoteRelease.id + remoteRelease.disc);
 				if (remoteRelease.id == localRelease.id) {
 					mbidInfo.appendChild(document.createTextNode(" (same" + (remoteRelease.disc ? ", " + remoteRelease.disc.substr(1).replace(/\//, "\u00a0") + "/" + discount : "") + ")"));
 				} else {
 					mbidInfo.appendChild(document.createTextNode(" “"));
-					mbidInfo.appendChild(createA(remoteRelease.id == localRelease.id ? "same" : remoteRelease.title, "/release/" + remoteRelease.id));
+					mbidInfo.appendChild(createA(remoteRelease.title, "/release/" + remoteRelease.id));
 					mbidInfo.appendChild(document.createTextNode("”" + remoteRelease.comment));
 					if (remoteRelease.disc) {
 						mbidInfo.appendChild(createTag("fragment", null, [" (", createA(remoteRelease.disc.substr(1).replace(/\//, "\u00a0"), "/release/" + remoteRelease.id + remoteRelease.disc + "#" + remoteRelease.disc.replace(/\//g, "")),  "/" + discount + ")"]));
@@ -622,11 +645,11 @@ function loadReleasePage() {
 				}
 			}
 		} else {
-			infoMerge("This is not a valid release", false);
+			infoMerge("Error " + this.status + ": “" + this.statusText + "”", false);
 		}
 	});
 	xhr.open("GET", "/release/" + remoteRelease.id + remoteRelease.disc, true);
-	xhr.send(null);
+	setTimeout(function() { xhr.send(null); }, chrono(MBSminimumDelay));
 }
 function bestStartPosition(localTrack, matchAC) {
 	var singleTrackMode = typeof localTrack != "undefined";
