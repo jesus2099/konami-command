@@ -286,6 +286,10 @@ function cleanTrack(track, editID, retryCount) {
 	if (rmForm) {
 		if (editID) {
 			mp(track.tr.querySelector(css_track), true);
+			var noPendingOpenEdits = document.querySelector("div#sidebar :not(.mp) > a[href='" + MBS + "/release/" + localRelease.id + "/open_edits']");
+			if (noPendingOpenEdits) {
+				mp(noPendingOpenEdits, true);
+			}
 			removeChildren(rmForm);
 			if (typeof editID == "number" || typeof retryCount == "number" && retryCount > 0) {
 				var infoSpan = addAfter(createTag("span", {s: {opacity: ".5"}}, [" (", createTag("span"), ")"]), rmForm).querySelector("span > span");
