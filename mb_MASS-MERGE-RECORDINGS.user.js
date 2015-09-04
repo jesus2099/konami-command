@@ -41,8 +41,8 @@ var cMerge = "#fcc";
 var cCancel = "#cfc";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 meta.n = meta.n.substr(4);
-if (document.getElementsByClassName("account").length < 1) { return; }
-var rythm = 1000;
+var lastTick = new Date().getTime();
+var MBSminimumDelay = 1000;
 var retryDelay = 2000;
 var currentButt;
 var KBD = {
@@ -92,7 +92,6 @@ var localRelease = {
 var safeLengthDelta = 4;
 if (localRelease.comment) localRelease.comment = " (" + localRelease.comment.textContent + ")"; else localRelease.comment = "";
 var remoteRelease = {tracks: []};
-sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 var collapsedMediums = document.querySelectorAll(css_collapsed_medium);
 if (collapsedMediums.length > 1) {
 	var tracklistHeader = document.querySelector("h2.tracklist");
@@ -101,12 +100,15 @@ if (collapsedMediums.length > 1) {
 		tracklistHeader.addEventListener("click", function(event) { if (event.target.tagName == "A") expandCollapseAllMediums(event.target.getAttribute("ref")); });
 	}
 }
-document.body.addEventListener("keydown", function(event) {
-	if (event.ctrlKey && event.shiftKey && event.keyCode == KBD.M) {
-		prepareLocalRelease();
-		return stop(event);
-	}
-});
+if (document.getElementsByClassName("account").length > 0) {
+	sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
+	document.body.addEventListener("keydown", function(event) {
+		if (event.ctrlKey && event.shiftKey && event.keyCode == KBD.M) {
+			prepareLocalRelease();
+			return stop(event);
+		}
+	});
+}
 //	sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
 /* TODO before step 1, check
 <form action="MBS/recording/merge" method="post">
@@ -203,7 +205,7 @@ function mergeRecsStep(_step) {
 	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	xhr.setRequestHeader("Content-length", params[step].length);
 	xhr.setRequestHeader("Connection", "close");
-	setTimeout(function(){ xhr.send(params[step]); }, rythm);
+	setTimeout(function(){ xhr.send(params[step]); }, chrono(MBSminimumDelay));
 }
 function checkMerge(errorText) {
 	retry.checking = true;
@@ -982,3 +984,13 @@ function decodeHTMLEntities(str) {
 	decoder.innerHTML = str;
 	return decoder.textContent;
 };
+function chrono(minimumDelay) {
+	if (minimumDelay) {
+		var del = minimumDelay + lastTick - new Date().getTime();
+		del = del > 0 ? del : 0;
+		return del;
+	} else {
+		lastTick = new Date().getTime();
+		return lastTick;
+	}
+}
