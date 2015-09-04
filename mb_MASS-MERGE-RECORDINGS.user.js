@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.8.31.1952
+// @version      2015.9.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -43,7 +43,7 @@ var cCancel = "#cfc";
 meta.n = meta.n.substr(4);
 if (document.getElementsByClassName("account").length < 1) { return; }
 var rythm = 1000;
-var coolos = 2000;
+var retryDelay = 2000;
 var currentButt;
 var KBD = {
 	ENTER: 13,
@@ -66,7 +66,7 @@ var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
 var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
 var rem2loc = "◀";
 var loc2rem = "▶";
-var retry = {count: 0};
+var retry = {count: 0, checking: false};
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 var css = document.styleSheets[document.styleSheets.length-1];
 css.insertRule("body." + MMRid + " div#" + MMRid + " > .main-shortcut { display: none; }", 0);
@@ -172,22 +172,30 @@ function mergeRecsStep(_step) {
 	xhr.onreadystatechange = function(event) {
 		if (this.readyState == 4) {
 			if (this.status == 200) {
-				if (step < 1) {
-					mergeRecsStep(step + 1);
-				} else {
-					var editID = this.responseText.match(new RegExp("<a href=\"" + MBS + "/edit/(\\d+)\">edit</a> \\(#(\\d+)\\)"));
-					if (editID && editID[1] == editID[2]) {
-						nextButt(editID[1]);
+				if (step == 0) {
+					if (
+						this.responseText.indexOf('<form action="' + MBS + '/recording/merge" method="post">') !== -1
+						&& this.responseText.indexOf('value="' + from.value + '"') !== -1
+						&& this.responseText.indexOf('<a href="' + MBS + '/recording/' + from.getAttribute("ref") + '">') !== -1
+						&& this.responseText.indexOf('value="' + to.value + '"') !== -1
+						&& this.responseText.indexOf('<a href="' + MBS + '/recording/' + to.getAttribute("ref") + '">') !== -1
+					) {
+						mergeRecsStep(1);
 					} else {
-						retry.count++;
-						retry.message = "Merge edit not found";
-						checkMerge(retry.message);
+						tryAgain("Did not queue");
+					}
+				} else if (step == 1) {
+					if (
+						this.responseText.indexOf('"@id":"https://musicbrainz.org/recording/' + to.getAttribute("ref") + '"') !== -1
+						&& this.responseText.indexOf('href="' + MBS + '/recording/merge_queue?add-to-merge=' + to.value + '"') !== -1
+					) {
+						nextButt();
+					} else {
+						checkMerge("Did not merge");
 					}
 				}
 			} else {
-				retry.count++;
-				retry.message = "Error " + this.status + ": " + this.statusText;
-				checkMerge("Error " + this.status + ", step " + (step + 1) + "/2.");
+				checkMerge("Error " + this.status + ": “" + this.statusText + "” in step " + (step + 1) + "/2");
 			}
 		}
 	};
@@ -198,29 +206,33 @@ function mergeRecsStep(_step) {
 	setTimeout(function(){ xhr.send(params[step]); }, rythm);
 }
 function checkMerge(errorText) {
+	retry.checking = true;
 	infoMerge("Checking merge (" + errorText + ")…", false);
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function(event) {
 		var retryStep = 0;
 		if (this.status == 200 && typeof this.responseText == "string") {
-			if (this.responseText.match(/class="edit-list"/)) {
+			if (this.responseText.indexOf('class="edit-list"') !== -1) {
 				var editID = this.responseText.match(/>Edit #(\d+)/);
-				if (editID) {
-					nextButt(editID[1]);
-				}
-			}
-			if (this.responseText.match(new RegExp("id=\"remove." + from.value + "\"")) && this.responseText.match(new RegExp("id=\"remove." + to.value + "\""))) {
+				nextButt(editID ? editID[1] : true);
+			} else if (this.responseText.indexOf('id="remove.' + from.value + '"') !== -1 && this.responseText.indexOf('id="remove.' + to.value + '"') !== -1) {
+				retry.count += 1;
+				retry.message = errorText;
 				mergeRecsStep(1);
+			} else {
+				tryAgain(errorText);
 			}
+		} else {
+			checkMerge(errorText);
 		}
-		tryAgain(errorText);
+		retry.checking = false;
 	});
 	xhr.open("GET", "/search/edits?negation=0&combinator=and&conditions.0.field=recording&conditions.0.operator=%3D&conditions.0.name=" + from.value + "&conditions.0.args.0=" + from.value + "&conditions.1.field=recording&conditions.1.operator=%3D&conditions.1.name=" + to.value + "&conditions.1.args.0=" + to.value + "&conditions.2.field=type&conditions.2.operator=%3D&conditions.2.args=74&conditions.3.field=status&conditions.3.operator=%3D&conditions.3.args=1", true);
 	xhr.send(null);
 }
 function nextButt(editID) {
 	remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]].recording.editsPending++;
-	cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]], editID, retry.count);
+	cleanTrack(localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]], editID || true, retry.count);
 	infoMerge("#" + from.value + " to #" + to.value + " merged OK", true, true);
 	retry.count = 0;
 	currentButt = null;
@@ -237,12 +249,14 @@ function nextButt(editID) {
 	}
 }
 function tryAgain(errorText) {
-	var errormsg = errorText || retry.message;
+	retry.count += 1;
+	retry.message = errorText
+	var errormsg = errorText;
 	if (currentButt) {
-		errormsg = "Retry in " + Math.ceil(coolos / 1000) + " seconds (" + errormsg + ").";
+		errormsg = "Retry in " + Math.ceil(retryDelay / 1000) + " seconds (" + errormsg + ").";
 		setTimeout(function() {
 			FireFoxWorkAround(currentButt);
-		}, coolos);
+		}, retryDelay);
 	}
 	infoMerge(errormsg, false, true);
 }
@@ -273,19 +287,24 @@ function cleanTrack(track, editID, retryCount) {
 		if (editID) {
 			mp(track.tr.querySelector(css_track), true);
 			removeChildren(rmForm);
-			var newEditLink = createA("edit:" + editID, "/edit/" + editID);
-			addAfter(createTag("span", {s: {opacity: ".5"}}, [" (", newEditLink, ")"]), rmForm);
-			if (typeof retryCount == "number" && retryCount > 0) {
-				var retryLabel = "retr";
-				if (retryCount > 1 ) {
-					retryLabel = retryCount + " " + retryLabel + "ies";
-				} else {
-					retryLabel += "y";
+			if (typeof editID == "number" || typeof retryCount == "number" && retryCount > 0) {
+				var infoSpan = addAfter(createTag("span", {s: {opacity: ".5"}}, [" (", createTag("span"), ")"]), rmForm).querySelector("span > span");
+				if (typeof editID == "number") {
+					infoSpan.appendChild(createTag("span", {a: {class: "mp"}}, createA("edit:" + editID, "/edit/" + editID)));
 				}
-				addAfter(createA(retryLabel, track.a.getAttribute("href") + "/edits"), newEditLink);
+				if (typeof retryCount == "number" && retryCount > 0) {
+					if (infoSpan.childNodes.length > 0) {
+						infoSpan.appendChild(document.createTextNode(", "));
+					}
+					var retryLabel = "retr";
+					if (retryCount > 1 ) {
+						retryLabel = retryCount + " " + retryLabel + "ies";
+					} else {
+						retryLabel += "y";
+					}
+					infoSpan.appendChild(createA(retryLabel, track.a.getAttribute("href") + "/edits"));
+				}
 			}
-			mp(newEditLink, true);
-			addAfter(document.createTextNode(" "), rmForm);
 		} else {
 			removeNode(rmForm);
 		}
@@ -517,7 +536,7 @@ function massMergeGUI() {
 }
 function loadReleasePage() {
 	var xhr = new XMLHttpRequest();
-	xhr.addEventListener("error", function() { infoMerge("Error #" + this.status + ": " + this.statusText, false); });
+	xhr.addEventListener("error", function() { infoMerge("Error #" + this.status + ": “" + this.statusText + "”", false); });
 	xhr.addEventListener("load", function(event) {
 		if (this.status == 200) {
 			var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
@@ -582,8 +601,8 @@ function loadReleasePage() {
 				for (var nopt = 0; nopt < negativeOptions.length; nopt++) {
 					removeNode(negativeOptions[nopt]);
 				}
-				for (var rtrack = 0; rtrack < remoteRelease.tracks.length-1; rtrack++) {
-					addOption(startpos, 0-rtrack-1, 0-rtrack-1, true);
+				for (var rtrack = 0; rtrack < remoteRelease.tracks.length - 1; rtrack++) {
+					addOption(startpos, 0 - rtrack - 1, 0 - rtrack - 1, true);
 				}
 				startpos.value = bestStartPosition() || 0;
 				spreadTracks(event);
@@ -650,9 +669,9 @@ function buildMergeForm(loc, rem) {
 	rmForm.setAttribute("title", "remote recording #" + format(remTrack.recording.rowid));
 	rmForm.setAttribute("class", MMRid);
 	rmForm.style.setProperty("display", "inline");
-	rmForm.appendChild(createInput("hidden", "merge.merging.0", locTrack.recid));
+	rmForm.appendChild(createInput("hidden", "merge.merging.0", locTrack.recid)).setAttribute("ref", locTrack.a.getAttribute("href").match(regex_MBID)[0]);
 	rmForm.appendChild(createInput("hidden", "merge.target", locTrack.recid));
-	rmForm.appendChild(createInput("hidden", "merge.merging.1", remTrack.recording.rowid));
+	rmForm.appendChild(createInput("hidden", "merge.merging.1", remTrack.recording.rowid)).setAttribute("ref", remTrack.recording.id);
 	rmForm.appendChild(createInput("hidden", "merge.edit_note", "mass rec merger"));
 	if (remTrack.recording.rowid != locTrack.recid) {
 		rmForm.style.setProperty("background-color", cWarning);
@@ -722,18 +741,20 @@ function buildMergeForm(loc, rem) {
 			disableInputs(swapbutt)
 			this.style.setProperty("background-color", cInfo);
 			var swapped = (swapbutt.value == loc2rem);
-			var mergeFrom = this.parentNode.getElementsByTagName("input")[swapped ? 0 : 2].value;
-			var mergeTo = this.parentNode.getElementsByTagName("input")[swapped ? 2 : 0].value;
+			var mergeFrom = this.parentNode.getElementsByTagName("input")[swapped ? 0 : 2];
+			var mergeTo = this.parentNode.getElementsByTagName("input")[swapped ? 2 : 0];
 			var queuedItem;
 			if (from.value == "") {
 				/* if no merge is ongoing, launch this merge */
-				from.value = mergeFrom;
-				to.value = mergeTo;
+				from.value = mergeFrom.value;
+				from.setAttribute("ref", mergeFrom.getAttribute("ref"));
+				to.value = mergeTo.value;
+				to.setAttribute("ref", mergeTo.getAttribute("ref"));
 				swap.value = (swapped ? "yes" : "no");
 				currentButt = this;
 				mergeRecsStep();
-			} else if (retry.count > 0 || mergeQueue.indexOf(this) == -1) {
-				/* if a merge is ongoing or a retry is pending, queue this one */
+			} else if (retry.checking || retry.count > 0 || mergeQueue.indexOf(this) == -1) {
+				/* if a merge is ongoing or a checking/retry is pending, queue this one */
 				this.value = "Unqueue";
 				enableInputs([this, swapbutt]);
 				mergeQueue.push(this);
