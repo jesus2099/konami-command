@@ -52,7 +52,7 @@
          It will add other request(s) to MB server, this is why it is an option. */
 	var addArtistLinks = true;
 /* END OF CONFIGURATION - --- - --- - --- - */
-	var userjs = "jesus2099userjs42102";
+	var userjs = "jesus2099userjs42102";//linked in mb_MASS-MERGE-RECORDINGS.user.js
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var loc, pageEntity, checked = [], xhrPendingEdits = {};
 	var MBS = location.protocol + "//" + location.host;
@@ -122,7 +122,7 @@
 		var currentEntity = associatedArtist || entity;
 		var linkLabel = (historyType == "edits" ? "editing\u00a0history" : "open\u00a0edits");
 		linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2, offset, string) { return g1.toUpperCase() + g2; });
-		var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel)));
+		var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel)));//“span.(""|"mp")” linked in mb_MASS-MERGE-RECORDINGS.user.js
 		if (associatedArtist) {
 			addAfter(newLink, entity.li);
 		} else if (!associatedArtist && historyType == "edits") {
@@ -138,7 +138,7 @@
 		var count = smp.querySelector("span." + userjs + "count");
 		if (!count) {
 			smp.appendChild(document.createTextNode("\u00a0("));
-			smp.appendChild(createTag("span", {a: {class: userjs + "count"}}, createTag("img", {a: {alt: "⌛ loading…", src: "/static/images/icons/loading.gif", height: getComputedStyle(smp).getPropertyValue("font-size")}})));
+			smp.appendChild(createTag("span", {a: {class: userjs + "count"}}, createTag("img", {a: {alt: "⌛ loading…", src: "/static/images/icons/loading.gif", height: getComputedStyle(smp).getPropertyValue("font-size")}})));//“userjs + "count"” linked in mb_MASS-MERGE-RECORDINGS.user.js
 			smp.appendChild(document.createTextNode(")"));
 		}
 		xhrPendingEdits[obj.base] = {
@@ -224,11 +224,11 @@
 		} else {
 			countText = pecount.status;
 			liTitle = pecount.responseText;
-			count.style.setProperty("background-color", "pink");
+			count.style.setProperty("background-color", "pink");//“pink” linked in mb_MASS-MERGE-RECORDINGS.user.js
 		}
-		count.replaceChild(document.createTextNode(countText), count.firstChild);
+		count.replaceChild(document.createTextNode(countText), count.firstChild);//“countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
 		if (liTitle) {
-			li.setAttribute("title", liTitle);
+			li.setAttribute("title", liTitle);//linked in mb_MASS-MERGE-RECORDINGS.user.js
 		}
 	}
 	function mp(o, set) {
@@ -242,8 +242,8 @@
 				if (mp(o)) {
 					li.firstChild.classList.remove("mp");
 				}
-				o.style.setProperty("text-decoration", "line-through");
-				li.style.setProperty("opacity", ".5");
+				o.style.setProperty("text-decoration", "line-through");//linked in mb_MASS-MERGE-RECORDINGS.user.js
+				li.style.setProperty("opacity", ".5");//linked in mb_MASS-MERGE-RECORDINGS.user.js
 			}
 		}
 	}
