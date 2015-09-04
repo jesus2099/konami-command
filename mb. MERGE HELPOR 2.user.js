@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.8.31
+// @version      2015.9.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -158,7 +158,12 @@ if (mergeType) {
 			}
 			return stop(event);
 		});
-		mergeButton.parentNode.insertBefore(reMergeButton, mergeButton);
+		/*addAfter()*/
+		if (mergeButton.parentNode.lastChild == mergeButton) {
+			mergeButton.parentNode.appendChild(reMergeButton);
+		} else {
+			mergeButton.parentNode.insertBefore(reMergeButton, mergeButton.parentNode.lastChild)
+		}
 		/* don’t reload page for nothing when nothing is checked */
 		mergeButton.addEventListener("click", function(event) {
 			if (!this.parentNode.parentNode.parentNode.querySelector("table.tbl input[name='add-to-merge']:checked")) {
