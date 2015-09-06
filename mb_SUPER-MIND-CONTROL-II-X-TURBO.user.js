@@ -1,7 +1,7 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.8.27
+// @version      2015.9.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -877,29 +877,32 @@
 			var servname;
 			if (servname = location.hostname.match(/^([^.]+)\.[^.]+\.[^.]+$/)) {
 				servname = servname[1];
+			} else {
+				servname = "MBS";
 			}
-			else { servname = "MBS"; }
-			var menu = menu.appendChild(createTag("li", {}, [createTag("a", {a:{title:"Server Switch"}}, createTag("code", {}, [meta.icon.cloneNode(), " ", servname])), document.createElement("ul")]));
-			menu.addEventListener("mouseover", function(e){
+			var menu = menu.appendChild(createTag("li", {a: {class: userjs + "serverSwitch"}}, [createTag("a", {a: {title: "Server Switch"}}, createTag("code", {}, [meta.icon.cloneNode(), " ", servname])), document.createElement("ul")]));
+			menu.addEventListener("mouseover", function(event) {
 				this.firstChild.nextSibling.style.setProperty("left", "inherit");
 				this.firstChild.nextSibling.style.setProperty("right", "0px");
-			}, false);
-			menu.addEventListener("mouseout", function(e){
-				this.firstChild.nextSibling.style.removeProperty("left");
-				this.firstChild.nextSibling.style.removeProperty("right");
-			}, false);
+			});
+			menu.addEventListener("mouseout", function(event) {
+				if (!getParent(event.relatedTarget, "li", userjs + "serverSwitch")) {
+					this.firstChild.nextSibling.style.removeProperty("left");
+					this.firstChild.nextSibling.style.removeProperty("right");
+				}
+			});
 			//MB.Control.HeaderMenu(menu);
 			menu = menu.firstChild.nextSibling;
 			var mbs = ["", "beta."];
-			for (var mb=0; mb<mbs.length; mb++) {
-				menu.appendChild(serverSwitch(mbs[mb]+"musicbrainz.org"));
+			for (var mb = 0; mb < mbs.length; mb++) {
+				menu.appendChild(serverSwitch(mbs[mb] + "musicbrainz.org"));
 			}
 			if (j2sets.SERVER_SWITCH_mbsandbox) {
 				var mbsb = JSON.parse(j2sets.SERVER_SWITCH_mbsandbox);
 				if (mbsb.length) {
 					mbsb.sort();
-					for (var sb=0; sb<mbsb.length; sb++) {
-						menu.appendChild(serverSwitch(mbsb[sb]+".mbsandbox.org", sb==0));
+					for (var sb = 0; sb < mbsb.length; sb++) {
+						menu.appendChild(serverSwitch(mbsb[sb] + ".mbsandbox.org", sb == 0));
 					}
 				}
 			}
@@ -914,9 +917,8 @@
 		if (location.host == server) {
 			a.style.setProperty("cursor", "no-drop");
 			a.style.setProperty("font-weight", "bold");
-		}
-		else {
-			a.setAttribute("href", "http"+(server.match(/mbsandbox/)?"":"s")+"://"+server+location.pathname+location.search+location.hash);
+		} else {
+			a.setAttribute("href", "http" + (server.match(/mbsandbox/) ? "" : "s") + "://" + server + location.pathname + location.search + location.hash);
 		}
 		return li;
 	}
