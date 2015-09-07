@@ -17,6 +17,7 @@
 // @since        2012-01-31
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
 // @include      http*://*musicbrainz.org/*
 // @include      http://*.mbsandbox.org/*
 // @exclude      *//*/*mbsandbox.org/*
@@ -55,13 +56,15 @@ if (mergeType) {
 			var headers = tbl.querySelector("thead tr");
 			if (showEntityInfo && mergeType.match(/(release|release-group)/)) {
 				headers.appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
-			} else { showEntityInfo = false; }
+			} else {
+				showEntityInfo = false;
+			}
 			var rowids = document.createElement("th");
-			rowids.setAttribute("id", userjs+"rowidsHeader");
+			rowids.setAttribute("id", userjs + "rowidsHeader");
 			rowids.style.setProperty("text-align", "right");
 			rowids.appendChild(document.createTextNode("MBID age (row ID) "));
 			headers.appendChild(rowids);
-			var batchRemove = headers.appendChild(document.createElement("th")).appendChild(createA("Remove selected entities", null, "Remove selected "+mergeType+"s from merge"));
+			var batchRemove = headers.appendChild(document.createElement("th")).appendChild(createA("Remove selected entities", null, "Remove selected " + mergeType + "s from merge"));
 			batchRemove.addEventListener("click", removeFromMerge);
 		}
 		var rowIDzone = [];
@@ -70,17 +73,17 @@ if (mergeType) {
 			var rad = entityRows[row].querySelector("input[type='radio']");
 			if (a && rad) {
 				if (showEntityInfo) {
-					addZone(entityRows[row], "entInfo"+rad.value);
+					addZone(entityRows[row], "entInfo" + rad.value);
 				}
-				entities[rad.value] = {a:a, rad:rad, row:entityRows[row], rowid:parseInt(rad.value, 10)};
-				minrowid = row==0?entities[rad.value].rowid:Math.min(minrowid, entities[rad.value].rowid);
+				entities[rad.value] = {a: a, rad: rad, row: entityRows[row], rowid: parseInt(rad.value, 10)};
+				minrowid = row == 0 ? entities[rad.value].rowid : Math.min(minrowid, entities[rad.value].rowid);
 				if (document.referrer) {
 					var lmbid = a.getAttribute("href").match(rembid);
 					var rmbid = document.referrer.match(rembid);
 					if (lmbid && rmbid && lmbid[0] == rmbid[0]) {
 						if (tbl) {
 							var tds = entityRows[row].querySelectorAll("td");
-							for (var td=0; td<tds.length; td++) {
+							for (var td = 0; td < tds.length; td++) {
 								tds[td].style.setProperty("background-color", "#FF6");
 							}
 						} else {
@@ -94,7 +97,7 @@ if (mergeType) {
 				entities[rad.value].rowidzone = addZone(entityRows[row], "rowID"+row);
 				entities[rad.value].rowidzone.style.setProperty("text-align", "right");
 				entities[rad.value].rowidzone.appendChild(rowIDLink(mergeType.replace(/-/, "_"), rad.value));
-				var removeZone = addZone(entityRows[row], "remove"+row);
+				var removeZone = addZone(entityRows[row], "remove" + row);
 				var batchRemove = document.createElement("label");
 				var removeCB = batchRemove.appendChild(document.createElement("input"));
 				removeCB.setAttribute("type", "checkbox");
@@ -113,14 +116,17 @@ if (mergeType) {
 			entities[minrowid].row.style.setProperty("text-shadow", "0px 0px 8px #0C0");
 			entities[minrowid].rowidzone.style.setProperty("color", "#060");
 			entities[minrowid].rowidzone.insertBefore(document.createTextNode(" (oldest) "), entities[minrowid].rowidzone.firstChild);
-			var rowidsHeader = document.getElementById(userjs+"rowidsHeader");
-			var sortButton = createA(rowidsHeader?rowidsHeader.textContent:"SORT!", null, "Sort those "+mergeType+"s (oldest ID first)");
+			var rowidsHeader = document.getElementById(userjs + "rowidsHeader");
+			var sortButton = createA(rowidsHeader ? rowidsHeader.textContent : "SORT!", null, "Sort those " + mergeType + "s (oldest ID first)");
 			sortButton.addEventListener("click", function(e) {
 				sortBy("rowid");
 			});
-			if (rowidsHeader) rowidsHeader.replaceChild(sortButton, rowidsHeader.firstChild);
-			else mergeForm.insertBefore(sortButton, mergeForm.firstChild);
-			entities[minrowid].rowidzone.querySelector("a[href$='conditions.0.args.0="+entities[minrowid].rowid+"']").style.setProperty("background-color",  "#6F6");
+			if (rowidsHeader) {
+				rowidsHeader.replaceChild(sortButton, rowidsHeader.firstChild);
+			} else {
+				mergeForm.insertBefore(sortButton, mergeForm.firstChild);
+			}
+			entities[minrowid].rowidzone.querySelector("a[href$='conditions.0.args.0=" + entities[minrowid].rowid + "']").style.setProperty("background-color",  "#6F6");
 			entities[minrowid].rad.click();
 		}
 		if (showEntityInfo) {
@@ -158,12 +164,7 @@ if (mergeType) {
 			}
 			return stop(event);
 		});
-		/*addAfter()*/
-		if (mergeButton.parentNode.lastChild == mergeButton) {
-			mergeButton.parentNode.appendChild(reMergeButton);
-		} else {
-			mergeButton.parentNode.insertBefore(reMergeButton, mergeButton.parentNode.lastChild)
-		}
+		addAfter(reMergeButton, mergeButton);
 		/* don’t reload page for nothing when nothing is checked */
 		mergeButton.addEventListener("click", function(event) {
 			if (!this.parentNode.parentNode.parentNode.querySelector("table.tbl input[name='add-to-merge']:checked")) {
@@ -173,12 +174,12 @@ if (mergeType) {
 	}
 }
 function loadEntInfo() {
-	var entInfoZone = mergeForm.querySelector("[id^='"+userjs+"entInfo']:not([class])") || mergeForm.querySelector("[id^='"+userjs+"entInfo']:not([class~='ok'])");
+	var entInfoZone = mergeForm.querySelector("[id^='" + userjs + "entInfo']:not([class])") || mergeForm.querySelector("[id^='" + userjs + "entInfo']:not([class~='ok'])");
 	if (entInfoZone) {
 		var rowid = entInfoZone.getAttribute("id").match(/\d+$/)[0];
 		entInfoZone.appendChild(loadimg("info"));
 		var mbid = entities[rowid].a.getAttribute("href").match(rembid)[0];
-		var url = "/ws/2/"+mergeType+"/"+mbid+"?inc=";
+		var url = "/ws/2/" + mergeType + "/" + mbid + "?inc=";
 		switch (mergeType) {
 			case "artist":
 				url += "release-groups+works+recordings";
@@ -193,7 +194,7 @@ function loadEntInfo() {
 		var xhr = new XMLHttpRequest();
 		xhr.id = rowid;
 		xhr.addEventListener("load", function() {
-			var entInfoZone = document.getElementById(userjs+"entInfo"+this.id);
+			var entInfoZone = document.getElementById(userjs + "entInfo" + this.id);
 			if (entInfoZone) {
 				removeChildren(entInfoZone);
 				if (this.status == 200) {
@@ -207,15 +208,15 @@ function loadEntInfo() {
 							}
 							tmp = res.evaluate(".//mb:work-list", res, nsr, XPathResult.ANY_TYPE, null);
 							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(entInfoZone, tmp2.getAttribute("count")+" works");
+								stackInfo(entInfoZone, tmp2.getAttribute("count") + " works");
 							}
 							tmp = res.evaluate(".//mb:release-group-list", res, nsr, XPathResult.ANY_TYPE, null);
 							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(entInfoZone, tmp2.getAttribute("count")+" records");
+								stackInfo(entInfoZone, tmp2.getAttribute("count") + " records");
 							}
 							tmp = res.evaluate(".//mb:recording-list", res, nsr, XPathResult.ANY_TYPE, null);
 							while (tmp2 = tmp.iterateNext()) {
-								stackInfo(entInfoZone, tmp2.getAttribute("count")+" recs");
+								stackInfo(entInfoZone, tmp2.getAttribute("count") + " recs");
 							}
 							break;
 						case "release":
@@ -234,7 +235,7 @@ function loadEntInfo() {
 							tmp = res.evaluate(".//mb:release-group", res, nsr, XPathResult.ANY_TYPE, null);
 							while (tmp2 = tmp.iterateNext()) {
 								var span = document.createElement("span");
-								fill(span, "in ", createA(tmp2.getElementsByTagName("title")[0].textContent.replace(/\s/g, " "), "/release-group/"+tmp2.getAttribute("id")), "");
+								fill(span, "in ", createA(tmp2.getElementsByTagName("title")[0].textContent.replace(/\s/g, " "), "/release-group/" + tmp2.getAttribute("id")), "");
 								stackInfo(entInfoZone, span);
 							}
 							break;
@@ -251,7 +252,7 @@ function loadEntInfo() {
 					}
 				} else {
 					entInfoZone.className = "ng";
-					stackInfo(entInfoZone, "Error "+this.status+" fetching "+mergeType+" #"+this.id+" info");
+					stackInfo(entInfoZone, "Error " + this.status + " fetching " + mergeType + " #" + this.id + " info");
 				}
 			}
 			loadEntInfo();
@@ -266,14 +267,14 @@ function sortBy(what) {
 			entities[rowid].row.parentNode.appendChild(entities[rowid].row.parentNode.removeChild(entities[rowid].row));
 		} else {
 			var rows = entities[rowid].row.parentNode.querySelectorAll("tr, li");
-			for (var row=0; row < rows.length; row++) {
-				var indexA = rows[row].querySelector("[id^='"+userjs+"rowID'] a[href^='/search/edits']"), index;
+			for (var row = 0; row < rows.length; row++) {
+				var indexA = rows[row].querySelector("[id^='" + userjs + "rowID'] a[href^='/search/edits']"), index;
 				if (indexA && (index = parseInt(indexA.textContent.replace(/\D/g, ""), 10)) && index >= entities[rowid][what]) {
 					if (entities[rowid].row != rows[row]) {
 						entities[rowid].row.parentNode.insertBefore(entities[rowid].row.parentNode.removeChild(entities[rowid].row), rows[row]);
 						if (index == entities[rowid][what]) {
 							indexA.style.setProperty("background-color", "silver");
-							indexA.setAttribute("title", "same "+what.replace(/ID/, " ID")+" as above");
+							indexA.setAttribute("title", "same " + what.replace(/ID/, " ID") + " as above");
 						}
 					}
 					break;
@@ -286,7 +287,7 @@ function sortBy(what) {
 function rangeClick(event) {
 	if (event.target.tagName == "LABEL") {
 		if (event.shiftKey && lastCB && event.target.firstChild != lastCB && event.target.firstChild.checked != lastCB.checked) {
-			var CBs = event.target.parentNode.parentNode.parentNode.querySelectorAll("[id^='"+userjs+"remove']  > label > input[type='checkbox'][ref='remove']");
+			var CBs = event.target.parentNode.parentNode.parentNode.querySelectorAll("[id^='" + userjs + "remove']  > label > input[type='checkbox'][ref='remove']");
 			var found;
 			for (var cb = 0; cb < CBs.length; cb++) {
 				if (found) {
@@ -305,11 +306,11 @@ function rangeClick(event) {
 }
 function removeFromMerge(event) {
 	var isCB = event.target.parentNode.getAttribute("id");
-	if (isCB && isCB.indexOf(userjs+"remove") == 0) {
+	if (isCB && isCB.indexOf(userjs + "remove") == 0) {
 		var cb = event.target.parentNode.querySelector("input[type='checkbox'][ref='remove']:not(:checked)");
 		if (cb) cb.checked = true;
 	}
-	var checkedRemoves = mergeForm.querySelectorAll("[id^='"+userjs+"remove'] input[type='checkbox'][ref='remove']:checked");
+	var checkedRemoves = mergeForm.querySelectorAll("[id^='" + userjs + "remove'] input[type='checkbox'][ref='remove']:checked");
 	if (checkedRemoves.length > 0) {
 		var href = "?submit=remove";
 		for (var cb = 0; cb < checkedRemoves.length; cb++) {
@@ -325,15 +326,15 @@ function removeFromMerge(event) {
 }
 function oddEvenRowsRedraw() {
 	var rows = mergeForm.querySelectorAll("form > table > tbody > tr");
-	for (var row=0; row < rows.length; row++) {
-		rows[row].className = rows[row].className.replace(/\b(even|odd)\b/, row%2?"even":"odd");
+	for (var row = 0; row < rows.length; row++) {
+		rows[row].className = rows[row].className.replace(/\b(even|odd)\b/, row % 2 ? "even" : "odd");
 	}
 }
 function loadimg(txt) {
 	var img = document.createElement("img");
 	img.setAttribute("src", "/static/images/icons/loading.gif");
 	if (txt) {
-		var msg = "⌛ loading "+txt+"…";
+		var msg = "⌛ loading " + txt + "…";
 		img.setAttribute("alt", msg);
 		img.setAttribute("title", msg);
 		top.status = msg;
@@ -342,17 +343,17 @@ function loadimg(txt) {
 }
 function addZone(par, id) {
 	par.appendChild(document.createTextNode(" "));
-	var zone = par.appendChild(document.createElement(tbl?"td":"span"));
-	zone.setAttribute("id", userjs+id);
+	var zone = par.appendChild(document.createElement(tbl ? "td" : "span"));
+	zone.setAttribute("id", userjs + id);
 	par.appendChild(document.createTextNode(" "));
 	return zone;
 }
 function stackInfo(zone, info) {
-	fill(zone, tbl?"":" — ", info, ", ");
+	fill(zone, tbl ? "" : " — ", info, ", ");
 }
 function fill(par, beg, stu, sep) {
-	par.appendChild(document.createTextNode(par.hasChildNodes()?sep:beg));
-	par.appendChild(typeof stu=="string"?document.createTextNode(stu):stu);
+	par.appendChild(document.createTextNode(par.hasChildNodes() ? sep : beg));
+	par.appendChild(typeof stu=="string" ? document.createTextNode(stu) : stu);
 }
 function createA(text, link, title) {
 	var a = document.createElement("a");
@@ -361,12 +362,11 @@ function createA(text, link, title) {
 	} else {
 		a.style.setProperty("cursor", "pointer");
 	}
-	if (title){ a.setAttribute("title", title); }
+	if (title) {
+		a.setAttribute("title", title);
+	}
 	a.appendChild(document.createTextNode(text));
 	return a;
-}
-function removeChildren(p) {
-	while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
 }
 function nsr(prefix) {
 	var ns = {
@@ -377,16 +377,10 @@ function nsr(prefix) {
 }
 function rowIDLink(type, id) {
 	/* thanks to http://snipplr.com/view/72657/thousand-separator */
-	var renderedID = (id+"").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
+	var renderedID = (id + "").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
 	var a = createA(
 		renderedID,
-		"/search/edits?order=asc&conditions.0.operator=%3D&conditions.0.field="+type+"&conditions.0.name="+renderedID+"&conditions.0.args.0="+id
+		"/search/edits?order=asc&conditions.0.operator=%3D&conditions.0.field=" + type + "&conditions.0.name=" + renderedID + "&conditions.0.args.0=" + id
 	);
 	return a;
-}
-function stop(event) {
-	event.cancelBubble = true;
-	if (event.stopPropagation) event.stopPropagation();
-	event.preventDefault();
-	return false;
 }
