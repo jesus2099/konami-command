@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.9.4
+// @version      2015.9.7
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -49,10 +49,44 @@ if (mergeType) {
 			* series		table.tbl
 			* work			table.tbl
 			* what else ?	*/
+		mergeForm.addEventListener("submit", function(event) {
+			var editNote = this.querySelector("textarea[name='merge.edit_note']");
+			if (editNote) {
+				editNote.value = editNote.value.trim().replace(/\n\s*—[\s\S]+Merging\sinto\soldest\s\[MBID\]\s\([\'←+\s\d]+\).(\n|$)/g, "");
+				var mergeTargets = mergeForm.querySelectorAll("form > table.tbl > tbody input[type='radio'][name='merge.target']");
+				var mergeTarget;
+				var sortedTargets = [];
+				for (var t = 0; t < mergeTargets.length; t++) {
+					var id = parseInt(mergeTargets[t].value, 10);
+					if (mergeTargets[t].checked) {
+						mergeTarget = id;
+					}
+					if (sortedTargets.length == 0 || id > sortedTargets[sortedTargets.length - 1]) {
+						sortedTargets.push(id);
+					} else if (id < sortedTargets[0]) {
+						sortedTargets.unshift(id);
+					} else {
+						for (var s = 0; s < sortedTargets.length; s++) {
+							if (id < sortedTargets[s]) {
+								sortedTargets.splice(s, 0, id);
+								break;
+							}
+						}
+					}
+				}
+				if (mergeTarget && mergeTarget == sortedTargets[0]) {
+					mergeTargets = "'''" + mergeTarget + "'''";
+					for (var i = 1; i < sortedTargets.length; i++) {
+						mergeTargets += (i == 1 ? " ← " : " + ") + sortedTargets[i];
+					}
+					editNote.value += "\r\n — \r\nMerging into oldest [MBID] (" + mergeTargets + ").";
+				}
+			}
+		});
 		var tbl = mergeForm.querySelector("table.tbl");
 		var entityRows = mergeForm.getElementsByTagName("li");
 		if (tbl) {
-			entityRows = mergeForm.querySelectorAll("form > table > tbody > tr");
+			entityRows = mergeForm.querySelectorAll("form > table.tbl > tbody > tr");
 			var headers = tbl.querySelector("thead tr");
 			if (showEntityInfo && mergeType.match(/(release|release-group)/)) {
 				headers.appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
@@ -70,7 +104,7 @@ if (mergeType) {
 		var rowIDzone = [];
 		for (var row = 0; row < entityRows.length; row++) {
 			var a = entityRows[row].querySelector("a");
-			var rad = entityRows[row].querySelector("input[type='radio']");
+			var rad = entityRows[row].querySelector("input[type='radio'][name='merge.target']");
 			if (a && rad) {
 				if (showEntityInfo) {
 					addZone(entityRows[row], "entInfo" + rad.value);
@@ -314,7 +348,7 @@ function removeFromMerge(event) {
 	if (checkedRemoves.length > 0) {
 		var href = "?submit=remove";
 		for (var cb = 0; cb < checkedRemoves.length; cb++) {
-			href += "&remove="+checkedRemoves[cb].value;
+			href += "&remove=" + checkedRemoves[cb].value;
 			delete entities[checkedRemoves[cb].value];
 			checkedRemoves[cb].parentNode.parentNode.parentNode.parentNode.removeChild(checkedRemoves[cb].parentNode.parentNode.parentNode);
 		}
