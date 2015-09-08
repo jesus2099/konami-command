@@ -1,7 +1,7 @@
 "use strict"; var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.9.6
+// @version      2015.9.8
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -945,7 +945,7 @@ if (j2sets.TAG_TOOLS && account) {
 			tagswitch(h1, tagswitches);
 		}
 	}
-	j2superturbo.addCSSRule("div#sidebar-tags ul.tag-list a[href^='/user/'] { background-color: #ff6 }");
+	j2superturbo.addCSSRule("div#sidebar-tags ul.tag-list a[href^='/user/'] { background-color: #B1EBB0 }");
 	updateTags();
 }
 function updateTags(event) {
@@ -953,7 +953,7 @@ function updateTags(event) {
 	var tagList = document.querySelector("div#sidebar-tags ul.tag-list");
 	if (tagZone && tagList) {
 		if (!event) {
-			getSibling(tagZone, "h2", null, true).appendChild(createTag("span", {s: {color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#ff6"}}, "mine"), " and others’"]));
+			getSibling(tagZone, "h2", null, true).appendChild(createTag("span", {s: {color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]));
 			tagList.addEventListener("DOMNodeInserted", updateTags);
 			var mytags = document.querySelectorAll("div#sidebar-tags ul.tag-list > li > span.tag-upvoted");
 			for (var t = 0; t < mytags.length; t++) {
