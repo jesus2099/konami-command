@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2015.9.7
+// @version      2015.9.9
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
@@ -38,7 +38,7 @@
 // @include      http*://*.mbsandbox.org/mod/*
 // @include      http*://*.mbsandbox.org/recording/*/add-isrc
 // @include      http*://*.mbsandbox.org/release*/*/*-cover-art*
-// @include      http*://*.mbsandbox.org/release/*/edit-relationships
+// @include      http*://*.mbsandbox.org/release/*/edit*
 // @include      http*://*.mbsandbox.org/release/add*
 // @include      http*://*.mbsandbox.org/work/*/add-iswc
 // @include      http*://*musicbrainz.org/*/add-alias
@@ -61,7 +61,7 @@
 // @include      http*://*musicbrainz.org/mod/*
 // @include      http*://*musicbrainz.org/recording/*/add-isrc
 // @include      http*://*musicbrainz.org/release*/*/*-cover-art*
-// @include      http*://*musicbrainz.org/release/*/edit-relationships
+// @include      http*://*musicbrainz.org/release/*/edit*
 // @include      http*://*musicbrainz.org/release/add*
 // @include      http*://*musicbrainz.org/work/*/add-iswc
 // @include      http*://acoustid.org/edit/*
