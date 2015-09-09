@@ -1,7 +1,7 @@
 "use strict"; var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.9.6
+// @version      2015.9.8
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -44,8 +44,8 @@ if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString()
 	}
 }
 meta.name = meta.name.substr(4).replace(/\s/g, "\u00a0");
-meta.icon = createTag("img", {a:{src:meta.icon}, s:{"vertical-align":"middle", "margin":"-8px 0"}});
-var chrome = "Please run “"+meta.name+"” with Tampermonkey instead of plain Chrome.";
+meta.icon = createTag("img", {a: {src: meta.icon}, s: {verticalAlign: "middle", margin: "-8px 0"}});
+var chrome = "Please run “" + meta.name + "” with Tampermonkey instead of plain Chrome.";
 var userjs = "jesus2099userjs85790"/*have to keep this for legacy saved settings*/;
 var KEYCODES = {
 	ENTER:           0x0D,
@@ -57,7 +57,7 @@ var KEYCODES = {
 	"NUMPAD-DOT":    0x6E,
 	"NUMPAD-DIVIDE": 0x6F,
 };
-var MBS = location.protocol+"//"+location.host;
+var MBS = location.protocol + "//" + location.host;
 var sidebar = document.getElementById("sidebar");
 var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(stre_GUID);
@@ -69,10 +69,10 @@ var re_date = {
 	DD: "(0(?:1|2|3|4|5|6|7|8|9)|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)",
 	D: "(1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)",
 };
-re_date.ISO = "("+re_date.YYYY+"(?:-"+re_date.MM+"(?:-"+re_date.DD+")?)?)";
+re_date.ISO = "(" + re_date.YYYY + "(?:-" + re_date.MM + "(?:-" + re_date.DD + ")?)?)";
 var account = document.querySelector("div#header-menu li.account");
 if (account) {
-	var a = account.querySelector("a[href^='"+MBS+"/user/']");
+	var a = account.querySelector("a[href^='" + MBS + "/user/']");
 	account = {
 		item: account,
 		name: a.textContent,
@@ -89,8 +89,8 @@ var j2superturbo = {
 	menu: {
 		expl: " (you can find this in “%editing%” menu)",
 		addItem: function(item) {
-			item.addEventListener("click", function(e) { this.parentNode.parentNode.style.removeProperty("left"); });
-			j2superturbo.menu.lastItem = addAfter(createTag("li", {a:{"class":"jesus2099"},s:{"text-shadow":"0 0 8px purple"}}, item), j2superturbo.menu.getLastItem());
+			item.addEventListener("click", function(event) { this.parentNode.parentNode.style.removeProperty("left"); });
+			j2superturbo.menu.lastItem = addAfter(createTag("li", {a: {class: "jesus2099"}, s: {textShadow: "0 0 8px purple"}}, item), j2superturbo.menu.getLastItem());
 		},
 		getLastItem: function() {
 			if (j2superturbo.menu.lastItem) return j2superturbo.menu.lastItem;
@@ -98,10 +98,10 @@ var j2superturbo = {
 				var head, MBmenu = document.querySelector("div#header-menu li.editing > ul") || document.querySelector("div#header-menu li.about > ul");
 				if (MBmenu && (head = MBmenu.parentNode.querySelector("a"))) {
 					j2superturbo.menu.expl = j2superturbo.menu.expl.replace(/%editing%/, head.textContent);
-					j2superturbo.menu.lastItem = MBmenu.appendChild(createTag("li", {a:{"class":"jesus2099 separator"}}));
+					j2superturbo.menu.lastItem = MBmenu.appendChild(createTag("li", {a: {class: "jesus2099 separator"}}));
 					head.style.setProperty("text-shadow", "0 0 8px purple");
 					return j2superturbo.menu.lastItem;
-				} else if (document.querySelector("div#header-menu")) bug({message:"Can’t add menu", report:true});
+				} else if (document.querySelector("div#header-menu")) bug({message: "Can’t add menu", report: true});
 			}
 		}
 	},
@@ -110,65 +110,65 @@ var j2superturbo = {
 	}
 };
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-j2superturbo.css = document.styleSheets[document.styleSheets.length-1];
+j2superturbo.css = document.styleSheets[document.styleSheets.length - 1];
 var j2sets = {}, j2docs = {}, j2defs = {}, j2setsclean = [];
 j2setting();
-j2superturbo.menu.addItem(createTag("a",{a:{title:"settings:\n"+meta.description.replace(/^[^:]+: /,"").replace(/ \/ /g,"\n")},e:{click:function(e) {
-	var j2setsdiv = document.getElementById(userjs+"j2sets");
+j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + meta.description.replace(/^[^:]+: /, "").replace(/ \/ /g, "\n")}, e: {click: function(event) {
+	var j2setsdiv = document.getElementById(userjs + "j2sets");
 	if (!j2setsdiv) {
 		j2setting();
 		if (j2sets) {
-			j2setsdiv = document.body.insertBefore(createTag("div",{a:{id:userjs+"j2sets"},s:{"background-color":"silver",border:"2px outset white",padding:"1em"}},[
-				createTag("p", {s:{"text-align":"right",margin:"0px"}}, [
-					createTag("a", {a:{href:meta.homepage,target:"_blank"}}, "HELP"),
+			j2setsdiv = document.body.insertBefore(createTag("div", {a: {id: userjs + "j2sets"}, s: {backgroundColor: "silver", border: "2px outset white", padding: "1em"}}, [
+				createTag("p", {s: {textAlign: "right", margin: "0px"}}, [
+					createTag("a", {a: {href: meta.homepage, target: "_blank"}}, "HELP"),
 					" | ",
-					createTag("a", {a:{href:meta.supportURL,target:"_blank"}}, "known issues"),
+					createTag("a", {a: {href: meta.supportURL, target: "_blank"}}, "known issues"),
 					" | ",
-					createTag("a", {e:{click:function(e){if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")){localStorage.removeItem(userjs+"settings");location.reload();}}}}, "RESET"),
+					createTag("a", {e: {click: function(event) { if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")) { localStorage.removeItem(userjs + "settings"); location.reload(); } }}}, "RESET"),
 					" | ",
-					createTag("a", {e:{click:function(e){removeNode(document.getElementById(userjs+"j2sets"));}}}, "CLOSE"),
+					createTag("a", {e: {click: function(event) { removeNode(document.getElementById(userjs + "j2sets")); }}}, "CLOSE"),
 				]),
-				createTag("h4",{s:{"text-shadow":"0 0 8px white","font-size":"1.5em","margin-top":"0px"}},["██ ",createTag("a",{a:{href:meta.namespace,target:"_blank"}},meta.name)," ("+meta.version+")"]),createTag("p",{},["All settings are instantly saved but require a ",createTag("a",{e:{click:function(){location.reload();}}},"PAGE RELOAD")," to see the effect."])
+				createTag("h4", {s: {textShadow: "0 0 8px white", fontSize: "1.5em", marginTop: "0px"}}, ["██ ", createTag("a", {a: {href: meta.namespace, target: "_blank"}}, meta.name), " (" + meta.version + ")"]), createTag("p", {}, ["All settings are instantly saved but require a ", createTag("a", {e: {click: function() { location.reload(); }}}, "PAGE RELOAD"), " to see the effect."])
 			]), document.getElementById("page"));
 			var alphakeys = [];
-			for (var s in j2sets) { if (j2sets.hasOwnProperty(s)) {
-				if (j2setsclean.indexOf(s)<0) { delete j2sets[s]; }
+			for (var s in j2sets) if (j2sets.hasOwnProperty(s)) {
+				if (j2setsclean.indexOf(s) < 0) { delete j2sets[s]; }
 				else if (!s.match(/!/)) { alphakeys.push(s); }
-			} }
+			}
 			alphakeys.sort();
-			var table = j2setsdiv.appendChild(createTag("table", {a:{border:"2", cellpadding:"4", cellspacing:"1"}}));
+			var table = j2setsdiv.appendChild(createTag("table", {a: {border: "2", cellpadding: "4", cellspacing: "1"}}));
 			table.appendChild(createTag("thead", {}, [createTag("th", {}, "setting"), createTag("th", {}, "default setting"), createTag("th", {}, "description")]));
 			table = table.appendChild(document.createElement("tbody"));
-			for (var a=0; a<alphakeys.length; a++) {
+			for (var a = 0; a < alphakeys.length; a++) {
 				var tr = table.appendChild(document.createElement("tr"));
-				tr.appendChild(createTag("th", {s:{"background-color":"#ccc","text-align":"left","padding-left":alphakeys[a].match(/[a-z]/)?"2em":"inherit"}}, j2settinput(alphakeys[a])));
-				tr.appendChild(createTag("td", {s:{opacity:".666", "text-align":"center"}}, typeof j2defs[alphakeys[a]]=="boolean"?(j2defs[alphakeys[a]]?"☑":"☐"):j2defs[alphakeys[a]]));
-				tr.appendChild(createTag("td", {s:{"margin-bottom":".4em"}}, j2docit(j2docs[alphakeys[a]]).concat([" — ", createTag("a", {a:{href:meta.homepage+"#"+alphakeys[a].toLowerCase(),target:"_blank"}}, "more help…")])));
+				tr.appendChild(createTag("th", {s: {backgroundColor: "#ccc", textAlign: "left", paddingLeft: alphakeys[a].match(/[a-z]/) ? "2em" : "inherit"}}, j2settinput(alphakeys[a])));
+				tr.appendChild(createTag("td", {s: {opacity: ".666", textAlign: "center"}}, typeof j2defs[alphakeys[a]] == "boolean" ? (j2defs[alphakeys[a]] ? "☑" : "☐") : j2defs[alphakeys[a]]));
+				tr.appendChild(createTag("td", {s: {marginBottom: ".4em"}}, j2docit(j2docs[alphakeys[a]]).concat([" — ", createTag("a", {a: {href: meta.homepage + "#" + alphakeys[a].toLowerCase(), target: "_blank"}}, "more help…")])));
 			}
 		}
 	}
 	j2setsdiv.scrollIntoView();
-}}}, [meta.icon.cloneNode(), " "+meta.name+" ("+meta.version+")"]));
+}}}, [meta.icon.cloneNode(), " " + meta.name + " (" + meta.version + ")"]));
 function bug(error) {
-	var title = "", alrt = meta.name+" ("+meta.version+")"+" ERROR";
+	var title = "", alrt = meta.name + " (" + meta.version + ")" + " ERROR";
 	if (error.module) {
-		title = " in “"+error.module+"” module";
+		title = " in “" + error.module + "” module";
 		alrt += title;
 	}
 	if (error.message) {
-		title = error.message+title;
-		alrt += "\n\n"+error.message;
+		title = error.message + title;
+		alrt += "\n\n" + error.message;
 	}
 	if (error.report && title) {
-		if (confirm(alrt+"\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
-			self.open(meta.supportURL+"/new?title="+encodeURIComponent(title)+"&body="+encodeURIComponent("Hello,\nI am using that awesome *"+meta.name+"* (**"+meta.version+"**).\nI got an error while I was on ["+(document.title?document.title:"that page")+"]("+location.href+"):\n\n    "+error.message.replace(/\n/g, "\n    ")));
+		if (confirm(alrt + "\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
+			self.open(meta.supportURL + "/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent("Hello,\nI am using that awesome *" + meta.name + "* (**" + meta.version + "**).\nI got an error while I was on [" + (document.title ? document.title : "that page") + "](" + location.href + "):\n\n    " + error.message.replace(/\n/g, "\n    ")));
 		}
 	} else {
 		alert(alrt);
 	}
 }
 function j2setting(set, val, def, doc) {
-	if (set == null) { j2sets = localStorage.getItem(userjs+"settings"); if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; } }
+	if (set == null) { j2sets = localStorage.getItem(userjs + "settings"); if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; } }
 	else {
 		if (doc) { j2docs[set] = doc; }
 		if (def) {
@@ -177,7 +177,7 @@ function j2setting(set, val, def, doc) {
 		}
 		if (val != null && (!def || j2sets[set] == null)) {
 			j2sets[set] = val;
-			localStorage.setItem(userjs+"settings", JSON.stringify(j2sets));
+			localStorage.setItem(userjs + "settings", JSON.stringify(j2sets));
 		} else if (set) {
 			return j2sets[set];
 		}
@@ -185,9 +185,9 @@ function j2setting(set, val, def, doc) {
 }
 function j2settinput(set) {
 	var val = j2setting(set);
-	var rnd = (Math.random()+"").substring(2);
-	var lbl = createTag("label", {a:{"for":userjs+enttype+set+rnd}, s:{"white-space":"nowrap","text-shadow":"1px 1px 2px #999"}}, createTag("input", {a:{type:"checkbox", id:userjs+enttype+set+rnd, "class":set},e:{change:function(e){
-		j2setting(this.className, this.getAttribute("type")=="checkbox"?this.checked:this.value);
+	var rnd = (Math.random() + "").substring(2);
+	var lbl = createTag("label", {a: {"for": userjs + enttype + set + rnd}, s: {whiteSpace: "nowrap", textShadow: "1px 1px 2px #999"}}, createTag("input", {a: {type: "checkbox", id: userjs + enttype + set + rnd, class: set}, e: {change: function(event) {
+		j2setting(this.className, this.getAttribute("type") == "checkbox" ? this.checked : this.value);
 	}}}));
 	var inp = lbl.querySelector("input");
 	switch (typeof val) {
@@ -197,11 +197,11 @@ function j2settinput(set) {
 			inp.checked = val;
 			break;
 		default:
-			lbl.insertBefore(document.createTextNode("\u00a0_\u00a0 "+set), inp);
+			lbl.insertBefore(document.createTextNode("\u00a0_\u00a0 " + set), inp);
 			inp.setAttribute("type", "text");
 			inp.setAttribute("value", val);
 			inp.style.setProperty("margin-left", "4px");
-			inp.addEventListener("keypress", function(e){if(e.keyCode==KEYCODES.ENTER){this.blur();removeNode(getParent(this,"div"))}}, false);
+			inp.addEventListener("keypress", function(event) { if(event.keyCode == KEYCODES.ENTER) { this.blur(); removeNode(getParent(this, "div")) } }, false);
 			break;
 	}
 	return lbl;
@@ -210,7 +210,7 @@ function j2docit(txt) {
 	var jira = txt.match(/\b(MBS-\d+)\b/);
 	if (jira) {
 		var arr = txt.split(jira[1]);
-		arr.splice(1, 0, createTag("a", {a:{href:"http://tickets.musicbrainz.org/browse/"+jira[1].toUpperCase(),target:"_blank",title:"opens in new window"}}, jira[1]));
+		arr.splice(1, 0, createTag("a", {a: {href: "http://tickets.musicbrainz.org/browse/" + jira[1].toUpperCase(), target: "_blank", title: "opens in new window"}}, jira[1]));
 		return arr;
 	}
 	else return [txt];
@@ -219,48 +219,48 @@ function j2docit(txt) {
 ## RELEASE_CLONER ##
 todo : add debugged clone release-AR module
 ==========================================================================*/
-j2setting("RELEASE_CLONER", true, true, "one-click duplicate release(s)"+j2superturbo.menu.expl);
+j2setting("RELEASE_CLONER", true, true, "one-click duplicate release(s)" + j2superturbo.menu.expl);
 j2setting("RELEASE_CLONER_release_event", false, true, "clones release event(s), package, catalogue number(s), etc. (not advised as those usually change for each edition)");
 j2setting("RELEASE_CLONER_additional_information", false, true, "clones annotation and disambiguation (usually change for each edition)");
 j2setting("RELEASE_CLONER_external_links", false, true, "(EXPERIMENTAL) clones URL relations (not advised as those usually change for each edition)");
 j2setting("RELEASE_CLONER_tracktimes", false, true, "clones track times (mastering sometimes change for some edition)");
 if (j2sets.RELEASE_CLONER && account) {
-	var rcwhere = location.pathname.match(new RegExp("^/((release(?!-group)|release-group|label)/"+stre_GUID+")|artist/"+stre_GUID+"/(releases)$"));
+	var rcwhere = location.pathname.match(new RegExp("^/((release(?!-group)|release-group|label)/" + stre_GUID + ")|artist/" + stre_GUID + "/(releases)$"));
 	if (
-		rcwhere && (rcwhere = rcwhere[2]?rcwhere[2]:rcwhere[3])
+		rcwhere && (rcwhere = rcwhere[2] ? rcwhere[2] : rcwhere[3])
 	) {
 		var addrel = document.querySelector("div#header-menu li.editing > ul > li:not(.separator) > a[href$='/release/add']");
 		if (addrel) {
-			j2superturbo.menu.addItem(createTag("a", {a:{title:meta.name+"\nshift+click to open new tab / ctrl+click for background tab"+(rcwhere!="release"?"\nno need to select if there is only one release on this page":"")},e:{click:function(e){
+			j2superturbo.menu.addItem(createTag("a", {a: {title: meta.name + "\nshift+click to open new tab / ctrl+click for background tab" + (rcwhere != "release" ? "\nno need to select if there is only one release on this page" : "")}, e: {click: function(event) {
 					var crmbids = [];
 					if (rcwhere == "release") {
-						crmbids.push(""+location.pathname.match(re_GUID));
+						crmbids.push("" + location.pathname.match(re_GUID));
 					}
 					else {
 						var checkrels = document.querySelectorAll("table.tbl > tbody input[type='checkbox'][name='add-to-merge']");
-						for (var crmbid, cr=0; cr<checkrels.length; cr++) {
+						for (var crmbid, cr = 0; cr < checkrels.length; cr++) {
 							if ((checkrels[cr].checked || checkrels.length == 1) && (crmbid = getParent(checkrels[cr], "tr")) && (crmbid = crmbid.querySelector("a[href*='/release/']").getAttribute("href").match(re_GUID))) {
-								crmbids.push(""+crmbid);
+								crmbids.push("" + crmbid);
 							}
 						}
 					}
 					if (crmbids.length > 0) {
-						if (confirm("This will (you can change the settings):\n\n* "+(j2sets.RELEASE_CLONER_release_event?"":"NOT ")+"copy release events\n* "+(j2sets.RELEASE_CLONER_additional_information?"":"NOT ")+"copy additional information\n* "+(j2sets.RELEASE_CLONER_external_links?"":"NOT ")+"copy external links\n* "+(j2sets.RELEASE_CLONER_tracktimes?"":"NOT ")+"copy track times")) {
-							for (var crr=crmbids.length-1; crr>=0; crr--) {
+						if (confirm("This will (you can change the settings):\n\n* " + (j2sets.RELEASE_CLONER_release_event ? "" : "NOT ") + "copy release events\n* " + (j2sets.RELEASE_CLONER_additional_information ? "" : "NOT ") + "copy additional information\n* " + (j2sets.RELEASE_CLONER_external_links ? "" : "NOT ") + "copy external links\n* " + (j2sets.RELEASE_CLONER_tracktimes ? "" : "NOT ") + "copy track times")) {
+							for (var crr = crmbids.length - 1; crr >= 0; crr--) {
 								var xhr = new XMLHttpRequest();
-								xhr.onload = function(e) {
+								xhr.onload = function(event) {
 									var resv, res = this.responseXML.documentElement;
 									var reled = {
-										form: createTag("form", {a:{action:"/release/add",method:"post",target:crr==0?"_self":"_blank"},s:{display:"none"}}),
+										form: createTag("form", {a: {action: "/release/add", method: "post", target: crr == 0 ? "_self" : "_blank"}, s: {display: "none"}}),
 										add: function(ws, re, _opt) {
-											var opt = _opt?_opt:{};
-											var cont = opt.node?opt.node:res;
-											var val = opt.raw?ws:cont.querySelector(ws);
+											var opt = _opt ? _opt : {};
+											var cont = opt.node ? opt.node : res;
+											var val = opt.raw ? ws : cont.querySelector(ws);
 											if (val) {
 												if (typeof val == "object") val = val.textContent;
-												/*console.log(re+" = "+val);*/
-												if (opt.multiline) reled.form.appendChild(createTag("textarea", {a:{name:re}}, val));
-												else reled.form.appendChild(createTag("input", {a:{name:re, value:val}}));
+												/*console.log(re + " = " + val);*/
+												if (opt.multiline) reled.form.appendChild(createTag("textarea", {a: {name: re}}, val));
+												else reled.form.appendChild(createTag("input", {a: {name: re, value: val}}));
 											}
 											else if (opt.req) {
 												return false;
@@ -269,25 +269,25 @@ if (j2sets.RELEASE_CLONER && account) {
 										}
 									};
 									var ok = true;
-									ok &= reled.add("release > title", "name", {req:true});
+									ok &= reled.add("release > title", "name", {req: true});
 									resv = res.querySelector("release > release-group");
-									ok &= reled.add(resv.getAttribute("id"), "release_group", {raw:true});
+									ok &= reled.add(resv.getAttribute("id"), "release_group", {raw: true});
 									if (j2sets.RELEASE_CLONER_additional_information) {
 										ok &= reled.add("release > disambiguation", "comment");
-										ok &= reled.add("release > annotation", "annotation", {multiline:true});
+										ok &= reled.add("release > annotation", "annotation", {multiline: true});
 									}
 									if (j2sets.RELEASE_CLONER_release_event) {
 										ok &= reled.add("release > barcode", "barcode");
 										/* ws:release-event-list */
 										resv = res.querySelectorAll("release > release-event-list > release-event");
-										for (var resi=0; resi<resv.length && ok; resi++) {
+										for (var resi = 0; resi < resv.length && ok; resi++) {
 											var date = resv[resi].querySelector("release-event > date");
 											if (date && (date = date.textContent)) {
 												var datex;
-												if (datex = date.match(/^(\d{4})/)) ok &= reled.add(datex[1], "events."+resi+".date.year", {raw:true});
-												if (datex = date.match(/^.{4}-(\d{2})/)) ok &= reled.add(datex[1], "events."+resi+".date.month", {raw:true});
-												if (datex = date.match(/^.{4}-.{2}-(\d{2})$/)) ok &= reled.add(datex[1], "events."+resi+".date.day", {raw:true});
-												ok &= reled.add("release-event > area > iso-3166-1-code-list > iso-3166-1-code", "events."+resi+".country", {node:resv[resi]});
+												if (datex = date.match(/^(\d{4})/)) ok &= reled.add(datex[1], "events." + resi + ".date.year", {raw: true});
+												if (datex = date.match(/^.{4}-(\d{2})/)) ok &= reled.add(datex[1], "events." + resi + ".date.month", {raw: true});
+												if (datex = date.match(/^.{4}-.{2}-(\d{2})$/)) ok &= reled.add(datex[1], "events." + resi + ".date.day", {raw: true});
+												ok &= reled.add("release-event > area > iso-3166-1-code-list > iso-3166-1-code", "events." + resi + ".country", {node: resv[resi]});
 											}
 										}
 										/* ws:release-event-list */
@@ -295,12 +295,12 @@ if (j2sets.RELEASE_CLONER && account) {
 										ok &= reled.add("release > packaging", "packaging");
 										/* ws:label-info-list */
 										resv = res.querySelectorAll("release > label-info-list > label-info");
-										for (var resi=0; resi<resv.length && ok; resi++) {
+										for (var resi = 0; resi < resv.length && ok; resi++) {
 											var label = resv[resi].querySelector("label-info > label");
 											if (label && (label = label.getAttribute("id"))) {
-												ok &= reled.add(label, "labels."+resi+".mbid", {raw:true});
+												ok &= reled.add(label, "labels." + resi + ".mbid", {raw: true});
 											}
-											ok &= reled.add("label-info > catalog-number", "labels."+resi+".catalog_number", {node:resv[resi]});
+											ok &= reled.add("label-info > catalog-number", "labels." + resi + ".catalog_number", {node: resv[resi]});
 										}
 										/* ws:label-info-list */
 									}
@@ -308,32 +308,32 @@ if (j2sets.RELEASE_CLONER && account) {
 									ok &= reled.add("release > text-representation > script", "script");
 									/* ws:artist-credit */
 									resv = res.querySelectorAll("release > artist-credit > name-credit > artist");
-									for (var resi=0; resi<resv.length && ok; resi++) {
-										ok &= reled.add(resv[resi].getAttribute("id"), "artist_credit.names."+resi+".mbid", {raw:true});
-										ok &= reled.add("name-credit name", "artist_credit.names."+resi+".name", {node:resv[resi].parentNode});
-										ok &= reled.add(resv[resi].parentNode.getAttribute("joinphrase"), "artist_credit.names."+resi+".join_phrase", {raw:true});
+									for (var resi = 0; resi < resv.length && ok; resi++) {
+										ok &= reled.add(resv[resi].getAttribute("id"), "artist_credit.names." + resi + ".mbid", {raw: true});
+										ok &= reled.add("name-credit name", "artist_credit.names." + resi + ".name", {node: resv[resi].parentNode});
+										ok &= reled.add(resv[resi].parentNode.getAttribute("joinphrase"), "artist_credit.names." + resi + ".join_phrase", {raw: true});
 									}
 									/* ws:artist-credit */
 									/* ws:medium-list */
 									resv = res.querySelectorAll("release > medium-list > medium");
-									for (var resi=0; resi<resv.length && ok; resi++) {
-										ok &= reled.add("medium > format", "mediums."+resi+".format", {node:resv[resi]});
-										ok &= reled.add("medium > title", "mediums."+resi+".name", {node:resv[resi]});
+									for (var resi = 0; resi < resv.length && ok; resi++) {
+										ok &= reled.add("medium > format", "mediums." + resi + ".format", {node: resv[resi]});
+										ok &= reled.add("medium > title", "mediums." + resi + ".name", {node: resv[resi]});
 										var tracks = resv[resi].querySelectorAll("medium > track-list > track");
-										for (var tr=0; tr<tracks.length; tr++) {
-											ok &= reled.add("track title", "mediums."+resi+".track."+tr+".name", {node:tracks[tr]});
-											ok &= reled.add("track > number", "mediums."+resi+".track."+tr+".number", {node:tracks[tr]});
-											ok &= reled.add(tracks[tr].querySelector("track > recording").getAttribute("id"), "mediums."+resi+".track."+tr+".recording", {raw:true});
+										for (var tr = 0; tr < tracks.length; tr++) {
+											ok &= reled.add("track title", "mediums." + resi + ".track." + tr + ".name", {node: tracks[tr]});
+											ok &= reled.add("track > number", "mediums." + resi + ".track." + tr + ".number", {node: tracks[tr]});
+											ok &= reled.add(tracks[tr].querySelector("track > recording").getAttribute("id"), "mediums." + resi + ".track." + tr + ".recording", {raw: true});
 											/* ws:artist-credit */
 											var trac = tracks[tr].querySelector("track > artist-credit, track > recording > artist-credit");
 											trac = trac.querySelectorAll("artist-credit > name-credit > artist");
-											for (var aci=0; aci<trac.length && ok; aci++) {
-												ok &= reled.add(trac[aci].getAttribute("id"), "mediums."+resi+".track."+tr+".artist_credit.names."+aci+".mbid", {raw:true});
-												ok &= reled.add("name-credit > name", "mediums."+resi+".track."+tr+".artist_credit.names."+aci+".name", {node:trac[aci].parentNode});
-												ok &= reled.add(trac[aci].parentNode.getAttribute("joinphrase"), "mediums."+resi+".track."+tr+".artist_credit.names."+aci+".join_phrase", {raw:true});
+											for (var aci = 0; aci < trac.length && ok; aci++) {
+												ok &= reled.add(trac[aci].getAttribute("id"), "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".mbid", {raw: true});
+												ok &= reled.add("name-credit > name", "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".name", {node: trac[aci].parentNode});
+												ok &= reled.add(trac[aci].parentNode.getAttribute("joinphrase"), "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".join_phrase", {raw: true});
 											}
 											/* ws:artist-credit */
-											if (j2sets.RELEASE_CLONER_tracktimes) ok &= reled.add("track > length", "mediums."+resi+".track."+tr+".length", {node:tracks[tr]});
+											if (j2sets.RELEASE_CLONER_tracktimes) ok &= reled.add("track > length", "mediums." + resi + ".track." + tr + ".length", {node: tracks[tr]});
 										}
 									}
 									/* ws:medium-list */
@@ -359,23 +359,23 @@ if (j2sets.RELEASE_CLONER && account) {
 											"unknown14":  86/*VGMdb*/,
 											"unknown15": 308/*2ndhandsong*/,
 										};
-										for (var resi=0; resi<resv.length && ok; resi++) {
-											ok &= reled.add(linkTypes[resv[resi].getAttribute("type-id")], "urls."+resi+".link_type", {raw:true});
-											ok &= reled.add("relation > target", "urls."+resi+".url", {node:resv[resi]});
+										for (var resi = 0; resi < resv.length && ok; resi++) {
+											ok &= reled.add(linkTypes[resv[resi].getAttribute("type-id")], "urls." + resi + ".link_type", {raw: true});
+											ok &= reled.add("relation > target", "urls." + resi + ".url", {node: resv[resi]});
 										}
 										/* ws:url-rels */
 									}
-									ok &= reled.add("\n —\n"+MBS+"/release/"+crmbids[crr]+" cloned using "+meta.name+"’s '''RELEASE_CLONER''' ("+meta.version+")", "edit_note", {raw:true,multiline:true});
+									ok &= reled.add("\n —\n" + MBS + "/release/" + crmbids[crr] + " cloned using " + meta.name + "’s '''RELEASE_CLONER''' (" + meta.version + ")", "edit_note", {raw: true, multiline: true});
 									/* fin */
 									if (ok) document.body.appendChild(reled.form).submit();
 									else sendEvent(this, "error");
 								};
-								xhr.onerror = function(e) {
+								xhr.onerror = function(event) {
 									if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
-										self.open(meta.supportURL+"/new?title=RELEASE_CLONER+xhr+error&body="+encodeURIComponent("Hello,\nI am using *"+meta.name+"* version **"+meta.version+"**.\nI got an error while cloning [this release]("+MBS+"/release/) on [that page]("+location.href+").\n"));
+										self.open(meta.supportURL + "/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + location.href + ").\n"));
 									}
 								};
-								xhr.open("get", "/ws/2/release/"+crmbids[crr]+"?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels", false);
+								xhr.open("get", "/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels", false);
 								xhr.overrideMimeType("text/xml");
 								xhr.send(null);
 							}
@@ -383,7 +383,7 @@ if (j2sets.RELEASE_CLONER && account) {
 					} else {
 						alert("Please select at least one release.");
 					}
-				}}}, [meta.icon.cloneNode(), " Clone "+(rcwhere=="release"?"release":"selected releases")+" ", createTag("small", {s:{color:"grey"}}, "← RELEASE_CLONER™")]));
+				}}}, [meta.icon.cloneNode(), " Clone " + (rcwhere == "release" ? "release" : "selected releases") + " ", createTag("small", {s: {color: "grey"}}, "← RELEASE_CLONER™")]));
 		}
 	}
 }
@@ -427,16 +427,16 @@ if (j2sets.USER_STATS && location.pathname.match(/^\/user\/[^/]+$/)) {
 		votes = votes.replace(/conditions\.1[^&]+/g, "");
 		for (var i = 7; i < stats.length; i++) {
 			var vote = stats[i];
-			vote.replaceChild(createTag("a", {a: {href: votes.replace(/%vote%/, {7:1, 8:0, 9:-1, 10:2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
+			vote.replaceChild(createTag("a", {a: {href: votes.replace(/%vote%/, {7: 1, 8: 0, 9: -1, 10: 2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
 		}
 		var yes = readStat(stats, 7);
 		var no = readStat(stats, 8);
 		var abs = readStat(stats, 9);
-		var appr = stats.length>10 ? readStat(stats, 10) : 0;
+		var appr = stats.length > 10 ? readStat(stats, 10) : 0;
 		stats[9].parentNode.parentNode.insertBefore(
 			createTag("tr", null, [
 				createTag("th", null, "Ranked total"),
-				createTag("th", {a: {colspan: "2"}}, createTag("a", {a: {href: "/statistics/editors", title :"see editor rankings"}, s: {cursor: "help"}}, separ1000(0 + yes + no + appr) + " (" + percentage(yes + no + appr, yes + no + abs + appr) + ")"))
+				createTag("th", {a: {colspan: "2"}}, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, separ1000(0 + yes + no + appr) + " (" + percentage(yes + no + appr, yes + no + abs + appr) + ")"))
 			]),
 			stats[9].parentNode
 		);
@@ -447,7 +447,7 @@ function readStat(stats, i) {
 }
 function writeStat(stats, i, stat, total) {
 	var a = stats[i].getElementsByTagName("a")[0];
-	a.replaceChild(document.createTextNode(percentage(stat,total)), a.firstChild);
+	a.replaceChild(document.createTextNode(percentage(stat, total)), a.firstChild);
 }
 function percentage(p, c) {
 	return (c == 0 ? 0 : Math.round(10000 * p / c) / 100) + "%";
@@ -461,24 +461,24 @@ function separ1000(n) {
 try {
 	var maxent = MB && MB.constants && MB.constants.MAX_RECENT_ENTITIES;
 	if (maxent && typeof maxent == "number") {
-		j2setting("MAX_RECENT_ENTITIES", maxent+"", true, "adjust the amount of recently used entities in inline searches (default is taken from MB itself)");
+		j2setting("MAX_RECENT_ENTITIES", maxent + "", true, "adjust the amount of recently used entities in inline searches (default is taken from MB itself)");
 		if (j2sets.MAX_RECENT_ENTITIES) {
 			MB.constants.MAX_RECENT_ENTITIES = parseInt(j2sets.MAX_RECENT_ENTITIES, 10);
 		}
 	}
-} catch(e) {
-	j2setting("MAX_RECENT_ENTITIES", "ERROR", true, e.message+"! — MAX_RECENT_ENTITIES can’t work. — "+chrome);
+} catch(error) {
+	j2setting("MAX_RECENT_ENTITIES", "ERROR", true, error.message + "! — MAX_RECENT_ENTITIES can’t work. — " + chrome);
 }
 /*=================================================================== MOUSE+
 ## CHECK_ALL_SUBSCRIPTIONS ##
 ==========================================================================*/
 j2setting("CHECK_ALL_SUBSCRIPTIONS", true, true, "adds a “check all” checkbox on subscriptions pages (MBS-3629)");
-if (j2sets.CHECK_ALL_SUBSCRIPTIONS && location.href.match(new RegExp("^"+MBS+"/user/[^/]+/subscriptions/.+$"))) {
+if (j2sets.CHECK_ALL_SUBSCRIPTIONS && location.href.match(new RegExp("^" + MBS + "/user/[^/]+/subscriptions/.+$"))) {
 	var cbs = document.querySelectorAll("div#page > form > table.tbl > tbody > tr > td > input[type='checkbox']");
 	var ths = document.querySelector("div#page > form > table.tbl > thead > tr > th");
 	if (ths && !ths.hasChildNodes() && cbs && cbs.length > 0) {
-		var cb = ths.appendChild(createTag("input",{a:{type:"checkbox"},e:{click:function(e){
-			for (var icb=0; icb < cbs.length; icb++) {
+		var cb = ths.appendChild(createTag("input", {a: {type: "checkbox"}, e: {click: function(event) {
+			for (var icb = 0; icb < cbs.length; icb++) {
 				if (cbs[icb].checked != this.checked) {
 					cbs[icb].click();
 				}
@@ -502,15 +502,15 @@ function EASY_DATE_calmDOM() {
 	EASY_DATE_calmDOMto = setTimeout(EASY_DATE_init, 100);
 }
 function EASY_DATE_init() {
-	for (var years=document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(."+userjs+"easydate)"), y=0; y<years.length; y++) {
+	for (var years = document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(." + userjs + "easydate)"), y = 0; y < years.length; y++) {
 		addAfter(
-			createTag("input",{
-				a:{value:years[y].value, placeholder:"YYY+", size:"4", title:"EASY_DATE®\n"+j2docs.EASY_DATE},
-				s:{"background-color":"#ff9"},
-				e:{
-					input:function(e) {
+			createTag("input", {
+				a: {value: years[y].value, placeholder: "YYY+", size: "4", title: "EASY_DATE®\n" + j2docs.EASY_DATE},
+				s: {backgroundColor: "#ff9"},
+				e: {
+					input: function(event) {
 						this.style.setProperty("background-color", "#ff9");
-						this.value = this.value.trim().replace(/[０-９]/g,function(d){return String.fromCharCode(d.charCodeAt(0)-"０".charCodeAt(0)+"0".charCodeAt(0));}).replace(/^\D+|\D+$/, "");
+						this.value = this.value.trim().replace(/[０-９]/g, function(d) { return String.fromCharCode(d.charCodeAt(0) - "０".charCodeAt(0) + "0".charCodeAt(0)); }).replace(/^\D+|\D+$/, "");
 						var date;
 						if (!this.value.match(/\D/)) {
 							switch (this.value.length) {
@@ -518,13 +518,13 @@ function EASY_DATE_init() {
 									this.value = this.value.substr(0, 4);
 									break;
 								case 6:
-									this.value = (parseInt(this.value, 10)>19?"19":"20") + this.value;
+									this.value = (parseInt(this.value, 10) > 19 ? "19" : "20") + this.value;
 								case 8:
-									date = this.value.match(new RegExp("^"+re_date.YYYY+re_date.MM+re_date.DD+"$"));
+									date = this.value.match(new RegExp("^" + re_date.YYYY + re_date.MM + re_date.DD + "$"));
 									break;
 							}
 						} else {
-							date = this.value.match(new RegExp("^(?:"+re_date.YYYY+"\\D+"+re_date.MM+"(?:\\D+"+re_date.DD+")?|(?:"+re_date.DD+"\\D+)"+re_date.MM+"\\D+"+re_date.YYYY+"|"+re_date.YYYY+"\\D+"+re_date.M+"(?:\\D+"+re_date.D+")?|(?:"+re_date.D+"\\D+)?"+re_date.M+"\\D+"+re_date.YYYY+"|"+re_date.YY+"\\D+"+re_date.M+"(?:\\D+"+re_date.D+")?|(?:"+re_date.D+"\\D+)?"+re_date.M+"\\D+"+re_date.YY+")$"));
+							date = this.value.match(new RegExp("^(?:" + re_date.YYYY + "\\D+" + re_date.MM + "(?:\\D+" + re_date.DD + ")?|(?:" + re_date.DD + "\\D+)" + re_date.MM + "\\D+" + re_date.YYYY + "|" + re_date.YYYY + "\\D+" + re_date.M + "(?:\\D+" + re_date.D + ")?|(?:" + re_date.D + "\\D+)?" + re_date.M + "\\D+" + re_date.YYYY + "|" + re_date.YY + "\\D+" + re_date.M + "(?:\\D+" + re_date.D + ")?|(?:" + re_date.D + "\\D+)?" + re_date.M + "\\D+" + re_date.YY + ")$"));
 						}
 						if (date) {
 							var ymd = {
@@ -534,12 +534,12 @@ function EASY_DATE_init() {
 							};
 							for (var i in ymd) if (ymd.hasOwnProperty(i) && ymd[i]) {
 								if (i == "YYYY" && ymd[i].length == 2) {
-									ymd[i] = (parseInt(ymd[i], 10)>19?"19":"20") + ymd[i];
+									ymd[i] = (parseInt(ymd[i], 10) > 19 ? "19" : "20") + ymd[i];
 								}
 								else if (ymd[i].length == 1) {
 									ymd[i] = "0" + ymd[i];
 								}
-								var input = this.parentNode.querySelector("input[placeholder='"+i+"']");
+								var input = this.parentNode.querySelector("input[placeholder='" + i + "']");
 								input.value = ymd[i];
 								input.focus();
 								sendEvent(input, "change");
@@ -551,13 +551,13 @@ function EASY_DATE_init() {
 							if (!this.value.match(/^\d\d\d\d$/)) this.style.setProperty("background-color", "#fcc");
 						}
 					},
-					focus:function(e){this.select();},
-					keydown:[EASY_DATE_cloneDate, EASY_DATE_nextField]
+					focus: function(event) { this.select(); },
+					keydown: [EASY_DATE_cloneDate, EASY_DATE_nextField]
 				}}
 			), years[y]);
-		years[y].classList.add(userjs+"easydate");
+		years[y].classList.add(userjs + "easydate");
 		years[y].style.setProperty("display", "none");
-		years[y].addEventListener("change", function(e) {
+		years[y].addEventListener("change", function(event) {
 			if (this.nextSibling.value != this.value) {
 				this.nextSibling.value = this.value;
 			}
@@ -574,14 +574,14 @@ function EASY_DATE_cloneDate(event) {
 		for (var p = 0; p < ph.length; p++) {
 			var inps = this.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='" + ph[p] + "']");
 			var downwards = (this.parentNode == inps[0].parentNode);
-			inps[downwards?1:0].value = inps[downwards?0:1].value;
-			sendEvent(inps[downwards?1:0], "change");
+			inps[downwards ? 1 : 0].value = inps[downwards ? 0 : 1].value;
+			sendEvent(inps[downwards ? 1 : 0], "change");
 		}
 	}
 }
 function EASY_DATE_nextField(event) {
 	if (!event.ctrlKey && !event.shiftKey && (event.keyCode == KEYCODES["NUMPAD-MINUS"] || event.keyCode == KEYCODES["NUMPAD-DIVIDE"] || event.keyCode == KEYCODES["NUMPAD-DOT"])) {
-		var nextField = this.parentNode.querySelector("input[placeholder='" + (this.getAttribute("placeholder")=="MM"?"DD":"MM") + "']");
+		var nextField = this.parentNode.querySelector("input[placeholder='" + (this.getAttribute("placeholder") == "MM" ? "DD" : "MM") + "']");
 		nextField.focus();
 		nextField.select();
 		return stop(event);
@@ -593,7 +593,7 @@ function EASY_DATE_nextField(event) {
 j2setting("SPOT_AC", true, true, "name variations (Artist Credit, track name ≠ recording name, etc.) stand out");
 j2setting("SPOT_AC_css", "border-bottom: 2px dashed maroon;", true, "CSS syntax (on “span.name-variation”)");
 if (j2sets.SPOT_AC) {
-	j2superturbo.addCSSRule("span.name-variation { "+j2sets.SPOT_AC_css+" }");
+	j2superturbo.addCSSRule("span.name-variation { " + j2sets.SPOT_AC_css + " }");
 }
 /*================================================================= DISPLAY+
 ## SPOT_CAA ##
@@ -601,7 +601,7 @@ if (j2sets.SPOT_AC) {
 j2setting("SPOT_CAA", true, true, "cover art archive’s images stand out from other images. Allows spotting incorrectly padded CAA uploads and looks cool altogether");
 j2setting("SPOT_CAA_css", "box-shadow: 0 0 8px black;", true, "CSS syntax (on “a.artwork-image > img”)");
 if (j2sets.SPOT_CAA) {
-	j2superturbo.addCSSRule("a.artwork-image > span.cover-art-image > img[src*='//coverartarchive.org/'] { "+j2sets.SPOT_CAA_css+" }");
+	j2superturbo.addCSSRule("a.artwork-image > span.cover-art-image > img[src*='//coverartarchive.org/'] { " + j2sets.SPOT_CAA_css + " }");
 }
 /*================================================================= DISPLAY+
 ## WARN_NEW_WINDOW ##
@@ -626,7 +626,7 @@ if (j2sets.HIDE_RATINGS) {
 	/*work around for missing rating classes (artist, collection)*/
 	var ratingIndex = document.querySelector("div#content table.tbl > tbody > tr > td:not(.rating) > span.inline-rating");
 	if (ratingIndex) {
-		j2superturbo.addCSSRule("div#content table.tbl > * > tr > *:nth-child("+(ratingIndex.parentNode.cellIndex+1)+") { display: none; }");
+		j2superturbo.addCSSRule("div#content table.tbl > * > tr > *:nth-child(" + (ratingIndex.parentNode.cellIndex + 1) + ") { display: none; }");
 	}
 }
 /*================================================================= DISPLAY+
@@ -641,7 +641,7 @@ if (j2sets.RATINGS_ON_TOP && sidebar && !j2sets.HIDE_RATINGS) {
 		var where;
 		if (j2sets.RATINGS_ON_TOP_below_image) where = sidebar.querySelector("div.cover-art + *, div.picture + *");
 		if (!where) where = sidebar.firstChild;
-		if (ratings[1] && where) for (var r=0; r<ratings.length; r++) {
+		if (ratings[1] && where) for (var r = 0; r < ratings.length; r++) {
 			sidebar.insertBefore(sidebar.removeChild(ratings[r]), where);
 		}
 	}
@@ -720,14 +720,14 @@ function ROW_HIGHLIGHTER_refresh(event) {
 /*=================================================================== MOUSE+
 ## Common form submission function ##
 ==========================================================================*/
-function parentFormSubmit(input, e) {
+function parentFormSubmit(input, event) {
 	var form = getParent(input, "form") || document.querySelector("div#release-editor");
 	if (form) {
 		var submitbutt = form.querySelector("div#release-editor button.positive[data-click='submitEdits'], div.buttons > button[type='submit'], span.buttons > button[type='submit']");
 		if (submitbutt) {
 			submitbutt.style.setProperty("background-color", "yellow");
 			if (submitbutt.getAttribute("disabled")) alert("This form is not (yet) submitable. Maybe you haven’t changed anything yet.");
-			else sendEvent(submitbutt, (e.shiftKey?"shift+":"")+"click");
+			else sendEvent(submitbutt, (event.shiftKey ? "shift+" : "") + "click");
 		} else {
 			form.submit();
 		}
@@ -739,10 +739,10 @@ function parentFormSubmit(input, e) {
 j2setting("DOUBLE_CLICK_SUBMIT", true, true, "makes the “radio buttons” and “multi-selects” submit forms on double-click (MBS-3229)");
 if (j2sets.DOUBLE_CLICK_SUBMIT && location.pathname.match(/^\/(cdtoc\/|cdstub\/|edit\/|release\/(add(\?release-group=)?|[^/]+\/edit-cover-art\/)|release-group\/[^/]+\/edit|search|.+\/merge)/)) {
 	var objs = document.querySelectorAll("div#page form > *:not(.edit-list) input[type='radio'], select[multiple]");
-	for (var o=0; o < objs.length; o++) {
+	for (var o = 0; o < objs.length; o++) {
 		var obj = getParent(objs[o], "label") || objs[o];
-		if (obj.tagName == "LABEL") obj.addEventListener("mousedown", function(e) { e.preventDefault(); });
-		obj.addEventListener("dblclick", function(e) { parentFormSubmit(this, e); });
+		if (obj.tagName == "LABEL") obj.addEventListener("mousedown", function(event) { event.preventDefault(); });
+		obj.addEventListener("dblclick", function(event) { parentFormSubmit(this, event); });
 		obj.setAttribute("title", "double-click here to submit the form");
 	}
 }
@@ -751,9 +751,9 @@ if (j2sets.DOUBLE_CLICK_SUBMIT && location.pathname.match(/^\/(cdtoc\/|cdstub\/|
 ==========================================================================*/
 j2setting("CONTROL_ENTER_SUBMIT", true, true, "hit CTRL+ENTER keys when you’re in a text area to submit the current form");
 if (j2sets.CONTROL_ENTER_SUBMIT) {
-	document.body.addEventListener("keydown", function(e){
-		if (e.target.tagName && e.target.tagName == "TEXTAREA" && e.ctrlKey && e.keyCode == KEYCODES.ENTER)
-			parentFormSubmit(e.target, e);
+	document.body.addEventListener("keydown", function(event) {
+		if (event.target.tagName && event.target.tagName == "TEXTAREA" && event.ctrlKey && event.keyCode == KEYCODES.ENTER)
+			parentFormSubmit(event.target, event);
 	});
 }
 /*================================================================ REMEMBER+
@@ -761,26 +761,26 @@ if (j2sets.CONTROL_ENTER_SUBMIT) {
 ==========================================================================*/
 j2setting("LAST_SEEN_EDIT", false, true, "it shows you what edits you have already seen (reviewed) on entities edit histories, yeah man. only saves states when looking at all edits (not only open) of entity");
 if (j2sets.LAST_SEEN_EDIT && account) {
-	var what = (location.pathname).match(new RegExp("^/(?:(user)/([^/]+)/edits(?:/(open))?|([^/]+)/("+stre_GUID+")/(?:(open)_)?edits)"));
+	var what = (location.pathname).match(new RegExp("^/(?:(user)/([^/]+)/edits(?:/(open))?|([^/]+)/(" + stre_GUID + ")/(?:(open)_)?edits)"));
 	if (what) {
 		var open = typeof (what[3] || what[6]) != "undefined";
 		var which = what[2] || what[5];
 		what = what[1] || what[4];
-		var lastseenedits = localStorage.getItem(userjs+"lastseenedits-"+what);
+		var lastseenedits = localStorage.getItem(userjs + "lastseenedits-" + what);
 		var upd = false;
 		if (lastseenedits) { lastseenedits = JSON.parse(lastseenedits); } else { lastseenedits = {}; }
 		var now = new Date();
 		if (lastseenedits[which]) {
-			if (lastseenedits[which][2] > lastseenedits[which][0] && new Date(lastseenedits[which][1]) < new Date(now-1000*60*30/*30minutes*/)) {
+			if (lastseenedits[which][2] > lastseenedits[which][0] && new Date(lastseenedits[which][1]) < new Date(now - 1000 * 60 * 30/*30minutes*/)) {
 				lastseenedits[which][0] = lastseenedits[which][2];
 				lastseenedits[which][1] = now.getTime();
 				upd = true;
 			}
 		} else {
-			lastseenedits[which] = [0,now.getTime(),0];/*[0:edit,1:when,2:next]*/
+			lastseenedits[which] = [0, now.getTime(), 0];/*[0:edit,1:when,2:next]*/
 		}
 		var edits = document.querySelectorAll("div.edit-header > h2 > a[href*='/edit/']");
-		for (var ed=0; ed<edits.length; ed++) {
+		for (var ed = 0; ed < edits.length; ed++) {
 			var editn = parseInt(edits[ed].getAttribute("href").match(/\d+$/), 10);
 			var editlist = getParent(edits[ed], "div", "edit-list");
 			if (!open && ed == 0 && editn > lastseenedits[which][0] && editn > lastseenedits[which][2]) {
@@ -790,7 +790,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 			if (editn <= lastseenedits[which][0]) {
 				editlist.setAttribute("title", "SEEN EDIT");
 				if (editn == lastseenedits[which][0]) {
-					editlist.parentNode.insertBefore(createTag("hr", {a:{title:"edits below are already seen"},s:{height:"0px", border:"none", "border-top": "4px dashed red"}}), editlist);
+					editlist.parentNode.insertBefore(createTag("hr", {a: {title: "edits below are already seen"}, s: {height: "0px", border: "none", "border-top": "4px dashed red"}}), editlist);
 					if (ed > 0) { getSibling(editlist, "div", "edit-list", true).scrollIntoView(); }
 				}
 			}
@@ -800,7 +800,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 			}
 		}
 		if (upd && !open) {
-			localStorage.setItem(userjs+"lastseenedits-"+what, JSON.stringify(lastseenedits));
+			localStorage.setItem(userjs + "lastseenedits-" + what, JSON.stringify(lastseenedits));
 		}
 	}
 }
@@ -810,16 +810,16 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” links excluding own edits or PUID edits, cross links between edits / open_edits, etc.");
 if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/edits/)) {
 	var noPUID = "&conditions.2097.field=type&conditions.2097.operator=%21%3D&conditions.2097.args=77&conditions.2097.args=113";
-	if (location.pathname.match(new RegExp("/[^/]+/"+stre_GUID+"$")) && !location.pathname.match(/label|work/)) {
-		var entityType = location.pathname.match(/[^/]+/); entityType = entityType?(entityType+"").replace(/-/, "_"):"";
+	if (location.pathname.match(new RegExp("/[^/]+/" + stre_GUID + "$")) && !location.pathname.match(/label|work/)) {
+		var entityType = location.pathname.match(/[^/]+/); entityType = entityType ? (entityType + "").replace(/-/, "_") : "";
 		var entityName = document.querySelector("div#content h1 a");
-		var entityID = document.querySelector("div#sidebar a[href^='"+MBS+"/"+entityType+"/merge_queue?add-to-merge=']");
-		var entityEdits = document.querySelector("div#sidebar a[href='"+MBS+location.pathname+"/edits']");
+		var entityID = document.querySelector("div#sidebar a[href^='" + MBS + "/" + entityType + "/merge_queue?add-to-merge=']");
+		var entityEdits = document.querySelector("div#sidebar a[href='" + MBS + location.pathname + "/edits']");
 		if (entityID && entityEdits && entityType && entityName) {
 			entityID = entityID.getAttribute("href").match(/\d+$/);
 			entityName = entityName.textContent;
-			var refine = "/search/edits?conditions.0.operator=%3D&conditions.0.field="+entityType+"&conditions.0.name="+encodeURIComponent(entityName)+"&conditions.0.args.0="+entityID+"&order=desc&combinator=and&negation=0";
-			addAfter(createTag("span", {}, [" (", createTag("a", {a:{title:"another cool search link", href:refine+noPUID}, s:{background:"#ff6"}}, "without PUIDs"), ")"]), entityEdits);
+			var refine = "/search/edits?conditions.0.operator=%3D&conditions.0.field=" + entityType + "&conditions.0.name=" + encodeURIComponent(entityName) + "&conditions.0.args.0=" + entityID + "&order=desc&combinator=and&negation=0";
+			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link", href: refine + noPUID}, s: {background: "#ff6"}}, "without PUIDs"), ")"]), entityEdits);
 		}
 	} else {
 		var refine = location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
@@ -829,29 +829,29 @@ if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/
 			var myID;
 			var notme = "&conditions.2099.field=editor&conditions.2099.operator=%21%3D&conditions.2099.name=COOLEST+EDITOR+2099&conditions.2099.args.0=%myID%";
 			var novote = "&conditions.2098.field=vote&conditions.2098.operator=%3D&conditions.2098.voter_id=%myID%&conditions.2098.args=no";
-			refines.appendChild(createTag("a", {a:{href: location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2]?"edits":(location.pathname.match(re_GUID)?"open_edits":"edits/open"))+location.search+location.hash}}, (refine[1]||refine[2]?"All ":"Open ")+"edits"));
+			refines.appendChild(createTag("a", {a: {href: location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2] ? "edits" : (location.pathname.match(re_GUID) ? "open_edits" : "edits/open")) + location.search + location.hash}}, (refine[1]||refine[2] ? "All " : "Open ") + "edits"));
 			if (
 				location.href.indexOf(account.pathname) < 0 &&
-				(refine = document.querySelector("table.search-help td > a[href^='"+MBS+"/search/edits?'][href*='user_id='][href*='&conditions.']")) &&
+				(refine = document.querySelector("table.search-help td > a[href^='" + MBS + "/search/edits?'][href*='user_id='][href*='&conditions.']")) &&
 				(refine = refine.getAttribute("href").replace(/form_only=yes/, "")) &&
-				(myID = refine.match(/user_id=(\d+)/) || localStorage.getItem(userjs+"me-userid"))
+				(myID = refine.match(/user_id=(\d+)/) || localStorage.getItem(userjs + "me-userid"))
 			) {
 				if (typeof myID == "object") {
 					myID = myID[1];
-					if (myID != localStorage.getItem(userjs+"me-userid")) localStorage.setItem(userjs+"me-userid", myID);
+					if (myID != localStorage.getItem(userjs + "me-userid")) localStorage.setItem(userjs + "me-userid", myID);
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a:{href: refine+notme.replace(/%myID%/g, myID)}}, ["Refine this search (",createTag("strong", null, "+not me"),")"]));
-					novote = notme+novote;
+					refines.appendChild(createTag("a", {a: {href: refine + notme.replace(/%myID%/g, myID)}}, ["Refine this search (", createTag("strong", null, "+not me"), ")"]));
+					novote = notme + novote;
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a:{href: refine+novote.replace(/%myID%/g, myID)}}, ["Refine this search (",createTag("strong", null, "+not me+not voted"),")"]));
+					refines.appendChild(createTag("a", {a: {href: refine + novote.replace(/%myID%/g, myID)}}, ["Refine this search (", createTag("strong", null, "+not me+not voted"), ")"]));
 				}
 				if (!location.pathname.match(/label|work/)) {
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a:{href: refine+noPUID}}, ["Refine this search (",createTag("strong", null, "no PUID edits"),")"]));
+					refines.appendChild(createTag("a", {a: {href: refine + noPUID}}, ["Refine this search (", createTag("strong", null, "no PUID edits"), ")"]));
 				}
 			}
 			if (refines.childElementCount > 0) {
-				searchHelp.insertBefore(createTag("tr", {s:{"text-shadow":"0 0 8px purple"}}, [createTag("th", {}, "Cool link"+(refines.childElementCount>1?"s":"")+": "), refines]), searchHelp.firstChild);
+				searchHelp.insertBefore(createTag("tr", {s: {"text-shadow": "0 0 8px purple"}}, [createTag("th", {}, "Cool link" + (refines.childElementCount > 1 ? "s" : "") + ": "), refines]), searchHelp.firstChild);
 			}
 		}
 	}
@@ -862,9 +862,9 @@ if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/
 j2setting("COPY_TOC", true, true, "re-lookup Disc ID (from cdtoc page)");
 if (j2sets.COPY_TOC && account && location.pathname.match(/^\/cdtoc\/[^/]+-$/)) {
 	var cdtoctrs = document.querySelectorAll("div#page > table table tr");
-	var TOC = cdtoctrs[2].getElementsByTagName("td")[0].textContent+"%20"+cdtoctrs[cdtoctrs.length-1].getElementsByTagName("td")[0].textContent+"%20"+cdtoctrs[cdtoctrs.length-1].getElementsByTagName("td")[6].textContent;/*this should be 1%20totaltracks%20lastsector*/
-	for (var i=2; i < cdtoctrs.length; i++) { TOC += "%20"+cdtoctrs[i].getElementsByTagName("td")[2].textContent; }
-	(document.querySelector("h1")||document.body).appendChild(createTag("fragment", {}, [" (", createTag("a", {a:{href:"/cdtoc/attach?toc="+TOC},s:{background:"yellow"}}, "re-lookup"), ")"]));
+	var TOC = cdtoctrs[2].getElementsByTagName("td")[0].textContent + "%20" + cdtoctrs[cdtoctrs.length - 1].getElementsByTagName("td")[0].textContent + "%20" + cdtoctrs[cdtoctrs.length - 1].getElementsByTagName("td")[6].textContent;/*this should be 1%20totaltracks%20lastsector*/
+	for (var i = 2; i < cdtoctrs.length; i++) { TOC += "%20" + cdtoctrs[i].getElementsByTagName("td")[2].textContent; }
+	(document.querySelector("h1")||document.body).appendChild(createTag("fragment", {}, [" (", createTag("a", {a: {href: "/cdtoc/attach?toc=" + TOC}, s: {background: "yellow"}}, "re-lookup"), ")"]));
 }
 /*==================================================================== LINK+
 ## SERVER_SWITCH ##
@@ -927,25 +927,25 @@ function serverSwitch(server, sep) {
 ==========================================================================*/
 j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global");
 if (j2sets.TAG_TOOLS && account) {
-	var tagscope = location.href.replace(new RegExp("^"+MBS+"|[?#].*$","g"),"").match(/(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
+	var tagscope = location.href.replace(new RegExp("^" + MBS + "|[?#].*$", "g"), "").match(/(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 	if (tagscope) {
 		var h1 = document.querySelector("h1");
 		var tags = tagscope[0].match(/tags$/);
 		if (h1 && account.pathname) {
 			var tagswitches = [];
-			var scope = typeof tagscope[1]=="string"?decodeURIComponent(tagscope[1]):"";
+			var scope = typeof tagscope[1] == "string" ? decodeURIComponent(tagscope[1]) : "";
 			if (scope != account.name) {
-				tagswitches.push([account.pathname+(tags?"/tags":tagscope[2]), (scope==""?"only ":"")+"mine"]);
+				tagswitches.push([account.pathname + (tags ? "/tags" : tagscope[2]), (scope == "" ? "only " : "") + "mine"]);
 			}
 			if (scope != "") {
-				tagswitches.push([MBS+(tags?"/tags":tagscope[2]), "everyone’s"]);
-				h1.appendChild(document.createTextNode("’s tag"+(tags?"s":" “"+decodeURIComponent(tagscope[3])+"”")));
+				tagswitches.push([MBS + (tags ? "/tags" : tagscope[2]), "everyone’s"]);
+				h1.appendChild(document.createTextNode("’s tag" + (tags ? "s" : " “" + decodeURIComponent(tagscope[3]) + "”")));
 			}
 			document.title = h1.textContent;
 			tagswitch(h1, tagswitches);
 		}
 	}
-	j2superturbo.addCSSRule("div#sidebar-tags ul.tag-list a[href^='/user/'] { background-color: #ff6 }");
+	j2superturbo.addCSSRule("div#sidebar-tags ul.tag-list a[href^='/user/'] { background-color: #B1EBB0 }");
 	updateTags();
 }
 function updateTags(event) {
@@ -953,7 +953,7 @@ function updateTags(event) {
 	var tagList = document.querySelector("div#sidebar-tags ul.tag-list");
 	if (tagZone && tagList) {
 		if (!event) {
-			getSibling(tagZone, "h2", null, true).appendChild(createTag("span", {s:{"color":"black", "font-weight":"normal", "float":"right"}}, ["↙", createTag("span", {s:{"background-color":"#ff6"}}, "mine"), " and others’"]));
+			getSibling(tagZone, "h2", null, true).appendChild(createTag("span", {s: {color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]));
 			tagList.addEventListener("DOMNodeInserted", updateTags);
 			var mytags = document.querySelectorAll("div#sidebar-tags ul.tag-list > li > span.tag-upvoted");
 			for (var t = 0; t < mytags.length; t++) {
@@ -971,10 +971,10 @@ function ownifyTag(tag) {
 	tag.setAttribute("href", account.pathname + tag.getAttribute("href"));
 }
 function tagswitch(cont, urltxt) {
-	var switcht = h1.appendChild(createTag("span", {s:{color:"grey","text-shadow":"1px 1px 2px silver"}}, " (see "));
-	for (var i=0; i<urltxt.length; i++) {
-		if (i>0) { switcht.appendChild(document.createTextNode(" or ")); }
-		switcht.appendChild(createTag("a", {a:{href:urltxt[i][0]}}, urltxt[i][1]));
+	var switcht = h1.appendChild(createTag("span", {s: {color: "grey", textShadow: "1px 1px 2px silver"}}, " (see "));
+	for (var i = 0; i < urltxt.length; i++) {
+		if (i > 0) { switcht.appendChild(document.createTextNode(" or ")); }
+		switcht.appendChild(createTag("a", {a: {href: urltxt[i][0]}}, urltxt[i][1]));
 	}
 	switcht.appendChild(document.createTextNode(")"));
 }
@@ -992,7 +992,7 @@ if (j2sets.STATIC_MENU && mmenu && mlogo) {
 	self.addEventListener("resize", smenu, false);
 	self.addEventListener("scroll", smenu, false);
 }
-function smenu(e) {
+function smenu(event) {
 	if (document.body.scrollTop + document.documentElement.scrollTop > self.getComputedStyle(mlogo).getPropertyValue("height").match(/\d+/)) {
 		mmenu.style.setProperty("position", "fixed");
 		mmenu.style.setProperty("top", "0px");
@@ -1003,7 +1003,7 @@ function smenu(e) {
 		try {
 			mmenu.querySelector("div > div.l").style.setProperty("display", "none");
 			mmenu.querySelector("div > div.r").style.setProperty("display", "none");
-		} catch (e) {}
+		} catch (error) {}
 	} else {
 		mmenu.style.removeProperty("position");
 		mmenu.style.removeProperty("top");
@@ -1013,7 +1013,7 @@ function smenu(e) {
 		try {
 			mmenu.querySelector("div > div.l").style.removeProperty("display");
 			mmenu.querySelector("div > div.r").style.removeProperty("display");
-		} catch (e) {}
+		} catch (error) {}
 	}
 }
 /*=================================================================== MOUSE+
@@ -1021,11 +1021,11 @@ function smenu(e) {
 ==========================================================================*/
 j2setting("MERGE_USER_MENUS", false, true, "merges “user” and “my data” menus. also adds “use beta site” (yes/no) link in user preferences");
 var data = document.querySelector("div#header-menu li.data");
-var datas = data?data.querySelectorAll("div#header-menu li.data > ul > li"):null;
+var datas = data ? data.querySelectorAll("div#header-menu li.data > ul > li") : null;
 if (j2sets.MERGE_USER_MENUS && account && data && datas.length > 0) {
 	data.style.setProperty("display", "none");
-	account.menu.insertBefore(createTag("li",{a:{"class":"separator"}}), account.menu.firstChild);
-	for (var d=datas.length-1; d > -1; d--) {
+	account.menu.insertBefore(createTag("li", {a: {class: "separator"}}), account.menu.firstChild);
+	for (var d = datas.length - 1; d > -1; d--) {
 		account.menu.insertBefore(datas[d].cloneNode(true), account.menu.firstChild);
 	}
 }
@@ -1051,7 +1051,7 @@ if (j2sets.SLOW_DOWN_RETRY) {
 				break;
 			case "502 bad gateway":
 			case "504 gateway time-out":
-				if (checkError("body > center > h1", new RegExp("^"+errortype[1]+"$", "i"))) retrydelay = 2;
+				if (checkError("body > center > h1", new RegExp("^" + errortype[1] + "$", "i"))) retrydelay = 2;
 				break;
 			case "internal server error":
 			case "search error":
@@ -1059,8 +1059,8 @@ if (j2sets.SLOW_DOWN_RETRY) {
 				break;
 		}
 		if (retrydelay) {
-			document.querySelector("div#page h1, div#content h1, h1").appendChild(createTag("fragment", {}, [" (retrying", createTag("span", {a:{"class":"countdown"}}, delayMsg(retrydelay)), ")"]));
-			setInterval(function(e) {
+			document.querySelector("div#page h1, div#content h1, h1").appendChild(createTag("fragment", {}, [" (retrying", createTag("span", {a: {class: "countdown"}}, delayMsg(retrydelay)), ")"]));
+			setInterval(function(event) {
 				retrydelay--;
 				replaceChildren(document.createTextNode(delayMsg(retrydelay)), document.querySelector("h1 > span.countdown"));
 				if (retrydelay == 0) { location.reload(false); }
@@ -1070,32 +1070,32 @@ if (j2sets.SLOW_DOWN_RETRY) {
 }
 function checkError(css, content) {
 	try { if (document.querySelector(css).textContent.match(content)) return true; }
-	catch(e) {}
+	catch(error) {}
 	return false;
 }
 function delayMsg(sec) {
-	return sec>0?" in "+sec+" second"+(sec!=1?"s":""):"…";
+	return sec > 0 ? " in " + sec + " second" + (sec != 1 ? "s" : "") : "…";
 }
 /* --- ENTITY BONUS --- */
 j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the release editor by mistake. repairs the keyboard tab navigation to save button (MBS-3112) (for the new release editor, the tab order might not be perfectly chosen yet but submit comes first and cancel last)");
-j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor"+j2superturbo.menu.expl+": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
+j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
-var enttype = location.href.match(new RegExp("^"+MBS+"/(area|artist|collection|event|label|place|recording|release|release-group|series|work)/.*$"));
+var enttype = location.href.match(new RegExp("^" + MBS + "/(area|artist|collection|event|label|place|recording|release|release-group|series|work)/.*$"));
 if (enttype) {
 	enttype = enttype[1];
 	/*======================================================== KEYBOARD+ MOUSE+
 	## RELEASE_EDITOR_PROTECTOR ##
 	=========================================================================*/
-	if (j2sets.RELEASE_EDITOR_PROTECTOR && enttype == "release" && location.href.match(new RegExp("^"+MBS+"/release/(add.*|"+stre_GUID+"/edit)$"))) {
+	if (j2sets.RELEASE_EDITOR_PROTECTOR && enttype == "release" && location.href.match(new RegExp("^" + MBS + "/release/(add.*|" + stre_GUID + "/edit)$"))) {
 		var editnote = document.querySelector("div#release-editor textarea#edit-note-text");
 		var cancelbutt = document.querySelector("div#release-editor button[data-click='cancelPage']");
 		var previousbutt = document.querySelector("div#release-editor button[data-click='previousTab']");
 		var nextbutt = document.querySelector("div#release-editor button[data-click='nextTab']");
 		var savebutt = document.querySelector("div#release-editor button[data-click='submitEdits']");
 		if (cancelbutt) {
-			cancelbutt.addEventListener("click", function(e) {
-				if (!confirm("RELEASE EDITOR PROTECTOR\n\nDo you really want to cancel this release "+location.href.match(/add|edit/)+"?")) {
-					return stop(e);
+			cancelbutt.addEventListener("click", function(event) {
+				if (!confirm("RELEASE EDITOR PROTECTOR\n\nDo you really want to cancel this release " + location.href.match(/add|edit/) + "?")) {
+					return stop(event);
 				}
 			}, false);
 			if (editnote && cancelbutt && previousbutt && nextbutt && savebutt) {
@@ -1110,7 +1110,7 @@ if (enttype) {
 	/*================================================================== MOUSE+
 	## TRACKLIST_TOOLS ## ex-TRACK_LENGTH_PARSER+search→replace(bookmarklet)+set-selected-works-date
 	=========================================================================*/
-	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/(add.*|"+stre_GUID+"/edit)$"))) {
+	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/(add.*|" + stre_GUID + "/edit)$"))) {
 		var re = document.querySelector("div#release-editor");
 		if (re) {
 			re.addEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
@@ -1119,48 +1119,48 @@ if (enttype) {
 			re.addEventListener("click", TRACKLIST_TOOLS_buttonHandler);
 		}
 	}
-	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/"+stre_GUID+"/edit-relationships$"))) {
+	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/" + stre_GUID + "/edit-relationships$"))) {
 		var tabs, re = document.querySelector("div.rel-editor");
 		if (re && (tabs = re.querySelector("ul.tabs"))) {
 			/* :::: MASS REMOVE RECORDING RELATIONSHIPS :::: */
-			j2superturbo.menu.addItem(createTag("a", {e:{click:function(e){
+			j2superturbo.menu.addItem(createTag("a", {e: {click: function(event) {
 				var text = prompt("This will remove the recording relationships that match the following text (ex.: “arrange”, “john”, “guitar”):");
 				if (text && (text = text.trim()) && text != "") {
 					var ars = document.querySelectorAll("td.recording > div.ars > div.ar > span[class*='remove-button']");
-					for(var ar=0; ar<ars.length; ar++) {
+					for(var ar = 0; ar < ars.length; ar++) {
 						if (!ars[ar].parentNode.querySelector("span.rel-remove") && ars[ar].parentNode.textContent.match(new RegExp(text, "i"))) {
 							ars[ar].click();
 						}
 					}
 				}
-			}}}, [meta.icon.cloneNode(), " Remove recording relationships ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
+			}}}, [meta.icon.cloneNode(), " Remove recording relationships ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 			/* :::: MASS SET WORKS’ RECORDING DATES :::: */
-			j2superturbo.menu.addItem(createTag("a", {e:{click:function(e){
+			j2superturbo.menu.addItem(createTag("a", {e: {click: function(event) {
 				var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
 				if (date) {
-					if (date = date.match(new RegExp(re_date.ISO+"(?:.+"+re_date.ISO+")?"))) {
+					if (date = date.match(new RegExp(re_date.ISO + "(?:.+" + re_date.ISO + ")?"))) {
 						MB.relationshipEditor.UI.checkedWorks().forEach(function(work) {
 							work.relationships().forEach(function(relationship) {
 								if (relationship.entityTypes == "recording-work") {
 									relationship.period.beginDate.year(date[2]);
 									relationship.period.beginDate.month(date[3]);
 									relationship.period.beginDate.day(date[4]);
-									relationship.period.endDate.year(date[5]?date[6]:date[2]);
-									relationship.period.endDate.month(date[5]?date[7]:date[3]);
-									relationship.period.endDate.day(date[5]?date[8]:date[4]);
+									relationship.period.endDate.year(date[5] ? date[6] : date[2]);
+									relationship.period.endDate.month(date[5] ? date[7] : date[3]);
+									relationship.period.endDate.day(date[5] ? date[8] : date[4]);
 								}
 							});
 						});
 					} else { alert("Wrong date format"); }
 				}
-			}}}, [meta.icon.cloneNode(), " Set selected works’ recording dates ", createTag("small", {s:{color:"grey"}}, "← TRACKLIST_TOOLS™")]));
+			}}}, [meta.icon.cloneNode(), " Set selected works’ recording dates ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 		}
 	}
 	/*================================================================ DISPLAY-
 	## UNLINK_ENTITY_HEADER ## (default off) Freso special request (https://gist.github.com/jesus2099/4111760)
 	=========================================================================*/
 	if (j2sets.UNLINK_ENTITY_HEADER) {
-		var h1link = document.querySelector("div#page h1 a[href='"+MBS+location.pathname.match(new RegExp("/"+enttype+"/"+stre_GUID))+"']");
+		var h1link = document.querySelector("div#page h1 a[href='" + MBS + location.pathname.match(new RegExp("/" + enttype + "/" + stre_GUID)) + "']");
 		if (h1link) {
 			var h1 = getParent(h1link, "h1");
 			if (h1.firstChild.nodeType != Node.TEXT_NODE) {
@@ -1264,14 +1264,14 @@ function TRACKLIST_TOOLS_getInputs(inputCSS, obj, evt) {
 }
 function TRACKLIST_TOOLS_init() {
 	re.removeEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
-	re.addEventListener("DOMNodeInserted", function(e) {
+	re.addEventListener("DOMNodeInserted", function(event) {
 		var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
-		for (var tp=0; tp<tps.length; tp++) {
+		for (var tp = 0; tp < tps.length; tp++) {
 			if (!tps[tp].parentNode.querySelector("." + userjs + "track-length-parser")) {
-				addAfter(createTag("button", {a: {type: "button", "class": userjs + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {"background-color": "yellow"}}, "Time Parser"), tps[tp]);
+				addAfter(createTag("button", {a: {type: "button", "class": userjs + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Time Parser"), tps[tp]);
 			}
 			if (!tps[tp].parentNode.querySelector("." + userjs + "search-replace")) {
-				addAfter(createTag("button", {a: {type: "button", "class": userjs + "search-replace", title: "SHIFT key to alter all open tracklists"}, s: {"background-color": "yellow"}}, "Search→replace"), tps[tp]);
+				addAfter(createTag("button", {a: {type: "button", "class": userjs + "search-replace", title: "SHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Search→replace"), tps[tp]);
 			}
 		}
 	}, false);
