@@ -68,7 +68,7 @@ var rem2loc = "◀";
 var loc2rem = "▶";
 var retry = {count: 0, checking: false};
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-var css = document.styleSheets[document.styleSheets.length-1];
+var css = document.styleSheets[document.styleSheets.length - 1];
 css.insertRule("body." + MMRid + " div#" + MMRid + " > .main-shortcut { display: none; }", 0);
 css.insertRule("body." + MMRid + " div#content table.tbl > * > tr > .rating { display: none; }", 0);
 css.insertRule("body." + MMRid + " div#content table.tbl > tbody > tr > td > div.ars { display: none; }", 0);
@@ -110,14 +110,6 @@ if (document.getElementsByClassName("account").length > 0) {
 	});
 }
 //	sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
-/* TODO before step 1, check
-<form action="MBS/recording/merge" method="post">
-<input type="radio" name="merge.target" value="1ST-ID"
-<input type="radio" name="merge.target" value="2ND-ID"
-after step 1, check
-on target recording page
-optionnally has <a href="MBS/edit/(\d+)">edit</a> \(#(\d+)\)
-	where $1 == $2 (otherwise, another page has taken this notice but NP) */
 function mergeRecsStep(_step) {
 	var step = _step || 0;
 	var MMR = document.getElementById(MMRid);
@@ -176,11 +168,11 @@ function mergeRecsStep(_step) {
 			if (this.status == 200) {
 				if (step == 0) {
 					if (
-						this.responseText.indexOf('<form action="' + MBS + '/recording/merge" method="post">') !== -1
-						&& this.responseText.indexOf('value="' + from.value + '"') !== -1
-						&& this.responseText.indexOf('<a href="' + MBS + '/recording/' + from.getAttribute("ref") + '">') !== -1
-						&& this.responseText.indexOf('value="' + to.value + '"') !== -1
-						&& this.responseText.indexOf('<a href="' + MBS + '/recording/' + to.getAttribute("ref") + '">') !== -1
+						this.responseText.indexOf('<form action="' + MBS + '/recording/merge" method="post">') > -1
+						&& this.responseText.indexOf('value="' + from.value + '"') > -1
+						&& this.responseText.indexOf('<a href="' + MBS + '/recording/' + from.getAttribute("ref") + '">') > -1
+						&& this.responseText.indexOf('value="' + to.value + '"') > -1
+						&& this.responseText.indexOf('<a href="' + MBS + '/recording/' + to.getAttribute("ref") + '">') > -1
 					) {
 						mergeRecsStep(1);
 					} else {
@@ -188,8 +180,8 @@ function mergeRecsStep(_step) {
 					}
 				} else if (step == 1) {
 					if (
-						this.responseText.indexOf('"@id":"https://musicbrainz.org/recording/' + to.getAttribute("ref") + '"') !== -1
-						&& this.responseText.indexOf('href="' + MBS + '/recording/merge_queue?add-to-merge=' + to.value + '"') !== -1
+						this.responseText.indexOf('"@id":"https://musicbrainz.org/recording/' + to.getAttribute("ref") + '"') > -1
+						&& this.responseText.indexOf('href="' + MBS + '/recording/merge_queue?add-to-merge=' + to.value + '"') > -1
 					) {
 						nextButt();
 					} else {
@@ -214,10 +206,10 @@ function checkMerge(errorText) {
 	xhr.addEventListener("load", function(event) {
 		var retryStep = 0;
 		if (this.status == 200 && typeof this.responseText == "string") {
-			if (this.responseText.indexOf('class="edit-list"') !== -1) {
+			if (this.responseText.indexOf('class="edit-list"') > -1) {
 				var editID = this.responseText.match(/>Edit #(\d+)/);
 				nextButt(editID ? editID[1] : true);
-			} else if (this.responseText.indexOf('id="remove.' + from.value + '"') !== -1 && this.responseText.indexOf('id="remove.' + to.value + '"') !== -1) {
+			} else if (this.responseText.indexOf('id="remove.' + from.value + '"') > -1 && this.responseText.indexOf('id="remove.' + to.value + '"') > -1) {
 				retry.count += 1;
 				retry.message = errorText;
 				mergeRecsStep(1);
@@ -425,9 +417,9 @@ function massMergeGUI() {
 						length: trackLength
 					});
 	//				if (jsonRelease) {
-	////					localRelease.tracks[localRelease.tracks.length-1] = jsonRelease.mediums[d-1].tracks[dt];
-	//					for (var key in jsonRelease.mediums[d-1].tracks[dt]) if (jsonRelease.mediums[d-1].tracks[dt].hasOwnProperty(key)) {
-	//						localRelease.tracks[localRelease.tracks.length-1][key] = jsonRelease.mediums[d-1].tracks[dt][key];
+	////					localRelease.tracks[localRelease.tracks.length - 1] = jsonRelease.mediums[d - 1].tracks[dt];
+	//					for (var key in jsonRelease.mediums[d - 1].tracks[dt]) if (jsonRelease.mediums[d - 1].tracks[dt].hasOwnProperty(key)) {
+	//						localRelease.tracks[localRelease.tracks.length - 1][key] = jsonRelease.mediums[d - 1].tracks[dt][key];
 	//					}
 	//				}
 					dt++;
@@ -558,7 +550,7 @@ function massMergeGUI() {
 }
 function loadReleasePage() {
 	for (var ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
-		/*should probably remove some in spreadTracks() etc.*/
+		/*//TODO should probably remove some in spreadTracks() etc.*/
 		cleanTrack(localRelease.tracks[ltrack]);
 	}
 	var mbidInfo = document.getElementById(MMRid).querySelector(".remote-release-link");
@@ -782,7 +774,7 @@ function buildMergeForm(loc, rem) {
 				swap.value = (swapped ? "yes" : "no");
 				currentButt = this;
 				mergeRecsStep();
-			} else if (retry.checking || retry.count > 0 || mergeQueue.indexOf(this) == -1) {
+			} else if (retry.checking || retry.count > 0 || mergeQueue.indexOf(this) < 0) {
 				/* if a merge is ongoing or a checking/retry is pending, queue this one */
 				this.value = "Unqueue";
 				enableInputs([this, swapbutt]);
@@ -825,7 +817,7 @@ function buildMergeForm(loc, rem) {
 	}
 }
 function expandCollapseAllMediums(clickThis) {
-	if (clickThis) for (var collapsedMediums = document.querySelectorAll(css_collapsed_medium), a = collapsedMediums.length-1; a >= 0; a--) {
+	if (clickThis) for (var collapsedMediums = document.querySelectorAll(css_collapsed_medium), a = collapsedMediums.length - 1; a >= 0; a--) {
 		if (collapsedMediums[a].textContent.trim() == clickThis) {
 			collapsedMediums[a].click();
 		}
