@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.9.4
+// @version      2015.9.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -139,9 +139,9 @@ function mergeRecsStep(_step) {
 		if (locTrack.name == remTrack.name) paramsup += "👍 '''Same track title''' “" + protectEditNoteText(locTrack.name) + "”\n";
 		else if (locTrack.name.toUpperCase() == remTrack.name.toUpperCase()) paramsup += "👍 '''Same track title''' (case insensitive)\n";
 		else if (almostSame(locTrack.name, remTrack.name)) paramsup += "👍 '''Similar track title''' (loose comparison)\n";
-		if (locTrack.artistCredit == remTrack.artistCredit) paramsup += "👍 '''Same track artist credit ([AC])''' “" + html2text(locTrack.artistCredit) + "”\n";
-		else if (html2text(locTrack.artistCredit).toUpperCase() == html2text(remTrack.artistCredit).toUpperCase()) paramsup += "👍 '''Same track artist credit ([AC])''' (case insensitive)\n";
-		else if (almostSame(html2text(locTrack.artistCredit), html2text(remTrack.artistCredit))) paramsup += "👍 '''Similar track artist credit ([AC])''' “" + html2text(locTrack.artistCredit) + "”\n";
+		if (locTrack.artistCredit == remTrack.artistCreditAsPlainText) paramsup += "👍 '''Same track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
+		else if (locTrack.artistCredit.toUpperCase() == remTrack.artistCreditAsPlainText.toUpperCase()) paramsup += "👍 '''Same track artist credit ([AC])''' (case insensitive)\n";
+		else if (almostSame(locTrack.artistCredit, remTrack.artistCreditAsPlainText)) paramsup += "👍 '''Similar track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
 		if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
 			var delta = Math.abs(locTrack.length - remTrack.length);
 			if (delta <= safeLengthDelta*1000) paramsup += "👍 '''" + (delta == 0 ? "Same" : "Very close") + " track times''' " + /*temporary hidden until milliseconds are back(delta == 0 ? "(in milliseconds)" : */ "(" + (time(locTrack.length) == time(remTrack.length) ? time(locTrack.length) : "within " + safeLengthDelta + " seconds: " + time((swap.value == "no" ? locTrack : remTrack).length) + " ← " + time((swap.value == "no" ? remTrack : locTrack).length)) + ")" /*)temporary*/ + "\n";
@@ -222,7 +222,7 @@ function checkMerge(errorText) {
 		retry.checking = false;
 	});
 	xhr.open("GET", "/search/edits?negation=0&combinator=and&conditions.0.field=recording&conditions.0.operator=%3D&conditions.0.name=" + from.value + "&conditions.0.args.0=" + from.value + "&conditions.1.field=recording&conditions.1.operator=%3D&conditions.1.name=" + to.value + "&conditions.1.args.0=" + to.value + "&conditions.2.field=type&conditions.2.operator=%3D&conditions.2.args=74&conditions.3.field=status&conditions.3.operator=%3D&conditions.3.args=1", true);
-	setTimeout(function() { xhr.send(null); }, chrono(MBSminimumDelay));
+	setTimeout(function() { xhr.send(null); }, chrono(retryDelay));
 }
 function nextButt(editID) {
 	remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]].recording.editsPending++;
@@ -413,7 +413,7 @@ function massMergeGUI() {
 						a: tracka,
 						recid: recoid,
 						name: trackname,
-						artistCredit: trackAC ? trackAC.innerHTML.trim() : localRelease.ac,
+						artistCredit: trackAC ? trackAC.textContent : localRelease.ac,
 						length: trackLength
 					});
 	//				if (jsonRelease) {
@@ -576,9 +576,9 @@ function loadReleasePage() {
 					recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
 				}
 				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
-				remoteRelease.title = decodeHTMLEntities(rtitle[1]);
+				remoteRelease.title = HTMLToText(rtitle[1]);
 				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
-				if (remoteRelease.comment) remoteRelease.comment = " (" + decodeHTMLEntities(remoteRelease.comment[1]) + ")"; else remoteRelease.comment = "";
+				if (remoteRelease.comment) remoteRelease.comment = " (" + HTMLToText(remoteRelease.comment[1]) + ")"; else remoteRelease.comment = "";
 				remoteRelease.ac = rtitle[2];
 				removeChildren(mbidInfo);
 				if (remoteRelease.id == localRelease.id) {
@@ -597,8 +597,8 @@ function loadReleasePage() {
 					if (trackLength) trackLength = strtime2ms(trackLength[0]);
 					remoteRelease.tracks.push({
 						number: trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + MBS + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
-						name: decodeHTMLEntities(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
-						artistCredit: trackRows[t].match(/<td>/g).length>1?trackRows[t].match(/[\s\S]*<td>([\s\S]+?)<\/td>/)[1].trim():releaseAC[1],
+						name: HTMLToText(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
+						artistCredit: trackRows[t].match(/<td>/g).length > 1 ? trackRows[t].match(/[\s\S]*<td>([\s\S]+?)<\/td>/)[1].trim() : releaseAC[1],
 						length: trackLength,
 						recording: {
 							rowid: recIDs[t],
@@ -608,6 +608,7 @@ function loadReleasePage() {
 						},
 						isDataTrack: false
 					});
+					remoteRelease.tracks[t].artistCreditAsPlainText = HTMLToText(remoteRelease.tracks[t].artistCredit);
 					recid2trackIndex.remote[recIDs[t]] = t;
 				}
 //									for (var rd = 0; rd < jsonRelease.mediums.length; rd++) {
@@ -649,7 +650,7 @@ function bestStartPosition(localTrack, matchAC) {
 		for (var rem = 0; rem < remoteRelease.tracks.length; rem++) {
 			if (
 				almostSame(localRelease.tracks[loc].name, remoteRelease.tracks[rem].name)
-				&& (!matchAC || almostSame(html2text(localRelease.tracks[loc].artistCredit), html2text(remoteRelease.tracks[rem].artistCredit)))
+				&& (!matchAC || almostSame(localRelease.tracks[loc].artistCredit, remoteRelease.tracks[rem].artistCreditAsPlainText))
 			) {
 				return loc - rem;
 			}
@@ -745,7 +746,7 @@ function buildMergeForm(loc, rem) {
 //			rmForm.appendChild(ac2dom(remTrack.artistCredit));
 		var AC = document.createElement("span");
 		AC.innerHTML = remTrack.artistCredit;
-		if (almostSame(html2text(locTrack.artistCredit), html2text(remTrack.artistCredit))) {
+		if (almostSame(locTrack.artistCredit, remTrack.artistCreditAsPlainText)) {
 			for (var spanMp = AC.querySelectorAll("span.mp"), m = 0; m < spanMp.length; m++) {
 				spanMp[m].classList.remove("mp");
 			}
@@ -967,9 +968,6 @@ function ac2dom(ac) {
 	}
 	return dom;
 }
-function html2text(html) {
-	return html.replace(/<.+?>/g, "");
-}
 function protectEditNoteText(text) {
 	return text.replace(/\'/g, "&#x0027;");
 }
@@ -994,9 +992,9 @@ function fw2hw(s) {
 		return String.fromCharCode(a.charCodeAt(0)-65248);
 	}).replace(/\u3000/g, "\u0020").replace(/\uff5e/g, "\u301c");
 }
-var decoder = document.createElement("b");
-function decodeHTMLEntities(str) {
-	decoder.innerHTML = str;
+function HTMLToText(HTMLBlurb) {
+	var decoder = document.createElement("div");
+	decoder.innerHTML = HTMLBlurb;
 	return decoder.textContent;
 };
 function chrono(minimumDelay) {
