@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.9.7
+// @version      2015.9.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -52,7 +52,7 @@ if (mergeType) {
 		mergeForm.addEventListener("submit", function(event) {
 			var editNote = this.querySelector("textarea[name='merge.edit_note']");
 			if (editNote) {
-				editNote.value = editNote.value.trim().replace(/\n\s*—[\s\S]+Merging\sinto\soldest\s\[MBID\]\s\([\'←+\s\d]+\).(\n|$)/g, "");
+				editNote.value = editNote.value.trim().replace(/\n(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'←+\s\d]+\).(\n|$)/g, "").trim();
 				var mergeTargets = mergeForm.querySelectorAll("form > table.tbl > tbody input[type='radio'][name='merge.target']");
 				var mergeTarget;
 				var sortedTargets = [];
@@ -75,11 +75,11 @@ if (mergeType) {
 					}
 				}
 				if (mergeTarget && mergeTarget == sortedTargets[0]) {
-					mergeTargets = "'''" + mergeTarget + "'''";
+					mergeTargets = "'''" + thousandSeparator(mergeTarget) + "'''";
 					for (var i = 1; i < sortedTargets.length; i++) {
-						mergeTargets += (i == 1 ? " ← " : " + ") + sortedTargets[i];
+						mergeTargets += (i == 1 ? " ← " : " + ") + thousandSeparator(sortedTargets[i]);
 					}
-					editNote.value += "\r\n — \r\nMerging into oldest [MBID] (" + mergeTargets + ").";
+					editNote.value = (editNote.value ? editNote.value + "\r\n — \r\n" : "") + "Merging into oldest [MBID] (" + mergeTargets + ").";
 				}
 			}
 		});
@@ -411,10 +411,13 @@ function nsr(prefix) {
 }
 function rowIDLink(type, id) {
 	/* thanks to http://snipplr.com/view/72657/thousand-separator */
-	var renderedID = (id + "").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
+	var renderedID = thousandSeparator(id);
 	var a = createA(
 		renderedID,
 		"/search/edits?order=asc&conditions.0.operator=%3D&conditions.0.field=" + type + "&conditions.0.name=" + renderedID + "&conditions.0.args.0=" + id
 	);
 	return a;
+}
+function thousandSeparator(number) {
+	return (number + "").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
 }
