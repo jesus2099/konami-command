@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2015.9.7
+// @version      2015.9.10
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
@@ -38,7 +38,7 @@
 // @include      http*://*.mbsandbox.org/mod/*
 // @include      http*://*.mbsandbox.org/recording/*/add-isrc
 // @include      http*://*.mbsandbox.org/release*/*/*-cover-art*
-// @include      http*://*.mbsandbox.org/release/*/edit-relationships
+// @include      http*://*.mbsandbox.org/release/*/edit*
 // @include      http*://*.mbsandbox.org/release/add*
 // @include      http*://*.mbsandbox.org/work/*/add-iswc
 // @include      http*://*musicbrainz.org/*/add-alias
@@ -61,7 +61,7 @@
 // @include      http*://*musicbrainz.org/mod/*
 // @include      http*://*musicbrainz.org/recording/*/add-isrc
 // @include      http*://*musicbrainz.org/release*/*/*-cover-art*
-// @include      http*://*musicbrainz.org/release/*/edit-relationships
+// @include      http*://*musicbrainz.org/release/*/edit*
 // @include      http*://*musicbrainz.org/release/add*
 // @include      http*://*musicbrainz.org/work/*/add-iswc
 // @include      http*://acoustid.org/edit/*
@@ -90,7 +90,7 @@ var mb = !acoustid;
 var editpage = (mb && location.href.match(/(\.mbsandbox|musicbrainz)\.org\/edit\/\d+($|[?#&])/));
 var editsearchpage = (mb && location.href.match(/(\.mbsandbox|musicbrainz)\.org\/.+(?:edits|subscribed)/));
 var re = (mb && document.querySelector("div#release-editor"));
-var save = editpage || editsearchpage ? false : true;
+var save = !localStorage.getItem(userjs + "forget") && (editpage || !editsearchpage);
 var content = document.getElementById(mb ? "page" : "content");
 var savedHeight = localStorage.getItem(userjs + "_savedHeight");
 if (content) {
@@ -158,7 +158,7 @@ if (content) {
 		}
 		var buttons = createTag("div", {a: {class: "buttons"}});
 		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if(event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
-		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); }}}));
+		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
 		savecb.checked = save;
 		savecb.parentNode.appendChild(document.createTextNode(" remember  "));
 		for (var ni = 0; ni < textLabels.length; ni++) {
@@ -186,7 +186,7 @@ if (content) {
 		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
 		notetext.parentNode.insertBefore(buttons, notetext);
 		var lastnotetext = localStorage.getItem(notetextStorage + "00");
-		if (!editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
+		if (save && !editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
 			notetext.value = lastnotetext;
 			sendEvent(notetext, "change");
 		}
