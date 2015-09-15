@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.9.11
+// @version      2015.9.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -237,9 +237,7 @@ function nextButt(editID) {
 	if (nextButt) {
 		FireFoxWorkAround(nextButt);
 	} else {
-		var x = scrollX, y = scrollY;
-		startpos.focus();
-		scrollTo(x, y);
+		noScrollFocus(startpos);
 	}
 }
 function tryAgain(errorText) {
@@ -351,7 +349,7 @@ function changeMatchMode(event) {
 		var notMatched = remoteRelease.tracks.length - matchedRemoteTracks.length;
 		infoMerge((notMatched == 0 ? "All" : "☞") + " " + matchedRemoteTracks.length + " remote track title" + (matchedRemoteTracks.length == 1 ? "" : "s") + " matched" + (notMatched > 0 ? " (" + notMatched + " left)" : ""), matchedRemoteTracks.length > 0);
 		if (matchedRemoteTracks.length > 0) {
-			queueAll.focus();
+			noScrollFocus(queueAll);
 		}
 	}
 }
@@ -1006,4 +1004,9 @@ function chrono(minimumDelay) {
 		lastTick = new Date().getTime();
 		return lastTick;
 	}
+}
+function noScrollFocus(field) {
+	var x = scrollX, y = scrollY;
+	field.focus();
+	scrollTo(x, y);
 }
