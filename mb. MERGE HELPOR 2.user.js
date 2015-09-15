@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.9.11
+// @version      2015.9.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -52,7 +52,7 @@ if (mergeType) {
 		mergeForm.addEventListener("submit", function(event) {
 			var editNote = this.querySelector("textarea[name='merge.edit_note']");
 			if (editNote) {
-				editNote.value = editNote.value.trim().replace(/\n(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'←+\s\d]+\).(\n|$)/g, "").trim();
+				editNote.value = editNote.value.trim().replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'\d,\s←]+\)\.(\n|$)/g, "").trim();
 				var mergeTargets = mergeForm.querySelectorAll("form > table.tbl > tbody input[type='radio'][name='merge.target']");
 				var mergeTarget;
 				var sortedTargets = [];
