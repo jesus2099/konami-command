@@ -103,7 +103,7 @@ if (collapsedMediums.length > 1) {
 if (document.getElementsByClassName("account").length > 0) {
 	sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 	document.body.addEventListener("keydown", function(event) {
-		if (event.ctrlKey && event.shiftKey && event.keyCode == KBD.M) {
+		if (!event.altKey && event.ctrlKey && event.shiftKey && event.keyCode == KBD.M) {
 			prepareLocalRelease();
 			return stop(event);
 		}
@@ -366,7 +366,7 @@ function massMergeGUI() {
 		keydown: function(event) {
 			if (event.keyCode == KBD.ENTER && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
 				queueAll.click();
-			} else if (event.target == editNote && event.ctrlKey) {
+			} else if (event.target == editNote && !event.altKey && event.ctrlKey && !event.shiftKey) {
 				switch (event.keyCode) {
 					case KBD.S:
 						return saveEditNote(event);
