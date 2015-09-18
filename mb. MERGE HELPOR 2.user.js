@@ -166,6 +166,28 @@ if (mergeType) {
 		if (showEntityInfo) {
 			loadEntInfo();
 		}
+		if (mergeType == "release") {
+			/* make the release each medium is from a clickable link */
+			for (var releases = {}, mediums = document.querySelectorAll("input[id$='.release_id'][type='hidden']"), m = 0; m < mediums.length; m++) {
+				if (!releases[mediums[m].value]) {
+					releases[mediums[m].value] = {fragment: document.createDocumentFragment()};
+					for (var releaseCell = getSibling(document.querySelector("form > table.tbl > tbody input[type='radio'][name='merge.target'][value='" + mediums[m].value + "']").parentNode, "td"), c = 0; c < releaseCell.childNodes.length; c++) {
+						releases[mediums[m].value].fragment.appendChild(releaseCell.childNodes[c].cloneNode(true));
+						if (!releases[mediums[m].value].title && releaseCell.childNodes[c].nodeType != Node.TEXT_NODE) {
+							var a = releases[mediums[m].value].fragment.lastChild.getElementsByTagName("a")[0];
+							a.setAttribute("target", "_blank");
+							releases[mediums[m].value].title = a.textContent;
+						}
+					}
+				}
+				var text = mediums[m].parentNode.lastChild.textContent.trim();
+				mediums[m].parentNode.replaceChild(createTag("fragment", {}, [
+					" " + text.substr(0, text.lastIndexOf(releases[mediums[m].value].title)),
+					releases[mediums[m].value].fragment.cloneNode(true),
+					")"
+				]), mediums[m].parentNode.lastChild);
+			}
+		}
 	}
 } else {
 	/* merge queue (clear before add) tool */
