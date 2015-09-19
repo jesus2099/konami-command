@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.9.18
+// @version      2015.9.19
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -171,20 +171,21 @@ if (mergeType) {
 			for (var releases = {}, mediums = document.querySelectorAll("input[id$='.release_id'][type='hidden']"), m = 0; m < mediums.length; m++) {
 				if (!releases[mediums[m].value]) {
 					releases[mediums[m].value] = {fragment: document.createDocumentFragment()};
-					for (var releaseCell = getSibling(document.querySelector("form > table.tbl > tbody input[type='radio'][name='merge.target'][value='" + mediums[m].value + "']").parentNode, "td"), c = 0; c < releaseCell.childNodes.length; c++) {
+					var releaseCell = getSibling(document.querySelector("form > table.tbl > tbody input[type='radio'][name='merge.target'][value='" + mediums[m].value + "']").parentNode, "td");
+					releases[mediums[m].value].format = releaseCell.parentNode.getElementsByTagName("td")[3].textContent.replace(/\s/g, "").replace(/"/g, "″");
+					for (var c = 0; c < releaseCell.childNodes.length; c++) {
 						releases[mediums[m].value].fragment.appendChild(releaseCell.childNodes[c].cloneNode(true));
-						if (!releases[mediums[m].value].title && releaseCell.childNodes[c].nodeType != Node.TEXT_NODE) {
-							var a = releases[mediums[m].value].fragment.lastChild.getElementsByTagName("a")[0];
-							a.setAttribute("target", "_blank");
-							releases[mediums[m].value].title = a.textContent;
-						}
 					}
+					var a = releases[mediums[m].value].fragment.firstChild.getElementsByTagName("a")[0];
+					a.setAttribute("target", "_blank");
+					releases[mediums[m].value].title = a.textContent;
 				}
 				var text = mediums[m].parentNode.lastChild.textContent.trim();
 				mediums[m].parentNode.replaceChild(createTag("fragment", {}, [
-					" " + text.substr(0, text.lastIndexOf(releases[mediums[m].value].title)),
+					" " + text.substring(1, text.lastIndexOf(releases[mediums[m].value].title)),
 					releases[mediums[m].value].fragment.cloneNode(true),
-					")"
+					createTag("span", {a: {class: "comment"}}, " (" + releases[mediums[m].value].format + ")"),
+					text.substring(text.lastIndexOf(releases[mediums[m].value].title) + releases[mediums[m].value].title.length, text.length - 1)
 				]), mediums[m].parentNode.lastChild);
 			}
 		}
