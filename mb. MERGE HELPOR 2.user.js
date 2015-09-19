@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.9.19
+// @version      2015.9.19.300
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -28,6 +28,8 @@
 var userjs = "j2userjs124579";
 var rembid = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
 var mergeType = location.pathname.match(/^\/(.+)\/merge/);
+var lastTick = new Date().getTime();
+var WSrate = 1000;
 if (mergeType) {
 	/* main merge tool */
 	mergeType = mergeType[1].replace(/_/, "-");
@@ -309,15 +311,16 @@ function loadEntInfo() {
 						stackInfo(entInfoZone, "no info");
 						entInfoZone.style.setProperty("opacity", ".5");
 					}
+					loadEntInfo();
 				} else {
 					entInfoZone.className = "ng";
 					stackInfo(entInfoZone, "Error " + this.status + " fetching " + mergeType + " #" + this.id + " info");
+					setTimeout(function() { loadEntInfo(); }, chrono(WSrate * 8));
 				}
 			}
-			loadEntInfo();
 		});
 		xhr.open("GET", url, true);
-		xhr.send(null);
+		setTimeout(function() { xhr.send(null); }, chrono(WSrate));
 	}
 }
 function sortBy(what) {
@@ -445,4 +448,14 @@ function rowIDLink(type, id) {
 }
 function thousandSeparator(number) {
 	return (number + "").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
+}
+function chrono(minimumDelay) {
+	if (minimumDelay) {
+		var del = minimumDelay + lastTick - new Date().getTime();
+		del = del > 0 ? del : 0;
+		return del;
+	} else {
+		lastTick = new Date().getTime();
+		return lastTick;
+	}
 }
