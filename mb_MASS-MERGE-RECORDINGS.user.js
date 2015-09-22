@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.9.15
+// @version      2015.9.22
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -411,7 +411,7 @@ function massMergeGUI() {
 						a: tracka,
 						recid: recoid,
 						name: trackname,
-						artistCredit: trackAC ? trackAC.textContent : localRelease.ac,
+						artistCredit: trackAC ? trackAC.textContent.trim() : localRelease.ac,
 						length: trackLength
 					});
 	//				if (jsonRelease) {
