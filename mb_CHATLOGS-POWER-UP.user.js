@@ -11,12 +11,14 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-03-05
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
 // @grant        none
 // @include      http://chatlogs.musicbrainz.org/*
 // @include      https://chatlogs.musicbrainz.org/*
 // @include      http://hcm.fam.cx/mbja/chatlog.cgi*
 // @run-at       document-end
 // ==/UserScript==
+"use strict";
 var userjs = "j2userjs127580";
 var cat = location.href.match(/chatlogs\.musicbrainz\.org\/([^/]+)\/|mbja/);
 if (cat) {
@@ -41,7 +43,8 @@ if (lskeys.length > 0) {
 	ul.setAttribute("id", userjs + "logs");
 	ul.style.setProperty("display", "none");
 	for (var k = 0; k < lskeys.length; k++) {
-		if (lrpage = lskeys[k].match(new RegExp(userjs + "lr([a-z-]+)((\\d{4})-(\\d{2})-(\\d{2}))", "i"))) {
+		var lrpage = lskeys[k].match(new RegExp(userjs + "lr([a-z-]+)((\\d{4})-(\\d{2})-(\\d{2}))", "i"));
+		if (lrpage) {
 			ul.appendChild(document.createElement("li")).appendChild(document.createElement("a")).appendChild(document.createTextNode(lrpage[1] + " " + lrpage[2])).parentNode.setAttribute("href", "/" + lrpage[1] + "/" + lrpage[3] + "/" + lrpage[3] + "-" + lrpage[4] + "/" + lrpage[2] + ".html");
 		}
 	}
@@ -51,7 +54,7 @@ if (cat) {
 	var ss = document.styleSheets[document.styleSheets.length - 1];
 	ss.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; }", ss.cssRules.length);
 	ss.insertRule("body { padding-bottom: .5em; }", ss.cssRules.length);
-	var ctt = document.body.appendChild(createTag("div", { "id": userjs + "toolbar"}));
+	var ctt = document.body.appendChild(createTag("div", {a: {id: userjs + "toolbar"}}));
 	if (date) {
 		document.title = "#" + cat + " (" + date + ")";
 		if (history.replaceState) history.replaceState(history.state, document.title);
@@ -61,8 +64,11 @@ if (cat) {
 		var css_brdr = "2px dashed red";
 		var maxStoredLastread = 100;
 		/* lastread and hashrow are <dt> in mb, <tr> in mbja */
-		var lastread; if (lastread = localStorage.getItem(userjs + "lr" + cat + date)) { lastread = document.getElementById(lastread.split(" ")[0]); }
-		var hashrow; if ((urlid = location.hash.match(re_urlid)) && (urlide = document.getElementById(urlid[1]))) { hashrow = urlide; }
+		var tmp;
+		var lastread = localStorage.getItem(userjs + "lr" + cat + date);
+		if (lastread) { lastread = document.getElementById(lastread.split(" ")[0]); }
+		var hashrow;
+		if ((tmp = location.hash.match(re_urlid)) && (tmp = document.getElementById(urlid[1]))) { hashrow = tmp; }
 		if (tmp = localStorage.getItem(userjs + "srd")) { srdd = tmp; }
 		if (tmp = localStorage.getItem(userjs + "nick")) { srnv = tmp; }
 		var sr = ss.insertRule("dt.server, dd.server, table#log tr:not(.msg) { display: " + srdd + "; }", ss.cssRules.length);
@@ -75,7 +81,8 @@ if (cat) {
 			if (hashrow.className.match(/enter|quit/) || (nextDD = getSibling(hashrow, "dd")) && isServer(nextDD)) {
 				ctt.appendChild(document.createTextNode(" (server)"));
 				a.addEventListener("click", function(event) {
-					if ((servel = document.getElementById(this.getAttribute("href").substr(1))) && self.getComputedStyle(servel).display == "none" && (prevmsg = getSibling(servel, !cat.match(/-ja/) ? "dt" : "tr", !cat.match(/-ja/) ? "nick-" : "msg", true))) {
+					var servel = document.getElementById(this.getAttribute("href").substr(1));
+					if ((servel) && self.getComputedStyle(servel).display == "none" && (prevmsg = getSibling(servel, !cat.match(/-ja/) ? "dt" : "tr", !cat.match(/-ja/) ? "nick-" : "msg", true))) {
 						prevmsg.querySelector("a").style.setProperty("background-color", "#ff9");
 						scrollTo(0, prevmsg.offsetTop);
 						event.cancelBubble = true;
@@ -104,45 +111,34 @@ if (cat) {
 			} else {
 				separate(ctt);
 			}
-			ctt.appendChild(createTag("input", {
-				"id": userjs + "nick",
-				"type": "text",
-				"value": srnv
-			}, {
-				"keyup": function(event) {
-					plusmoins(this.value);
-				}
-			}));
+			ctt.appendChild(createTag("input", {a: {id: userjs + "nick", type: "text", value: srnv}, e: {keyup: function(event) { plusmoins(this.value); }}}));
 			asyncPlusmoins();
 		}
 		/* server messages on/off */
 		separate(ctt);
-		ctt.appendChild(createTag("input", {
-			"id": userjs + "tog",
-			"type": "button",
-			"value": (srdd == "none" ? "Show" : "Hide") + " server messages"
-		}, {
-			"click": function(event) {
-				var fv;
-				if ((log = document.querySelector("dl, table#log")) && log.offsetTop < self.pageYOffset) { fv = firstVisibleMsg(); }
-				var s = this.value.match(/^(Show|Hide)/);
-				if (s) { s = s[1] == "Show"; }
-				var d = s ? (cat.match(/-ja/) ? "table-row" : "block") : "none";
-				localStorage.setItem(userjs + "srd", d);
-				ss.cssRules[sr].style.setProperty("display", d);
-				this.value = this.value.replace(s ? "Show" : "Hide", s ? "Hide" : "Show");
-				if (fv) {
-					if ((y = fv[0].offsetTop - fv[1]) < 0) {
-						if (prevmsg = getSibling(fv[0], !cat.match(/-ja/) ? "dt" : "tr", !cat.match(/-ja/) ? "nick-" : "msg", true)) {
-							y = prevmsg.offsetTop;
-						} else {
-							y = fv[0].offsetTop;
-						}
+		ctt.appendChild(createTag("input", {a: {id: userjs + "tog", type: "button", value: (srdd == "none" ? "Show" : "Hide") + " server messages"}, e: {click: function(event) {
+			var fv;
+			var log = document.querySelector("dl, table#log");
+			if (log && log.offsetTop < self.pageYOffset) { fv = firstVisibleMsg(); }
+			var s = this.value.match(/^(Show|Hide)/);
+			if (s) { s = s[1] == "Show"; }
+			var d = s ? (cat.match(/-ja/) ? "table-row" : "block") : "none";
+			localStorage.setItem(userjs + "srd", d);
+			ss.cssRules[sr].style.setProperty("display", d);
+			this.value = this.value.replace(s ? "Show" : "Hide", s ? "Hide" : "Show");
+			if (fv) {
+				var y = fv[0].offsetTop - fv[1];
+				if (y < 0) {
+					var prevmsg = getSibling(fv[0], !cat.match(/-ja/) ? "dt" : "tr", !cat.match(/-ja/) ? "nick-" : "msg", true);
+					if (prevmsg) {
+						y = prevmsg.offsetTop;
+					} else {
+						y = fv[0].offsetTop;
 					}
-					scrollTo(0, y);
 				}
+				scrollTo(0, y);
 			}
-		}));
+		}}}));
 		/* jump around! */
 		var jumpto = setTimeout(function() {
 			jumpAround();
@@ -156,13 +152,15 @@ if (cat) {
 			if (lastread) {
 				(cat.match(/-ja/) ? lastread.querySelector("td:last-child") : document.querySelector("dt#" + lastread.getAttribute("id") + " ~ dd")).style.setProperty("border-bottom", css_brdr);
 			}
-			if (ldt = lastMsg()) {
-				localStorage.setItem(userjs + "lr" + cat+date, ldt.getAttribute("id") + " " + new Date().getTime());
+			var ldt = lastMsg();
+			if (ldt) {
+				localStorage.setItem(userjs + "lr" + cat + date, ldt.getAttribute("id") + " " + new Date().getTime());
 			}
 			/* last read cleanup */
-			dates = [];
+			var dates = [];
 			for (var sto = 0; sto < localStorage.length; sto++) {
-				if (key = localStorage.key(sto).match(new RegExp(userjs + "lr\\d{4}-\\d{2}-\\d{2}"))) {
+				var key = localStorage.key(sto).match(new RegExp(userjs + "lr\\d{4}-\\d{2}-\\d{2}"));
+				if (key) {
 					dates.push(key);
 				}
 			}
@@ -266,7 +264,8 @@ function plusmoins(p) {
 	if (!cat.match(/-ja/)) {
 		var nicks = document.getElementsByTagName("dt");
 		for (var nick = 0; nick < nicks.length; nick++) {
-			if (who = nicks[nick].innerHTML.match(re_nick)) {
+			var who = nicks[nick].innerHTML.match(re_nick);
+			if (who) {
 				var gotit = srnv.match(new RegExp("(?:^|[^\\w-])"+who[1]+"(?:$|[^\\w-])"));
 				var a = nicks[nick].getElementsByClassName(userjs + "plusmoins");
 				if (a && a.length == 1) {
@@ -343,24 +342,6 @@ function lastMsg() {
 }
 function isServer(o) {
 	return cat.match(/-ja/) && o.parentNode.className.match(/enter|quit/) || (o.childNodes.length == 1 && o.firstChild.nodeType == 3 && o.firstChild.nodeValue.match(re_server));
-}
-function getSibling(obj, tag, cls, prev) {
-	var cur = obj;
-	if (cur = prev ? cur.previousSibling : cur.nextSibling) {
-		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-			return cur;
-		} else {
-			return getSibling(cur, tag, cls, prev);
-		}
-	} else {
-		return null;
-	}
-}
-function createTag(tag, attribs, events) {
-	var t = document.createElement(tag);
-	for (var attr in attribs) { if (attribs.hasOwnProperty(attr)) { t.setAttribute(attr, attribs[attr]); } }
-	for (var evt in events) { if (events.hasOwnProperty(evt)) { t.addEventListener(evt, events[evt], false); } }
-	return t;
 }
 function createA(text, link, title) {
 	var a = document.createElement("a");
