@@ -179,16 +179,16 @@ if (cat) {
 	/* cross linking */
 	separate(ctt);
 	if (!cat.match(/-ja/)) {
-		var tgt = "musicbrainz" + (cat.match(/^musicbrainz$/) ? "-devel" : "");
-		var tgtA = createA("#" + tgt, location.pathname.replace(/\/musicbrainz(?:-devel)?\//, "/" + tgt + "/"));
+		var tgt = (cat.match(/^musicbrainz$/) ? "meta" : "music") + "brainz";
+		var tgtA = createA("#" + tgt, location.pathname.replace(/\/(meta|music)brainz\//, "/" + tgt + "/"));
 		if (cat == "musicbrainz") {
 			ctt.appendChild(document.createTextNode("#musicbrainz"));
 		} else {
 			ctt.appendChild(tgtA);
 		}
 		separate(ctt);
-		if (cat == "musicbrainz-devel") {
-			ctt.appendChild(document.createTextNode("#musicbrainz-devel"));
+		if (cat == "metabrainz") {
+			ctt.appendChild(document.createTextNode("#metabrainz"));
 		} else {
 			ctt.appendChild(tgtA);
 		}
@@ -210,7 +210,7 @@ if (cat) {
 		}
 		ctt.appendChild(createA("#musicbrainz", "https://chatlogs.musicbrainz.org/musicbrainz/" + path));
 		separate(ctt);
-		ctt.appendChild(createA("#musicbrainz-devel", "https://chatlogs.musicbrainz.org/musicbrainz-devel/" + path));
+		ctt.appendChild(createA("#metabrainz", "https://chatlogs.musicbrainz.org/metabrainz/" + path));
 		separate(ctt);
 		ctt.appendChild(document.createTextNode("#musicbrainz-ja"));
 	}
