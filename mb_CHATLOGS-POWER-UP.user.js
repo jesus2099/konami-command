@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2015.9.24
+// @version      2015.9.24.2005
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -68,7 +68,7 @@ if (cat) {
 		var lastread = localStorage.getItem(userjs + "lr" + cat + date);
 		if (lastread) { lastread = document.getElementById(lastread.split(" ")[0]); }
 		var hashrow;
-		if ((tmp = location.hash.match(re_urlid)) && (tmp = document.getElementById(urlid[1]))) { hashrow = tmp; }
+		if ((tmp = location.hash.match(re_urlid)) && (tmp = document.getElementById(tmp[1]))) { hashrow = tmp; }
 		if (tmp = localStorage.getItem(userjs + "srd")) { srdd = tmp; }
 		if (tmp = localStorage.getItem(userjs + "nick")) { srnv = tmp; }
 		var sr = ss.insertRule("dt.server, dd.server, table#log tr:not(.msg) { display: " + srdd + "; }", ss.cssRules.length);
@@ -78,17 +78,21 @@ if (cat) {
 		if (hashrow) {
 			separate(ctt);
 			var a = ctt.appendChild(createA("#\u00a0" + hashrow.firstChild.textContent.replace(/[^\d:]/g, ""), "#" + hashrow.getAttribute("id"), hashrow.getAttribute("id")));
-			if (hashrow.className.match(/enter|quit/) || (nextDD = getSibling(hashrow, "dd")) && isServer(nextDD)) {
+			var nextDD = getSibling(hashrow, "dd");
+			if (hashrow.className.match(/enter|quit/) || nextDD && isServer(nextDD)) {
 				ctt.appendChild(document.createTextNode(" (server)"));
 				a.addEventListener("click", function(event) {
 					var servel = document.getElementById(this.getAttribute("href").substr(1));
-					if ((servel) && self.getComputedStyle(servel).display == "none" && (prevmsg = getSibling(servel, !cat.match(/-ja/) ? "dt" : "tr", !cat.match(/-ja/) ? "nick-" : "msg", true))) {
-						prevmsg.querySelector("a").style.setProperty("background-color", "#ff9");
-						scrollTo(0, prevmsg.offsetTop);
-						event.cancelBubble = true;
-						if (event.stopPropagation) event.stopPropagation();
-						event.preventDefault();
-						return false;
+					if ((servel) && self.getComputedStyle(servel).display == "none") {
+						var prevmsg = getSibling(servel, !cat.match(/-ja/) ? "dt" : "tr", !cat.match(/-ja/) ? "nick-" : "msg", true);
+						if (prevmsg) {
+							prevmsg.querySelector("a").style.setProperty("background-color", "#ff9");
+							scrollTo(0, prevmsg.offsetTop);
+							event.cancelBubble = true;
+							if (event.stopPropagation) event.stopPropagation();
+							event.preventDefault();
+							return false;
+						}
 					}
 				}, false);
 			}
