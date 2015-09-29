@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2015.9.24.2005
+// @version      2015.9.29
 // @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -23,6 +23,16 @@ var userjs = "j2userjs127580";
 var cat = location.href.match(/chatlogs\.musicbrainz\.org\/([^/]+)\/|mbja/);
 if (cat) {
 	cat = cat[1] ? cat[1] : "musicbrainz-ja";
+}
+if (cat.match(/(meta|music)brainz/) && document.title.match(/error/i) && location.pathname.match(/today|yesterday/)) {
+	var pathnameSplit = location.pathname.match(/^(.+)(today|yesterday)/);
+	var shift = pathnameSplit[2] == "today" ? 0 : -1;
+	var sdate = new Date();
+	sdate.setDate(sdate.getDate() + shift);
+	var yyyy = zeroPad(sdate.getFullYear(), 4);
+	var mm = zeroPad(sdate.getMonth() + 1, 2);
+	var dd = zeroPad(sdate.getDate(), 2);
+	location.replace(pathnameSplit[1] + yyyy + "/" + (cat.match(/-ja/) ? mm + "/" + dd : yyyy + "-" + mm + "/" + yyyy + "-" + mm + "-" + dd + ".html"));
 }
 var date = location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
 if (date) date = date[1] + "-" + date[2] + "-" + date[3];
