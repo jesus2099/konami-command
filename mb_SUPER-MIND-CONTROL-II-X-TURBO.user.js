@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.9.8
+// @version      2015.10.1
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -250,123 +250,109 @@ if (j2sets.RELEASE_CLONER && account) {
 							for (var crr = crmbids.length - 1; crr >= 0; crr--) {
 								var xhr = new XMLHttpRequest();
 								xhr.onload = function(event) {
-									var resv, res = this.responseXML.documentElement;
+									var release = JSON.parse(this.responseText);
 									var reled = {
 										form: createTag("form", {a: {action: "/release/add", method: "post", target: crr == 0 ? "_self" : "_blank"}, s: {display: "none"}}),
-										add: function(ws, re, _opt) {
-											var opt = _opt ? _opt : {};
-											var cont = opt.node ? opt.node : res;
-											var val = opt.raw ? ws : cont.querySelector(ws);
-											if (val) {
-												if (typeof val == "object") val = val.textContent;
-												/*console.log(re + " = " + val);*/
-												if (opt.multiline) reled.form.appendChild(createTag("textarea", {a: {name: re}}, val));
-												else reled.form.appendChild(createTag("input", {a: {name: re, value: val}}));
-											}
-											else if (opt.req) {
+										add: function(data, requestParameter, required) {
+											if (data) {
+												/*console.log(requestParameter + " = " + data);*/
+												reled.form.appendChild(createTag("textarea", {a: {name: requestParameter}}, data));
+											} else if (required) {
 												return false;
 											}
 											return true;
 										}
 									};
 									var ok = true;
-									ok &= reled.add("release > title", "name", {req: true});
-									resv = res.querySelector("release > release-group");
-									ok &= reled.add(resv.getAttribute("id"), "release_group", {raw: true});
+									ok &= reled.add(release.title, "name", true);
+									ok &= reled.add(release["release-group"].id, "release_group");
 									if (j2sets.RELEASE_CLONER_additional_information) {
-										ok &= reled.add("release > disambiguation", "comment");
-										ok &= reled.add("release > annotation", "annotation", {multiline: true});
+										ok &= reled.add(release.disambiguation, "comment");
+										ok &= reled.add(release.annotation, "annotation");
 									}
 									if (j2sets.RELEASE_CLONER_release_event) {
-										ok &= reled.add("release > barcode", "barcode");
+										ok &= reled.add(release.barcode, "barcode");
 										/* ws:release-event-list */
-										resv = res.querySelectorAll("release > release-event-list > release-event");
-										for (var resi = 0; resi < resv.length && ok; resi++) {
-											var date = resv[resi].querySelector("release-event > date");
-											if (date && (date = date.textContent)) {
+										for (var resi = 0; resi < release["release-events"].length && ok; resi++) {
+											var date = release["release-events"][resi].date;
+											if (date) {
 												var datex;
-												if (datex = date.match(/^(\d{4})/)) ok &= reled.add(datex[1], "events." + resi + ".date.year", {raw: true});
-												if (datex = date.match(/^.{4}-(\d{2})/)) ok &= reled.add(datex[1], "events." + resi + ".date.month", {raw: true});
-												if (datex = date.match(/^.{4}-.{2}-(\d{2})$/)) ok &= reled.add(datex[1], "events." + resi + ".date.day", {raw: true});
-												ok &= reled.add("release-event > area > iso-3166-1-code-list > iso-3166-1-code", "events." + resi + ".country", {node: resv[resi]});
+												if (datex = date.match(/^(\d{4})/)) ok &= reled.add(datex[1], "events." + resi + ".date.year");
+												if (datex = date.match(/^.{4}-(\d{2})/)) ok &= reled.add(datex[1], "events." + resi + ".date.month");
+												if (datex = date.match(/^.{4}-.{2}-(\d{2})$/)) ok &= reled.add(datex[1], "events." + resi + ".date.day");
+												if (release["release-events"][resi].area.iso_3166_1_codes.length > 0) ok &= reled.add(release["release-events"][resi].area.iso_3166_1_codes[0], "events." + resi + ".country");
 											}
 										}
 										/* ws:release-event-list */
-										ok &= reled.add("release > status", "status");
-										ok &= reled.add("release > packaging", "packaging");
+										ok &= reled.add(release.status, "status");
+										ok &= reled.add(release.packaging, "packaging");
 										/* ws:label-info-list */
-										resv = res.querySelectorAll("release > label-info-list > label-info");
-										for (var resi = 0; resi < resv.length && ok; resi++) {
-											var label = resv[resi].querySelector("label-info > label");
-											if (label && (label = label.getAttribute("id"))) {
-												ok &= reled.add(label, "labels." + resi + ".mbid", {raw: true});
-											}
-											ok &= reled.add("label-info > catalog-number", "labels." + resi + ".catalog_number", {node: resv[resi]});
+										for (var resi = 0; resi < release["label-info"].length && ok; resi++) {
+											if (release["label-info"][resi].label) ok &= reled.add(release["label-info"][resi].label.id, "labels." + resi + ".mbid");
+											ok &= reled.add(release["label-info"][resi]["catalog-number"], "labels." + resi + ".catalog_number");
 										}
 										/* ws:label-info-list */
 									}
-									ok &= reled.add("release > text-representation > language", "language");
-									ok &= reled.add("release > text-representation > script", "script");
+									ok &= reled.add(release["text-representation"].language, "language");
+									ok &= reled.add(release["text-representation"].script, "script");
 									/* ws:artist-credit */
-									resv = res.querySelectorAll("release > artist-credit > name-credit > artist");
-									for (var resi = 0; resi < resv.length && ok; resi++) {
-										ok &= reled.add(resv[resi].getAttribute("id"), "artist_credit.names." + resi + ".mbid", {raw: true});
-										ok &= reled.add("name-credit name", "artist_credit.names." + resi + ".name", {node: resv[resi].parentNode});
-										ok &= reled.add(resv[resi].parentNode.getAttribute("joinphrase"), "artist_credit.names." + resi + ".join_phrase", {raw: true});
+									for (var resi = 0; resi < release["artist-credit"].length && ok; resi++) {
+										ok &= reled.add(release["artist-credit"][resi].artist.id, "artist_credit.names." + resi + ".mbid");
+										ok &= reled.add(release["artist-credit"][resi].name, "artist_credit.names." + resi + ".name");
+										ok &= reled.add(release["artist-credit"][resi].joinphrase, "artist_credit.names." + resi + ".join_phrase");
 									}
 									/* ws:artist-credit */
 									/* ws:medium-list */
-									resv = res.querySelectorAll("release > medium-list > medium");
-									for (var resi = 0; resi < resv.length && ok; resi++) {
-										ok &= reled.add("medium > format", "mediums." + resi + ".format", {node: resv[resi]});
-										ok &= reled.add("medium > title", "mediums." + resi + ".name", {node: resv[resi]});
-										var tracks = resv[resi].querySelectorAll("medium > track-list > track");
-										for (var tr = 0; tr < tracks.length; tr++) {
-											ok &= reled.add("track title", "mediums." + resi + ".track." + tr + ".name", {node: tracks[tr]});
-											ok &= reled.add("track > number", "mediums." + resi + ".track." + tr + ".number", {node: tracks[tr]});
-											ok &= reled.add(tracks[tr].querySelector("track > recording").getAttribute("id"), "mediums." + resi + ".track." + tr + ".recording", {raw: true});
+									for (var resi = 0; resi < release.media.length && ok; resi++) {
+										ok &= reled.add(release.media[resi].format, "mediums." + resi + ".format");
+										ok &= reled.add(release.media[resi].title, "mediums." + resi + ".name");
+										for (var tr = 0; tr < release.media[resi].tracks.length; tr++) {
+											ok &= reled.add(release.media[resi].tracks[tr].title, "mediums." + resi + ".track." + tr + ".name");
+											ok &= reled.add(release.media[resi].tracks[tr].number, "mediums." + resi + ".track." + tr + ".number");
+											ok &= reled.add(release.media[resi].tracks[tr].recording.id, "mediums." + resi + ".track." + tr + ".recording");
 											/* ws:artist-credit */
-											var trac = tracks[tr].querySelector("track > artist-credit, track > recording > artist-credit");
-											trac = trac.querySelectorAll("artist-credit > name-credit > artist");
-											for (var aci = 0; aci < trac.length && ok; aci++) {
-												ok &= reled.add(trac[aci].getAttribute("id"), "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".mbid", {raw: true});
-												ok &= reled.add("name-credit > name", "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".name", {node: trac[aci].parentNode});
-												ok &= reled.add(trac[aci].parentNode.getAttribute("joinphrase"), "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".join_phrase", {raw: true});
+											for (var aci = 0; aci < release.media[resi].tracks[tr]["artist-credit"].length && ok; aci++) {
+												ok &= reled.add(release.media[resi].tracks[tr]["artist-credit"][aci].artist.id, "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".mbid");
+												ok &= reled.add(release.media[resi].tracks[tr]["artist-credit"][aci].name, "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".name");
+												ok &= reled.add(release.media[resi].tracks[tr]["artist-credit"][aci].joinphrase, "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".join_phrase");
 											}
 											/* ws:artist-credit */
-											if (j2sets.RELEASE_CLONER_tracktimes) ok &= reled.add("track > length", "mediums." + resi + ".track." + tr + ".length", {node: tracks[tr]});
+											if (j2sets.RELEASE_CLONER_tracktimes) ok &= reled.add(release.media[resi].tracks[tr].length, "mediums." + resi + ".track." + tr + ".length");
 										}
 									}
 									/* ws:medium-list */
 									if (j2sets.RELEASE_CLONER_external_links) {
 										/* ws:url-rels*/
-										resv = res.querySelectorAll("release > relation-list[target-type='url'] > relation");
 										var linkTypes = {
-											"unknown01":  72/*production*/,
-											"unknown02":  83/*IMDb*/,
+											"unknown29unknown29unknown29unknown29":  29/*notes*/,
+											"unknown72unknown72unknown72unknown72":  72/*production*/,
+											"unknown73unknown73unknown73unknown73":  73/*get*/,
+											"98e08c20-8402-4163-8970-53504bb6a1e4":  74/*buy download*/,
+											"9896ecd0-6d29-482d-a21e-bd5d1b5e3425":  75/*download*/,
+											"4a78823c-1c53-4176-a5f3-58026c76f2bc":  76/*discogs*/,
 											"4f2e710d-166c-480c-a293-2e2c8d658d87":  77/*ASIN*/,
+											"2476be45-3090-43b3-a948-a8f972b4065c":  78/*cover art*/,
+											"3ee51e05-a06a-415e-b40c-b3f740dedfd7":  79/*buy mail*/,
+											"c74dee45-3c85-41e9-a804-92ab1c654446":  82/*other db*/,
+											"7387c5a2-9abe-4515-b667-9eb5ed4dd4ce":  83/*IMDb*/,
+											"08445ccf-7b99-4438-9f9a-fb9ac18099ee":  85/*stream*/,
+											"6af0134a-df6a-425a-96e2-895f9cd342ba":  86/*VGMdb*/,
 											"823656dd-0309-4247-b282-b92d287d59c5": 288/*discography*/,
-											"unknown03": 301/*licence*/,
-											"unknown04":  73/*get*/,
-											"unknown05":  79/*buy mail*/,
-											"unknown06":  74/*buy download*/,
-											"unknown07":  75/*download*/,
-											"unknown08":  85/*stream*/,
-											"unknown09": 729/*notes*/,
-											"unknown10":  78/*cover art*/,
-											"unknown11":  29/*notes*/,
-											"unknown12":  82/*other db*/,
-											"unknown13":  76/*discogs*/,
-											"unknown14":  86/*VGMdb*/,
-											"unknown15": 308/*2ndhandsong*/,
+											"004bd0c3-8a45-4309-ba52-fa99f3aa3d50": 301/*licence*/,
+											"0e555925-1b7d-475c-9b25-b9c349dcc3f3": 308/*2ndhandsong*/,
+											"2d24d075-9943-4c4d-a659-8ce52e6e6b57": 729/*notes*/,
+											"90ff18ad-3e9d-4472-a3d1-71d4df7e8484": 755/*allmusic*/,
+											"63b84620-ba52-4630-9bfe-8ad3b5504dff": 850/*bookbrainz*/,
 										};
-										for (var resi = 0; resi < resv.length && ok; resi++) {
-											ok &= reled.add(linkTypes[resv[resi].getAttribute("type-id")], "urls." + resi + ".link_type", {raw: true});
-											ok &= reled.add("relation > target", "urls." + resi + ".url", {node: resv[resi]});
+										for (var resi = 0; resi < release.relations.length && ok; resi++) {
+											if (release.relations[resi].url) {
+												ok &= reled.add(linkTypes[release.relations[resi]["type-id"]], "urls." + resi + ".link_type");
+												ok &= reled.add(release.relations[resi].url.resource, "urls." + resi + ".url");
+											}
 										}
 										/* ws:url-rels */
 									}
-									ok &= reled.add("\n —\n" + MBS + "/release/" + crmbids[crr] + " cloned using " + meta.name + "’s '''RELEASE_CLONER''' (" + meta.version + ")", "edit_note", {raw: true, multiline: true});
+									ok &= reled.add("\n —\n" + MBS + "/release/" + crmbids[crr] + " cloned using " + meta.name + "’s '''RELEASE_CLONER''' (" + meta.version + ")", "edit_note");
 									/* fin */
 									if (ok) document.body.appendChild(reled.form).submit();
 									else sendEvent(this, "error");
@@ -376,8 +362,7 @@ if (j2sets.RELEASE_CLONER && account) {
 										self.open(meta.supportURL + "/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + location.href + ").\n"));
 									}
 								};
-								xhr.open("get", "/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels", false);
-								xhr.overrideMimeType("text/xml");
+								xhr.open("get", "/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels&fmt=json", false);
 								xhr.send(null);
 							}
 						}
