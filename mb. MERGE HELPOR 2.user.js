@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.9.19.300
+// @version      2015.10.1
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey    quickly tested
-// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey    tested sometimes
+// @compatible   chromium(46)+tampermonkey   tested sometimes
 // @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js
@@ -16,8 +16,8 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-01-31
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @grant        none
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
+// @grant        none
 // @include      http*://*musicbrainz.org/*
 // @include      http://*.mbsandbox.org/*
 // @exclude      *//*/*mbsandbox.org/*
@@ -54,7 +54,7 @@ if (mergeType) {
 		mergeForm.addEventListener("submit", function(event) {
 			var editNote = this.querySelector("textarea[name='merge.edit_note']");
 			if (editNote) {
-				editNote.value = editNote.value.trim().replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'\d,\s←]+\)\.(\n|$)/g, "").trim();
+				editNote.value = editNote.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'\d,\s←]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");//linked in mb_ELEPHANT-EDITOR.user.js
 				var mergeTargets = mergeForm.querySelectorAll("form > table.tbl > tbody input[type='radio'][name='merge.target']");
 				var mergeTarget;
 				var sortedTargets = [];
