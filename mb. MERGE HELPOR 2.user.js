@@ -178,8 +178,10 @@ if (mergeType) {
 					for (var c = 0; c < releaseCell.childNodes.length; c++) {
 						releases[mediums[m].value].fragment.appendChild(releaseCell.childNodes[c].cloneNode(true));
 					}
-					var a = releases[mediums[m].value].fragment.firstChild.getElementsByTagName("a")[0];
+					var a = releases[mediums[m].value].fragment.firstChild;
+					if (a.tagName != "A") a = a.getElementsByTagName("a")[0];
 					a.setAttribute("target", "_blank");
+					a.style.setProperty("color", getComputedStyle(releaseCell.getElementsByTagName("a")[0]).getPropertyValue("color"));
 					releases[mediums[m].value].title = a.textContent;
 				}
 				var text = mediums[m].parentNode.lastChild.textContent.trim();
