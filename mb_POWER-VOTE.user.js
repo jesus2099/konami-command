@@ -72,7 +72,6 @@
 					}
 				}
 			} else {
-				lockform();
 				this.submit();
 			}
 		}, false);
@@ -403,15 +402,6 @@
 			}
 		} else return o.classList.contains(userjs+cls);
 	}
-	function lockform(lo) {
-		if (typeof lo != "boolean" || lo == true) {
-			submitButton.setAttribute("disabled", "disabled");
-			if (submitClone) submitClone.setAttribute("disabled", "disabled");
-		} else {
-			submitButton.removeAttribute("disabled");
-			if (submitClone) submitClone.removeAttribute("disabled");
-		}
-	}
 	function updateXHRstat(nbr) {
 		var stat = document.getElementById(userjs+"xhrstat");
 		if (!stat) {
@@ -421,7 +411,6 @@
 			stat.style.setProperty("z-index", "2099");
 		}
 		stat.replaceChild(document.createTextNode(nbr+" background vote"+(nbr==1?"":"s")+" pending…"), stat.firstChild);
-		lockform(editform.querySelector("div.edit-list:not(."+userjs+"force) div.edit-description")?false:true);
 		if (!editform.querySelector("div.edit-list div.edit-description")) {
 			location.reload();
 		}
