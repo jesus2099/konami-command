@@ -58,7 +58,7 @@ var artist_autolinks = {
 	"Japanese stuff": null,
 		"VGMdb": "http://vgmdb.net/search?q=%artist-name%",
 		"ja.Wikipedia": "//ja.wikipedia.org/w/index.php?search=%artist-name%",
-		"CDJournal search": {"accept-charset":"euc-jp", "action":"//cdjournal.com/search/do/", "parameters":{"k":"%artist-name%","target":"a"}},
+		"CDJournal search": {"accept-charset":"euc-jp", "action":"https://cdjournal.com/search/do/", "parameters":{"k":"%artist-name%","target":"a"}},
 		"Joshinweb search": {"accept-charset":"Shift_JIS", "action":"//joshinweb.jp/cdshops/Dps", "parameters":{"KEY":"ARTIST","FM":"0","KEYWORD":"%artist-name%"}},
 		"Yunisan": "//duckduckgo.com/?q=site:www22.big.or.jp+%22%2F%7Eyunisan%2Fvi%2F%22+%artist-name%",
 		"VKDB": "//duckduckgo.com/?q=site:vkdb.jp+%artist-name%",
