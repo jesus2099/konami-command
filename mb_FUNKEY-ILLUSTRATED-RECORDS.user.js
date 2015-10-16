@@ -1,4 +1,5 @@
-"use strict"; var meta= {rawmdb: function() {
+"use strict";
+var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
 // @version      2015.10.16
@@ -17,6 +18,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-12-19
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
 // @grant        none
 // @include      http*://*.mbsandbox.org/
 // @include      http*://*.mbsandbox.org/artist/*
@@ -94,19 +96,20 @@ if (!location.pathname.match(/^\/$|^\/release\//)) for (var t=0; t<types.length;
 		if (smallpics) {
 			var margin = "-12px 0px -14px 0px";
 			as[a].parentNode.insertBefore(
-				createTag("div", {}, {float: "right", "margin-right": ".5em"}, {}, [document.createTextNode("⌛"),
-					createTag("a", {href: imgurl}, {display: "none"}, {}, [
-						createTag("img",
-							{alt: as[a].textContent, class: userjs, title: "click to enlarge", src: imgurl + "-250", "_size": "_", "_margin": margin, "_istable": istable ? "1" : "0"},
-							{cursor: "pointer", "box-shadow": "1px 1px 4px black", margin: margin, padding: "none", position: "relative", "z-index": "1"},
-							{
+				createTag("div", {s: {float: "right", marginRight: ".5em"}}, [
+					"⌛",
+					createTag("a", {a: {href: imgurl}, s: {display: "none"}}, [
+						createTag("img", {
+							a: {alt: as[a].textContent, class: userjs, title: "click to enlarge", src: imgurl + "-250", "_size": "_", "_margin": margin, "_istable": istable ? "1" : "0"},
+							s: {cursor: "pointer", boxShadow: "1px 1px 4px black", margin: margin, padding: "none", position: "relative", zIndex: "1"},
+							e: {
 								click: function(event) { big(event, this, SMALL_SIZE); },
-								load: function(event) { this.setAttribute("_height", this.height + "px"); this.setAttribute("_width", this.width+"px"); this.style.setProperty("height", "0"); del(this.parentNode.parentNode.firstChild); this.parentNode.style.setProperty("display", "inline"); big(event, this, SMALL_SIZE) },
-								error: function(event) { del(this.parentNode.parentNode); },
+								load: function(event) { this.setAttribute("_height", this.height + "px"); this.setAttribute("_width", this.width+"px"); this.style.setProperty("height", "0"); removeNode(this.parentNode.parentNode.firstChild); this.parentNode.style.setProperty("display", "inline"); big(event, this, SMALL_SIZE) },
+								error: function(event) { removeNode(this.parentNode.parentNode); },
 								mouseover: function(event) { this.style.setProperty("z-index", "2"); this.parentNode.parentNode.nextSibling.style.setProperty("background-color", colour); },
 								mouseout: function(event) { if(this.getAttribute("_size") != "full") this.style.setProperty("z-index", "1"); this.parentNode.parentNode.nextSibling.style.removeProperty("background-color"); }
 							}
-						)
+						})
 					])
 				])
 			, as[a]);
@@ -120,20 +123,20 @@ if (!location.pathname.match(/^\/$|^\/release\//)) for (var t=0; t<types.length;
 		tr.addEventListener("mouseover", updateBig, false);
 		tr.addEventListener("mouseout", updateBig, false);
 		var box = getParent(as[a], "table") || getParent(as[a], "ul");
-		if (bigpics && imgurls.indexOf(imgurl) < 0 && (box = box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {class: userjs + "bigbox"}), box))) {
+		if (bigpics && imgurls.indexOf(imgurl) < 0 && (box = box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
 			var artisttd = artistcol && getSibling(getParent(as[a], "td"), "td");
-			box.appendChild(createTag("a", {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\r\n" + artisttd.textContent.trim() : "")}, {display: "inline-block", height: "100%", margin:"8px 8px 4px 4px"}, {}, [
-				document.createTextNode("⌛"),
-				createTag("img",
-					{src: imgurl + "-250", alt: as[a].textContent},
-					{"vertical-align": "middle", display: "none", "max-height": "20px", "box-shadow": "1px 1px 4px black"},
-					{
-						load: function(event) { del(this.parentNode.firstChild); this.style.setProperty("display", "inline"); try{jQuery(this).animate({"max-height": BIG_SIZE}, 200); } catch(error) { this.style.setProperty("max-height", BIG_SIZE); console.log(error.message + "!\n" + chrome); } },
-						error: function(event) { del(this.parentNode); },
+			box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\r\n" + artisttd.textContent.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
+				"⌛",
+				createTag("img", {
+					a: {src: imgurl + "-250", alt: as[a].textContent},
+					s: {verticalAlign: "middle", display: "none", maxHeight: "20px", boxShadow: "1px 1px 4px black"},
+					e: {
+						load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); try{jQuery(this).animate({"max-height": BIG_SIZE}, 200); } catch(error) { this.style.setProperty("max-height", BIG_SIZE); console.log(error.message + "!\n" + chrome); } },
+						error: function(event) { removeNode(this.parentNode); },
 						mouseover: updateA,
 						mouseout: updateA
 					}
-				)
+				})
 			]));
 		}
 		imgurls.push(imgurl);
@@ -187,48 +190,4 @@ function complete(fallback) {
 	var enlarge = (node.getAttribute("_size") == "full");
 	node.setAttribute("title", node.getAttribute("title").replace(/\w+$/, enlarge ? "shrink" : "enlarge"));
 	node.style.setProperty("z-index", enlarge ? "2" : "1");
-}
-function del(o) {
-	return o.parentNode.removeChild(o);
-}
-function createTag(tag, attribs, styles, events, children) {
-	var t = document.createElement(tag);
-	if(t.tagName) {
-		for (var attr in attribs) { if (attribs.hasOwnProperty(attr)) { t.setAttribute(attr, attribs[attr]); } }
-		for (var styl in styles) { if (styles.hasOwnProperty(styl)) { t.style.setProperty(styl.replace(/!/, ""), styles[styl], styl.match(/!/) ? "important" : ""); } }
-		for (var evt in events) { if (events.hasOwnProperty(evt)) { t.addEventListener(evt, events[evt], false); } }
-		if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.tagName) { chldrn = [chldrn]; } for(var child = 0; child < chldrn.length; child++) { t.appendChild(typeof chldrn[child] == "string" ? document.createTextNode(chldrn[child]) : chldrn[child]); } }
-	}
-	return t;
-}
-function getParent(obj, tag, cls) {
-	var cur = obj;
-	if (cur.parentNode) {
-		cur = cur.parentNode;
-		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-			return cur;
-		} else {
-			return getParent(cur, tag, cls);
-		}
-	} else {
-		return null;
-	}
-}
-function getSibling(obj, tag, cls, prev) {
-	var cur = obj;
-	if (cur = prev ? cur.previousSibling : cur.nextSibling) {
-		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-			return cur;
-		} else {
-			return getSibling(cur, tag, cls, prev);
-		}
-	} else {
-		return null;
-	}
-}
-function stop(event) {
-	event.cancelBubble = true;
-	if (event.stopPropagation) event.stopPropagation();
-	event.preventDefault();
-	return false;
 }
