@@ -1,7 +1,7 @@
 "use strict"; var meta= {rawmdb: function() {
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2015.6.4.1626
+// @version      2015.10.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
@@ -28,6 +28,7 @@
 // @include      http*://*.mbsandbox.org/release-group/*
 // @include      http*://*.mbsandbox.org/search?*type=annotation*
 // @include      http*://*.mbsandbox.org/search?*type=release*
+// @include      http*://*.mbsandbox.org/series/*
 // @include      http*://*.mbsandbox.org/tag/*
 // @include      http*://*.mbsandbox.org/user/*/ratings*
 // @include      http*://*.mbsandbox.org/user/*/tag/*
@@ -41,11 +42,13 @@
 // @include      http*://*musicbrainz.org/release-group/*
 // @include      http*://*musicbrainz.org/search?*type=annotation*
 // @include      http*://*musicbrainz.org/search?*type=release*
+// @include      http*://*musicbrainz.org/series/*
 // @include      http*://*musicbrainz.org/tag/*
 // @include      http*://*musicbrainz.org/user/*/ratings*
 // @include      http*://*musicbrainz.org/user/*/tag/*
 // @exclude      *.org/cdtoc/remove*
 // @exclude      *.org/release/*/*edit*
+// @exclude      *.org/series/*/*edit*
 // @exclude      *//*/*mbsandbox.org/*
 // @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
