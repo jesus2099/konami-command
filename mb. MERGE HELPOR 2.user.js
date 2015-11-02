@@ -198,7 +198,21 @@ if (mergeType) {
 	/* merge queue (clear before add) tool */
 	var mergeButton = document.querySelector("div#content > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit']");
 	if (mergeButton) {
+		var checkForm = mergeButton.parentNode.parentNode.parentNode;
+		setButtonTextFromSelectedToAll(mergeButton, true);
+		checkForm.addEventListener("submit", function(event) {
+			if (noChildrenChecked(this)) {
+				checkAllChildren(this);
+			}
+		});
 		var loadingAnimation = "url(data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP/MAP///////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQJBQAAACwAAAAAEAAQAAACIQyOF8uW2NpTcU1Q7czu8fttGTiK1YWdZISWprTCL9NGBQAh+QQJBQAAACwAAAAAEAAQAAACIIQdqXm9285TEc1QwcV1Zz19lxhmo1l2aXSqD7lKrXMWACH5BAkFAAAALAAAAAAQABAAAAIhRI4Hy5bY2lNxzVDtzO7x+20ZOIrVhZ1khJamtMIv00YFACH5BAkFAAAALAAAAAAQABAAAAIgjA2peb3bzlMRTVDDxXVnPX2XGGajWXZpdKoPuUqtcxYAOw==)";
+		mergeButton.parentNode.parentNode.parentNode.addEventListener("change", function(event) {
+			if (event.target.tagName == "INPUT" && event.target.getAttribute("type") == "checkbox") {
+				var nothingChecked = noChildrenChecked(this);
+				setButtonTextFromSelectedToAll(mergeButton, nothingChecked);
+				setButtonTextFromSelectedToAll(reMergeButton, nothingChecked);
+			}
+		});
 		/* clear merge queue and add new stuff to merge queue within only one click */
 		var reMergeButton = mergeButton.cloneNode();
 		reMergeButton.replaceChild(document.createTextNode("Clear queue then " + mergeButton.textContent.toLowerCase()), reMergeButton.firstChild);
@@ -206,34 +220,39 @@ if (mergeType) {
 		reMergeButton.style.setProperty("cursor", "help");
 		reMergeButton.style.setProperty("background-color", "#ff3");
 		reMergeButton.addEventListener("click", function(event) {
-			if (this.parentNode.parentNode.parentNode.querySelector("table.tbl input[name='add-to-merge']:checked")) {
-				/* store control and/or shift key statuses to pass them to the other later merge button click */
-				var modifierKeys = (event.altKey ? "alt+" : "") + (event.ctrlKey ? "ctrl+" : "") + (event.metaKey ? "meta+" : "") + (event.shiftKey ? "shift+" : "");
-				reMergeButton.style.setProperty("background-image", loadingAnimation);
-				var xhr = new XMLHttpRequest();
-				xhr.addEventListener("load", function(event) {
-					reMergeButton.style.removeProperty("background-image");
-					if (this.status == 200) {
-						if (modifierKeys == "") {
-							mergeButton.style.setProperty("background-image", loadingAnimation);
-						}
-						sendEvent(mergeButton, modifierKeys + "click");
-					} else {
-						reMergeButton.style.setProperty("background-color", "#fcc");
+			/* store control and/or shift key statuses to pass them to the other later merge button click */
+			var modifierKeys = (event.altKey ? "alt+" : "") + (event.ctrlKey ? "ctrl+" : "") + (event.metaKey ? "meta+" : "") + (event.shiftKey ? "shift+" : "");
+			reMergeButton.style.setProperty("background-image", loadingAnimation);
+			var xhr = new XMLHttpRequest();
+			xhr.addEventListener("load", function(event) {
+				reMergeButton.style.removeProperty("background-image");
+				if (this.status == 200) {
+					if (modifierKeys == "") {
+						mergeButton.style.setProperty("background-image", loadingAnimation);
 					}
-				});
-				xhr.open("GET", mergeButton.parentNode.parentNode.parentNode.getAttribute("action").replace(/_queue$/, "?submit=cancel"), true);
-				xhr.send(null);
-			}
+					sendEvent(mergeButton, modifierKeys + "click");
+				} else {
+					reMergeButton.style.setProperty("background-color", "#fcc");
+				}
+			});
+			xhr.open("GET", mergeButton.parentNode.parentNode.parentNode.getAttribute("action").replace(/_queue$/, "?submit=cancel"), true);
+			xhr.send(null);
 			return stop(event);
 		});
 		addAfter(reMergeButton, mergeButton);
-		/* don’t reload page for nothing when nothing is checked */
-		mergeButton.addEventListener("click", function(event) {
-			if (!this.parentNode.parentNode.parentNode.querySelector("table.tbl input[name='add-to-merge']:checked")) {
-				return stop(event);
-			}
-		});
+	}
+}
+function setButtonTextFromSelectedToAll(button, all) {
+	button.replaceChild(document.createTextNode(button.textContent.replace(new RegExp(all ? "selected" : "all", "i"), all ? "all" : "selected")), button.firstChild);
+}
+function noChildrenChecked(parent) {
+	return !parent.querySelector("table.tbl input[name='add-to-merge']:checked");
+}
+function checkAllChildren(parent) {
+	var checkAll = parent.querySelector("th input[type='checkbox']");
+	if (checkAll) {
+		checkAll.checked = true;
+		sendEvent(checkAll, "change");
 	}
 }
 function loadEntInfo() {
