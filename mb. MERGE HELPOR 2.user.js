@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.10.22
+// @version      2015.11.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -16,7 +16,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-01-31
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
 // @include      http*://*musicbrainz.org/*
 // @include      http://*.mbsandbox.org/*
@@ -240,6 +240,28 @@ if (mergeType) {
 			return stop(event);
 		});
 		addAfter(reMergeButton, mergeButton);
+		/* Make “Remove selected entites” and “Cancel” buttons faster */
+		var currentMergeForm = document.querySelector("div#current-editing > form[action$='/merge']");
+		if (currentMergeForm) {
+			currentMergeForm.querySelector("button[type='submit'][value='remove']").addEventListener("click", function(event) {
+				var href = currentMergeForm.getAttribute("action") + "?submit=remove";
+				for (var checked = currentMergeForm.querySelectorAll("li > input[type='checkbox'][id^='remove.'][value]:checked"), c = 0; c < checked.length; c++) {
+					href += "&remove=" + checked[c].value;
+					removeNode(checked[c].parentNode);
+				}
+				var xhr = new XMLHttpRequest();
+				xhr.open("GET", href, true);
+				xhr.send(null);
+				return stop(event);
+			});
+			currentMergeForm.querySelector("button[type='submit'][value='cancel']").addEventListener("click", function(event) {
+				removeNode(currentMergeForm.parentNode);
+				var xhr = new XMLHttpRequest();
+				xhr.open("GET", currentMergeForm.getAttribute("action") + "?submit=cancel", true);
+				xhr.send(null);
+				return stop(event);
+			});
+		}
 	}
 }
 function setButtonTextFromSelectedToAll(button, all) {
