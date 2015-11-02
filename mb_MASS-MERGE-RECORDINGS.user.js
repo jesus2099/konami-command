@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.9.22
+// @version      2015.11.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -823,6 +823,17 @@ function expandCollapseAllMediums(clickThis) {
 	}
 }
 function prepareLocalRelease() {
+	//link to mb_INLINE-STUFF (start)
+	var inlineStuffedRecordingNames = document.querySelectorAll("a[jesus2099userjs81127recname]");
+	for (var n = 0; n < inlineStuffedRecordingNames.length; n++) {
+		replaceChildren(createTag("bdi", {}, inlineStuffedRecordingNames[n].getAttribute("jesus2099userjs81127recname")), inlineStuffedRecordingNames[n]);
+		inlineStuffedRecordingNames[n].removeAttribute("jesus2099userjs81127recname");
+	}
+	var inlineStuffedRecordingComments = document.querySelectorAll("span.jesus2099userjs81127recdis");
+	for (var c = 0; c < inlineStuffedRecordingComments.length; c++) {
+		removeNode(inlineStuffedRecordingComments[c]);
+	}
+	//link to mb_INLINE-STUFF (end)
 	expandCollapseAllMediums("▶");
 	setTimeout(loadingAllMediums, 10);
 }
