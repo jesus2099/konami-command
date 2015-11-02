@@ -2,13 +2,13 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.11.2
+// @version      2015.11.2.1147
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12.17)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey    tested sometimes
+// @compatible   firefox(41.0.2)+greasemonkey    tested sometimes
 // @compatible   chromium(46)+tampermonkey   tested sometimes
 // @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
@@ -235,7 +235,7 @@ function nextButt(editID) {
 	enableInputs([mergeStatus, editNote]);
 	var nextButt = mergeQueue.shift();
 	if (nextButt) {
-		FireFoxWorkAround(nextButt);
+		enableAndClick(nextButt);
 	} else {
 		noScrollFocus(startpos);
 	}
@@ -247,17 +247,14 @@ function tryAgain(errorText) {
 	if (currentButt) {
 		errormsg = "Retry in " + Math.ceil(retryDelay / 1000) + " seconds (" + errormsg + ").";
 		setTimeout(function() {
-			FireFoxWorkAround(currentButt);
+			enableAndClick(currentButt);
 		}, retryDelay);
 	}
 	infoMerge(errormsg, false, true);
 }
-function FireFoxWorkAround(butt) {
+function enableAndClick(butt) {
 	enableInputs(butt);
-	if (navigator.userAgent.match(/firefox/i)) {
-		butt.setAttribute("value", "FF delay…");
-		setTimeout(function() { butt.click(); }, 1000);
-	} else { butt.click(); }
+	butt.click();
 }
 function infoMerge(msg, goodNews, reset) {
 	mergeStatus.value = msg;
