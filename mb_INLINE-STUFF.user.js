@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2015.8.14.1426
+// @version      2015.11.2
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -38,7 +38,6 @@
 // @exclude      http*://wiki.musicbrainz.org*
 // @run-at       document-end
 // ==/UserScript==
-(function(){
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 var dupeColour = "pink";
 var infoColour = "lightcyan";
@@ -58,23 +57,26 @@ var shownisrcs = [];
 var isrcDone = false;
 var shownacoustids = [];
 var acoustidDone = false;
-var shownworks = {"count":0};
+var shownworks = {count: 0};
 var isrcURL = "/isrc/%s";
 var acoustidURL = "//acoustid.org/track/%s";
 var releasewsURL = "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musicbrainz.org/XMLWebService#release_resources */ 
 var str_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(str_GUID, "i");
 var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acoustid&mbid=%mbid&state=%state";
-var MBS = location.protocol+"//"+location.host;
-var css_recording = "td:not(.pos):not(.video) > a[href^='"+MBS+"/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='"+MBS+"/recording/']";
-var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='"+MBS+"/work/']";
+var MBS = location.protocol + "//" + location.host;
+var css_recording = "td:not(.pos):not(.video) > a[href^='" + MBS + "/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='" + MBS + "/recording/']";
+var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='" + MBS + "/work/']";
 var pleaseWaitFragment = null;
 var tracksHtml = null;
-var pagecat = location.href.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i)? "edits" : "release";
-if (location.href.match(/\/recordings/i)) { pagecat = "recordings"; }
+var pagecat = location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
+if (location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
 if (pagecat) {
 	switch(pagecat) {
 		case "release":
+			document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
+			var css = document.styleSheets[document.styleSheets.length - 1];
+			css.insertRule("a[" + userjs + "recname], span." + userjs + "recdis { text-shadow: 1px 2px 2px #999; color: maroon}", 0);
 			var relMBID = location.href.match(re_GUID);
 			if (relMBID && (tracksHtml = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]:not(.subh)")).length > 0) {
 				if (recUseInRelationshipLink || recAddToMergeLink) {
@@ -268,21 +270,22 @@ function isrcFish() {
 					aRec.setAttribute("title", ntit);
 					if (markTrackRecNameDiff) {
 						if (typeof markTrackRecNameDiff == "string") {
-							var patf = document.createDocumentFragment();
-							var patt = markTrackRecNameDiff.replace(/%track-name%/ig, aRec.textContent).replace(/%recording-name%/ig, recnameNet[mbid].name).split("%br%");
-							for (var p = 0; p < patt.length; p++) {
-								if (p > 0) { patf.appendChild(document.createElement("br")); }
-								patf.appendChild(document.createTextNode(patt[p]));
+							var trackNameFragment = document.createDocumentFragment();
+							var trackNameRows = markTrackRecNameDiff.replace(/%track-name%/ig, aRec.textContent).replace(/%recording-name%/ig, recnameNet[mbid].name).split("%br%");
+							for (var row = 0; row < trackNameRows.length; row++) {
+								if (row > 0) {
+									trackNameFragment.appendChild(document.createElement("br"));
+								}
+								trackNameFragment.appendChild(document.createTextNode(trackNameRows[row]));
 							}
-							aRec.replaceChild(patf, aRec.firstChild);
+							aRec.setAttribute(userjs + "recname", aRec.textContent); //linked in mb_MASS-MERGE-RECORDINGS
+							aRec.replaceChild(trackNameFragment, aRec.firstChild);
 						}
-						aRec.style.setProperty("text-shadow", "1px 2px 2px #999");
-						aRec.style.setProperty("color", "maroon");
 					}
 				}
 				if (markTrackRecNameDiff && recnameNet[mbid].comment && !sameCompleteName) {
 					var recdis = document.createElement("span");
-					recdis.className = userjs + "recdis";
+					recdis.className = userjs + "recdis"; //linked in mb_MASS-MERGE-RECORDINGS
 					recdis.appendChild(document.createTextNode(" (" + recnameNet[mbid].comment + ")"));
 					addAfter(recdis, aRec);
 				}
@@ -557,4 +560,3 @@ function acoustidFishBatch(recids) {
 		xhr.send(params);
 	}
 }
-})();
