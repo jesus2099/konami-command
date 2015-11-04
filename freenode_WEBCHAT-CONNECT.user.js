@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2015.11.2
+// @version      2015.11.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/freenode_WEBCHAT-CONNECT.user.js
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. cleverly focus first empty field.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -23,7 +23,7 @@
 setTimeout(function() {
 	"use strict";
 	var userjs = {name: "freenode. WEBCHAT CONNECT", key: "j2fwc"};
-	var channels = "#github, #last.fm, ##musicbrainz-lol, #musicbrainz";
+	var channels = "#github,#last.fm,##musicbrainz-lol,#musicbrainz";
 	var inputs = document.getElementsByTagName("input");
 	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 	var css = document.styleSheets[document.styleSheets.length - 1];
@@ -57,7 +57,7 @@ setTimeout(function() {
 		field.addEventListener("change", function(event) {
 			var key = this.getAttribute("ref");
 			if (key && key.match(new RegExp("^" + userjs.key + "_\\w+"))) {
-				if (key.match(/channels/)) { this.value = this.value.replace(/[\s:;,]+/g, ", ").replace(/^,|,$/g, ""); }
+				if (key.match(/channels/)) { this.value = this.value.replace(/[\s:;,]+/g, ",").replace(/^,|,$/g, ""); }
 				localStorage.setItem(key, this.value);
 			}
 		});
