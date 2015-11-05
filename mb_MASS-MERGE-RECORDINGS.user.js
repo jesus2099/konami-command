@@ -82,35 +82,37 @@ css.insertRule("div#" + MMRid + " h2 { color: maroon; text-shadow: 2px 2px 4px #
 css.insertRule("div#" + MMRid + " kbd { background-color: silver; border: 2px grey outset; padding: 0px 4px; font-size: .8em; }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
-var localRelease = {
-	"release-group": document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
-	title: ltitle[1],
-	comment: document.querySelector("h1 > span.comment > bdi"),
-	ac: ltitle[2],
-	id: location.pathname.match(regex_MBID)[0],
-	tracks: []
-};
-var safeLengthDelta = 4;
-if (localRelease.comment) localRelease.comment = " (" + localRelease.comment.textContent + ")"; else localRelease.comment = "";
-var remoteRelease = {tracks: []};
-var collapsedMediums = document.querySelectorAll(css_collapsed_medium);
-if (collapsedMediums.length > 1) {
-	var tracklistHeader = document.querySelector("h2.tracklist");
-	if (tracklistHeader) {
-		tracklistHeader.appendChild(createTag("span", {a: {title: "by and for " + meta.n}, s: {color: "#999", opacity: ".5"}}, [" (", createTag("a", {a: {ref: "▶"}}, "expand"), "/", createTag("a", {a: {ref: "▼"}}, "collapse"), " all mediums)"]));
-		tracklistHeader.addEventListener("click", function(event) { if (event.target.tagName == "A") expandCollapseAllMediums(event.target.getAttribute("ref")); });
-	}
-}
-if (document.getElementsByClassName("account").length > 0) {
-	sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
-	document.body.addEventListener("keydown", function(event) {
-		if (!event.altKey && event.ctrlKey && event.shiftKey && event.keyCode == KBD.M) {
-			prepareLocalRelease();
-			return stop(event);
+if (ltitle) {
+	var localRelease = {
+		"release-group": document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
+		title: ltitle[1],
+		comment: document.querySelector("h1 > span.comment > bdi"),
+		ac: ltitle[2],
+		id: location.pathname.match(regex_MBID)[0],
+		tracks: []
+	};
+	var safeLengthDelta = 4;
+	if (localRelease.comment) localRelease.comment = " (" + localRelease.comment.textContent + ")"; else localRelease.comment = "";
+	var remoteRelease = {tracks: []};
+	var collapsedMediums = document.querySelectorAll(css_collapsed_medium);
+	if (collapsedMediums.length > 1) {
+		var tracklistHeader = document.querySelector("h2.tracklist");
+		if (tracklistHeader) {
+			tracklistHeader.appendChild(createTag("span", {a: {title: "by and for " + meta.n}, s: {color: "#999", opacity: ".5"}}, [" (", createTag("a", {a: {ref: "▶"}}, "expand"), "/", createTag("a", {a: {ref: "▼"}}, "collapse"), " all mediums)"]));
+			tracklistHeader.addEventListener("click", function(event) { if (event.target.tagName == "A") expandCollapseAllMediums(event.target.getAttribute("ref")); });
 		}
-	});
+	}
+	if (document.getElementsByClassName("account").length > 0) {
+		sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
+		document.body.addEventListener("keydown", function(event) {
+			if (!event.altKey && event.ctrlKey && event.shiftKey && event.keyCode == KBD.M) {
+				prepareLocalRelease();
+				return stop(event);
+			}
+		});
+	}
+	//	sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
 }
-//	sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
 function mergeRecsStep(_step) {
 	var step = _step || 0;
 	var MMR = document.getElementById(MMRid);
