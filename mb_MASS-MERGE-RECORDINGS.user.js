@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.11.2.1147
+// @version      2015.11.5
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -72,6 +72,7 @@ var css = document.styleSheets[document.styleSheets.length - 1];
 css.insertRule("body." + MMRid + " div#" + MMRid + " > .main-shortcut { display: none; }", 0);
 css.insertRule("body." + MMRid + " div#content table.tbl > * > tr > .rating { display: none; }", 0);
 css.insertRule("body." + MMRid + " div#content table.tbl > tbody > tr > td > div.ars { display: none; }", 0);
+css.insertRule("body." + MMRid + " div#content table.tbl > tbody > tr > td > a[href^='http://acousticbrainz.org/'][style='float: right;'] { display: none; }", 0); //link to mb_ACOUSTICBRAINZ-LINKS https://gist.github.com/jesus2099/8e223f09d64d831a9514
 css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " { margin-top: 12px; cursor: pointer; }", 0);
 css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " > :not(h2):not(.main-shortcut) { display: none; }", 0);
 css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " input[name='mergeStatus'] { font-size: 9px!important; background-color: #fcf; }", 0);
