@@ -125,7 +125,7 @@ function mergeRecsStep(_step) {
 	];
 	disableInputs([matchMode.sequential, matchMode.title, matchMode.titleAndAC, startpos, mergeStatus]);
 	if (step == 1) {
-		disableInputs(editNote);
+		disableInputs([editNote, currentButt.parentNode.querySelector("input." + MMRid + "dirbutt")]);
 		params[step] += "&merge.edit_note=";
 		var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
 		if (paramsup != "") paramsup += "\n —\n";
@@ -236,9 +236,9 @@ function nextButt(editID) {
 	document.title = dtitle;
 	updateMatchModeDisplay();
 	enableInputs([mergeStatus, editNote]);
-	var nextButt = mergeQueue.shift();
-	if (nextButt) {
-		enableAndClick(nextButt);
+	var nextButtFromQueue = mergeQueue.shift();
+	if (nextButtFromQueue) {
+		enableAndClick(nextButtFromQueue);
 	} else {
 		noScrollFocus(startpos);
 	}
@@ -757,15 +757,14 @@ function buildMergeForm(loc, rem) {
 		mergeButt.style.setProperty("float", "right");
 		mergeButt.addEventListener("click", function(event) {
 			disableInputs(this);
-			var swapbutt = this.parentNode.getElementsByTagName("input")[4];
-			disableInputs(swapbutt)
+			var swapbutt = this.parentNode.querySelector("input." + MMRid + "dirbutt");
 			this.style.setProperty("background-color", cInfo);
-			var swapped = (swapbutt.value == loc2rem);
-			var mergeFrom = this.parentNode.getElementsByTagName("input")[swapped ? 0 : 2];
-			var mergeTo = this.parentNode.getElementsByTagName("input")[swapped ? 2 : 0];
 			var queuedItem;
 			if (from.value == "") {
 				/* if no merge is ongoing, launch this merge */
+				var swapped = (swapbutt.value == loc2rem);
+				var mergeFrom = this.parentNode.getElementsByTagName("input")[swapped ? 0 : 2];
+				var mergeTo = this.parentNode.getElementsByTagName("input")[swapped ? 2 : 0];
 				from.value = mergeFrom.value;
 				from.setAttribute("ref", mergeFrom.getAttribute("ref"));
 				to.value = mergeTo.value;
