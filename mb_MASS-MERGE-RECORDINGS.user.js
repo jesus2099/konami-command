@@ -237,6 +237,8 @@ function nextButt(successOrEditID) {
 		infoMerge("#" + from.value + " to #" + to.value + " merged OK", true, true);
 	} else {
 		infoMerge("Merge cancelled", true, true);
+		currentButt.value = "Merge";
+		enableInputs(currentButt);
 	}
 	retry.count = 0;
 	currentButt = null;
@@ -781,8 +783,9 @@ function buildMergeForm(loc, rem) {
 			} else if (this.getAttribute("ref") === "0") {
 				/* if this merge is being stacked (step 0), cancel its submission (step 1) */
 				infoMerge("Cancelling merge…", true, true);
+				disableInputs(this);
 				this.removeAttribute("ref");
-				this.value = "Merge";
+				this.value = "Cancelling…";
 			} else if (retry.checking || retry.count > 0 || mergeQueue.indexOf(this) < 0) {
 				/* if a merge is ongoing or a checking/retry is pending, queue this one */
 				this.value = "Unqueue";
