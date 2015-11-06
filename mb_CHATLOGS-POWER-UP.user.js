@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2015.9.29
-// @description  Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
+// @version      2015.11.6
+// @description  MIGRATION (to chatlogs.metabrainz.org) IN PROGRESS. Toggle server messages; See red bar below last read line; Linkify forgotten links; Highlight lines containing one of keywords; previous/next date log page; misc stuff too
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
@@ -11,18 +11,23 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-03-05
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
-// @include      http://chatlogs.musicbrainz.org/*
-// @include      https://chatlogs.musicbrainz.org/*
+// @include      http://chatlogs.metabrainz.org/*
 // @include      http://hcm.fam.cx/mbja/chatlog.cgi*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
 var userjs = "j2userjs127580";
-var cat = location.href.match(/chatlogs\.musicbrainz\.org\/([^/]+)\/|mbja/);
+var cat = location.href.match(/https?:\/\/chatlogs\.metabrainz\.org\/brainzbot\/([^/]+)\/|mbja/);
 if (cat) {
 	cat = cat[1] ? cat[1] : "musicbrainz-ja";
+	if (cat != "musicbrainz-ja") {
+		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
+		var css = document.styleSheets[document.styleSheets.length - 1];
+		css.insertRule("header#Site-Header { display: none; }", 0);
+		css.insertRule("header#Log-Header { padding: 0px; }", 0);
+	}
 }
 if (cat.match(/(meta|music)brainz/) && document.title.match(/error/i) && location.pathname.match(/today|yesterday/)) {
 	var pathnameSplit = location.pathname.match(/^(.+)(today|yesterday)/);
