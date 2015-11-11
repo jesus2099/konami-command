@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.11.5
+// @version      2015.11.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -957,7 +957,7 @@ function time(_ms, pad) {/*from 166877*/
 	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
 	if (ms > 0) {
 		var d = new Date();
-		d.setTime(ms);
+		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
 		return /*milliseconds temporary hidden*/(d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad&&d.getMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getMinutes() + ":" + (d.getSeconds() < 10 ? "0" : "") + d.getSeconds()/* + (pad||d.getMilliseconds() > 0 ? "." + (d.getMilliseconds() < 100 ? "0" : "") + (d.getMilliseconds() < 10 ? "0" : "") + d.getMilliseconds() : "")*/;
 	}
 	return "?:??";
