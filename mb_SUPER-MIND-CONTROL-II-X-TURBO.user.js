@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.11.12.958
+// @version      2015.11.12.1011
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / SHOW_RECORDING_LENGTHS / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1165,7 +1165,7 @@ if (enttype) {
 	if (j2sets.SHOW_RECORDING_LENGTHS) {
 		if (enttype == "work" && location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$"))) {
 			var workRecTable = document.querySelector("div#content table.tbl");
-			if (workRecTable) {
+			if (workRecTable && workRecTable.getElementsByClassName("treleases").length == 0) {
 				var xhr = new XMLHttpRequest();
 				xhr.onload = function(event) {
 					var relations = JSON.parse(this.responseText).relations;
@@ -1175,14 +1175,14 @@ if (enttype) {
 							recordingLengths[relations[r].recording.id] = relations[r].recording.length;
 						}
 					}
-					workRecTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
+					workRecTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
 					var rows = workRecTable.querySelectorAll("tbody > tr.subh > th + th[colspan]");
 					for (var r = 0; r < rows.length; r++) {
 						rows[r].setAttribute("colspan", parseInt(rows[r].getAttribute("colspan"), 10) + 1);
 					}
 					var recordings = workRecTable.querySelectorAll("tbody > tr:not(.subh) a[href*='/recording/']");
 					for (var r = 0; r < recordings.length; r++) {
-						getParent(recordings[r], "tr").appendChild(createTag("td", {}, time(recordingLengths[recordings[r].getAttribute("href").match(re_GUID)[0]])));
+						getParent(recordings[r], "tr").appendChild(createTag("td", {a: {class: "treleases"}}, time(recordingLengths[recordings[r].getAttribute("href").match(re_GUID)[0]])));
 					}
 				};
 				xhr.open("get", "/ws/2" + location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=recording-rels&fmt=json", false);
