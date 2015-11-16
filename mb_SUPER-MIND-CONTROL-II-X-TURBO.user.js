@@ -587,7 +587,7 @@ if (j2sets.SPOT_AC) {
 j2setting("SPOT_CAA", true, true, "cover art archive’s images stand out from other images. Allows spotting incorrectly padded CAA uploads and looks cool altogether");
 j2setting("SPOT_CAA_css", "box-shadow: 0 0 8px black;", true, "CSS syntax (on “a.artwork-image > img”)");
 if (j2sets.SPOT_CAA) {
-	j2superturbo.addCSSRule("a.artwork-image > span.cover-art-image > img[src*='//coverartarchive.org/'] { " + j2sets.SPOT_CAA_css + " }");
+	j2superturbo.addCSSRule("img[src*='//coverartarchive.org/'], img.uploader-preview-image { " + j2sets.SPOT_CAA_css + " }");
 }
 /*================================================================= DISPLAY+
 ## WARN_NEW_WINDOW ##
