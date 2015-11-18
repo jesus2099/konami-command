@@ -2,7 +2,7 @@
 var meta= { rawmdb: function() {
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2015.10.1
+// @version      2015.11.18
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
@@ -113,35 +113,44 @@ if (editform) {
 				var params = "enter-vote.vote.0.edit_id=" + id.value + "&enter-vote.vote.0.vote=" + vote + "&url=" + encodeURIComponent("/edit/" + id.value);
 				if (ta) { params += "&enter-vote.vote.0.edit_note=" + encodeURIComponent(ta.value); }
 				var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function(event) {
-					if (xhr.readyState == 4) {
-						var xhredito, xhredit = this.responseText.match(/<title>Edit #([0-9]+)/);
-						var errmsg = "Error while edit voting in the background.";
-						if (xhr.status != 200) { errmsg += "\n" + xhr.status + ": " + xhr.statusText; }
-						if (xhredit) {
-							xhredit = xhredit[1];
-							errmsg = "Edit #" + xhredit + "\n" + errmsg;
-							xhredito = document.querySelector("input[type='hidden'][name$='edit_id'][value='" + xhredit + "']");
-							if (xhredito) {
-								xhredito = getParent(xhredito, "div", "edit-list");
-							}
-						} else { errmsg = "Unknown edit\n" + errmsg; }
-						if (xhr.status == 200 && pendingXHRvote > 0 && xhredito) {
-							del(xhredito);
-						} else {
-							if (xhredito) {
-								ninja(event, xhredito, false, "force");
-								xhredito.style.setProperty("background-color", "pink");
-								xhredito.style.setProperty("display", "block");
-							}
-							alert(errmsg);
-							if (xhredit && !xhredito) {
-								self.open("/edit/" + xhredit);
-							}
-						}
-						if (pendingXHRvote > 0) { updateXHRstat(--pendingXHRvote); }
+				xhr.id = id.value;
+				xhr.addEventListener("load", function(event) {
+					var editVoted = this.responseText.match(/<title>\D*(\d+)\D*<\/title>/);
+					if (editVoted) {
+						editVoted = editVoted[1];
 					}
-				};
+					var editBlock = document.querySelector("input[type='hidden'][name$='edit_id'][value='" + this.id + "']");
+					if (editBlock) {
+						editBlock = getParent(editBlock, "div", "edit-list");
+					}
+					if (this.status == 200 && pendingXHRvote > 0 && editVoted == this.id && editBlock) {
+						del(editBlock);
+					} else {
+						var errorMessage = "Error while voting Edit #" + this.id + " in the background.\n\n";
+						if (this.status != 200) {
+							errorMessage += this.status + ": " + this.statusText + "\n";
+						}
+						if (editBlock) {
+							ninja(event, editBlock, false, "force");
+							editBlock.style.setProperty("background-color", "pink");
+							editBlock.style.setProperty("display", "block");
+						} else {
+							open("/edit/" + this.id);
+							errorMessage += "Edit block not found.\n";
+						}
+						if (editVoted != this.id) {
+							open("/edit/" + editVoted);
+							errorMessage += "Got Edit #" + editVoted + " instead in return page.\n";
+						}
+						if (pendingXHRvote < 1) {
+							errorMessage += "No votes pending.\n";
+						}
+						alert(errorMessage + "\n\n" + this.responseText);
+					}
+					if (pendingXHRvote > 0) {
+						updateXHRstat(--pendingXHRvote);
+					}
+				});
 				xhr.open("POST", "/edit/enter_votes", true);
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 				xhr.setRequestHeader("Content-length", params.length);
