@@ -2,7 +2,7 @@
 var meta= { rawmdb: function() {
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2015.11.18
+// @version      2015.11.18.1611
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
@@ -115,37 +115,39 @@ if (editform) {
 				var xhr = new XMLHttpRequest();
 				xhr.id = id.value;
 				xhr.addEventListener("load", function(event) {
-					var editVoted = this.responseText.match(/<title>\D*(\d+)\D*<\/title>/);
-					if (editVoted) {
-						editVoted = editVoted[1];
+					var anotherEdit = this.responseText.match(/<title>\D*(\d+)\D*<\/title>/);
+					if (anotherEdit && anotherEdit[1] != this.id) {
+						anotherEdit = anotherEdit[1];
+					} else {
+						anotherEdit = false;
 					}
-					var editBlock = document.querySelector("input[type='hidden'][name$='edit_id'][value='" + this.id + "']");
-					if (editBlock) {
-						editBlock = getParent(editBlock, "div", "edit-list");
+					var editEntry = document.querySelector("input[type='hidden'][name$='edit_id'][value='" + this.id + "']");
+					if (editEntry) {
+						editEntry = getParent(editEntry, "div", "edit-list");
 					}
-					if (this.status == 200 && pendingXHRvote > 0 && editVoted == this.id && editBlock) {
-						del(editBlock);
+					if (this.status == 200 && pendingXHRvote > 0 && !anotherEdit && editEntry) {
+						del(editEntry);
 					} else {
 						var errorMessage = "Error while voting Edit #" + this.id + " in the background.\n\n";
 						if (this.status != 200) {
 							errorMessage += this.status + ": " + this.statusText + "\n";
 						}
-						if (editBlock) {
-							ninja(event, editBlock, false, "force");
-							editBlock.style.setProperty("background-color", "pink");
-							editBlock.style.setProperty("display", "block");
+						if (editEntry) {
+							ninja(event, editEntry, false, "force");
+							editEntry.style.setProperty("background-color", "pink");
+							editEntry.style.setProperty("display", "block");
 						} else {
 							open("/edit/" + this.id);
 							errorMessage += "Edit block not found.\n";
 						}
-						if (editVoted != this.id) {
-							open("/edit/" + editVoted);
-							errorMessage += "Got Edit #" + editVoted + " instead in return page.\n";
+						if (anotherEdit) {
+							open("/edit/" + anotherEdit);
+							errorMessage += "Got Edit #" + anotherEdit + " instead in return page.\n";
 						}
 						if (pendingXHRvote < 1) {
 							errorMessage += "No votes pending.\n";
 						}
-						alert(errorMessage + "\n\n" + this.responseText);
+						alert(errorMessage);
 					}
 					if (pendingXHRvote > 0) {
 						updateXHRstat(--pendingXHRvote);
