@@ -1,2 +1,7 @@
 [tgit]
 	projectlanguage = 2057
+[bugtraq]
+	url = https://github.com/jesus2099/konami-command/issues/%BUGID%
+	logregex = "#(\\d+)\\b"
+[bugtraq]
+	warnifnoissue = true
