@@ -19,7 +19,6 @@
 // @exclude      *.org/release/*/*
 // @run-at       document-end
 // ==/UserScript==
-(function(){"use strict";
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - 
 patterns	: tweak the result tracklist using \n for new lines [normal tracklist, various artists (VA) tracklist]
 nextDisc	: used to show when going next medium/tracklist in multi-discs releases */
@@ -51,10 +50,10 @@ function textTracklist(tracks, patt) {
 	    [/%tracknumber%/g, "tracknumber"],
 	];
 	var tracklist = "";
-	for (var i=0 ; i < tracks.length ; i++) {
+	for (var i = 0 ; i < tracks.length ; i++) {
 		var tracknumber = tracks[i].querySelector("td.pos").textContent.trim();
 		if (tracknumber == "1" && i != 0) { tracklist += nextDisc; }
-		var title = (tracks[i].querySelector("td:not(.pos):not(.video) a[href^='"+location.protocol+"//"+location.host+"/recording/']").textContent);
+		var title = (tracks[i].querySelector("td:not(.pos):not(.video) a[href^='" + location.protocol + "//" + location.host + "/recording/']").textContent);
 		var artist = tracks[i].querySelector("td:not([class]) + td:not([class])");
 		if (artist) {
 			artist = artist.textContent.trim();
@@ -62,7 +61,7 @@ function textTracklist(tracks, patt) {
 		}
 		var length = tracks[i].querySelector("td.treleases").textContent.replace(/[^0-9:(?)]/g, "");
 		var txt = pattern;
-		for (var j=0; j < replaces.length; j++) {
+		for (var j = 0; j < replaces.length; j++) {
 			txt = txt.replace(replaces[j][0], eval(replaces[j][1]));
 		}
 		tracklist += txt.replace(" (?:??)", "");
@@ -73,28 +72,28 @@ if (tracks.length > 0) {
 	for (var p in patterns) if (patterns.hasOwnProperty(p)) {
 		var fragment= document.createDocumentFragment();
 		var a = document.createElement("a");
-		a.style.cursor = "pointer";
-		a.addEventListener("click", function(e) {
-			function coolstuff(t,z,s,b,o) {
-				var truc = document.getElementsByTagName("body")[0].appendChild(document.createElement(t));
-				truc.style.position = "fixed";
-				truc.style.zIndex = z;
-				truc.style.top = (100-s)/2+"%";
-				truc.style.left = (100-s)/2+"%";
-				truc.style.width = s+"%";
-				truc.style.height = s+"%";
-				if (b) { truc.style.background = b; }
-				if (o) { truc.style.opacity = o; }
+		a.style.setProperty("cursor", "pointer");
+		a.addEventListener("click", function(event) {
+			function coolstuff(tagName, zIndex, size, background, opacity) {
+				var truc = document.body.appendChild(document.createElement(tagName));
+				truc.style.setProperty("position", "fixed");
+				truc.style.setProperty("z-index", zIndex);
+				truc.style.setProperty("top", (100 - size) / 2 + "%");
+				truc.style.setProperty("left", (100 - size) / 2+"%");
+				truc.style.setProperty("width", size + "%");
+				truc.style.setProperty("height", size + "%");
+				if (background) { truc.style.setProperty("background", background); }
+				if (opacity) { truc.style.setProperty("opacity", opacity); }
 				return truc;
 			}
-			coolstuff("div", "50", 100, "black", ".6").addEventListener("click", function(e) {
+			coolstuff("div", "50", 100, "black", ".6").addEventListener("click", function(event) {
 				this.parentNode.removeChild(this.nextSibling);
 				this.parentNode.removeChild(this);
 			});
 			var thisisit = coolstuff("textarea", "55", 80);
 			thisisit.style.setProperty("font-family", "sans-serif");
-			thisisit.addEventListener("keypress", function(e) {
-				if (e.keyCode == 27) { this.previousSibling.click(); }
+			thisisit.addEventListener("keypress", function(event) {
+				if (event.keyCode == 27) { this.previousSibling.click(); }
 			});
 			thisisit.appendChild(document.createTextNode(textTracklist(tracks, this.getAttribute("rel"))));
 			thisisit.setAttribute("title", "press ESC to close");
@@ -104,8 +103,8 @@ if (tracks.length > 0) {
 		a.setAttribute("rel", p);
 		var relprop = document.querySelector("div#sidebar dl.properties");
 		if (relprop) {
-			var tlddid = userjs+"tracklists";
-			var tldd = relprop.querySelector("dd#"+tlddid);
+			var tlddid = userjs + "tracklists";
+			var tldd = relprop.querySelector("dd#" + tlddid);
 			var sep = ", ";
 			if (!tldd) {
 				relprop.appendChild(document.createElement("dt")).appendChild(document.createTextNode("Tracklist:"));
@@ -118,4 +117,3 @@ if (tracks.length > 0) {
 		}
 	}
 }
-})();
