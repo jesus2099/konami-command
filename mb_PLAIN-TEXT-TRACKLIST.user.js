@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2015.4.28.1748
+// @version      2015.11.20
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @homepage     http://userscripts-mirror.org/scripts/show/89036
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -11,6 +11,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2010-10-28
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
 // @include      http*://*musicbrainz.org/release/*
 // @include      http://*.mbsandbox.org/release/*
@@ -42,6 +43,17 @@ var userjs = "jesus2099plainTextTracklist";
 var tracks = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]");
 /* ## PLAIN TEXT TRACKLIST ## */
 function textTracklist(tracks, patt) {
+	//link to mb_INLINE-STUFF (start)
+	var inlineStuffedRecordingNames = document.querySelectorAll("a[jesus2099userjs81127recname]");
+	for (var n = 0; n < inlineStuffedRecordingNames.length; n++) {
+		replaceChildren(createTag("bdi", {}, inlineStuffedRecordingNames[n].getAttribute("jesus2099userjs81127recname")), inlineStuffedRecordingNames[n]);
+		inlineStuffedRecordingNames[n].removeAttribute("jesus2099userjs81127recname");
+	}
+	var inlineStuffedRecordingComments = document.querySelectorAll("span.jesus2099userjs81127recdis");
+	for (var c = 0; c < inlineStuffedRecordingComments.length; c++) {
+		removeNode(inlineStuffedRecordingComments[c]);
+	}
+	//link to mb_INLINE-STUFF (end)
 	var pattern = patterns[patt][0];
 	var replaces = [
 	    [/%artist%/g, "artist"],
