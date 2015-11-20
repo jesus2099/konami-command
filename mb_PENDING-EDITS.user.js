@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.8.27
+// @version      2015.11.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -153,12 +153,13 @@ function checkOpenEdits(obj) {
 				break;
 			}
 			if (this.status == 200) {
-				var editc = this.responseText.match(/found (at least )?(\d+) edits?/i), editDetails;
-				if (editc) {
-					editc = [null, editc[1], parseInt(editc[2], 10)];
+				var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
+				var editc = responseDOM.querySelector("div.search-toggle"), editDetails;
+				if (editc && (editc = editc.textContent.match(/\d+/))) {
+					editc = [null, editc[0] == 500, parseInt(editc[0], 10)];
 					editDetails = {
 						types: this.responseText.match(/[^<>]+(?=<\/bdi><\/a><\/h2>)/g),
-						editors: this.responseText.match(new RegExp("Edit by <a href=\"" + MBS + "/user/[^/]+\">", "g"))
+						editors: this.responseText.match(new RegExp("</h2><p class=\"subheader\">[\\S\\s]+?<a href=\"" + MBS + "/user/[^/]+\">[\\S\\s]+?</p>", "g"))
 					};
 				} else {
 					editc = [null, false, 0];
@@ -189,8 +190,8 @@ function updateLink(obj, pecount, details, more) {
 			if (details.types.length > 0 && details.types.length == details.editors.length) {
 				var titarray = [], dupcount = 0, dupreset;
 				for (var d = 0; d < details.types.length; d++) {
-					var thistit = details.types[d].replace(/^Edit #\d+ /, "");
-					var editor = unescape(details.editors[d].replace(/^.+\/user\/|">$/g, ""));
+					var thistit = details.types[d].replace(/^.+ - /, "");
+					var editor = unescape(details.editors[d].replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""));
 					if (editor != account) {
 						thistit += " (" + editor + ")";
 					}
