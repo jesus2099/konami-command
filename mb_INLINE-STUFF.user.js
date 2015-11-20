@@ -278,14 +278,14 @@ function isrcFish() {
 								}
 								trackNameFragment.appendChild(document.createTextNode(trackNameRows[row]));
 							}
-							aRec.setAttribute(userjs + "recname", aRec.textContent); //linked in mb_MASS-MERGE-RECORDINGS
+							aRec.setAttribute(userjs + "recname", aRec.textContent); //linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
 							aRec.replaceChild(trackNameFragment, aRec.firstChild);
 						}
 					}
 				}
 				if (markTrackRecNameDiff && recnameNet[mbid].comment && !sameCompleteName) {
 					var recdis = document.createElement("span");
-					recdis.className = userjs + "recdis"; //linked in mb_MASS-MERGE-RECORDINGS
+					recdis.className = userjs + "recdis"; //linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
 					recdis.appendChild(document.createTextNode(" (" + recnameNet[mbid].comment + ")"));
 					addAfter(recdis, aRec);
 				}
