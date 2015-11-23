@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.11.20
+// @version      2015.11.23
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -190,7 +190,7 @@ function updateLink(obj, pecount, details, more) {
 			if (details.types.length > 0 && details.types.length == details.editors.length) {
 				var titarray = [], dupcount = 0, dupreset;
 				for (var d = 0; d < details.types.length; d++) {
-					var thistit = details.types[d].replace(/^.+ - /, "");
+					var thistit = details.types[d].replace(/^.+ - /, "- ");
 					var editor = unescape(details.editors[d].replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""));
 					if (editor != account) {
 						thistit += " (" + editor + ")";
