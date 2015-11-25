@@ -71,20 +71,20 @@ if (
 		pageEntity.ul = getParent(pageEntity.editinghistory, "ul");
 	} else {
 		pageEntity.ul = document.querySelector("div#sidebar ul.links");
-		pageEntity.editinghistory = createLink(pageEntity, "edits");//reverts MBS-57 drawback
+		pageEntity.editinghistory = createLink(pageEntity, "edits");//reverts MBS-57 (Remove “normal artist” functionality from Various Artists) drawback
 	}
 	pageEntity.li = getParent(pageEntity.editinghistory, "li");
 //OPEN EDITS
 	pageEntity.openedits = document.querySelector("div#sidebar a[href='" + MBS + pageEntity.base + "/open_edits']");
 	if (pageEntity.openedits) {
-		pageEntity.openedits.removeAttribute("title");//removing useless tooltip (artist disambiguation or swapped sort name) that is masking our useful tooltip
-		if (pageEntity.openedits.parentNode.tagName == "LI") {//fixes MBS-2298 (mark open_edits as having pending edits)
+		pageEntity.openedits.removeAttribute("title");//removes bogus tooltip (artist disambiguation or swapped sort name) that is masking our useful tooltip
+		if (pageEntity.openedits.parentNode.tagName == "LI") {//fixes MBS-2298 (“Open edits” link should share same styling as pending edit items)
 			var pendingEditsMarkedLink = createTag("span", {a: {class: "mp"}});
 			pageEntity.openedits.parentNode.replaceChild(pendingEditsMarkedLink.appendChild(pageEntity.openedits.cloneNode(true)).parentNode, pageEntity.openedits);
 			pageEntity.openedits = pendingEditsMarkedLink.firstChild;//restore node parental context
 		}
 	} else {
-		pageEntity.openedits = createLink(pageEntity, "open_edits");//fixes MBS-3386
+		pageEntity.openedits = createLink(pageEntity, "open_edits");//fixes MBS-3386 (“Open edits” link not always displayed)
 	}
 	checked.push(pageEntity.base);
 	checkOpenEdits(pageEntity);
@@ -145,31 +145,34 @@ function checkOpenEdits(obj) {
 		object: obj,
 		xhr: new XMLHttpRequest()
 	};
-	xhrPendingEdits[obj.base].xhr.onreadystatechange = function() {
-		if (this.readyState == 4) {
-			var xhrpe;
-			for (var x in xhrPendingEdits) if (xhrPendingEdits.hasOwnProperty(x) && xhrPendingEdits[x].xhr == this) {
-				xhrpe = xhrPendingEdits[x];
-				break;
-			}
-			if (this.status == 200) {
-				var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
-				var editc = responseDOM.querySelector("div.search-toggle"), editDetails;
-				if (editc && (editc = editc.textContent.match(/\d+/))) {
-					editc = [null, editc[0] == 500, parseInt(editc[0], 10)];
-					editDetails = {
-						types: this.responseText.match(/[^<>]+(?=<\/bdi><\/a><\/h2>)/g),
-						editors: this.responseText.match(new RegExp("</h2><p class=\"subheader\">[\\S\\s]+?<a href=\"" + MBS + "/user/[^/]+\">[\\S\\s]+?</p>", "g"))
-					};
-				} else {
-					editc = [null, false, 0];
-				}
-				updateLink(xhrpe.object, editc[2], editDetails, editc[1]);
-			} else {
-				updateLink(xhrpe.object, this);
-			}
+	xhrPendingEdits[obj.base].xhr.addEventListener("load", function() {
+		var xhrpe;
+		for (var x in xhrPendingEdits) if (xhrPendingEdits.hasOwnProperty(x) && xhrPendingEdits[x].xhr == this) {
+			xhrpe = xhrPendingEdits[x];
+			break;
 		}
-	};
+		if (this.status == 200) {
+			var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
+			var editCount = responseDOM.querySelector("div.search-toggle");
+			var editDetails;
+			if (
+				editCount
+				&& (editCount = editCount.textContent.match(/\d+/))
+				&& (editCount = parseInt(editCount[0], 10))
+				&& !isNaN(editCount)
+			) {
+				editDetails = {
+					types: this.responseText.match(/[^<>]+(?=<\/bdi><\/a><\/h2>)/g),
+					editors: this.responseText.match(new RegExp("</h2><p class=\"subheader\">[\\S\\s]+?<a href=\"" + MBS + "/user/[^/]+\">[\\S\\s]+?</p>", "g"))
+				};
+			} else {
+				editCount = 0;
+			}
+			updateLink(xhrpe.object, editCount, editDetails, editCount == 500);
+		} else {
+			updateLink(xhrpe.object, this);
+		}
+	});
 	xhrPendingEdits[obj.base].xhr.open("get", obj.openedits.getAttribute("href"), true);
 	xhrPendingEdits[obj.base].xhr.setRequestHeader("base", obj.base);
 	xhrPendingEdits[obj.base].xhr.send(null);
