@@ -4,6 +4,7 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
+// @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12.17)+violentmonkey  my setup
 // @compatible   firefox(39)+greasemonkey    tested sometimes
