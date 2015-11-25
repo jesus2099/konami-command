@@ -214,15 +214,30 @@ function updateLink(obj, pecount, details, more) {
 					dupreset = false;
 				}
 				liTitle = titarray.join("\r\n");
+				var ul = document.createElement("ul");
+				for (var e = 0; e < titarray.length; e++) {
+					var edit1type2editor3count = titarray[e].match(/^(?:- )?([^\(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
+					var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
+					if (edit1type2editor3count[2]) {
+						editLi.appendChild(document.createTextNode(" by "));
+						editLi.appendChild(createTag("a", {a: {href: "/user/" + escape(edit1type2editor3count[2])}}, edit1type2editor3count[2]));
+					}
+				}
 				if (titarray.length < 2 && pecount <= 50) {
 					liTitle = liTitle.replace(/^- /, "");
 				}
 				if (pecount > 50) {
 					liTitle += "\r\n- …";
+					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
 				}
 				if (titarray.length > 1) {
 					liTitle += "\r\n \r\n(oldest edit on bottom)";
+					if (obj != pageEntity) {
+						li.appendChild(document.createElement("br"));
+					}
+					li.appendChild(document.createTextNode(" newest edit on top"));
 				}
+				li.appendChild(ul);
 			}
 		}
 	} else {
@@ -285,7 +300,7 @@ function workMainArtists() {
 			max = groupedPerformers[href].length;
 			mainArtists = [groupedPerformers[href][0]];
 		} else if (groupedPerformers[href].length == max) {
-			//take first æquo artist(s) too
+			//take first ex‐æquo artist(s) too
 			mainArtists.push(groupedPerformers[href][0]);
 		}
 	}
