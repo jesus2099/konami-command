@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.11.25
+// @version      2015.11.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -1003,7 +1003,7 @@ function almostSame(a, b) {
 function looseTitle(title) {
 	var genericTitle = fw2hw(title).toUpperCase();
 	genericTitle = genericTitle.replace(/\b(AND|ET|VÀ)\b/g, "&");
-	genericTitle = genericTitle.replace(/\b(\w+)IN\b\s?['’´`](\W|$)/g, "$1ING ");
+	genericTitle = genericTitle.replace(/\b(\w+)ING\b/g, "$1IN ");
 	genericTitle = genericTitle.replace(/ⅰ/ig, "I").replace(/ⅱ/ig, "II").replace(/ⅲ/ig, "III").replace(/ⅳ/ig, "IV").replace(/ⅴ/ig, "V").replace(/ⅵ/ig, "VI").replace(/ⅶ/ig, "VII").replace(/ⅷ/ig, "VIII").replace(/ⅸ/ig, "IX").replace(/ⅹ/ig, "X").replace(/ⅺ/ig, "XI").replace(/ⅻ/ig, "XII");
 	genericTitle = genericTitle.replace(/[\s\u0021-\u002f\u003a-\u003f\u005b-\u0060\u007b-\u00bf\u2000-\u2064\u2190-\u21ff\u2460-\u27ff\u2960-\u2b59\uff5e-\uff65]+|S\b|^(?:AN?|THE)\s+|,\s+(?:AN?|THE)$/g, "");
 	return genericTitle;
