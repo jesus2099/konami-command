@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.11.23
+// @version      2015.12.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -215,7 +215,10 @@ function updateLink(obj, pecount, details, more) {
 					dupreset = false;
 				}
 				liTitle = titarray.join("\r\n");
-				var ul = document.createElement("ul");
+				var expanded = "▼";
+				var collapsed = "◀";
+				var expandEditLists = (localStorage.getItem(userjs + "pendingEditLists") != collapsed);
+				var ul = createTag("ul", {a: {class: userjs + "editlist"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
 				for (var e = 0; e < titarray.length; e++) {
 					var edit1type2editor3count = titarray[e].match(/^(?:- )?([^\(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
 					var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
@@ -231,14 +234,26 @@ function updateLink(obj, pecount, details, more) {
 					liTitle += "\r\n- …";
 					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
 				}
+				var help = createTag("span", {a: {class: userjs + "help"}, s: {display: expandEditLists ? "inline" : "none"}});
 				if (titarray.length > 1) {
 					liTitle += "\r\n \r\n(oldest edit on bottom)";
 					if (obj != pageEntity) {
-						li.appendChild(document.createElement("br"));
+						help.appendChild(document.createElement("br"));
 					}
-					li.appendChild(document.createTextNode(" newest edit on top"));
+					help.appendChild(document.createTextNode(" newest edit on top"));
 				}
+				li.appendChild(help);
 				li.appendChild(ul);
+				li.insertBefore(createTag("a", {a: {class: userjs + "toggle"}, s: {position: "absolute", right: "4px"}, e: {click: function(event) {
+					var collapse = (this.textContent == expanded);
+					for (var options = document.querySelectorAll("ul." + userjs + "editlist, span." + userjs + "help"), o = 0; o < options.length; o++) {
+						options[o].style.setProperty("display", collapse ? "none" : (options[o].tagName == "UL" ? "block" : "inline"));
+					}
+					for (var toggles = document.querySelectorAll("a." + userjs + "toggle"), t = 0; t < toggles.length; t++) {
+						replaceChildren(document.createTextNode(collapse ? collapsed : expanded), toggles[t]);
+					}
+					localStorage.setItem(userjs + "pendingEditLists", collapse ? collapsed : expanded);
+				}}}, expandEditLists ? expanded : collapsed), li.firstChild);
 			}
 		}
 	} else {
