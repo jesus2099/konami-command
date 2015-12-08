@@ -2,9 +2,9 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2015.11.17
+// @version      2015.12.8
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / SHOW_RECORDING_LENGTHS / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12.17)+violentmonkey  my own setup
@@ -1066,7 +1066,8 @@ function delayMsg(sec) {
 j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the release editor by mistake. repairs the keyboard tab navigation to save button (MBS-3112) (for the new release editor, the tab order might not be perfectly chosen yet but submit comes first and cancel last)");
 j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
-j2setting("SHOW_RECORDING_LENGTHS", true, true, "Displays recording lengths in work page (similar to Loujine’s script) as well as in artist relationships page");
+j2setting("RECORDING_LENGTH_COLUMN", true, true, "Displays recording lengths in work page (similar to Loujine’s script) as well as in artist relationships page");
+j2setting("RELEASE_EVENT_COLUMN", true, true, "Displays release dates in label relationships page");
 var enttype = location.href.match(new RegExp("^" + MBS + "/(area|artist|collection|event|label|place|recording|release|release-group|series|work)/.*$"));
 if (enttype) {
 	enttype = enttype[1];
@@ -1160,34 +1161,65 @@ if (enttype) {
 		}
 	}
 	/*================================================================ DISPLAY+
-	## SHOW_RECORDING_LENGTHS ## inspired by Loujine’s https://bitbucket.org/loujine/musicbrainz-scripts/src/default/mbz-showperformancedurations.user.js for work page
+	## RECORDING_LENGTH_COLUMN ## inspired by Loujine’s https://bitbucket.org/loujine/musicbrainz-scripts/src/default/mbz-showperformancedurations.user.js for work page
 	=========================================================================*/
-	if (j2sets.SHOW_RECORDING_LENGTHS) {
-		if (enttype == "work" && location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$"))) {
-			var workRecTable = document.querySelector("div#content table.tbl");
-			if (workRecTable && workRecTable.getElementsByClassName("treleases").length == 0) {
-				var xhr = new XMLHttpRequest();
-				xhr.onload = function(event) {
-					var relations = JSON.parse(this.responseText).relations;
-					var recordingLengths = {};
-					for (var r = 0; r < relations.length; r++) {
-						if (relations[r].recording && relations[r].recording.id && relations[r].recording.length) {
-							recordingLengths[relations[r].recording.id] = relations[r].recording.length;
+	if (j2sets.RECORDING_LENGTH_COLUMN && enttype == "work" && location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$"))) {
+		var workRecTable = document.querySelector("div#content table.tbl");
+		if (workRecTable && workRecTable.getElementsByClassName("treleases").length == 0) {
+			var xhr = new XMLHttpRequest();
+			xhr.onload = function(event) {
+				var relations = JSON.parse(this.responseText).relations;
+				var recordingLengths = {};
+				for (var r = 0; r < relations.length; r++) {
+					if (relations[r].recording && relations[r].recording.id && relations[r].recording.length) {
+						recordingLengths[relations[r].recording.id] = relations[r].recording.length;
+					}
+				}
+				workRecTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
+				var rows = workRecTable.querySelectorAll("tbody > tr.subh > th + th[colspan]");
+				for (var r = 0; r < rows.length; r++) {
+					rows[r].setAttribute("colspan", parseInt(rows[r].getAttribute("colspan"), 10) + 1);
+				}
+				var recordings = workRecTable.querySelectorAll("tbody > tr:not(.subh) a[href*='/recording/']");
+				for (var r = 0; r < recordings.length; r++) {
+					getParent(recordings[r], "tr").appendChild(createTag("td", {a: {class: "treleases"}}, time(recordingLengths[recordings[r].getAttribute("href").match(re_GUID)[0]])));
+				}
+			};
+			xhr.open("get", "/ws/2" + location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=recording-rels&fmt=json", true);
+			xhr.send(null);
+		}
+	}
+	/*================================================================ DISPLAY+
+	## RELEASE_EVENT_COLUMN ## requested by Lotheric https://github.com/jesus2099/konami-command/issues/132
+	=========================================================================*/
+	if (j2sets.RELEASE_EVENT_COLUMN && location.pathname.match(new RegExp("^/(artist|label)/" + stre_GUID + "/relationships$"))) {
+		var relationshipTable = document.querySelector("div#content table.tbl");
+		if (relationshipTable && relationshipTable.getElementsByClassName(userjs + "releaseEvents").length == 0 && relationshipTable.querySelector("a[href*='/release/']")) {
+			var xhr = new XMLHttpRequest();
+			xhr.addEventListener("load", function(event) {
+				var relations = JSON.parse(this.responseText).relations;
+				var releaseEvents = {};
+				for (var r = 0; r < relations.length; r++) {
+					if (relations[r].release && relations[r].release.id && relations[r].release["release-events"]) {
+						releaseEvents[relations[r].release.id] = relations[r].release["release-events"];
+					}
+				}
+				relationshipTable.querySelector("thead > tr").insertBefore(createTag("th", {a: {title: meta.name, class: userjs + "releaseEvents"}, s: {textShadow: "0 0 2px yellow"}}, "Release events"), relationshipTable.querySelector("thead > tr > th:nth-child(2)"));
+				var cells = relationshipTable.querySelectorAll("tbody > tr.subh > th:nth-child(2), tbody > tr:not(.subh) > td:nth-child(2)");
+				for (var c = 0; c < cells.length; c++) {
+					var newCell = cells[c].parentNode.insertBefore(document.createElement(cells[c].tagName == "TD" ? "td" : "th"), cells[c]);
+					if (cells[c].tagName == "TD") {
+						var releaseID = cells[c].querySelector("a[href*='/release/']");
+						if (releaseID && (releaseID = releaseID.getAttribute("href").match(re_GUID)[0]) && releaseEvents[releaseID]) {
+							for (var e = 0; e < releaseEvents[releaseID].length; e++) {
+								newCell.appendChild(createTag("div", {a: {title: releaseEvents[releaseID][e].area.name, class: "flag flag-" + releaseEvents[releaseID][e].area.iso_3166_1_codes[0]}}, releaseEvents[releaseID][e].date ? releaseEvents[releaseID][e].date : "\u00a0"));
+							}
 						}
 					}
-					workRecTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
-					var rows = workRecTable.querySelectorAll("tbody > tr.subh > th + th[colspan]");
-					for (var r = 0; r < rows.length; r++) {
-						rows[r].setAttribute("colspan", parseInt(rows[r].getAttribute("colspan"), 10) + 1);
-					}
-					var recordings = workRecTable.querySelectorAll("tbody > tr:not(.subh) a[href*='/recording/']");
-					for (var r = 0; r < recordings.length; r++) {
-						getParent(recordings[r], "tr").appendChild(createTag("td", {a: {class: "treleases"}}, time(recordingLengths[recordings[r].getAttribute("href").match(re_GUID)[0]])));
-					}
-				};
-				xhr.open("get", "/ws/2" + location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=recording-rels&fmt=json", true);
-				xhr.send(null);
-			}
+				}
+			});
+			xhr.open("get", "/ws/2" + location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=release-rels&fmt=json", true);
+			xhr.send(null);
 		}
 	}
 }
