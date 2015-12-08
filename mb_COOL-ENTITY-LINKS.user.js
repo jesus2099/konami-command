@@ -83,7 +83,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 		cssas += "div[class^='edit-'] a[href*='://test." + u + "'], ";
 		cssas += "div[class^='edit-'] a[href*='://beta." + u + "'], ";
 		cssas += "div[class^='edit-'] a[href*='://classic." + u + "'][href$='.html']";
-		if (location.pathname.match(new RegExp("/artist/" + GUIDi + "/relationships|/place/" + GUIDi + "/performances"), "i")) {
+		if (location.pathname.match(new RegExp("/(artist|label)/" + GUIDi + "/relationships|/place/" + GUIDi + "/performances"), "i")) {
 			cssas += ", table.tbl tr > td:first-child + td a[href*='://" + u + "'], ";
 			cssas += "table.tbl tr > td:first-child + td a[href*='://test." + u + "'], ";
 			cssas += "table.tbl tr > td:first-child + td a[href*='://beta." + u + "']";
