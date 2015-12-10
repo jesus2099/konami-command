@@ -29,6 +29,7 @@ var colourloading = "gold";
 var loadingtxt = "⌛ loading…";
 var edittypes = {deleted: "×", merged: "+"};
 var markReadEditsForDeletion = true;
+var preferredProtocol = "";/* "https:", "http:" (including “:”) or "" (empty string) if you prefer using the same current protocol as Yahoo! Mail*/
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs80308";
 var edits = [];
@@ -40,7 +41,7 @@ var triggernoextractorz = /<div class="plainMail">'(.+)' has voted against your 
 var edittypeextractor = /(deleted|merged) by edit #([0-9]+)/;
 var idextractor = /by edit #([0-9]+)/;
 var triggerResponseURL = /<input type="hidden" name="mid" value="([^"]+)"/;
-var editurl = "//musicbrainz.org/edit/";
+var editurl = preferredProtocol + "//musicbrainz.org/edit/";
 var jiraurl = "http://tickets.musicbrainz.org/browse/";
 var emails = document.querySelectorAll("table#datatable > tbody > tr > td > h2 > a.mlink");
 var emailnovotes = [];
@@ -65,7 +66,7 @@ if (emails) {
 			editid = editid[editid.length-1];
 			email.replaceChild(document.createTextNode(emailtxt.substring(0, emailtxt.length - editid.length - 2)), email.firstChild);
 			var emailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
-			emailfrom.setAttribute("href", "//musicbrainz.org/user/" + encodeURIComponent(emailfrom.textContent.trim()));
+			emailfrom.setAttribute("href", preferredProtocol + "//musicbrainz.org/user/" + encodeURIComponent(emailfrom.textContent.trim()));
 			emailfrom.setAttribute("target", "_blank");
 			emailfrom.style.setProperty("background-color", colour);
 			if (!edits[editid]) {
@@ -88,6 +89,7 @@ if (emails) {
 						var div = document.createElement("div");
 						div.innerHTML = editNote.replace(/<a/g, '<a style="color: blue; text-decoration: underline;"');
 						div.style.setProperty("background-color", "#eee")
+						div.style.setProperty("padding", "4px")
 						this.email.parentNode.appendChild(div);
 					}
 				}
@@ -138,9 +140,9 @@ if (emails) {
 						var im = a.appendChild(document.createElement("img"));
 						var openedits = "/open_edits";
 						if ((type = allparts[4].match(/artist|collection|label|series/))) {
-							im.setAttribute("src", "//musicbrainz.org/static/images/entity/%type%.png".replace(/%type%/, type).replace(/collection|series/, "release_group"));
+							im.setAttribute("src", preferredProtocol + "//musicbrainz.org/static/images/entity/%type%.png".replace(/%type%/, type).replace(/collection|series/, "release_group"));
 						} else if (allparts[4].match(/user/)) {
-							im.setAttribute("src", "//gravatar.com/avatar/placeholder?d=mm&s=12");
+							im.setAttribute("src", preferredProtocol + "//gravatar.com/avatar/placeholder?d=mm&s=12");
 							openedits = "/edits/open";
 						}
 						im.style.setProperty("margin-right", "4px");
