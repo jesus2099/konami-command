@@ -33,6 +33,7 @@ var markReadEditsForDeletion = true;
 var userjs = "jesus2099userjs80308";
 var edits = [];
 var editTrigger = /^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/;
+var editNoteExtractor = /'[^']+' has added the following note to(?: your)? edit #\d+:<BR>-{72}<BR>(.+)<BR>-{72}<BR>If you would like to reply to this note, please add your note at:<BR>/;
 var jiraTrigger = /^\[jira\](?: \w+){1,3}: \(([A-Z][A-Z\d]*-\d+)\)/;
 var triggerno = /^Someone has voted against your edit(?: #[0-9]+)?$/;
 var triggernoextractorz = /<div class="plainMail">'(.+)' has voted against your edit #([0-9]+)/;
@@ -75,13 +76,31 @@ if (emails) {
 				email.style.setProperty("background-color", colourdupe);
 				editlink(email, editid, true);
 			}
+			var xhr = new XMLHttpRequest();
+			xhr.email = email;
+			xhr.emailRow = getParent(email, "tr");
+			xhr.addEventListener("load", function(event) {
+				if (this.status > 199 && this.status < 400) {
+					this.emailRow.className = "";
+					var editNote = this.responseText.match(editNoteExtractor);
+					if (editNote) {
+						editNote = editNote[1];
+						var div = document.createElement("div");
+						div.innerHTML = editNote.replace(/<a/g, '<a style="color: blue; text-decoration: underline;"');
+						div.style.setProperty("background-color", "#eee")
+						this.email.parentNode.appendChild(div);
+					}
+				}
+			});
+			xhr.open("get", email.getAttribute("href"), true);
+			xhr.send(null);
 		} else if (email.getAttribute("title").match(/^Edits for your subscriptions$/)) {
 			getParent(email, "tr").style.setProperty("background-color", colourloading);
 			email.insertBefore(loading(), email.firstChild);
 			emailsubscrs[decodeURIComponent(email.getAttribute("href").match(/(?:&|\?)mid=([^&$]+)/)[1])] = email;
-			var xmlhttp = new XMLHttpRequest();
-			xmlhttp.onreadystatechange = function() {
-				if (this.readyState == 4 && this.status == 200) {
+			var xhr = new XMLHttpRequest();
+			xhr.addEventListener("load", function(event) {
+				if (this.status == 200) {
 					var res = this.responseText;
 					var susu = res.match(/(deleted|merged) by edit #([0-9]+)/g);
 					var susuemail = emailsubscrs[this.responseText.match(triggerResponseURL)[1]];
@@ -138,17 +157,17 @@ if (emails) {
 						lnk.parentNode.insertBefore(document.createTextNode(")"), lnk.nextSibling);
 					}
 				}
-			};
-			xmlhttp.open("get", email.getAttribute("href"), true);
-			xmlhttp.send(null);
+			});
+			xhr.open("get", email.getAttribute("href"), true);
+			xhr.send(null);
 		}
 		if (email.getAttribute("title").match(triggerno)) {
 			var nonoemailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
 			nonoemailfrom.style.setProperty("background-color", colourloading);
 			nonoemailfrom.replaceChild(loading(), nonoemailfrom.firstChild);
 			emailnovotes[decodeURIComponent(email.getAttribute("href").match(/(?:&|\?)mid=([^&$]+)/)[1])] = email;
-			var xmlhttp = new XMLHttpRequest();
-			xmlhttp.onreadystatechange = function() {
+			var xhr = new XMLHttpRequest();
+			xhr.addEventListener("readystatechange", function(event) {
 				if (this.readyState > 2 && this.status < 400 && this.status > 199) {
 					var nonoemail = this.responseText.match(triggerResponseURL);
 					if (nonoemail && (nonoemail = emailnovotes[this.responseText.match(triggerResponseURL)[1]])) {
@@ -166,9 +185,9 @@ if (emails) {
 						}
 					}
 				}
-			};
-			xmlhttp.open("get", email.getAttribute("href"), true);
-			xmlhttp.send(null);
+			});
+			xhr.open("get", email.getAttribute("href"), true);
+			xhr.send(null);
 		}
 	}
 }
