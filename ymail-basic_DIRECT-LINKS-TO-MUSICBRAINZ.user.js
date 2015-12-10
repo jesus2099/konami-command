@@ -26,11 +26,6 @@ var colourdupe = "mistyrose";
 var colourno = "yellow";
 var colournobg = "red";
 var colourloading = "gold";
-/* Specify which e-mail box links you want the script to be triggered in.
-   It will remove AJAX from those links so that the page reloads and the script is re-run.
-   It shouldn’t be required any more with current ymail BASIC
-   set an empty array [] to disable */
-var directlinks = [];/*["inbox", /--*"draft", "bulk",*--/ "trash", "%Musibrainz%", "%Any Other e-mail Folder (see yahoo source page for ID)%"];*/
 var loadingtxt = "⌛ loading…";
 var edittypes = {deleted: "×", merged: "+"};
 var markReadEditsForDeletion = true;
@@ -46,13 +41,6 @@ var idextractor = /by edit #([0-9]+)/;
 var triggerResponseURL = /<input type="hidden" name="mid" value="([^"]+)"/;
 var editurl = "//musicbrainz.org/edit/";
 var jiraurl = "http://tickets.musicbrainz.org/browse/";
-for (var i = 0; i < directlinks; i++) {
-	var lnk = document.querySelector("li#" + directlinks[i] + " a");
-	if (lnk) {
-		lnk.style.setProperty("background-color", colour);
-		lnk.addEventListener("click", function(event) { top.location = this.getAttribute("href"); }, true);
-	}
-}
 var emails = document.querySelectorAll("table#datatable > tbody > tr > td > h2 > a.mlink");
 var emailnovotes = [];
 var emailsubscrs = [];
