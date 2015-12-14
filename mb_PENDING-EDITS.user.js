@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2015.12.2
+// @version      2015.12.14
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -225,6 +225,8 @@ function updateLink(obj, pecount, details, more) {
 					if (edit1type2editor3count[2]) {
 						editLi.appendChild(document.createTextNode(" by "));
 						editLi.appendChild(createTag("a", {a: {href: "/user/" + escape(edit1type2editor3count[2])}}, edit1type2editor3count[2]));
+					} else {
+						editLi.style.setProperty("font-weight", "bold");
 					}
 				}
 				if (titarray.length < 2 && pecount <= 50) {
