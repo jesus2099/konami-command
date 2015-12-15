@@ -4,6 +4,7 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
+// @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12.17)+violentmonkey  my setup
 // @compatible   firefox(39)+greasemonkey    tested sometimes
@@ -16,6 +17,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-08-02
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
 // @include      http*://*musicbrainz.org/artist/*
 // @exclude      http*://*musicbrainz.org/artist/*/edit
@@ -122,7 +124,7 @@ function main() {
 	if (sidebar) {
 		var rgextrels = sidebar.querySelector("ul.external_links_2 > li");
 		if (rgextrels && (rgextrels = rgextrels.parentNode) && rgextrels.previousSibling.tagName == "UL") {
-			rgextrels.parentNode.insertBefore(document.createElement("h2"), rgextrels).appendChild(document.createTextNode("Release group external links"));
+			rgextrels.parentNode.insertBefore(createTag("h2", {}, "Release group external links"), rgextrels);
 		}
 		var artistid = location.href.match(/musicbrainz.org\/artist\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
 		var artistname = document.querySelector("div#content > div.artistheader > h1 a, div#content > div.artistheader > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
@@ -233,8 +235,7 @@ function addExternalLink(text, target, begin, end, sntarget) {
 	if (target) {
 		var li;
 		if (typeof target != "string") {
-			var form = document.createElement("form");
-			form.setAttribute("action", target.action);
+			var form = createTag("form", {a: {action: target.action}});
 			if (target.title) {
 				form.style.setProperty("cursor", "help");
 			}
@@ -243,11 +244,7 @@ function addExternalLink(text, target, begin, end, sntarget) {
 				if (attr == "parameters") {
 					for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
 						info += "\r\n" + param + "=" + target.parameters[param];
-						var input = document.createElement("input");
-						input.setAttribute("type", "hidden");
-						input.setAttribute("name", param);
-						input.setAttribute("value", target.parameters[param]);
-						form.appendChild(input);
+						form.appendChild(createTag("input", {a: {name: param, type: "hidden", value: target.parameters[param]}}));
 					}
 				} else {
 					if (attr.match(/accept-charset|enctype|method/)) {
@@ -256,18 +253,9 @@ function addExternalLink(text, target, begin, end, sntarget) {
 					form.setAttribute(attr, target[attr]);
 				}
 			}
-			var a = createA(text);
-			a.setAttribute("title", info);
-			a.addEventListener("mousedown", function (event) {
-				event.preventDefault();
-				if (event.button == 1) {
-					this.parentNode.setAttribute("target", weirdobg());
-					this.parentNode.submit();
-				}
-			}, false);
-			a.addEventListener("click", function (event) {
+			form.appendChild(createTag("a", {a: {title: info}, e: {click: function(event) {
 				if (event.button == 0) {
-					/*lame browsers;)*/
+					/* lame browsers ;) */
 					if (typeof opera == "undefined") {
 						if (event.shiftKey) {
 							this.parentNode.setAttribute("target", "_blank");
@@ -277,31 +265,31 @@ function addExternalLink(text, target, begin, end, sntarget) {
 					}
 					this.parentNode.submit();
 				}
-			}, false);
-			form.appendChild(a);
+			}, mousedown: function(event) {
+				event.preventDefault();
+				if (event.button == 1) {
+					this.parentNode.setAttribute("target", weirdobg());
+					this.parentNode.submit();
+				}
+			}}}, text));
 			form.appendChild(document.createTextNode("*"));
-			li = document.createElement("li");
-			li.appendChild(form);
+			li = createTag("li", {}, form);
 		} else {
-			var exi = existingLinks.indexOf(target.trim().replace(/^https?:/,""));
+			var exi = existingLinks.indexOf(target.trim().replace(/^https?:/, ""));
 			if (exi == -1) {
-				existingLinks.push(target.trim().replace(/^https?:/,""));
-				li = document.createElement("li");
-				li.className = text;
-				li.appendChild(createA(text, target));
+				existingLinks.push(target.trim().replace(/^https?:/, ""));
+				li = createTag("li", {a: {class: text}}, createTag("a", {a: {href: target}}, text));
 			} else {
 				newLink = false;
 				li = lis[exi];
 			}
 			if (sntarget && newLink) {
 				li.appendChild(document.createTextNode(" ("));
-				li.appendChild(createA("lat.", sntarget, "search with latin name"));
+				li.appendChild(createTag("a", {a: {href: sntarget, title: "search with latin name"}}, "lat."));
 				li.appendChild(document.createTextNode(")"));
 			}
 			if (begin || end) {
-				var ardates = document.createElement("span");
-				ardates.style.setProperty("white-space", "nowrap");
-				ardates.appendChild(document.createTextNode(" ("));
+				var ardates = createTag("span", {s: {whiteSpace: "nowrap"}}, " (");
 				if (!begin && end == "????") {
 					ardates.appendChild(archivedDate(end, target));
 				} else {
@@ -339,9 +327,7 @@ function addExternalLink(text, target, begin, end, sntarget) {
 		favicontry[ifit].src = favurlfound;
 		favicontry[ifit].to = setTimeout(function(){ favicontry[ifit].src = "/"; }, 5000);
 	} else {
-		var li = document.createElement("li");
-		li.appendChild(document.createTextNode(text));
-		li.style.setProperty("font-weight", "bold");
+		var li = createTag("li", {s: {fontWeight: "bold"}}, text);
 		if (text.indexOf(" ") == 0) {
 			li.style.setProperty("padding-top", "0px");
 			extlinks.insertBefore(li, extlinks.lastChild);
@@ -370,20 +356,18 @@ function error(code, text) {
 		ldng.setAttribute("id", userjs + "-error");
 		ldng.style.setProperty("background", "pink");
 		ldng.replaceChild(document.createTextNode("Error " + code), ldng.firstChild);
-		ldng.appendChild(createA("*", arelsws));
+		ldng.appendChild(createTag("a", {a: {href: arelsws}}, "*"));
 		ldng.appendChild(document.createTextNode(" in "));
-		ldng.appendChild(createA("all links", "http://userscripts-mirror.org/scripts/show/108889"));
+		ldng.appendChild(createTag("a", {a: {href: "http://userscripts-mirror.org/scripts/show/108889"}}, "all links"));
 		ldng.appendChild(document.createTextNode(" ("));
-		var retrybtn = createA("retry");
-		retrybtn.addEventListener("click", function (event) {
+		ldng.appendChild(createTag("a", {e: {click: function(event) {
 			var err = document.getElementById(userjs + "-error");
 			if (err) { err.parentNode.removeChild(err); }
 			main();
-		});
-		ldng.appendChild(retrybtn);
+		}}}, "retry"));
 		ldng.appendChild(document.createTextNode(")"));
 		ldng.appendChild(document.createElement("br"));
-		ldng.appendChild(document.createElement("i").appendChild(document.createTextNode(text)));
+		ldng.appendChild(createTag("i", {}, text));
 	} else {
 		loading(true);
 		error(code, text);
@@ -392,14 +376,8 @@ function error(code, text) {
 function loading(on) {
 	var ldng = document.getElementById(userjs + "-loading");
 	if (on && !ldng) {
-		var li = document.createElement("li");
-		li.setAttribute("id", userjs + "-loading");
-		var img = document.createElement("img");
-		img.setAttribute("src", "/static/images/icons/loading.gif");
-		img.setAttribute("alt", "loading all links…");
-		li.appendChild(img);
-		extlinks.appendChild(li);
-		li = extlinks.querySelector("ul.external_links > li.all-relationships");
+		extlinks.appendChild(createTag("li", {a: {id: userjs + "-loading"}}, createTag("img", {a: {alt: "loading all links…", src: "/static/images/icons/loading.gif"}})));
+		var li = extlinks.querySelector("ul.external_links > li.all-relationships");
 		if (li) {
 			li.style.setProperty("display", "none");
 		}
@@ -415,21 +393,10 @@ function archivedDate(date, url) {
 			archiveStamp = date.replace(/\D/g, "");
 			while (archiveStamp.length < 14) archiveStamp += "0";
 		}
-		return createA(text, "//wayback.archive.org/web/" + archiveStamp + "/" + url.replace(/https?:\/\//, ""), "Internet Archive Wayback Machine capture");
+		return createTag("a", {a: {href: "//wayback.archive.org/web/" + archiveStamp + "/" + url.replace(/https?:\/\//, ""), title: "Internet Archive Wayback Machine capture"}}, text);
 	} else {
 		return document.createTextNode(text);
 	}
-}
-function createA(text, link, title) {
-	var a = document.createElement("a");
-	if (link) {
-		a.setAttribute("href", link);
-	} else {
-		a.style.setProperty("cursor", "pointer");
-	}
-	if (title){ a.setAttribute("title", title); }
-	a.appendChild(document.createTextNode(text));
-	return a;
 }
 function nsr(prefix) {
 	switch (prefix) {
