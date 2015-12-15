@@ -2,7 +2,7 @@
 // @name         mb. ALL LINKS
 // @version      2015.12.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
-// @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Dates on URLs
+// @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -156,7 +156,7 @@ function main() {
 							var haslinks = false;
 							while (url = urls.iterateNext()) {
 								var target = res.evaluate("./mb:target", url, nsr, XPathResult.ANY_TYPE, null);
-								var turl = target.iterateNext();
+								var target = target.iterateNext();
 								var begin, end;
 								if (begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
 									begin = begin.textContent;
@@ -166,11 +166,11 @@ function main() {
 								} else if (res.evaluate("./mb:ended", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
 									end = "????";
 								}
-								if (turl) {
-									if (addExternalLink(url.getAttribute("type"), turl.textContent, begin, end)) {
+								if (target) {
+									if (addExternalLink({text: url.getAttribute("type"), target: target.textContent, mbid: target.getAttribute("id"), begin: begin, end: end})) {
 										if (!haslinks) {
 											haslinks = true;
-											addExternalLink(" Hidden links");
+											addExternalLink({text: " Hidden links"});
 										}
 									}
 								}
@@ -198,10 +198,10 @@ function main() {
 										}
 									}
 								}
-								if (addExternalLink(link, target, null, null, sntarget)) {
+								if (addExternalLink({text: link, target: target, sntarget: sntarget})) {
 									if (!haslinks) {
 										haslinks = true;
-										addExternalLink(" Generated links");
+										addExternalLink({text: " Generated links"});
 									}
 								}
 							}
@@ -220,7 +220,7 @@ function main() {
 }
 var favicontry = [];
 var extlinksOpacity = "1";
-function addExternalLink(text, target, begin, end, sntarget) {
+function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid*/) {
 	var newLink = true;
 	var lis = extlinks.getElementsByTagName("li");
 	if (!existingLinks) {
@@ -232,25 +232,25 @@ function addExternalLink(text, target, begin, end, sntarget) {
 			}
 		}
 	}
-	if (target) {
+	if (parameters.target) {
 		var li;
-		if (typeof target != "string") {
-			var form = createTag("form", {a: {action: target.action}});
-			if (target.title) {
+		if (typeof parameters.target != "string") {
+			var form = createTag("form", {a: {action: parameters.target.action}});
+			if (parameters.target.title) {
 				form.style.setProperty("cursor", "help");
 			}
-			var info = "\r\n" + target.action;
-			for (var attr in target) if (target.hasOwnProperty(attr)) {
+			var info = "\r\n" + parameters.target.action;
+			for (var attr in parameters.target) if (parameters.target.hasOwnProperty(attr)) {
 				if (attr == "parameters") {
-					for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
-						info += "\r\n" + param + "=" + target.parameters[param];
-						form.appendChild(createTag("input", {a: {name: param, type: "hidden", value: target.parameters[param]}}));
+					for (var param in parameters.target.parameters) if (parameters.target.parameters.hasOwnProperty(param)) {
+						info += "\r\n" + param + "=" + parameters.target.parameters[param];
+						form.appendChild(createTag("input", {a: {name: param, type: "hidden", value: parameters.target.parameters[param]}}));
 					}
 				} else {
 					if (attr.match(/accept-charset|enctype|method/)) {
-						info = target[attr] + " " + info;
+						info = parameters.target[attr] + " " + info;
 					}
-					form.setAttribute(attr, target[attr]);
+					form.setAttribute(attr, parameters.target[attr]);
 				}
 			}
 			form.appendChild(createTag("a", {a: {title: info}, e: {click: function(event) {
@@ -271,38 +271,42 @@ function addExternalLink(text, target, begin, end, sntarget) {
 					this.parentNode.setAttribute("target", weirdobg());
 					this.parentNode.submit();
 				}
-			}}}, text));
+			}}}, parameters.text));
 			form.appendChild(document.createTextNode("*"));
 			li = createTag("li", {}, form);
 		} else {
-			var exi = existingLinks.indexOf(target.trim().replace(/^https?:/, ""));
+			var exi = existingLinks.indexOf(parameters.target.trim().replace(/^https?:/, ""));
 			if (exi == -1) {
-				existingLinks.push(target.trim().replace(/^https?:/, ""));
-				li = createTag("li", {a: {class: text}}, createTag("a", {a: {href: target}}, text));
+				existingLinks.push(parameters.target.trim().replace(/^https?:/, ""));
+				li = createTag("li", {a: {class: parameters.text}}, createTag("a", {a: {href: parameters.target}}, parameters.text));
 			} else {
 				newLink = false;
 				li = lis[exi];
 			}
-			if (sntarget && newLink) {
+			if (parameters.sntarget && newLink) {
 				li.appendChild(document.createTextNode(" ("));
-				li.appendChild(createTag("a", {a: {href: sntarget, title: "search with latin name"}}, "lat."));
+				li.appendChild(createTag("a", {a: {href: parameters.sntarget, title: "search with latin name"}}, "lat."));
 				li.appendChild(document.createTextNode(")"));
 			}
-			if (begin || end) {
+			if (parameters.begin || parameters.end) {
 				var ardates = createTag("span", {s: {whiteSpace: "nowrap"}}, " (");
-				if (!begin && end == "????") {
-					ardates.appendChild(archivedDate(end, target));
+				if (!parameters.begin && parameters.end == "????") {
+					ardates.appendChild(archivedDate(parameters.end, parameters.target));
 				} else {
-					if (begin) { ardates.appendChild(archivedDate(begin, target)); }
-					if (begin != end) { ardates.appendChild(document.createTextNode("—")); }
-					if (end && begin != end) { ardates.appendChild(archivedDate(end, target)); }
+					if (parameters.begin) { ardates.appendChild(archivedDate(parameters.begin, parameters.target)); }
+					if (parameters.begin != parameters.end) { ardates.appendChild(document.createTextNode("—")); }
+					if (parameters.end && parameters.begin != parameters.end) { ardates.appendChild(archivedDate(parameters.end, parameters.target)); }
 				}
 				ardates.appendChild(document.createTextNode(")"));
 				ardates.normalize();
 				li.appendChild(ardates);
 			}
+			if (parameters.mbid) {
+				li.appendChild(document.createTextNode(" "));
+				li.appendChild(createTag("div", {a: {class: "icon img edit-item"}, s: {opacity: ".5"}}, createTag("a", {a: {href: "/url/" + parameters.mbid + "/edit"}, s: {color: "transparent"}}, "edit")));
+			}
 		}
-		var favurltest = (typeof target == "string") ? target : target.action;
+		var favurltest = (typeof parameters.target == "string") ? parameters.target : parameters.target.action;
 		var favurlfound = false;
 		for (var part in favicons) if (favicons.hasOwnProperty(part)) {
 			if (favurltest.indexOf(part) != -1) {
@@ -327,8 +331,8 @@ function addExternalLink(text, target, begin, end, sntarget) {
 		favicontry[ifit].src = favurlfound;
 		favicontry[ifit].to = setTimeout(function(){ favicontry[ifit].src = "/"; }, 5000);
 	} else {
-		var li = createTag("li", {s: {fontWeight: "bold"}}, text);
-		if (text.indexOf(" ") == 0) {
+		var li = createTag("li", {s: {fontWeight: "bold"}}, parameters.text);
+		if (parameters.text.indexOf(" ") == 0) {
 			li.style.setProperty("padding-top", "0px");
 			extlinks.insertBefore(li, extlinks.lastChild);
 		} else {
@@ -340,7 +344,7 @@ function addExternalLink(text, target, begin, end, sntarget) {
 	}
 	if (newLink) {
 		li.style.setProperty("opacity", extlinksOpacity);
-		if (target) { extlinks.appendChild(li); }
+		if (parameters.target) { extlinks.appendChild(li); }
 	}
 	return newLink;
 }
