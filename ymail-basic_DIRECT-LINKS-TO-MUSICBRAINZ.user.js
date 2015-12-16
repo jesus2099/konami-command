@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2015.12.10
+// @version      2015.12.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
 // @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @homepage     http://userscripts-mirror.org/scripts/show/80308
@@ -107,7 +107,7 @@ if (emails) {
 					var susu = res.match(/(deleted|merged) by edit #([0-9]+)/g);
 					var susuemail = emailsubscrs[this.responseText.match(triggerResponseURL)[1]];
 					var susuemailine = getParent(susuemail, "tr");
-					susuemailine.className = "";/* mark as read */
+					susuemailine.classList.remove("msgnew");
 					susuemailine.style.setProperty("background-color", "");
 					susuemail.removeChild(susuemail.firstChild);
 					if (susu) {
@@ -174,7 +174,7 @@ if (emails) {
 					var nonoemail = this.responseText.match(triggerResponseURL);
 					if (nonoemail && (nonoemail = emailnovotes[this.responseText.match(triggerResponseURL)[1]])) {
 						nonoemail = getParent(nonoemail, "tr");
-						nonoemail.className = "";/* mark as read */
+						nonoemail.classList.remove("msgnew");
 						var nono = this.responseText.match(triggernoextractorz);
 						nonoemail = nonoemail.querySelector("tr > td > div > a");
 						if (nono) {
