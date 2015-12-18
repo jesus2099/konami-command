@@ -31,7 +31,7 @@ var editLink = true;/*add direct link to edit page*/
 var editsLink = true;/*add direct link to edit history page*/
 var confirmIfMoreThan = 2000;/*-1 to never confirm*/
 var addNormal = true;/*add direct link to normal mbs after beta or test links*/
-var forceHTTPS = true;/*force HTTPS instead of HTTP everytime possible*/
+var preferredProtocol = "https:";/* "https:", "http:" (including “:”) or "" (empty string) for no change*/
 /* -------- CONFIGURATION  END  (don't edit below) -------- */
 var userjs = "jesus2099userjs131731";
 var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -105,15 +105,10 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 				&& (id = href.match(new RegExp(u + "(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
 				&& !as[a].querySelector("img:not(.rendericon)")
 			) {
-				var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.)/);
-				var hrefn = href;
-				if (altserv && addNormal) {
-					hrefn = href.replace(/^([^/]*\/\/).+\.(musicbrainz\.org.+)$/, "$1$2");
-				}
 				as[a].classList.add(c);
 				if (as[a].textContent == href || /*forums*/as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /*edit-notes*/as[a].textContent == href.substr(0, 48) + "…") {
-					if (forceHTTPS && !entities[ent].HTTPonly && href.match(/^http[^s]/)) {
-						href = href.replace(/^(http)(:\/\/.+)$/, "https$2");
+					if (!entities[ent].fullpath && href.match(/^https?:/) && href.indexOf(preferredProtocol) != 0) {
+						href = href.replace(/^https?:/, preferredProtocol);
 						as[a].setAttribute("href", href);
 					}
 					as[a].classList.add(userjs);
@@ -125,6 +120,11 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 					}
 					if (id[2] || id[3]) {
 						as[a].appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? "…" : ""))).parentNode.style.setProperty("opacity", ".5");
+					}
+					var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.)/);
+					var hrefn = href;
+					if (altserv && addNormal) {
+						hrefn = href.replace(/^([^/]*\/\/).+\.(musicbrainz\.org.+)$/, "$1$2");
 					}
 					if ((ent=="user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
 						addAfter(document.createTextNode(">"), as[a]);
