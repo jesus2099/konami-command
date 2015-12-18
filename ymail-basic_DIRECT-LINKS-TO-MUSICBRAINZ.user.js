@@ -209,7 +209,7 @@ function editlink(email, urlOrEditId, dupe, txt) {
 	a.className = userjs + "new";
 	a.setAttribute("target", "_blank");
 	a.style.setProperty("background-color", dupe ? colourdupe : colour);
-	a.appendChild(document.createTextNode(txt ? txt : "#" + urlOrEditId));
+	a.appendChild(document.createTextNode(txt ? txt : "Edit #" + urlOrEditId));
 	fragment.appendChild(a);
 	fragment.appendChild(document.createElement("br"));
 	email.parentNode.insertBefore(fragment, email);
