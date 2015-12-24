@@ -672,7 +672,7 @@ function spreadTracks(event) {
 	for (var ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
 		cleanTrack(localRelease.tracks[ltrack]);
 		if(ltrack >= startpos.value && rtrack < remoteRelease.tracks.length) {
-			var ntitl = "local recording #" + format(localRelease.tracks[ltrack].recid);
+			var ntitl = "local recording #" + format(localRelease.tracks[ltrack].recid + "\r\n" + looseTitle(localRelease.tracks[ltrack].name) + "\r\n" + looseTitle(localRelease.tracks[ltrack].artistCredit));
 			var ntit = localRelease.tracks[ltrack].a.getAttribute("title");
 			if (!ntit || (ntit && !ntit.match(new RegExp(ntitl)))) {
 				localRelease.tracks[ltrack].a.setAttribute("title", (ntit ? ntit + " — " : "") + ntitl);
@@ -695,7 +695,7 @@ function buildMergeForm(loc, rem) {
 	rmForm.setAttribute("action", "/recording/merge");
 	rmForm.setAttribute("method", "post");
 //		rmForm.setAttribute("title", "AC: " + ac2str(remTrack.artistCredit) + "\nremote recording #" + remTrack.recording.rowid);
-	rmForm.setAttribute("title", "remote recording #" + format(remTrack.recording.rowid));
+	rmForm.setAttribute("title", "remote recording #" + format(remTrack.recording.rowid) + "\r\n" + looseTitle(remTrack.name) + "\r\n" + looseTitle(remTrack.artistCreditAsPlainText));
 	rmForm.setAttribute("class", MMRid);
 	rmForm.style.setProperty("display", "inline");
 	rmForm.appendChild(createInput("hidden", "merge.merging.0", locTrack.recid)).setAttribute("ref", locTrack.a.getAttribute("href").match(regex_MBID)[0]);
@@ -1001,18 +1001,35 @@ function almostSame(a, b) {
 	return looseTitle(a) == looseTitle(b);
 }
 function looseTitle(title) {
-	var genericTitle = fw2hw(title).toUpperCase();
-	genericTitle = genericTitle.replace(/\b(AND|ET|VÀ)\b/g, "&");
-	genericTitle = genericTitle.replace(/\b(\w+)ING\b/g, "$1IN ");
-	genericTitle = genericTitle.replace(/\$/g, "S");
-	genericTitle = genericTitle.replace(/ß/g, "SS");
-	genericTitle = genericTitle.replace(/ⅰ/ig, "I").replace(/ⅱ/ig, "II").replace(/ⅲ/ig, "III").replace(/ⅳ/ig, "IV").replace(/ⅴ/ig, "V").replace(/ⅵ/ig, "VI").replace(/ⅶ/ig, "VII").replace(/ⅷ/ig, "VIII").replace(/ⅸ/ig, "IX").replace(/ⅹ/ig, "X").replace(/ⅺ/ig, "XI").replace(/ⅻ/ig, "XII");
-	genericTitle = genericTitle.replace(/[\s\u0021-\u002f\u003a-\u003f\u005b-\u0060\u007b-\u00bf\u2000-\u2064\u2190-\u21ff\u2460-\u27ff\u2960-\u2b59\uff5e-\uff65]+|S\b|^(?:AN?|THE)\s+|,\s+(?:AN?|THE)$/g, "");
+	var genericTitle = toHalfWidth(title).toUpperCase();
+	var simplifications = [
+		{complex: /\$/g, simple: "S"},
+		{complex: /\b(\w+)ING\b/g, simple: "$1IN "},
+		{complex: /\b(AND|ET|VÀ)\b/g, simple: "&"},
+		{complex: /\b(×|VS\.?|CROSS|VERSUS)\b/g, simple: "X"},
+		{complex: /ⅰ/ig, simple: "I"},
+		{complex: /ⅱ/ig, simple: "II"},
+		{complex: /ⅲ/ig, simple: "III"},
+		{complex: /ⅳ/ig, simple: "IV"},
+		{complex: /ⅴ/ig, simple: "V"},
+		{complex: /ⅵ/ig, simple: "VI"},
+		{complex: /ⅶ/ig, simple: "VII"},
+		{complex: /ⅷ/ig, simple: "VIII"},
+		{complex: /ⅸ/ig, simple: "IX"},
+		{complex: /ⅹ/ig, simple: "X"},
+		{complex: /ⅺ/ig, simple: "XI"},
+		{complex: /ⅻ/ig, simple: "XII"},
+		{complex: /ß/g, simple: "SS"},
+		{complex: /[\s\u0021-\u002f\u003a-\u003f\u005b-\u0060\u007b-\u00bf\u2000-\u2064\u2190-\u21ff\u2460-\u27ff\u2960-\u2b59\uff5e-\uff65]+|S\b|^(?:AN?|THE)\s+|,\s+(?:AN?|THE)$/g, simple: ""}
+	];
+	for (var s = 0; s < simplifications.length; s++) {
+		genericTitle = genericTitle.replace(simplifications[s].complex, simplifications[s].simple);
+	}
 	return genericTitle;
 }
-function fw2hw(s) {
+function toHalfWidth(s) {
 	return s.replace(/[\uff01-\uff5d]/g, function(a) {
-		return String.fromCharCode(a.charCodeAt(0)-65248);
+		return String.fromCharCode(a.charCodeAt(0) - 65248);
 	}).replace(/\u3000/g, "\u0020").replace(/\uff5e/g, "\u301c");
 }
 function HTMLToText(HTMLBlurb) {
