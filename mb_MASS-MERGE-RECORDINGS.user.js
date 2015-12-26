@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2015.12.23
+// @version      2015.12.24
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -86,6 +86,7 @@ if (ltitle) {
 	var localRelease = {
 		"release-group": document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
 		title: ltitle[1],
+		looseTitle: looseTitle(ltitle[1]),
 		comment: document.querySelector("h1 > span.comment > bdi"),
 		ac: ltitle[2],
 		id: location.pathname.match(regex_MBID)[0],
@@ -141,10 +142,10 @@ function mergeRecsStep(_step) {
 		var remTrack = remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]];
 		if (locTrack.name == remTrack.name) paramsup += "👍 '''Same track title''' “" + protectEditNoteText(locTrack.name) + "”\n";
 		else if (locTrack.name.toUpperCase() == remTrack.name.toUpperCase()) paramsup += "👍 '''Same track title''' (case insensitive)\n";
-		else if (almostSame(locTrack.name, remTrack.name)) paramsup += "👍 '''Similar track title''' (loose comparison)\n";
+		else if (locTrack.looseName == remTrack.looseName) paramsup += "👍 '''Similar track title''' (loose comparison)\n";
 		if (locTrack.artistCredit == remTrack.artistCreditAsPlainText) paramsup += "👍 '''Same track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
 		else if (locTrack.artistCredit.toUpperCase() == remTrack.artistCreditAsPlainText.toUpperCase()) paramsup += "👍 '''Same track artist credit ([AC])''' (case insensitive)\n";
-		else if (almostSame(locTrack.artistCredit, remTrack.artistCreditAsPlainText)) paramsup += "👍 '''Similar track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
+		else if (locTrack.looseAC == remTrack.looseAC) paramsup += "👍 '''Similar track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
 		if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
 			var delta = Math.abs(locTrack.length - remTrack.length);
 			if (delta <= safeLengthDelta * 1000) paramsup += "👍 '''" + (delta === 0 ? "Same" : "Very close") + " track times''' " + /*temporary hidden until milliseconds are back(delta === 0 ? "(in milliseconds)" : */ "(" + (time(locTrack.length) == time(remTrack.length) ? time(locTrack.length) : "within " + safeLengthDelta + " seconds: " + time((swap.value == "no" ? locTrack : remTrack).length) + " ← " + time((swap.value == "no" ? remTrack : locTrack).length)) + ")" /*)temporary*/ + "\n";
@@ -152,7 +153,7 @@ function mergeRecsStep(_step) {
 		if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “" + protectEditNoteText(localRelease.ac) + "”\n";
 		if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “" + protectEditNoteText(localRelease.title) + "”\n";
 		else if (localRelease.title.toUpperCase() == remoteRelease.title.toUpperCase()) paramsup += "👍 '''Same release title''' (case insensitive)\n";
-		else if (almostSame(localRelease.title, remoteRelease.title)) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
+		else if (localRelease.looseTitle == remoteRelease.looseTitle) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
 		if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' (" + MBS + "/release-group/" + localRelease["release-group"] + ")\n";
 		paramsup += " —\n" + meta.n + " (" + meta.v + ") in “" + matchMode.current.value.replace(/^Match unordered /i, "") + "” match mode";
 		if (retry.count > 0) {
@@ -423,6 +424,8 @@ function massMergeGUI() {
 						artistCredit: trackAC ? trackAC.textContent.trim() : localRelease.ac,
 						length: trackLength
 					});
+					localRelease.tracks[t].looseName = looseTitle(localRelease.tracks[t].name);
+					localRelease.tracks[t].looseAC = looseTitle(localRelease.tracks[t].artistCredit);
 	//				if (jsonRelease) {
 	////					localRelease.tracks[localRelease.tracks.length - 1] = jsonRelease.mediums[d - 1].tracks[dt];
 	//					for (var key in jsonRelease.mediums[d - 1].tracks[dt]) if (jsonRelease.mediums[d - 1].tracks[dt].hasOwnProperty(key)) {
@@ -584,6 +587,7 @@ function loadReleasePage() {
 				}
 				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
 				remoteRelease.title = HTMLToText(rtitle[1]);
+				remoteRelease.looseTitle = looseTitle(remoteRelease.title);
 				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
 				if (remoteRelease.comment) remoteRelease.comment = " (" + HTMLToText(remoteRelease.comment[1]) + ")"; else remoteRelease.comment = "";
 				remoteRelease.ac = rtitle[2];
@@ -616,6 +620,8 @@ function loadReleasePage() {
 						isDataTrack: false
 					});
 					remoteRelease.tracks[t].artistCreditAsPlainText = HTMLToText(remoteRelease.tracks[t].artistCredit);
+					remoteRelease.tracks[t].looseName = looseTitle(remoteRelease.tracks[t].name);
+					remoteRelease.tracks[t].looseAC = looseTitle(remoteRelease.tracks[t].artistCreditAsPlainText);
 					recid2trackIndex.remote[recIDs[t]] = t;
 				}
 //									for (var rd = 0; rd < jsonRelease.mediums.length; rd++) {
@@ -656,8 +662,8 @@ function bestStartPosition(localTrack, matchAC) {
 	for (var loc = singleTrackMode ? localTrack : 0; loc < (singleTrackMode ? localTrack + 1 : localRelease.tracks.length); loc++) {
 		for (var rem = 0; rem < remoteRelease.tracks.length; rem++) {
 			if (
-				almostSame(localRelease.tracks[loc].name, remoteRelease.tracks[rem].name)
-				&& (!matchAC || almostSame(localRelease.tracks[loc].artistCredit, remoteRelease.tracks[rem].artistCreditAsPlainText))
+				localRelease.tracks[loc].looseName == remoteRelease.tracks[rem].looseName
+				&& (!matchAC || localRelease.tracks[loc].looseAC == remoteRelease.tracks[rem].looseAC)
 			) {
 				return loc - rem;
 			}
@@ -672,7 +678,7 @@ function spreadTracks(event) {
 	for (var ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
 		cleanTrack(localRelease.tracks[ltrack]);
 		if(ltrack >= startpos.value && rtrack < remoteRelease.tracks.length) {
-			var ntitl = "local recording #" + format(localRelease.tracks[ltrack].recid + "\r\n" + looseTitle(localRelease.tracks[ltrack].name) + "\r\n" + looseTitle(localRelease.tracks[ltrack].artistCredit));
+			var ntitl = "local recording #" + format(localRelease.tracks[ltrack].recid + "\r\n" + localRelease.tracks[ltrack].looseName + "\r\n" + localRelease.tracks[ltrack].looseAC);
 			var ntit = localRelease.tracks[ltrack].a.getAttribute("title");
 			if (!ntit || (ntit && !ntit.match(new RegExp(ntitl)))) {
 				localRelease.tracks[ltrack].a.setAttribute("title", (ntit ? ntit + " — " : "") + ntitl);
@@ -695,7 +701,7 @@ function buildMergeForm(loc, rem) {
 	rmForm.setAttribute("action", "/recording/merge");
 	rmForm.setAttribute("method", "post");
 //		rmForm.setAttribute("title", "AC: " + ac2str(remTrack.artistCredit) + "\nremote recording #" + remTrack.recording.rowid);
-	rmForm.setAttribute("title", "remote recording #" + format(remTrack.recording.rowid) + "\r\n" + looseTitle(remTrack.name) + "\r\n" + looseTitle(remTrack.artistCreditAsPlainText));
+	rmForm.setAttribute("title", "remote recording #" + format(remTrack.recording.rowid) + "\r\n" + remTrack.looseName + "\r\n" + remTrack.looseAC);
 	rmForm.setAttribute("class", MMRid);
 	rmForm.style.setProperty("display", "inline");
 	rmForm.appendChild(createInput("hidden", "merge.merging.0", locTrack.recid)).setAttribute("ref", locTrack.a.getAttribute("href").match(regex_MBID)[0]);
@@ -723,7 +729,7 @@ function buildMergeForm(loc, rem) {
 		var rectitle = remrec.appendChild(document.createElement("span"));
 		rectitle.appendChild(document.createTextNode(remTrack.name));
 		remrec.appendChild(document.createTextNode("” "));
-		if (almostSame(remTrack.name, locTrack.name)) {
+		if (remTrack.looseName == locTrack.looseName) {
 			rectitle.style.setProperty("background-color", cOK);
 			rectitle.setAttribute("title", "(almost) same title");
 		}
@@ -753,7 +759,7 @@ function buildMergeForm(loc, rem) {
 //			rmForm.appendChild(ac2dom(remTrack.artistCredit));
 		var AC = document.createElement("span");
 		AC.innerHTML = remTrack.artistCredit;
-		if (almostSame(locTrack.artistCredit, remTrack.artistCreditAsPlainText)) {
+		if (locTrack.looseAC == remTrack.looseAC) {
 			for (var spanMp = AC.querySelectorAll("span.mp"), m = 0; m < spanMp.length; m++) {
 				spanMp[m].classList.remove("mp");
 			}
@@ -996,9 +1002,6 @@ function MBicon(iconCss) {
 	icon.className = iconCss;
 	icon.style.setProperty("margin-right", "4px");
 	return icon;
-}
-function almostSame(a, b) {
-	return looseTitle(a) == looseTitle(b);
 }
 function looseTitle(title) {
 	var genericTitle = toHalfWidth(title).toUpperCase();
