@@ -1233,7 +1233,13 @@ if (enttype) {
 							var releaseID = cells[c].querySelector("a[href*='/release/']");
 							if (releaseID && (releaseID = releaseID.getAttribute("href").match(re_GUID)[0]) && releaseEvents[releaseID]) {
 								for (var e = 0; e < releaseEvents[releaseID].length; e++) {
-									newCell.appendChild(createTag("div", {a: {title: releaseEvents[releaseID][e].area.name, class: "flag flag-" + releaseEvents[releaseID][e].area.iso_3166_1_codes[0]}}, releaseEvents[releaseID][e].date ? releaseEvents[releaseID][e].date : "\u00a0"));
+									var releaseDate = releaseEvents[releaseID][e].date ? releaseEvents[releaseID][e].date : "\u00a0";
+									var releaseEvent = createTag("div", {}, releaseDate);
+									if (releaseEvents[releaseID][e].area) {
+										releaseEvent.setAttribute("title", releaseEvents[releaseID][e].area.name);
+										releaseEvent.className = "flag flag-" + releaseEvents[releaseID][e].area.iso_3166_1_codes[0];
+									}
+									newCell.appendChild(releaseEvent);
 								}
 							}
 						}
