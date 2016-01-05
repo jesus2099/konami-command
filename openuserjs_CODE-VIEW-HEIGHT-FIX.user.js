@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         openuserjs. CODE VIEW HEIGHT FIX
-// @version      2015.1.2.1503
-// @description  openuserjs.org. Source code tab height fix (for Opera 12 and other css "calc" and "vh" unit unabled browsers)
+// @version      2016.1.5.obsolete
+// @description  ☠ OBSOLETE ☠ — openuserjs.org. Source code tab height fix (for Opera 12 and other css "calc" and "vh" unit unabled browsers)
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/openuserjs_CODE-VIEW-HEIGHT-FIX.user.js
@@ -16,22 +16,5 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var editor = document.querySelector("pre#editor");
-if (editor) {
-	var minHeight = getComputedStyle(editor).getPropertyValue("min-height");
-	if (minHeight && (minHeight = minHeight.match(/(\d+)px/)) && (minHeight = parseInt(minHeight[1], 10)) && editor.offsetHeight == minHeight) {
-		var margins = document.getElementsByTagName("head")[0].querySelector("style");
-		if (margins && (margins = margins.textContent.match(/#editor[^}]+height: calc\((\d+)vh\s*-\s*(\d+)px\);/))) {
-			document.addEventListener("resize", setEditorHeight);
-			sendEvent(editor, "resize");
-		}
-	}
-}
-function setEditorHeight() {
-	editor.style.setProperty("height", (document.documentElement.clientHeight * 100 / margins[1] - margins[2]) + "px");
-}
-function sendEvent(node, eventName){
-	var event = document.createEvent("HTMLEvents");
-	event.initEvent(eventName, true, true);
-	node.dispatchEvent(event);
-}
+if (confirm("“openuserjs. CODE VIEW HEIGHT FIX” is now obsolete.\r\n\r\nThank you for using this script but OUJS’ code window is now genuinely displaying perfectly.\r\n\r\nPlease uninstall “openuserjs. CODE VIEW HEIGHT FIX”.\r\n\r\n — its author, PATATE12 (jesus2099) —\r\n\r\n\r\nPress OK to read more about how this was fixed by OUJS team."))
+	open("//github.com/OpenUserJs/OpenUserJS.org/issues/136#issuecomment-69478996");
