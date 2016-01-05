@@ -1170,11 +1170,11 @@ if (enttype) {
 		}
 	}
 	/*================================================================ DISPLAY+
-	## RECORDING_LENGTH_COLUMN ## inspired by Loujine’s https://bitbucket.org/loujine/musicbrainz-scripts/src/default/mbz-showperformancedurations.user.js for work page
+	## RECORDING_LENGTH_COLUMN ## inspired by loujine’s https://bitbucket.org/loujine/musicbrainz-scripts/src/default/mbz-showperformancedurations.user.js for work page
 	=========================================================================*/
 	if (j2sets.RECORDING_LENGTH_COLUMN && (enttype == "work" && location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$")))) {
-		var workRecTable = document.querySelector("div#content table.tbl");
-		if (workRecTable && workRecTable.getElementsByClassName("treleases").length == 0) {
+		var relationshipTable = document.querySelector("div#content table.tbl");
+		if (relationshipTable && relationshipTable.getElementsByClassName("treleases").length == 0) {
 			var xhr = new XMLHttpRequest();
 			xhr.onload = function(event) {
 				var relations = JSON.parse(this.responseText).relations;
@@ -1184,14 +1184,19 @@ if (enttype) {
 						recordingLengths[relations[r].recording.id] = relations[r].recording.length;
 					}
 				}
-				workRecTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
-				var rows = workRecTable.querySelectorAll("tbody > tr.subh > th + th[colspan]");
+				relationshipTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
+				var rows = relationshipTable.querySelectorAll("tbody > tr.subh > th + th[colspan]");
 				for (var r = 0; r < rows.length; r++) {
 					rows[r].setAttribute("colspan", parseInt(rows[r].getAttribute("colspan"), 10) + 1);
 				}
-				var recordings = workRecTable.querySelectorAll("tbody > tr:not(.subh) a[href*='/recording/']");
-				for (var r = 0; r < recordings.length; r++) {
-					getParent(recordings[r], "tr").appendChild(createTag("td", {a: {class: "treleases"}}, time(recordingLengths[recordings[r].getAttribute("href").match(re_GUID)[0]])));
+				var rows = relationshipTable.querySelectorAll("tbody > tr:not(.subh)");
+				for (var r = 0; r < rows.length; r++) {
+					var newCell = createTag("td", {a: {class: "treleases"}});
+					var recordingID = rows[r].querySelector("a[href*='/recording/']");
+					if (recordingID && (recordingID = recordingID.getAttribute("href").match(re_GUID)[0]) && recordingLengths[recordingID]) {
+						newCell.appendChild(document.createTextNode(time(recordingLengths[recordingID])));
+					}
+					rows[r].appendChild(newCell);
 				}
 			};
 			xhr.open("get", "/ws/2" + location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=recording-rels&fmt=json", true);
