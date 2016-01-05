@@ -1174,29 +1174,33 @@ if (enttype) {
 	=========================================================================*/
 	if (j2sets.RECORDING_LENGTH_COLUMN && (enttype == "work" && location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$")))) {
 		var relationshipTable = document.querySelector("div#content table.tbl");
-		if (relationshipTable && relationshipTable.getElementsByClassName("treleases").length == 0) {
+		if (relationshipTable && relationshipTable.getElementsByClassName("treleases").length == 0 && relationshipTable.querySelector("a[href*='/recording/']")) {
 			var xhr = new XMLHttpRequest();
 			xhr.onload = function(event) {
 				var relations = JSON.parse(this.responseText).relations;
 				var recordingLengths = {};
+				var recordingLengthFound = false;
 				for (var r = 0; r < relations.length; r++) {
 					if (relations[r].recording && relations[r].recording.id && relations[r].recording.length) {
+						recordingLengthFound = true;
 						recordingLengths[relations[r].recording.id] = relations[r].recording.length;
 					}
 				}
-				relationshipTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
-				var rows = relationshipTable.querySelectorAll("tbody > tr.subh > th + th[colspan]");
-				for (var r = 0; r < rows.length; r++) {
-					rows[r].setAttribute("colspan", parseInt(rows[r].getAttribute("colspan"), 10) + 1);
-				}
-				var rows = relationshipTable.querySelectorAll("tbody > tr:not(.subh)");
-				for (var r = 0; r < rows.length; r++) {
-					var newCell = createTag("td", {a: {class: "treleases"}});
-					var recordingID = rows[r].querySelector("a[href*='/recording/']");
-					if (recordingID && (recordingID = recordingID.getAttribute("href").match(re_GUID)[0]) && recordingLengths[recordingID]) {
-						newCell.appendChild(document.createTextNode(time(recordingLengths[recordingID])));
+				if (recordingLengthFound) {
+					relationshipTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
+					var rows = relationshipTable.querySelectorAll("tbody > tr.subh > th + th[colspan]");
+					for (var r = 0; r < rows.length; r++) {
+						rows[r].setAttribute("colspan", parseInt(rows[r].getAttribute("colspan"), 10) + 1);
 					}
-					rows[r].appendChild(newCell);
+					var rows = relationshipTable.querySelectorAll("tbody > tr:not(.subh)");
+					for (var r = 0; r < rows.length; r++) {
+						var newCell = createTag("td", {a: {class: "treleases"}});
+						var recordingID = rows[r].querySelector("a[href*='/recording/']");
+						if (recordingID && (recordingID = recordingID.getAttribute("href").match(re_GUID)[0]) && recordingLengths[recordingID]) {
+							newCell.appendChild(document.createTextNode(time(recordingLengths[recordingID])));
+						}
+						rows[r].appendChild(newCell);
+					}
 				}
 			};
 			xhr.open("get", "/ws/2" + location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=recording-rels&fmt=json", true);
@@ -1213,20 +1217,24 @@ if (enttype) {
 			xhr.addEventListener("load", function(event) {
 				var relations = JSON.parse(this.responseText).relations;
 				var releaseEvents = {};
+				var releaseEventFound = false;
 				for (var r = 0; r < relations.length; r++) {
 					if (relations[r].release && relations[r].release.id && relations[r].release["release-events"]) {
+						releaseEventFound = true;
 						releaseEvents[relations[r].release.id] = relations[r].release["release-events"];
 					}
 				}
-				relationshipTable.querySelector("thead > tr").insertBefore(createTag("th", {a: {title: meta.name, class: userjs + "releaseEvents"}, s: {textShadow: "0 0 2px yellow"}}, "Release events"), relationshipTable.querySelector("thead > tr > th:nth-child(2)"));
-				var cells = relationshipTable.querySelectorAll("tbody > tr.subh > th:nth-child(2), tbody > tr:not(.subh) > td:nth-child(2)");
-				for (var c = 0; c < cells.length; c++) {
-					var newCell = cells[c].parentNode.insertBefore(document.createElement(cells[c].tagName == "TD" ? "td" : "th"), cells[c]);
-					if (cells[c].tagName == "TD") {
-						var releaseID = cells[c].querySelector("a[href*='/release/']");
-						if (releaseID && (releaseID = releaseID.getAttribute("href").match(re_GUID)[0]) && releaseEvents[releaseID]) {
-							for (var e = 0; e < releaseEvents[releaseID].length; e++) {
-								newCell.appendChild(createTag("div", {a: {title: releaseEvents[releaseID][e].area.name, class: "flag flag-" + releaseEvents[releaseID][e].area.iso_3166_1_codes[0]}}, releaseEvents[releaseID][e].date ? releaseEvents[releaseID][e].date : "\u00a0"));
+				if (releaseEventFound) {
+					relationshipTable.querySelector("thead > tr").insertBefore(createTag("th", {a: {title: meta.name, class: userjs + "releaseEvents"}, s: {textShadow: "0 0 2px yellow"}}, "Release events"), relationshipTable.querySelector("thead > tr > th:nth-child(2)"));
+					var cells = relationshipTable.querySelectorAll("tbody > tr.subh > th:nth-child(2), tbody > tr:not(.subh) > td:nth-child(2)");
+					for (var c = 0; c < cells.length; c++) {
+						var newCell = cells[c].parentNode.insertBefore(document.createElement(cells[c].tagName == "TD" ? "td" : "th"), cells[c]);
+						if (cells[c].tagName == "TD") {
+							var releaseID = cells[c].querySelector("a[href*='/release/']");
+							if (releaseID && (releaseID = releaseID.getAttribute("href").match(re_GUID)[0]) && releaseEvents[releaseID]) {
+								for (var e = 0; e < releaseEvents[releaseID].length; e++) {
+									newCell.appendChild(createTag("div", {a: {title: releaseEvents[releaseID][e].area.name, class: "flag flag-" + releaseEvents[releaseID][e].area.iso_3166_1_codes[0]}}, releaseEvents[releaseID][e].date ? releaseEvents[releaseID][e].date : "\u00a0"));
+								}
 							}
 						}
 					}
