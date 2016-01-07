@@ -303,7 +303,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid*/)
 			}
 			if (parameters.mbid) {
 				li.appendChild(document.createTextNode(" "));
-				li.appendChild(createTag("div", {a: {class: "icon img edit-item"}, s: {opacity: ".5"}}, createTag("a", {a: {href: "/url/" + parameters.mbid + "/edit"}, s: {color: "transparent"}}, "edit")));
+				li.appendChild(createTag("div", {a: {class: "icon img edit-item"}, s: {opacity: ".5"}}, createTag("a", {a: {title: "edit this URL relationship", href: "/url/" + parameters.mbid + "/edit"}, s: {color: "transparent"}}, "edit")));
 			}
 		}
 		var favurltest = (typeof parameters.target == "string") ? parameters.target : parameters.target.action;
