@@ -401,7 +401,7 @@ function fetchReleasesStuff(pi) {
 						cou = cou[0].textContent;
 					}
 					if (typeof cou == "string" && cou.length == 2 && (cou.charAt(0) != "X" || cou == "XE")) {
-						frg.appendChild(createTag("img", {a: {alt: cou, src: "http://i.hbtronix.de/flags/" + (cou == "XE" ? "europeanunion" : cou.toLowerCase()) + ".png"}}));
+						frg.appendChild(createTag("img", {a: {alt: cou, src: "//raw.githubusercontent.com/stevenrskelton/flag-icon/master/png/16/country-4x3/" + (cou == "XE" ? "europeanunion" : cou.toLowerCase()) + ".png"}}));
 						frg.appendChild(document.createTextNode(" "));
 					}
 					modal(true, concat([
