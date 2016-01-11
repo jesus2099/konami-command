@@ -856,7 +856,7 @@ if (j2sets.COPY_TOC && account && location.pathname.match(/^\/cdtoc\/[^/]+-$/)) 
 ## SERVER_SWITCH ##
 ==========================================================================*/
 j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta and mbsandboxes. look for the new top-right MBS menu");
-j2setting("SERVER_SWITCH_mbsandbox", "[\"ianmcorvidae\", \"bitmap\", \"nikki\", \"i18n\"]", true, "type an array of subdomains to .mbsandbox.org");
+j2setting("SERVER_SWITCH_mbsandbox", "[\"chirlu\", \"reosarevok\"]", true, "type an array of subdomains to .mbsandbox.org");
 if (j2sets.SERVER_SWITCH) {
 	var menu = document.querySelector("div#header-menu ul.r");
 	if (menu) {
