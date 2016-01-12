@@ -16,11 +16,11 @@
 // @grant        none
 // @include      http://*
 // @include      https://*
-// @run-at       document-start
+// @run-at       document-end
 // ==/UserScript==
 "use strict";
 /*-----------------------------------------------*/
-var preferredMBS = "http://musicbrainz.org";
+var preferredMBS = "http://beta.musicbrainz.org";
 /*-----------------------------------------------*/
 if (document.body) {
 	document.body.addEventListener("mousedown", function(event) {
