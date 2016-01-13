@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2015.12.8
+// @version      2016.1.13
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
@@ -137,6 +137,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 							var mbs = document.createElement("a");
 							mbs.setAttribute("title", "normal server link");
 							mbs.setAttribute("href", hrefn);
+							mbs.classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//linked to mb_PREFERRED-MBS
 							mbs.appendChild(document.createTextNode("n"));
 							addAfter(document.createTextNode(")"), as[a]);
 							addAfter(mbs, as[a]);
