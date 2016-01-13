@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2016.1.12
+// @version      2016.1.13
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others — bypass this script by holding CTRL+ALT+SHIFT
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
@@ -30,7 +30,7 @@ if (document.body) {
 				if (element.tagName == "BDI") {
 					element = element.parentNode;
 				}
-				if (element.tagName == "A") {
+				if (element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) {//linked in mb_COOL-ENTITY-LINKS, mb_SUPER-MIND-CONTROL-II-X-TURBO
 					var href = element.getAttribute("href");
 					if (href) {
 						var hrefMatch = href.match(/^(https?:)?(\/\/)?(beta\.)?(musicbrainz\.org)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/);
