@@ -28,6 +28,7 @@
 var preferredMBS = "http://beta.musicbrainz.org";
 /*-----------------------------------------------*/
 if (document.body) {
+	preferredMBS = stripProtocol(preferredMBS);
 	document.body.addEventListener("mousedown", function(event) {
 		if (!event.altKey || !event.ctrlKey || !event.shiftKey) {
 			var element = event.target || event.srcElement;
@@ -42,10 +43,14 @@ if (document.body) {
 						var newHref = preferredMBS;
 						if (hrefMatch) {
 							newHref += (hrefMatch[5] ? hrefMatch[5] : "") + (hrefMatch[6] ? hrefMatch[6] : "") + (hrefMatch[7] ? hrefMatch[7] : "") + (hrefMatch[8] ? hrefMatch[8] : "");
-						} else if (location.href.match(/^https?:\/\/(beta\.)?musicbrainz\.org/) && HREF.match(/^\/[^/]/)) {
+						} else if (
+							location.href.match(/^https?:\/\/(beta\.)?musicbrainz\.org/)
+							&& (preferredMBS.indexOf("http") == 0 || "//" + location.host != preferredMBS.match(/\/\/(beta\.)?musicbrainz\.org/))
+							&& HREF.match(/^\/[^/]/)
+						) {
 							newHref += HREF;
 						}
-						if (newHref != preferredMBS) {
+						if (newHref != preferredMBS && newHref != stripProtocol(HREF)) {
 							element.setAttribute("href", newHref);
 							element.style.setProperty("border", "1px dashed gold");
 							var tooltip = element.getAttribute("title") || "";
@@ -59,4 +64,11 @@ if (document.body) {
 			}
 		}
 	});
+}
+function stripProtocol(url) {
+	if (url.indexOf(location.protocol) == 0) {
+		return url.replace(/^https?:/, "");
+	} else {
+		return url;
+	}
 }
