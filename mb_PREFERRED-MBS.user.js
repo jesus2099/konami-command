@@ -4,8 +4,12 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others — bypass this script by holding CTRL+ALT+SHIFT
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
+// @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/issues
 // @compatible   opera(12.17)+violentmonkey  my own setup
+// @compatible   firefox(39)+greasemonkey    quickly tested
+// @compatible   chromium(46)+tampermonkey   quickly tested
+// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    jesus2099/shamo
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
@@ -32,19 +36,23 @@ if (document.body) {
 					element = getParent(element, "a");
 				}
 				if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) {//linked in mb_COOL-ENTITY-LINKS, mb_SUPER-MIND-CONTROL-II-X-TURBO
-					var href = element.getAttribute("href");
-					if (href) {
-						var hrefMatch = href.match(/^(https?:)?(\/\/)?(beta\.)?(musicbrainz\.org)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/);
+					var HREF = element.getAttribute("href");
+					if (HREF) {
+						var hrefMatch = HREF.match(/^(https?:)?(\/\/)?(beta\.)?(musicbrainz\.org)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/);
+						var newHref = preferredMBS;
 						if (hrefMatch) {
-							element.setAttribute("href",
-								preferredMBS
-								+ (hrefMatch[5] ? hrefMatch[5] : "")
-								+ (hrefMatch[6] ? hrefMatch[6] : "")
-								+ (hrefMatch[7] ? hrefMatch[7] : "")
-								+ (hrefMatch[8] ? hrefMatch[8] : "")
-							);
-						} else if (location.href.match(/^https?:\/\/(beta\.)?musicbrainz\.org/) && href.match(/^\/[^/]/)) {
-							element.setAttribute("href", preferredMBS + href);
+							newHref += (hrefMatch[5] ? hrefMatch[5] : "") + (hrefMatch[6] ? hrefMatch[6] : "") + (hrefMatch[7] ? hrefMatch[7] : "") + (hrefMatch[8] ? hrefMatch[8] : "");
+						} else if (location.href.match(/^https?:\/\/(beta\.)?musicbrainz\.org/) && HREF.match(/^\/[^/]/)) {
+							newHref += HREF;
+						}
+						if (newHref != preferredMBS) {
+							element.setAttribute("href", newHref);
+							element.style.setProperty("border", "1px dashed gold");
+							var tooltip = element.getAttribute("title") || "";
+							if (tooltip) {
+								tooltip += "\r\n"
+							}
+							element.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
 						}
 					}
 				}
