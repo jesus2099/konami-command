@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2015.12.16
+// @version      2016.1.14
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
 // @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @homepage     http://userscripts-mirror.org/scripts/show/80308
@@ -29,7 +29,7 @@ var colourloading = "gold";
 var loadingtxt = "⌛ loading…";
 var edittypes = {deleted: "×", merged: "+"};
 var markReadEditsForDeletion = true;
-var preferredProtocol = "";/* "https:", "http:" (including “:”) or "" (empty string) if you prefer using the same current protocol as Yahoo! Mail*/
+var preferredProtocol = "http:";/* "https:", "http:" (including “:”) or "" (empty string) if you prefer using the same current protocol as Yahoo! Mail*/
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs80308";
 var edits = [];
@@ -197,7 +197,7 @@ function editlink(email, urlOrEditId, dupe, txt) {
 	var fragment = document.createDocumentFragment();
 	var a = document.createElement("a");
 	a.addEventListener("click", function(event) {
-		var edits = getParent(this, "table", "tbldata").querySelectorAll("table#datatable > tbody > tr > td > h2 > a." + userjs + "new[href='" + this.getAttribute("href") + "']");
+		var edits = getParent(this, "table", "tbldata").querySelectorAll("table#datatable > tbody > tr > td > h2 > a." + userjs + "new[href$='" + this.getAttribute("href").replace(/^https?:\/\/(beta\.)?/g, "") + "']"); //in case of on the fly change by mb-PREFERRED-MBS
 		for (var e = 0; e < edits.length; e++) {
 			edits[e].className = edits[e].className.replace(userjs + "new", userjs + "read");
 			edits[e].style.setProperty("background-color", colourclicked);
