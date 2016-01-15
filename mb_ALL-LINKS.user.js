@@ -2,7 +2,7 @@
 // @name         mb. ALL LINKS
 // @version      2015.12.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
-// @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link.
+// @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated links (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -30,7 +30,8 @@
 /*------------settings*/
 var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; /*U+2FA1D is currently out of js range*/
 var autolinksOpacity = ".5"; /*can be dimmer than existing links*/
-/*
+var wikipediaLanguages = ["fr", "en", "ja", "vi"];
+	/*
 	%artist-id% (MBID)
 	%arist-name%
 	%artist-sort-name%
@@ -148,10 +149,10 @@ function main() {
 				/*attached missing links*/
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function(event) {
-					if (xhr.readyState == 4) {
-						if (xhr.status == 200) {
+					if (this.readyState == 4) {
+						if (this.status == 200) {
 							loading(false);
-							var res = xhr.responseXML;
+							var res = this.responseXML;
 							var url, urls = res.evaluate("//mb:relation-list[@target-type='url']/mb:relation", res, nsr, XPathResult.ANY_TYPE, null);
 							var haslinks = false;
 							while (url = urls.iterateNext()) {
@@ -205,10 +206,10 @@ function main() {
 									}
 								}
 							}
-						} else if (xhr.status >= 400) {
-							var txt = xhr.responseText.match(/<error><text>(.+)<\/text><text>/);
+						} else if (this.status >= 400) {
+							var txt = this.responseText.match(/<error><text>(.+)<\/text><text>/);
 							txt = txt ? txt[1] : "";
-							error(xhr.status, txt);
+							error(this.status, txt);
 						}
 					}
 				};
@@ -216,6 +217,43 @@ function main() {
 				xhr.send(null);
 			}
 		}/*artist*/
+		/*wikidata to wikipedia*/
+		//TODO: maybe use https://github.com/dansingerman/jQuery-Browser-Language to detect user supported languages
+		if (wikipediaLanguages && Array.isArray(wikipediaLanguages) && wikipediaLanguages.length > 0) {
+			var wikidatas = sidebar.querySelectorAll("ul.external_links > li a[href*='wikidata.org/wiki/Q']");
+			for (var wd = 0; wd < wikidatas.length; wd++) {
+				var wikidataID = wikidatas[wd].getAttribute("href").match(/Q\d+$/);
+				if (wikidataID) {
+					var xhr = new XMLHttpRequest();
+					xhr.id = wikidataID[0];
+					getParent(wikidatas[wd], "li").classList.add(userjs + "-wd-" + xhr.id);
+					wikidatas[wd].parentNode.appendChild(createTag("img", {a: {alt: "checking available wikipedia languages…", src: "/static/images/icons/loading.gif"}}));
+					xhr.addEventListener("load", function(event) {
+						var wikidataListItem = sidebar.querySelector("ul.external_links > li." + userjs + "-wd-" + this.id);
+						removeNode(wikidataListItem.querySelector("img[src$='loading.gif']"));
+						var wikidata = JSON.parse(this.responseText);
+						if (wikidata && wikidata.entities && (wikidata = wikidata.entities[this.id])) {
+							for (var languageCode = 0; languageCode < wikipediaLanguages.length; languageCode++) {
+								var wikiEntry = wikidata.sitelinks[wikipediaLanguages[languageCode] + "wiki"];
+								if (wikiEntry) {
+									var href = wikiEntry.url.replace(/^https?:/, "");
+									var ul;
+									/*if (!existingLinks || !existingLinks[url]) {*/
+									if (!extlinks.querySelector("li a[href$='" + href + "']")) {
+										if (!ul) {
+											ul = wikidataListItem.appendChild(document.createElement("ul"));
+										}
+										ul.appendChild(createTag("li", {s: {padding: "0"}}, [wikipediaLanguages[languageCode], ": ", createTag("a", {a: {href: href}}, wikiEntry.title)]));
+									}
+								}
+							}
+						}
+					});
+					xhr.open("get", "https://www.wikidata.org/wiki/Special:EntityData/" + xhr.id + ".json", true);
+					xhr.send(null);
+				}
+			}
+		}
 	}
 }
 var favicontry = [];
@@ -228,7 +266,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid*/)
 		for (var ilis = 0; ilis < lis.length; ilis++) {
 			var lisas = lis[ilis].getElementsByTagName("a");
 			if (lisas.length>0) {
-				existingLinks.push(lisas[0].getAttribute("href").trim().replace(/^https?:/,""));
+				existingLinks.push(lisas[0].getAttribute("href").trim().replace(/^https?:/, ""));
 			}
 		}
 	}
@@ -302,8 +340,8 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid*/)
 				li.appendChild(ardates);
 			}
 			if (parameters.mbid) {
-				li.appendChild(document.createTextNode(" "));
-				li.appendChild(createTag("div", {a: {class: "icon img edit-item"}, s: {opacity: ".5"}}, createTag("a", {a: {title: "edit this URL relationship", href: "/url/" + parameters.mbid + "/edit"}, s: {color: "transparent"}}, "edit")));
+				addAfter(createTag("div", {a: {class: "icon img edit-item"}, s: {opacity: ".5"}}, createTag("a", {a: {title: "edit this URL relationship", href: "/url/" + parameters.mbid + "/edit"}, s: {color: "transparent"}}, "edit")), li.querySelector("a"));
+				addAfter(document.createTextNode(" "), li.querySelector("a"));
 			}
 		}
 		var favurltest = (typeof parameters.target == "string") ? parameters.target : parameters.target.action;
