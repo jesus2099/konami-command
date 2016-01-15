@@ -20,9 +20,13 @@
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
 // @include      http*://*musicbrainz.org/artist/*
-// @exclude      http*://*musicbrainz.org/artist/*/edit
-// @exclude      http*://*musicbrainz.org/artist/*/split
 // @include      http*://*musicbrainz.org/release/*
+// @include      http://*.mbsandbox.org/artist/*
+// @include      http://*.mbsandbox.org/release/*
+// @exclude      *//*/*mbsandbox.org/*
+// @exclude      *//*/*musicbrainz.org/*
+// @exclude      *//*musicbrainz.org/artist/*/edit
+// @exclude      *//*musicbrainz.org/artist/*/split
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -127,7 +131,7 @@ function main() {
 		if (rgextrels && (rgextrels = rgextrels.parentNode) && rgextrels.previousSibling.tagName == "UL") {
 			rgextrels.parentNode.insertBefore(createTag("h2", {}, "Release group external links"), rgextrels);
 		}
-		var artistid = location.href.match(/musicbrainz.org\/artist\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
+		var artistid = location.href.match(/(?:mbsandbox|musicbrainz)\.org\/artist\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
 		var artistname = document.querySelector("div#content > div.artistheader > h1 a, div#content > div.artistheader > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
 		var artistsortname, artistsortnameSwapped = "";
 		if (artistid && artistname) {
