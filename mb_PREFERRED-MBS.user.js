@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2016.1.14
+// @version      2016.1.18
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others — bypass this script by holding CTRL+ALT+SHIFT
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
@@ -25,10 +25,13 @@
 // ==/UserScript==
 "use strict";
 /*-----------------------------------------------*/
+/* preferredMBS can be either
+ * http://musicbrainz.org, https://musicbrainz.org, http://beta.musicbrainz.org or https://beta.musicbrainz.org
+ * it is not intended to work with any other values */
 var preferredMBS = "http://beta.musicbrainz.org";
 /*-----------------------------------------------*/
 if (document.body) {
-	preferredMBS = stripProtocol(preferredMBS);
+	preferredMBS = leftTrim(preferredMBS);
 	document.body.addEventListener("mousedown", function(event) {
 		if (!event.altKey || !event.ctrlKey || !event.shiftKey) {
 			var element = event.target || event.srcElement;
@@ -39,20 +42,22 @@ if (document.body) {
 				if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) {//linked in mb_COOL-ENTITY-LINKS, mb_SUPER-MIND-CONTROL-II-X-TURBO
 					var HREF = element.getAttribute("href");
 					if (HREF) {
-						var hrefMatch = HREF.match(/^(https?:)?(\/\/)?(beta\.)?(musicbrainz\.org)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/);
 						var newHref = preferredMBS;
+						var hrefMatch = HREF.match(/^(https?:)?(\/\/)?((?:beta\.)?musicbrainz\.org(?::\d+)?)(\/.*)?(\?.*)?(#.*)?$/);
 						if (hrefMatch) {
-							newHref += (hrefMatch[5] ? hrefMatch[5] : "") + (hrefMatch[6] ? hrefMatch[6] : "") + (hrefMatch[7] ? hrefMatch[7] : "") + (hrefMatch[8] ? hrefMatch[8] : "");
+							newHref += (hrefMatch[4] ? hrefMatch[4] : "") + (hrefMatch[5] ? hrefMatch[5] : "") + (hrefMatch[6] ? hrefMatch[6] : "");
 						} else if (
 							location.href.match(/^https?:\/\/(beta\.)?musicbrainz\.org/)
-							&& (preferredMBS.indexOf("http") == 0 || "//" + location.host != preferredMBS.match(/\/\/(beta\.)?musicbrainz\.org/))
-							&& HREF.match(/^\/[^/]/)
+							&& HREF.match(/^\/([^/]|$)/)
+							&& preferredMBS.match(/^(https?:)?\/\//)
 						) {
 							newHref += HREF;
 						}
-						if (newHref != preferredMBS && newHref != stripProtocol(HREF)) {
+						if (newHref != preferredMBS && newHref != leftTrim(HREF)) {
 							element.setAttribute("href", newHref);
-							element.style.setProperty("border", "1px dashed gold");
+							element.style.setProperty("background-color", "#cfc");
+							element.style.setProperty("color", "#606");
+							element.style.setProperty("text-decoration", "line-through");
 							var tooltip = element.getAttribute("title") || "";
 							if (tooltip) {
 								tooltip += "\r\n"
@@ -65,10 +70,13 @@ if (document.body) {
 		}
 	});
 }
-function stripProtocol(url) {
-	if (url.indexOf(location.protocol) == 0) {
-		return url.replace(/^https?:/, "");
-	} else {
-		return url;
+function leftTrim(url) {
+	var trimmedURL = url;
+	if (trimmedURL.indexOf(location.protocol) == 0) {
+		trimmedURL = trimmedURL.replace(/^https?:/, "");
 	}
+	if (trimmedURL.indexOf("//" + location.host) == 0) {
+		trimmedURL = trimmedURL.replace(new RegExp("^//" + location.host), "");
+	}
+	return trimmedURL;
 }
