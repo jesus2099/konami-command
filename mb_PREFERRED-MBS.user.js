@@ -60,7 +60,7 @@ if (document.body) {
 							element.style.setProperty("text-decoration", "line-through");
 							var tooltip = element.getAttribute("title") || "";
 							if (tooltip) {
-								tooltip += "\r\n"
+								tooltip += "\r\n";
 							}
 							element.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
 						}
