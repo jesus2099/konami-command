@@ -1,7 +1,7 @@
 (function(){"use strict";var meta=function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2015.12.11
+// @version      2016.1.25
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
@@ -123,7 +123,7 @@
 						if (row.querySelector("input[name='ar.attrs.additional']")) {
 							xhrJobs["batch-relationship-create"].params += rel+"attrs.additional=1";
 						}
-						if (row.querySelector("input[name='ar.attrs.translated']")) {
+						if (row.querySelector("input[name='ar.attrs.translated']")) {//TODO: obsolete, cf. da6c5d8a-ce13-474d-9375-61feb29039a5
 							xhrJobs["batch-relationship-create"].params += rel+"attrs.translated=1";
 						}
 					} else if (input.tagName == "TEXTAREA") {
@@ -338,7 +338,7 @@
 						createWork += getWorkCredits({
 							/*artist-work*/
 							"作詞": { nomatch:/^権利者　/, type:"3e48faba-ec01-47fd-8e89-30e81161661c" },
-							"訳詞": { nomatch:/^権利者　/, type:"3e48faba-ec01-47fd-8e89-30e81161661c", translated:"1" },
+							"訳詞": { nomatch:/^権利者　/, type:"da6c5d8a-ce13-474d-9375-61feb29039a5" },
 							"補詞": { nomatch:/^権利者　/, type:"3e48faba-ec01-47fd-8e89-30e81161661c", additional:"1" },
 							"作曲": { nomatch:/^権利者　/, type:"d59d99ea-23d4-4a80-b066-edca32ee158f" },
 							"作曲作詞": { type: "a255bca1-b157-4518-9108-7b147dc3fc68" }
@@ -717,7 +717,7 @@
 		}
 		workCredit("artist", {
 			"作詞":{"nomatch":/^権利者　/,"english":"lyrics","ar.link_type_id":"165"},
-			"訳詞":{"nomatch":/^権利者　/,"english":"translate lyrics","ar.link_type_id":"165","ar.attrs.translated":"1"},
+			"訳詞":{"nomatch":/^権利者　/,"english":"translate lyrics","ar.link_type_id":"165","ar.attrs.translated":"1"},//TODO: obsolete, cf. da6c5d8a-ce13-474d-9375-61feb29039a5
 			"補詞":{"nomatch":/^権利者　/,"english":"additional lyrics","ar.link_type_id":"165","ar.attrs.additional":"1"},
 			"作曲":{"nomatch":/^権利者　/,"english":"compose","ar.link_type_id":"168"},
 			"作曲作詞":[{"english":"generic write","ar.link_type_id":"167"},{"english":"compose","ar.link_type_id":"168"},{"english":"lyrics","ar.link_type_id":"165"}],
