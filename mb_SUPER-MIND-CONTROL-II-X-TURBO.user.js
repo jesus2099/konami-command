@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2016.1.25
+// @version      2016.1.26
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
@@ -281,7 +281,7 @@ if (j2sets.RELEASE_CLONER && account) {
 												if (datex = date.match(/^(\d{4})/)) ok &= reled.add(datex[1], "events." + resi + ".date.year");
 												if (datex = date.match(/^.{4}-(\d{2})/)) ok &= reled.add(datex[1], "events." + resi + ".date.month");
 												if (datex = date.match(/^.{4}-.{2}-(\d{2})$/)) ok &= reled.add(datex[1], "events." + resi + ".date.day");
-												if (release["release-events"][resi].area.iso_3166_1_codes.length > 0) ok &= reled.add(release["release-events"][resi].area.iso_3166_1_codes[0], "events." + resi + ".country");
+												if (release["release-events"][resi].area && release["release-events"][resi].area["iso-3166-1-codes"] && release["release-events"][resi].area["iso-3166-1-codes"].length > 0) ok &= reled.add(release["release-events"][resi].area["iso-3166-1-codes"][0], "events." + resi + ".country");
 											}
 										}
 										/* ws:release-event-list */
@@ -363,7 +363,7 @@ if (j2sets.RELEASE_CLONER && account) {
 										self.open(meta.supportURL + "/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + location.href + ").\n"));
 									}
 								};
-								xhr.open("get", "//musicbrainz.org/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels&fmt=json", false);//TODO: remove //musicbrainz.org once beta gone live and replace .area.iso_3166_1_codes[0] by .area.iso-3166-1-codes[0] cf. #152
+								xhr.open("get", "/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels&fmt=json", false);
 								xhr.send(null);
 							}
 						}
@@ -1247,8 +1247,12 @@ if (enttype) {
 												var releaseDate = releaseEvents[releaseID][e].date ? releaseEvents[releaseID][e].date : "\u00a0";
 												var releaseEvent = createTag("div", {}, releaseDate);
 												if (releaseEvents[releaseID][e].area) {
-													releaseEvent.setAttribute("title", releaseEvents[releaseID][e].area.name);
-													releaseEvent.className = "flag flag-" + releaseEvents[releaseID][e].area.iso_3166_1_codes[0];
+													if (releaseEvents[releaseID][e].area.name) {
+														releaseEvent.setAttribute("title", releaseEvents[releaseID][e].area.name);
+													}
+													if (releaseEvents[releaseID][e].area["iso-3166-1-codes"] && releaseEvents[releaseID][e].area["iso-3166-1-codes"].length > 0) {
+														releaseEvent.className = "flag flag-" + releaseEvents[releaseID][e].area["iso-3166-1-codes"][0];
+													}
 												}
 												newCell.appendChild(releaseEvent);
 											}
