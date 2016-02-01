@@ -1,6 +1,8 @@
+"use strict";
+var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2015.11.6
+// @version      2016.2.1
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/INSTALL-USER-SCRIPT.user.js
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -21,7 +23,16 @@
 // @include      https://gitlab.com/*
 // @run-at       document-end
 // ==/UserScript==
-"use strict";
+}};
+if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
+	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+	while ((kv = row.exec(meta.rawmdb)) !== null) {
+		if (meta[kv[1]]) {
+			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
+			meta[kv[1]].push(kv[2]);
+		} else meta[kv[1]] = kv[2];
+	}
+}
 var supportedFileTypes = [".user.js", ".uc.js", ".uc.xul"];
 var host = {
 	"bitbucket.org": {
@@ -36,8 +47,8 @@ var host = {
 	"github.com": {
 		css: {
 			files: "table.files tbody a.js-directory-link[title$='%fileType%']",
-			icon: "td.icon span.octicon.octicon-file-text",
-			newIcon: "octicon octicon-cloud-download", /* https://octicons.github.com */
+			icon: "td.icon svg.octicon.octicon-file-text",
+			/*//TODO: find why a.octicon.octicon-cloud-download does not show icon any more // newIcon: "octicon octicon-cloud-download", /* https://octicons.github.com */
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
 		iconParentLevel: 3,
@@ -53,6 +64,7 @@ var host = {
 		dumbMode: true,
 	},
 };
+var installImage;
 host = host[location.host];
 host.css.files = supportedFileTypes.map(function(fileType) { return host.css.files.replace(/%fileType%/g, fileType) + ":not(.j2installUserScript)"; }).join(", ");
 jQuery(document).on("pjax:end", changeStuff); /* https://github.com/defunkt/jquery-pjax#events */
@@ -71,7 +83,16 @@ function changeStuff() {
 		icon = icon.querySelector(host.css.icon);
 		if (icon) {
 			var install = document.createElement("a");
-			install.className = host.css.newIcon?host.css.newIcon:icon.className;
+			if (host.css.newIcon) {
+				install.className = host.css.newIcon;
+			} else {
+				if (!installImage) {
+					installImage = document.createElement("img");
+					installImage.setAttribute("src", meta.icon);
+				}
+				install.appendChild(installImage.cloneNode());
+				install.className = icon.className;
+			}
 			install.setAttribute("href", host.files[f].getAttribute("href").replace(host.href.match, host.href.replace));
 			install.setAttribute("title", "Install “" + host.files[f].getAttribute("title") + "”");
 			install.style.setProperty("color", "green");
