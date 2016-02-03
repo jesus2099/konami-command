@@ -92,7 +92,7 @@ var favicons = {
 	"allmusic.com": "http://allmusic.com/img/favicon.ico",
 	"ameblo.jp": "http://ameblo.jp/favicon.ico",
 	"bbc.co.uk": "http://www.bbc.co.uk/favicon.ico",
-	"discogs.com": "http://musicbrainz.org/static/images/favicons/discogs-16.png",
+	/*"discogs.com": "http://musicbrainz.org/static/images/favicons/discogs-16.png",*/
 	"exblog.jp": "http://exblog.jp/favicon.ico",
 	"joshinweb.jp": "http://joshinweb.jp/favicon.ico",
 	"last.fm": "http://musicbrainz.org/static/images/favicons/lastfm-16.png",
