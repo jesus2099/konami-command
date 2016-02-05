@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
-// @version      2014.11.24.1428
+// @version      2016.2.5
 // @description  notlob.eu/isrc. BATCH SUBMIT ISRCs. Allows pasting all ISRCs at once (from Simonf’s mediatool on multi-disc releases or from 音楽の森/ongakunomori/minc) - does not work in Opera for AUTH bug reason :/
 // @homepage     http://userscripts-mirror.org/scripts/show/151040
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -12,9 +12,12 @@
 // @since        2012-10-26
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
+// @include      http://beta.musicbrainz.org/ws/1/track/
 // @include      http://mb.lmfao.org.uk/isrc/*
-// @include      http://notlob.eu/isrc/*
 // @include      http://musicbrainz.org/ws/1/track/
+// @include      http://notlob.eu/isrc/*
+// @include      https://beta.musicbrainz.org/ws/1/track/
+// @include      https://musicbrainz.org/ws/1/track/
 // @run-at       document-end
 // ==/UserScript==
 (function(){"use strict";
