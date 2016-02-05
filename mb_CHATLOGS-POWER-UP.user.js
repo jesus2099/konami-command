@@ -197,7 +197,7 @@ if (cat) {
 	separate(ctt);
 	if (!cat.match(/-ja/)) {
 		var tgt = (cat.match(/^musicbrainz$/) ? "meta" : "music") + "brainz";
-		var tgtA = createA("#" + tgt, location.pathname.replace(/\/(meta|music)brainz\//, "/" + tgt + "/"));
+		var tgtA = createA("#" + tgt, (location.pathname.match(/\/search\/$/) ? location.href : location.pathname).replace(/\/(meta|music)brainz\//, "/" + tgt + "/"));
 		if (cat == "musicbrainz") {
 			ctt.appendChild(document.createTextNode("#musicbrainz"));
 		} else {
