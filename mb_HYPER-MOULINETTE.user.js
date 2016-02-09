@@ -36,7 +36,6 @@
 	meta.name = meta.name.substr("4");
 	var DEBUG = false;
 	meta.key = "jesus2099"+meta.name.replace(/ /, "-");
-	var MBS = location.protocol + "//" + location.host;
 	var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var re_GUID = new RegExp(stre_GUID);
 	var account = document.querySelector("div#header-menu li.account");

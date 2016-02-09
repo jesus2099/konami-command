@@ -38,7 +38,7 @@
 	var reISWC = "T- ?\\d{3}\\.\\d{3}.\\d{3}-\\d";
 	var reCode = "\\d[A-Z\\d]\\d-\\d{4}-\\d";
 	var reAnnotCode = "(?:jasrac|作品コード)\\W+("+reCode+")";
-	var MBS = location.protocol+"//"+location.host;
+	var MBS = location.protocol + "//" + location.host;
 	var pagecat = location.href.match(new RegExp("(jasrac(?=\\.or\\.jp)|minc(?=\\.gr\\.jp)|work(/"+RE_GUID+"/edit$|/create)|work)"));
 	var oldTitle = document.title;
 	var xhrForm = {}, xhrWork = {}, h1, iname;
@@ -666,7 +666,7 @@
 		}
 	}
 	function MBlinks() {
-		return (xhrWork.id&&location.href.match(/^\/work\/create/)?"MB add work edit: "+MBS+"/search/edits?combinator=and&conditions.0.field=work&conditions.0.operator=%3D&conditions.0.name="+(iname.value?encodeURIComponent(iname.value):"TA+GUEULE")+"&conditions.0.args.0="+xhrWork.id[1]+"&conditions.1.field=type&conditions.1.operator=%3D&conditions.1.args=41\n":"")+"MB work edit history: "+MBS+"/work/"+xhrWork.mbid+"/edits";
+		return (xhrWork.id&&location.href.match(/^\/work\/create/) ? "MB add work edit: " + MBS + "/search/edits?combinator=and&conditions.0.field=work&conditions.0.operator=%3D&conditions.0.name=" + (iname.value ? encodeURIComponent(iname.value) : "TA+GUEULE") + "&conditions.0.args.0=" + xhrWork.id[1] + "&conditions.1.field=type&conditions.1.operator=%3D&conditions.1.args=41\n" : "") + "MB work edit history: " + MBS + "/work/" + xhrWork.mbid + "/edits";
 	}
 	function workSortName(txt) {
 		var sortname = txt.match(/(.+) \(''yomikata''\)/);
