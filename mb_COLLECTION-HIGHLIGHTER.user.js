@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2015.8.27.1404
+// @version      2016.2.9
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -94,7 +94,7 @@ if (host && cat) {
 	j2ss.insertRule("li." + userjs + "HLrow { padding-left: 4px; }", 0);
 	j2ss.insertRule("." + userjs + "HLitem { text-shadow: 0 0 8px " + highlightColour + "!important; }", 0);
 	j2ss.insertRule("." + userjs + "HLrow ." + userjs + "HLitem { border: 0; padding: 0; }", 0);
-	var server = location.protocol + "//" + location.host;
+	var MBS = location.protocol + "//" + location.host;
 	var collectionsID = localStorage.getItem(userjs + "collections") || "";
 	var releaseID;
 	var stuff, collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
@@ -238,7 +238,7 @@ if (host && cat) {
 			if (!highlightInEditNotes && (cat == "edit" || cat == "edits")) {
 				downhill += "[count(ancestor::xhtml:div[contains(@class, 'edit-notes')])=0]";
 			}
-			var path = uphill + "//xhtml:a[starts-with(@href, '" + server + "/" + cstuff + "/')" + (cat == "release" ? " or starts-with(@href, '/" + cstuff + "/')" : "") + "]" + downhill;
+			var path = uphill + "//xhtml:a[starts-with(@href, '/" + cstuff + "/')]" + downhill;
 			var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			if (xp.snapshotLength > 0) {
 				var skip = localStorage.getItem("jesus2099skip_linksdeco_" + cstuff);/*skip deco shared with ENTITY ICONS asks only once per page*/
@@ -372,7 +372,7 @@ function loadCollection(mbid, ws, po) {
 			}
 		}
 	};
-	debug(server + url, true);
+	debug(MBS + url, true);
 	chrono();
 	xhr.open("GET", url, true);
 	xhr.send(null);
@@ -457,7 +457,7 @@ function fetchReleasesStuff(pi) {
 				}
 			}
 		};
-		debug(server + url, true);
+		debug(MBS + url, true);
 		chrono();
 		xhr.open("GET", url, true);
 		xhr.send(null);
@@ -654,12 +654,12 @@ function collectionUpdater(link, action) {
 function getStuffs(what, pwhere) {
 	var cont = pwhere ? pwhere : document;
 	var selector = {
-		"release": "div#content table.tbl > tbody > tr > td a[href^='" + server + "/release/']", /*pwhere(lab,rec,rgr)*/
-		"release-group": "div.releaseheader a[href^='" + server + "/release-group/']", /*rel*/
-		"recording": (pwhere ? "div#content [href^='" + server + "/recording/']" : "table.medium > tbody > tr > td:not(.pos):not(.video) > a[href^='" + server + "/recording/'], table.medium > tbody > tr > td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='" + server + "/recording/']"), /*pwhere(art,wrk)/rel*/
-		"artist": "div.releaseheader a[href^='" + server + "/artist/'], div#content table.tbl > tbody > tr > td > a[href^='" + server + "/artist/'], div#content table.tbl > tbody > tr > td > span > a[href^='" + server + "/artist/'], div#content table.tbl > tbody > tr > td > span > span > a[href^='" + server + "/artist/']", /*rel*/
-		"work": "div#content div.ars > dl.ars > dd > a[href^='" + server + "/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='" + server + "/work/']", /*rel*/
-		"label": "div#sidebar > ul.links > li a[href^='" + server + "/label/']", /*rel*/
+		"release": "div#content table.tbl > tbody > tr > td a[href^='/release/']", /*pwhere(lab,rec,rgr)*/
+		"release-group": "div.releaseheader a[href^='/release-group/']", /*rel*/
+		"recording": (pwhere ? "div#content [href^='/recording/']" : "table.medium > tbody > tr > td:not(.pos):not(.video) > a[href^='/recording/'], table.medium > tbody > tr > td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']"), /*pwhere(art,wrk)/rel*/
+		"artist": "div.releaseheader a[href^='/artist/'], div#content table.tbl > tbody > tr > td > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > span > a[href^='/artist/']", /*rel*/
+		"work": "div#content div.ars > dl.ars > dd > a[href^='/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='/work/']", /*rel*/
+		"label": "div#sidebar > ul.links > li a[href^='/label/']", /*rel*/
 	};
 	if (what) {
 		return cont.querySelectorAll(selector[what]);
@@ -760,7 +760,7 @@ function stuffRemover(checks, pp) {
 						}
 					}/*4*/
 				};
-				debug(server + url);
+				debug(MBS + url);
 				chrono();
 				xhr.open("GET", url, true);
 				xhr.send(null);
