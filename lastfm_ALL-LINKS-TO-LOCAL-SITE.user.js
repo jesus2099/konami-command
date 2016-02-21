@@ -19,6 +19,9 @@ var metadata=function(){/*
 // @exclude      http://www.lastfm.*
 // @run-at       document-end
 // ==/UserScript==
+// ==OpenUserJS==
+// @unstableMinify it might break metadata block parser
+// ==/OpenUserJS==}};
 */};
 var preferred_lastfm = "last.fm";
 /* In above setting, choose your favourite host :
