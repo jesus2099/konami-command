@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2016.2.9
+// @version      2016.2.22-beta
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PLAIN-TEXT-TRACKLIST.user.js
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @homepage     http://userscripts-mirror.org/scripts/show/89036
