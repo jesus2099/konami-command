@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2016.2.9
+// @version      2016.2.22
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PLAIN-TEXT-TRACKLIST.user.js
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @homepage     http://userscripts-mirror.org/scripts/show/89036
@@ -67,7 +67,7 @@ function textTracklist(tracks, patt) {
 	for (var i = 0 ; i < tracks.length ; i++) {
 		var tracknumber = tracks[i].querySelector("td.pos").textContent.trim();
 		if (tracknumber == "1" && i != 0) { tracklist += nextDisc; }
-		var title = (tracks[i].querySelector("td:not(.pos):not(.video) a[href^='/recording/']").textContent);
+		var title = (tracks[i].querySelector("td:not(.pos):not(.video) a[href^='" + location.protocol + "//" + location.host + "/recording/']").textContent);
 		var artist = tracks[i].querySelector("td:not([class]) + td:not([class])");
 		if (artist) {
 			artist = artist.textContent.trim();
