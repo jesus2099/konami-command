@@ -7,7 +7,7 @@ var meta = function() {
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey   my setup
+// @compatible   opera(12.18)+violentmonkey   my setup
 // @compatible   firefox(41.0.2)+greasemonkey tested sometimes
 // @compatible   chromium(46)+tampermonkey    tested sometimes
 // @compatible   chrome+tampermonkey          should be same as chromium
@@ -30,6 +30,9 @@ var meta = function() {
 // @exclude      *.org/release/merge*
 // @run-at       document-end
 // ==/UserScript==
+// ==OpenUserJS==
+// @unstableMinify it might break metadata block parser
+// ==/OpenUserJS==}};
 }; if (meta && meta.toString && (meta = meta.toString())) { meta = {n: meta.match(/@name\s+(.+)/)[1], v: meta.match(/@version\s+(.+)/)[1], ns: meta.match(/@namespace\s+(.+)/)[1]}; }
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 /* COLOURS */

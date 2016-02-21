@@ -8,7 +8,7 @@ var meta = {rawmdb: function() {
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own setup
+// @compatible   opera(12.18)+violentmonkey  my own setup
 // @compatible   firefox(39)+greasemonkey    quickly tested
 // @compatible   chromium(46)+tampermonkey   quickly tested
 // @compatible   chrome+tampermonkey         should be same as chromium
@@ -35,6 +35,9 @@ var meta = {rawmdb: function() {
 // @exclude      *wiki.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
+// ==OpenUserJS==
+// @unstableMinify it might break metadata block parser
+// ==/OpenUserJS==}};
 }};
 if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
 	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;

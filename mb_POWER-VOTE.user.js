@@ -7,7 +7,7 @@ var meta= { rawmdb: function() {
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   opera(12.18)+violentmonkey  my setup
 // @compatible   firefox(39)+greasemonkey    tested sometimes
 // @compatible   chromium(46)+tampermonkey   tested sometimes
 // @compatible   chrome+tampermonkey         should be same as chromium
@@ -25,6 +25,9 @@ var meta= { rawmdb: function() {
 // @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
+// ==OpenUserJS==
+// @unstableMinify it might break metadata block parser
+// ==/OpenUserJS==}};
 }};
 if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
 	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;

@@ -5,7 +5,7 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_HYPER-MOULINETTE.user.js
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   opera(12.18)+violentmonkey  my setup
 // @compatible   firefox(39)+greasemonkey    tested sometimes
 // @compatible   chromium(46)+tampermonkey   tested sometimes
 // @compatible   chrome+tampermonkey         should be same as chromium
@@ -23,6 +23,9 @@
 // @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
+// ==OpenUserJS==
+// @unstableMinify it might break metadata block parser
+// ==/OpenUserJS==}};
 	}};
 	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
 		var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;

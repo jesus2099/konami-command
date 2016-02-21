@@ -19,6 +19,9 @@
 // @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
+// ==OpenUserJS==
+// @unstableMinify it might break metadata block parser
+// ==/OpenUserJS==}};
 	}};
 	if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
 		var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;

@@ -7,7 +7,7 @@ var meta = {raw: function() {
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   opera(12.18)+violentmonkey  my setup
 // @compatible   firefox(39)+greasemonkey    tested sometimes
 // @compatible   chromium(46)+tampermonkey   tested sometimes
 // @compatible   chrome+tampermonkey         should be same as chromium
@@ -52,6 +52,9 @@ var meta = {raw: function() {
 // @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
+// ==OpenUserJS==
+// @unstableMinify it might break metadata block parser
+// ==/OpenUserJS==}};
 }};
 if (meta.raw && meta.raw.toString && (meta.raw = meta.raw.toString())) {
 	var item, row = /\/\/\s+@(\S+)\s+(.+)/g;
