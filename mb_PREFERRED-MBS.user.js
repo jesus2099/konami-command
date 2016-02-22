@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2016.2.21
+// @version      2016.2.22
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others — bypass this script by holding CTRL+ALT+SHIFT
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
@@ -28,7 +28,7 @@
 /* preferredMBS can be either
  * http://musicbrainz.org, https://musicbrainz.org, http://beta.musicbrainz.org or https://beta.musicbrainz.org
  * it is not intended to work with any other values */
-var preferredMBS = "http://beta.musicbrainz.org";
+var preferredMBS = "http://musicbrainz.org";
 /*-----------------------------------------------*/
 if (document.body) {
 	preferredMBS = leftTrim(preferredMBS);
