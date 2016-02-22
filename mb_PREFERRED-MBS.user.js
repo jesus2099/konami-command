@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2016.2.22
+// @version      2016.2.22.1122
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others — bypass this script by holding CTRL+ALT+SHIFT
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
@@ -37,7 +37,7 @@ if (document.body) {
 			var element = event.target || event.srcElement;
 			if (element && element.nodeType == Node.ELEMENT_NODE && element.tagName == "FORM") {
 				var ACTION = element.getAttribute("action");
-				if (ACTION && ACTION.indexOf("/login") < 0) {
+				if (ACTION && !element.querySelector("input[type='password']")) {
 					var newAction = prefer(ACTION);
 					if (newAction) {
 						var urlInput = element.querySelector("input[name='url']");
