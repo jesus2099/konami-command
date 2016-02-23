@@ -183,7 +183,7 @@ if (host && cat) {
 						var cstuff = collectedStuff[stu];
 						var lab = document.createElement("label");
 						lab.style.setProperty("white-space", "nowrap");
-						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(){localStorage.setItem(userjs + "cfg" + this.getAttribute("name"), this.checked ? "1" : "0");}}}), cstuff + "s "]));
+						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { localStorage.setItem(userjs + "cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
 						var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
 						if (cstuff.match(/artist|recording|release(-group)?/)) {/*defaults*/
 							cfgcb.setAttribute("checked", "checked");
@@ -200,7 +200,7 @@ if (host && cat) {
 							}
 						}
 						if (cstuff.match(/artist|work/)) {/*artist and work tracking requires recording tracking*/
-							cfgcb.addEventListener("change", function(e) {
+							cfgcb.addEventListener("change", function(event) {
 								if (this.checked) {
 									var recording = this.parentNode.parentNode.querySelector("input[name='recording']");
 									recording.checked = true;
@@ -208,7 +208,7 @@ if (host && cat) {
 								}
 							}, false);
 						} else if (cstuff.match(/recording/)) {
-							cfgcb.addEventListener("change", function(e) {
+							cfgcb.addEventListener("change", function(event) {
 								if (!this.checked) {
 									var artistwork = this.parentNode.parentNode.querySelectorAll("input[name='artist'], input[name='work']");
 									for (var aw = 0; aw < artistwork.length; aw++) {
@@ -282,14 +282,18 @@ function decorate(entityLink) {
 	var tabs = getParent(entityLink, "div", "tabs");
 	var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
 	if (row && !h1 && !tabs && !(cat == "release" && page && page.classList.contains(userjs + "HLbox") && entityType == "recording") && entityType.match(/^(release|recording|work|release-group)$/)) {
+		// table rows are left bordered. Only for releases, recordings, works, release groups. Not in tracklists.
 		row.classList.add(userjs + "HLrow");
 	}
 	if (!tabs) {
+		// tabs are not highlighted.
 		entityLink.classList.add(userjs + "HLitem");
 	}
 	if (cat == "edit" || h1) {
+		// entity page and edit pages are boxed.
 		page.classList.add(userjs + "HLbox");
 	} else if (cat == "edits") {
+		// in edit lists: release or release group edits are boxed; other entity edits are left bordered.
 		var edit = getParent(entityLink, "div", "edit-list");
 		if (edit) {
 			edit.classList.add(userjs + "HL" + (entityType == "release" || entityType == "release-group" && entityLink == edit.querySelector("div.edit-details a") ? "box" : "row"));
@@ -318,7 +322,7 @@ function loadCollection(mbid, ws, po) {
 		}
 		localStorage.setItem(userjs + "collections", collectionsID);
 		modal(true, "Loading collection " + mbid + "…", 1);
-		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(e){location.reload();}), " or close this page."]), 2);
+		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { location.reload(); }), " or close this page."]), 2);
 		modal(true, concat(["<hr>", "Fetching releases…"]), 2);
 		stuff["release-tmp"] = {ids: []};
 		for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
@@ -400,7 +404,7 @@ function fetchReleasesStuff(pi) {
 		}
 		var url = "/ws/2/release/" + stuff["release-tmp"].ids[i] + "?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels";
 		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
+		xhr.onreadystatechange = function(event) {
 			if (this.readyState == 4) {
 				if (this.status == 200) {
 					var res = this.responseXML;
@@ -504,13 +508,13 @@ function end(ok, msg) {
 	} else {
 		modal(true, msg, 1).style.setProperty("background-color", "pink");
 		alert(dialogprefix + msg);
-		modal(true, concat(["You can submit this error message to ", createA("jesus2099", meta.supportURL), " or just ", createA("reload this page", function(e){location.reload();}), "."]), 1);
+		modal(true, concat(["You can submit this error message to ", createA("jesus2099", meta.supportURL), " or just ", createA("reload this page", function(event) { location.reload(); }), "."]), 1);
 	}
 	closeButt();
 }
 function closeButt() {
-	modal(true, concat(["☞ You can now review these cute logs, or ", createA("close", function(e){modal(false);}, "this will close this cute little window"), " them. ஜ۩۞۩ஜ"]), 1);
-	document.getElementById(userjs + "modal").previousSibling.addEventListener("click", function(e) {
+	modal(true, concat(["☞ You can now review these cute logs, or ", createA("close", function(event) { modal(false); }, "this will close this cute little window"), " them. ஜ۩۞۩ஜ"]), 1);
+	document.getElementById(userjs + "modal").previousSibling.addEventListener("click", function(event) {
 		if (gaugeto) { clearTimeout(gaugeto); gaugeto = null; }
 		this.parentNode.removeChild(this.nextSibling);
 		this.parentNode.removeChild(this);
@@ -527,8 +531,8 @@ function modal(show, txt, brs, gauge) {
 		obj.style.setProperty("overflow", "auto");
 		obj.style.setProperty("white-space", "nowrap");
 		obj.style.setProperty("border", "4px solid black");
-		obj.addEventListener("mouseover", function(e) { this.style.setProperty("border-color", "silver"); }, false);
-		obj.addEventListener("mouseout", function(e) { this.style.setProperty("border-color", "black"); }, false);
+		obj.addEventListener("mouseover", function(event) { this.style.setProperty("border-color", "silver"); }, false);
+		obj.addEventListener("mouseout", function(event) { this.style.setProperty("border-color", "black"); }, false);
 		var gaug = obj.appendChild(document.createElement("div"));
 		gaug.style.setProperty("position", "fixed");
 		gaug.style.setProperty("left", 0);
@@ -606,7 +610,7 @@ function modal(show, txt, brs, gauge) {
 var altered = false;
 function collectionUpdater(link, action) {
 	if (link && action) {
-		link.addEventListener("click", function(e) {
+		link.addEventListener("click", function(event) {
 			altered = this.getAttribute("href") != location.href;
 			modal(true, "Refreshing memory…", 1);
 			collectionsID = localStorage.getItem(userjs + "collections") || "";
@@ -649,7 +653,7 @@ function collectionUpdater(link, action) {
 						if (checks.length > 0) {
 							lastLink(this.getAttribute("href"));
 							stuffRemover(checks);
-							return stop(e);
+							return stop(event);
 						}
 						break;
 				}
@@ -657,7 +661,7 @@ function collectionUpdater(link, action) {
 			if (!altered) {
 				modal(true, "Nothing has changed.", 1);
 				setTimeout(function() { modal(false); }, 1000);
-				return stop(e);
+				return stop(event);
 			} else {
 				modal(true, "Re‐loading page…", 1);
 			}
@@ -737,7 +741,7 @@ function stuffRemover(checks, pp) {
 				url += "?page=" + p;
 				modal(true, concat(["Checking " + checkType + " ", createA(checkType != "release-group" ? check.textContent : checkID, check.getAttribute("href"), checkType), " against all its ", createA(checkAgainst + "s" + (p > 1 ? " (page " + p + ")" : ""), url), "…"]), 1);
 				var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function(e) {
+				xhr.onreadystatechange = function(event) {
 					if (this.readyState == 4) {
 						if (this.status == 200) {
 							var res = document.createElement("html"); res.innerHTML = this.responseText;
