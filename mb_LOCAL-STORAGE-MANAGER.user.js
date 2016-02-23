@@ -38,8 +38,8 @@ if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString()
 }
 var userjs = "jesus2099userjs126475";
 var lsm, lskeys;
-var j2set = document.querySelector("div#header-menu li.about > ul > li.jesus2099");
-if (!j2set && (j2set = document.querySelector("div#header-menu li.about > ul"))) {
+var j2set = document.querySelector("div.header ul.menu li.about > ul > li.jesus2099");
+if (!j2set && (j2set = document.querySelector("div.header ul.menu li.about > ul"))) {
 	j2set = j2set.appendChild(createTag("li", {a: {class: "jesus2099 separator"}}));
 }
 if (j2set) {
