@@ -141,7 +141,7 @@ if (host && cat) {
 				var coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
 				var collid = coll.getAttribute("href").match(new RegExp(strMBID));
 				if (collectionsID.indexOf(collid) > -1) {
-					decorate("collection", coll);
+					decorate(coll);
 				}
 				var loadButt = [
 					createA("Load",
@@ -261,7 +261,7 @@ if (host && cat) {
 							}
 							if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
 								debug(mbid + " ● “" + xp.snapshotItem(i).textContent + "”", true);
-								decorate(cstuff, xp.snapshotItem(i));
+								decorate(xp.snapshotItem(i));
 							}
 						}
 					}
@@ -272,17 +272,28 @@ if (host && cat) {
 		debug("");
 	}
 }
-function decorate(stu, link) {
+function decorate(entityLink) {
+	var entityType = entityLink.getAttribute("href").match(new RegExp("/(.+?)/" + strMBID, "i")) || "";
+	if (entityType) {
+		entityType = entityType[1];
+	}
 	var page = document.getElementById("page");
-	var h1 = getParent(link, "h1");
-	var tabs = getParent(link, "div", "tabs");
-	var row = !getParent(link, "ul") && !getParent(link, "dl") && getParent(link, "tr");
-	if (row && !h1 && !tabs && !(cat == "release" && page && page.classList.contains(userjs + "HLbox") && stu == "recording") && stu.match(/^(release|recording|work|release-group)$/)) { row.classList.add(userjs + "HLrow"); }
-	if (!tabs) { link.classList.add(userjs + "HLitem"); }
-	if (cat == "edit" || h1) { page.classList.add(userjs + "HLbox"); }
-	else if (cat == "edits") {
-		var edit = getParent(link, "div", "edit-list");
-		if (edit) { edit.classList.add(userjs + "HL" + (stu.match(/^(release|recording|release-group)$/) ? "box" : "row")); }
+	var h1 = getParent(entityLink, "h1");
+	var tabs = getParent(entityLink, "div", "tabs");
+	var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
+	if (row && !h1 && !tabs && !(cat == "release" && page && page.classList.contains(userjs + "HLbox") && entityType == "recording") && entityType.match(/^(release|recording|work|release-group)$/)) {
+		row.classList.add(userjs + "HLrow");
+	}
+	if (!tabs) {
+		entityLink.classList.add(userjs + "HLitem");
+	}
+	if (cat == "edit" || h1) {
+		page.classList.add(userjs + "HLbox");
+	} else if (cat == "edits") {
+		var edit = getParent(entityLink, "div", "edit-list");
+		if (edit) {
+			edit.classList.add(userjs + "HL" + (entityType == "release" || entityType == "release-group" && entityLink == edit.querySelector("div.edit-details a") ? "box" : "row"));
+		}
 	}
 }
 function setTitle(ldng, pc) {
@@ -651,7 +662,7 @@ function collectionUpdater(link, action) {
 				modal(true, "Re‐loading page…", 1);
 			}
 		}, false);
-		decorate("collection", link);
+		decorate(link);
 	}
 }
 function getStuffs(what, pwhere) {
