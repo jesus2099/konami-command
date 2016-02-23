@@ -273,30 +273,37 @@ if (host && cat) {
 	}
 }
 function decorate(entityLink) {
-	var entityType = entityLink.getAttribute("href").match(new RegExp("/(.+?)/" + strMBID, "i")) || "";
-	if (entityType) {
-		entityType = entityType[1];
-	}
-	var page = document.getElementById("page");
-	var h1 = getParent(entityLink, "h1");
-	var tabs = getParent(entityLink, "div", "tabs");
-	var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
-	if (row && !h1 && !tabs && !(cat == "release" && page && page.classList.contains(userjs + "HLbox") && entityType == "recording") && entityType.match(/^(release|recording|work|release-group)$/)) {
-		// table rows are left bordered. Only for releases, recordings, works, release groups. Not in tracklists.
-		row.classList.add(userjs + "HLrow");
-	}
-	if (!tabs) {
-		// tabs are not highlighted.
+	if (!getParent(entityLink, "div", "tabs")) {
+		// Does not highlight tabs.
 		entityLink.classList.add(userjs + "HLitem");
-	}
-	if (cat == "edit" || h1) {
-		// entity page and edit pages are boxed.
-		page.classList.add(userjs + "HLbox");
-	} else if (cat == "edits") {
-		// in edit lists: release or release group edits are boxed; other entity edits are left bordered.
-		var edit = getParent(entityLink, "div", "edit-list");
-		if (edit) {
-			edit.classList.add(userjs + "HL" + (entityType == "release" || entityType == "release-group" && entityLink == edit.querySelector("div.edit-details a") ? "box" : "row"));
+		var page = document.getElementById("page");
+		if (getParent(entityLink, "h1")) {
+			// Entity page is boxed.
+			page.classList.add(userjs + "HLbox");
+		} else {
+			var entityType = entityLink.getAttribute("href").match(new RegExp("/(.+?)/" + strMBID, "i")) || "";
+			if (entityType) {
+				entityType = entityType[1];
+			}
+			if (cat == "edit") {
+				// Entity edit page is boxed.
+				var editDetails = getParent(entityLink, "table", "details");
+				if (editDetails && entityLink == editDetails.querySelector("a")) {
+					page.classList.add(userjs + "HLbox");
+				}
+			} else if (cat == "edits") {
+				// In edit lists: Release or release group edits are boxed; other entity edits are left bordered.
+				var edit = getParent(entityLink, "div", "edit-list");
+				if (edit) {
+					edit.classList.add(userjs + "HL" + (entityLink == edit.querySelector("div.edit-details a") ? "box" : "row"));
+				}
+			} else {
+				// In other pages: Leftmost entity table rows are left bordered. Not in owned release tracklists.
+				var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
+				if (row && entityLink == row.querySelector("a:not([href*='coverartarchive.org'])") && !(cat == "release" && page.classList.contains(userjs + "HLbox") && entityType == "recording")) {
+					row.classList.add(userjs + "HLrow");
+				}
+			}
 		}
 	}
 }
