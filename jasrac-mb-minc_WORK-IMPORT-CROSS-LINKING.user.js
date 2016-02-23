@@ -26,7 +26,7 @@
 // ==/UserScript==
 // ==OpenUserJS==
 // @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==}};
+// ==/OpenUserJS==
 };meta=meta.toString();meta={name:meta.match(/@name\s+(.+)/)[1],version:meta.match(/@version\s+(.+)/)[1],namespace:meta.match(/@namespace\s+(.+)/)[1]};
 /*
 	https://github.com/jesus2099/konami-command/issues/14

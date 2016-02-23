@@ -25,7 +25,7 @@ var meta = {rawmdb: function() {
 // ==/UserScript==
 // ==OpenUserJS==
 // @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==}};
+// ==/OpenUserJS==
 }};
 if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
 	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;

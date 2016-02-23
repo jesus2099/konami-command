@@ -21,7 +21,7 @@ var metadata=function(){/*
 // ==/UserScript==
 // ==OpenUserJS==
 // @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==}};
+// ==/OpenUserJS==
 */};
 var preferred_lastfm = "last.fm";
 /* In above setting, choose your favourite host :
