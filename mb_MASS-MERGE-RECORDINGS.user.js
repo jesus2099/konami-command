@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2016.2.22
+// @version      2016.2.23
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -32,7 +32,7 @@ var meta = function() {
 // ==/UserScript==
 // ==OpenUserJS==
 // @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==}};
+// ==/OpenUserJS==
 }; if (meta && meta.toString && (meta = meta.toString())) { meta = {n: meta.match(/@name\s+(.+)/)[1], v: meta.match(/@version\s+(.+)/)[1], ns: meta.match(/@namespace\s+(.+)/)[1]}; }
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 /* COLOURS */
@@ -61,7 +61,7 @@ var recid2trackIndex = {remote: {}, local: {}};/*recid:tracks index*/
 var mergeQueue = [];/*contains next mergeButts*/
 var sregex_MBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var regex_MBID = new RegExp(sregex_MBID, "i");
-var css_track = "td:not(.pos):not(.video) > a[href^='" + MBS + "/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='" + MBS + "/recording/']";
+var css_track = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
 var css_track_ac = "td:not([class]) + td:not([class])";
 var css_collapsed_medium = "div#content > table.tbl > thead > tr > th > a.expand-medium > span.expand-triangle";
 var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
@@ -578,7 +578,7 @@ function loadReleasePage() {
 			var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
 			var recIDx5 = releaseWithoutARs.match(/entity_id=\d+[^"]*entity_type=recording|entity_type=recording[^"]*entity_id=\d+/g);
 			var trackRows = releaseWithoutARs.match(/<tr class="(even|odd)" id="[-\da-z]{36}">[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
-			var trackInfos = releaseWithoutARs.match(new RegExp("<a href=\"" + MBS + "/recording/" + sregex_MBID + "\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
+			var trackInfos = releaseWithoutARs.match(new RegExp("<a href=\"/recording/" + sregex_MBID + "\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
 			var trackTimes = releaseWithoutARs.match(/<td class="treleases">[^<]*<\/td>/g);
 			var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
 			var releaseAC = releaseWithoutARs.match(/\s+Release by (<.+>)/);

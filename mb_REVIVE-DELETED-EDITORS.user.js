@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2016.2.22
+// @version      2016.2.23
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -87,7 +87,7 @@ var editors = {
 var standout /*from the crowd*/ = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var MBS = location.protocol + "//" + location.host;
-var you = document.querySelector("div#header li.account a[href^='" + MBS + "/user/']");
+var you = document.querySelector("div#header li.account a[href^='/user/']");
 if (document.querySelector("div#header li.account a[href='" + MBS + "/logout'], div#page") == null) { return; }
 if (you) {
 	if (editors["%you%"]) {
@@ -138,7 +138,7 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 			dur = Math.round(dur);
 			editors[editor].duration = dur + " " + unit + (dur == 1 ? "" : "s");
 			editors[editor].title = editorName + "\n" + editors[editor].namewas + (editors[editor].comment ? " (" + editors[editor].comment + ")" : "") + "\n" + editors[editor].duration + " (" + editors[editor].fullspan + ")";
-			var as = document.querySelectorAll("a[href='" + MBS + "/user/" + encodeURIComponent(editorName) + "']");
+			var as = document.querySelectorAll("a[href='/user/" + encodeURIComponent(editorName) + "']");
 			for (var a = 0; a < as.length; a++) {
 				for (var n = 0; n < as[a].childNodes.length; n++) {
 					if ((as[a].childNodes[n].nodeType == 3 || as[a].childNodes[n].tagName && as[a].childNodes[n].tagName == "BDI") && as[a].childNodes[n].textContent == editorName) {

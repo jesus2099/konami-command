@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2016.2.22
+// @version      2016.2.23
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -57,17 +57,17 @@ var userjs = "jesus2099userjs42102";//linked in mb_MASS-MERGE-RECORDINGS.user.js
 var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var loc, pageEntity, checked = [], xhrPendingEdits = {};
 var MBS = location.protocol + "//" + location.host;
-var account = document.querySelector("div#header li.account a[href^='" + MBS + "/user/']");
+var account = document.querySelector("div#header li.account a[href^='/user/']");
 //EDITING HISTORY
 if (
-	account &&
-	(account = unescape(account.getAttribute("href").match(/[^/]+$/))) &&
-	document.querySelector("div#sidebar") &&
-	(loc = location.pathname.match(new RegExp("^/(area|artist|collection|event|label|place|release-group|release|recording|series|work|url)/(" + RE_GUID + ")"))) &&
-	(pageEntity = document.querySelector("div#content > div.tabs > ul.tabs > li > a")) &&
-	(pageEntity = a2obj(pageEntity))
+	account
+	&& (account = unescape(account.getAttribute("href").match(/[^/]+$/)))
+	&& document.querySelector("div#sidebar")
+	&& (loc = location.pathname.match(new RegExp("^/(area|artist|collection|event|label|place|release-group|release|recording|series|work|url)/(" + RE_GUID + ")")))
+	&& (pageEntity = document.querySelector("div#content > div > h1 a"))
+	&& (pageEntity = a2obj(pageEntity))
 ) {
-	pageEntity.editinghistory = document.querySelector("div#sidebar ul.links a[href='" + MBS + pageEntity.base + "/edits']");
+	pageEntity.editinghistory = document.querySelector("div#sidebar ul.links a[href$='" + pageEntity.base + "/edits']");
 	if (pageEntity.editinghistory) {
 		pageEntity.ul = getParent(pageEntity.editinghistory, "ul");
 	} else {
@@ -76,7 +76,7 @@ if (
 	}
 	pageEntity.li = getParent(pageEntity.editinghistory, "li");
 //OPEN EDITS
-	pageEntity.openedits = document.querySelector("div#sidebar a[href='" + MBS + pageEntity.base + "/open_edits']");
+	pageEntity.openedits = document.querySelector("div#sidebar a[href$='" + pageEntity.base + "/open_edits']");
 	if (pageEntity.openedits) {
 		pageEntity.openedits.removeAttribute("title");//removes bogus tooltip (artist disambiguation or swapped sort name) that is masking our useful tooltip
 		if (pageEntity.openedits.parentNode.tagName == "LI") {//fixes MBS-2298 (“Open edits” link should share same styling as pending edit items)
@@ -96,10 +96,10 @@ if (
 			case "release-group":
 			case "release":
 			case "recording":
-				artists = document.querySelectorAll("p.subheader a[href^='" + MBS + "/artist/']");
+				artists = document.querySelectorAll("p.subheader a[href^='/artist/']");
 				break;
 			case "url":
-				artists = document.querySelectorAll("div#content a[href^='" + MBS + "/artist/'], div#content a[href^='" + MBS + "/label/']");
+				artists = document.querySelectorAll("div#content a[href^='/artist/'], div#content a[href^='/label/']");
 				break;
 			case "work":
 				artists = workMainArtists();
@@ -164,7 +164,7 @@ function checkOpenEdits(obj) {
 			) {
 				editDetails = {
 					types: this.responseText.match(/[^<>]+(?=<\/bdi><\/a><\/h2>)/g),
-					editors: this.responseText.match(new RegExp("</h2><p class=\"subheader\">[\\S\\s]+?<a href=\"" + MBS + "/user/[^/]+\">[\\S\\s]+?</p>", "g"))
+					editors: this.responseText.match(new RegExp("</h2><p class=\"subheader\">[\\S\\s]+?<a href=\"/user/[^/]+\">[\\S\\s]+?</p>", "g"))
 				};
 			} else {
 				editCount = 0;
@@ -288,11 +288,11 @@ function a2obj(a) {
 	return {
 		a: a,
 		name: a.textContent,
-		base: a.getAttribute("href").match(new RegExp("^" + MBS + "(/[^/]+/" + RE_GUID + ")"))[1]
+		base: a.getAttribute("href").match(new RegExp("(/[^/]+/" + RE_GUID + ")$"))[1]
 	};
 }
 function workMainArtists() {
-	var writers = document.querySelectorAll("div#content > table.details > tbody td a[href^='" + MBS + "/artist/']");
+	var writers = document.querySelectorAll("div#content > table.details > tbody td a[href^='/artist/']");
 	var groupedWriters = {};
 	for (var w = 0; w < writers.length; w++) {
 		var href = writers[w].getAttribute("href");
@@ -301,7 +301,7 @@ function workMainArtists() {
 		}
 		groupedWriters[href].push(writers[w]);
 	}
-	var performers = document.querySelectorAll("div#content > table.tbl > tbody td a[href^='" + MBS + "/artist/']");
+	var performers = document.querySelectorAll("div#content > table.tbl > tbody td a[href^='/artist/']");
 	var groupedPerformers = {};
 	for (var p = 0; p < performers.length; p++) {
 		var href = performers[p].getAttribute("href");
