@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2016.2.23
+// @version      2016.2.24
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
@@ -75,14 +75,14 @@ var re_date = {
 	D: "(1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31)",
 };
 re_date.ISO = "(" + re_date.YYYY + "(?:-" + re_date.MM + "(?:-" + re_date.DD + ")?)?)";
-var account = document.querySelector("div#header-menu li.account");
+var account = document.querySelector("div.header ul.menu li.account");
 if (account) {
-	var a = account.querySelector("a[href^='/user/']");
+	var a = account.querySelector("a[href^='" + MBS + "/user/']");
 	account = {
 		item: account,
 		name: a.textContent,
-		href: MBS + a.getAttribute("href"),
-		pathname: a.getAttribute("href"),
+		href: a.getAttribute("href"),
+		pathname: a.getAttribute("href").replace(MBS, ""),
 		menu: account.querySelector("ul")
 	};
 }
@@ -100,13 +100,13 @@ var j2superturbo = {
 		getLastItem: function() {
 			if (j2superturbo.menu.lastItem) return j2superturbo.menu.lastItem;
 			else {
-				var head, MBmenu = document.querySelector("div#header-menu li.editing > ul") || document.querySelector("div#header-menu li.about > ul");
-				if (MBmenu && (head = MBmenu.parentNode.querySelector("a"))) {
+				var head, MBmenu = document.querySelector("div.header ul.menu li.editing > ul") || document.querySelector("div.header ul.menu li.about > ul");
+				if (MBmenu && (head = MBmenu.parentNode.querySelector("span.menu-header"))) {
 					j2superturbo.menu.expl = j2superturbo.menu.expl.replace(/%editing%/, head.textContent);
 					j2superturbo.menu.lastItem = MBmenu.appendChild(createTag("li", {a: {class: "jesus2099 separator"}}));
 					head.style.setProperty("text-shadow", "0 0 8px purple");
 					return j2superturbo.menu.lastItem;
-				} else if (document.querySelector("div#header-menu")) bug({message: "Can’t add menu", report: true});
+				} else if (document.querySelector("div.header ul.menu")) bug({message: "Can’t add menu", report: true});
 			}
 		}
 	},
@@ -234,8 +234,7 @@ if (j2sets.RELEASE_CLONER && account) {
 	if (
 		rcwhere && (rcwhere = rcwhere[2] ? rcwhere[2] : rcwhere[3])
 	) {
-		var addrel = document.querySelector("div#header-menu li.editing > ul > li:not(.separator) > a[href$='/release/add']");
-		if (addrel) {
+		if (account) {
 			j2superturbo.menu.addItem(createTag("a", {a: {title: meta.name + "\nshift+click to open new tab / ctrl+click for background tab" + (rcwhere != "release" ? "\nno need to select if there is only one release on this page" : "")}, e: {click: function(event) {
 					var crmbids = [];
 					if (rcwhere == "release") {
@@ -612,7 +611,7 @@ if (j2sets.CENTER_FLAGS) {
 ==========================================================================*/
 j2setting("HIDE_RATINGS", false, true, "hide those cute little stars and everything related to ratings in MB");
 if (j2sets.HIDE_RATINGS) {
-	j2superturbo.addCSSRule("div#content table.tbl > * > tr > th.rating, div#content table.tbl > tbody > tr > td.rating, div#sidebar > h2.rating, div#sidebar > h2.rating + p, div#page > div.tabs > ul.tabs > li:not(.sel) > a[href$='/ratings'], div#header-menu li.account a[href$='/ratings'] { display: none; }");
+	j2superturbo.addCSSRule("div#content table.tbl > * > tr > th.rating, div#content table.tbl > tbody > tr > td.rating, div#sidebar > h2.rating, div#sidebar > h2.rating + p, div#page > div.tabs > ul.tabs > li:not(.sel) > a[href$='/ratings'], div.header ul.menu li.account a[href$='/ratings'] { display: none; }");
 	/*work around for missing rating classes (artist, collection)*/
 	var ratingIndex = document.querySelector("div#content table.tbl > tbody > tr > td:not(.rating) > span.inline-rating");
 	if (ratingIndex) {
@@ -862,15 +861,15 @@ if (j2sets.COPY_TOC && account && location.pathname.match(/^\/cdtoc\/[^/]+-$/)) 
 j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta and mbsandboxes. look for the new top-right MBS menu");
 j2setting("SERVER_SWITCH_mbsandbox", "[\"chirlu\", \"reosarevok\"]", true, "type an array of subdomains to .mbsandbox.org");
 if (j2sets.SERVER_SWITCH) {
-	var menu = document.querySelector("div#header-menu ul.r");
-	if (menu) {
+	var langMenu = document.querySelector("div.header ul.menu li.language-selector");
+	if (langMenu) {
 		var servname;
 		if (servname = location.hostname.match(/^([^.]+)\.[^.]+\.[^.]+$/)) {
 			servname = servname[1];
 		} else {
 			servname = "MBS";
 		}
-		var menu = menu.appendChild(createTag("li", {a: {class: userjs + "serverSwitch"}}, [createTag("a", {a: {title: "Server Switch"}}, createTag("code", {}, [meta.icon.cloneNode(), " ", servname])), document.createElement("ul")]));
+		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("a", {a: {title: "Server Switch"}}, createTag("code", {}, [meta.icon.cloneNode(), " ", servname])), document.createElement("ul")]), langMenu);
 		menu.addEventListener("mouseover", function(event) {
 			this.firstChild.nextSibling.style.setProperty("left", "inherit");
 			this.firstChild.nextSibling.style.setProperty("right", "0px");
@@ -1012,7 +1011,7 @@ function smenu(event) {
 ==========================================================================*/
 j2setting("MERGE_USER_MENUS", false, true, "merges “user” and “my data” menus. also adds “use beta site” (yes/no) link in user preferences");
 var data = document.querySelector("div#header-menu li.data");
-var datas = data ? data.querySelectorAll("div#header-menu li.data > ul > li") : null;
+var datas = data ? data.querySelectorAll("div.header ul.menu li.data > ul > li") : null;
 if (j2sets.MERGE_USER_MENUS && account && data && datas.length > 0) {
 	data.style.setProperty("display", "none");
 	account.menu.insertBefore(createTag("li", {a: {class: "separator"}}), account.menu.firstChild);
