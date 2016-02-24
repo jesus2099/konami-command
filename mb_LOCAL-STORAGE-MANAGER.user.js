@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2016.2.23
+// @version      2016.2.24
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @homepage     http://userscripts-mirror.org/scripts/show/126475
@@ -40,6 +40,7 @@ var userjs = "jesus2099userjs126475";
 var lsm, lskeys;
 var j2set = document.querySelector("div.header ul.menu li.about > ul > li.jesus2099");
 if (!j2set && (j2set = document.querySelector("div.header ul.menu li.about > ul"))) {
+	j2set.parentNode.querySelector("span.menu-header").style.setProperty("text-shadow", "0 0 8px purple");
 	j2set = j2set.appendChild(createTag("li", {a: {class: "jesus2099 separator"}}));
 }
 if (j2set) {
