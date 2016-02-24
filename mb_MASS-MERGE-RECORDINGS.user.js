@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2016.2.23
+// @version      2016.2.24
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -180,9 +180,9 @@ function mergeRecsStep(_step) {
 					if (
 						this.responseText.indexOf('<form action="' + MBS + '/recording/merge" method="post">') > -1
 						&& this.responseText.indexOf('value="' + from.value + '"') > -1
-						&& this.responseText.indexOf('<a href="' + MBS + '/recording/' + from.getAttribute("ref") + '">') > -1
+						&& this.responseText.indexOf('<a href="/recording/' + from.getAttribute("ref") + '">') > -1
 						&& this.responseText.indexOf('value="' + to.value + '"') > -1
-						&& this.responseText.indexOf('<a href="' + MBS + '/recording/' + to.getAttribute("ref") + '">') > -1
+						&& this.responseText.indexOf('<a href="/recording/' + to.getAttribute("ref") + '">') > -1
 					) {
 						mergeRecsStep(1);
 					} else {
@@ -291,7 +291,7 @@ function cleanTrack(track, editID, retryCount) {
 	if (rmForm) {
 		if (editID) {
 			mp(track.tr.querySelector(css_track), true);
-			var noPendingOpenEdits = document.querySelector("div#sidebar :not(.mp) > a[href='" + MBS + "/release/" + localRelease.id + "/open_edits']");
+			var noPendingOpenEdits = document.querySelector("div#sidebar :not(.mp) > a[href='/release/" + localRelease.id + "/open_edits']");
 			var mb_PENDING_EDITS = document.querySelectorAll("div#sidebar .jesus2099userjs42102count");
 			for (var counts = 0; counts < mb_PENDING_EDITS.length; counts++) {
 				var currentCount = mb_PENDING_EDITS[counts].textContent.trim();
