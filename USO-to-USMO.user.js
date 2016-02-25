@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         USO to USMO
-// @version      2016.1.14
+// @version      2016.2.25
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/USO-to-USMO.user.js
 // @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long — bypass this script by holding CTRL+ALT+SHIFT
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/USO-to-USMO
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own setup
+// @compatible   opera(12.18)+violentmonkey  my own setup
 // @compatible   firefox(39)+greasemonkey    quickly tested
 // @compatible   chromium(46)+tampermonkey   quickly tested
 // @compatible   chrome+tampermonkey         should be same as chromium
@@ -23,37 +23,35 @@
 // @run-at       document-start
 // ==/UserScript==
 "use strict";
-if (document.body) {
-	document.body.addEventListener("mousedown", function(event) {
-		if (!event.altKey || !event.ctrlKey || !event.shiftKey) {
-			var element = event.target || event.srcElement;
-			if (element && element.nodeType == Node.ELEMENT_NODE) {
-				if (element.tagName != "A") {
-					element = getParent(element, "a");
-				}
-				if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-USO-to-USMO")) {//not linked yet
-					var HREF = element.getAttribute("href");
-					var hrefMatch = HREF && HREF.match(/^(https?:)?(\/\/)?(www\.)?(userscripts\.org)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/);
-					var newHref = HREF;
-					if (hrefMatch) {
-						/* an USO link was (left/middle/right) mouse clicked */
-						/* expand short path (uso/123456 → uso/scripts/show/123456) */
-						var shortPath = hrefMatch[6];
-						if (shortPath && (shortPath = shortPath.match(/^\/(\d+)\/?$/))) {
-							newHref = newHref.replace(shortPath[0], "/scripts/show/" + shortPath[1]);
-						}
-						/* USO to USMO */
-						newHref = newHref.replace((hrefMatch[1] ? hrefMatch[1] : "") + (hrefMatch[2] ? hrefMatch[2] : "") + (hrefMatch[3] ? hrefMatch[3] : "") + hrefMatch[4], "http://userscripts-mirror.org");
-						element.setAttribute("href", newHref);
-						element.style.setProperty("border", "1px dashed gold");
-						var tooltip = element.getAttribute("title") || "";
-						if (tooltip) {
-							tooltip += "\r\n";
-						}
-						element.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
+document.addEventListener("mousedown", function(event) {
+	if (!event.altKey || !event.ctrlKey || !event.shiftKey) {
+		var element = event.target || event.srcElement;
+		if (element && element.nodeType == Node.ELEMENT_NODE) {
+			if (element.tagName != "A") {
+				element = getParent(element, "a");
+			}
+			if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-USO-to-USMO")) { // not linked yet
+				var HREF = element.getAttribute("href");
+				var hrefMatch = HREF && HREF.match(/^(https?:)?(\/\/)?(www\.)?(userscripts\.org)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/);
+				var newHref = HREF;
+				if (hrefMatch) {
+					/* an USO link was (left/middle/right) mouse clicked */
+					/* expand short path (uso/123456 → uso/scripts/show/123456) */
+					var shortPath = hrefMatch[6];
+					if (shortPath && (shortPath = shortPath.match(/^\/(\d+)\/?$/))) {
+						newHref = newHref.replace(shortPath[0], "/scripts/show/" + shortPath[1]);
 					}
+					/* USO to USMO */
+					newHref = newHref.replace((hrefMatch[1] ? hrefMatch[1] : "") + (hrefMatch[2] ? hrefMatch[2] : "") + (hrefMatch[3] ? hrefMatch[3] : "") + hrefMatch[4], "http://userscripts-mirror.org");
+					element.setAttribute("href", newHref);
+					element.style.setProperty("border", "1px dashed gold");
+					var tooltip = element.getAttribute("title") || "";
+					if (tooltip) {
+						tooltip += "\r\n";
+					}
+					element.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
 				}
 			}
 		}
-	});
-}
+	}
+});
