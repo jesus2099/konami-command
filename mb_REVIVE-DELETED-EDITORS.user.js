@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2016.2.23
+// @version      2016.2.25
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -87,17 +87,18 @@ var editors = {
 var standout /*from the crowd*/ = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var MBS = location.protocol + "//" + location.host;
-var you = document.querySelector("div#header li.account a[href^='/user/']");
-if (document.querySelector("div#header li.account a[href='" + MBS + "/logout'], div#page") == null) { return; }
+var you = document.querySelector("div.header ul.menu li.account a[href^='" + MBS + "/user/']");
+if (document.querySelector("div.header ul.menu li.account a[href$='/logout'], div#page") == null) { return; }
 if (you) {
 	if (editors["%you%"]) {
-		if (!editors[you.textContent]) { editors[you.textContent] = editors["%you%"]; }
+		you = unescape(you.getAttribute("href").match(/[^/]+$/));
+		if (!editors[you]) { editors[you] = editors["%you%"]; }
 		delete editors["%you%"];
 	}
 	if (standout) {
 		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 		var css = document.styleSheets[document.styleSheets.length - 1];
-		css.insertRule("div#page a[href='" + you.getAttribute("href") + "'] { background-color: yellow; }", 0);
+		css.insertRule("div#page a[href='" + MBS + "/user/" + you + "'], div#page a[href='/user/" + you + "'] { background-color: yellow; color: purple; }", 0);
 	}
 }
 for (var editor in editors) if (editors.hasOwnProperty(editor)) {
