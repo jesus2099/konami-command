@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2016.2.23
+// @version      2016.2.25
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
@@ -88,7 +88,7 @@ if (forceHTTP && location.protocol == "https:") {
 	for (var c = 0; c < caa.length; c++) caa[c].setAttribute("src", "http:"+caa[c].getAttribute("src"));
 }
 if (!location.pathname.match(/^\/$|^\/release\//)) for (var t=0; t<types.length; t++) {
-	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/'], div#page.fullwidth ul > li a[href^='/" + types[t] + "/']");
+	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/'], div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']");
 	var istable, istablechecked, artistcol;
 	for (var a = 0; a < as.length; a++) if (as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/" + RE_GUID + "$"))) {
 		if (!istablechecked) {
