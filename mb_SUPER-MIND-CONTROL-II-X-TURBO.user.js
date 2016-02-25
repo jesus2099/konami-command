@@ -80,7 +80,7 @@ if (account) {
 	var a = account.querySelector("a[href^='" + MBS + "/user/']");
 	account = {
 		item: account,
-		name: a.textContent,
+		name: unescape(a.getAttribute("href").match(/[^/]+$/)),
 		href: a.getAttribute("href"),
 		pathname: a.getAttribute("href").replace(MBS, ""),
 		menu: account.querySelector("ul")
