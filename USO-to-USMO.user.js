@@ -44,7 +44,9 @@ document.addEventListener("mousedown", function(event) {
 					/* USO to USMO */
 					newHref = newHref.replace((hrefMatch[1] ? hrefMatch[1] : "") + (hrefMatch[2] ? hrefMatch[2] : "") + (hrefMatch[3] ? hrefMatch[3] : "") + hrefMatch[4], "http://userscripts-mirror.org");
 					element.setAttribute("href", newHref);
-					element.style.setProperty("border", "1px dashed gold");
+					element.style.setProperty("background-color", "#cfc");
+					element.style.setProperty("color", "#606");
+					element.style.setProperty("text-decoration", "line-through");
 					var tooltip = element.getAttribute("title") || "";
 					if (tooltip) {
 						tooltip += "\r\n";
