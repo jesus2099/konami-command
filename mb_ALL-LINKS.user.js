@@ -229,7 +229,7 @@ function main() {
 			if (extlinks && extlinks.length > 0) {
 				extlinks = extlinks[0];
 				loading(true);
-				/*attached missing links*/
+				// Attached missing links
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function(event) {
 					if (this.readyState == 4) {
@@ -259,7 +259,7 @@ function main() {
 									}
 								}
 							}
-							// Default and user autolinks
+							// Autolinks
 							extlinksOpacity = autolinksOpacity;
 							autolinks.user = JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {};
 							for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
@@ -303,7 +303,6 @@ function main() {
 			}
 		}/*artist*/
 		/*wikidata to wikipedia*/
-		//TODO: maybe use https://github.com/dansingerman/jQuery-Browser-Language to detect user supported languages
 		if (languages && Array.isArray(languages) && languages.length > 0) {
 			var wikidatas = sidebar.querySelectorAll("ul.external_links > li a[href*='wikidata.org/wiki/Q']");
 			for (var wd = 0; wd < wikidatas.length; wd++) {
@@ -350,7 +349,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid*/)
 		existingLinks = [];
 		for (var ilis = 0; ilis < lis.length; ilis++) {
 			var lisas = lis[ilis].getElementsByTagName("a");
-			if (lisas.length>0) {
+			if (lisas.length > 0) {
 				existingLinks.push(lisas[0].getAttribute("href").trim().replace(/^https?:/, ""));
 			}
 		}
