@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2016.1.14
+// @version      2016.3.1
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
 // @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @homepage     http://userscripts-mirror.org/scripts/show/80308
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
+// @coming-soon  https://github.com/jesus2099/konami-command/labels/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my setup
+// @compatible   opera(12.18)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
@@ -52,7 +52,7 @@ if (emails) {
 		var emailtxt = email.getAttribute("title");
 		var editid = emailtxt.match(editTrigger);
 		var jiraid = emailtxt.match(jiraTrigger);
-		if (jiraid) {
+		if (jiraid) { // An email about a JIRA ticket
 			jiraid = jiraid[1];
 			if (!edits[jiraid]) {
 				edits[jiraid] = email;
@@ -62,7 +62,7 @@ if (emails) {
 				email.style.setProperty("background-color", colourdupe);
 				editlink(email, jiraurl + jiraid, true, jiraid);
 			}
-		} else if (editid) {
+		} else if (editid) { // An email about an edit
 			editid = editid[editid.length-1];
 			email.replaceChild(document.createTextNode(emailtxt.substring(0, emailtxt.length - editid.length - 2)), email.firstChild);
 			var emailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
@@ -90,13 +90,13 @@ if (emails) {
 						div.innerHTML = editNote.replace(/<a/g, '<a style="color: blue; text-decoration: underline;"');
 						div.style.setProperty("background-color", "#eee")
 						div.style.setProperty("padding", "4px")
-						this.email.parentNode.appendChild(div);
+						this.email.parentNode.insertBefore(div, this.email);
 					}
 				}
 			});
 			xhr.open("get", email.getAttribute("href"), true);
 			xhr.send(null);
-		} else if (email.getAttribute("title").match(/^Edits for your subscriptions$/)) {
+		} else if (email.getAttribute("title").match(/^Edits for your subscriptions$/)) { // A subscription email
 			getParent(email, "tr").style.setProperty("background-color", colourloading);
 			email.insertBefore(loading(), email.firstChild);
 			emailsubscrs[decodeURIComponent(email.getAttribute("href").match(/(?:&|\?)mid=([^&$]+)/)[1])] = email;
@@ -163,7 +163,7 @@ if (emails) {
 			xhr.open("get", email.getAttribute("href"), true);
 			xhr.send(null);
 		}
-		if (email.getAttribute("title").match(triggerno)) {
+		if (email.getAttribute("title").match(triggerno)) { // An own no‐voted edit
 			var nonoemailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
 			nonoemailfrom.style.setProperty("background-color", colourloading);
 			nonoemailfrom.replaceChild(loading(), nonoemailfrom.firstChild);
