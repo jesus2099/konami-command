@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.2.23
+// @version      2016.3.3
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -70,7 +70,7 @@ if (meta.raw && meta.raw.toString && (meta.raw = meta.raw.toString())) {
 		}
 	}
 }
-meta.name = meta.name.substr("4");
+meta.name = meta.name.substr("4") + " " + meta.version;
 var host = (["musicbrainz.org", "beta.musicbrainz.org", "test.musicbrainz.org"].indexOf(location.host) > -1);
 var cat = location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|series|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (host && cat) {
@@ -79,14 +79,14 @@ if (host && cat) {
 	var highlightColour = "purple";
 	var highlightInEditNotes = false;
 	var skipArtists = "89ad4ac3-39f7-470e-963a-56509c546377"; /*put artist GUID separated by space that you want to skip, example here it’s VA*/
-	var MBWSRate = 600;
+	var MBWSRate = 1000;
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var userjs = "jesus2099userjs126380";
 	var DEBUG = false;
 	var dialogprefix = "..:: " + meta.name.replace(/ /g, " :: ") + " ::..\r\n\r\n";
-	var maxRetry = 10;
+	var maxRetry = 20;
 	var retryPause = 5000;
-	var slowDownStepAfterRetry = 200;
+	var slowDownStepAfterRetry = 0;
 	var css_nextPage = "ul.pagination > li:last-of-type > a";
 	var retry = 0;
 	var debugBuffer = "";
@@ -389,11 +389,11 @@ function loadCollection(mbid, ws, po) {
 			} else {
 				if (retry++ < maxRetry ) {
 					MBWSRate += slowDownStepAfterRetry;
-					modal(true, "Error " + this.status + " (" + retry + "/" + maxRetry + ")", 1);
+					modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
 					debugRetry(this.status);
 					setTimeout(function() { loadCollection(mbid, ws, ws ? offset : page); }, chrono(retryPause));
 				} else {
-					end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " while loading collection).");
+					end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
 				}
 			}
 		}
@@ -475,10 +475,11 @@ function fetchReleasesStuff(pi) {
 				} else {
 					if (retry++ < maxRetry ) {
 						MBWSRate += slowDownStepAfterRetry;
+						modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
 						debugRetry(this.status);
 						setTimeout(function() { fetchReleasesStuff(i); }, chrono(retryPause));
 					} else {
-						end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " while loading releases’ stuff).");
+						end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading releases’ stuff).");
 					}
 				}
 			}
