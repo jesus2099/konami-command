@@ -27,7 +27,7 @@ that will allow you to install all scripts directly from
 
 Compatibility:
 
-* [Opera 12.17](http://opera.com/download/guide/?ver=12.17) + [Violentmonkey](https://addons.opera.com/extensions/details/violent-monkey) (**my setup**)
+* [Opera 12.18](http://opera.com/download/guide/?ver=12.18) (1872) + [Violentmonkey](https://addons.opera.com/extensions/details/violent-monkey) (**my setup**)
 * Firefox + Greasemonkey (tested sometimes; many users have this)
 * Chromium + Tampermonkey (tested sometimes; some users have this)
 * Chrome + Tampermonkey (never tested but should be same as Chromium; some users have this)
