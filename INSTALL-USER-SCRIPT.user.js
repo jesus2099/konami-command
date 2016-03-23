@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2016.2.1
+// @version      2016.3.23
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/INSTALL-USER-SCRIPT.user.js
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/issues
@@ -49,7 +49,7 @@ var host = {
 	},
 	"github.com": {
 		css: {
-			files: "table.files tbody a.js-directory-link[title$='%fileType%']",
+			files: "table.files tbody td.content a.js-navigation-open[title$='%fileType%']",
 			icon: "td.icon svg.octicon.octicon-file-text",
 			/*//TODO: find why a.octicon.octicon-cloud-download does not show icon any more // newIcon: "octicon octicon-cloud-download", /* https://octicons.github.com */
 		},
