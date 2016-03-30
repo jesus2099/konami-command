@@ -39,131 +39,134 @@ var languages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["en",
 // %arist-name%
 // %artist-sort-name%
 // %artist-family-name-first%
-var autolinks = {default: {
-	"Web pages": "//duckduckgo.com/?q=%artist-name%",
-	"Web pages (strict)": "//duckduckgo.com/?q=%2B%22%artist-name%%22",
-	"Images": "//duckduckgo.com/?q=%artist-name%+!i",
-	"Videos": "//duckduckgo.com/?q=%artist-name%+!v",
-	"Credits": null,
-	"SACEM (Interprète)": {
-		acceptCharset: "ISO-8859-1",
-		action: "http://www.sacem.fr/oeuvres/oeuvre/rechercheOeuvre.do",
-		parameters: {
-			"ftin": "true",
-			"tiers": "%artist-name%"
-		}
-	},
-	"SACEM (Auteur‐Compositeur‐Éditeur)": {
-		acceptCharset: "ISO-8859-1",
-		action: "http://www.sacem.fr/oeuvres/oeuvre/rechercheOeuvre.do",
-		parameters: {
-			"ftad": "true",
-			"tiers": "%artist-name%"
-		}
-	},
-	"JASRAC（アーティスト）": {
-		title: "requires JASRAC direct link",
-		method: "post",
-		acceptCharset: "Shift_JIS",
-		enctype: "multipart/form-data",
-		action: "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3",
-		parameters: {
-			"IN_ARTIST_NAME_OPTION1": "0",
-			"IN_ARTIST_NAME1": "%artist-name%",
-			"IN_DEFAULT_WORKS_KOUHO_MAX": "100",
-			"IN_DEFAULT_WORKS_KOUHO_SEQ": "1",
-			"IN_DEFAULT_SEARCH_WORKS_NAIGAI": "0",
-			"RESULT_CURRENT_PAGE": "1"
-		}
-	},
-	"JASRAC（著作者）": {
-		title: "requires JASRAC direct link",
-		method: "post",
-		acceptCharset: "Shift_JIS",
-		enctype: "multipart/form-data",
-		action: "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3",
-		parameters: {
-			"IN_KEN_NAME_OPTION1": "0",
-			"IN_KEN_NAME1": "%artist-family-name-first%",
-			"IN_KEN_NAME_JOB1": "0",
-			"IN_DEFAULT_WORKS_KOUHO_MAX": "100",
-			"IN_DEFAULT_WORKS_KOUHO_SEQ": "1",
-			"IN_DEFAULT_SEARCH_WORKS_NAIGAI": "0",
-			"RESULT_CURRENT_PAGE": "1"
-		}
-	},
-	"音楽の森（アーティスト）": "//www.minc.gr.jp/db/ArtNmSrch.aspx?ArtNm=%artist-name%",
-	"音楽の森（著作者）": "//www.minc.gr.jp/db/KenriSrch.aspx?KENRISYANM=%artist-family-name-first%",
-	"Lyrics": null,
-	"decoda": "http://decoda.com/search?q=%artist-name%",
-	"LyricWiki": "//lyrics.wikia.com/%artist-name%",
-	"うたまっぷ（アーティスト）": {
-		acceptCharset: "euc-jp",
-		action: "http://www.utamap.com/searchkasi.php",
-		parameters: {
-			"searchname": "artist",
-			"word": "%artist-name%"
-		}
-	},
-	"うたまっぷ（作詞者）": {
-		acceptCharset: "euc-jp",
-		action: "http://www.utamap.com/searchkasi.php",
-		parameters: {
-			"searchname": "sakusi",
-			"word": "%artist-name%"
-		}
-	},
-	"うたまっぷ（作曲者）": {
-		acceptCharset: "euc-jp",
-		action: "http://www.utamap.com/searchkasi.php",
-		parameters: {
-			"searchname": "sakyoku",
-			"word":"%artist-name%"
-		}
-	},
-	"J-Lyric（歌手）": "http://j-lyric.net/index.php?ka=%artist-name%",
-	"歌詞タイム": "//duckduckgo.com/?q=site%3Akasi-time.com+subcat+intitle:%artist-name%",
-	"Japanese stuff": null,
-	"VGMdb": "http://vgmdb.net/search?q=%artist-name%",
-	"ja.Wikipedia": "//ja.wikipedia.org/w/index.php?search=%artist-name%",
-	"CDJournal search": {
-		acceptCharset: "euc-jp",
-		action: "https://cdjournal.com/search/do/",
-		parameters: {
-			"k": "%artist-name%",
-			"target": "a"
-		}
-	},
-	"Joshinweb search": {
-		acceptCharset: "Shift_JIS",
-		action: "//joshinweb.jp/cdshops/Dps",
-		parameters: {
-			"KEY": "ARTIST",
-			"FM": "0",
-			"KEYWORD": "%artist-name%"
-		}
-	},
-	"Yunisan": "//duckduckgo.com/?q=site:www22.big.or.jp+%22%2F%7Eyunisan%2Fvi%2F%22+%artist-name%",
-	"VKDB": "//duckduckgo.com/?q=site:vkdb.jp+%artist-name%",
-	"Vietnamese stuff": null,
-	"vi.Wikipedia": "//vi.wikipedia.org/w/index.php?search=%artist-name%",
-	"nhạc số": "http://nhacso.net/tim-kiem-nghe-si.html?keyName=%artist-name%",
-	"Korean stuff": null,
-	"maniadb": "http://www.maniadb.com/search.asp?sr=PO&q=%artist-name%",
-	"Other databases": null,
-	"AllMusic": "http://www.allmusic.com/search/artist/%artist-name%",
-	"Discogs": "http://www.discogs.com/search?q=%artist-name%&type=artist",
-	"ISNI": "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
-	"Rate Your Music": "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
-	"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
-	"WhoSampled": "//www.whosampled.com/search/artists/?h=1&q=%artist-name%", 
-	"Other stuff": null,
-	"en.Wikipedia": "//en.wikipedia.org/w/index.php?search=%artist-name%",
-	"*.Wikipedia": "//duckduckgo.com/?q=site:wikipedia.org+%22%artist-name%%22",
-	"Lastfm (mbid)": "http://last.fm/mbid/%artist-id%",
-	"Lastfm (name)": "http://last.fm/music/%artist-name%",
-	"BBC Music": "http://www.bbc.co.uk/music/artists/%artist-id%",
-}};
+var autolinks = {
+	user: JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {},
+	default: {
+		"Web pages": "//duckduckgo.com/?q=%artist-name%",
+		"Web pages (strict)": "//duckduckgo.com/?q=%2B%22%artist-name%%22",
+		"Images": "//duckduckgo.com/?q=%artist-name%+!i",
+		"Videos": "//duckduckgo.com/?q=%artist-name%+!v",
+		"Credits": null,
+		"SACEM (Interprète)": {
+			acceptCharset: "ISO-8859-1",
+			action: "http://www.sacem.fr/oeuvres/oeuvre/rechercheOeuvre.do",
+			parameters: {
+				"ftin": "true",
+				"tiers": "%artist-name%"
+			}
+		},
+		"SACEM (Auteur‐Compositeur‐Éditeur)": {
+			acceptCharset: "ISO-8859-1",
+			action: "http://www.sacem.fr/oeuvres/oeuvre/rechercheOeuvre.do",
+			parameters: {
+				"ftad": "true",
+				"tiers": "%artist-name%"
+			}
+		},
+		"JASRAC（アーティスト）": {
+			title: "requires JASRAC direct link",
+			method: "post",
+			acceptCharset: "Shift_JIS",
+			enctype: "multipart/form-data",
+			action: "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3",
+			parameters: {
+				"IN_ARTIST_NAME_OPTION1": "0",
+				"IN_ARTIST_NAME1": "%artist-name%",
+				"IN_DEFAULT_WORKS_KOUHO_MAX": "100",
+				"IN_DEFAULT_WORKS_KOUHO_SEQ": "1",
+				"IN_DEFAULT_SEARCH_WORKS_NAIGAI": "0",
+				"RESULT_CURRENT_PAGE": "1"
+			}
+		},
+		"JASRAC（著作者）": {
+			title: "requires JASRAC direct link",
+			method: "post",
+			acceptCharset: "Shift_JIS",
+			enctype: "multipart/form-data",
+			action: "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3",
+			parameters: {
+				"IN_KEN_NAME_OPTION1": "0",
+				"IN_KEN_NAME1": "%artist-family-name-first%",
+				"IN_KEN_NAME_JOB1": "0",
+				"IN_DEFAULT_WORKS_KOUHO_MAX": "100",
+				"IN_DEFAULT_WORKS_KOUHO_SEQ": "1",
+				"IN_DEFAULT_SEARCH_WORKS_NAIGAI": "0",
+				"RESULT_CURRENT_PAGE": "1"
+			}
+		},
+		"音楽の森（アーティスト）": "//www.minc.gr.jp/db/ArtNmSrch.aspx?ArtNm=%artist-name%",
+		"音楽の森（著作者）": "//www.minc.gr.jp/db/KenriSrch.aspx?KENRISYANM=%artist-family-name-first%",
+		"Lyrics": null,
+		"decoda": "http://decoda.com/search?q=%artist-name%",
+		"LyricWiki": "//lyrics.wikia.com/%artist-name%",
+		"うたまっぷ（アーティスト）": {
+			acceptCharset: "euc-jp",
+			action: "http://www.utamap.com/searchkasi.php",
+			parameters: {
+				"searchname": "artist",
+				"word": "%artist-name%"
+			}
+		},
+		"うたまっぷ（作詞者）": {
+			acceptCharset: "euc-jp",
+			action: "http://www.utamap.com/searchkasi.php",
+			parameters: {
+				"searchname": "sakusi",
+				"word": "%artist-name%"
+			}
+		},
+		"うたまっぷ（作曲者）": {
+			acceptCharset: "euc-jp",
+			action: "http://www.utamap.com/searchkasi.php",
+			parameters: {
+				"searchname": "sakyoku",
+				"word":"%artist-name%"
+			}
+		},
+		"J-Lyric（歌手）": "http://j-lyric.net/index.php?ka=%artist-name%",
+		"歌詞タイム": "//duckduckgo.com/?q=site%3Akasi-time.com+subcat+intitle:%artist-name%",
+		"Japanese stuff": null,
+		"VGMdb": "http://vgmdb.net/search?q=%artist-name%",
+		"ja.Wikipedia": "//ja.wikipedia.org/w/index.php?search=%artist-name%",
+		"CDJournal search": {
+			acceptCharset: "euc-jp",
+			action: "https://cdjournal.com/search/do/",
+			parameters: {
+				"k": "%artist-name%",
+				"target": "a"
+			}
+		},
+		"Joshinweb search": {
+			acceptCharset: "Shift_JIS",
+			action: "//joshinweb.jp/cdshops/Dps",
+			parameters: {
+				"KEY": "ARTIST",
+				"FM": "0",
+				"KEYWORD": "%artist-name%"
+			}
+		},
+		"Yunisan": "//duckduckgo.com/?q=site:www22.big.or.jp+%22%2F%7Eyunisan%2Fvi%2F%22+%artist-name%",
+		"VKDB": "//duckduckgo.com/?q=site:vkdb.jp+%artist-name%",
+		"Vietnamese stuff": null,
+		"vi.Wikipedia": "//vi.wikipedia.org/w/index.php?search=%artist-name%",
+		"nhạc số": "http://nhacso.net/tim-kiem-nghe-si.html?keyName=%artist-name%",
+		"Korean stuff": null,
+		"maniadb": "http://www.maniadb.com/search.asp?sr=PO&q=%artist-name%",
+		"Other databases": null,
+		"AllMusic": "http://www.allmusic.com/search/artist/%artist-name%",
+		"Discogs": "http://www.discogs.com/search?q=%artist-name%&type=artist",
+		"ISNI": "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
+		"Rate Your Music": "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
+		"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
+		"WhoSampled": "//www.whosampled.com/search/artists/?h=1&q=%artist-name%", 
+		"Other stuff": null,
+		"en.Wikipedia": "//en.wikipedia.org/w/index.php?search=%artist-name%",
+		"*.Wikipedia": "//duckduckgo.com/?q=site:wikipedia.org+%22%artist-name%%22",
+		"Lastfm (mbid)": "http://last.fm/mbid/%artist-id%",
+		"Lastfm (name)": "http://last.fm/music/%artist-name%",
+		"BBC Music": "http://www.bbc.co.uk/music/artists/%artist-id%",
+	}
+};
 var enabledDefaultAutolinks = {};
 var loadedSettings = JSON.parse(localStorage.getItem(userjs + "enabled-default-autolinks")) || {};
 for (var link in autolinks.default) if (autolinks.default.hasOwnProperty(link)) {
@@ -264,7 +267,6 @@ function main() {
 							}
 							// Autolinks
 							extlinksOpacity = autolinksOpacity;
-							autolinks.user = JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {};
 							for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
 								haslinks = false;
 								for (var link in autolinks[defaultOrUser]) if (autolinks[defaultOrUser].hasOwnProperty(link) && (defaultOrUser == "user" || enabledDefaultAutolinks[link])) {
@@ -358,7 +360,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid*/)
 		}
 	}
 	if (parameters.target) {
-		// This is an autolink
+		// This is a link
 		var li;
 		if (typeof parameters.target != "string") {
 			var form = createTag("form", {a: {action: parameters.target.action}});
