@@ -1182,7 +1182,7 @@ if (enttype) {
 	## RELEASE_EVENT_COLUMN ## requested by Lotheric https://github.com/jesus2099/konami-command/issues/132
 	=========================================================================*/
 	if (
-		j2sets.RECORDING_LENGTH_COLUMN && (enttype == "work" && location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$")))
+		j2sets.RECORDING_LENGTH_COLUMN && (enttype == "work" && location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$")) || enttype == "place" && location.pathname.match(new RegExp("^/place/" + stre_GUID + "/performances$")))
 		||
 		j2sets.RELEASE_EVENT_COLUMN && location.pathname.match(new RegExp("^/(artist|label)/" + stre_GUID + "/relationships$"))
 	) {
