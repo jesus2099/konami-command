@@ -1,14 +1,15 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
-// @version      2015.7.9.1705
+// @version      2016.3.30
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac_DIRECT-LINK.user.js
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
+// @coming-soon  https://github.com/jesus2099/konami-command/labels/jasrac_DIRECT-LINK
 // @homepage     http://userscripts-mirror.org/scripts/show/131591
 // @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12)                my own coding setup
-// @compatible   opera(12)+violentmonkey  my own browsing setup
-// @compatible   firefox+greasemonkey     quickly tested
-// @compatible   chromium+tampermonkey    quickly tested
-// @compatible   chrome+tampermonkey      tested with chromium
+// @compatible   opera(12.18.1872)+violentmonkey  my own setup
+// @compatible   firefox+greasemonkey             quickly tested
+// @compatible   chromium+tampermonkey            quickly tested
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/jasrac_DIRECT-LINK.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/jasrac_DIRECT-LINK.user.js
@@ -77,6 +78,8 @@
 	} else if (location.pathname == "/eJwid/main.jsp") {
 		var results = document.querySelector("select[name='IN_DEFAULT_WORKS_KOUHO_MAX']");
 		if (results) { results.selectedIndex = results.options.length - 1; }
+		var title = document.querySelector("input[type='text'][name='IN_WORKS_TITLE_NAME1']");
+		if (title) { title.focus(); }
 	}
 	function hasHome(action) {
 		var has = false;
