@@ -3,9 +3,8 @@
 // @version      2016.3.30
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac_DIRECT-LINK.user.js
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/jasrac_DIRECT-LINK
 // @homepage     http://userscripts-mirror.org/scripts/show/131591
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac_DIRECT-LINK
 // @compatible   opera(12.18.1872)+violentmonkey  my own setup
 // @compatible   firefox+greasemonkey             quickly tested
 // @compatible   chromium+tampermonkey            quickly tested
