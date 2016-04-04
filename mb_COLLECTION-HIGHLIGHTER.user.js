@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.3.3
+// @version      2016.3.29
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -346,12 +346,12 @@ function loadCollection(mbid, ws, po) {
 				modal(true, concat(["NG.", "<br>", "Private collection problem, switching to slower mode…"]), 1);
 				loadCollection(mbid, false, 1);
 			} else if (this.status == 200) {
-				var re = ws ? '<release id="(' + strMBID + ')">' : '<td>(?:<span class="mp">)?<a href=".+musicbrainz.org/release/(' + strMBID + ')">(.+)</a>';
+				var re = ws ? '<release id="(' + strMBID + ')">' : '<td>(?:<span class="mp">)?<a href="/release/(' + strMBID + ')">(.+)</a>';
 				var rels = this.responseText.match(new RegExp(re, "g"));
 				if (rels) {
 					for (var rel = 0; rel < rels.length; rel++) {
 						var release = rels[rel].match(new RegExp(re))[1];
-						if (stuff["release"].ids.indexOf(release)<0) {
+						if (stuff["release"].ids.indexOf(release) < 0) {
 							stuff["release"].ids.push(release);
 							stuff["release"].rawids += release + " ";
 						}
