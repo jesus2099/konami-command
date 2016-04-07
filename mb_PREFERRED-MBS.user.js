@@ -34,7 +34,7 @@ document.addEventListener("submit", function(event) {
 	var element = event.target || event.srcElement;
 	if (element && element.nodeType == Node.ELEMENT_NODE && element.tagName == "FORM") {
 		var ACTION = element.getAttribute("action");
-		if (ACTION && !element.querySelector("input[type='password']")) {
+		if (ACTION && !ACTION.match(/oauth/) && !element.querySelector("input[type='password']")) {
 			var newAction = prefer(ACTION);
 			if (newAction) {
 				var urlInput = element.querySelector("input[name='url']");
