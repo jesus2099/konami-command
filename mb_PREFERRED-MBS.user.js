@@ -1,15 +1,14 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2016.2.22.1122
+// @version      2016.4.8
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
-// @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others — bypass this script by holding CTRL+ALT+SHIFT
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
+// @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey    quickly tested
-// @compatible   chromium(46)+tampermonkey   quickly tested
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
+// @compatible   opera(12.18.1872)+violentmonkey  my own setup
+// @compatible   firefox(39)+greasemonkey         quickly tested
+// @compatible   chromium(46)+tampermonkey        quickly tested
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    jesus2099/shamo
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
@@ -21,7 +20,7 @@
 // @grant        none
 // @include      http://*
 // @include      https://*
-// @run-at       document-end
+// @run-at       document-start
 // ==/UserScript==
 "use strict";
 /*-----------------------------------------------*/
@@ -30,60 +29,54 @@
  * it is not intended to work with any other values */
 var preferredMBS = "http://musicbrainz.org";
 /*-----------------------------------------------*/
-if (document.body) {
-	preferredMBS = leftTrim(preferredMBS);
-	document.body.addEventListener("submit", function(event) {
-		if (!event.altKey || !event.ctrlKey || !event.shiftKey) {
-			var element = event.target || event.srcElement;
-			if (element && element.nodeType == Node.ELEMENT_NODE && element.tagName == "FORM") {
-				var ACTION = element.getAttribute("action");
-				if (ACTION && !element.querySelector("input[type='password']")) {
-					var newAction = prefer(ACTION);
-					if (newAction) {
-						var urlInput = element.querySelector("input[name='url']");
-						if (urlInput) {
-							var newUrl = prefer(urlInput.value);
-							if (newUrl) {
-								urlInput.value = newUrl;
-							}
-						}
-						element.setAttribute("action", newAction);
-						element.style.setProperty("background-color", "#cfc");
-						setTimeout(function() { element.submit(); }, 10);
-						return stop(event);
+preferredMBS = leftTrim(preferredMBS);
+document.addEventListener("submit", function(event) {
+	var element = event.target || event.srcElement;
+	if (element && element.nodeType == Node.ELEMENT_NODE && element.tagName == "FORM") {
+		var ACTION = element.getAttribute("action");
+		if (ACTION && !element.querySelector("input[type='password']")) {
+			var newAction = prefer(ACTION);
+			if (newAction) {
+				var urlInput = element.querySelector("input[name='url']");
+				if (urlInput) {
+					var newUrl = prefer(urlInput.value);
+					if (newUrl) {
+						urlInput.value = newUrl;
 					}
+				}
+				element.setAttribute("action", newAction);
+				element.style.setProperty("background-color", "#cfc");
+				setTimeout(function() { element.submit(); }, 10);
+				return stop(event);
+			}
+		}
+	}
+}, true);
+document.addEventListener("mousedown", function(event) {
+	var element = event.target || event.srcElement;
+	if (element && element.nodeType == Node.ELEMENT_NODE) {
+		if (element.tagName != "A") {
+			element = getParent(element, "a");
+		}
+		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) {//linked in mb_COOL-ENTITY-LINKS, mb_SUPER-MIND-CONTROL-II-X-TURBO
+			var HREF = element.getAttribute("href");
+			if (HREF) {
+				var newHref = prefer(HREF);
+				if (newHref) {
+					element.setAttribute("href", newHref);
+					element.style.setProperty("background-color", "#cfc");
+					element.style.setProperty("color", "#606");
+					element.style.setProperty("text-decoration", "line-through");
+					var tooltip = element.getAttribute("title") || "";
+					if (tooltip) {
+						tooltip += "\r\n";
+					}
+					element.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
 				}
 			}
 		}
-	}, true);
-	document.body.addEventListener("mousedown", function(event) {
-		if (!event.altKey || !event.ctrlKey || !event.shiftKey) {
-			var element = event.target || event.srcElement;
-			if (element && element.nodeType == Node.ELEMENT_NODE) {
-				if (element.tagName != "A") {
-					element = getParent(element, "a");
-				}
-				if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) {//linked in mb_COOL-ENTITY-LINKS, mb_SUPER-MIND-CONTROL-II-X-TURBO
-					var HREF = element.getAttribute("href");
-					if (HREF) {
-						var newHref = prefer(HREF);
-						if (newHref) {
-							element.setAttribute("href", newHref);
-							element.style.setProperty("background-color", "#cfc");
-							element.style.setProperty("color", "#606");
-							element.style.setProperty("text-decoration", "line-through");
-							var tooltip = element.getAttribute("title") || "";
-							if (tooltip) {
-								tooltip += "\r\n";
-							}
-							element.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
-						}
-					}
-				}
-			}
-		}
-	});
-}
+	}
+});
 function prefer(URL) {
 	var newUrl = preferredMBS;
 	var urlMatch = URL.match(/^(https?:)?(\/\/)?((?:beta\.)?musicbrainz\.org(?::\d+)?)(\/.*)?(\?.*)?(#.*)?$/);
