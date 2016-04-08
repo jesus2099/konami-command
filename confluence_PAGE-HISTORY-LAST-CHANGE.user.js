@@ -4,10 +4,10 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
 // @description  confluence wiki: pre-selects last change for one click comparison
 // @supportURL   https://github.com/jesus2099/konami-command/labels/confluence_PAGE-HISTORY-LAST-CHANGE
-// @compatible   opera(12.18.1872)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey         quickly tested
-// @compatible   chromium(46)+tampermonkey        quickly tested
-// @compatible   chrome+tampermonkey              should be same as chromium
+// @compatible   opera(12.18.1872)+violentmonkey     my own setup
+// @compatible   firefox(45.0.1)+greasemonkey        quickly tested
+// @compatible   chromium(37.0.2030.0)+tampermonkey  quickly tested
+// @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    jesus2099/shamo
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
