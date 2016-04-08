@@ -2,7 +2,7 @@
 // @name         confluence. PAGE HISTORY LAST CHANGE
 // @version      2016.4.8
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
-// @description  confluence wiki: pre-selects last change for one click comparison
+// @description  Atlassian Confluence wiki: pre-selects last change for one click comparison
 // @supportURL   https://github.com/jesus2099/konami-command/labels/confluence_PAGE-HISTORY-LAST-CHANGE
 // @compatible   opera(12.18.1872)+violentmonkey     my own setup
 // @compatible   firefox(45.0.1)+greasemonkey        quickly tested
