@@ -2,16 +2,15 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.3.29
+// @version      2016.4.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.18)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey    tested sometimes
-// @compatible   chromium(46)+tampermonkey   tested sometimes
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey         tested sometimes
+// @compatible   chromium(46)+tampermonkey        tested sometimes
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_COLLECTION-HIGHLIGHTER.user.js
@@ -299,10 +298,19 @@ function decorate(entityLink) {
 					edit.classList.add(userjs + "HL" + (entityLink == edit.querySelector("div.edit-details a") ? "box" : "row"));
 				}
 			} else {
-				// In other pages: Leftmost entity table rows are left bordered. Not in owned release tracklists.
+				// In other pages: Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists.
 				var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
-				if (row && entityLink == row.querySelector("a:not([href*='coverartarchive.org'])") && !(cat == "release" && page.classList.contains(userjs + "HLbox") && entityType == "recording")) {
-					row.classList.add(userjs + "HLrow");
+				if (row) {
+					if (entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/'])") && !(cat == "release" && page.classList.contains(userjs + "HLbox") && entityType == "recording")) {
+						row.classList.add(userjs + "HLrow");
+					}
+					// Decorate tracks without holding them.
+					if (cat == "release" && entityType == "recording" || cat == "recording" && entityType == "release") {
+						var track = row.querySelector("a[href*='/track']");
+						if (track) {
+							track.classList.add(userjs + "HLitem");
+						}
+					}
 				}
 			}
 		}
