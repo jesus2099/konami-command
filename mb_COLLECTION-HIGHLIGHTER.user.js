@@ -157,7 +157,7 @@ if (host && cat) {
 							} else {
 								noWS = false;
 							}
-							loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !noWS, noWS ? 1 : 0);
+							loadCollection(this.getAttribute("title").match(new RegExp(strMBID)));
 						},
 						"Add this collection’s content to local storage (" + collid + ")"
 					),
@@ -325,87 +325,109 @@ function setTitle(ldng, pc) {
 		document.title = old;
 	}
 }
-function loadCollection(mbid, ws, po) {
+function loadCollection(mbid, pOffset) {
 	var limit = 100;
-	var offset = po;
-	var page = !ws ? po : offset / limit + 1;
+	var offset = pOffset || 0;
+	var page = offset / limit + 1;
 	setTitle(true);
-	var url = ws ? "/ws/2/collection/" + mbid + "/releases?limit=" + limit + "&offset=" + offset : "/collection/" + mbid + "?page=" + page;
+	var url = "/ws/2/release?collection=" + mbid + "&limit=" + limit + "&offset=" + offset + "&fmt=json";
 	if (page == 1) {
 		collectionsID = localStorage.getItem(userjs + "collections") || "";
 		if (collectionsID .indexOf(mbid) < 0) {
 			collectionsID += mbid + " ";
 		}
 		localStorage.setItem(userjs + "collections", collectionsID);
-		modal(true, "Loading collection " + mbid + "…", 1);
-		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { location.reload(); }), " or close this page."]), 2);
+		modal(true, concat(["Fetching collection ", createA(mbid, "/collection/" + mbid), "…"]), 1);
+		modal(true, concat(["Please ", createA("reload", function(event) { location.reload(); }), " or close this page to interrupt."]), 2);
 		modal(true, concat(["<hr>", "Fetching releases…"]), 2);
-		stuff["release-tmp"] = {ids: []};
 		for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
 			stuff[stu].rawids = localStorage.getItem(userjs + stu + "s") || "";
 			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
 		}
 	}
-	modal(true, "Reading page " + page + "… ");
+	modal(true, "Loading page " + page + "… ");
 	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (this.readyState == 4) {
-			if (this.status == 401) {
-				modal(true, concat(["NG.", "<br>", "Private collection problem, switching to slower mode…"]), 1);
-				loadCollection(mbid, false, 1);
-			} else if (this.status == 200) {
-				var re = ws ? '<release id="(' + strMBID + ')">' : '<td>(?:<span class="mp">)?<a href="/release/(' + strMBID + ')">(.+)</a>';
-				var rels = this.responseText.match(new RegExp(re, "g"));
-				if (rels) {
-					for (var rel = 0; rel < rels.length; rel++) {
-						var release = rels[rel].match(new RegExp(re))[1];
-						if (stuff["release"].ids.indexOf(release) < 0) {
-							stuff["release"].ids.push(release);
-							stuff["release"].rawids += release + " ";
-						}
-						stuff["release-tmp"].ids.push(release);
+	xhr.addEventListener("load", function(event) {
+		var response = JSON.parse(this.responseText);
+		if (
+			(this.status == 200 || this.status == 400 /*error status but with full content for private releases*/)
+			&& !response.error && response.releases
+			&& response.releases.length > 0
+		) {
+			for (var r = 0; r < response.releases.length; r++) {
+				for (var stuffType in stuff) if (stuff.hasOwnProperty(stuffType)) {
+					var id = [];
+					switch (stuffType) {
+						case "release":
+							id.push(response.releases[r].id);
+							break;
+						case "artist":
+							break;
+						case "label":
+							break;
+						case "recording":
+							break;
+						case "work":
+							break;
 					}
-					modal(true, rels.length + " release" + (rels.length == 1 ? "" : "s") + " fetched.", 1);
-				}
-				var ps, lastPage, nextPage;
-				if (ws && (lastPage = this.responseText.match(/<release-list count="(\d+)">/))) {
-					lastPage = Math.ceil(parseInt(lastPage[1], 10) / limit);
-				} else if (!ws) {
-					var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
-					nextPage = responseDOM.querySelector(css_nextPage);
-				}
-				if (lastPage && page < lastPage || nextPage) {
-					if (lastPage && page == 1) { modal(true, "(total " + lastPage + " pages)", 1); }
-					retry = 0;
-					setTimeout(function() { loadCollection(mbid, ws, ws ? offset + limit : page + 1); }, chrono(MBWSRate));
-				} else if (lastPage && lastPage == page || !nextPage) {
-					modal(true, " ", 1);
-					if (stuff["release-tmp"].ids.length > 0) {
-						localStorage.setItem(userjs + "releases", stuff["release"].rawids);
-						modal(true, concat([createTag("b", {}, stuff["release"].ids.length + " release" + (stuff["release"].ids.length == 1 ? "" : "s")), " saved into local storage (" + userjs + "releases)… "]));
-						modal(true, "OK.", 2);
-						retry = 0;
-						setTimeout(function() { fetchReleasesStuff(); }, chrono(MBWSRate));
-					} else {
-						modal(true, "No new releases.", 2);
-						end(true);
+					if (stuff[stuffType].ids.indexOf )
+							if (stu != "artist" || skipArtists.indexOf(rgid) < 0) {
+								var stupos = stuff[stu].ids.indexOf(rgid);
+								if (stupos<0) {
+									stuff[stu].ids.push(rgid);
+									stuff[stu].rawids += rgid + " ";
+									addedStuff++; totalAddedStuff++;
+								}
+							}
+					switch (stu) {
+						case "release":
+							if (stuff["release"].ids.indexOf(response.releases[r].id) < 0) {
+								stuff["release"].ids.push(response.releases[r].id);
+								stuff["release"].rawids += response.releases[r].id + " ";
+							}
+							break;
 					}
-					stuff["release"].rawids = "";
-				} else {
-					end(false, "Error while loading page " + page + (lastPage ? "/" + lastPage : "") + ".");
-				}
-			} else {
-				if (retry++ < maxRetry ) {
-					MBWSRate += slowDownStepAfterRetry;
-					modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
-					debugRetry(this.status);
-					setTimeout(function() { loadCollection(mbid, ws, ws ? offset : page); }, chrono(retryPause));
-				} else {
-					end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
 				}
 			}
+			modal(true, response.releases.length + " release" + (response.releases.length == 1 ? "" : "s") + " (out of " + response["release-count"] + ") fetched.", 1);
+			var ps, lastPage, nextPage;
+			if (ws && (lastPage = this.responseText.match(/<release-list count="(\d+)">/))) {
+				lastPage = Math.ceil(parseInt(lastPage[1], 10) / limit);
+			} else if (!ws) {
+				var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
+				nextPage = responseDOM.querySelector(css_nextPage);
+			}
+			if (lastPage && page < lastPage || nextPage) {
+				if (lastPage && page == 1) { modal(true, "(total " + lastPage + " pages)", 1); }
+				retry = 0;
+				setTimeout(function() { loadCollection(mbid, offset + limit); }, chrono(MBWSRate));
+			} else if (lastPage && lastPage == page || !nextPage) {
+				modal(true, " ", 1);
+				if (stuff["release-tmp"].ids.length > 0) {
+					localStorage.setItem(userjs + "releases", stuff["release"].rawids);
+					modal(true, concat([createTag("b", {}, stuff["release"].ids.length + " release" + (stuff["release"].ids.length == 1 ? "" : "s")), " saved into local storage (" + userjs + "releases)… "]));
+					modal(true, "OK.", 2);
+					retry = 0;
+					setTimeout(function() { fetchReleasesStuff(); }, chrono(MBWSRate));
+				} else {
+					modal(true, "No new releases.", 2);
+					end(true);
+				}
+				stuff["release"].rawids = "";
+			} else {
+				end(false, "Error while loading page " + page + (lastPage ? "/" + lastPage : "") + ".");
+			}
+		} else {
+			if (retry++ < maxRetry ) {
+				MBWSRate += slowDownStepAfterRetry;
+				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
+				debugRetry(this.status);
+				setTimeout(function() { loadCollection(mbid, offset); }, chrono(retryPause));
+			} else {
+				end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
+			}
 		}
-	};
+	});
 	debug(MBS + url, true);
 	chrono();
 	xhr.open("GET", url, true);
