@@ -52,14 +52,6 @@ document.addEventListener("submit", function(event) {
 		}
 	}
 }, true);
-/* for Snap Links extension v1.9.5 by Ayush and Mpkstroff http://addons.opera.com/extensions/details/snap-links */
-document.addEventListener("DOMAttrModified", function (event) {
-	var element = event.target || event.srcElement;
-	if (element && element.tagName == "A" && event.attrName == "style" && event.attrChange == 2 && event.newValue.match(/outline.+!important/)) {
-		/*attrChange: 1 MODIFICATION, 2 ADDITION, 3 REMOVAL*/
-		process(element);
-	}
-});
 document.addEventListener("mousedown", function(event) {
 	var element = event.target || event.srcElement;
 	if (element && element.nodeType == Node.ELEMENT_NODE) {
@@ -71,6 +63,20 @@ document.addEventListener("mousedown", function(event) {
 		}
 	}
 });
+/* for Snap Links extension v1.9.5 by Ayush and Mpkstroff http://addons.opera.com/extensions/details/snap-links */
+document.addEventListener("mousedown", function(event) {
+	document.addEventListener("DOMAttrModified", snapLinksDOMAttrModified);
+});
+document.addEventListener("mouseup", function(event) {
+	document.removeEventListener("DOMAttrModified", snapLinksDOMAttrModified);
+});
+function snapLinksDOMAttrModified(event) {
+	var element = event.target || event.srcElement;
+	if (element && element.tagName == "A" && event.attrName == "style" && event.attrChange == 2 && event.newValue.match(/outline.+!important/)) {
+		/*attrChange: 1 MODIFICATION, 2 ADDITION, 3 REMOVAL*/
+		process(element);
+	}
+}
 function process(anchor) {
 	var HREF = anchor.getAttribute("href");
 	if (HREF) {
