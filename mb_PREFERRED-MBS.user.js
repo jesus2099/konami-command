@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2016.4.8
+// @version      2016.4.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
@@ -52,6 +52,14 @@ document.addEventListener("submit", function(event) {
 		}
 	}
 }, true);
+/* for Snap Links extension v1.9.5 by Ayush and Mpkstroff http://addons.opera.com/extensions/details/snap-links */
+document.addEventListener("DOMAttrModified", function (event) {
+	var element = event.target || event.srcElement;
+	if (element && element.tagName == "A" && event.attrName == "style" && event.attrChange == 2 && event.newValue.match(/outline.+!important/)) {
+		/*attrChange: 1 MODIFICATION, 2 ADDITION, 3 REMOVAL*/
+		process(element);
+	}
+});
 document.addEventListener("mousedown", function(event) {
 	var element = event.target || event.srcElement;
 	if (element && element.nodeType == Node.ELEMENT_NODE) {
@@ -59,24 +67,27 @@ document.addEventListener("mousedown", function(event) {
 			element = getParent(element, "a");
 		}
 		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) {//linked in mb_COOL-ENTITY-LINKS, mb_SUPER-MIND-CONTROL-II-X-TURBO
-			var HREF = element.getAttribute("href");
-			if (HREF) {
-				var newHref = prefer(HREF);
-				if (newHref) {
-					element.setAttribute("href", newHref);
-					element.style.setProperty("background-color", "#cfc");
-					element.style.setProperty("color", "#606");
-					element.style.setProperty("text-decoration", "line-through");
-					var tooltip = element.getAttribute("title") || "";
-					if (tooltip) {
-						tooltip += "\r\n";
-					}
-					element.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
-				}
-			}
+			process(element);
 		}
 	}
 });
+function process(anchor) {
+	var HREF = anchor.getAttribute("href");
+	if (HREF) {
+		var newHref = prefer(HREF);
+		if (newHref) {
+			anchor.setAttribute("href", newHref);
+			anchor.style.setProperty("background-color", "#cfc");
+			anchor.style.setProperty("color", "#606");
+			anchor.style.setProperty("text-decoration", "line-through");
+			var tooltip = anchor.getAttribute("title") || "";
+			if (tooltip) {
+				tooltip += "\r\n";
+			}
+			anchor.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
+		}
+	}
+}
 function prefer(URL) {
 	var newUrl = preferredMBS;
 	var urlMatch = URL.match(/^(https?:)?(\/\/)?((?:beta\.)?musicbrainz\.org(?::\d+)?)(\/.*)?(\?.*)?(#.*)?$/);
