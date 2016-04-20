@@ -172,25 +172,25 @@ var loadedSettings = JSON.parse(localStorage.getItem(userjs + "enabled-default-a
 for (var link in autolinks.default) if (autolinks.default.hasOwnProperty(link)) {
 	enabledDefaultAutolinks[link] = typeof loadedSettings[link] != "undefined" ? loadedSettings[link] : true;
 }
-var favicons = {
-	"allmusic.com": "http://allmusic.com/img/favicon.ico",
+var favicons = {//TODO: /favicon.ico entries are quite useless as they are auto found otherwise
+	"allmusic.com": "//www.allmusic.com/favicon.ico",
 	"ameblo.jp": "http://ameblo.jp/favicon.ico",
-	"bbc.co.uk": "http://www.bbc.co.uk/favicon.ico",
-	/*"discogs.com": "http://musicbrainz.org/static/images/favicons/discogs-16.png",*/
-	"exblog.jp": "http://exblog.jp/favicon.ico",
-	"joshinweb.jp": "http://joshinweb.jp/favicon.ico",
-	"last.fm": "http://musicbrainz.org/static/images/favicons/lastfm-16.png",
-	"lastfm.": "http://musicbrainz.org/static/images/favicons/lastfm-16.png",
+	"bbc.co.uk": "//www.bbc.co.uk/favicon.ico",
+	"discogs.com": "//www.discogs.com/favicon.ico",
+	"exblog.jp": "//www.exblog.jp/favicon.ico",
+	"joshinweb.jp": "//joshinweb.jp/favicon.ico",
+	"last.fm": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
+	"lastfm.": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
 	"livedoor.jp": "http://blog.livedoor.jp/favicon.ico",
-	"lyrics.wikia.com": "http://lyrics.wikia.com/favicon.ico",
+	"lyrics.wikia.com": "//lyrics.wikia.com/favicon.ico",
 	"metal-archives.com": "http://www.metal-archives.com/favicon.ico",
-	"musicbrainz.org": "http://musicbrainz.org/favicon.ico",
-	"rakuten.co.jp": "http://plaza.rakuten.co.jp/favicon.ico",
-	"secondhandsongs.com": "http://www.secondhandsongs.com/art/icons/shs.png",
-	"soundcloud.com": "http://musicbrainz.org/static/images/favicons/soundcloud-16.png",
+	"musicbrainz.org": "//musicbrainz.org/favicon.ico",
+	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
+	"secondhandsongs.com": "http://secondhandsongs.com/favicon.ico",
+	"soundcloud.com": "//musicbrainz.org/static/images/favicons/soundcloud-16.png",
 	"vgmdb.net": "http://vgmdb.net/favicon.ico",
-	"vkdb.jp": "http://www.vkdb.jp/favicon.ico",
-	"wikipedia.org": "http://en.wikipedia.org/favicon.ico",
+	"vkdb.jp": "//www.vkdb.jp/favicon.ico",
+	"wikipedia.org": "//en.wikipedia.org/favicon.ico",
 	"yahoo.": "http://blogs.yahoo.co.jp/favicon.ico",
 };
 var guessOtherFavicons = false;
