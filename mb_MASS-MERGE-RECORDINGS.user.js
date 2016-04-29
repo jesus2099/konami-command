@@ -679,7 +679,7 @@ function spreadTracks(event) {
 	for (var ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
 		cleanTrack(localRelease.tracks[ltrack]);
 		if(ltrack >= startpos.value && rtrack < remoteRelease.tracks.length) {
-			var ntitl = "local recording #" + format(localRelease.tracks[ltrack].recid + "\r\n" + localRelease.tracks[ltrack].looseName + "\r\n" + localRelease.tracks[ltrack].looseAC);
+			var ntitl = "local recording #" + format(localRelease.tracks[ltrack].recid) + "\r\n" + localRelease.tracks[ltrack].looseName + "\r\n" + localRelease.tracks[ltrack].looseAC;
 			var ntit = localRelease.tracks[ltrack].a.getAttribute("title");
 			if (!ntit || (ntit && !ntit.match(new RegExp(ntitl)))) {
 				localRelease.tracks[ltrack].a.setAttribute("title", (ntit ? ntit + " — " : "") + ntitl);
