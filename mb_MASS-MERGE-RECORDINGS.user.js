@@ -1051,7 +1051,7 @@ function looseTitle(title) {
 		{from: /ⅹ/ig, to: "X"},
 		{from: /ⅺ/ig, to: "XI"},
 		{from: /ⅻ/ig, to: "XII"},
-		{from: /[\s\u0021-\u002f\u003a-\u003f\u005b-\u0060\u007b-\u00bf\u2000-\u2064\u2190-\u21ff\u2460-\u27ff\u2960-\u2b59\uff5e-\uff65]+|S\b|^(?:AN?|THE)\s+|,\s+(?:AN?|THE)$/g, to: ""}
+		{from: /\s+|[\u0021-\u002F\u003A-\u003F\u005B-\u0060\u007B-\u00BF\u2000-\u2064\u2190-\u21FF\u2460-\u27FF\u2960-\u2B59\u3000-\u3030\u30FB\uFF5E-\uFF65]+|S\b|^(?:AN?|THE)\s+|,\s+(?:AN?|THE)$/g, to: ""}
 	];
 	for (var s = 0; s < simplifications.length; s++) {
 		genericTitle = genericTitle.replace(simplifications[s].from, simplifications[s].to);
