@@ -1,9 +1,11 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
 // @version      2016.2.5
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-ISRC.user.js
 // @description  notlob.eu/isrc. BATCH SUBMIT ISRCs. Allows pasting all ISRCs at once (from Simonf’s mediatool on multi-disc releases or from 音楽の森/ongakunomori/minc) - does not work in Opera for AUTH bug reason :/
 // @homepage     http://userscripts-mirror.org/scripts/show/151040
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MASS-ISRC
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_MASS-ISRC.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_MASS-ISRC.user.js

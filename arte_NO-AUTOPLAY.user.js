@@ -3,13 +3,12 @@
 // @version      2016.3.18
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/arte_NO-AUTOPLAY.user.js
 // @description  arte.tv: Removes autoplay property from video page links
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/arte_NO-AUTOPLAY
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.18)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey    quickly tested
-// @compatible   chromium(46)+tampermonkey   quickly tested
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/arte_NO-AUTOPLAY
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey         quickly tested
+// @compatible   chromium(46)+tampermonkey        quickly tested
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/arte_NO-AUTOPLAY.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/arte_NO-AUTOPLAY.user.js

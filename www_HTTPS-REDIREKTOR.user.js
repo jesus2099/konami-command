@@ -4,7 +4,8 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/www_HTTPS-REDIREKTOR.user.js
 // @description  redirect to HTTPS in some websites. keep hash. avoid infinite loops (Opera speed-up tip: save as bla.js instead of bla.user.js)
 // @homepage     http://userscripts-mirror.org/scripts/show/178037
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/www_HTTPS-REDIREKTOR
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @compatible   opera(12.17)+violentmonkey  my own setup
 // @compatible   firefox(39)+greasemonkey    quickly tested
 // @compatible   chromium(46)+tampermonkey   quickly tested

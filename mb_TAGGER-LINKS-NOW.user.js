@@ -1,9 +1,11 @@
 // ==UserScript==
 // @name         mb. TAGGER LINKS NOW
 // @version      2014.11.24.1411
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_TAGGER-LINKS-NOW.user.js
 // @description  musicbrainz.org: Quickly show or update "TAGGER" links with desired port
 // @homepage     http://userscripts-mirror.org/scripts/show/88065
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_TAGGER-LINKS-NOW
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_TAGGER-LINKS-NOW.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_TAGGER-LINKS-NOW.user.js

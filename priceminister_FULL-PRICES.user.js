@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         priceminister. FULL PRICES
 // @version      2015.6.4.1626
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/priceminister_FULL-PRICES.user.js
 // @description  Affiche les prix totaux (incl. frais de port)
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/priceminister_FULL-PRICES
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/priceminister_FULL-PRICES.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/priceminister_FULL-PRICES.user.js

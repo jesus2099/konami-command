@@ -1,9 +1,11 @@
 // ==UserScript==
 // @name         priceminister. NO JAVASCRIPT NAVIGATION LINKS
 // @version      2014.11.24.1429
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/priceminister_NO-JAVASCRIPT-NAVIGATION-LINKS.user.js
 // @description  Remplace la plupart des liens javascript par des liens href standards.
 // @homepage     http://userscripts-mirror.org/scripts/show/95062
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/priceminister_NO-JAVASCRIPT-NAVIGATION-LINKS
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/priceminister_NO-JAVASCRIPT-NAVIGATION-LINKS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/priceminister_NO-JAVASCRIPT-NAVIGATION-LINKS.user.js

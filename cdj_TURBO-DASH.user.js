@@ -1,9 +1,11 @@
 // ==UserScript==
 // @name         cdj. TURBO DASH
 // @version      2014.11.24.1449
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/cdj_TURBO-DASH.user.js
 // @description  CDJournal.com: adds quick links to artists’ CD and ビデオ. removes adcrap
 // @homepage     http://userscripts-mirror.org/scripts/show/180523
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/cdj_TURBO-DASH
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/cdj_TURBO-DASH.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/cdj_TURBO-DASH.user.js

@@ -4,11 +4,11 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PUNBB-FORUMS-ENHANCER.user.js
 // @description  BBCode markup buttons (bold, italic, url, etc.) with keyboard shortcut keys and restore accesskey on preview and submit too in musicbrainz forums + Hide some forums from new posts page
 // @homepage     http://userscripts-mirror.org/scripts/show/125668
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey    quickly tested
-// @compatible   chromium(46)+tampermonkey   quickly tested
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PUNBB-FORUMS-ENHANCER
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey         quickly tested
+// @compatible   chromium(46)+tampermonkey        quickly tested
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PUNBB-FORUMS-ENHANCER.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PUNBB-FORUMS-ENHANCER.user.js

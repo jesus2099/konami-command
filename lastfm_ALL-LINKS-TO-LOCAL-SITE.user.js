@@ -3,9 +3,11 @@ var metadata=function(){/*
 // ==UserScript==
 // @name         last.fm. ALL LINKS TO LOCAL SITE
 // @version      2014.6.13.1809
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @description  Replaces any lastfm link by the desired language, like "www.lastfm.xx" or else
 // @homepage     http://userscripts-mirror.org/scripts/show/29156
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/lastfm_ALL-LINKS-TO-LOCAL-SITE
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js

@@ -1,9 +1,11 @@
 // ==UserScript==
 // @name         goocal. FORCE LOCAL TIMEZONE
 // @version      2014.11.14.2134
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/goocal_FORCE-LOCAL-TIMEZONE.user.js
 // @description  google.com/calendar/ (gcal): Display times in your own local computed time zone (uses jsTimezoneDetect)
 // @homepage     http://userscripts-mirror.org/scripts/show/159216
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/goocal_FORCE-LOCAL-TIMEZONE
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/goocal_FORCE-LOCAL-TIMEZONE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/goocal_FORCE-LOCAL-TIMEZONE.user.js
