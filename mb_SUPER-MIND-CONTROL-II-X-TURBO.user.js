@@ -2,14 +2,13 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2016.3.30
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.18)+violentmonkey          my own setup
-// @compatible   firefox(45.0.1)+greasemonkey        quickly tested
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
+// @compatible   opera(12.18.1872)+violentmonkey     my setup
+// @compatible   firefox(45.0.2)+greasemonkey        quickly tested
 // @compatible   chromium(46.0.2471.0)+tampermonkey  quickly tested
 // @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
@@ -880,8 +879,8 @@ if (j2sets.SERVER_SWITCH) {
 				this.lastChild.style.setProperty("left", "-10000px");
 			} else {
 				this.classList.add("fake-active");
-				var ulStyle = self.getComputedStyle(this.lastChild);
-				this.lastChild.style.setProperty("left", "-" + (ulStyle.getPropertyValue("width").match(/\d+/) - self.getComputedStyle(this).getPropertyValue("width").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-left").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-right").match(/\d+/)) + "px");
+				var ulStyle = getComputedStyle(this.lastChild);
+				this.lastChild.style.setProperty("left", "-" + (ulStyle.getPropertyValue("width").match(/\d+/) - getComputedStyle(this).getPropertyValue("width").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-left").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-right").match(/\d+/)) + "px");
 			}
 		}, true);
 		menu.lastChild.addEventListener("click", function(event) { event.stopPropagation(); });
@@ -987,13 +986,13 @@ if (j2sets.STATIC_MENU && mmenu && mlogo) {
 	self.addEventListener("scroll", smenu, false);
 }
 function smenu(event) {
-	if (document.body.scrollTop + document.documentElement.scrollTop > self.getComputedStyle(mlogo).getPropertyValue("height").match(/\d+/)) {
+	if (document.body.scrollTop + document.documentElement.scrollTop > getComputedStyle(mlogo).getPropertyValue("height").match(/\d+/)) {
 		mmenu.style.setProperty("position", "fixed");
 		mmenu.style.setProperty("top", "0px");
-		mmenu.style.setProperty("width", self.getComputedStyle(mmenu.parentNode).getPropertyValue("width"));
+		mmenu.style.setProperty("width", getComputedStyle(mmenu.parentNode).getPropertyValue("width"));
 		mmenu.style.setProperty("opacity", j2sets.STATIC_MENU_opacity);
 		etais.style.setProperty("display", "block");
-		etais.style.setProperty("height", self.getComputedStyle(mmenu).getPropertyValue("height"));
+		etais.style.setProperty("height", getComputedStyle(mmenu).getPropertyValue("height"));
 		try {
 			mmenu.querySelector("div > div.l").style.setProperty("display", "none");
 			mmenu.querySelector("div > div.r").style.setProperty("display", "none");
