@@ -1,15 +1,14 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2016.1.13
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_COOL-ENTITY-LINKS
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey    tested sometimes
-// @compatible   chromium(46)+tampermonkey   tested sometimes
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COOL-ENTITY-LINKS
+// @compatible   opera(12.18.1872)+violentmonkey     my setup
+// @compatible   firefox(39)+greasemonkey            tested sometimes
+// @compatible   chromium(46)+tampermonkey           tested sometimes
+// @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_COOL-ENTITY-LINKS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_COOL-ENTITY-LINKS.user.js
@@ -56,7 +55,7 @@ document.head.appendChild(document.createElement("style")).setAttribute("type", 
 var j2css = document.styleSheets[document.styleSheets.length - 1];
 j2css.insertRule("a." + userjs + " {text-shadow: 1px 1px 2px silver; white-space: nowrap;}", j2css.cssRules.length);
 j2css.insertRule("a." + userjs + "tool {font-variant: small-caps; vertical-align: super; font-size: xx-small}", j2css.cssRules.length);
-self.addEventListener("load", function(event){
+window.addEventListener("load", function(event){
 	for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 		localStorage.removeItem("jesus2099skip_linksdeco_" + ent);
 	}

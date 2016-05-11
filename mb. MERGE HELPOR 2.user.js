@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2015.11.5
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey    tested sometimes
-// @compatible   chromium(46)+tampermonkey   tested sometimes
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey         tested sometimes
+// @compatible   chromium(46)+tampermonkey        tested sometimes
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js
@@ -181,7 +181,7 @@ if (mergeType) {
 					var a = releases[mediums[m].value].fragment.firstChild;
 					if (a.tagName != "A") a = a.getElementsByTagName("a")[0];
 					a.setAttribute("target", "_blank");
-					a.style.setProperty("color", getComputedStyle(releaseCell.getElementsByTagName("a")[0]).getPropertyValue("color"));
+					a.style.setProperty("color", window.getComputedStyle(releaseCell.getElementsByTagName("a")[0]).getPropertyValue("color"));
 					releases[mediums[m].value].title = a.textContent;
 				}
 				var text = mediums[m].parentNode.lastChild.textContent.trim();

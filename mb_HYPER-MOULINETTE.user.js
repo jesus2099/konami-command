@@ -1,14 +1,14 @@
 (function(){"use strict";var meta={rawmdb:function(){
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2015.8.20.1748
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_HYPER-MOULINETTE.user.js
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.18)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey    tested sometimes
-// @compatible   chromium(46)+tampermonkey   tested sometimes
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HYPER-MOULINETTE
+// @compatible   opera(12.18.1872)+violentmonkey     my setup
+// @compatible   firefox(39)+greasemonkey            tested sometimes
+// @compatible   chromium(46)+tampermonkey           tested sometimes
+// @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_HYPER-MOULINETTE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_HYPER-MOULINETTE.user.js
@@ -56,7 +56,7 @@
 		var collectionHeaders = document.querySelectorAll("table.tbl > thead > tr")
 		for (var th = 0; th < collectionHeaders.length; th++) {
 			if (collectionHeaders[th].textContent.match(/Veröffentlichungen|Väljalasked|Releases|Publicaciones|Parutions|Pubblicazioni|Uitgaves|Julkaisut|Κυκλοφορίες|リリース/i)) {
-				collectionHeaders[th].appendChild(createTag("th", {a: {class: "hypermouli-header"}}, [meta.name.replace(/.+\. /, "") + (self.opera ? " (does not work in Opera!)" : ""), createTag("br"), meta.description.replace(/.+:/, "")]));
+				collectionHeaders[th].appendChild(createTag("th", {a: {class: "hypermouli-header"}}, [meta.name.replace(/.+\. /, "") + (window.opera ? " (does not work in Opera!)" : ""), createTag("br"), meta.description.replace(/.+:/, "")]));
 				var columns = collectionHeaders[th].parentNode.parentNode.querySelectorAll("table.tbl > tbody > tr");
 				for (var c = 0; c < columns.length; c++) {
 					columns[c].appendChild(createTag("td", {}, [createTag("a", {e: {click: mouli}}, "Put"), " | ", createTag("a", {e: {click: mouli}}, "Delete")]));
@@ -130,7 +130,7 @@
 		xhr.sendDebug(null);
 	}
 	function requestForAction(method, url) {
-		if (self.opera) { modal(createTag("p", {}, ["Will not perform ",createTag("a", {a:{href:url,target:"_blank"}}, method)," (auth-digest does not work in Opera)."])); }
+		if (window.opera) { modal(createTag("p", {}, ["Will not perform ",createTag("a", {a:{href:url,target:"_blank"}}, method)," (auth-digest does not work in Opera)."])); }
 		else {
 			var xhr = new XMLHttpRequest();
 			loaders[xhr.getID()] = {method:method, url:url, maxRetry:5};
@@ -188,12 +188,12 @@
 			truc.style.width = x;
 			var xx = x.match(/^([0-9]+)(px|%)$/);
 			if (xx) {
-				truc.style.left = ((xx[2]=="%"?100:self.innerWidth)-xx[1])/2+xx[2];
+				truc.style.left = ((xx[2] == "%" ? 100 : window.innerWidth) - xx[1]) / 2 + xx[2];
 			}
 			truc.style.height = y;
 			var yy = y.match(/^([0-9]+)(px|%)$/);
 			if (yy) {
-				truc.style.top = ((yy[2]=="%"?100:self.innerHeight)-yy[1])/2+yy[2];
+				truc.style.top = ((yy[2] == "%" ? 100 : window.innerHeight) - yy[1]) / 2 + yy[2];
 			}
 			if (b) { truc.style.background = b; }
 			if (o) { truc.style.opacity = o; }

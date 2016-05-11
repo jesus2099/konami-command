@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.4.11
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -228,7 +228,8 @@ if (host && cat) {
 	} else {
 		/*almost generic stuff highlighter*/
 		stuff = {};
-		self.addEventListener("load", function(event) {
+		window.addEventListener("load", function(event) {
+			//TODO: remove that, should not even work well with “//@ run-at document-end” anyway
 			for (var stu = 0; stu < collectedStuff.length; stu++) {
 				localStorage.removeItem("jesus2099skip_linksdeco_" + collectedStuff[stu]);
 			}
@@ -577,7 +578,7 @@ function modal(show, txt, brs, gauge) {
 					gaugeto = null;
 					gau.style.setProperty("display", "block");
 				}
-				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge[0] / gauge[1]) + "px");
+				gau.style.setProperty("width", Math.ceil(window.innerWidth * gauge[0] / gauge[1]) + "px");
 				gau.lastChild.replaceChild(document.createTextNode(gauge[0] + "/" + gauge[1] + " (" + pc + "%) approx. remaining " + sInt2msStr(Math.ceil((gauge[1] - gauge[0]) * MBWSRate / 1000))), gau.lastChild.firstChild);
 				setTitle(true, pc);
 				if (gauge[0] >= gauge[1]) {
@@ -611,12 +612,12 @@ function modal(show, txt, brs, gauge) {
 		truc.style.setProperty("width", x);
 		var xx = x.match(/^([0-9]+)(px|%)$/);
 		if (xx) {
-			truc.style.setProperty("left", ((xx[2] == "%" ? 100 : self.innerWidth) - xx[1]) / 2 + xx[2]);
+			truc.style.setProperty("left", ((xx[2] == "%" ? 100 : window.innerWidth) - xx[1]) / 2 + xx[2]);
 		}
 		truc.style.setProperty("height", y);
 		var yy = y.match(/^([0-9]+)(px|%)$/);
 		if (yy) {
-			truc.style.setProperty("top", ((yy[2] == "%" ? 100 : self.innerHeight) - yy[1]) / 2 + yy[2]);
+			truc.style.setProperty("top", ((yy[2] == "%" ? 100 : window.innerHeight) - yy[1]) / 2 + yy[2]);
 		}
 		if (b) { truc.style.setProperty("background", b); }
 		if (o) { truc.style.setProperty("opacity", o); }

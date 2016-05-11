@@ -1,15 +1,14 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2016.2.24
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey    tested sometimes
-// @compatible   chromium(46)+tampermonkey   tested sometimes
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey         tested sometimes
+// @compatible   chromium(46)+tampermonkey        tested sometimes
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PENDING-EDITS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PENDING-EDITS.user.js
@@ -139,7 +138,7 @@ function checkOpenEdits(obj) {
 	var count = smp.querySelector("span." + userjs + "count");
 	if (!count) {
 		smp.appendChild(document.createTextNode("\u00a0("));
-		smp.appendChild(createTag("span", {a: {class: userjs + "count"}}, createTag("img", {a: {alt: "⌛ loading…", src: "/static/images/icons/loading.gif", height: getComputedStyle(smp).getPropertyValue("font-size")}})));//“userjs + "count"” linked in mb_MASS-MERGE-RECORDINGS.user.js
+		smp.appendChild(createTag("span", {a: {class: userjs + "count"}}, createTag("img", {a: {alt: "⌛ loading…", src: "/static/images/icons/loading.gif", height: window.getComputedStyle(smp).getPropertyValue("font-size")}})));//“userjs + "count"” linked in mb_MASS-MERGE-RECORDINGS.user.js
 		smp.appendChild(document.createTextNode(")"));
 	}
 	xhrPendingEdits[obj.base] = {
