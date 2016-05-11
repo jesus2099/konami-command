@@ -2,7 +2,7 @@
 var meta= { rawmdb: function() {
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2016.5.11
+// @version      2016.5.11.1111
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
@@ -98,11 +98,20 @@ if (editform) {
 		radios.push(inputs[i]);
 		if (voteColours) {/*FF is LIFO*/
 			inputs[i].addEventListener("change", function(event) {
-				var actions = getParent(this, "div", "edit-actions");
-				if (this.value != -2) { actions.style.setProperty("background-color", FF ? FF[this.value] : getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color")); }
-				else { actions.style.removeProperty("background-color"); }
-			}, false);
-			if (inputs[i].checked) { sendEvent(inputs[i], "change"); }
+				setTimeout(function() {
+					var actions = getParent(this, "div", "edit-actions");
+					if (this.value != -2) {
+						actions.style.setProperty("background-color", FF ? FF[this.value] : getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color"));
+					} else {
+						actions.style.removeProperty("background-color");
+					}
+				}.bind(this), 0);
+			});
+			if (inputs[i].checked && inputs[i].value != -2) {
+				setTimeout(function() {
+					sendEvent(this, "change");
+				}.bind(inputs[i]), 1000);
+			}
 		}
 		var labinput = getParent(inputs[i], "label") || inputs[i];
 		preventDefault(labinput, "mousedown");
