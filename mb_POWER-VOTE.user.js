@@ -93,16 +93,16 @@ if (editform) {
 		}
 	}
 	inputs = editform.querySelectorAll("div.voteopts input[type='radio']");
+	if (voteColours) {
+		editform.addEventListener("change", spreadBackgroundColour);
+	}
 	for (var i = 0; i < inputs.length; i++) {
 		if (onlySubmitTabIndexed) { inputs[i].setAttribute("tabindex", "-1"); }
 		radios.push(inputs[i]);
-		if (voteColours) {/*FF is LIFO*/
-			inputs[i].addEventListener("change", spreadBackgroundColour);
-			if (inputs[i].checked && inputs[i].value != -2) {
-				setTimeout(function() {
-					sendEvent(this, "change");
-				}.bind(inputs[i]), 0);
-			}
+		if (voteColours && inputs[i].checked && inputs[i].value != -2) {
+			setTimeout(function() {
+				sendEvent(this, "change");
+			}.bind(inputs[i]), 0);
 		}
 		var labinput = getParent(inputs[i], "label") || inputs[i];
 		preventDefault(labinput, "mousedown");
@@ -444,12 +444,20 @@ function del(o) {
 function submitShiftKey(event) { submitShift = event.shiftKey; }
 function preventDefault(node, eventName) { node.addEventListener(eventName, function(event) { event.preventDefault(); }, false); }
 function spreadBackgroundColour(event) {
-	setTimeout(function() {
-		var actions = getParent(this, "div", "edit-actions");
-		if (this.value != -2) {
-			actions.style.setProperty("background-color", FF ? FF[this.value] : getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color"));
-		} else {
-			actions.style.removeProperty("background-color");
-		}
-	}.bind(this), 0);
+	if (
+		event.target !== event.currentTarget
+		&& event.target.tagName == "INPUT"
+		&& event.target.getAttribute("type") == "radio"
+		&& event.target.getAttribute("name").match(/^enter-vote\.vote\.\d+\.vote$/)
+	) {
+		setTimeout(function() {
+			var actions = getParent(this, "div", "edit-actions");
+			if (this.value != -2) {
+				actions.style.setProperty("background-color", FF ? FF[this.value] : getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color"));
+			} else {
+				actions.style.removeProperty("background-color");
+			}
+		}.bind(event.target), 0);
+		event.stopPropagation();
+	}
 }
