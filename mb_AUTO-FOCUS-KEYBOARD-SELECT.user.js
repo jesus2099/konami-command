@@ -1,9 +1,11 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
 // @version      2015.6.4.1626
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_AUTO-FOCUS-KEYBOARD-SELECT.user.js
 // @description  musicbrainz.org: MOUSE-LESS EDITING ! Cleverly focuses fields in various musicbrainz edit pages and allows keyboard selection of relationship types as well as some release editor keyboard navigation performance features
 // @homepage     http://userscripts-mirror.org/scripts/show/135547
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_AUTO-FOCUS-KEYBOARD-SELECT
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_AUTO-FOCUS-KEYBOARD-SELECT.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_AUTO-FOCUS-KEYBOARD-SELECT.user.js

@@ -4,9 +4,8 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CHATLOGS-POWER-UP.user.js
 // @description  chatlogs.metabrainz.org/brainzbot. swicth between #musicbrainz, #metabrainz and #musicbrainz-ja channels; previous/next date log page (it was once a better script)
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own setup
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_CHATLOGS-POWER-UP.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_CHATLOGS-POWER-UP.user.js

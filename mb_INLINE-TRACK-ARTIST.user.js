@@ -4,7 +4,8 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-TRACK-ARTIST.user.js
 // @description  musicbrainz.org: highlights track title, length and artist differences in recording page
 // @homepage     http://userscripts-mirror.org/scripts/show/166877
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-TRACK-ARTIST
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-TRACK-ARTIST.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-TRACK-ARTIST.user.js

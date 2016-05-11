@@ -4,11 +4,11 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SPOT-DUPLICATE-RECORDINGS.user.js
 // @description  musicbrainz.org: Spot recordings that are linked multiple times to the same work
 // @homepage     http://userscripts-mirror.org/scripts/show/106145
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey    quickly tested
-// @compatible   chromium(46)+tampermonkey   quickly tested
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SPOT-DUPLICATE-RECORDINGS
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey         quickly tested
+// @compatible   chromium(46)+tampermonkey        quickly tested
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_SPOT-DUPLICATE-RECORDINGS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_SPOT-DUPLICATE-RECORDINGS.user.js

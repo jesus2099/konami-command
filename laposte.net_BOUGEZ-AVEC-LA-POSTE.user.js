@@ -1,9 +1,11 @@
 // ==UserScript==
 // @name         laposte.net. BOUGEZ AVEC LA POSTE
 // @version      2014.3.19.1555
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/laposte.net_BOUGEZ-AVEC-LA-POSTE.user.js
 // @description  laposte.net webmail power ups: Déconnexion d’un seul clic, moins de pubs
 // @homepage     http://userscripts-mirror.org/scripts/show/422068
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/laposte.net_BOUGEZ-AVEC-LA-POSTE
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/laposte.net_BOUGEZ-AVEC-LA-POSTE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/laposte.net_BOUGEZ-AVEC-LA-POSTE.user.js

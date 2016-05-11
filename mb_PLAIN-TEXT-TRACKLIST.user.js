@@ -4,8 +4,8 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PLAIN-TEXT-TRACKLIST.user.js
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @homepage     http://userscripts-mirror.org/scripts/show/89036
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_PLAIN-TEXT-TRACKLIST
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PLAIN-TEXT-TRACKLIST
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PLAIN-TEXT-TRACKLIST.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PLAIN-TEXT-TRACKLIST.user.js
