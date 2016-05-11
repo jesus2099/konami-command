@@ -1,10 +1,14 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2016.2.23
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
-// @supportURL   https://github.com/jesus2099/konami-command/issues
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
+// @compatible   opera(12.18.1872)+violentmonkey     my setup
+// @compatible   firefox(45.0.2)+greasemonkey        quickly tested
+// @compatible   chromium(46.0.2471.0)+tampermonkey  quickly tested
+// @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-STUFF.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-STUFF.user.js
@@ -227,8 +231,8 @@ function isrcFish() {
 				CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
 				CAAtab.style.setProperty("background-color", "#ff6");
 			}
-			CAAtab.style.setProperty("width", self.getComputedStyle(CAAtab).getPropertyValue("width"));
-			CAAtab.style.setProperty("height", self.getComputedStyle(CAAtab).getPropertyValue("height"));
+			CAAtab.style.setProperty("width", getComputedStyle(CAAtab).getPropertyValue("width"));
+			CAAtab.style.setProperty("height", getComputedStyle(CAAtab).getPropertyValue("height"));
 			CAAtab.style.setProperty("text-align", "center");
 			CAAtab.replaceChild(document.createTextNode(CAAtxt), CAAtab.firstChild);
 		}
@@ -531,7 +535,7 @@ function acoustidFishBatch(recids) {
 							aidtable.style.setProperty("display", "block");
 							var aids = aidtable.querySelectorAll("a > code[title]");
 							for (var aid=0; aid<aids.length; aid++) {
-								aids[aid].parentNode.style.setProperty("width", parseInt(self.getComputedStyle(aids[aid].parentNode).getPropertyValue("width").match(/^\d+/)+"", 10)/aids[aid].textContent.length*6+"px");
+								aids[aid].parentNode.style.setProperty("width", parseInt(getComputedStyle(aids[aid].parentNode).getPropertyValue("width").match(/^\d+/)+"", 10)/aids[aid].textContent.length*6+"px");
 							}
 							aidtable.style.setProperty("display", show?"block":"none");
 						}

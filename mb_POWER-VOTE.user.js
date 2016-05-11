@@ -2,15 +2,15 @@
 var meta= { rawmdb: function() {
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2015.11.18.1621
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.18)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey    tested sometimes
-// @compatible   chromium(46)+tampermonkey   tested sometimes
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
+// @compatible   opera(12.18.1872)+violentmonkey     my setup
+// @compatible   firefox(45.0.2)+greasemonkey        quickly tested
+// @compatible   chromium(46.0.2471.0)+tampermonkey  quickly tested
+// @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js
@@ -99,7 +99,7 @@ if (editform) {
 		if (voteColours) {/*FF is LIFO*/
 			inputs[i].addEventListener("change", function(event) {
 				var actions = getParent(this, "div", "edit-actions");
-				if (this.value != -2) { actions.style.setProperty("background-color", FF ? FF[this.value] : self.getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color")); }
+				if (this.value != -2) { actions.style.setProperty("background-color", FF ? FF[this.value] : getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color")); }
 				else { actions.style.removeProperty("background-color"); }
 			}, false);
 			if (inputs[i].checked) { sendEvent(inputs[i], "change"); }
@@ -257,11 +257,11 @@ if (editform) {
 	}
 	if (self.pageYOffset > 0) {
 		var cs, offset = 0;
-		if (submitClone && (cs = self.getComputedStyle(getParent(submitClone, "div", "row")))) {
+		if (submitClone && (cs = getComputedStyle(getParent(submitClone, "div", "row")))) {
 			offset += parseInt(cs.getPropertyValue("height").match(/\d+/), 10);
 			offset += parseInt(cs.getPropertyValue("margin").match(/\d+/), 10);
 		}
-		if (showtop.tagName && (cs = self.getComputedStyle(showtop))) {
+		if (showtop.tagName && (cs = getComputedStyle(showtop))) {
 			offset += parseInt(cs.getPropertyValue("height").match(/\d+/), 10);
 			offset += parseInt(cs.getPropertyValue("margin").match(/\d+/), 10);
 		}
@@ -294,7 +294,7 @@ if (editform) {
 			artistlnk.style.setProperty("font-weight", "normal");
 			artistlnk.style.setProperty("color", "black");
 		}
-		self.scrollTo(0, findPos(document.getElementById("edits")).y - self.getComputedStyle(document.getElementById("header-menu")).getPropertyValue("height").match(/\d+/));
+		self.scrollTo(0, findPos(document.getElementById("edits")).y - getComputedStyle(document.getElementById("header-menu")).getPropertyValue("height").match(/\d+/));
 	}
 }
 function shortcutsRow() {
