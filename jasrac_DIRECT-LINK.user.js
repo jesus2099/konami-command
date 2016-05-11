@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
-// @version      2016.3.30
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac_DIRECT-LINK.user.js
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
 // @homepage     http://userscripts-mirror.org/scripts/show/131591
@@ -47,7 +47,7 @@ for (var c = 0; c < cells.length; c++) if (!cells[c].textContent.match(/\d[A-Z\d
 	}
 }
 /* make connection, etc. */
-if (self == top && document.body.textContent.match(/接続が切断されました。再度、了承画面からお願い致します。|システムエラーです。(.+)/) && (as = document.querySelectorAll("body > a")).length == 1 && as[0].textContent.match(/作品データベース検索サービスへ/) && as[0].getAttribute("target").match(/_top/i)) {
+if (window == top && document.body.textContent.match(/接続が切断されました。再度、了承画面からお願い致します。|システムエラーです。(.+)/) && (as = document.querySelectorAll("body > a")).length == 1 && as[0].textContent.match(/作品データベース検索サービスへ/) && as[0].getAttribute("target").match(/_top/i)) {
 	removeChildren(document.body);
 	var toto = document.body.appendChild(createTag("div", {}, {"background-color": "purple", border: ".5em solid black", color: "white", "font-size": "2em", "font-weight": "bold", margin: "1em", padding: "2em", "text-align": "center", "text-shadow": "1px 2px 2px black"}, {}, document.createTextNode("接続中")));
 	document.title = toto.textContent;
@@ -56,15 +56,15 @@ if (self == top && document.body.textContent.match(/接続が切断されまし�
 		document.title = toto.textContent;
 		setTimeout(function() { location.reload(true); }, 1);
 	}}));
-} else if (self == top && location.pathname != "/eJwid/" && document.getElementsByTagName("frameset").length == 0) {
+} else if (window == top && location.pathname != "/eJwid/" && document.getElementsByTagName("frameset").length == 0) {
 	try {
-		if (!document.referer && self.opener && self.opener == self.opener.top && self.opener.location.host == location.host) {
-			self.opener.close();
-			if(self.opener) {
-				var ajs = self.opener.document.querySelectorAll("table.contentsTable a[name='AUTO_JUMP']");
+		if (!document.referer && window.opener && window.opener == window.opener.top && window.opener.location.host == location.host) {
+			window.opener.close();
+			if(window.opener) {
+				var ajs = window.opener.document.querySelectorAll("table.contentsTable a[name='AUTO_JUMP']");
 				if (ajs.length == 1) {
-					self.opener.location.href = ajs[0].getAttribute("href");
-					self.close();
+					window.opener.location.href = ajs[0].getAttribute("href");
+					window.close();
 				}
 			}
 		}
@@ -83,13 +83,13 @@ if (self == top && document.body.textContent.match(/接続が切断されまし�
 function hasHome(action) {
 	var has = false;
 	try {
-		if (self.opener != null && self.opener.innerWidth > 0 && self.opener.top.location.href == home) {
+		if (window.opener != null && window.opener.innerWidth > 0 && window.opener.top.location.href == home) {
 			has = true;
 		}
 	} catch(error) {}
 	if (action && has) {
-		self.opener.top.focus();
-		self.close();
+		window.opener.top.focus();
+		window.close();
 	} else {
 		return document.createTextNode(has ? "CLOSE" : "HOME");
 	}

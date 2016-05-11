@@ -231,8 +231,8 @@ function isrcFish() {
 				CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
 				CAAtab.style.setProperty("background-color", "#ff6");
 			}
-			CAAtab.style.setProperty("width", getComputedStyle(CAAtab).getPropertyValue("width"));
-			CAAtab.style.setProperty("height", getComputedStyle(CAAtab).getPropertyValue("height"));
+			CAAtab.style.setProperty("width", window.getComputedStyle(CAAtab).getPropertyValue("width"));
+			CAAtab.style.setProperty("height", window.getComputedStyle(CAAtab).getPropertyValue("height"));
 			CAAtab.style.setProperty("text-align", "center");
 			CAAtab.replaceChild(document.createTextNode(CAAtxt), CAAtab.firstChild);
 		}
@@ -535,7 +535,7 @@ function acoustidFishBatch(recids) {
 							aidtable.style.setProperty("display", "block");
 							var aids = aidtable.querySelectorAll("a > code[title]");
 							for (var aid=0; aid<aids.length; aid++) {
-								aids[aid].parentNode.style.setProperty("width", parseInt(getComputedStyle(aids[aid].parentNode).getPropertyValue("width").match(/^\d+/)+"", 10)/aids[aid].textContent.length*6+"px");
+								aids[aid].parentNode.style.setProperty("width", parseInt(window.getComputedStyle(aids[aid].parentNode).getPropertyValue("width").match(/^\d+/)+"", 10)/aids[aid].textContent.length*6+"px");
 							}
 							aidtable.style.setProperty("display", show?"block":"none");
 						}

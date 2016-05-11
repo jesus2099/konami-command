@@ -165,7 +165,7 @@ function bug(error) {
 	}
 	if (error.report && title) {
 		if (confirm(alrt + "\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
-			self.open(meta.supportURL + "/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent("Hello,\nI am using that awesome *" + meta.name + "* (**" + meta.version + "**).\nI got an error while I was on [" + (document.title ? document.title : "that page") + "](" + location.href + "):\n\n    " + error.message.replace(/\n/g, "\n    ")));
+			window.open(meta.supportURL + "/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent("Hello,\nI am using that awesome *" + meta.name + "* (**" + meta.version + "**).\nI got an error while I was on [" + (document.title ? document.title : "that page") + "](" + location.href + "):\n\n    " + error.message.replace(/\n/g, "\n    ")));
 		}
 	} else {
 		alert(alrt);
@@ -361,7 +361,7 @@ if (j2sets.RELEASE_CLONER && account) {
 								};
 								xhr.onerror = function(event) {
 									if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
-										self.open(meta.supportURL + "/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + location.href + ").\n"));
+										window.open(meta.supportURL + "/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + location.href + ").\n"));
 									}
 								};
 								xhr.open("get", "/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels&fmt=json", false);
@@ -879,8 +879,8 @@ if (j2sets.SERVER_SWITCH) {
 				this.lastChild.style.setProperty("left", "-10000px");
 			} else {
 				this.classList.add("fake-active");
-				var ulStyle = getComputedStyle(this.lastChild);
-				this.lastChild.style.setProperty("left", "-" + (ulStyle.getPropertyValue("width").match(/\d+/) - getComputedStyle(this).getPropertyValue("width").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-left").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-right").match(/\d+/)) + "px");
+				var ulStyle = window.getComputedStyle(this.lastChild);
+				this.lastChild.style.setProperty("left", "-" + (ulStyle.getPropertyValue("width").match(/\d+/) - window.getComputedStyle(this).getPropertyValue("width").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-left").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-right").match(/\d+/)) + "px");
 			}
 		}, true);
 		menu.lastChild.addEventListener("click", function(event) { event.stopPropagation(); });
@@ -981,18 +981,19 @@ var mlogo = document.getElementById("header-logo");
 var etais;
 if (j2sets.STATIC_MENU && mmenu && mlogo) {
 	etais = mmenu.parentNode.insertBefore(document.createElement("div"), mmenu);
-	self.addEventListener("load", smenu, false);
-	self.addEventListener("resize", smenu, false);
-	self.addEventListener("scroll", smenu, false);
+	//TODO: is this even supposed to work with // @run-at document-end?
+	window.addEventListener("load", smenu, false);
+	window.addEventListener("resize", smenu, false);
+	window.addEventListener("scroll", smenu, false);
 }
 function smenu(event) {
-	if (document.body.scrollTop + document.documentElement.scrollTop > getComputedStyle(mlogo).getPropertyValue("height").match(/\d+/)) {
+	if (document.body.scrollTop + document.documentElement.scrollTop > window.getComputedStyle(mlogo).getPropertyValue("height").match(/\d+/)) {
 		mmenu.style.setProperty("position", "fixed");
 		mmenu.style.setProperty("top", "0px");
-		mmenu.style.setProperty("width", getComputedStyle(mmenu.parentNode).getPropertyValue("width"));
+		mmenu.style.setProperty("width", window.getComputedStyle(mmenu.parentNode).getPropertyValue("width"));
 		mmenu.style.setProperty("opacity", j2sets.STATIC_MENU_opacity);
 		etais.style.setProperty("display", "block");
-		etais.style.setProperty("height", getComputedStyle(mmenu).getPropertyValue("height"));
+		etais.style.setProperty("height", window.getComputedStyle(mmenu).getPropertyValue("height"));
 		try {
 			mmenu.querySelector("div > div.l").style.setProperty("display", "none");
 			mmenu.querySelector("div > div.r").style.setProperty("display", "none");

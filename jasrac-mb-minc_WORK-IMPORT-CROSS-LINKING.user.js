@@ -1,15 +1,15 @@
 (function(){"use strict";var meta=function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2016.1.25
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.18)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey    quickly tested
-// @compatible   chromium(46)+tampermonkey   quickly tested
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
+// @compatible   opera(12.18.1872)+violentmonkey  my own setup
+// @compatible   firefox(39)+greasemonkey         quickly tested
+// @compatible   chromium(46)+tampermonkey        quickly tested
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
@@ -571,9 +571,9 @@
 				stypeid.addEventListener("focus", function(e){ this.style.background = ""; }, false);
 				stypeid.style.width = "260px";
 				var buttons = stypeid.parentNode.appendChild(createTag("span", {"class":"buttons"}, {}, {}, [createButtor(vocal), createButtor(instrumental)]));
-				stypeid.style.setProperty("width", (parseInt(getComputedStyle(stypeid).getPropertyValue("width"), 10) - parseInt(getComputedStyle(buttons).getPropertyValue("width"), 10))+"px");
+				stypeid.style.setProperty("width", (parseInt(window.getComputedStyle(stypeid).getPropertyValue("width"), 10) - parseInt(window.getComputedStyle(buttons).getPropertyValue("width"), 10))+"px");
 				buttons = slangid.parentNode.appendChild(createTag("span", {"class":"buttons"}, {}, {}, [createButtol("日", 198), createButtol("EN", 120)]));
-				slangid.style.setProperty("width", (parseInt(getComputedStyle(slangid).getPropertyValue("width"), 10) - parseInt(getComputedStyle(buttons).getPropertyValue("width"), 10))+"px");
+				slangid.style.setProperty("width", (parseInt(window.getComputedStyle(slangid).getPropertyValue("width"), 10) - parseInt(window.getComputedStyle(buttons).getPropertyValue("width"), 10))+"px");
 				teditnote.parentNode.appendChild(document.createElement("br"));
 				var tjasrac = document.querySelector("div.workheader p.subheader") || document.querySelector("h1");
 				tjasrac = tjasrac.appendChild(createTag("textarea", {"placeholder":"Paste JASRAC summary here"}));
@@ -1109,8 +1109,8 @@
 	}
 	function weirdobg() {
 		var weirdo = userjs+(new Date().getTime());
-		try { self.open("", weirdo).blur(); } catch(e) {}
-		self.focus();
+		try { window.open("", weirdo).blur(); } catch(e) {}
+		window.focus();
 		return weirdo;
 	}
 	function createButtor(type) {

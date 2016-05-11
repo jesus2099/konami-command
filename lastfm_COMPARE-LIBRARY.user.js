@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         lastfm. COMPARE LIBRARY
-// @version      2015.6.9.1234
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_COMPARE-LIBRARY.user.js
 // @description  last.fm: Basic side by side comparison of any library page with ours.
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey    quickly tested
-// @compatible   chromium(46)+tampermonkey   quickly tested
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/lastfm_COMPARE-LIBRARY
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @compatible   firefox(39)+greasemonkey         quickly tested
+// @compatible   chromium(46)+tampermonkey        quickly tested
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/lastfm_COMPARE-LIBRARY.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/lastfm_COMPARE-LIBRARY.user.js
@@ -28,7 +28,7 @@ var libtitle = document.querySelector("div#page div#content > header h1");
 var user = page && page.querySelector("nav div.masthead-right a[href^='/user/'].user-badge");
 if (page && user && menus) {
 	var thisFrame = parent && parent.document.querySelector("iframe.j2lfm-cl");
-	if (self != top && location.pathname.indexOf(user.getAttribute("href")) == 0 && thisFrame) {
+	if (window != top && location.pathname.indexOf(user.getAttribute("href")) == 0 && thisFrame) {
 		/* FIGHTING *googleadservices.com/* !!! */
 		parent.document.querySelector("html").style.removeProperty("display");
 		/* compare library iframe page (our library) */
@@ -48,7 +48,7 @@ if (page && user && menus) {
 		for (var a = 0; a < fixTargets.length; a++) {
 			fixTargets[a].setAttribute("target", "_PARENT");
 		}
-		self.addEventListener("resize", function() {
+		window.addEventListener("resize", function() {
 			/* align both track lists */
 			var libraryPadding = [{root:page}, {root:parent.document.querySelector("div#page")}];
 			var headerTypes = ["Top", "Albums"];
@@ -58,7 +58,7 @@ if (page && user && menus) {
 					libraryPadding[i][headerTypes[t]] = {"node": libraryPadding[i].root.querySelector("div#library"+headerTypes[t])};
 					if (libraryPadding[i][headerTypes[t]].node) {
 						libraryPadding[i][headerTypes[t]].node.style.removeProperty("min-height");
-						libraryPadding[i][headerTypes[t]].height = parseInt(getComputedStyle(libraryPadding[i][headerTypes[t]].node).getPropertyValue("height"), 10);
+						libraryPadding[i][headerTypes[t]].height = parseInt(window.getComputedStyle(libraryPadding[i][headerTypes[t]].node).getPropertyValue("height"), 10);
 					}
 					if (libraryPadding[i][headerTypes[t]].height > libraryPadding[max][headerTypes[t]].height) max = i;
 				}
@@ -71,9 +71,9 @@ if (page && user && menus) {
 					libraryPadding[i][headerTypes[0]].node.style.setProperty("min-height", (libraryPadding[i][headerTypes[0]].height + libraryPadding[i?0:1][headerTypes[1]].height) + "px");
 				}
 			}
-			thisFrame.style.setProperty("min-height", Math.max(parseInt(getComputedStyle(document.body).getPropertyValue("height"), 10)+27, parseInt(getComputedStyle(libraryPadding[1].root).getPropertyValue("height"), 10))+"px");
+			thisFrame.style.setProperty("min-height", Math.max(parseInt(window.getComputedStyle(document.body).getPropertyValue("height"), 10)+27, parseInt(window.getComputedStyle(libraryPadding[1].root).getPropertyValue("height"), 10))+"px");
 		});
-		sendEvent(self, "resize");
+		sendEvent(window, "resize");
 	} else if (libtitle && user && location.pathname.indexOf(user.getAttribute("href")) == -1) {
 		/* library page (except ours) */
 		var comparelib = document.createElement("a");
@@ -103,7 +103,7 @@ if (page && user && menus) {
 			frm.style.setProperty("margin", "0");
 			frm.style.setProperty("border", "0");
 			frm.style.setProperty("padding", "0");
-			frm.style.setProperty("min-height", getComputedStyle(page).getPropertyValue("height"));
+			frm.style.setProperty("min-height", window.getComputedStyle(page).getPropertyValue("height"));
 			frm.setAttribute("src", this.getAttribute("title"));
 		});
 		libtitle.appendChild(document.createTextNode(" ("));

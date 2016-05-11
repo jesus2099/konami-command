@@ -2,13 +2,12 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2016.2.24
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @homepage     http://userscripts-mirror.org/scripts/show/126475
-// @coming-soon  https://github.com/jesus2099/konami-command/labels/mb_LOCAL-STORAGE-MANAGER
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.18)+violentmonkey  my setup
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_LOCAL-STORAGE-MANAGER
+// @compatible   opera(12.18.1872)+violentmonkey     my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_LOCAL-STORAGE-MANAGER.user.js
@@ -79,7 +78,7 @@ if (j2set) {
 					createTag("a", {a: {title: "Close local storage manager"}, e: {click: function(event){unloadLS();}}}, "close"),
 					")"
 				])), document.getElementById("page"));
-				if (self.opera) lsm.appendChild(createTag("p", {}, "☞ Opera 12 has its own local storage editor: CTRL+SHIFT+I (Dragon fly) > Storage > Local Storage."));
+				if (window.opera) lsm.appendChild(createTag("p", {}, "☞ Opera 12 has its own local storage editor: CTRL+SHIFT+I (Dragon fly) > Storage > Local Storage."));
 				else if (navigator.userAgent.match(/firefox/i)) lsm.appendChild(createTag("p", {}, "☞ Firefox’s Firebug has its own local storage editor: DOM > localStorage."));
 				else if (navigator.userAgent.match(/chrom(ium|e)/i)) lsm.appendChild(createTag("p", {}, "☞ Chromium has its own local storage editor: F12 > Resources > Local Storage."));
 				document.addEventListener("storage", function(event) { loadLS(); }, false);/*does never trigger btw*/

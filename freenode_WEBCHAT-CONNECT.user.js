@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2015.11.4
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/freenode_WEBCHAT-CONNECT.user.js
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. cleverly focus first empty field.
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey    tested sometimes
-// @compatible   chromium(46)+tampermonkey   tested sometimes
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/freenode_WEBCHAT-CONNECT
+// @compatible   opera(12.18.1872)+violentmonkey  my own setup
+// @compatible   firefox(39)+greasemonkey         tested sometimes
+// @compatible   chromium(46)+tampermonkey        tested sometimes
+// @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/freenode_WEBCHAT-CONNECT.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/freenode_WEBCHAT-CONNECT.user.js
@@ -31,7 +31,7 @@ setTimeout(function() {
 	if (document.body.textContent.trim().match(/^412 - Precondition Failed$/) || !document.body.textContent.match(/connect.+nickname.+channels/i)) {
 		location.reload();
 	} else if (document.getElementsByTagName("frameset").length == 0 && inputs && inputs[0] && inputs[1]) {
-		self.addEventListener("focus", cleverFocus);
+		window.addEventListener("focus", cleverFocus);
 		storify(inputs[0], "nickname");
 		storify(inputs[1], "channels");
 		cleverFocus();

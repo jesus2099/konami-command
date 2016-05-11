@@ -255,18 +255,18 @@ if (editform) {
 			}
 		}
 	}
-	if (self.pageYOffset > 0) {
+	if (window.pageYOffset > 0) {
 		var cs, offset = 0;
-		if (submitClone && (cs = getComputedStyle(getParent(submitClone, "div", "row")))) {
+		if (submitClone && (cs = window.getComputedStyle(getParent(submitClone, "div", "row")))) {
 			offset += parseInt(cs.getPropertyValue("height").match(/\d+/), 10);
 			offset += parseInt(cs.getPropertyValue("margin").match(/\d+/), 10);
 		}
-		if (showtop.tagName && (cs = getComputedStyle(showtop))) {
+		if (showtop.tagName && (cs = window.getComputedStyle(showtop))) {
 			offset += parseInt(cs.getPropertyValue("height").match(/\d+/), 10);
 			offset += parseInt(cs.getPropertyValue("margin").match(/\d+/), 10);
 		}
 		if (offset != 0) {
-			self.scrollTo(0, self.pageYOffset + offset);
+			window.scrollTo(0, window.pageYOffset + offset);
 		}
 	} else if (scrollToEdits) {
 		var foundcount = document.querySelector("div#page div.search-toggle > p > strong");
@@ -294,7 +294,7 @@ if (editform) {
 			artistlnk.style.setProperty("font-weight", "normal");
 			artistlnk.style.setProperty("color", "black");
 		}
-		self.scrollTo(0, findPos(document.getElementById("edits")).y - getComputedStyle(document.getElementById("header-menu")).getPropertyValue("height").match(/\d+/));
+		window.scrollTo(0, findPos(document.getElementById("edits")).y - window.getComputedStyle(document.getElementById("header-menu")).getPropertyValue("height").match(/\d+/));
 	}
 }
 function shortcutsRow() {
@@ -373,7 +373,7 @@ function findPos(obj) { /* http://www.quirksmode.org/js/findpos.html */
 }
 function click(n, mod){
 	var clicke = document.createEvent("MouseEvents");
-	clicke.initMouseEvent((mod ? mod : "") + "click", true, true, self, mod ? 2 : 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+	clicke.initMouseEvent((mod ? mod : "") + "click", true, true, window, mod ? 2 : 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 	n.dispatchEvent(clicke);
 }
 function sendEvent(node, eventName){
@@ -453,7 +453,7 @@ function spreadBackgroundColour(event) {
 		setTimeout(function() {
 			var actions = getParent(this, "div", "edit-actions");
 			if (this.value != -2) {
-				actions.style.setProperty("background-color", FF ? FF[this.value] : getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color"));
+				actions.style.setProperty("background-color", FF ? FF[this.value] : window.getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color"));
 			} else {
 				actions.style.removeProperty("background-color");
 			}

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         AMZ. shrink product links and direct link to full size pictures
-// @version      2014.0109.1703
+// @version      2016.5.11
 // @description  Amazon. Shows links to full size images. Shrinks product and search URLs. Prevents from opening new windows in amazn.jp searches.
 // @namespace    https://userscripts.org/139394
 // @author       PATATE12 aka. jesus2099/shamo
@@ -53,26 +53,26 @@
 		h.insertBefore(document.createElement("span").appendChild(document.createTextNode(ASIN.getAttribute("href").match(/[A-Z0-9]{10}$/)+" ")).parentNode, h.firstChild).style.setProperty("background-color", "yellow");
 	}
 	/* SHORT SEARCH URLS */
-	if (shrinkSearch && (surl = shrinkSearchUrl(self.location.href, false))) {
-		self.location.href = surl;
+	if (shrinkSearch && (surl = shrinkSearchUrl(location.href, false))) {
+		location.href = surl;
 		return;
 	}
 	/* SHOW SHORTEST SEARCH LINK ON HEADER */
-	if (shortestShrinkSearchOnHeader && (surl = shrinkSearchUrl(self.location.href, true)) && (h = document.querySelector("div#searchTemplate h1"))) {
+	if (shortestShrinkSearchOnHeader && (surl = shrinkSearchUrl(location.href, true)) && (h = document.querySelector("div#searchTemplate h1"))) {
 		var sa = h.insertBefore(document.createElement("a").appendChild(document.createTextNode("#")).parentNode, h.firstChild);
 		sa.setAttribute("href", surl);
 		addAfter(document.createTextNode(" "), sa);
 	}
 	/* SHOW SHORTEST PRODUCT LINK ON HEADER */
-	if (shortestShrinkOnHeader && (surl = shrinkASINurl(self.location.href, true)) && (h = document.querySelector("h1"))) {
+	if (shortestShrinkOnHeader && (surl = shrinkASINurl(location.href, true)) && (h = document.querySelector("h1"))) {
 		var sa = h.insertBefore(document.createElement("a").appendChild(document.createTextNode("#")).parentNode, h.firstChild);
 		sa.setAttribute("href", surl);
 		addAfter(document.createTextNode(" "), sa);
 	}
 	/* SHORT ASIN LINKS */
 	if (shrink) {
-		if (surl = shrinkASINurl(self.location.href, false)) {
-			self.location.href = surl;
+		if (surl = shrinkASINurl(location.href, false)) {
+			location.href = surl;
 			return;
 		}
 		var aas = document.querySelectorAll("a[href^='http://www.amazon.'][href*='/dp/'], a[href^='http://www.amazon.'][href*='/exec/obidos/ASIN/'], a[href^='http://www.amazon.'][href*='/gp/product/'], div.faceoutTitle > a[href*='http://www.amazon.']");

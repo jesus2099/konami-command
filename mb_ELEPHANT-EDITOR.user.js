@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2015.10.9
+// @version      2016.5.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
-// @supportURL   https://github.com/jesus2099/konami-command/issues
-// @compatible   opera(12.17)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey    tested sometimes
-// @compatible   chromium(46)+tampermonkey   tested sometimes
-// @compatible   chrome+tampermonkey         should be same as chromium
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
+// @compatible   opera(12.18.1872)+violentmonkey     my setup
+// @compatible   firefox(39)+greasemonkey            tested sometimes
+// @compatible   chromium(46)+tampermonkey           tested sometimes
+// @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
@@ -248,7 +248,7 @@ if (content) {
 			sub.addEventListener("click", saveNote, false);
 		}
 	}
-	self.addEventListener("unload", saveNote, false);
+	window.addEventListener("unload", saveNote, false);
 }
 function saveNote() {
 	if (notetext) {
