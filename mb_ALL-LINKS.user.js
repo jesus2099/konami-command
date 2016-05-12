@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2016.5.11
+// @version      2016.5.12
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -588,10 +588,11 @@ function configureModule(event) {
 			extlinks.classList.toggle("configure");
 			break;
 		case "choose wikipedia languages":
-			var loadedLanguages = localStorage.getItem(userjs + "languages");
-			var newLanguages = prompt("Choose your favourite language(s)\r\nExample 1: [\"fr\", \"en\", \"vi\", \"ja\"]\r\nExample 2: [\"en\"]", loadedLanguages.replace(/,/g, "$& "));
+			var loadedLanguages = localStorage.getItem(userjs + "languages") || JSON.stringify(languages);
+			var newLanguages = prompt("Choose your favourite language(s)\r\nExample 1: [\"fr\", \"en\", \"vi\", \"ja\"]\r\nExample 2: [\"en\"]\r\nExample 3: []", loadedLanguages.replace(/,/g, "$& "));
 			if (newLanguages && newLanguages != loadedLanguages && JSON.stringify(newLanguages)) {
 				localStorage.setItem(userjs + "languages", newLanguages);
+				languages = newLanguages;
 			}
 			break;
 	}
