@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2016.5.11
+// @version      2016.5.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
@@ -85,10 +85,10 @@ var cWARN = "gold";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs94629";
 var notetextStorage = "jesus2099userjs::last_editnotetext";
-var acoustid = location.href.match(/acoustid\.org\/edit\//);
+var acoustid = self.location.href.match(/acoustid\.org\/edit\//);
 var mb = !acoustid;
-var editpage = (mb && location.href.match(/(\.mbsandbox|musicbrainz)\.org\/edit\/\d+($|[?#&])/));
-var editsearchpage = (mb && location.href.match(/(\.mbsandbox|musicbrainz)\.org\/.+(?:edits|subscribed)/));
+var editpage = (mb && self.location.href.match(/(\.mbsandbox|musicbrainz)\.org\/edit\/\d+($|[?#&])/));
+var editsearchpage = (mb && self.location.href.match(/(\.mbsandbox|musicbrainz)\.org\/.+(?:edits|subscribed)/));
 var re = (mb && document.querySelector("div#release-editor"));
 var save = !localStorage.getItem(userjs + "forget") && (editpage || !editsearchpage);
 var content = document.getElementById(mb ? "page" : "content");
@@ -242,13 +242,13 @@ if (content) {
 			}
 		}
 	}
-	if (location.href.match(/edit-relationships$/)) {
+	if (self.location.href.match(/edit-relationships$/)) {
 		var sub = document.querySelector("div#content.rel-editor > form > div.row.no-label.buttons > button.submit.positive[type='submit']");
 		if (sub) {
 			sub.addEventListener("click", saveNote, false);
 		}
 	}
-	window.addEventListener("unload", saveNote, false);
+	self.addEventListener("unload", saveNote, false);
 }
 function saveNote() {
 	if (notetext) {

@@ -86,7 +86,7 @@ var editors = {
 };
 var standout /*from the crowd*/ = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
-var MBS = location.protocol + "//" + location.host;
+var MBS = self.location.protocol + "//" + self.location.host;
 var you = document.querySelector("div.header ul.menu li.account a[href^='" + MBS + "/user/']");
 if (document.querySelector("div.header ul.menu li.account a[href$='/logout'], div#page") == null) { return; }
 if (you) {
@@ -108,7 +108,7 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 	document.title = deletedEditor ? document.title.replace(new RegExp(editorName + "(”)?"), namewas + "$1") : document.title.replace(new RegExp("^Editor( “" + editorName + "”)"), editors[editor] + "$1");
 	if (deletedEditor) {
 		editors[editor] = {begin: editors[editor][0], end: editors[editor][1], namewas: namewas, comment: editors[editor][3]};
-		if (document.title.match(/^editor not found/i) && location.pathname.match("^/user/" + editors[editor].namewas)) {
+		if (document.title.match(/^editor not found/i) && self.location.pathname.match("^/user/" + editors[editor].namewas)) {
 			var node = document.querySelector("div#page > h1");
 			if (node) {
 				node.replaceChild(document.createTextNode(" “" + editors[editor].namewas + "” → “" + editorName + "”"), node.firstChild);
@@ -120,7 +120,7 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 				node.style.setProperty("color", "darkred");
 				node.appendChild(document.createTextNode("Please wait while you are redirected to the editor page (" + editors[editor].namewas + " has been renamed to " + editorName + ")…"));
 			}
-			location.replace(MBS + "/user/" + encodeURIComponent(editorName));
+			self.location.replace(MBS + "/user/" + encodeURIComponent(editorName));
 			return;
 		} else {
 			editors[editor].fullspan = editors[editor].begin + "—" + editors[editor].end;
@@ -182,7 +182,7 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 			}
 		}
 	}
-	if (location.href.match(new RegExp("^" + MBS + "/user/" + escape(editorName) + "$"))) {
+	if (self.location.href.match(new RegExp("^" + MBS + "/user/" + escape(editorName) + "$"))) {
 		var dts = document.querySelectorAll("dl.profileinfo > dt");
 		for (var dt = 0; dt < dts.length; dt++) {
 			if (dts[dt].textContent.match(/user type/i)) {

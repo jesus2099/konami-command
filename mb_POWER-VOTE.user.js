@@ -2,7 +2,7 @@
 var meta= { rawmdb: function() {
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2016.5.11
+// @version      2016.5.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
@@ -255,18 +255,18 @@ if (editform) {
 			}
 		}
 	}
-	if (window.pageYOffset > 0) {
+	if (self.pageYOffset > 0) {
 		var cs, offset = 0;
-		if (submitClone && (cs = window.getComputedStyle(getParent(submitClone, "div", "row")))) {
+		if (submitClone && (cs = self.getComputedStyle(getParent(submitClone, "div", "row")))) {
 			offset += parseInt(cs.getPropertyValue("height").match(/\d+/), 10);
 			offset += parseInt(cs.getPropertyValue("margin").match(/\d+/), 10);
 		}
-		if (showtop.tagName && (cs = window.getComputedStyle(showtop))) {
+		if (showtop.tagName && (cs = self.getComputedStyle(showtop))) {
 			offset += parseInt(cs.getPropertyValue("height").match(/\d+/), 10);
 			offset += parseInt(cs.getPropertyValue("margin").match(/\d+/), 10);
 		}
 		if (offset != 0) {
-			window.scrollTo(0, window.pageYOffset + offset);
+			self.scrollTo(0, self.pageYOffset + offset);
 		}
 	} else if (scrollToEdits) {
 		var foundcount = document.querySelector("div#page div.search-toggle > p > strong");
@@ -294,7 +294,7 @@ if (editform) {
 			artistlnk.style.setProperty("font-weight", "normal");
 			artistlnk.style.setProperty("color", "black");
 		}
-		window.scrollTo(0, findPos(document.getElementById("edits")).y - window.getComputedStyle(document.getElementById("header-menu")).getPropertyValue("height").match(/\d+/));
+		self.scrollTo(0, findPos(document.getElementById("edits")).y - self.getComputedStyle(document.getElementById("header-menu")).getPropertyValue("height").match(/\d+/));
 	}
 }
 function shortcutsRow() {
@@ -373,7 +373,7 @@ function findPos(obj) { /* http://www.quirksmode.org/js/findpos.html */
 }
 function click(n, mod){
 	var clicke = document.createEvent("MouseEvents");
-	clicke.initMouseEvent((mod ? mod : "") + "click", true, true, window, mod ? 2 : 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+	clicke.initMouseEvent((mod ? mod : "") + "click", true, true, self, mod ? 2 : 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 	n.dispatchEvent(clicke);
 }
 function sendEvent(node, eventName){
@@ -434,7 +434,7 @@ function updateXHRstat(nbr) {
 	}
 	stat.replaceChild(document.createTextNode(nbr + " background vote" + (nbr == 1 ? "" : "s") + " pending…"), stat.firstChild);
 	if (!editform.querySelector("div.edit-list div.edit-description")) {
-		location.reload();
+		self.location.reload();
 	}
 	stat.style.setProperty("display", nbr > 0 ? "block" : "none");
 }
@@ -453,7 +453,7 @@ function spreadBackgroundColour(event) {
 		setTimeout(function() {
 			var actions = getParent(this, "div", "edit-actions");
 			if (this.value != -2) {
-				actions.style.setProperty("background-color", FF ? FF[this.value] : window.getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color"));
+				actions.style.setProperty("background-color", FF ? FF[this.value] : self.getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color"));
 			} else {
 				actions.style.removeProperty("background-color");
 			}

@@ -27,7 +27,7 @@
 (function(){"use strict";
 	/*remove crap*/
 	for (var ss=0; ss < document.styleSheets.length; ss++) {
-		if (document.styleSheets[ss].href.match(/\/\/[^/]+/)+"" == "//"+location.hostname) {
+		if (document.styleSheets[ss].href.match(/\/\/[^/]+/) + "" == "//" + self.location.hostname) {
 			document.styleSheets[ss].insertRule("div#aun_banner, iframe, div#right_body a:not([href*='.cdjournal.com/']) { display: none; }", document.styleSheets[ss].cssRules.length);
 			break;
 		}

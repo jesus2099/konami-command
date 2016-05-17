@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2016.5.11
+// @version      2016.5.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -55,14 +55,14 @@ var addArtistLinks = true;
 var userjs = "jesus2099userjs42102";//linked in mb_MASS-MERGE-RECORDINGS.user.js
 var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var loc, pageEntity, checked = [], xhrPendingEdits = {};
-var MBS = location.protocol + "//" + location.host;
+var MBS = self.location.protocol + "//" + self.location.host;
 var account = document.querySelector("div.header li.account a[href^='" + MBS + "/user/']");
 //EDITING HISTORY
 if (
 	account
 	&& (account = unescape(account.getAttribute("href").match(/[^/]+$/)))
 	&& document.querySelector("div#sidebar")
-	&& (loc = location.pathname.match(new RegExp("^/(area|artist|collection|event|label|place|release-group|release|recording|series|work|url)/(" + RE_GUID + ")")))
+	&& (loc = self.location.pathname.match(new RegExp("^/(area|artist|collection|event|label|place|release-group|release|recording|series|work|url)/(" + RE_GUID + ")")))
 	&& (pageEntity = document.querySelector("div#content > div > h1 a"))
 	&& (pageEntity = a2obj(pageEntity))
 ) {
@@ -138,7 +138,7 @@ function checkOpenEdits(obj) {
 	var count = smp.querySelector("span." + userjs + "count");
 	if (!count) {
 		smp.appendChild(document.createTextNode("\u00a0("));
-		smp.appendChild(createTag("span", {a: {class: userjs + "count"}}, createTag("img", {a: {alt: "⌛ loading…", src: "/static/images/icons/loading.gif", height: window.getComputedStyle(smp).getPropertyValue("font-size")}})));//“userjs + "count"” linked in mb_MASS-MERGE-RECORDINGS.user.js
+		smp.appendChild(createTag("span", {a: {class: userjs + "count"}}, createTag("img", {a: {alt: "⌛ loading…", src: "/static/images/icons/loading.gif", height: self.getComputedStyle(smp).getPropertyValue("font-size")}})));//“userjs + "count"” linked in mb_MASS-MERGE-RECORDINGS.user.js
 		smp.appendChild(document.createTextNode(")"));
 	}
 	xhrPendingEdits[obj.base] = {

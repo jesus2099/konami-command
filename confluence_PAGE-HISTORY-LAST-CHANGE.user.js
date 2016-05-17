@@ -20,7 +20,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-if (location.pathname.match(/^\/pages\/viewpreviousversions.action$/) && location.search.match(/^\?pageId=\d+$/)) {
+if (self.location.pathname.match(/^\/pages\/viewpreviousversions.action$/) && self.location.search.match(/^\?pageId=\d+$/)) {
 	var versions = document.querySelectorAll("table#page-history-container input[type='checkbox'][name='selectedPageVersions']");
 	if (versions.length > 1) {
 		versions[0].checked = true;

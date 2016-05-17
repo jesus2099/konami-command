@@ -55,7 +55,7 @@ var KBD = {
 	S:     83
 };
 var MMRid = "MMR2099userjs120382";
-var MBS = location.protocol + "//" + location.host;
+var MBS = self.location.protocol + "//" + self.location.host;
 var sidebar = document.getElementById("sidebar");
 var recid2trackIndex = {remote: {}, local: {}};/*recid:tracks index*/
 var mergeQueue = [];/*contains next mergeButts*/
@@ -92,7 +92,7 @@ if (ltitle) {
 		looseTitle: looseTitle(ltitle[1]),
 		comment: document.querySelector("h1 > span.comment > bdi"),
 		ac: ltitle[2],
-		id: location.pathname.match(regex_MBID)[0],
+		id: self.location.pathname.match(regex_MBID)[0],
 		tracks: []
 	};
 	var safeLengthDelta = 4;

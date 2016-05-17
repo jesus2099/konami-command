@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2016.5.11
+// @version      2016.5.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -61,7 +61,7 @@ var KEYCODES = {
 	"NUMPAD-DOT":    0x6E,
 	"NUMPAD-DIVIDE": 0x6F,
 };
-var MBS = location.protocol + "//" + location.host;
+var MBS = self.location.protocol + "//" + self.location.host;
 var sidebar = document.getElementById("sidebar");
 var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(stre_GUID);
@@ -128,11 +128,11 @@ j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + meta.descri
 					" | ",
 					createTag("a", {a: {href: meta.supportURL, target: "_blank"}}, "known issues"),
 					" | ",
-					createTag("a", {e: {click: function(event) { if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")) { localStorage.removeItem(userjs + "settings"); location.reload(); } }}}, "RESET"),
+					createTag("a", {e: {click: function(event) { if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")) { localStorage.removeItem(userjs + "settings"); self.location.reload(); } }}}, "RESET"),
 					" | ",
 					createTag("a", {e: {click: function(event) { removeNode(document.getElementById(userjs + "j2sets")); }}}, "CLOSE"),
 				]),
-				createTag("h4", {s: {textShadow: "0 0 8px white", fontSize: "1.5em", marginTop: "0px"}}, ["██ ", createTag("a", {a: {href: meta.namespace, target: "_blank"}}, meta.name), " (" + meta.version + ")"]), createTag("p", {}, ["All settings are instantly saved but require a ", createTag("a", {e: {click: function() { location.reload(); }}}, "PAGE RELOAD"), " to see the effect."])
+				createTag("h4", {s: {textShadow: "0 0 8px white", fontSize: "1.5em", marginTop: "0px"}}, ["██ ", createTag("a", {a: {href: meta.namespace, target: "_blank"}}, meta.name), " (" + meta.version + ")"]), createTag("p", {}, ["All settings are instantly saved but require a ", createTag("a", {e: {click: function() { self.location.reload(); }}}, "PAGE RELOAD"), " to see the effect."])
 			]), document.getElementById("page"));
 			var alphakeys = [];
 			for (var s in j2sets) if (j2sets.hasOwnProperty(s)) {
@@ -165,7 +165,7 @@ function bug(error) {
 	}
 	if (error.report && title) {
 		if (confirm(alrt + "\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
-			window.open(meta.supportURL + "/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent("Hello,\nI am using that awesome *" + meta.name + "* (**" + meta.version + "**).\nI got an error while I was on [" + (document.title ? document.title : "that page") + "](" + location.href + "):\n\n    " + error.message.replace(/\n/g, "\n    ")));
+			self.open(meta.supportURL + "/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent("Hello,\nI am using that awesome *" + meta.name + "* (**" + meta.version + "**).\nI got an error while I was on [" + (document.title ? document.title : "that page") + "](" + self.location.href + "):\n\n    " + error.message.replace(/\n/g, "\n    ")));
 		}
 	} else {
 		alert(alrt);
@@ -229,7 +229,7 @@ j2setting("RELEASE_CLONER_additional_information", false, true, "clones annotati
 j2setting("RELEASE_CLONER_external_links", false, true, "(EXPERIMENTAL) clones URL relations (not advised as those usually change for each edition)");
 j2setting("RELEASE_CLONER_tracktimes", false, true, "clones track times (mastering sometimes change for some edition)");
 if (j2sets.RELEASE_CLONER && account) {
-	var rcwhere = location.pathname.match(new RegExp("^/((release(?!-group)|release-group|label)/" + stre_GUID + ")|artist/" + stre_GUID + "/(releases)$"));
+	var rcwhere = self.location.pathname.match(new RegExp("^/((release(?!-group)|release-group|label)/" + stre_GUID + ")|artist/" + stre_GUID + "/(releases)$"));
 	if (
 		rcwhere && (rcwhere = rcwhere[2] ? rcwhere[2] : rcwhere[3])
 	) {
@@ -237,7 +237,7 @@ if (j2sets.RELEASE_CLONER && account) {
 			j2superturbo.menu.addItem(createTag("a", {a: {title: meta.name + "\nshift+click to open new tab / ctrl+click for background tab" + (rcwhere != "release" ? "\nno need to select if there is only one release on this page" : "")}, e: {click: function(event) {
 					var crmbids = [];
 					if (rcwhere == "release") {
-						crmbids.push("" + location.pathname.match(re_GUID));
+						crmbids.push("" + self.location.pathname.match(re_GUID));
 					}
 					else {
 						var checkrels = document.querySelectorAll("table.tbl > tbody input[type='checkbox'][name='add-to-merge']");
@@ -361,7 +361,7 @@ if (j2sets.RELEASE_CLONER && account) {
 								};
 								xhr.onerror = function(event) {
 									if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
-										window.open(meta.supportURL + "/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + location.href + ").\n"));
+										self.open(meta.supportURL + "/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + self.location.href + ").\n"));
 									}
 								};
 								xhr.open("get", "/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels&fmt=json", false);
@@ -379,10 +379,10 @@ if (j2sets.RELEASE_CLONER && account) {
 ## USER_STATS ##
 ==========================================================================*/
 j2setting("USER_STATS", true, true, "adds convenient edit stats to user page (percentage of yes/no voted edits)");
-if (j2sets.USER_STATS && location.pathname.match(/^\/user\/[^/]+$/)) {
+if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 	var stats = document.querySelectorAll("table.statistics > tbody > tr > td:last-child");
-	var editorPathname = location.pathname.lastIndexOf("/") + 1;
-	editorPathname = location.pathname.substr(0, editorPathname) + encodeURIComponent(location.pathname.substr(editorPathname));
+	var editorPathname = self.location.pathname.lastIndexOf("/") + 1;
+	editorPathname = self.location.pathname.substr(0, editorPathname) + encodeURIComponent(self.location.pathname.substr(editorPathname));
 	if (stats.length > 0) {
 		var accepted = readStat(stats, 0);
 		var autoedits = readStat(stats, 1);
@@ -461,7 +461,7 @@ try {
 ## CHECK_ALL_SUBSCRIPTIONS ##
 ==========================================================================*/
 j2setting("CHECK_ALL_SUBSCRIPTIONS", true, true, "adds a “check all” checkbox on subscriptions pages (MBS-3629)");
-if (j2sets.CHECK_ALL_SUBSCRIPTIONS && location.href.match(new RegExp("^" + MBS + "/user/[^/]+/subscriptions/.+$"))) {
+if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + MBS + "/user/[^/]+/subscriptions/.+$"))) {
 	var cbs = document.querySelectorAll("div#page > form > table.tbl > tbody > tr > td > input[type='checkbox']");
 	var ths = document.querySelector("div#page > form > table.tbl > thead > tr > th");
 	if (ths && !ths.hasChildNodes() && cbs && cbs.length > 0) {
@@ -681,7 +681,7 @@ function ROW_HIGHLIGHTER_init() {
 function ROW_HIGHLIGHTER_refresh(event) {
 	var row = [this.parentNode];
 	if (row[0]) {
-		if (location.pathname.match(new RegExp("^/release/(add|" + stre_GUID + "/edit)$"))) {/*release-editor hacks*/
+		if (self.location.pathname.match(new RegExp("^/release/(add|" + stre_GUID + "/edit)$"))) {/*release-editor hacks*/
 			if (getParent(this, "div", null, "recordings")/*Recordings*/ && this.tagName == "TD") {
 				if (!row[0].classList.contains("track")) {
 					row[0] = getSibling(row[0], "tr", "track", true);
@@ -725,7 +725,7 @@ function parentFormSubmit(input, event) {
 ## DOUBLE_CLICK_SUBMIT ##
 ==========================================================================*/
 j2setting("DOUBLE_CLICK_SUBMIT", true, true, "makes the “radio buttons” and “multi-selects” submit forms on double-click (MBS-3229)");
-if (j2sets.DOUBLE_CLICK_SUBMIT && location.pathname.match(/^\/(cdtoc\/|cdstub\/|edit\/|release\/(add(\?release-group=)?|[^/]+\/edit-cover-art\/)|release-group\/[^/]+\/edit|search|.+\/merge)/)) {
+if (j2sets.DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdstub\/|edit\/|release\/(add(\?release-group=)?|[^/]+\/edit-cover-art\/)|release-group\/[^/]+\/edit|search|.+\/merge)/)) {
 	var objs = document.querySelectorAll("div#page form > *:not(.edit-list) input[type='radio'], select[multiple]");
 	for (var o = 0; o < objs.length; o++) {
 		var obj = getParent(objs[o], "label") || objs[o];
@@ -749,7 +749,7 @@ if (j2sets.CONTROL_ENTER_SUBMIT) {
 ==========================================================================*/
 j2setting("LAST_SEEN_EDIT", false, true, "it shows you what edits you have already seen (reviewed) on entities edit histories, yeah man. only saves states when looking at all edits (not only open) of entity");
 if (j2sets.LAST_SEEN_EDIT && account) {
-	var what = (location.pathname).match(new RegExp("^/(?:(user)/([^/]+)/edits(?:/(open))?|([^/]+)/(" + stre_GUID + ")/(?:(open)_)?edits)"));
+	var what = (self.location.pathname).match(new RegExp("^/(?:(user)/([^/]+)/edits(?:/(open))?|([^/]+)/(" + stre_GUID + ")/(?:(open)_)?edits)"));
 	if (what) {
 		var open = typeof (what[3] || what[6]) != "undefined";
 		var which = what[2] || what[5];
@@ -796,13 +796,13 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 ## COOL_SEARCH_LINKS ##
 ==========================================================================*/
 j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” links excluding own edits or PUID edits, cross links between edits / open_edits, etc.");
-if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/edits/)) {
+if (j2sets.COOL_SEARCH_LINKS && account && !self.locationself.location.pathname.match(/^\/search\/edits/)) {
 	var noPUID = "&conditions.2097.field=type&conditions.2097.operator=%21%3D&conditions.2097.args=77&conditions.2097.args=113";
-	if (location.pathname.match(new RegExp("/[^/]+/" + stre_GUID + "$")) && !location.pathname.match(/label|work/)) {
-		var entityType = location.pathname.match(/[^/]+/); entityType = entityType ? (entityType + "").replace(/-/, "_") : "";
+	if (self.location.pathname.match(new RegExp("/[^/]+/" + stre_GUID + "$")) && !self.location.pathname.match(/label|work/)) {
+		var entityType = self.location.pathname.match(/[^/]+/); entityType = entityType ? (entityType + "").replace(/-/, "_") : "";
 		var entityName = document.querySelector("div#content h1 a");
 		var entityID = document.querySelector("div#sidebar a[href^='" + MBS + "/" + entityType + "/merge_queue?add-to-merge=']");
-		var entityEdits = document.querySelector("div#sidebar a[href$='" + location.pathname + "/edits']");
+		var entityEdits = document.querySelector("div#sidebar a[href$='" + self.location.pathname + "/edits']");
 		if (entityID && entityEdits && entityType && entityName) {
 			entityID = entityID.getAttribute("href").match(/\d+$/);
 			entityName = entityName.textContent;
@@ -810,16 +810,16 @@ if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/
 			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link", href: refine + noPUID}, s: {background: "#ff6"}}, "without PUIDs"), ")"]), entityEdits);
 		}
 	} else {
-		var refine = location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
+		var refine = self.location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
 		var searchHelp = document.querySelector("table.search-help > tbody");
 		if (searchHelp && refine) {
 			var refines = document.createElement("td");
 			var myID;
 			var notme = "&conditions.2099.field=editor&conditions.2099.operator=%21%3D&conditions.2099.name=COOLEST+EDITOR+2099&conditions.2099.args.0=%myID%";
 			var novote = "&conditions.2098.field=vote&conditions.2098.operator=%3D&conditions.2098.voter_id=%myID%&conditions.2098.args=no";
-			refines.appendChild(createTag("a", {a: {href: location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2] ? "edits" : (location.pathname.match(re_GUID) ? "open_edits" : "edits/open")) + location.search + location.hash}}, (refine[1]||refine[2] ? "All " : "Open ") + "edits"));
+			refines.appendChild(createTag("a", {a: {href: self.location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2] ? "edits" : (self.location.pathname.match(re_GUID) ? "open_edits" : "edits/open")) + self.location.search + self.location.hash}}, (refine[1]||refine[2] ? "All " : "Open ") + "edits"));
 			if (
-				location.href.indexOf(account.pathname) < 0 &&
+				self.location.href.indexOf(account.pathname) < 0 &&
 				(refine = document.querySelector("table.search-help td > a[href^='" + MBS + "/search/edits?'][href*='user_id='][href*='&conditions.']")) &&
 				(refine = refine.getAttribute("href").replace(/form_only=yes/, "")) &&
 				(myID = refine.match(/user_id=(\d+)/) || localStorage.getItem(userjs + "me-userid"))
@@ -833,7 +833,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/
 					refines.appendChild(document.createTextNode(" | "));
 					refines.appendChild(createTag("a", {a: {href: refine + novote.replace(/%myID%/g, myID)}}, ["Refine this search (", createTag("strong", null, "+not me+not voted"), ")"]));
 				}
-				if (!location.pathname.match(/label|work/)) {
+				if (!self.location.pathname.match(/label|work/)) {
 					refines.appendChild(document.createTextNode(" | "));
 					refines.appendChild(createTag("a", {a: {href: refine + noPUID}}, ["Refine this search (", createTag("strong", null, "no PUID edits"), ")"]));
 				}
@@ -848,7 +848,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/
 ## COPY_TOC ##
 ==========================================================================*/
 j2setting("COPY_TOC", true, true, "re-lookup Disc ID (from cdtoc page)");
-if (j2sets.COPY_TOC && account && location.pathname.match(/^\/cdtoc\/[^/]+-$/)) {
+if (j2sets.COPY_TOC && account && self.location.pathname.match(/^\/cdtoc\/[^/]+-$/)) {
 	var cdtoctrs = document.querySelectorAll("div#page > table table tr");
 	var TOC = cdtoctrs[2].getElementsByTagName("td")[0].textContent + "%20" + cdtoctrs[cdtoctrs.length - 1].getElementsByTagName("td")[0].textContent + "%20" + cdtoctrs[cdtoctrs.length - 1].getElementsByTagName("td")[6].textContent;/*this should be 1%20totaltracks%20lastsector*/
 	for (var i = 2; i < cdtoctrs.length; i++) { TOC += "%20" + cdtoctrs[i].getElementsByTagName("td")[2].textContent; }
@@ -863,7 +863,7 @@ if (j2sets.SERVER_SWITCH) {
 	var langMenu = document.querySelector("div.header ul.menu li.language-selector");
 	if (langMenu) {
 		var servname;
-		if (servname = location.hostname.match(/^([^.]+)\.[^.]+\.[^.]+$/)) {
+		if (servname = self.location.hostname.match(/^([^.]+)\.[^.]+\.[^.]+$/)) {
 			servname = servname[1];
 		} else {
 			servname = "MBS";
@@ -879,8 +879,8 @@ if (j2sets.SERVER_SWITCH) {
 				this.lastChild.style.setProperty("left", "-10000px");
 			} else {
 				this.classList.add("fake-active");
-				var ulStyle = window.getComputedStyle(this.lastChild);
-				this.lastChild.style.setProperty("left", "-" + (ulStyle.getPropertyValue("width").match(/\d+/) - window.getComputedStyle(this).getPropertyValue("width").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-left").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-right").match(/\d+/)) + "px");
+				var ulStyle = self.getComputedStyle(this.lastChild);
+				this.lastChild.style.setProperty("left", "-" + (ulStyle.getPropertyValue("width").match(/\d+/) - self.getComputedStyle(this).getPropertyValue("width").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-left").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-right").match(/\d+/)) + "px");
 			}
 		}, true);
 		menu.lastChild.addEventListener("click", function(event) { event.stopPropagation(); });
@@ -906,11 +906,11 @@ function serverSwitch(server, sep) {
 		li.className = "separator";
 	}
 	var a = li.appendChild(createTag("a", {}, server));
-	if (location.host == server) {
+	if (self.location.host == server) {
 		a.style.setProperty("cursor", "no-drop");
 		a.style.setProperty("font-weight", "bold");
 	} else {
-		a.setAttribute("href", (server.match(/mbsandbox/) ? "http:" : "") + "//" + server + location.pathname + location.search + location.hash);
+		a.setAttribute("href", (server.match(/mbsandbox/) ? "http:" : "") + "//" + server + self.location.pathname + self.location.search + self.location.hash);
 		a.classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//linked to mb_PREFERRED-MBS
 	}
 	return li;
@@ -920,7 +920,7 @@ function serverSwitch(server, sep) {
 ==========================================================================*/
 j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global");
 if (j2sets.TAG_TOOLS && account) {
-	var tagscope = location.pathname.replace(new RegExp("^" + MBS + "|[?#].*$", "g"), "").match(/^(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
+	var tagscope = self.location.pathname.replace(new RegExp("^" + MBS + "|[?#].*$", "g"), "").match(/^(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 	if (tagscope) {
 		var h1 = document.querySelector("h1");
 		var tags = tagscope[0].match(/tags$/);
@@ -982,18 +982,18 @@ var etais;
 if (j2sets.STATIC_MENU && mmenu && mlogo) {
 	etais = mmenu.parentNode.insertBefore(document.createElement("div"), mmenu);
 	//TODO: is this even supposed to work with // @run-at document-end?
-	window.addEventListener("load", smenu, false);
-	window.addEventListener("resize", smenu, false);
-	window.addEventListener("scroll", smenu, false);
+	self.addEventListener("load", smenu, false);
+	self.addEventListener("resize", smenu, false);
+	self.addEventListener("scroll", smenu, false);
 }
 function smenu(event) {
-	if (document.body.scrollTop + document.documentElement.scrollTop > window.getComputedStyle(mlogo).getPropertyValue("height").match(/\d+/)) {
+	if (document.body.scrollTop + document.documentElement.scrollTop > self.getComputedStyle(mlogo).getPropertyValue("height").match(/\d+/)) {
 		mmenu.style.setProperty("position", "fixed");
 		mmenu.style.setProperty("top", "0px");
-		mmenu.style.setProperty("width", window.getComputedStyle(mmenu.parentNode).getPropertyValue("width"));
+		mmenu.style.setProperty("width", self.getComputedStyle(mmenu.parentNode).getPropertyValue("width"));
 		mmenu.style.setProperty("opacity", j2sets.STATIC_MENU_opacity);
 		etais.style.setProperty("display", "block");
-		etais.style.setProperty("height", window.getComputedStyle(mmenu).getPropertyValue("height"));
+		etais.style.setProperty("height", self.getComputedStyle(mmenu).getPropertyValue("height"));
 		try {
 			mmenu.querySelector("div > div.l").style.setProperty("display", "none");
 			mmenu.querySelector("div > div.r").style.setProperty("display", "none");
@@ -1023,7 +1023,7 @@ if (j2sets.MERGE_USER_MENUS && account && data && datas.length > 0) {
 		account.menu.insertBefore(datas[d].cloneNode(true), account.menu.firstChild);
 	}
 }
-if (location.pathname.match(/\/account\/preferences$/)) {
+if (self.location.pathname.match(/\/account\/preferences$/)) {
 	var betalink = document.querySelector("div#footer a.internal[href$='/set-beta-preference']");
 	if (betalink) {
 		var cont = document.querySelector("div#page form") || document.getElementById("page") || document.body;
@@ -1057,7 +1057,7 @@ if (j2sets.SLOW_DOWN_RETRY) {
 			setInterval(function(event) {
 				retrydelay--;
 				replaceChildren(document.createTextNode(delayMsg(retrydelay)), document.querySelector("h1 > span.countdown"));
-				if (retrydelay == 0) { location.reload(false); }
+				if (retrydelay == 0) { self.location.reload(false); }
 			}, 1000);
 		}
 	}
@@ -1077,13 +1077,13 @@ j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships
 j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
 j2setting("RECORDING_LENGTH_COLUMN", true, true, "Displays recording lengths in work page (similar to Loujine’s script) as well as in artist relationships page");
 j2setting("RELEASE_EVENT_COLUMN", true, true, "Displays release dates in label relationships page");
-var enttype = location.href.match(new RegExp("^" + MBS + "/(area|artist|collection|event|label|place|recording|release|release-group|series|work)/.*$"));
+var enttype = self.location.href.match(new RegExp("^" + MBS + "/(area|artist|collection|event|label|place|recording|release|release-group|series|work)/.*$"));
 if (enttype) {
 	enttype = enttype[1];
 	/*======================================================== KEYBOARD+ MOUSE+
 	## RELEASE_EDITOR_PROTECTOR ##
 	=========================================================================*/
-	if (j2sets.RELEASE_EDITOR_PROTECTOR && enttype == "release" && location.href.match(new RegExp("^" + MBS + "/release/(add.*|" + stre_GUID + "/edit)$"))) {
+	if (j2sets.RELEASE_EDITOR_PROTECTOR && enttype == "release" && self.location.href.match(new RegExp("^" + MBS + "/release/(add.*|" + stre_GUID + "/edit)$"))) {
 		var editnote = document.querySelector("div#release-editor textarea#edit-note-text");
 		var cancelbutt = document.querySelector("div#release-editor button[data-click='cancelPage']");
 		var previousbutt = document.querySelector("div#release-editor button[data-click='previousTab']");
@@ -1091,7 +1091,7 @@ if (enttype) {
 		var savebutt = document.querySelector("div#release-editor button[data-click='submitEdits']");
 		if (cancelbutt) {
 			cancelbutt.addEventListener("click", function(event) {
-				if (!confirm("RELEASE EDITOR PROTECTOR\n\nDo you really want to cancel this release " + location.href.match(/add|edit/) + "?")) {
+				if (!confirm("RELEASE EDITOR PROTECTOR\n\nDo you really want to cancel this release " + self.location.href.match(/add|edit/) + "?")) {
 					return stop(event);
 				}
 			}, false);
@@ -1115,7 +1115,7 @@ if (enttype) {
 	/*================================================================== MOUSE+
 	## TRACKLIST_TOOLS ## ex-TRACK_LENGTH_PARSER+search→replace(bookmarklet)+set-selected-works-date
 	=========================================================================*/
-	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/(add.*|" + stre_GUID + "/edit)$"))) {
+	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && self.location.pathname.match(new RegExp("/release/(add.*|" + stre_GUID + "/edit)$"))) {
 		var re = document.querySelector("div#release-editor");
 		if (re) {
 			re.addEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
@@ -1124,7 +1124,7 @@ if (enttype) {
 			re.addEventListener("click", TRACKLIST_TOOLS_buttonHandler);
 		}
 	}
-	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/" + stre_GUID + "/edit-relationships$"))) {
+	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && self.location.pathname.match(new RegExp("/release/" + stre_GUID + "/edit-relationships$"))) {
 		var tabs, re = document.querySelector("div.rel-editor");
 		if (re && (tabs = re.querySelector("ul.tabs"))) {
 			/* :::: MASS REMOVE RECORDING RELATIONSHIPS :::: */
@@ -1165,7 +1165,7 @@ if (enttype) {
 	## UNLINK_ENTITY_HEADER ## (default off) Freso special request (https://gist.github.com/jesus2099/4111760)
 	=========================================================================*/
 	if (j2sets.UNLINK_ENTITY_HEADER) {
-		var h1link = document.querySelector("div#page h1 a[href='" + location.pathname.match(new RegExp("/" + enttype + "/" + stre_GUID)) + "']");
+		var h1link = document.querySelector("div#page h1 a[href='" + self.location.pathname.match(new RegExp("/" + enttype + "/" + stre_GUID)) + "']");
 		if (h1link) {
 			var h1 = getParent(h1link, "h1");
 			if (h1.firstChild.nodeType != Node.TEXT_NODE) {
@@ -1182,9 +1182,9 @@ if (enttype) {
 	## RELEASE_EVENT_COLUMN ## requested by Lotheric https://github.com/jesus2099/konami-command/issues/132
 	=========================================================================*/
 	if (
-		j2sets.RECORDING_LENGTH_COLUMN && (enttype == "work" && location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$")) || enttype == "place" && location.pathname.match(new RegExp("^/place/" + stre_GUID + "/performances$")))
+		j2sets.RECORDING_LENGTH_COLUMN && (enttype == "work" && self.location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && self.location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$")) || enttype == "place" && self.location.pathname.match(new RegExp("^/place/" + stre_GUID + "/performances$")))
 		||
-		j2sets.RELEASE_EVENT_COLUMN && location.pathname.match(new RegExp("^/(artist|label)/" + stre_GUID + "/relationships$"))
+		j2sets.RELEASE_EVENT_COLUMN && self.location.pathname.match(new RegExp("^/(artist|label)/" + stre_GUID + "/relationships$"))
 	) {
 		var relationshipTable = document.querySelector("div#content table.tbl");
 		if (relationshipTable) {
@@ -1269,7 +1269,7 @@ if (enttype) {
 						}
 					}
 				});
-				xhr.open("get", "/ws/2" + location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=recording-rels+release-rels&fmt=json", true);
+				xhr.open("get", "/ws/2" + self.location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=recording-rels+release-rels&fmt=json", true);
 				xhr.send(null);
 			}
 		}

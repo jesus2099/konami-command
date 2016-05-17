@@ -27,7 +27,7 @@
 (function(){"use strict";
 	var userjs = "jesus2099userjs125668";
 /*ignore some forums on new posts page*/
-	if (location.pathname == "/search.php" && location.search.match(/show_new/)) {
+	if (self.location.pathname == "/search.php" && self.location.search.match(/show_new/)) {
 		var hide = JSON.parse(localStorage.getItem(userjs+"hide")) || [];
 		var zone = document.querySelector("div#brd-crumbs-top > p");
 		var forums = document.querySelectorAll("div.forum-forums li.info-forum > a[href^='http://forums.musicbrainz.org/viewforum.php?id=']");
@@ -42,13 +42,13 @@
 					forums[f].parentNode.appendChild(createTag("a", {a: {ref: id, title: "click to hide new posts from forum #" + id}, e: {click: function(event) {
 						hide.push(this.getAttribute("ref"));
 						localStorage.setItem(userjs + "hide", JSON.stringify(hide));
-						location.reload();
+						self.location.reload();
 					}}}, "hide"));
 				}
 			}
 		}
 	} else {
-		if (location.pathname.match(/^\/view(forum|topic)\.php$/) && document.title.match(/ \(Page 1\) — /) && !document.head.querySelector("link[rel='next']")) {
+		if (self.location.pathname.match(/^\/view(forum|topic)\.php$/) && document.title.match(/ \(Page 1\) — /) && !document.head.querySelector("link[rel='next']")) {
 			document.title = document.title.replace(" (Page 1) — ", " — ");
 		}
 /*add some markup tools on new/edit post page*/
@@ -82,7 +82,7 @@
 						setTimeout(function() {
 							submittedButt.removeAttribute("disabled");
 							var click = document.createEvent("MouseEvents");
-							click.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+							click.initMouseEvent("click", true, true, self, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 							submittedButt.dispatchEvent(click);
 						}, 100);
 						return stop(event);
@@ -150,7 +150,7 @@
 					}
 				}
 				localStorage.setItem(userjs + "hide", JSON.stringify(newhide));
-				location.reload();
+				self.location.reload();
 			}}, s: {"text-decoration": "line-through", "background-color": "#FF6"}}, fname));
 		}
 	}

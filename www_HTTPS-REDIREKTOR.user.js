@@ -46,4 +46,4 @@
 // @exclude      http://*musicbrainz.org/ws/*
 // @run-at       document-start
 // ==/UserScript==
-if(location.protocol=="http:")location.replace(location.href.replace(/^http/,"https"));
+if(self.location.protocol == "http:") self.location.replace(self.location.href.replace(/^http/, "https"));

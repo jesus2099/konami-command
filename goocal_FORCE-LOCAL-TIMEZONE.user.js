@@ -27,7 +27,7 @@
 	/*end of jsTimezoneDetect*/
 	var ctz = jstz.determine();
 	if (ctz = ctz.name()) {
-		console.log("goocal. FORCE LOCAL TIMEZONE\n"+ctz+" timezone set for google calendar\n"+location.href);
-		location.href += (location.href.match(/\?/)?"&":"?")+"ctz="+ctz;
+		console.log("goocal. FORCE LOCAL TIMEZONE\n" + ctz + " timezone set for google calendar\n" + self.location.href);
+		self.location.href += (self.location.href.match(/\?/) ? "&" : "?") + "ctz=" + ctz;
 	}
 })();

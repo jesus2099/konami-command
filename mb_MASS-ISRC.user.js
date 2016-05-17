@@ -26,12 +26,12 @@
 var home = "http://notlob.eu/isrc/";
 var dummySkip = "JESUS2099999";
 var inputs, submit = document.querySelector("form > input[type='submit']");
-if (location.href.match(/^https?:\/\/[^/]+\/ws\/1\//)) {
+if (self.location.href.match(/^https?:\/\/[^/]+\/ws\/1\//)) {
 	var p = document.body.querySelector("pre, p");
 	if (p && p.textContent.trim() == "") {
 		document.body.appendChild(document.createTextNode("ISRC submission seems OK. "));
 		document.body.appendChild(document.createElement("a")).appendChild(document.createTextNode("Going back to submission page (in 4 seconds).")).parentNode.setAttribute("href", home);
-		setTimeout(function() { location=home; }, 4000);
+		setTimeout(function() { self.location = home; }, 4000);
 	}
 } else if (inputs = document.querySelector("form input[name='mbid']")) {
 	inputs.addEventListener("focus", function(event) { this.select(); }, false);

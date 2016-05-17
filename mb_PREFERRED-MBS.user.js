@@ -100,7 +100,7 @@ function prefer(URL) {
 	if (urlMatch) {
 		newUrl += (urlMatch[4] ? urlMatch[4] : "") + (urlMatch[5] ? urlMatch[5] : "") + (urlMatch[6] ? urlMatch[6] : "");
 	} else if (
-		location.href.match(/^https?:\/\/(beta\.)?musicbrainz\.org/)
+		self.location.href.match(/^https?:\/\/(beta\.)?musicbrainz\.org/)
 		&& URL.match(/^\/([^/]|$)/)
 		&& preferredMBS.match(/^(https?:)?\/\//)
 	) {
@@ -110,11 +110,11 @@ function prefer(URL) {
 }
 function leftTrim(url) {
 	var trimmedURL = url;
-	if (trimmedURL.indexOf(location.protocol) === 0) {
+	if (trimmedURL.indexOf(self.location.protocol) === 0) {
 		trimmedURL = trimmedURL.replace(/^https?:/, "");
 	}
-	if (trimmedURL.indexOf("//" + location.host) === 0) {
-		trimmedURL = trimmedURL.replace(new RegExp("^//" + location.host), "");
+	if (trimmedURL.indexOf("//" + self.location.host) === 0) {
+		trimmedURL = trimmedURL.replace(new RegExp("^//" + self.location.host), "");
 	}
 	return trimmedURL;
 }

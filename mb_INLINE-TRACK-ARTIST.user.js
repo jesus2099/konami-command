@@ -20,7 +20,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var mbid = location.pathname.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
+var mbid = self.location.pathname.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
 var tracks = document.querySelectorAll("div#content table.tbl > tbody > tr");
 if (mbid && tracks.length > 0) {
 	var artistth = getParent(tracks[0], "table").querySelectorAll("thead > tr > th");
