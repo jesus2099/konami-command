@@ -51,7 +51,7 @@
 	var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var portStorage = userjs+"_tport";
 	var isOK = document.cookie.match(new RegExp(userjs+"_ok=1"));
-	var shouldhavetaggerlink = location.pathname.match(new RegExp("^/(artist/"+RE_GUID+"/releases|label/"+RE_GUID+"|recording/"+RE_GUID+"|release[-_]group/"+RE_GUID+"|release/"+RE_GUID+"(/(relationships|discids|tags|details|((add|edit|remove|reorder)-)?cover-art(/\\d+)?|edit))?)/?$")) && document.querySelector("a[href*='/release/']:not([href*='/release/add'])");
+	var shouldhavetaggerlink = self.location.pathname.match(new RegExp("^/(artist/"+RE_GUID+"/releases|label/"+RE_GUID+"|recording/"+RE_GUID+"|release[-_]group/"+RE_GUID+"|release/"+RE_GUID+"(/(relationships|discids|tags|details|((add|edit|remove|reorder)-)?cover-art(/\\d+)?|edit))?)/?$")) && document.querySelector("a[href*='/release/']:not([href*='/release/add'])");
 	var taggerlink = document.querySelector("a.tagger-icon");
 	var con, a, menu;
 	var savedport = localStorage.getItem(portStorage);
@@ -89,10 +89,10 @@
 		}
 		a.appendChild(wfrg);
 		a.style.setProperty("cursor", "pointer");
-		a.setAttribute("title", (!taggerlink?"CTRL+":"")+"CLICK to change port (currently on port "+tagger_port+")");
+		a.setAttribute("title", (!taggerlink ? "CTRL+" : "") + "CLICK to change port (currently on port " + tagger_port + ")");
 		a.addEventListener("click", function(e) {
 				if (e.ctrlKey || taggerlink) {
-					var tport = window.prompt("CHANGE TAGGER PORT\n\nCurrent tagger port is "+tagger_port+".\nEnter new tagger port below:", tagger_port);
+					var tport = prompt("CHANGE TAGGER PORT\n\nCurrent tagger port is " + tagger_port + ".\nEnter new tagger port below:", tagger_port);
 					if (!tport || (tport == tagger_port && taggerlink)) {
 						return false;
 					}

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2016.5.11
+// @version      2016.5.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -73,15 +73,15 @@ var css_recording = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.
 var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='/work/']";
 var pleaseWaitFragment = null;
 var tracksHtml = null;
-var pagecat = location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
-if (location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
+var pagecat = self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
+if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
 if (pagecat) {
 	switch(pagecat) {
 		case "release":
 			document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 			var css = document.styleSheets[document.styleSheets.length - 1];
 			css.insertRule("a[" + userjs + "recname], span." + userjs + "recdis { text-shadow: 1px 2px 2px #999; color: maroon}", 0);
-			var relMBID = location.href.match(re_GUID);
+			var relMBID = self.location.href.match(re_GUID);
 			if (relMBID && (tracksHtml = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]:not(.subh)")).length > 0) {
 				if (recUseInRelationshipLink || recAddToMergeLink) {
 					for (var ith=0; ith < tracksHtml.length; ith++) {
@@ -231,8 +231,8 @@ function isrcFish() {
 				CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
 				CAAtab.style.setProperty("background-color", "#ff6");
 			}
-			CAAtab.style.setProperty("width", window.getComputedStyle(CAAtab).getPropertyValue("width"));
-			CAAtab.style.setProperty("height", window.getComputedStyle(CAAtab).getPropertyValue("height"));
+			CAAtab.style.setProperty("width", self.getComputedStyle(CAAtab).getPropertyValue("width"));
+			CAAtab.style.setProperty("height", self.getComputedStyle(CAAtab).getPropertyValue("height"));
 			CAAtab.style.setProperty("text-align", "center");
 			CAAtab.replaceChild(document.createTextNode(CAAtxt), CAAtab.firstChild);
 		}
@@ -535,7 +535,7 @@ function acoustidFishBatch(recids) {
 							aidtable.style.setProperty("display", "block");
 							var aids = aidtable.querySelectorAll("a > code[title]");
 							for (var aid=0; aid<aids.length; aid++) {
-								aids[aid].parentNode.style.setProperty("width", parseInt(window.getComputedStyle(aids[aid].parentNode).getPropertyValue("width").match(/^\d+/)+"", 10)/aids[aid].textContent.length*6+"px");
+								aids[aid].parentNode.style.setProperty("width", parseInt(self.getComputedStyle(aids[aid].parentNode).getPropertyValue("width").match(/^\d+/)+"", 10)/aids[aid].textContent.length*6+"px");
 							}
 							aidtable.style.setProperty("display", show?"block":"none");
 						}

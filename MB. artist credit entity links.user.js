@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           MB. artist credit entity links
-// @version        2016.5.11
+// @version        2016.5.17
 // @description    Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases page's artist credits section. Additionally spots duplicate aliases.
 // @namespace      http://userscripts.org/scripts/show/131649
 // @author         Tristan DANIEL (PATATE12 aka. jesus2099/shamo)
@@ -9,7 +9,7 @@
 // @match          *://*.musicbrainz.org/artist/*/aliases
 // @run-at         document-end
 // ==/UserScript==
-if(location.href.match(/^https?:\/\/([^.]+\.)?musicbrainz\.org\/artist\/[^/]+\/aliases$/)){/*@matchopera*/(function(){"use strict";
+if(self.location.href.match(/^https?:\/\/([^.]+\.)?musicbrainz\.org\/artist\/[^/]+\/aliases$/)){/*@matchopera*/(function(){"use strict";
 	var entities = {
 		"filtered release groups": {"url":"/artist/%aid%?filter.artist_credit_id=%acid%", "img":"/static/images/entity/release_group.png"},
 		"release group search": {"url":"/search?query=arid%3A%aid%+AND+artist%3A%22%acname%%22&type=release_group&limit=100&method=advanced", "img":"/static/images/icons/search.png"},
@@ -32,7 +32,7 @@ if(location.href.match(/^https?:\/\/([^.]+\.)?musicbrainz\.org\/artist\/[^/]+\/a
 				var entd = trs[i].insertBefore(createTag("td"), trs[i].querySelector("td:nth-last-of-type(1)"));
 				for (var ent in entities) {
 					if (entities.hasOwnProperty(ent)) {
-						entd.appendChild(createTag("a", {"title":ent, "href":entities[ent].url.replace(/%acname%/, encodeURIComponent(aname)).replace(/%aid%/, location.href.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/)).replace(/%acid%/, trs[i].querySelector("td:nth-last-of-type(1) > a").getAttribute("href").match(/credit\/([0-9]+)\/edit$/)[1])}, {}, {}, createTag("img", {"alt":ent, "src":entities[ent].img})));
+						entd.appendChild(createTag("a", {"title":ent, "href":entities[ent].url.replace(/%acname%/, encodeURIComponent(aname)).replace(/%aid%/, self.location.href.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/)).replace(/%acid%/, trs[i].querySelector("td:nth-last-of-type(1) > a").getAttribute("href").match(/credit\/([0-9]+)\/edit$/)[1])}, {}, {}, createTag("img", {"alt":ent, "src":entities[ent].img})));
 					}
 				}
 			}

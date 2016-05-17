@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb: Redirect when only 1 result and/or unique 100% scored result
-// @version      2016.5.11
+// @version      2016.5.17
 // @description  In (test.)musicbrainz.org
 // @namespace    http://userscripts.org/scripts/show/106156
 // @author       N.(stars 2011-06-30) then Tristan DANIEL (PATATE12 aka. jesus2099/shamo)
@@ -57,6 +57,6 @@
 		row.style.setProperty("text-shadow", textShadowMarking);
 	}
 	function go(url) {
-		setTimeout(function() { location.href = url; }, 0);
+		setTimeout(function() { self.location.href = url; }, 0);
 	}
 })();

@@ -226,7 +226,7 @@
 		if (includes.indexOf(key) == -1) includes.push(key);
 	}
 	db("includes:\n"+includes.join("\n"));
-	var doko = location.host.match(new RegExp("(?:www\\.)?("+includes.join("|")+")"));
+	var doko = self.location.host.match(new RegExp("(?:www\\.)?("+includes.join("|")+")"));
 	var iti = true;
 	if (document.head) {
 		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
@@ -237,13 +237,13 @@
 		doko = doko[1];
 		kasimasin = kasimasin[doko];
 		if (kasimasin.na) { meta.name = kasimasin.na+" "+meta.name; }
-		db(meta.name+"\n"+location.href);
+		db(meta.name + "\n" + self.location.href);
 		var url;
-		if (kasimasin.uta_re && (url = location.href.match(kasimasin.uta_re))) {
+		if (kasimasin.uta_re && (url = self.location.href.match(kasimasin.uta_re))) {
 			kasimasin.uta = url[1];
 		}
-		if (kasimasin.clean_url && (url = kasimasin.clean_url.replace(/%uta%/g, kasimasin.uta)) && url != location.href) {
-			location.href = url;
+		if (kasimasin.clean_url && (url = kasimasin.clean_url.replace(/%uta%/g, kasimasin.uta)) && url != self.location.href) {
+			self.location.href = url;
 		} else {
 			if (kasimasin.init) { kasimasin.init(true); }
 			else { machine(); }

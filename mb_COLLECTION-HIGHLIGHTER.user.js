@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.5.11
+// @version      2016.5.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -70,8 +70,8 @@ if (meta.raw && meta.raw.toString && (meta.raw = meta.raw.toString())) {
 	}
 }
 meta.name = meta.name.substr("4") + " " + meta.version;
-var host = (["musicbrainz.org", "beta.musicbrainz.org", "test.musicbrainz.org"].indexOf(location.host) > -1);
-var cat = location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|series|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
+var host = (["musicbrainz.org", "beta.musicbrainz.org", "test.musicbrainz.org"].indexOf(self.location.host) > -1);
+var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|series|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (host && cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
 	var confirmIfMoreThan = 2000; /*-1 to never confirm*/
@@ -97,7 +97,7 @@ if (host && cat) {
 	j2ss.insertRule("li." + userjs + "HLrow { padding-left: 4px; }", 0);
 	j2ss.insertRule("." + userjs + "HLitem { text-shadow: 0 0 8px " + highlightColour + "!important; }", 0);
 	j2ss.insertRule("." + userjs + "HLrow ." + userjs + "HLitem { border: 0; padding: 0; }", 0);
-	var MBS = location.protocol + "//" + location.host;
+	var MBS = self.location.protocol + "//" + self.location.host;
 	var collectionsID = localStorage.getItem(userjs + "collections") || "";
 	var releaseID;
 	var stuff, collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
@@ -105,9 +105,9 @@ if (host && cat) {
 	var strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	cat = cat[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
 	debug("CAT: " + cat);
-	if (cat == "release" && (releaseID = location.pathname.match(new RegExp(strMBID)))) {
+	if (cat == "release" && (releaseID = self.location.pathname.match(new RegExp(strMBID)))) {
 		releaseID = releaseID[0];
-		var mainReleasePage = location.pathname.match(new RegExp("^/release/" + strMBID + "$"));
+		var mainReleasePage = self.location.pathname.match(new RegExp("^/release/" + strMBID + "$"));
 		var colls = document.querySelectorAll("div#sidebar a[href*='/own_collection/add?release='], div#sidebar a[href*='/own_collection/remove?release=']");
 		for (var coll = 0; coll < colls.length; coll++) {
 			if (collectionsID.indexOf(colls[coll].getAttribute("href").match(new RegExp(strMBID))) > -1) {
@@ -124,9 +124,9 @@ if (host && cat) {
 				var buttxt = " this release to your local collection highlighter,\r\nwithout changing its status among you MB collection(s)";
 				lili = lili.insertBefore(document.createElement("li"), lili.firstChild);
 				lili.appendChild(document.createTextNode("Force highlight "));
-				collectionUpdater(lili.appendChild(createA("ON", location.href, "Add" + buttxt, true)), "add");
+				collectionUpdater(lili.appendChild(createA("ON", self.location.href, "Add" + buttxt, true)), "add");
 				lili.appendChild(document.createTextNode(" / "));
-				collectionUpdater(lili.appendChild(createA("OFF", location.href, "Remove" + buttxt.replace(" to ", " from "), true)), "remove");
+				collectionUpdater(lili.appendChild(createA("OFF", self.location.href, "Remove" + buttxt.replace(" to ", " from "), true)), "remove");
 			}
 		}
 	}
@@ -228,7 +228,7 @@ if (host && cat) {
 	} else {
 		/*almost generic stuff highlighter*/
 		stuff = {};
-		window.addEventListener("load", function(event) {
+		self.addEventListener("load", function(event) {
 			//TODO: remove that, should not even work well with “//@ run-at document-end” anyway
 			for (var stu = 0; stu < collectedStuff.length; stu++) {
 				localStorage.removeItem("jesus2099skip_linksdeco_" + collectedStuff[stu]);
@@ -339,7 +339,7 @@ function loadCollection(mbid, ws, po) {
 		}
 		localStorage.setItem(userjs + "collections", collectionsID);
 		modal(true, "Loading collection " + mbid + "…", 1);
-		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { location.reload(); }), " or close this page."]), 2);
+		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page."]), 2);
 		modal(true, concat(["<hr>", "Fetching releases…"]), 2);
 		stuff["release-tmp"] = {ids: []};
 		for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
@@ -526,7 +526,7 @@ function end(ok, msg) {
 	} else {
 		modal(true, msg, 1).style.setProperty("background-color", "pink");
 		alert(dialogprefix + msg);
-		modal(true, concat(["You can submit this error message to ", createA("jesus2099", meta.supportURL), " or just ", createA("reload this page", function(event) { location.reload(); }), "."]), 1);
+		modal(true, concat(["You can submit this error message to ", createA("jesus2099", meta.supportURL), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
 	}
 	closeButt();
 }
@@ -578,7 +578,7 @@ function modal(show, txt, brs, gauge) {
 					gaugeto = null;
 					gau.style.setProperty("display", "block");
 				}
-				gau.style.setProperty("width", Math.ceil(window.innerWidth * gauge[0] / gauge[1]) + "px");
+				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge[0] / gauge[1]) + "px");
 				gau.lastChild.replaceChild(document.createTextNode(gauge[0] + "/" + gauge[1] + " (" + pc + "%) approx. remaining " + sInt2msStr(Math.ceil((gauge[1] - gauge[0]) * MBWSRate / 1000))), gau.lastChild.firstChild);
 				setTitle(true, pc);
 				if (gauge[0] >= gauge[1]) {
@@ -612,12 +612,12 @@ function modal(show, txt, brs, gauge) {
 		truc.style.setProperty("width", x);
 		var xx = x.match(/^([0-9]+)(px|%)$/);
 		if (xx) {
-			truc.style.setProperty("left", ((xx[2] == "%" ? 100 : window.innerWidth) - xx[1]) / 2 + xx[2]);
+			truc.style.setProperty("left", ((xx[2] == "%" ? 100 : self.innerWidth) - xx[1]) / 2 + xx[2]);
 		}
 		truc.style.setProperty("height", y);
 		var yy = y.match(/^([0-9]+)(px|%)$/);
 		if (yy) {
-			truc.style.setProperty("top", ((yy[2] == "%" ? 100 : window.innerHeight) - yy[1]) / 2 + yy[2]);
+			truc.style.setProperty("top", ((yy[2] == "%" ? 100 : self.innerHeight) - yy[1]) / 2 + yy[2]);
 		}
 		if (b) { truc.style.setProperty("background", b); }
 		if (o) { truc.style.setProperty("opacity", o); }
@@ -629,7 +629,7 @@ var altered = false;
 function collectionUpdater(link, action) {
 	if (link && action) {
 		link.addEventListener("click", function(event) {
-			altered = this.getAttribute("href") != location.href;
+			altered = this.getAttribute("href") != self.location.href;
 			modal(true, "Refreshing memory…", 1);
 			collectionsID = localStorage.getItem(userjs + "collections") || "";
 			for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
@@ -824,7 +824,7 @@ function lastLink(href) {
 		if (ll) {
 			localStorage.removeItem(userjs + "lastlink");
 			modal(true, "Re‐loading page…", 1);
-			setTimeout(function() { location.href = ll; }, chrono(MBWSRate));
+			setTimeout(function() { self.location.href = ll; }, chrono(MBWSRate));
 		} else {
 			modal(true, " ", 1);
 			end(false, "Sorry, I’m lost. I don’t know what was the link you last clicked.");

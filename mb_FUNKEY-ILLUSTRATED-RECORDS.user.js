@@ -82,11 +82,11 @@ var BIG_SIZE = "125px";
 var types = ["release-group", "release"];
 var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var imgurls = [];
-if (forceHTTP && location.protocol == "https:") {
+if (forceHTTP && self.location.protocol == "https:") {
 	var caa = document.querySelectorAll("img[src^='//coverartarchive.org/release']");
 	for (var c = 0; c < caa.length; c++) caa[c].setAttribute("src", "http:"+caa[c].getAttribute("src"));
 }
-if (!location.pathname.match(/^\/$|^\/release\//)) for (var t=0; t<types.length; t++) {
+if (!self.location.pathname.match(/^\/$|^\/release\//)) for (var t=0; t<types.length; t++) {
 	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/'], div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']");
 	var istable, istablechecked, artistcol;
 	for (var a = 0; a < as.length; a++) if (as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/" + RE_GUID + "$"))) {

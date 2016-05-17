@@ -69,7 +69,7 @@ var host = {
 	},
 };
 var installImage;
-host = host[location.host];
+host = host[self.location.host];
 host.css.files = supportedFileTypes.map(function(fileType) { return host.css.files.replace(/%fileType%/g, fileType) + ":not(.j2installUserScript)"; }).join(", ");
 if (host.dumbMode) {
 	setInterval(changeStuff, 1000);

@@ -62,7 +62,7 @@ const experimentalTracklistEditorKeyboardNavUpDown = true; /* press UP↓/↑DOW
 	/*work in progress, don't refrain from requesting more pages and/or fields*/
 	function what() {
 		var w;
-		switch (location.pathname.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/, "*").replace(/[0-9]+/, "*")) {
+		switch (self.location.pathname.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/, "*").replace(/[0-9]+/, "*")) {
 			case "/artist/*/add-alias":
 			case "/work/*/add-alias":
 			case "/label/*/add-alias":

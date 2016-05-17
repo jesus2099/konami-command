@@ -21,7 +21,7 @@
 // ==/UserScript==
 "use strict";
 var userjs = "j2userjs127580";
-var cat = location.href.match(/https?:\/\/chatlogs\.metabrainz\.org\/brainzbot\/([^/]+)\/|mbja/);
+var cat = self.location.href.match(/https?:\/\/chatlogs\.metabrainz\.org\/brainzbot\/([^/]+)\/|mbja/);
 if (cat) {
 	cat = cat[1] ? cat[1] : "musicbrainz-ja";
 	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
@@ -30,7 +30,7 @@ if (cat) {
 		css.insertRule("header#Site-Header { display: none; }", 0);
 		css.insertRule("header#Log-Header { padding: 0px; }", 0);
 	}
-	var date = location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
+	var date = self.location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
 	if (date) date = date[1] + "-" + date[2] + "-" + date[3];
 	css.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; }", 0);
 	css.insertRule("body { padding-bottom: .5em; }", 0);
@@ -39,7 +39,7 @@ if (cat) {
 	separate(ctt);
 	if (!cat.match(/-ja/)) {
 		var tgt = (cat.match(/^musicbrainz$/) ? "meta" : "music") + "brainz";
-		var tgtA = createA("#" + tgt, (location.pathname.match(/\/search\/$/) ? location.href : location.pathname).replace(/\/(meta|music)brainz\//, "/" + tgt + "/"));
+		var tgtA = createA("#" + tgt, (self.location.pathname.match(/\/search\/$/) ? self.location.href : self.location.pathname).replace(/\/(meta|music)brainz\//, "/" + tgt + "/"));
 		if (cat == "musicbrainz") {
 			ctt.appendChild(document.createTextNode("#musicbrainz"));
 		} else {
@@ -52,11 +52,11 @@ if (cat) {
 			ctt.appendChild(tgtA);
 		}
 		separate(ctt);
-		ctt.appendChild(createA("#musicbrainz-ja", "http://hcm.fam.cx/mbja/chatlog.cgi/" + (location.pathname.match(/\d/) ? (location.pathname.match(/[\d-]+(?=\/$|\.html$)/) + "").replace(/-/g, "/") : "")));
+		ctt.appendChild(createA("#musicbrainz-ja", "http://hcm.fam.cx/mbja/chatlog.cgi/" + (self.location.pathname.match(/\d/) ? (self.location.pathname.match(/[\d-]+(?=\/$|\.html$)/) + "").replace(/-/g, "/") : "")));
 	} else {
 		var path = "";
-		if (location.pathname.match(/\d/)) {
-			var dateDetect = location.pathname.match(/(\d{4})\/(?:(\d{2})\/)?(\d{2})?$/);
+		if (self.location.pathname.match(/\d/)) {
+			var dateDetect = self.location.pathname.match(/(\d{4})\/(?:(\d{2})\/)?(\d{2})?$/);
 			if (dateDetect) {
 				path += dateDetect[1] + "-" + (dateDetect[2] ? dateDetect[2] : "01") + "-" + (dateDetect[3] ? dateDetect[3] : "01") + "/";
 			}
@@ -81,7 +81,7 @@ function shiftDate(shift) {
 	var yyyy = zeroPad(sdate.getFullYear(), 4);
 	var mm = zeroPad(sdate.getMonth() + 1, 2);
 	var dd = zeroPad(sdate.getDate(), 2);
-	return location.pathname.match(/[^\d]+/) + yyyy + (cat.match(/-ja/) ? "/" + mm + "/" + dd : "-" + mm + "-" + dd + "/");
+	return self.location.pathname.match(/[^\d]+/) + yyyy + (cat.match(/-ja/) ? "/" + mm + "/" + dd : "-" + mm + "-" + dd + "/");
 }
 function zeroPad(i, cols) {
 	var str = "" + i;

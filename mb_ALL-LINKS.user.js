@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2016.5.12
+// @version      2016.5.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -220,7 +220,7 @@ function main() {
 		if (rgextrels && (rgextrels = rgextrels.parentNode) && rgextrels.previousSibling.tagName == "UL") {
 			rgextrels.parentNode.insertBefore(createTag("h2", {}, "Release group external links"), rgextrels);
 		}
-		var artistid = location.href.match(/(?:mbsandbox|musicbrainz)\.org\/artist\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
+		var artistid = self.location.href.match(/(?:mbsandbox|musicbrainz)\.org\/artist\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
 		var artistname = document.querySelector("div#content > div.artistheader > h1 a, div#content > div.artistheader > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
 		var artistsortname, artistsortnameSwapped = "";
 		if (artistid && artistname) {
@@ -514,7 +514,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 function weirdobg() {
 	var weirdo = userjs + (new Date().getTime());
 	try { open("", weirdo).blur(); } catch(error) {}
-	window.focus();
+	self.focus();
 	return weirdo;
 }
 function error(code, text) {

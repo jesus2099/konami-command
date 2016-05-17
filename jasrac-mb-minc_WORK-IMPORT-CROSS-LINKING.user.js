@@ -1,7 +1,7 @@
 (function(){"use strict";var meta=function(){
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2016.5.11
+// @version      2016.5.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
@@ -41,8 +41,8 @@
 	var reISWC = "T- ?\\d{3}\\.\\d{3}.\\d{3}-\\d";
 	var reCode = "\\d[A-Z\\d]\\d-\\d{4}-\\d";
 	var reAnnotCode = "(?:jasrac|作品コード)\\W+("+reCode+")";
-	var MBS = location.protocol + "//" + location.host;
-	var pagecat = location.href.match(new RegExp("(jasrac(?=\\.or\\.jp)|minc(?=\\.gr\\.jp)|work(/"+RE_GUID+"/edit$|/create)|work)"));
+	var MBS = self.location.protocol + "//" + self.location.host;
+	var pagecat = self.location.href.match(new RegExp("(jasrac(?=\\.or\\.jp)|minc(?=\\.gr\\.jp)|work(/"+RE_GUID+"/edit$|/create)|work)"));
 	var oldTitle = document.title;
 	var xhrForm = {}, xhrWork = {}, h1, iname;
 	var MBlookups = [];
@@ -74,7 +74,7 @@
 			"method": "post",
 			"async": true,
 			"init": function(xhr) {
-				xhrJobs["work-create/edit"].info = (location.pathname.match(/^\/work\/create/)?"create":"edit")+" work";
+				xhrJobs["work-create/edit"].info = (self.location.pathname.match(/^\/work\/create/)?"create":"edit")+" work";
 				xhrJobs["work-create/edit"].url = xhrForm.form.getAttribute("action");
 				var inps = xhrForm.form.querySelectorAll("form > div > fieldset:not(."+userjs+") input[name]:not([name='']):not([type='button']), form > div > fieldset:not(."+userjs+") textarea[name], form > div > fieldset:not(."+userjs+") select[name]");
 				xhrJobs["work-create/edit"].params = "";
@@ -87,7 +87,7 @@
 				xhrWork.id = this.responseText.match(new RegExp("<a[^>]+/work/merge_queue\\?add-to-merge=([0-9]+)\""));
 				if (!xhrWork.edit && mbid) {
 					xhrWork.mbid = mbid[1];
-					if (location.pathname.match(/^\/work\/create/) && h1) {
+					if (self.location.pathname.match(/^\/work\/create/) && h1) {
 						h1.appendChild(document.createTextNode(" "));
 						h1.appendChild(createA(iname.value, "/work/"+xhrWork.mbid, null, "_blank"));
 					}
@@ -437,7 +437,7 @@
 								getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", ddcode)}, {"background":background}, {}, "音楽の森 — "+ddcode)));
 							} else {
 								if (confirm("Duplicate JASRAC ID detected in work attributes.\nDo you want to edit?")) {
-									location.href = location.pathname+"/edit";
+									self.location.href = self.location.pathname+"/edit";
 								}
 							}
 						}
@@ -454,7 +454,7 @@
 								if (annotation.textContent.trim().match(new RegExp("^"+reAnnotCode+"( \\(MBS-7359\\))?$", "i"))) {
 									insertBefore(createTag("p", {}, {"background-color":"#ffc"}, {}, [createTag("img", {src: "/static/images/icons/loading.gif"}), " This JASRAC ID is now set as an attribute of this work: Removing obsolete annotation, please wait…"]), annotation.firstChild);
 									simpleXHR(
-										{method:"post", action:location.pathname+"/edit_annotation?edit-annotation.text=&edit-annotation.changelog=Removing+obsolete+JASRAC+ID+annotation&edit-annotation.edit_note=The+same+JASRAC+ID+is+now+set+as+an+attribute+to+this+work+(self+cleaning)."},
+										{method: "post", action: self.location.pathname + "/edit_annotation?edit-annotation.text=&edit-annotation.changelog=Removing+obsolete+JASRAC+ID+annotation&edit-annotation.edit_note=The+same+JASRAC+ID+is+now+set+as+an+attribute+to+this+work+(self+cleaning)."},
 										function() {
 											if (this.responseText.indexOf("<h2 class=\"annotation\">Annotation</h2>") == -1) {
 												removeElement(document.querySelector("div#content h2.annotation"));
@@ -467,7 +467,7 @@
 									);
 									break;
 								} else if (confirm("Bogus JASRAC ID detected in annotation (now is set as work attribute).\nDo you want to edit annotation and remove it now?")) {
-									location.href = location.pathname+"/edit_annotation?edit-annotation.changelog=JASRAC+ID+is+now+set+as+an+attribute";
+									self.location.href = self.location.pathname+"/edit_annotation?edit-annotation.changelog=JASRAC+ID+is+now+set+as+an+attribute";
 								}
 							}
 						}
@@ -486,7 +486,7 @@
 				break;
 			case "work/edit":
 				xhrWork.edit = true;
-				xhrWork.mbid = location.pathname.match(new RegExp(RE_GUID));
+				xhrWork.mbid = self.location.pathname.match(new RegExp(RE_GUID));
 				xhrMachine(xhrJobs["workinfo-get"]);
 			case "work/create":
 				h1 = document.querySelector("h1");
@@ -571,9 +571,9 @@
 				stypeid.addEventListener("focus", function(e){ this.style.background = ""; }, false);
 				stypeid.style.width = "260px";
 				var buttons = stypeid.parentNode.appendChild(createTag("span", {"class":"buttons"}, {}, {}, [createButtor(vocal), createButtor(instrumental)]));
-				stypeid.style.setProperty("width", (parseInt(window.getComputedStyle(stypeid).getPropertyValue("width"), 10) - parseInt(window.getComputedStyle(buttons).getPropertyValue("width"), 10))+"px");
+				stypeid.style.setProperty("width", (parseInt(self.getComputedStyle(stypeid).getPropertyValue("width"), 10) - parseInt(self.getComputedStyle(buttons).getPropertyValue("width"), 10))+"px");
 				buttons = slangid.parentNode.appendChild(createTag("span", {"class":"buttons"}, {}, {}, [createButtol("日", 198), createButtol("EN", 120)]));
-				slangid.style.setProperty("width", (parseInt(window.getComputedStyle(slangid).getPropertyValue("width"), 10) - parseInt(window.getComputedStyle(buttons).getPropertyValue("width"), 10))+"px");
+				slangid.style.setProperty("width", (parseInt(self.getComputedStyle(slangid).getPropertyValue("width"), 10) - parseInt(self.getComputedStyle(buttons).getPropertyValue("width"), 10))+"px");
 				teditnote.parentNode.appendChild(document.createElement("br"));
 				var tjasrac = document.querySelector("div.workheader p.subheader") || document.querySelector("h1");
 				tjasrac = tjasrac.appendChild(createTag("textarea", {"placeholder":"Paste JASRAC summary here"}));
@@ -669,7 +669,7 @@
 		}
 	}
 	function MBlinks() {
-		return (xhrWork.id&&location.href.match(/^\/work\/create/) ? "MB add work edit: " + MBS + "/search/edits?combinator=and&conditions.0.field=work&conditions.0.operator=%3D&conditions.0.name=" + (iname.value ? encodeURIComponent(iname.value) : "TA+GUEULE") + "&conditions.0.args.0=" + xhrWork.id[1] + "&conditions.1.field=type&conditions.1.operator=%3D&conditions.1.args=41\n" : "") + "MB work edit history: " + MBS + "/work/" + xhrWork.mbid + "/edits";
+		return (xhrWork.id&&self.location.href.match(/^\/work\/create/) ? "MB add work edit: " + MBS + "/search/edits?combinator=and&conditions.0.field=work&conditions.0.operator=%3D&conditions.0.name=" + (iname.value ? encodeURIComponent(iname.value) : "TA+GUEULE") + "&conditions.0.args.0=" + xhrWork.id[1] + "&conditions.1.field=type&conditions.1.operator=%3D&conditions.1.args=41\n" : "") + "MB work edit history: " + MBS + "/work/" + xhrWork.mbid + "/edits";
 	}
 	function workSortName(txt) {
 		var sortname = txt.match(/(.+) \(''yomikata''\)/);
@@ -1109,8 +1109,8 @@
 	}
 	function weirdobg() {
 		var weirdo = userjs+(new Date().getTime());
-		try { window.open("", weirdo).blur(); } catch(e) {}
-		window.focus();
+		try { self.open("", weirdo).blur(); } catch(e) {}
+		self.focus();
 		return weirdo;
 	}
 	function createButtor(type) {
@@ -1203,7 +1203,7 @@
 			if (joblist.length > 0) {
 				job = xhrJobs[joblist.shift()];
 			} else if (xhrWork.mbid) {
-				location.href = "/work/"+xhrWork.mbid;
+				self.location.href = "/work/"+xhrWork.mbid;
 				return;
 			} else {
 				alert("MAXI ERROR NO MBID (OMG BBQ WTF?)\nMaybe reload everything and try again…");
