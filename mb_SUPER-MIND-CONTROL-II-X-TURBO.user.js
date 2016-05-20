@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2016.5.17
+// @version      2016.5.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -796,7 +796,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 ## COOL_SEARCH_LINKS ##
 ==========================================================================*/
 j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” links excluding own edits or PUID edits, cross links between edits / open_edits, etc.");
-if (j2sets.COOL_SEARCH_LINKS && account && !self.locationself.location.pathname.match(/^\/search\/edits/)) {
+if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/search\/edits/)) {
 	var noPUID = "&conditions.2097.field=type&conditions.2097.operator=%21%3D&conditions.2097.args=77&conditions.2097.args=113";
 	if (self.location.pathname.match(new RegExp("/[^/]+/" + stre_GUID + "$")) && !self.location.pathname.match(/label|work/)) {
 		var entityType = self.location.pathname.match(/[^/]+/); entityType = entityType ? (entityType + "").replace(/-/, "_") : "";
