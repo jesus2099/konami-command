@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2016.5.17
+// @version      2016.5.25
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -101,6 +101,12 @@ if (pagecat) {
 							toolzone.className = userjs+"editbutt";
 							toolzone.style.setProperty("display", "none");
 							toolzone.appendChild(createA("Edit", rec.getAttribute("href")+"/edit", "Edit this recording"));
+							toolzone = toolzone.parentNode.appendChild(document.createElement("div"));
+							toolzone.className = userjs + "openEdits";
+							toolzone.style.setProperty("display", "none");
+							toolzone.appendChild(createA("Open", rec.getAttribute("href") + "/open_edits", "Recording open edits"));
+							toolzone.appendChild(document.createTextNode(" "));
+							toolzone.appendChild(createA("edits", rec.getAttribute("href") + "/edits", "Recording edit history"));
 						}
 						if (works = tracksHtml[ith].querySelectorAll(css_work)) {
 							for (var w=0; w<works.length; w++) {
@@ -388,6 +394,15 @@ function idCount(type, hash) {
 		idCountZone = document.querySelector("div#sidebar > dl.properties").appendChild(document.createElement("div"));
 		idCountZone.setAttribute("id", userjs+"idcountzone");
 		idCountZone.style.setProperty("border", "1px dashed silver");
+		var showOE = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createElement("label")).appendChild(document.createElement("input"));
+		showOE.setAttribute("type", "checkbox");
+		showOE.parentNode.appendChild(document.createTextNode(" Show recording open edits"));
+		showOE.addEventListener("click", function(event) {
+			var openEditLinks = document.querySelectorAll("div." + userjs + "openEdits");
+			for (var oe = 0; oe < openEditLinks.length; oe++) {
+				openEditLinks[oe].style.setProperty("display", this.checked ? "block" : "none");
+			}
+		});
 		var showTZ = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createElement("label")).appendChild(document.createElement("input"));
 		showTZ.setAttribute("type", "checkbox");
 		showTZ.parentNode.appendChild(document.createTextNode(" Show relate/merge tools"));
