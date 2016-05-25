@@ -171,25 +171,90 @@ var loadedSettings = JSON.parse(localStorage.getItem(userjs + "enabled-default-a
 for (var link in autolinks.default) if (autolinks.default.hasOwnProperty(link)) {
 	enabledDefaultAutolinks[link] = typeof loadedSettings[link] != "undefined" ? loadedSettings[link] : true;
 }
+var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/61960dd9ebd5b77c6f1199815160e63b3383437e/lib/MusicBrainz/Server/Entity/URL/Sidebar.pm
+	'amazon'                    : 'amazon',
+	'allmusic.com'              : 'allmusic',
+	'animenewsnetwork.com'      : 'animenewsnetwork',
+	'wikipedia.org'             : 'wikipedia',
+	'facebook.com'              : 'facebook',
+	'generasia.com'             : 'generasia',
+	'last.fm'                   : 'lastfm',
+	'myspace.com'               : 'myspace',
+	'twitter.com'               : 'twitter',
+	'youtube.com'               : 'youtube',
+	'discogs.com'               : 'discogs',
+	'secondhandsongs.com'       : 'secondhandsongs',
+	'songfacts.com'             : 'songfacts',
+	'soundcloud.com'            : 'soundcloud',
+	'ibdb.com'                  : 'ibdb',
+	'imdb.com'                  : 'imdb',
+	'imslp.org'                 : 'imslp',
+	'instagram.com'             : 'instagram',
+	'ester.ee'                  : 'ester',
+	'worldcat.org'              : 'worldcat',
+	'45cat.com'                 : 'fortyfivecat',
+	'rateyourmusic.com'         : 'rateyourmusic',
+	'rolldabeats.com'           : 'rolldabeats',
+	'psydb.net'                 : 'psydb',
+	'metal-archives.com'        : 'metalarchives',
+	'spirit-of-metal.com'       : 'spiritofmetal',
+	'theatricalia.com'          : 'theatricalia',
+	'whosampled.com'            : 'whosampled',
+	'ocremix.org'               : 'ocremix',
+	'musik-sammler.de'          : 'musiksammler',
+	'encyclopedisque.fr'        : 'encyclopedisque',
+	'nla.gov.au'                : 'trove',
+	'rockensdanmarkskort.dk'    : 'rockensdanmarkskort',
+	'rockinchina.com'           : 'ric',
+	'rockipedia.no'             : 'rockipedia',
+	'vgmdb.net'                 : 'vgmdb',
+	'viaf.org'                  : 'viaf',
+	'vk.com'                    : 'vk',
+	'vkdb.jp'                   : 'vkdb',
+	'dhhu.dk'                   : 'dhhu',
+	'thesession.org'            : 'thesession',
+	'plus.google.com'           : 'googleplus',
+	'openlibrary.org'           : 'openlibrary',
+	'bandcamp.com'              : 'bandcamp',
+	'play.google.com'           : 'googleplay',
+	'itunes.apple.com'          : 'itunes',
+	'spotify.com'               : 'spotify',
+	'soundtrackcollector.com'   : 'stcollector',
+	'wikidata.org'              : 'wikidata',
+	'lieder.net'                : 'lieder',
+	'loudr.fm'                  : 'loudr',
+	'genius.com'                : 'genius',
+	'imvdb.com'                 : 'imvdb',
+	'residentadvisor.net'       : 'residentadvisor',
+	'd-nb.info'                 : 'dnb',
+	'iss.ndl.go.jp'             : 'ndl',
+	'ci.nii.ac.jp'              : 'cinii',
+	'finnmusic.net'             : 'finnmusic',
+	'fono.fi'                   : 'fonofi',
+	'stage48.net'               : 'stage48',
+	'tedcrane.com/dancedb'      : 'dancedb',
+	'finna.fi'                  : 'finna',
+	'mainlynorfolk.info'        : 'mainlynorfolk',
+	'bibliotekapiosenki.pl'     : 'piosenki',
+	'qim.com'                   : 'quebecinfomusique',
+	'thedancegypsy.com'         : 'thedancegypsy',
+	'videogam.in'               : 'videogamin',
+	'spirit-of-rock.com'        : 'spiritofrock',
+	'tunearch.org'              : 'tunearch',
+	'castalbums.org'            : 'castalbums',
+	'smdb.kb.se'                : 'smdb',
+	'triplejunearthed.com'      : 'triplejunearthed',
+	'cdbaby.com'                : 'cdbaby',
+};
 var favicons = {//TODO: /favicon.ico entries are quite useless as they are auto found otherwise
-	"allmusic.com": "//www.allmusic.com/favicon.ico",
 	"ameblo.jp": "http://ameblo.jp/favicon.ico",
-	"bbc.co.uk": "//www.bbc.co.uk/favicon.ico",
-	"discogs.com": "//www.discogs.com/favicon.ico",
 	"exblog.jp": "//www.exblog.jp/favicon.ico",
 	"joshinweb.jp": "//joshinweb.jp/favicon.ico",
-	"last.fm": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
 	"lastfm.": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
 	"livedoor.jp": "http://blog.livedoor.jp/favicon.ico",
 	"lyrics.wikia.com": "//lyrics.wikia.com/favicon.ico",
-	"metal-archives.com": "http://www.metal-archives.com/favicon.ico",
 	"musicbrainz.org": "//musicbrainz.org/favicon.ico",
 	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
-	"secondhandsongs.com": "http://secondhandsongs.com/favicon.ico",
-	"soundcloud.com": "//musicbrainz.org/static/images/favicons/soundcloud-16.png",
-	"vgmdb.net": "http://vgmdb.net/favicon.ico",
-	"vkdb.jp": "//www.vkdb.jp/favicon.ico",
-	"wikipedia.org": "//en.wikipedia.org/favicon.ico",
 	"yahoo.": "http://blogs.yahoo.co.jp/favicon.ico",
 };
 var guessOtherFavicons = false;
@@ -467,6 +532,17 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 			}
 		}
 		var favurltest = (typeof parameters.target == "string") ? parameters.target : parameters.target.action;
+		var favclass = 'no';
+		var urldomain = favurltest.split('/')[2];
+		for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(favdomain)) {
+			if (urldomain.match(classdomain)) {
+				favclass = faviconClasses[classdomain];
+				break;
+			}
+		}
+		if (favclass != 'no') {
+			li.classList.add(favclass + '-favicon');
+		} else {
 		var favurlfound = false;
 		for (var part in favicons) if (favicons.hasOwnProperty(part)) {
 			if (favurltest.indexOf(part) != -1) {
@@ -474,6 +550,9 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 				break;
 			}
 		}
+		if (!guessOtherFavicons && !favurlfound) {
+			li.classList.add('no-favicon');
+		} else {
 		if (guessOtherFavicons && !favurlfound) {
 			favurlfound = favurltest.substr(0, favurltest.indexOf("/", 7)) + "/favicon.ico";
 		}
@@ -490,6 +569,8 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		favicontry[ifit].li = li;
 		favicontry[ifit].src = favurlfound;
 		favicontry[ifit].to = setTimeout(function(){ favicontry[ifit].src = "/"; }, 5000);
+		}
+		}
 	} else {
 		// This is a header
 		var li = createTag("li", {s: {fontWeight: "bold"}}, parameters.text);
