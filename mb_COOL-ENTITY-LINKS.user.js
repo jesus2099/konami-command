@@ -27,10 +27,8 @@
 "use strict";
 /* -------- CONFIGURATION START (don't edit above) -------- */
 var editLink = true;/*add direct link to edit page*/
-var editsLink = true;/*add direct link to edit history page*/
+var editsLink = true;/*add direct link to edit history and open edit pages*/
 var confirmIfMoreThan = 2000;/*-1 to never confirm*/
-var addNormal = true;/*add direct link to normal mbs after beta or test links*/
-var preferredProtocol = "https:";/* "https:", "http:" (including “:”) or "" (empty string) for no change*/
 /* -------- CONFIGURATION  END  (don't edit below) -------- */
 var userjs = "jesus2099userjs131731";
 var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -48,7 +46,7 @@ var entities = {
 	"release-group": {path: "/release-group/", icon: "release_group"},
 	ticket: {fullpath: "http://tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", HTTPonly: true},
 	track: {path: "/track/", icon: "recording"},
-	user: {path: "/user/", id: ".+"},
+	user: {path: "/user/", id: ".+", openEdits: "/edits/open", noEdit: true},
 	work: {path: "/work/", icon: "blank"},/*MBS-7070*/
 };
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
@@ -65,6 +63,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 	var c = userjs + ent;
 	if (entities[ent].icon) {
 		j2css.insertRule("a." + c + " { background-image: url(//musicbrainz.org/static/images/entity/" + entities[ent].icon + ".png); background-repeat: no-repeat; background-size: contain; padding-left: 16px; }", 0);
+		j2css.insertRule("a." + c + "::before { content: '" + ent + " '; font-weight: bold; }", 0);
 	}
 	var as, cssas;
 	if (entities[ent].fullpath) {
@@ -106,10 +105,6 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 			) {
 				as[a].classList.add(c);
 				if (as[a].textContent == href || /*forums*/as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /*edit-notes*/as[a].textContent == href.substr(0, 48) + "…") {
-					if (!entities[ent].fullpath && href.match(/^https?:/) && href.indexOf(preferredProtocol) != 0) {
-						href = href.replace(/^https?:/, preferredProtocol);
-						as[a].setAttribute("href", href);
-					}
 					as[a].classList.add(userjs);
 					var text = unescape(id[1]);
 					if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);
@@ -121,28 +116,15 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 						as[a].appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? "…" : ""))).parentNode.style.setProperty("opacity", ".5");
 					}
 					var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.)/);
-					var hrefn = href;
-					if (altserv && addNormal) {
-						hrefn = href.replace(/^([^/]*\/\/).+\.(musicbrainz\.org.+)$/, "$1$2");
-					}
-					if ((ent=="user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
-						addAfter(document.createTextNode(">"), as[a]);
-						if (editsLink) { addAfter(createTag("a", {a: {href: hrefn + "/edits", title: "see entity edit history"}}, "L"), as[a]); }
-						if (editLink) { addAfter(createTag("a", {a: {href: hrefn + "/edit", title: "edit this entity"}}, "E"), as[a]); }
-						addAfter(document.createTextNode("<"), as[a]);
-					}
 					if (altserv) {
-						if (addNormal) {
-							var mbs = document.createElement("a");
-							mbs.setAttribute("title", "normal server link");
-							mbs.setAttribute("href", hrefn);
-							mbs.classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//linked to mb_PREFERRED-MBS
-							mbs.appendChild(document.createTextNode("n"));
-							addAfter(document.createTextNode(")"), as[a]);
-							addAfter(mbs, as[a]);
-							addAfter(document.createTextNode("("), as[a]);
-						}
-						as[a].insertBefore(document.createElement("code").appendChild(document.createTextNode(altserv[1] + "\u00a0")).parentNode, as[a].firstChild);
+						addAfter(document.createTextNode("(" + altserv[1] + ")"), as[a]);
+					}
+					if ((ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
+						addAfter(document.createTextNode(">"), as[a]);
+						if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), as[a]); }
+						if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "L"), as[a]); }
+						if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), as[a]); }
+						addAfter(document.createTextNode("<"), as[a]);
 					}
 				}
 			}
