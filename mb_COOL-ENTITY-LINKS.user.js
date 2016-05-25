@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2016.5.17
+// @version      2016.5.25
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
@@ -53,8 +53,8 @@ var entities = {
 };
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 var j2css = document.styleSheets[document.styleSheets.length - 1];
-j2css.insertRule("a." + userjs + " {text-shadow: 1px 1px 2px silver; white-space: nowrap;}", j2css.cssRules.length);
-j2css.insertRule("a." + userjs + "tool {font-variant: small-caps; vertical-align: super; font-size: xx-small}", j2css.cssRules.length);
+j2css.insertRule("a." + userjs + " {text-shadow: 1px 1px 2px silver; white-space: nowrap;}", 0);
+j2css.insertRule("a." + userjs + "tool {font-variant: small-caps; vertical-align: super; font-size: xx-small}", 0);
 self.addEventListener("load", function(event){
 	for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 		localStorage.removeItem("jesus2099skip_linksdeco_" + ent);
@@ -64,7 +64,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 	var u = (entities[ent].fullpath ? entities[ent].fullpath : "musicbrainz.org" + entities[ent].path.replace("?", "\\?"));
 	var c = userjs + ent;
 	if (entities[ent].icon) {
-		j2css.insertRule("a." + c + "::before { content: url(//musicbrainz.org/static/images/entity/" + entities[ent].icon + ".png); margin-right: 4px; vertical-align: -.3em; }", j2css.cssRules.length);
+		j2css.insertRule("a." + c + " { background-image: url(//musicbrainz.org/static/images/entity/" + entities[ent].icon + ".png); background-repeat: no-repeat; background-size: contain; padding-left: 16px; }", 0);
 	}
 	var as, cssas;
 	if (entities[ent].fullpath) {
