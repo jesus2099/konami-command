@@ -534,7 +534,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		var favurltest = (typeof parameters.target == "string") ? parameters.target : parameters.target.action;
 		var favclass = 'no';
 		var urldomain = favurltest.split('/')[2];
-		for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(favdomain)) {
+		for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(classdomain)) {
 			if (urldomain.match(classdomain)) {
 				favclass = faviconClasses[classdomain];
 				break;
@@ -543,33 +543,33 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		if (favclass != 'no') {
 			li.classList.add(favclass + '-favicon');
 		} else {
-		var favurlfound = false;
-		for (var part in favicons) if (favicons.hasOwnProperty(part)) {
-			if (favurltest.indexOf(part) != -1) {
-				favurlfound = favicons[part];
-				break;
+			var favurlfound = false;
+			for (var part in favicons) if (favicons.hasOwnProperty(part)) {
+				if (favurltest.indexOf(part) != -1) {
+					favurlfound = favicons[part];
+					break;
+				}
 			}
-		}
-		if (!guessOtherFavicons && !favurlfound) {
-			li.classList.add('no-favicon');
-		} else {
-		if (guessOtherFavicons && !favurlfound) {
-			favurlfound = favurltest.substr(0, favurltest.indexOf("/", 7)) + "/favicon.ico";
-		}
-		var ifit = favicontry.length;
-		favicontry[ifit] = new Image();
-		/*favicontry.addEventListener("error", function (event) {
-		});*/
-		favicontry[ifit].addEventListener("load", function (event) {
-			clearTimeout(this.to);
-			if (this.width == 16) {
-				this.li.style.setProperty("background-image", "url(" + this.src + ")");
+			if (!guessOtherFavicons && !favurlfound) {
+				li.classList.add('no-favicon');
+			} else {
+				if (guessOtherFavicons && !favurlfound) {
+					favurlfound = favurltest.substr(0, favurltest.indexOf("/", 7)) + "/favicon.ico";
+				}
+				var ifit = favicontry.length;
+				favicontry[ifit] = new Image();
+				/*favicontry.addEventListener("error", function (event) {
+				});*/
+				favicontry[ifit].addEventListener("load", function (event) {
+					clearTimeout(this.to);
+					if (this.width == 16) {
+						this.li.style.setProperty("background-image", "url(" + this.src + ")");
+					}
+				});
+				favicontry[ifit].li = li;
+				favicontry[ifit].src = favurlfound;
+				favicontry[ifit].to = setTimeout(function(){ favicontry[ifit].src = "/"; }, 5000);
 			}
-		});
-		favicontry[ifit].li = li;
-		favicontry[ifit].src = favurlfound;
-		favicontry[ifit].to = setTimeout(function(){ favicontry[ifit].src = "/"; }, 5000);
-		}
 		}
 	} else {
 		// This is a header
