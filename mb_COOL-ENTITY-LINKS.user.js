@@ -26,6 +26,7 @@
 // ==/UserScript==
 "use strict";
 /* -------- CONFIGURATION START (don't edit above) -------- */
+var contractMBIDs = true; /* more compact MBIDs but brwoser can still inline search/find full MBID (this is magic from mb_INLINE-STUFF) */
 var editLink = true;/*add direct link to edit page*/
 var editsLink = true;/*add direct link to edit history and open edit pages*/
 var confirmIfMoreThan = 2000;/*-1 to never confirm*/
@@ -63,7 +64,10 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 	var c = userjs + ent;
 	if (entities[ent].icon) {
 		j2css.insertRule("a." + c + " { background-image: url(//musicbrainz.org/static/images/entity/" + entities[ent].icon + ".png); background-repeat: no-repeat; background-size: contain; padding-left: 16px; }", 0);
-		j2css.insertRule("a." + c + "::before { content: '" + ent + " '; font-weight: bold; }", 0);
+	}
+	j2css.insertRule("a." + c + "::before { content: '" + ent + " '; font-weight: bold; }", 0);
+	if (contractMBIDs && ent != "user") {
+		j2css.insertRule("a." + c + " > code { display: inline-block; overflow-x: hidden; vertical-align: bottom; }", 0);
 	}
 	var as, cssas;
 	if (entities[ent].fullpath) {
@@ -109,22 +113,27 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 					var text = unescape(id[1]);
 					if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);
 					if (text) {
-						as[a].replaceChild(document.createTextNode(text), as[a].firstChild);
-						as[a].setAttribute("title", ent);
+						as[a].replaceChild(entities[ent].id ? document.createTextNode(text) : createTag("code", {}, text), as[a].firstChild);
 					}
 					if (id[2] || id[3]) {
 						as[a].appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? "…" : ""))).parentNode.style.setProperty("opacity", ".5");
 					}
 					var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.)/);
 					if (altserv) {
-						addAfter(document.createTextNode("(" + altserv[1] + ")"), as[a]);
+						as[a].appendChild(document.createTextNode(" (" + altserv[1] + ")"));
+					}
+					var code = as[a].querySelector("code");
+					if (contractMBIDs && code) {
+						var width = parseInt(self.getComputedStyle(code).getPropertyValue("width").match(/^\d+/) + "", 10);
+						code.style.setProperty("width", width / code.textContent.length * 8 + "px");
+						as[a].setAttribute("title", id[1] + " (" + ent + ")");
 					}
 					if ((ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
 						addAfter(document.createTextNode(">"), as[a]);
 						if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), as[a]); }
 						if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "L"), as[a]); }
 						if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), as[a]); }
-						addAfter(document.createTextNode("<"), as[a]);
+						addAfter(document.createTextNode(" <"), as[a]);
 					}
 				}
 			}
