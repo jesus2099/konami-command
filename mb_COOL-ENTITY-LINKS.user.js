@@ -70,28 +70,28 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 	if (entities[ent].fullpath) {
 		cssas = "a[href^='" + u + "']";
 	} else if (self.location.href.match(/^https?:\/\/(test\.|beta\.|classic\.)?musicbrainz\.org/)) {
-		cssas = "table.details a[href*='://" + u + "'], ";
-		cssas += "table.details a[href*='://test." + u + "'], ";
-		cssas += "table.details a[href*='://beta." + u + "'], ";
-		cssas += "table.details a[href*='://classic." + u + "'][href$='.html'], ";
-		cssas += "div.annotation a[href*='://" + u + "'], ";
-		cssas += "div.annotation a[href*='://test." + u + "'], ";
-		cssas += "div.annotation a[href*='://beta." + u + "'], ";
-		cssas += "div.annotation a[href*='://classic." + u + "'][href$='.html'], ";
-		cssas += "div[class^='edit-'] a[href*='://" + u + "'], ";
-		cssas += "div[class^='edit-'] a[href*='://test." + u + "'], ";
-		cssas += "div[class^='edit-'] a[href*='://beta." + u + "'], ";
-		cssas += "div[class^='edit-'] a[href*='://classic." + u + "'][href$='.html']";
+		cssas = "table.details a[href*='//" + u + "'], ";
+		cssas += "table.details a[href*='//test." + u + "'], ";
+		cssas += "table.details a[href*='//beta." + u + "'], ";
+		cssas += "table.details a[href*='//classic." + u + "'][href$='.html'], ";
+		cssas += "div.annotation a[href*='//" + u + "'], ";
+		cssas += "div.annotation a[href*='//test." + u + "'], ";
+		cssas += "div.annotation a[href*='//beta." + u + "'], ";
+		cssas += "div.annotation a[href*='//classic." + u + "'][href$='.html'], ";
+		cssas += "div[class^='edit-'] a[href*='//" + u + "'], ";
+		cssas += "div[class^='edit-'] a[href*='//test." + u + "'], ";
+		cssas += "div[class^='edit-'] a[href*='//beta." + u + "'], ";
+		cssas += "div[class^='edit-'] a[href*='//classic." + u + "'][href$='.html']";
 		if (self.location.pathname.match(new RegExp("/(artist|label)/" + GUIDi + "/relationships|/place/" + GUIDi + "/performances"), "i")) {
-			cssas += ", table.tbl tr > td:first-child + td a[href*='://" + u + "'], ";
-			cssas += "table.tbl tr > td:first-child + td a[href*='://test." + u + "'], ";
-			cssas += "table.tbl tr > td:first-child + td a[href*='://beta." + u + "']";
+			cssas += ", table.tbl tr > td:first-child + td a[href*='//" + u + "'], ";
+			cssas += "table.tbl tr > td:first-child + td a[href*='//test." + u + "'], ";
+			cssas += "table.tbl tr > td:first-child + td a[href*='//beta." + u + "']";
 		}
 	} else {
-		cssas = "a[href*='://" + u + "'], ";
-		cssas += "a[href*='://test." + u + "'], ";
-		cssas += "a[href*='://beta." + u + "'], ";
-		cssas += "a[href*='://classic." + u + "'][href$='.html']";
+		cssas = "a[href*='//" + u + "'], ";
+		cssas += "a[href*='//test." + u + "'], ";
+		cssas += "a[href*='//beta." + u + "'], ";
+		cssas += "a[href*='//classic." + u + "'][href$='.html']";
 	}
 	as = document.querySelectorAll(cssas);
 	var skip = localStorage.getItem("jesus2099skip_linksdeco_" + ent);/*skip deco shared with COLLECTION HIGHLIGHTER asks only once per page*/
