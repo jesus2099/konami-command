@@ -65,9 +65,9 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 	if (entities[ent].icon) {
 		j2css.insertRule("a." + c + " { background-image: url(//musicbrainz.org/static/images/entity/" + entities[ent].icon + ".png); background-repeat: no-repeat; background-size: contain; padding-left: 16px; }", 0);
 	}
-	j2css.insertRule("a." + c + "::before { content: '" + ent + " '; font-weight: bold; }", 0);
 	if (contractMBIDs && ent != "user") {
 		j2css.insertRule("a." + c + " > code { display: inline-block; overflow-x: hidden; vertical-align: bottom; }", 0);
+		j2css.insertRule("a." + c + ":hover > code { display: inline; }", 0);
 	}
 	var as, cssas;
 	if (entities[ent].fullpath) {
@@ -126,12 +126,12 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 					if (contractMBIDs && code) {
 						var width = parseInt(self.getComputedStyle(code).getPropertyValue("width").match(/^\d+/) + "", 10);
 						code.style.setProperty("width", width / code.textContent.length * 8 + "px");
-						as[a].setAttribute("title", id[1] + " (" + ent + ")");
 					}
+					as[a].insertBefore(createTag("b", {}, ent + " "), as[a].firstChild);
 					if ((ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
 						addAfter(document.createTextNode(">"), as[a]);
 						if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), as[a]); }
-						if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "L"), as[a]); }
+						if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "H"), as[a]); }
 						if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), as[a]); }
 						addAfter(document.createTextNode(" <"), as[a]);
 					}
