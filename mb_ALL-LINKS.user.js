@@ -33,7 +33,7 @@
 var userjs = "jesus2099_all-links_";
 var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; // U+2FA1D is currently out of js range
 var autolinksOpacity = ".5";
-var languages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["en", "ja", "fr", "de", "es"]; // http://musicbrainz.org/statistics/languages-scripts
+var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["navigator", "musicbrainz"];
 // %artist-id% (MBID)
 // %arist-name%
 // %artist-sort-name%
@@ -314,7 +314,8 @@ function main() {
 			}
 		}/*artist*/
 		/*wikidata to wikipedia*/
-		if (languages && Array.isArray(languages) && languages.length > 0) {
+		if (rawLanguages && Array.isArray(rawLanguages) && rawLanguages.length > 0) {
+			var languages = parseLanguages(rawLanguages);
 			var wikidatas = sidebar.querySelectorAll("ul.external_links > li a[href*='wikidata.org/wiki/Q']");
 			for (var wd = 0; wd < wikidatas.length; wd++) {
 				var wikidataID = wikidatas[wd].getAttribute("href").match(/Q\d+$/);
@@ -573,6 +574,49 @@ function nsr(prefix) {
 			return null;
 	}
 }
+function guessNavigatorLanguages () {
+	var languages = navigator.languages;
+	if (languages && languages.length) {
+		return languages;
+	} else {
+		var language = navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage;
+		if (language) {
+			if (language.match('-')) {
+				return [language, language.split('-')[0]];
+			} else {
+				return [language];
+			}
+		} else {
+			return [];
+		}
+	}
+}
+function parseLanguages (inputLanguages) {
+	var outputLanguages = [];
+	var ol = 0;
+	for (var il = 0; il < inputLanguages.length; il++) {
+		var nextLanguage = inputLanguages[il];
+		if (inputLanguages[il] == "navigator") {
+			var navigatorLanguages = guessNavigatorLanguages();
+			for (var nl = 0; nl < navigatorLanguages.length; nl++) {
+				nextLanguage = navigatorLanguages[nl];
+				if (outputLanguages.indexOf(nextLanguage) < 0) {
+					outputLanguages[ol] = nextLanguage;
+					ol++;
+				}
+			}
+		} else {
+			if (inputLanguages[il] == "musicbrainz") {
+				nextLanguage = document.documentElement.getAttribute("lang") || "en";
+			}
+			if (outputLanguages.indexOf(nextLanguage) < 0) {
+				outputLanguages[ol] = nextLanguage;
+				ol++;
+			}
+		}
+	}
+	return outputLanguages;
+}
 function configureModule(event) {
 	switch (event.target.getAttribute("title")) {
 		case "configure user autolinks":
@@ -588,11 +632,13 @@ function configureModule(event) {
 			extlinks.classList.toggle("configure");
 			break;
 		case "choose wikipedia languages":
-			var loadedLanguages = localStorage.getItem(userjs + "languages") || JSON.stringify(languages);
-			var newLanguages = prompt("Choose your favourite language(s)\r\nExample 1: [\"fr\", \"en\", \"vi\", \"ja\"]\r\nExample 2: [\"en\"]\r\nExample 3: []", loadedLanguages.replace(/,/g, "$& "));
+			var navigatorLanguages = guessNavigatorLanguages();
+			var musicbrainzLanguage = document.documentElement.getAttribute("lang") || "en" ;
+			var loadedLanguages = localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages);
+			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nMeta languages are:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length ? ("detected as [" + navigatorLanguages + "]") : "undetected") + "\r\n- \"musicbrainz\" for MusicBrainz UI settings, currently " + (musicbrainzLanguage ? ("detected as [" + musicbrainzLanguage + "]") : "undetected") + "\r\n\r\nExample 1: [\"navigator\", \"musicbrainz\"]\r\nExample 2: [\"fr\", \"en\", \"vi\", \"ja\"]\r\nExample 3: [\"en\"]\r\nExample 4: []", loadedLanguages.replace(/,/g, "$& "));
 			if (newLanguages && newLanguages != loadedLanguages && JSON.stringify(newLanguages)) {
 				localStorage.setItem(userjs + "languages", newLanguages);
-				languages = newLanguages;
+				rawLanguages = newLanguages;
 			}
 			break;
 	}
