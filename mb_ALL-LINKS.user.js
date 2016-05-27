@@ -574,7 +574,7 @@ function nsr(prefix) {
 			return null;
 	}
 }
-function guessNavigatorLanguages () {
+function guessNavigatorLanguages() {
 	if (Array.isArray(navigator.languages)) {
 		return navigator.languages;
 	} else {
@@ -586,7 +586,7 @@ function guessNavigatorLanguages () {
 		}
 	}
 }
-function parseLanguages (inputLanguages) {
+function parseLanguages(inputLanguages) {
 	var outputLanguages = [];
 	for (var il = 0; il < inputLanguages.length; il++) {
 		var nextLanguage = inputLanguages[il];
@@ -607,10 +607,17 @@ function parseLanguages (inputLanguages) {
 			}
 		}
 	}
-	for (var ol = 0; ol < outputLanguages.length; ol++) {
-		if (outputLanguages[ol].match(/-/)) {
-			outputLanguages.splice(ol + 1, 0, outputLanguages[ol].split("-")[0]);
-			ol += 1;
+	return splitLanguages(outputLanguages);
+}
+function splitLanguages(inputLanguages) {
+	var outputLanguages = [];
+	for (var il = 0; il < inputLanguages.length; il++) {
+		outputLanguages.push(inputLanguages[il]);
+		if (inputLanguages[il].match(/-/)) {
+			var splitLanguage = inputLanguages[il].split("-")[0];
+			if (outputLanguages.indexOf(splitLanguage) < 0) {
+				outputLanguages.push(splitLanguage);
+			}
 		}
 	}
 	return outputLanguages;
@@ -630,10 +637,10 @@ function configureModule(event) {
 			extlinks.classList.toggle("configure");
 			break;
 		case "choose wikipedia languages":
-			var navigatorLanguages = guessNavigatorLanguages();
-			var musicbrainzLanguage = document.documentElement.getAttribute("lang") || "en" ;
+			var navigatorLanguages = splitLanguages(guessNavigatorLanguages());
+			var musicbrainzLanguage = splitLanguages([document.documentElement.getAttribute("lang") || "en"])[0];
 			var loadedLanguages = localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages);
-			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nMeta languages are:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length ? ("detected as [" + navigatorLanguages + "]") : "undetected") + "\r\n- \"musicbrainz\" for MusicBrainz UI settings, currently " + (musicbrainzLanguage ? ("detected as [" + musicbrainzLanguage + "]") : "undetected") + "\r\n\r\nExample 1: [\"navigator\", \"musicbrainz\"]\r\nExample 2: [\"fr\", \"en\", \"vi\", \"ja\"]\r\nExample 3: [\"en\"]\r\nExample 4: []", loadedLanguages.replace(/,/g, "$& "));
+			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nMeta languages are:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ") : "undetected") + "\r\n- \"musicbrainz\" for MusicBrainz UI settings, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault: [\"navigator\", \"musicbrainz\"]\r\nExample 2: [\"fr\", \"en\", \"vi\", \"ja\"]\r\nExample 3: [\"en\"]\r\nExample 4: []", loadedLanguages.replace(/,/g, "$& "));
 			if (newLanguages && newLanguages != loadedLanguages && JSON.stringify(newLanguages)) {
 				localStorage.setItem(userjs + "languages", newLanguages);
 				rawLanguages = newLanguages;
