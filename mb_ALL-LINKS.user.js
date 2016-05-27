@@ -575,17 +575,12 @@ function nsr(prefix) {
 	}
 }
 function guessNavigatorLanguages () {
-	var languages = navigator.languages;
-	if (languages && languages.length) {
-		return languages;
+	if (Array.isArray(navigator.languages)) {
+		return navigator.languages;
 	} else {
 		var language = navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage;
 		if (language) {
-			if (language.match('-')) {
-				return [language, language.split('-')[0]];
-			} else {
-				return [language];
-			}
+			return [language];
 		} else {
 			return [];
 		}
@@ -593,7 +588,6 @@ function guessNavigatorLanguages () {
 }
 function parseLanguages (inputLanguages) {
 	var outputLanguages = [];
-	var ol = 0;
 	for (var il = 0; il < inputLanguages.length; il++) {
 		var nextLanguage = inputLanguages[il];
 		if (inputLanguages[il] == "navigator") {
@@ -601,8 +595,7 @@ function parseLanguages (inputLanguages) {
 			for (var nl = 0; nl < navigatorLanguages.length; nl++) {
 				nextLanguage = navigatorLanguages[nl];
 				if (outputLanguages.indexOf(nextLanguage) < 0) {
-					outputLanguages[ol] = nextLanguage;
-					ol++;
+					outputLanguages.push(nextLanguage);
 				}
 			}
 		} else {
@@ -610,9 +603,14 @@ function parseLanguages (inputLanguages) {
 				nextLanguage = document.documentElement.getAttribute("lang") || "en";
 			}
 			if (outputLanguages.indexOf(nextLanguage) < 0) {
-				outputLanguages[ol] = nextLanguage;
-				ol++;
+				outputLanguages.push(nextLanguage);
 			}
+		}
+	}
+	for (var ol = 0; ol < outputLanguages.length; ol++) {
+		if (outputLanguages[ol].match(/-/)) {
+			outputLanguages.splice(ol + 1, 0, outputLanguages[ol].split("-")[0]);
+			ol += 1;
 		}
 	}
 	return outputLanguages;
