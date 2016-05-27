@@ -533,7 +533,8 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		}
 		var favurltest = (typeof parameters.target == "string") ? parameters.target : parameters.target.action;
 		var favclass = 'no';
-		var urldomain = favurltest.split('/')[2];
+		var searchdomain = favurltest.match('site:([^+]*)\\+');
+		var urldomain = searchdomain ? searchdomain[1] : favurltest.split('/')[2];
 		for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(classdomain)) {
 			if (urldomain.match(classdomain)) {
 				favclass = faviconClasses[classdomain];
