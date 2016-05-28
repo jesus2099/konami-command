@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2016.5.17
+// @version      2016.5.28
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -172,92 +172,87 @@ for (var link in autolinks.default) if (autolinks.default.hasOwnProperty(link)) 
 	enabledDefaultAutolinks[link] = typeof loadedSettings[link] != "undefined" ? loadedSettings[link] : true;
 }
 var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/61960dd9ebd5b77c6f1199815160e63b3383437e/lib/MusicBrainz/Server/Entity/URL/Sidebar.pm
-	'amazon'                    : 'amazon',
-	'allmusic.com'              : 'allmusic',
-	'animenewsnetwork.com'      : 'animenewsnetwork',
-	'wikipedia.org'             : 'wikipedia',
-	'facebook.com'              : 'facebook',
-	'generasia.com'             : 'generasia',
-	'last.fm'                   : 'lastfm',
-	'myspace.com'               : 'myspace',
-	'twitter.com'               : 'twitter',
-	'youtube.com'               : 'youtube',
-	'discogs.com'               : 'discogs',
-	'secondhandsongs.com'       : 'secondhandsongs',
-	'songfacts.com'             : 'songfacts',
-	'soundcloud.com'            : 'soundcloud',
-	'ibdb.com'                  : 'ibdb',
-	'imdb.com'                  : 'imdb',
-	'imslp.org'                 : 'imslp',
-	'instagram.com'             : 'instagram',
-	'ester.ee'                  : 'ester',
-	'worldcat.org'              : 'worldcat',
-	'45cat.com'                 : 'fortyfivecat',
-	'rateyourmusic.com'         : 'rateyourmusic',
-	'rolldabeats.com'           : 'rolldabeats',
-	'psydb.net'                 : 'psydb',
-	'metal-archives.com'        : 'metalarchives',
-	'spirit-of-metal.com'       : 'spiritofmetal',
-	'theatricalia.com'          : 'theatricalia',
-	'whosampled.com'            : 'whosampled',
-	'ocremix.org'               : 'ocremix',
-	'musik-sammler.de'          : 'musiksammler',
-	'encyclopedisque.fr'        : 'encyclopedisque',
-	'nla.gov.au'                : 'trove',
-	'rockensdanmarkskort.dk'    : 'rockensdanmarkskort',
-	'rockinchina.com'           : 'ric',
-	'rockipedia.no'             : 'rockipedia',
-	'vgmdb.net'                 : 'vgmdb',
-	'viaf.org'                  : 'viaf',
-	'vk.com'                    : 'vk',
-	'vkdb.jp'                   : 'vkdb',
-	'dhhu.dk'                   : 'dhhu',
-	'thesession.org'            : 'thesession',
-	'plus.google.com'           : 'googleplus',
-	'openlibrary.org'           : 'openlibrary',
-	'bandcamp.com'              : 'bandcamp',
-	'play.google.com'           : 'googleplay',
-	'itunes.apple.com'          : 'itunes',
-	'spotify.com'               : 'spotify',
-	'soundtrackcollector.com'   : 'stcollector',
-	'wikidata.org'              : 'wikidata',
-	'lieder.net'                : 'lieder',
-	'loudr.fm'                  : 'loudr',
-	'genius.com'                : 'genius',
-	'imvdb.com'                 : 'imvdb',
-	'residentadvisor.net'       : 'residentadvisor',
-	'd-nb.info'                 : 'dnb',
-	'iss.ndl.go.jp'             : 'ndl',
-	'ci.nii.ac.jp'              : 'cinii',
-	'finnmusic.net'             : 'finnmusic',
-	'fono.fi'                   : 'fonofi',
-	'stage48.net'               : 'stage48',
-	'tedcrane.com/dancedb'      : 'dancedb',
-	'finna.fi'                  : 'finna',
-	'mainlynorfolk.info'        : 'mainlynorfolk',
-	'bibliotekapiosenki.pl'     : 'piosenki',
-	'qim.com'                   : 'quebecinfomusique',
-	'thedancegypsy.com'         : 'thedancegypsy',
-	'videogam.in'               : 'videogamin',
-	'spirit-of-rock.com'        : 'spiritofrock',
-	'tunearch.org'              : 'tunearch',
-	'castalbums.org'            : 'castalbums',
-	'smdb.kb.se'                : 'smdb',
-	'triplejunearthed.com'      : 'triplejunearthed',
-	'cdbaby.com'                : 'cdbaby',
+	"amazon"                    : "amazon",
+	"allmusic.com"              : "allmusic",
+	"animenewsnetwork.com"      : "animenewsnetwork",
+	"wikipedia.org"             : "wikipedia",
+	"facebook.com"              : "facebook",
+	"generasia.com"             : "generasia",
+	"last.fm"                   : "lastfm",
+	"myspace.com"               : "myspace",
+	"twitter.com"               : "twitter",
+	"youtube.com"               : "youtube",
+	"discogs.com"               : "discogs",
+	"secondhandsongs.com"       : "secondhandsongs",
+	"songfacts.com"             : "songfacts",
+	"soundcloud.com"            : "soundcloud",
+	"ibdb.com"                  : "ibdb",
+	"imdb.com"                  : "imdb",
+	"imslp.org"                 : "imslp",
+	"instagram.com"             : "instagram",
+	"ester.ee"                  : "ester",
+	"worldcat.org"              : "worldcat",
+	"45cat.com"                 : "fortyfivecat",
+	"rateyourmusic.com"         : "rateyourmusic",
+	"rolldabeats.com"           : "rolldabeats",
+	"psydb.net"                 : "psydb",
+	"metal-archives.com"        : "metalarchives",
+	"spirit-of-metal.com"       : "spiritofmetal",
+	"theatricalia.com"          : "theatricalia",
+	"whosampled.com"            : "whosampled",
+	"ocremix.org"               : "ocremix",
+	"musik-sammler.de"          : "musiksammler",
+	"encyclopedisque.fr"        : "encyclopedisque",
+	"nla.gov.au"                : "trove",
+	"rockensdanmarkskort.dk"    : "rockensdanmarkskort",
+	"rockinchina.com"           : "ric",
+	"rockipedia.no"             : "rockipedia",
+	"vgmdb.net"                 : "vgmdb",
+	"viaf.org"                  : "viaf",
+	"vk.com"                    : "vk",
+	"vkdb.jp"                   : "vkdb",
+	"dhhu.dk"                   : "dhhu",
+	"thesession.org"            : "thesession",
+	"plus.google.com"           : "googleplus",
+	"openlibrary.org"           : "openlibrary",
+	"bandcamp.com"              : "bandcamp",
+	"play.google.com"           : "googleplay",
+	"itunes.apple.com"          : "itunes",
+	"spotify.com"               : "spotify",
+	"soundtrackcollector.com"   : "stcollector",
+	"wikidata.org"              : "wikidata",
+	"lieder.net"                : "lieder",
+	"loudr.fm"                  : "loudr",
+	"genius.com"                : "genius",
+	"imvdb.com"                 : "imvdb",
+	"residentadvisor.net"       : "residentadvisor",
+	"d-nb.info"                 : "dnb",
+	"iss.ndl.go.jp"             : "ndl",
+	"ci.nii.ac.jp"              : "cinii",
+	"finnmusic.net"             : "finnmusic",
+	"fono.fi"                   : "fonofi",
+	"stage48.net"               : "stage48",
+	"tedcrane.com/dancedb"      : "dancedb",
+	"finna.fi"                  : "finna",
+	"mainlynorfolk.info"        : "mainlynorfolk",
+	"bibliotekapiosenki.pl"     : "piosenki",
+	"qim.com"                   : "quebecinfomusique",
+	"thedancegypsy.com"         : "thedancegypsy",
+	"videogam.in"               : "videogamin",
+	"spirit-of-rock.com"        : "spiritofrock",
+	"tunearch.org"              : "tunearch",
+	"castalbums.org"            : "castalbums",
+	"smdb.kb.se"                : "smdb",
+	"triplejunearthed.com"      : "triplejunearthed",
+	"cdbaby.com"                : "cdbaby",
 };
-var favicons = {//TODO: /favicon.ico entries are quite useless as they are auto found otherwise
-	"ameblo.jp": "http://ameblo.jp/favicon.ico",
-	"exblog.jp": "//www.exblog.jp/favicon.ico",
-	"joshinweb.jp": "//joshinweb.jp/favicon.ico",
+var favicons = {
 	"lastfm.": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
 	"livedoor.jp": "http://blog.livedoor.jp/favicon.ico",
-	"lyrics.wikia.com": "//lyrics.wikia.com/favicon.ico",
-	"musicbrainz.org": "//musicbrainz.org/favicon.ico",
 	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
 	"yahoo.": "http://blogs.yahoo.co.jp/favicon.ico",
 };
-var guessOtherFavicons = false;
+var guessOtherFavicons = true;
 var sidebar = document.getElementById("sidebar");
 var arelsws = "/ws/2/artist/%artist-id%?inc=url-rels";
 var existingLinks, extlinks;
@@ -533,18 +528,20 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 			}
 		}
 		var favurltest = (typeof parameters.target == "string") ? parameters.target : parameters.target.action;
-		var favclass = 'no';
-		var searchdomain = favurltest.match('site:([^+]*)\\+');
-		var urldomain = searchdomain ? searchdomain[1] : favurltest.split('/')[2];
+		var favclass = "no";
+		// MusicBrainz cached favicon CSS classes
+		var searchdomain = favurltest.match(/site:([^+]*)\+/);
+		var urldomain = searchdomain ? searchdomain[1] : favurltest.split("/")[2];
 		for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(classdomain)) {
 			if (urldomain.match(classdomain)) {
 				favclass = faviconClasses[classdomain];
 				break;
 			}
 		}
-		if (favclass != 'no') {
-			li.classList.add(favclass + '-favicon');
+		if (favclass != "no") {
+			li.classList.add(favclass + "-favicon");
 		} else {
+			// Static favicon URL dictionary
 			var favurlfound = false;
 			for (var part in favicons) if (favicons.hasOwnProperty(part)) {
 				if (favurltest.indexOf(part) != -1) {
@@ -553,24 +550,29 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 				}
 			}
 			if (!guessOtherFavicons && !favurlfound) {
-				li.classList.add('no-favicon');
+				li.classList.add("no-favicon");
 			} else {
+				// arbitrary /favicon.ico load try out
 				if (guessOtherFavicons && !favurlfound) {
-					favurlfound = favurltest.substr(0, favurltest.indexOf("/", 7)) + "/favicon.ico";
+					favurlfound = favurltest.substr(0, favurltest.indexOf("/", 8)) + "/favicon.ico";
 				}
 				var ifit = favicontry.length;
 				favicontry[ifit] = new Image();
-				/*favicontry.addEventListener("error", function (event) {
-				});*/
+				favicontry[ifit].addEventListener("error", function (event) {
+					this.li.classList.add("no-favicon");
+				});
 				favicontry[ifit].addEventListener("load", function (event) {
 					clearTimeout(this.to);
-					if (this.width == 16) {
-						this.li.style.setProperty("background-image", "url(" + this.src + ")");
-					}
+					this.li.style.setProperty("background-image", "url(" + this.src + ")");
+					this.li.style.setProperty("background-size", "16px 16px");
 				});
 				favicontry[ifit].li = li;
 				favicontry[ifit].src = favurlfound;
-				favicontry[ifit].to = setTimeout(function(){ favicontry[ifit].src = "/"; }, 5000);
+				favicontry[ifit].to = setTimeout(function() {
+					// don’t wait for more than 5 seconds
+					favicontry[ifit].src = "";
+					this.li.classList.add("no-favicon");
+				}, 5000);
 			}
 		}
 	} else {
