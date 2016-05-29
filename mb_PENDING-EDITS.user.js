@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2016.5.17
+// @version      2016.5.29
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -60,7 +60,7 @@ var account = document.querySelector("div.header li.account a[href^='" + MBS + "
 //EDITING HISTORY
 if (
 	account
-	&& (account = unescape(account.getAttribute("href").match(/[^/]+$/)))
+	&& (account = decodeURIComponent(account.getAttribute("href").match(/[^/]+$/)))
 	&& document.querySelector("div#sidebar")
 	&& (loc = self.location.pathname.match(new RegExp("^/(area|artist|collection|event|label|place|release-group|release|recording|series|work|url)/(" + RE_GUID + ")")))
 	&& (pageEntity = document.querySelector("div#content > div > h1 a"))
@@ -194,7 +194,7 @@ function updateLink(obj, pecount, details, more) {
 				var titarray = [], dupcount = 0, dupreset;
 				for (var d = 0; d < details.types.length; d++) {
 					var thistit = details.types[d].replace(/^.+ - /, "- ");
-					var editor = unescape(details.editors[d].replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""));
+					var editor = decodeURIComponent(details.editors[d].replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""));
 					if (editor != account) {
 						thistit += " (" + editor + ")";
 					}
