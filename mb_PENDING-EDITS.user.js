@@ -179,7 +179,7 @@ function checkOpenEdits(obj) {
 }
 function updateLink(obj, pecount, details, more) {
 	var countText;
-	var liTitle;
+	var tooltip;
 	var li = getParent(obj.openedits, "li");
 	var count = li.querySelector("span." + userjs + "count");
 	if (typeof pecount == "number") {
@@ -187,7 +187,7 @@ function updateLink(obj, pecount, details, more) {
 		if (more) countText += "+";
 		if (pecount == 0) {
 			mp(obj.openedits, false);
-			liTitle = "no pending edits";
+			tooltip = "no pending edits";
 		} else if (pecount > 0) {
 			mp(obj.openedits, true);
 			if (details.types.length > 0 && details.types.length == details.editors.length) {
@@ -213,7 +213,7 @@ function updateLink(obj, pecount, details, more) {
 					}
 					dupreset = false;
 				}
-				liTitle = titarray.join("\r\n");
+				tooltip = titarray.join("\r\n");
 				var expanded = "▼";
 				var collapsed = "◀";
 				var expandEditLists = (localStorage.getItem(userjs + "pendingEditLists") != collapsed);
@@ -229,15 +229,15 @@ function updateLink(obj, pecount, details, more) {
 					}
 				}
 				if (titarray.length < 2 && pecount <= 50) {
-					liTitle = liTitle.replace(/^- /, "");
+					tooltip = tooltip.replace(/^- /, "");
 				}
 				if (pecount > 50) {
-					liTitle += "\r\n- …";
+					tooltip += "\r\n- …";
 					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
 				}
 				var help = createTag("span", {a: {class: userjs + "help"}, s: {display: expandEditLists ? "inline" : "none"}});
 				if (titarray.length > 1) {
-					liTitle += "\r\n \r\n(oldest edit on bottom)";
+					tooltip += "\r\n \r\n(oldest edit on bottom)";
 					if (obj != pageEntity) {
 						help.appendChild(document.createElement("br"));
 					}
@@ -259,12 +259,12 @@ function updateLink(obj, pecount, details, more) {
 		}
 	} else {
 		countText = pecount.status;
-		liTitle = pecount.responseText;
+		tooltip = pecount.responseText;
 		count.style.setProperty("background-color", "pink");//“pink” linked in mb_MASS-MERGE-RECORDINGS.user.js
 	}
 	count.replaceChild(document.createTextNode(countText), count.firstChild);//“countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
-	if (liTitle) {
-		li.setAttribute("title", liTitle);//linked in mb_MASS-MERGE-RECORDINGS.user.js
+	if (tooltip) {
+		obj.openedits.setAttribute("title", tooltip);//linked in mb_MASS-MERGE-RECORDINGS.user.js
 	}
 }
 function mp(o, set) {
