@@ -401,9 +401,9 @@ function main() {
 									/*if (!existingLinks || !existingLinks[url]) {*/
 									if (!extlinks.querySelector("li a[href$='" + href + "']")) {
 										if (!ul) {
-											ul = wikidataListItem.appendChild(document.createElement("ul"));
+											ul = wikidataListItem.appendChild(createTag("ul", {s: {listStyle: "none"}}));
 										}
-										ul.appendChild(createTag("li", {s: {padding: "0"}}, [languages[languageCode], ": ", createTag("a", {a: {href: href}}, wikiEntry.title)]));
+										ul.appendChild(createTag("li", {a: {class: "wikipedia-favicon"}, s: {marginLeft: "-22px"}}, [languages[languageCode], ": ", createTag("a", {a: {href: href}}, wikiEntry.title)]));
 									}
 								}
 							}
