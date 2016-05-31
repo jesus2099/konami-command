@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2016.5.25
+// @version      2016.5.31
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -16,6 +16,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2010-07-09
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128636
 // @grant        none
 // @include      http*://*musicbrainz.org/release/*
 // @include      http*://*musicbrainz.org*edit*
@@ -43,11 +44,11 @@
 // @exclude      http*://wiki.musicbrainz.org*
 // @run-at       document-end
 // ==/UserScript==
+"use strict";
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 var dupeColour = "pink";
 var infoColour = "lightcyan";
 var contractFingerPrints = true; /* more compact AcoustIDs but brwoser can still inline search/find full AcoustID */
-var pleaseWaitText = "Fetching %s AcoustID and ISRC…"; /* put "" to disable this pleasewait message */
 	/* track/recording name diff: null for no marking and no inline recording disambiguation comment either, 
 	"" for no name change, %br% is return to new line feed
 	ex.: "%track-name%*", "%track-name% (%recording-name%)" or even %recording-name% */
@@ -59,9 +60,7 @@ var userjs = "jesus2099userjs81127";
 var hasDupeISRCs = 0;
 var hasDupeAcoustIDs = 0;
 var shownisrcs = [];
-var isrcDone = false;
 var shownacoustids = [];
-var acoustidDone = false;
 var shownworks = {count: 0};
 var isrcURL = "/isrc/%s";
 var acoustidURL = "//acoustid.org/track/%s";
@@ -71,7 +70,6 @@ var re_GUID = new RegExp(str_GUID, "i");
 var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acoustid&mbid=%mbid&state=%state";
 var css_recording = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
 var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='/work/']";
-var pleaseWaitFragment = null;
 var tracksHtml = null;
 var pagecat = self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
 if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
@@ -90,10 +88,12 @@ if (pagecat) {
 							toolzone = toolzone.appendChild(document.createElement("div"));
 							toolzone.className = userjs+"toolzone";
 							toolzone.style.setProperty("display", "none");
-							if (recUseInRelationshipLink && (rec = tracksHtml[ith].querySelector(css_recording))) {
+							var rec = tracksHtml[ith].querySelector(css_recording);
+							if (recUseInRelationshipLink && rec) {
 								toolzone.appendChild(createA(recUseInRelationshipLink, rec.getAttribute("href")+"/relate", "Use this recording in a relationship…"));
 							}
-							if (recAddToMergeLink && (rat = tracksHtml[ith].querySelector("span.star-rating a.set-rating"))) {
+							var rat = tracksHtml[ith].querySelector("span.star-rating a.set-rating");
+							if (recAddToMergeLink && rat) {
 								if (recUseInRelationshipLink) { toolzone.appendChild(document.createElement("br")); }
 								toolzone.appendChild(createA(recAddToMergeLink, "/recording/merge_queue?add-to-merge="+rat.getAttribute("href").match(/id=([0-9]+)/)[1], "Merge this recording…"));
 							}
@@ -108,9 +108,11 @@ if (pagecat) {
 							toolzone.appendChild(document.createTextNode(" "));
 							toolzone.appendChild(createA("edits", rec.getAttribute("href") + "/edits", "Recording edit history"));
 						}
-						if (works = tracksHtml[ith].querySelectorAll(css_work)) {
+						var works = tracksHtml[ith].querySelectorAll(css_work);
+						if (works) {
 							for (var w=0; w<works.length; w++) {
-								if (workid = works[w].getAttribute("href").match(new RegExp("/work/("+str_GUID+")$"))) {
+								var workid = works[w].getAttribute("href").match(new RegExp("/work/("+str_GUID+")$"));
+								if (workid) {
 									if (!shownworks[workid[1]]) {
 										shownworks[workid[1]] = 0;
 										shownworks.count++;
@@ -126,9 +128,9 @@ if (pagecat) {
 				var url = releasewsURL.replace(/%s/, relMBID);
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = isrcFish;
+				coolBubble({message: "Fetching " + pagecat + " AcoustID and ISRC…"});
 				xhr.open("GET", url, true);
 				xhr.overrideMimeType("text/xml");
-				pleaseWait(true);
 				xhr.send(null);
 			}
 			break;
@@ -195,33 +197,11 @@ function addAfter(n, e) {
 function removeChildren(p) {
 	while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
 }
-function pleaseWait(on) {
-	if (on && pleaseWaitText) {
-		var pwf = getPleaseWaitFragment();
-		pwf.appendChild(document.createTextNode(pleaseWaitText.replace(/%s/, " "+pagecat+" ")));
-	} else if (!on && pleaseWaitFragment) {
-		document.body.removeChild(pleaseWaitFragment);
-		pleaseWaitFragment = null;
-	}
-}
-function getPleaseWaitFragment() {
-	if (pleaseWaitFragment == null) {
-		var pwf = document.createElement("div");
-		pwf.style.setProperty("position", "fixed");
-		pwf.style.setProperty("left", "0");
-		pwf.style.setProperty("bottom", "0");
-		pwf.style.setProperty("padding", "0 4px");
-		pwf.style.setProperty("background-color", "#ff0");
-		pwf.style.setProperty("color", "black");
-		pwf.style.setProperty("border-right", "2px solid #660");
-		pwf.style.setProperty("border-top", "2px solid #ffc");
-		pleaseWaitFragment = document.body.appendChild(pwf);
-	}
-	return pleaseWaitFragment;
-}
 function isrcFish() {
 	if (this.readyState == 4 && this.status == 200 && tracksHtml) {
+		coolBubble({message: "MB stuff found."});
 		var res = this.responseXML;
+		var CAAcnt, CAAtab, CAAtxt;
 		if (
 			(CAAcnt = res.documentElement.querySelector("release > cover-art-archive > count")) && 
 			(CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']")) && 
@@ -246,20 +226,24 @@ function isrcFish() {
 		var recnameNet = {};
 		var acoustidNet = [];
 		var tracks = res.evaluate("//mb:recording", res, nsr, XPathResult.ANY_TYPE, null);
+		var track;
 		for (var pos=1; track = tracks.iterateNext(); pos++) {
 			var trackMBID = track.getAttribute("id");
 			if (acoustidNet.indexOf(trackMBID) < 0) { acoustidNet.push(trackMBID); }
 			isrcNet[trackMBID] = [];
 			recnameNet[trackMBID] = {};
 			var isrcs = res.evaluate(".//mb:isrc", track, nsr, XPathResult.ANY_TYPE, null);
+			var isrc;
 			while (isrc = isrcs.iterateNext()) {
 				isrcNet[trackMBID].push(isrc.getAttribute("id"));
 			}
 			var recnames = res.evaluate(".//mb:title/text()", track, nsr, XPathResult.ANY_TYPE, null);
+			var recname;
 			while (recname = recnames.iterateNext()) {
 				recnameNet[trackMBID].name = recname.textContent;
 			}
 			var recdisambigs = res.evaluate(".//mb:disambiguation/text()", track, nsr, XPathResult.ANY_TYPE, null);
+			var recdisambig;
 			while (recdisambig = recdisambigs.iterateNext()) {
 				recnameNet[trackMBID].comment = recdisambig.textContent;
 			}
@@ -301,8 +285,11 @@ function isrcFish() {
 				}
 			}
 		}
-		isrcDone = true;
+		shownisrcs = count(shownisrcs);
+		coolBubble({message: shownisrcs + " ISRCs fetched."})
 		idCount("ISRC", shownisrcs);
+	} else if (this.readyState == 4 && this.status > 200) {
+		coolBubble({message: "Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching MB inline stuff.", type: "error", delay: 0});
 	}
 }
 function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid) {
@@ -388,7 +375,7 @@ function nsr(prefix) {
 	}
 }
 var bonusclicks = [];
-function idCount(type, hash) {
+function idCount(type, count) {
 	var idCountZone = document.querySelector("div#sidebar div#"+userjs+"idcountzone");
 	if (!idCountZone) {
 		idCountZone = document.querySelector("div#sidebar > dl.properties").appendChild(document.createElement("div"));
@@ -422,9 +409,6 @@ function idCount(type, hash) {
 			}
 		}, false);
 	}
-	var count = 0;
-	if (typeof hash == "number") { count = hash; }
-	else { for (key in hash) { if (hash.hasOwnProperty(key)) { count++; } } }
 	if (count != 0) {
 		var errorMsg = { "-20": "acoustid.org unreachable", "-21": "Strange result from acoustid.org" };
 		var cooldt = idCountZone.appendChild(document.createElement("dt")).appendChild(document.createTextNode(type+(count>1?"s":"")+":")).parentNode;
@@ -483,9 +467,6 @@ function idCount(type, hash) {
 			cooldd.appendChild(document.createTextNode(")"));
 		}
 	}
-	if (isrcDone && acoustidDone) {
-		pleaseWait(false);
-	}
 }
 function coolifyISRC(isrc) {
 	function truc(txt, i) {
@@ -513,20 +494,24 @@ function acoustidFishBatch(recids) {
 	if (recids.length > 0) {
 		var xhr = new XMLHttpRequest();
 		xhr.onload = function(e) {
+			var res = this.responseXML;
+			var wsstatus, mbids;
 			if (
 				this.status == 200 && 
-				(res = this.responseXML.documentElement) &&
+				(res = res.documentElement) &&
 				(wsstatus = res.querySelector("response > status")) && 
 				wsstatus.textContent == "ok" && 
 				(mbids = res.querySelectorAll("response > mbids > mbid > mbid:not(:empty)"))
 			) {
 				var acoustids = {};
 				for (var m = 0; m < mbids.length; m++) {
-					if ((mbid = mbids[m].textContent) && mbid.match(re_GUID)) {
+					var mbid = mbids[m].textContent;
+					if (mbid && mbid.match(re_GUID)) {
 						if (!acoustids[mbid]) { acoustids[mbid] = []; }
 						var trackids = mbids[m].parentNode.querySelectorAll("track > id:not(:empty)");
 						for (var ti = 0; ti < trackids.length; ti++) {
-							if ((trackid = trackids[ti].firstChild.textContent) && trackid.match(re_GUID)) {
+							var trackid = trackids[ti].firstChild.textContent;
+							if (trackid && trackid.match(re_GUID)) {
 								var disabled = trackids[ti].parentNode.querySelector("disabled");
 								disabled = disabled && disabled.textContent.match(/true/i);
 								var duo = [trackid, disabled];
@@ -537,6 +522,7 @@ function acoustidFishBatch(recids) {
 					}
 				}
 				for (var th = 0; th < tracksHtml.length; th++) {
+					var recmbid, trackTitleCell;
 					if (
 						(recmbid = tracksHtml[th].querySelector(css_recording)) && 
 						(recmbid = recmbid.getAttribute("href").match(new RegExp("/("+str_GUID+")$"))) && 
@@ -556,17 +542,19 @@ function acoustidFishBatch(recids) {
 						}
 					}
 				}
-			}
-			else {
+			} else {
 				shownacoustids = -21;
+				coolBubble({message: "Error parsing AcoustIDs.", type: "error", delay: 0});
 			}
-			acoustidDone = true;
+			shownacoustids = count(shownacoustids);
+			coolBubble({message: shownacoustids + " AcoustIDs fetched."});
 			idCount("AcoustID", shownacoustids);
 		};
 		xhr.onerror = function(e) {
-			acoustidDone = true;
 			idCount("AcoustID", -20);
+			coolBubble({message: "Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching AcoustIDs.", type: "error", delay: 0});
 		};
+		coolBubble({message: "Fetching " + pagecat + "AcoustIDs…"});
 		xhr.open("post", "//api.acoustid.org/v2/track/list_by_mbid", true);
 		var params = "client=A6AsOfBc&format=xml&batch=1&disabled=1";
 		for (var m = 0; m < recids.length; m++) {
@@ -578,4 +566,11 @@ function acoustidFishBatch(recids) {
 		xhr.overrideMimeType("text/xml");
 		xhr.send(params);
 	}
+}
+function count(hash) {
+	var count = 0;
+	for (var key in hash) if (hash.hasOwnProperty(key)) {
+		count += 1;
+	}
+	return count;
 }
