@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2016.5.17
+// @version      2016.5.29
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -60,7 +60,7 @@ var account = document.querySelector("div.header li.account a[href^='" + MBS + "
 //EDITING HISTORY
 if (
 	account
-	&& (account = unescape(account.getAttribute("href").match(/[^/]+$/)))
+	&& (account = decodeURIComponent(account.getAttribute("href").match(/[^/]+$/)))
 	&& document.querySelector("div#sidebar")
 	&& (loc = self.location.pathname.match(new RegExp("^/(area|artist|collection|event|label|place|release-group|release|recording|series|work|url)/(" + RE_GUID + ")")))
 	&& (pageEntity = document.querySelector("div#content > div > h1 a"))
@@ -179,7 +179,7 @@ function checkOpenEdits(obj) {
 }
 function updateLink(obj, pecount, details, more) {
 	var countText;
-	var liTitle;
+	var tooltip;
 	var li = getParent(obj.openedits, "li");
 	var count = li.querySelector("span." + userjs + "count");
 	if (typeof pecount == "number") {
@@ -187,14 +187,14 @@ function updateLink(obj, pecount, details, more) {
 		if (more) countText += "+";
 		if (pecount == 0) {
 			mp(obj.openedits, false);
-			liTitle = "no pending edits";
+			tooltip = "no pending edits";
 		} else if (pecount > 0) {
 			mp(obj.openedits, true);
 			if (details.types.length > 0 && details.types.length == details.editors.length) {
 				var titarray = [], dupcount = 0, dupreset;
 				for (var d = 0; d < details.types.length; d++) {
 					var thistit = details.types[d].replace(/^.+ - /, "- ");
-					var editor = unescape(details.editors[d].replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""));
+					var editor = decodeURIComponent(details.editors[d].replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""));
 					if (editor != account) {
 						thistit += " (" + editor + ")";
 					}
@@ -213,7 +213,7 @@ function updateLink(obj, pecount, details, more) {
 					}
 					dupreset = false;
 				}
-				liTitle = titarray.join("\r\n");
+				tooltip = titarray.join("\r\n");
 				var expanded = "▼";
 				var collapsed = "◀";
 				var expandEditLists = (localStorage.getItem(userjs + "pendingEditLists") != collapsed);
@@ -229,15 +229,15 @@ function updateLink(obj, pecount, details, more) {
 					}
 				}
 				if (titarray.length < 2 && pecount <= 50) {
-					liTitle = liTitle.replace(/^- /, "");
+					tooltip = tooltip.replace(/^- /, "");
 				}
 				if (pecount > 50) {
-					liTitle += "\r\n- …";
+					tooltip += "\r\n- …";
 					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
 				}
 				var help = createTag("span", {a: {class: userjs + "help"}, s: {display: expandEditLists ? "inline" : "none"}});
 				if (titarray.length > 1) {
-					liTitle += "\r\n \r\n(oldest edit on bottom)";
+					tooltip += "\r\n \r\n(oldest edit on bottom)";
 					if (obj != pageEntity) {
 						help.appendChild(document.createElement("br"));
 					}
@@ -259,12 +259,12 @@ function updateLink(obj, pecount, details, more) {
 		}
 	} else {
 		countText = pecount.status;
-		liTitle = pecount.responseText;
+		tooltip = pecount.responseText;
 		count.style.setProperty("background-color", "pink");//“pink” linked in mb_MASS-MERGE-RECORDINGS.user.js
 	}
 	count.replaceChild(document.createTextNode(countText), count.firstChild);//“countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
-	if (liTitle) {
-		li.setAttribute("title", liTitle);//linked in mb_MASS-MERGE-RECORDINGS.user.js
+	if (tooltip) {
+		obj.openedits.setAttribute("title", tooltip);//linked in mb_MASS-MERGE-RECORDINGS.user.js
 	}
 }
 function mp(o, set) {
