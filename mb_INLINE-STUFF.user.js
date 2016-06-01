@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2016.5.31
+// @version      2016.6.1
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
 // @compatible   opera(12.18.1872)+violentmonkey     my setup
-// @compatible   firefox(45.0.2)+greasemonkey        quickly tested
+// @compatible   firefox(46.0.1)+greasemonkey        quickly tested
 // @compatible   chromium(46.0.2471.0)+tampermonkey  quickly tested
 // @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
@@ -16,7 +16,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2010-07-09
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128636
+// @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128789
 // @grant        none
 // @include      http*://*musicbrainz.org/release/*
 // @include      http*://*musicbrainz.org*edit*
@@ -125,11 +125,10 @@ if (pagecat) {
 				}
 				idCount("Track", tracksHtml.length);
 				if (shownworks.count > 0) { idCount("Work", shownworks.count); }
-				var url = releasewsURL.replace(/%s/, relMBID);
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = isrcFish;
-				coolBubble({message: "Fetching " + pagecat + " AcoustID and ISRC…"});
-				xhr.open("GET", url, true);
+				coolBubble.msg("Loading shadow release…");
+				xhr.open("GET", releasewsURL.replace(/%s/, relMBID), true);
 				xhr.overrideMimeType("text/xml");
 				xhr.send(null);
 			}
@@ -199,7 +198,6 @@ function removeChildren(p) {
 }
 function isrcFish() {
 	if (this.readyState == 4 && this.status == 200 && tracksHtml) {
-		coolBubble({message: "MB stuff found."});
 		var res = this.responseXML;
 		var CAAcnt, CAAtab, CAAtxt;
 		if (
@@ -286,10 +284,9 @@ function isrcFish() {
 			}
 		}
 		shownisrcs = count(shownisrcs);
-		coolBubble({message: shownisrcs + " ISRCs fetched."})
 		idCount("ISRC", shownisrcs);
 	} else if (this.readyState == 4 && this.status > 200) {
-		coolBubble({message: "Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching MB inline stuff.", type: "error", delay: 0});
+		coolBubble.err("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching MB inline stuff.");
 	}
 }
 function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid) {
@@ -544,17 +541,16 @@ function acoustidFishBatch(recids) {
 				}
 			} else {
 				shownacoustids = -21;
-				coolBubble({message: "Error parsing AcoustIDs.", type: "error", delay: 0});
+				coolBubble.err("Error parsing AcoustIDs.");
 			}
 			shownacoustids = count(shownacoustids);
-			coolBubble({message: shownacoustids + " AcoustIDs fetched."});
 			idCount("AcoustID", shownacoustids);
 		};
 		xhr.onerror = function(e) {
 			idCount("AcoustID", -20);
-			coolBubble({message: "Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching AcoustIDs.", type: "error", delay: 0});
+			coolBubble.err("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching AcoustIDs.");
 		};
-		coolBubble({message: "Fetching " + pagecat + "AcoustIDs…"});
+		coolBubble.msg("Loading AcoustIDs…");
 		xhr.open("post", "//api.acoustid.org/v2/track/list_by_mbid", true);
 		var params = "client=A6AsOfBc&format=xml&batch=1&disabled=1";
 		for (var m = 0; m < recids.length; m++) {
