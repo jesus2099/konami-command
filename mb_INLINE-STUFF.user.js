@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2016.6.1.1949
+// @version      2016.6.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -198,93 +198,97 @@ function removeChildren(p) {
 }
 function isrcFish() {
 	if (this.readyState == 4 && this.status == 200 && tracksHtml) {
-		var res = this.responseXML;
-		var CAAcnt, CAAtab, CAAtxt;
-		if (
-			(CAAcnt = res.documentElement.querySelector("release > cover-art-archive > count")) && 
-			(CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']")) && 
-			(CAAtxt = "CAA")
-		) {
-			CAAcnt = parseInt(CAAcnt.textContent, 10);
-			if (CAAcnt > 0) {
-				CAAtxt += " ("+CAAcnt+")";
-				CAAtab.style.setProperty("background-color", "#6f9");
-			}
-			else {
-				CAAtxt = "Add "+CAAtxt;
-				CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
-				CAAtab.style.setProperty("background-color", "#ff6");
-			}
-			CAAtab.style.setProperty("width", self.getComputedStyle(CAAtab).getPropertyValue("width"));
-			CAAtab.style.setProperty("height", self.getComputedStyle(CAAtab).getPropertyValue("height"));
-			CAAtab.style.setProperty("text-align", "center");
-			CAAtab.replaceChild(document.createTextNode(CAAtxt), CAAtab.firstChild);
-		}
-		var isrcNet = {};
-		var recnameNet = {};
-		var acoustidNet = [];
-		var tracks = res.evaluate("//mb:recording", res, nsr, XPathResult.ANY_TYPE, null);
-		var track;
-		for (var pos=1; track = tracks.iterateNext(); pos++) {
-			var trackMBID = track.getAttribute("id");
-			if (acoustidNet.indexOf(trackMBID) < 0) { acoustidNet.push(trackMBID); }
-			isrcNet[trackMBID] = [];
-			recnameNet[trackMBID] = {};
-			var isrcs = res.evaluate(".//mb:isrc", track, nsr, XPathResult.ANY_TYPE, null);
-			var isrc;
-			while (isrc = isrcs.iterateNext()) {
-				isrcNet[trackMBID].push(isrc.getAttribute("id"));
-			}
-			var recnames = res.evaluate(".//mb:title/text()", track, nsr, XPathResult.ANY_TYPE, null);
-			var recname;
-			while (recname = recnames.iterateNext()) {
-				recnameNet[trackMBID].name = recname.textContent;
-			}
-			var recdisambigs = res.evaluate(".//mb:disambiguation/text()", track, nsr, XPathResult.ANY_TYPE, null);
-			var recdisambig;
-			while (recdisambig = recdisambigs.iterateNext()) {
-				recnameNet[trackMBID].comment = recdisambig.textContent;
-			}
-		}
-		acoustidFishBatch(acoustidNet);
-		for (var i=0 ; i < tracksHtml.length ; i++) {
-			var aRec = tracksHtml[i].querySelector(css_recording);
-			if (aRec) {
-				var mbid = aRec.getAttribute("href").match(re_GUID);
-				var trackTitleCell = tracksHtml[i].querySelector("td:not(.pos):not(.video)");
-				if (isrcNet[mbid].length > 0) {
-					insertBeforeARS(trackTitleCell, createStuffFragment("ISRC", isrcNet[mbid], shownisrcs, isrcURL, null, mbid));
+		if (document.body.classList.contains("MMR2099userjs120382")) { // linked to mb_MASS-MERGE-RECORDINGS
+			coolBubble.warn("INLINE STUFF abandoned in favour of MASS MERGE session.");
+		} else {
+			var res = this.responseXML;
+			var CAAcnt, CAAtab, CAAtxt;
+			if (
+				(CAAcnt = res.documentElement.querySelector("release > cover-art-archive > count")) && 
+				(CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']")) && 
+				(CAAtxt = "CAA")
+			) {
+				CAAcnt = parseInt(CAAcnt.textContent, 10);
+				if (CAAcnt > 0) {
+					CAAtxt += " ("+CAAcnt+")";
+					CAAtab.style.setProperty("background-color", "#6f9");
 				}
-				var sameCompleteName = aRec.textContent == recnameNet[mbid].name + " (" + recnameNet[mbid].comment + ")";
-				if (aRec.textContent != recnameNet[mbid].name && !sameCompleteName) {
-					var ntit = aRec.getAttribute("title");
-					ntit = (ntit ? ntit + " —\u00a0" : "") + "track name: " + aRec.textContent + "\r\n≠rec. name: " + recnameNet[mbid].name;
-					aRec.setAttribute("title", ntit);
-					if (markTrackRecNameDiff) {
-						if (typeof markTrackRecNameDiff == "string") {
-							var trackNameFragment = document.createDocumentFragment();
-							var trackNameRows = markTrackRecNameDiff.replace(/%track-name%/ig, aRec.textContent).replace(/%recording-name%/ig, recnameNet[mbid].name).split("%br%");
-							for (var row = 0; row < trackNameRows.length; row++) {
-								if (row > 0) {
-									trackNameFragment.appendChild(document.createElement("br"));
+				else {
+					CAAtxt = "Add "+CAAtxt;
+					CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
+					CAAtab.style.setProperty("background-color", "#ff6");
+				}
+				CAAtab.style.setProperty("width", self.getComputedStyle(CAAtab).getPropertyValue("width"));
+				CAAtab.style.setProperty("height", self.getComputedStyle(CAAtab).getPropertyValue("height"));
+				CAAtab.style.setProperty("text-align", "center");
+				CAAtab.replaceChild(document.createTextNode(CAAtxt), CAAtab.firstChild);
+			}
+			var isrcNet = {};
+			var recnameNet = {};
+			var acoustidNet = [];
+			var tracks = res.evaluate("//mb:recording", res, nsr, XPathResult.ANY_TYPE, null);
+			var track;
+			for (var pos=1; track = tracks.iterateNext(); pos++) {
+				var trackMBID = track.getAttribute("id");
+				if (acoustidNet.indexOf(trackMBID) < 0) { acoustidNet.push(trackMBID); }
+				isrcNet[trackMBID] = [];
+				recnameNet[trackMBID] = {};
+				var isrcs = res.evaluate(".//mb:isrc", track, nsr, XPathResult.ANY_TYPE, null);
+				var isrc;
+				while (isrc = isrcs.iterateNext()) {
+					isrcNet[trackMBID].push(isrc.getAttribute("id"));
+				}
+				var recnames = res.evaluate(".//mb:title/text()", track, nsr, XPathResult.ANY_TYPE, null);
+				var recname;
+				while (recname = recnames.iterateNext()) {
+					recnameNet[trackMBID].name = recname.textContent;
+				}
+				var recdisambigs = res.evaluate(".//mb:disambiguation/text()", track, nsr, XPathResult.ANY_TYPE, null);
+				var recdisambig;
+				while (recdisambig = recdisambigs.iterateNext()) {
+					recnameNet[trackMBID].comment = recdisambig.textContent;
+				}
+			}
+			acoustidFishBatch(acoustidNet);
+			for (var i=0 ; i < tracksHtml.length ; i++) {
+				var aRec = tracksHtml[i].querySelector(css_recording);
+				if (aRec) {
+					var mbid = aRec.getAttribute("href").match(re_GUID);
+					var trackTitleCell = tracksHtml[i].querySelector("td:not(.pos):not(.video)");
+					if (isrcNet[mbid].length > 0) {
+						insertBeforeARS(trackTitleCell, createStuffFragment("ISRC", isrcNet[mbid], shownisrcs, isrcURL, null, mbid));
+					}
+					var sameCompleteName = aRec.textContent == recnameNet[mbid].name + " (" + recnameNet[mbid].comment + ")";
+					if (aRec.textContent != recnameNet[mbid].name && !sameCompleteName) {
+						var ntit = aRec.getAttribute("title");
+						ntit = (ntit ? ntit + " —\u00a0" : "") + "track name: " + aRec.textContent + "\r\n≠rec. name: " + recnameNet[mbid].name;
+						aRec.setAttribute("title", ntit);
+						if (markTrackRecNameDiff) {
+							if (typeof markTrackRecNameDiff == "string") {
+								var trackNameFragment = document.createDocumentFragment();
+								var trackNameRows = markTrackRecNameDiff.replace(/%track-name%/ig, aRec.textContent).replace(/%recording-name%/ig, recnameNet[mbid].name).split("%br%");
+								for (var row = 0; row < trackNameRows.length; row++) {
+									if (row > 0) {
+										trackNameFragment.appendChild(document.createElement("br"));
+									}
+									trackNameFragment.appendChild(document.createTextNode(trackNameRows[row]));
 								}
-								trackNameFragment.appendChild(document.createTextNode(trackNameRows[row]));
+								aRec.setAttribute(userjs + "recname", aRec.textContent); //linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
+								aRec.replaceChild(trackNameFragment, aRec.firstChild);
 							}
-							aRec.setAttribute(userjs + "recname", aRec.textContent); //linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
-							aRec.replaceChild(trackNameFragment, aRec.firstChild);
 						}
 					}
-				}
-				if (markTrackRecNameDiff && recnameNet[mbid].comment && !sameCompleteName) {
-					var recdis = document.createElement("span");
-					recdis.className = userjs + "recdis"; //linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
-					recdis.appendChild(document.createTextNode(" (" + recnameNet[mbid].comment + ")"));
-					addAfter(recdis, aRec);
+					if (markTrackRecNameDiff && recnameNet[mbid].comment && !sameCompleteName) {
+						var recdis = document.createElement("span");
+						recdis.className = userjs + "recdis"; //linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
+						recdis.appendChild(document.createTextNode(" (" + recnameNet[mbid].comment + ")"));
+						addAfter(recdis, aRec);
+					}
 				}
 			}
+			shownisrcs = count(shownisrcs);
+			idCount("ISRC", shownisrcs);
 		}
-		shownisrcs = count(shownisrcs);
-		idCount("ISRC", shownisrcs);
 	} else if (this.readyState == 4 && this.status > 200) {
 		coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching MB inline stuff.");
 	}
