@@ -54,7 +54,7 @@ var KBD = {
 	O:     79,
 	S:     83
 };
-var MMRid = "MMR2099userjs120382";
+var MMRid = "MMR2099userjs120382"; // linked to mb_INLINE-STUFF
 var MBS = self.location.protocol + "//" + self.location.host;
 var sidebar = document.getElementById("sidebar");
 var recid2trackIndex = {remote: {}, local: {}};/*recid:tracks index*/
