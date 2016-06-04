@@ -567,7 +567,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 				favicontry[ifit].to = setTimeout(function() {
 					// don’t wait for more than 5 seconds
 					favicontry[ifit].src = "";
-					this.li.classList.add("no-favicon");
+					favicontry[ifit].li.classList.add("no-favicon");
 				}, 5000);
 			}
 		}
