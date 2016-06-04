@@ -32,6 +32,7 @@
 /* hint for Opera 12 users allow opera:config#UserPrefs|Allowscripttolowerwindow and opera:config#UserPrefs|Allowscripttoraisewindow */
 var userjs = "jesus2099_all-links_";
 var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; // U+2FA1D is currently out of js range
+var extlinksOpacity = "1";
 var autolinksOpacity = ".5";
 var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["navigator", "musicbrainz"];
 // %artist-id% (MBID)
@@ -252,6 +253,7 @@ var favicons = {
 	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
 	"yahoo.": "http://blogs.yahoo.co.jp/favicon.ico",
 };
+var favicontry = [];
 var guessOtherFavicons = true;
 var sidebar = document.getElementById("sidebar");
 var arelsws = "/ws/2/artist/%artist-id%?inc=url-rels";
@@ -325,39 +327,6 @@ function main() {
 									}
 								}
 							}
-							// Autolinks
-							extlinksOpacity = autolinksOpacity;
-							for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
-								haslinks = false;
-								for (var link in autolinks[defaultOrUser]) if (autolinks[defaultOrUser].hasOwnProperty(link)) {
-									var target = autolinks[defaultOrUser][link];
-									var sntarget = null;
-									if (target) {
-										if (typeof target == "string") {
-											target = target.replace(/%artist-id%/, artistid);
-											if (target.match(/%artist-name%/) && artistname != artistsortnameSwapped && artistname.match(nonLatinName)) {
-												sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
-											}
-											target = target.replace(/%artist-name%/, encodeURIComponent(artistname));
-											target = target.replace(/%artist-family-name-first%/, encodeURIComponent(artistname.match(nonLatinName) ? artistname : artistsortname));
-										} else {
-											var aname = target.acceptCharset;
-											aname = aname && aname.match(/iso-8859/i) && artistname != artistsortnameSwapped && artistname.match(nonLatinName) ? artistsortnameSwapped : artistname;
-											for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
-												target.parameters[param] = target.parameters[param].replace(/%artist-id%/, artistid).replace(/%artist-name%/, aname).replace(/%artist-family-name-first%/, artistname.match(nonLatinName) ? artistname : artistsortname);
-											}
-										}
-									}
-									if (addExternalLink({text: link, target: target, sntarget: sntarget, enabledDefaultAutolink: enabledDefaultAutolinks[link]})) {
-										if (!haslinks) {
-											haslinks = true;
-											addExternalLink({text: " " + defaultOrUser.substr(0, 1).toUpperCase() + defaultOrUser.substr(1).toLowerCase() + " autolinks"});
-											extlinks.lastChild.previousSibling.appendChild(document.createTextNode(" "));
-											extlinks.lastChild.previousSibling.appendChild(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)"}}, createTag("a", {a: {title: "configure " + defaultOrUser + " autolinks"}, s: {color: "transparent"}, e: {click: configureModule}}, "configure")));
-										}
-									}
-								}
-							}
 						} else if (this.status >= 400) {
 							var txt = this.responseText.match(/<error><text>(.+)<\/text><text>/);
 							txt = txt ? txt[1] : "";
@@ -367,6 +336,39 @@ function main() {
 				};
 				xhr.open("GET", arelsws, true);
 				xhr.send(null);
+				// Autolinks
+				extlinksOpacity = autolinksOpacity;
+				for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
+					var haslinks = false;
+					for (var link in autolinks[defaultOrUser]) if (autolinks[defaultOrUser].hasOwnProperty(link)) {
+						var target = autolinks[defaultOrUser][link];
+						var sntarget = null;
+						if (target) {
+							if (typeof target == "string") {
+								target = target.replace(/%artist-id%/, artistid);
+								if (target.match(/%artist-name%/) && artistname != artistsortnameSwapped && artistname.match(nonLatinName)) {
+									sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
+								}
+								target = target.replace(/%artist-name%/, encodeURIComponent(artistname));
+								target = target.replace(/%artist-family-name-first%/, encodeURIComponent(artistname.match(nonLatinName) ? artistname : artistsortname));
+							} else {
+								var aname = target.acceptCharset;
+								aname = aname && aname.match(/iso-8859/i) && artistname != artistsortnameSwapped && artistname.match(nonLatinName) ? artistsortnameSwapped : artistname;
+								for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
+									target.parameters[param] = target.parameters[param].replace(/%artist-id%/, artistid).replace(/%artist-name%/, aname).replace(/%artist-family-name-first%/, artistname.match(nonLatinName) ? artistname : artistsortname);
+								}
+							}
+						}
+						if (addExternalLink({text: link, target: target, sntarget: sntarget, enabledDefaultAutolink: enabledDefaultAutolinks[link]})) {
+							if (!haslinks) {
+								haslinks = true;
+								addExternalLink({text: " " + defaultOrUser.substr(0, 1).toUpperCase() + defaultOrUser.substr(1).toLowerCase() + " autolinks"});
+								extlinks.lastChild.previousSibling.appendChild(document.createTextNode(" "));
+								extlinks.lastChild.previousSibling.appendChild(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)"}}, createTag("a", {a: {title: "configure " + defaultOrUser + " autolinks"}, s: {color: "transparent"}, e: {click: configureModule}}, "configure")));
+							}
+						}
+					}
+				}
 			}
 		}/*artist*/
 		/*wikidata to wikipedia*/
@@ -412,8 +414,6 @@ function main() {
 		}
 	}
 }
-var favicontry = [];
-var extlinksOpacity = "1";
 function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, enabledDefaultAutolink*/) {
 	var newLink = true;
 	var lis = extlinks.getElementsByTagName("li");
