@@ -276,10 +276,6 @@ if (hrStyle.css) {
 }
 function main() {
 	if (sidebar) {
-		var rgextrels = sidebar.querySelector("ul.external_links_2 > li");
-		if (rgextrels && (rgextrels = rgextrels.parentNode) && rgextrels.previousSibling.tagName == "UL") {
-			rgextrels.parentNode.insertBefore(createTag("h2", {}, "Release group external links"), rgextrels);
-		}
 		var artistid = self.location.href.match(/(?:mbsandbox|musicbrainz)\.org\/artist\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
 		var artistname = document.querySelector("div#content > div.artistheader > h1 a, div#content > div.artistheader > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
 		var artistsortname, artistsortnameSwapped = "";
