@@ -18,14 +18,65 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=125133&v=2016.5.11
 // @grant        none
+// @include      http*://*mbsandbox.org/area/*
+// @include      http*://*mbsandbox.org/artist/*
+// @include      http*://*mbsandbox.org/event/*
+// @include      http*://*mbsandbox.org/instrument/*
+// @include      http*://*mbsandbox.org/label/*
+// @include      http*://*mbsandbox.org/place/*
+// @include      http*://*mbsandbox.org/recording/*
+// @include      http*://*mbsandbox.org/release/*
+// @include      http*://*mbsandbox.org/release-group/*
+// @include      http*://*mbsandbox.org/series/*
+// @include      http*://*mbsandbox.org/url/*
+// @include      http*://*mbsandbox.org/work/*
+// @include      http*://*musicbrainz.org/area/*
 // @include      http*://*musicbrainz.org/artist/*
+// @include      http*://*musicbrainz.org/event/*
+// @include      http*://*musicbrainz.org/instrument/*
+// @include      http*://*musicbrainz.org/label/*
+// @include      http*://*musicbrainz.org/place/*
+// @include      http*://*musicbrainz.org/recording/*
 // @include      http*://*musicbrainz.org/release/*
-// @include      http://*.mbsandbox.org/artist/*
+// @include      http*://*musicbrainz.org/release-group/*
+// @include      http*://*musicbrainz.org/series/*
+// @include      http*://*musicbrainz.org/url/*
+// @include      http*://*musicbrainz.org/work/*
 // @include      http://*.mbsandbox.org/release/*
 // @exclude      *//*/*mbsandbox.org/*
 // @exclude      *//*/*musicbrainz.org/*
-// @exclude      *//*musicbrainz.org/artist/*/edit
-// @exclude      *//*musicbrainz.org/artist/*/split
+// @exclude      *//*mbsandbox.org/*/*add*
+// @exclude      *//*mbsandbox.org/*/*annotat*
+// @exclude      *//*mbsandbox.org/*/*create*
+// @exclude      *//*mbsandbox.org/*/*delete*
+// @exclude      *//*mbsandbox.org/*/*edit*
+// @exclude      *//*mbsandbox.org/*/*merge*
+// @exclude      *//*mbsandbox.org/*/*remove*
+// @exclude      *//*mbsandbox.org/*/*split*
+// @exclude      *//*mbsandbox.org/*/*/*add*
+// @exclude      *//*mbsandbox.org/*/*/*annotat*
+// @exclude      *//*mbsandbox.org/*/*/*create*
+// @exclude      *//*mbsandbox.org/*/*/*delete*
+// @exclude      *//*mbsandbox.org/*/*/*edit*
+// @exclude      *//*mbsandbox.org/*/*/*merge*
+// @exclude      *//*mbsandbox.org/*/*/*remove*
+// @exclude      *//*mbsandbox.org/*/*/*split*
+// @exclude      *//*musicbrainz.org/*/*add*
+// @exclude      *//*musicbrainz.org/*/*annotat*
+// @exclude      *//*musicbrainz.org/*/*create*
+// @exclude      *//*musicbrainz.org/*/*delete*
+// @exclude      *//*musicbrainz.org/*/*edit*
+// @exclude      *//*musicbrainz.org/*/*merge*
+// @exclude      *//*musicbrainz.org/*/*remove*
+// @exclude      *//*musicbrainz.org/*/*split*
+// @exclude      *//*musicbrainz.org/*/*/*add*
+// @exclude      *//*musicbrainz.org/*/*/*annotat*
+// @exclude      *//*musicbrainz.org/*/*/*create*
+// @exclude      *//*musicbrainz.org/*/*/*delete*
+// @exclude      *//*musicbrainz.org/*/*/*edit*
+// @exclude      *//*musicbrainz.org/*/*/*merge*
+// @exclude      *//*musicbrainz.org/*/*/*remove*
+// @exclude      *//*musicbrainz.org/*/*/*split*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -256,7 +307,7 @@ var favicons = {
 var favicontry = [];
 var guessOtherFavicons = true;
 var sidebar = document.getElementById("sidebar");
-var arelsws = "/ws/2/artist/%artist-id%?inc=url-rels";
+var entityUrlRelsWS = "/ws/2/%entity-type%/%entity-mbid%?inc=url-rels";
 var existingLinks, extlinks;
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 var j2css = document.styleSheets[document.styleSheets.length - 1];
@@ -278,21 +329,12 @@ if (hrStyle.css) {
 }
 function main() {
 	if (sidebar) {
-		var artistid = self.location.href.match(/(?:mbsandbox|musicbrainz)\.org\/artist\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
-		var artistname = document.querySelector("div#content > div.artistheader > h1 a, div#content > div.artistheader > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
-		var artistsortname, artistsortnameSwapped = "";
-		if (artistid && artistname) {
-			artistid = artistid[1];
-			arelsws = arelsws.replace(/%artist-id%/, artistid);
-			artistsortname = artistname.getAttribute("title");
-			var tmpsn = artistsortname.split(",");
-			for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
-				artistsortnameSwapped += tmpsn[isn].trim();
-				if (isn != 0) {
-					artistsortnameSwapped += " ";
-				}
-			}
-			artistname = artistname.textContent.trim();
+		var entityMatch = self.location.href.match(/\/([a-z\-]*)\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
+		var entityType = entityMatch[1], entityMBID = entityMatch[2];
+		var entityHeaderClass = (entityType == "release-group" ? "rg" : entityType) + "header";
+		var entityNameNode = document.querySelector("div#content > div." + entityHeaderClass + " > h1 a, div#content > div." + entityHeaderClass + " > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
+		if (entityType && entityMBID) {
+			entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
 			extlinks = sidebar.getElementsByClassName("external_links");
 			if (extlinks && extlinks.length > 0) {
 				extlinks = extlinks[0];
@@ -334,8 +376,25 @@ function main() {
 						}
 					}
 				};
-				xhr.open("GET", arelsws, true);
+				xhr.open("GET", entityUrlRelsWS, true);
 				xhr.send(null);
+			}
+		}
+		if (entityType && entityNameNode && entityMBID && entityType == "artist") {
+			var artistid = entityMBID, artistname = entityNameNode;
+			var artistsortname, artistsortnameSwapped = "";
+			artistsortname = artistname.getAttribute("title");
+			var tmpsn = artistsortname.split(",");
+			for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
+				artistsortnameSwapped += tmpsn[isn].trim();
+				if (isn != 0) {
+					artistsortnameSwapped += " ";
+				}
+			}
+			artistname = artistname.textContent.trim();
+			extlinks = sidebar.getElementsByClassName("external_links");
+			if (extlinks && extlinks.length > 0) {
+				extlinks = extlinks[0];
 				// Autolinks
 				extlinksOpacity = autolinksOpacity;
 				for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
@@ -604,7 +663,7 @@ function error(code, text) {
 		ldng.setAttribute("id", userjs + "-error");
 		ldng.style.setProperty("background", "pink");
 		ldng.replaceChild(document.createTextNode("Error " + code), ldng.firstChild);
-		ldng.appendChild(createTag("a", {a: {href: arelsws}}, "*"));
+		ldng.appendChild(createTag("a", {a: {href: entityUrlRelsWS}}, "*"));
 		ldng.appendChild(document.createTextNode(" in "));
 		ldng.appendChild(createTag("a", {a: {href: "http://userscripts-mirror.org/scripts/show/108889"}}, "all links"));
 		ldng.appendChild(document.createTextNode(" ("));
