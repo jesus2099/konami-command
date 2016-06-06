@@ -140,7 +140,7 @@ if (emails) {
 						var openedits = "/open_edits";
 						if ((type = allparts[4].match(/artist|collection|label|series/))) {
 							im.setAttribute("src", preferredProtocol + "//musicbrainz.org/static/images/entity/%type%.svg".replace(/%type%/, type).replace(/collection|series/, "release_group"));
-							im.setAttribute("height", "12px");
+							im.setAttribute("height", "16px");
 						} else if (allparts[4].match(/user/)) {
 							im.setAttribute("src", preferredProtocol + "//gravatar.com/avatar/placeholder?d=mm&s=12");
 							openedits = "/edits/open";
