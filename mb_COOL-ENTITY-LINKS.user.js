@@ -107,35 +107,40 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 				&& (id = href.match(new RegExp(u + "(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
 				&& !as[a].querySelector("img:not(.rendericon)")
 			) {
-				as[a].classList.add(c);
+				var newA = as[a].cloneNode(true);
+				newA.classList.add(c);
 				if (as[a].textContent == href || /*forums*/as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /*edit-notes*/as[a].textContent == href.substr(0, 48) + "…") {
-					as[a].classList.add(userjs);
+					newA.classList.add(userjs);
 					var text = unescape(id[1]);
 					if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);
 					if (text) {
-						as[a].replaceChild(entities[ent].id ? document.createTextNode(text) : createTag("code", {}, text), as[a].firstChild);
+						newA.replaceChild(entities[ent].id ? document.createTextNode(text) : createTag("code", {}, text), newA.firstChild);
 					}
 					if (id[2] || id[3]) {
-						as[a].appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? "…" : ""))).parentNode.style.setProperty("opacity", ".5");
+						newA.appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? "…" : ""))).parentNode.style.setProperty("opacity", ".5");
 					}
 					var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.)/);
 					if (altserv) {
-						as[a].appendChild(document.createTextNode(" (" + altserv[1] + ")"));
+						newA.appendChild(document.createTextNode(" (" + altserv[1] + ")"));
 					}
-					var code = as[a].querySelector("code");
+					var code = newA.querySelector("code");
 					if (contractMBIDs && code) {
 						var width = parseInt(self.getComputedStyle(code).getPropertyValue("width").match(/^\d+/) + "", 10);
 						code.style.setProperty("width", width / code.textContent.length * 8 + "px");
 					}
-					as[a].insertBefore(createTag("b", {}, ent + "\u00A0"), as[a].firstChild);
+					newA.insertBefore(createTag("b", {}, ent + "\u00A0"), newA.firstChild);
 					if ((ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
-						addAfter(document.createTextNode(">"), as[a]);
-						if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), as[a]); }
-						if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "H"), as[a]); }
-						if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), as[a]); }
-						addAfter(document.createTextNode(" <"), as[a]);
+						var fragment = document.createDocumentFragment();
+						fragment.appendChild(newA);
+						addAfter(document.createTextNode(">"), newA);
+						if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), newA); }
+						if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "H"), newA); }
+						if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), newA); }
+						addAfter(document.createTextNode(" <"), newA);
+						newA = fragment;
 					}
 				}
+				as[a].parentNode.replaceChild(newA, as[a]);
 			}
 		}
 	} else { skip = "1"; }
