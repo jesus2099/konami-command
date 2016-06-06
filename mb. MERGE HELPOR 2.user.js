@@ -196,7 +196,7 @@ if (mergeType) {
 	}
 } else {
 	/* merge queue (clear before add) tool */
-	var mergeButton = document.querySelector("div#content > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit']");
+	var mergeButton = document.querySelector("div#content > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit'], div#page > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit']");
 	if (mergeButton) {
 		var checkForm = mergeButton.parentNode.parentNode.parentNode;
 		setButtonTextFromSelectedToAll(mergeButton, true);
