@@ -34,21 +34,21 @@ var confirmIfMoreThan = 2000;/*-1 to never confirm*/
 var userjs = "jesus2099userjs131731";
 var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var entities = {
-	artist: {path: "/artist/", icon: "artist"},
+	artist: {path: "/artist/", icon: "artist.png"},
 	bug: {fullpath: "http://bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%", HTTPonly: true},
-	cdtoc: {path: "/cdtoc/", icon: "release", id: "[A-Za-z0-9_\\.]+-"},
+	cdtoc: {path: "/cdtoc/", icon: "release.png", id: "[A-Za-z0-9_\\.]+-"},
 	"classic.edit": {path: "/show/edit/?editid=", id: "[0-9]+", label: "edit\u00a0#%id%"},
 	"classic.user": {path: "/show/user/?username=", id: ".+"},
 	edit: {path: "/edit/", id: "[0-9]+", label: "#%id%"},
-	label: {path: "/label/", icon: "label"},
-	place: {path: "/place/", icon: "blank"},/*MBS-7070*/
-	recording: {path: "/recording/", icon: "recording"},
-	release: {path: "/release/", icon: "release"},
-	"release-group": {path: "/release-group/", icon: "release_group"},
+	label: {path: "/label/", icon: "label.png"},
+	place: {path: "/place/", icon: "place.svg"},
+	recording: {path: "/recording/", icon: "recording.png"},
+	release: {path: "/release/", icon: "release.png"},
+	"release-group": {path: "/release-group/", icon: "release_group.svg"},
 	ticket: {fullpath: "http://tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", HTTPonly: true},
-	track: {path: "/track/", icon: "recording"},
+	track: {path: "/track/", icon: "recording.png"},
 	user: {path: "/user/", id: ".+", openEdits: "/edits/open", noEdit: true},
-	work: {path: "/work/", icon: "blank"},/*MBS-7070*/
+	work: {path: "/work/", icon: "work.svg"},
 };
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 var j2css = document.styleSheets[document.styleSheets.length - 1];
@@ -63,7 +63,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 	var u = (entities[ent].fullpath ? entities[ent].fullpath : "musicbrainz.org" + entities[ent].path.replace("?", "\\?"));
 	var c = userjs + ent;
 	if (entities[ent].icon) {
-		j2css.insertRule("a." + c + " { background-image: url(//musicbrainz.org/static/images/entity/" + entities[ent].icon + ".png); background-repeat: no-repeat; background-size: contain; padding-left: 16px; }", 0);
+		j2css.insertRule("a." + c + " { background-image: url(//musicbrainz.org/static/images/entity/" + entities[ent].icon + "); background-repeat: no-repeat; background-size: contain; padding-left: 16px; }", 0);
 	}
 	if (contractMBIDs && ent != "user") {
 		j2css.insertRule("a." + c + " > code { display: inline-block; overflow-x: hidden; vertical-align: bottom; }", 0);
