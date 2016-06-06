@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2016.5.25
+// @version      2016.6.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
@@ -39,7 +39,7 @@ var entities = {
 	cdtoc: {path: "/cdtoc/", icon: "release", id: "[A-Za-z0-9_\\.]+-"},
 	"classic.edit": {path: "/show/edit/?editid=", id: "[0-9]+", label: "edit\u00a0#%id%"},
 	"classic.user": {path: "/show/user/?username=", id: ".+"},
-	edit: {path: "/edit/", id: "[0-9]+", label: "edit\u00a0#%id%"},
+	edit: {path: "/edit/", id: "[0-9]+", label: "#%id%"},
 	label: {path: "/label/", icon: "label"},
 	place: {path: "/place/", icon: "blank"},/*MBS-7070*/
 	recording: {path: "/recording/", icon: "recording"},
@@ -127,7 +127,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 						var width = parseInt(self.getComputedStyle(code).getPropertyValue("width").match(/^\d+/) + "", 10);
 						code.style.setProperty("width", width / code.textContent.length * 8 + "px");
 					}
-					as[a].insertBefore(createTag("b", {}, ent + " "), as[a].firstChild);
+					as[a].insertBefore(createTag("b", {}, ent + "\u00A0"), as[a].firstChild);
 					if ((ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
 						addAfter(document.createTextNode(">"), as[a]);
 						if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), as[a]); }
