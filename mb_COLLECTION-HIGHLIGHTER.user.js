@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.5.17
+// @version      2016.6.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -526,7 +526,7 @@ function end(ok, msg) {
 	} else {
 		modal(true, msg, 1).style.setProperty("background-color", "pink");
 		alert(dialogprefix + msg);
-		modal(true, concat(["You can submit this error message to ", createA("jesus2099", meta.supportURL), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
+		modal(true, concat(["You may ", createA("have a look at known issues and/or create a new bug report", meta.supportURL), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
 	}
 	closeButt();
 }
