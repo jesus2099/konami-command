@@ -1,8 +1,14 @@
 // ==UserScript==
-// @name         mb. show CAA comments in reorder page
-// @version      2015.9.9
+// @name         mb. SHOW CAA COMMENTS IN REORDER PAGE
+// @version      2015.9.9.metadata
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE.user.js
+// @description  Show cover art comments to ease reordering, especially when thumbnails have not been generated yet.
 // @homepage     http://forums.musicbrainz.org/viewtopic.php?pid=31473#p31473
-// @compatible   opera(12.17)+violentmonkey  my setup
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE
+// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @namespace    jesus2099/shamo
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE.user.js
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2015-09-09
@@ -11,7 +17,7 @@
 // @include      http://*.mbsandbox.org/*/reorder-cover-art
 // @exclude      *//*/*mbsandbox.org/*
 // @exclude      *//*/*musicbrainz.org/*
-// @run-at       document.end
+// @run-at       document-end
 // ==/UserScript==
 "use strict";
 var imageLoaders = document.querySelectorAll("div.thumb-position > a > span.cover-art-image[data-title]")
