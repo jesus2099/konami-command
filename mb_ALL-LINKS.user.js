@@ -86,10 +86,10 @@ var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; // U+2FA1D is currently out o
 var extlinksOpacity = "1";
 var autolinksOpacity = ".5";
 var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["navigator", "musicbrainz"];
-// %artist-id% (MBID)
-// %arist-name%
-// %artist-sort-name%
-// %artist-family-name-first%
+// Available tokens:
+// - for all entity pages: %entity-type% %entity-mbid% %entity-name%
+// - for artist entity pages: %artist-sort-name% %artist-family-name-first% %artist-latin-script-name%
+// - for that type entity pages: %that-mbid% %that-name% where "that" is an entity type in the above @include list
 var autolinks = {
 	user: JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {},
 	default: {
@@ -307,6 +307,7 @@ var favicons = {
 var favicontry = [];
 var guessOtherFavicons = true;
 var sidebar = document.getElementById("sidebar");
+var tokenValues = {};
 var entityUrlRelsWS = "/ws/2/%entity-type%/%entity-mbid%?inc=url-rels";
 var existingLinks, extlinks;
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
@@ -332,9 +333,13 @@ if (hrStyle.css) {
 function main() {
 	if (sidebar) {
 		var entityMatch = self.location.href.match(/\/([a-z\-]*)\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
-		var entityType = entityMatch[1], entityMBID = entityMatch[2];
+		var entityType = tokenValues["%entity-type%"] = entityMatch[1];
+		var entityMBID = tokenValues["%entity-mbid%"] = entityMatch[2];
+		tokenValues["%" + entityType + "-mbid%"] = entityMBID;
 		var entityHeaderClass = (entityType == "release-group" ? "rg" : entityType) + "header";
 		var entityNameNode = document.querySelector("div#content > div." + entityHeaderClass + " > h1 a, div#content > div." + entityHeaderClass + " > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
+		var entityName = tokenValues["%entity-name%"] = entityNameNode.textContent.trim();
+		tokenValues["%" + entityType + "-name%"] = entityName;
 		if (entityType && entityMBID) {
 			entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
 			extlinks = sidebar.getElementsByClassName("external_links");
@@ -383,17 +388,24 @@ function main() {
 			}
 		}
 		if (firstRun && entityType && entityNameNode && entityMBID && entityType == "artist") {
-			var artistid = entityMBID, artistname = entityNameNode;
+			var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
+			var artistname = entityName;
 			var artistsortname, artistsortnameSwapped = "";
-			artistsortname = artistname.getAttribute("title");
-			var tmpsn = artistsortname.split(",");
-			for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
-				artistsortnameSwapped += tmpsn[isn].trim();
-				if (isn != 0) {
-					artistsortnameSwapped += " ";
+			artistsortname = tokenValues["%artist-sort-name%"] = entityNameNode.getAttribute("title");
+			if (!artistname.match(nonLatinName)) {
+				tokenValues["%artist-family-name-first%"] = artistsortname;
+				tokenValues["%artist-latin-script-name%"] = artistname;
+			} else {
+				var tmpsn = artistsortname.split(",");
+				for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
+					artistsortnameSwapped += tmpsn[isn].trim();
+					if (isn != 0) {
+						artistsortnameSwapped += " ";
+					}
 				}
+				tokenValues["%artist-family-name-first%"] = artistname;
+				tokenValues["%artist-latin-script-name%"] = artistsortnameSwapped;
 			}
-			artistname = artistname.textContent.trim();
 			extlinks = sidebar.getElementsByClassName("external_links");
 			if (extlinks && extlinks.length > 0) {
 				extlinks = extlinks[0];
@@ -406,17 +418,16 @@ function main() {
 						var sntarget = null;
 						if (target) {
 							if (typeof target == "string") {
-								target = target.replace(/%artist-id%/, artistid);
 								if (target.match(/%artist-name%/) && artistname != artistsortnameSwapped && artistname.match(nonLatinName)) {
 									sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
 								}
-								target = target.replace(/%artist-name%/, encodeURIComponent(artistname));
-								target = target.replace(/%artist-family-name-first%/, encodeURIComponent(artistname.match(nonLatinName) ? artistname : artistsortname));
+								target = replaceAllTokens(target);
 							} else {
-								var aname = target.acceptCharset;
-								aname = aname && aname.match(/iso-8859/i) && artistname != artistsortnameSwapped && artistname.match(nonLatinName) ? artistsortnameSwapped : artistname;
+								var latinScriptOnly = target.acceptCharset.match(/iso-8859/i);
 								for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
-									target.parameters[param] = target.parameters[param].replace(/%artist-id%/, artistid).replace(/%artist-name%/, aname).replace(/%artist-family-name-first%/, artistname.match(nonLatinName) ? artistname : artistsortname);
+									if (latinScriptOnly)
+										target.parameters[param] = target.parameters[param].replace(/%artist-name%/, "%artist-latin-script-name%");
+									target.parameters[param] = replaceAllTokens(target.parameters[param]);
 								}
 							}
 						}
@@ -606,6 +617,15 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 	}
 	return newLink;
 }
+function replaceAllTokens(string) {
+	var stringTokens = string.match(/%[a-z]+(?:-[a-z]+)+%/g);
+	if (stringTokens)	for (var t = 0; t < stringTokens.length; t++) {
+		var token = stringTokens[t];
+		if (!tokenValues.hasOwnProperty(token)) return false;
+		string = string.replace(token, encodeURIComponent(tokenValues[token]));
+	}
+	return string;
+}
 function setFavicon(li, url) {
 	var favclass = "no";
 	// MusicBrainz cached favicon CSS classes
@@ -770,7 +790,7 @@ function configureModule(event) {
 		case "configure user autolinks":
 			//TODO: provide a real editor
 			var loadedUserAutolinks = localStorage.getItem(userjs + "user-autolinks") || {};
-			var newUserAutolinks = prompt("Edit your user autolinks\r\nCopy/paste in a real editor\r\nSorry for such an awful prompt\r\n\r\nAvailable variables: %artist-id% (MBID), %arist-name%, %artist-sort-name% and %artist-family-name-first%\r\n\r\nExample: {\"xyz\": \"//duckduckgo.com/?q=%artist-name%+xyz\",\r\n\"XYZ\": \"//duckduckgo.com/?q=%artist-name%+XYZ\",\r\n\"abc\": \"/ws/2/artist/%artist-id%?inc=works\",\r\n\"La FNAC\": \"//recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%artist-name%&sft=1&sa=0\"}", loadedUserAutolinks);
+			var newUserAutolinks = prompt("Edit your user autolinks\r\nCopy/paste in a real editor\r\nSorry for such an awful prompt\r\n\r\nAvailable variables:\r\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\r\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\r\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\r\n\r\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%entity-name%+reviews\",\r\n\"Search for fans\": \"//duckduckgo.com/?q=%artist-name%+fans\",\r\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\r\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
 			if (newUserAutolinks && newUserAutolinks != loadedUserAutolinks && JSON.stringify(newUserAutolinks)) {
 				localStorage.setItem(userjs + "user-autolinks", newUserAutolinks);
 			}
