@@ -316,7 +316,9 @@ j2css.insertRule("ul.external_links > li.defaultAutolink.disabled { text-decorat
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink.disabled { display: list-item; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink > input[type='checkbox'] { display: inline; }", 0);
 var hrStyle = {css: ""};
+var firstRun = true;
 main();
+firstRun = false;
 for (var s = 0; s < document.styleSheets.length; s++) {
 	for (var r = 0; r < document.styleSheets[s].cssRules.length - 1; r++) {
 		if (hrStyle.match = document.styleSheets[s].cssRules[r].cssText.match(/(#sidebar.+ul.+hr) {(.+)}/)) {
@@ -380,7 +382,7 @@ function main() {
 				xhr.send(null);
 			}
 		}
-		if (entityType && entityNameNode && entityMBID && entityType == "artist") {
+		if (firstRun && entityType && entityNameNode && entityMBID && entityType == "artist") {
 			var artistid = entityMBID, artistname = entityNameNode;
 			var artistsortname, artistsortnameSwapped = "";
 			artistsortname = artistname.getAttribute("title");
