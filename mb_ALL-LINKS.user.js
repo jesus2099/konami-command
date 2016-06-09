@@ -317,9 +317,7 @@ j2css.insertRule("ul.external_links > li.defaultAutolink.disabled { text-decorat
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink.disabled { display: list-item; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink > input[type='checkbox'] { display: inline; }", 0);
 var hrStyle = {css: ""};
-var firstRun = true;
 main();
-firstRun = false;
 for (var s = 0; s < document.styleSheets.length; s++) {
 	for (var r = 0; r < document.styleSheets[s].cssRules.length - 1; r++) {
 		if (hrStyle.match = document.styleSheets[s].cssRules[r].cssText.match(/(#sidebar.+ul.+hr) {(.+)}/)) {
@@ -345,49 +343,10 @@ function main() {
 			extlinks = sidebar.getElementsByClassName("external_links");
 			if (extlinks && extlinks.length > 0) {
 				extlinks = extlinks[0];
-				loading(true);
-				// Attached missing links
-				var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function(event) {
-					if (this.readyState == 4) {
-						if (this.status == 200) {
-							loading(false);
-							var res = this.responseXML;
-							var url, urls = res.evaluate("//mb:relation-list[@target-type='url']/mb:relation", res, nsr, XPathResult.ANY_TYPE, null);
-							var haslinks = false;
-							while (url = urls.iterateNext()) {
-								var target = res.evaluate("./mb:target", url, nsr, XPathResult.ANY_TYPE, null);
-								target = target.iterateNext();
-								var begin, end;
-								if (begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
-									begin = begin.textContent;
-								}
-								if (end = res.evaluate("./mb:end", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
-									end = end.textContent;
-								} else if (res.evaluate("./mb:ended", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
-									end = "????";
-								}
-								if (target) {
-									if (addExternalLink({text: url.getAttribute("type"), target: target.textContent, mbid: target.getAttribute("id"), begin: begin, end: end})) {
-										if (!haslinks) {
-											haslinks = true;
-											addExternalLink({text: " Hidden links"});
-										}
-									}
-								}
-							}
-						} else if (this.status >= 400) {
-							var txt = this.responseText.match(/<error><text>(.+)<\/text><text>/);
-							txt = txt ? txt[1] : "";
-							error(this.status, txt);
-						}
-					}
-				};
-				xhr.open("GET", entityUrlRelsWS, true);
-				xhr.send(null);
+				addHiddenLinks();
 			}
 		}
-		if (firstRun && entityType && entityNameNode && entityMBID && entityType == "artist") {
+		if (entityType && entityNameNode && entityMBID && entityType == "artist") {
 			var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
 			var artistname = entityName;
 			var artistsortname, artistsortnameSwapped = "";
@@ -617,6 +576,47 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 	}
 	return newLink;
 }
+function addHiddenLinks() {
+	loading(true);
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function(event) {
+		if (this.readyState == 4) {
+			if (this.status == 200) {
+				loading(false);
+				var res = this.responseXML;
+				var url, urls = res.evaluate("//mb:relation-list[@target-type='url']/mb:relation", res, nsr, XPathResult.ANY_TYPE, null);
+				var haslinks = false;
+				while (url = urls.iterateNext()) {
+					var target = res.evaluate("./mb:target", url, nsr, XPathResult.ANY_TYPE, null);
+					target = target.iterateNext();
+					var begin, end;
+					if (begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+						begin = begin.textContent;
+					}
+					if (end = res.evaluate("./mb:end", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+						end = end.textContent;
+					} else if (res.evaluate("./mb:ended", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+						end = "????";
+					}
+					if (target) {
+						if (addExternalLink({text: url.getAttribute("type"), target: target.textContent, mbid: target.getAttribute("id"), begin: begin, end: end})) {
+							if (!haslinks) {
+								haslinks = true;
+								addExternalLink({text: " Hidden links"});
+							}
+						}
+					}
+				}
+			} else if (this.status >= 400) {
+				var txt = this.responseText.match(/<error><text>(.+)<\/text><text>/);
+				txt = txt ? txt[1] : "";
+				error(this.status, txt);
+			}
+		}
+	};
+	xhr.open("GET", entityUrlRelsWS, true);
+	xhr.send(null);
+}
 function replaceAllTokens(string) {
 	var stringTokens = string.match(/%[a-z]+(?:-[a-z]+)+%/g);
 	if (stringTokens)	for (var t = 0; t < stringTokens.length; t++) {
@@ -694,7 +694,7 @@ function error(code, text) {
 		ldng.appendChild(createTag("a", {e: {click: function(event) {
 			var err = document.getElementById(userjs + "-error");
 			if (err) { err.parentNode.removeChild(err); }
-			main();
+			addHiddenLinks();
 		}}}, "retry"));
 		ldng.appendChild(document.createTextNode(")"));
 		ldng.appendChild(document.createElement("br"));
