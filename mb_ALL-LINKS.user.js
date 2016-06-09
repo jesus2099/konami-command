@@ -584,54 +584,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 				cb.checked = false;
 			}
 		}
-		var favurltest = (typeof parameters.target == "string") ? parameters.target : parameters.target.action;
-		var favclass = "no";
-		// MusicBrainz cached favicon CSS classes
-		var searchdomain = favurltest.match(/site:([^+]*)\+/);
-		var urldomain = searchdomain ? searchdomain[1] : favurltest.split("/")[2];
-		for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(classdomain)) {
-			if (urldomain.match(classdomain)) {
-				favclass = faviconClasses[classdomain];
-				break;
-			}
-		}
-		if (favclass != "no") {
-			li.classList.add(favclass + "-favicon");
-		} else {
-			// Static favicon URL dictionary
-			var favurlfound = false;
-			for (var part in favicons) if (favicons.hasOwnProperty(part)) {
-				if (favurltest.indexOf(part) != -1) {
-					favurlfound = favicons[part];
-					break;
-				}
-			}
-			if (!guessOtherFavicons && !favurlfound) {
-				li.classList.add("no-favicon");
-			} else {
-				// arbitrary /favicon.ico load try out
-				if (guessOtherFavicons && !favurlfound) {
-					favurlfound = favurltest.substr(0, favurltest.indexOf("/", 8)) + "/favicon.ico";
-				}
-				var ifit = favicontry.length;
-				favicontry[ifit] = new Image();
-				favicontry[ifit].addEventListener("error", function (event) {
-					this.li.classList.add("no-favicon");
-				});
-				favicontry[ifit].addEventListener("load", function (event) {
-					clearTimeout(this.to);
-					this.li.style.setProperty("background-image", "url(" + this.src + ")");
-					this.li.style.setProperty("background-size", "16px 16px");
-				});
-				favicontry[ifit].li = li;
-				favicontry[ifit].src = favurlfound;
-				favicontry[ifit].to = setTimeout(function() {
-					// don’t wait for more than 5 seconds
-					favicontry[ifit].src = "";
-					favicontry[ifit].li.classList.add("no-favicon");
-				}, 5000);
-			}
-		}
+		setFavicon(li, (typeof parameters.target == "string") ? parameters.target : parameters.target.action);
 	} else {
 		// This is a header
 		var li = createTag("li", {s: {fontWeight: "bold"}}, parameters.text);
@@ -652,6 +605,55 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		if (parameters.target) { extlinks.appendChild(li); }
 	}
 	return newLink;
+}
+function setFavicon(li, url) {
+	var favclass = "no";
+	// MusicBrainz cached favicon CSS classes
+	var searchdomain = url.match(/site:([^+]*)\+/);
+	var urldomain = searchdomain ? searchdomain[1] : url.split("/")[2];
+	for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(classdomain)) {
+		if (urldomain.match(classdomain)) {
+			favclass = faviconClasses[classdomain];
+			break;
+		}
+	}
+	if (favclass != "no") {
+		li.classList.add(favclass + "-favicon");
+	} else {
+		// Static favicon URL dictionary
+		var favurlfound = false;
+		for (var part in favicons) if (favicons.hasOwnProperty(part)) {
+			if (url.indexOf(part) != -1) {
+				favurlfound = favicons[part];
+				break;
+			}
+		}
+		if (!guessOtherFavicons && !favurlfound) {
+			li.classList.add("no-favicon");
+		} else {
+			// arbitrary /favicon.ico load try out
+			if (guessOtherFavicons && !favurlfound) {
+				favurlfound = url.substr(0, url.indexOf("/", 8)) + "/favicon.ico";
+			}
+			var ifit = favicontry.length;
+			favicontry[ifit] = new Image();
+			favicontry[ifit].addEventListener("error", function (event) {
+				this.li.classList.add("no-favicon");
+			});
+			favicontry[ifit].addEventListener("load", function (event) {
+				clearTimeout(this.to);
+				this.li.style.setProperty("background-image", "url(" + this.src + ")");
+				this.li.style.setProperty("background-size", "16px 16px");
+			});
+			favicontry[ifit].li = li;
+			favicontry[ifit].src = favurlfound;
+			favicontry[ifit].to = setTimeout(function() {
+				// don’t wait for more than 5 seconds
+				favicontry[ifit].src = "";
+				favicontry[ifit].li.classList.add("no-favicon");
+			}, 5000);
+		}
+	}
 }
 function weirdobg() {
 	var weirdo = userjs + (new Date().getTime());
