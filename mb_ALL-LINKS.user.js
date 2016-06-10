@@ -93,10 +93,10 @@ var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["n
 var autolinks = {
 	user: JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {},
 	default: {
-		"Web pages": "//duckduckgo.com/?q=%artist-name%",
-		"Web pages (strict)": "//duckduckgo.com/?q=%2B%22%artist-name%%22",
-		"Images": "//duckduckgo.com/?q=%artist-name%+!i",
-		"Videos": "//duckduckgo.com/?q=%artist-name%+!v",
+		"Web pages": "//duckduckgo.com/?q=%entity-name%",
+		"Web pages (strict)": "//duckduckgo.com/?q=%2B%22%entity-name%%22",
+		"Images": "//duckduckgo.com/?q=%entity-name%+!i",
+		"Videos": "//duckduckgo.com/?q=%entity-name%+!v",
 		"Credits": null,
 		"SACEM (Interprète)": {
 			acceptCharset: "ISO-8859-1",
@@ -334,40 +334,41 @@ function main() {
 		var entityType = tokenValues["%entity-type%"] = entityMatch[1];
 		var entityMBID = tokenValues["%entity-mbid%"] = entityMatch[2];
 		tokenValues["%" + entityType + "-mbid%"] = entityMBID;
-		var entityHeaderClass = (entityType == "release-group" ? "rg" : entityType) + "header";
-		var entityNameNode = document.querySelector("div#content > div." + entityHeaderClass + " > h1 a, div#content > div." + entityHeaderClass + " > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
-		var entityName = tokenValues["%entity-name%"] = entityNameNode.textContent.trim();
-		tokenValues["%" + entityType + "-name%"] = entityName;
+		/* Hidden links and autolinks */
 		if (entityType && entityMBID) {
-			entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
-			extlinks = sidebar.getElementsByClassName("external_links");
-			if (extlinks && extlinks.length > 0) {
-				extlinks = extlinks[0];
-				addHiddenLinks();
-			}
-		}
-		if (entityType && entityNameNode && entityMBID && entityType == "artist") {
-			var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
-			var artistname = entityName;
-			var artistsortname, artistsortnameSwapped = "";
-			artistsortname = tokenValues["%artist-sort-name%"] = entityNameNode.getAttribute("title");
-			if (!artistname.match(nonLatinName)) {
-				tokenValues["%artist-family-name-first%"] = artistsortname;
-				tokenValues["%artist-latin-script-name%"] = artistname;
-			} else {
-				var tmpsn = artistsortname.split(",");
-				for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
-					artistsortnameSwapped += tmpsn[isn].trim();
-					if (isn != 0) {
-						artistsortnameSwapped += " ";
+			// Tokens for autolinks
+			var entityHeaderClass = (entityType === "release-group" ? "rg" : entityType) + "header";
+			var entityNameNode = document.querySelector("div#content > div." + entityHeaderClass + " > h1 a, div#content > div." + entityHeaderClass + " > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
+			if (entityNameNode) {
+				var entityName = tokenValues["%entity-name%"] = entityNameNode.textContent.trim();
+				tokenValues["%" + entityType + "-name%"] = entityName;
+				if (entityType == "artist") {
+					var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
+					var artistname = entityName;
+					var artistsortname, artistsortnameSwapped = "";
+					artistsortname = tokenValues["%artist-sort-name%"] = entityNameNode.getAttribute("title");
+					if (!artistname.match(nonLatinName)) {
+						tokenValues["%artist-family-name-first%"] = artistsortname;
+						tokenValues["%artist-latin-script-name%"] = artistname;
+					} else {
+						var tmpsn = artistsortname.split(",");
+						for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
+							artistsortnameSwapped += tmpsn[isn].trim();
+							if (isn != 0) {
+								artistsortnameSwapped += " ";
+							}
+						}
+						tokenValues["%artist-family-name-first%"] = artistname;
+						tokenValues["%artist-latin-script-name%"] = artistsortnameSwapped;
 					}
 				}
-				tokenValues["%artist-family-name-first%"] = artistname;
-				tokenValues["%artist-latin-script-name%"] = artistsortnameSwapped;
 			}
 			extlinks = sidebar.getElementsByClassName("external_links");
 			if (extlinks && extlinks.length > 0) {
 				extlinks = extlinks[0];
+				// Hidden links
+				entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
+				addHiddenLinks();
 				// Autolinks
 				extlinksOpacity = autolinksOpacity;
 				for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
@@ -381,13 +382,17 @@ function main() {
 									sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
 								}
 								target = replaceAllTokens(target);
+								if (!target) continue;
 							} else {
 								var latinScriptOnly = target.acceptCharset.match(/iso-8859/i);
+								var skippedToken = false;
 								for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
 									if (latinScriptOnly)
 										target.parameters[param] = target.parameters[param].replace(/%artist-name%/, "%artist-latin-script-name%");
 									target.parameters[param] = replaceAllTokens(target.parameters[param]);
+									if (!target.parameters[param]) { skippedToken = true; break; }
 								}
+								if (skippedToken) continue;
 							}
 						}
 						if (addExternalLink({text: link, target: target, sntarget: sntarget, enabledDefaultAutolink: enabledDefaultAutolinks[link]})) {
@@ -401,8 +406,8 @@ function main() {
 					}
 				}
 			}
-		}/*artist*/
-		/*wikidata to wikipedia*/
+		}
+		/* Wikidata to Wikipedia */
 		if (rawLanguages && Array.isArray(rawLanguages) && rawLanguages.length > 0) {
 			var languages = parseLanguages(rawLanguages);
 			var wikidatas = sidebar.querySelectorAll("ul.external_links > li a[href*='wikidata.org/wiki/Q']");
