@@ -532,6 +532,7 @@ j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks li.disabled
 j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks ul.disabled { display: none; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks h3 { margin: 0; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks h4 { margin: 0; }", 0);
+j2css.insertRule("div#sidebar > ul." + userjs + "userLinks > li.subsectionHeader { font-weight: 'bold'; padding: '0px'; float: 'right'; }", 0);
 var hrStyle = {css: ""};
 main();
 for (var s = 0; s < document.styleSheets.length; s++) {
@@ -630,6 +631,7 @@ function main() {
 			for (var sectionKey in searchLinks.items) if (searchLinks.items.hasOwnProperty(sectionKey)) {
 				addSearchLinksSection([sectionKey], sidebar);
 			}
+			addUserLinks();
 		}
 		/* Wikidata to Wikipedia */
 		if (rawLanguages && Array.isArray(rawLanguages) && rawLanguages.length > 0) {
@@ -947,6 +949,66 @@ function addSearchLinksSection(sectionPath, parentNode) {
 		}
 	}
 	return hasVisibleContent && !disabledSearchLinks[sectionID];
+}
+function addUserLinks() {
+	var loadedUserLinks = JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {};
+	var filteredUserLinks = {};
+	var currentSection = "", currentSectionIsEmpty = true;
+	for (var title in loadedUserLinks) if (loadedUserLinks.hasOwnProperty(title)) {
+		var target = loadedUserLinks[title];
+		if (!target || target === "") {
+			if (currentSectionIsEmpty) {
+				delete filteredUserLinks[currentSection];
+			}
+			currentSection = title;
+			currentSectionIsEmpty = true;
+			filteredUserLinks[title] = null;
+		}
+		if (typeof target === "string") {
+			target = replaceAllTokens(target);
+			if (target) {
+				currentSectionIsEmpty = false;
+				filteredUserLinks[title] = target;
+			}
+		}
+	}
+	if (currentSectionIsEmpty) delete filteredUserLinks[currentSection];
+	if (!Object.getOwnPropertyNames(filteredUserLinks).length) return;
+	var userLinksTitle = {
+		de: "Meine Links",
+		en: "My links",
+		fr: "Mes liens",
+		nl: "Mijn links",
+	};
+	var userLinksTitleNode = createTag("h2", {}, getLocalizedText(userLinksTitle));
+	userLinksTitleNode.appendChild(document.createTextNode(" "));
+	userLinksTitleNode.appendChild(
+			createTag("a", {a: {title: "configure user autolinks"}, s: {padding: "0px"}, e: {click: configureModule}},
+				createTag("img", {a: {src: "/static/images/icons/cog.png", alt: "configure user autolinks", title: "configure user autolinks"}})
+						));
+	var landingSibling = false;
+	for (var n = 0; n < sidebar.children.length; n++)
+		if (sidebar.children[n].classList.contains("editing")) {
+			landingSibling = sidebar.children[n];
+			break;
+		}
+	if (landingSibling) sidebar.insertBefore(userLinksTitleNode, landingSibling);
+	else parentNode.appendChild(userLinksTitleNode);
+	var userLinksListNode = createTag("ul", {a: {class: "external_links " + userjs + "userLinks"}})
+	addAfter(userLinksListNode, userLinksTitleNode);
+	for (var title in filteredUserLinks) if (filteredUserLinks.hasOwnProperty(title)) {
+		var target = filteredUserLinks[title];
+		var itemNode = createTag("li", {});
+		if (target === null) {
+			itemNode.classList.add("subsectionHeader");
+			itemNode.appendChild(document.createTextNode(title));
+		  userLinksListNode.appendChild(document.createElement("hr"));
+		} else {
+			itemNode.appendChild(createTag("a", {a: {href: target}}, title));
+			setFavicon(itemNode, target);
+		}
+		userLinksListNode.appendChild(itemNode);
+	}
 }
 function getLocalizedText(textSet, multilingualKeys) {
 	if (typeof textSet === "string") return textSet;
