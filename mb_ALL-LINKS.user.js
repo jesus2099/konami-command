@@ -88,8 +88,9 @@ var autolinksOpacity = ".5";
 var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["navigator", "musicbrainz"];
 // Available tokens:
 // - for all entity pages: %entity-type% %entity-mbid% %entity-name%
+// - for "that" type entity pages: %that-mbid% %that-name% where "that" is an entity type in the above @include list
 // - for artist entity pages: %artist-sort-name% %artist-family-name-first% %artist-latin-script-name%
-// - for that type entity pages: %that-mbid% %that-name% where "that" is an entity type in the above @include list
+// - for url entity pages: %url-target% (while %entity-name% and %url-name% are deliberately ignored)
 var autolinks = {
 	user: JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {},
 	default: {
@@ -223,6 +224,207 @@ var loadedSettings = JSON.parse(localStorage.getItem(userjs + "enabled-default-a
 for (var link in autolinks.default) if (autolinks.default.hasOwnProperty(link)) {
 	enabledDefaultAutolinks[link] = typeof loadedSettings[link] != "undefined" ? loadedSettings[link] : true;
 }
+var webSearchLinks = {
+	title: {
+		en: "Search the web",
+		de: "Durchsuchen das Web",
+		fr: "Chercher sur le Web",
+		nl: "Zoeken op het Web",
+	},
+	items: {
+		webPageSearch: {
+			title: {en: "Web pages", de: "Webseiten", fr: "Pages Web", nl: "Webpagina’s"},
+			target: "//duckduckgo.com/?q=%entity-name%"
+		},
+		webPageSearchPlusQuotes: {
+			title: {en: "Web pages (exact)", de: "Webseiten (genaue)", fr: "Pages Web (exacte)", nl: "Webpagina’s (exacten)"},
+			target: [
+				"//duckduckgo.com/?q=%2B%22%entity-name%%22",
+				"//duckduckgo.com/?q=%2B%22%url-target%%22"
+			]
+		},
+		imageSearch: {
+			title: {en: "Images", de: "Bilder", fr: "Images", nl: "Afbeeldingen"},
+			target: "//duckduckgo.com/?q=%entity-name%+!i"
+		},
+		videoSearch: {
+			title: {en: "Videos", de: "Videos", fr: "Vidéos", nl: "Video’s"},
+			target: "//duckduckgo.com/?q=%entity-name%+!v"
+		},
+		waybackMachineHistory: {
+			title: {en: "Archive history", de: "Archivgeschichte", fr: "Historique d'archivage", nl: "Archiefgeschiedenis"},
+			target: "//web.archive.org/web/*/%url-target%"
+		}
+	}
+};
+var whitelistSearchLinks = {
+	title: {
+		de: "Durchsuchen in die weiße Liste",
+		en: "Search in the whitelist",
+		fr: "Chercher dans la liste blanche",
+		nl: "Zoeken in de witte lijst",
+	},
+	items: {
+		lyricsDBs: {
+			title: {
+				de: "Liedtext",
+				en: "Lyrics",
+				fr: "Paroles",
+				nl: "Liedtekst",
+			},
+			items: {
+				lyricWikia: {
+					title: {en: "LyricWikia"},
+					target: {en: "http://lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
+				},
+			}
+		},
+		regionalDBs: {
+			title: {
+				de: "Pro Gebiet",
+				en: "By area",
+				fr: "Par région",
+				nl: "Per Gebied",
+			},
+			items: {
+				DE: {
+					title: {
+						de: "Deutschland",
+						en: "Germany",
+						fr: "Allemagne",
+						nl: "Duitsland",
+					},
+					items: {
+						musikSammler: {
+							title: {de: "Musik-Sammler.de"},
+							target: [
+								{de: "https://www.musik-sammler.de/search/%artist-name%/?q=artist"},
+								{de: "https://www.musik-sammler.de/search/%release-name%/?q=medium"},
+								{de: "https://www.musik-sammler.de/search/%release-group-name%/?q=album"}
+							]
+						},
+						dnbMusikarchiv: {
+							title: {de: "DNB - Deutsches Musikarchiv"},
+							target: {de: "https://portal.dnb.de/opac.htm?query=%28mat%3DMusic+OR+cod%3Dmt%29+AND+%release-name%&method=simpleSearch&cqlMode=true"}
+						},
+					}
+				},
+				FR: {
+					title: {
+						de: "Frankreich",
+						en: "France",
+						fr: "France",
+						nl: "Frankrijk",
+					},
+					items: {
+						encyclopedisque: {
+							title: {fr: "Encyclopédisque"},
+							target: [
+								{fr: "http://www.encyclopedisque.fr/recherche.html?ra=%artist-name%&sp=1#resultat"},
+								{fr: "http://www.encyclopedisque.fr/recherche.html?rd=%release-name%&sp=1#resultat"}
+							]
+						},
+					}
+				},
+			}
+		},
+		otherDBs: {
+			title: {
+				de: "Andere Datenbanken",
+				en: "Other databases",
+				fr: "Autres bases de données",
+				nl: "Andere databases",
+			},
+			items: {
+				lastfmMBID: {
+					title: {en: "Last.fm (MBID)"},
+					target: {
+						"en": "http://last.fm/mbid/%artist-mbid%",
+						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/mbid/%artist-mbid%",
+					},
+					multilingualKeys: true
+				},
+				lastfmName: {
+					title: {en: "Last.fm (name)",	de: "Last.fm (Name)", es: "Last.fm (nombre)", fr: "Last.fm (nom)", it: "Last.fm (Nome)", ja: "Last.fm (名)", pl: "Last.fm (Nazwa)", pt: "Last.fm (nome)", ru: "Last.fm (имя)", sv: "Last.fm (namn)", tr: "Last.fm (ad)", zh: "Last.fm (名)"},
+					target: {
+						"en": "http://last.fm/search?q=%artist-name%",
+						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/search?q=%artist-name%",
+					},
+					multilingualKeys: true
+				},
+			}
+		}
+	}
+};
+var additionalSearchLinks = {
+	title: {
+		de: "Durchsuchen noch mehr",
+		en: "Search further",
+		fr: "Chercher plus loin",
+		nl: "Zoeken verder naar",
+	},
+	items: {
+		lyricsDBs: {
+			title: {
+				de: "Liedtext",
+				en: "Lyrics",
+				fr: "Paroles",
+				nl: "Liedtekst",
+			},
+			items: {
+				lyricWikiaFR: {
+					title: {fr: "WikiParoles"},
+					target: {fr: "http://fr.lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
+				},
+			}
+		},
+		regionalDBs: {
+			title: {
+				de: "Pro Gebiet",
+				en: "By area",
+				fr: "Par région",
+				nl: "Per Gebied",
+			},
+			items: {
+				FR: {
+					title: {
+						de: "Frankreich",
+						en: "France",
+						fr: "France",
+						nl: "Frankrijk",
+					},
+					items: {
+						sacem: {
+							title: {fr: "SACEM"},
+							target: {
+								fr: "https://repertoire.sacem.fr/resultats?filters=titles&query=%work-name%#searchBtn",
+								en: "https://repertoire.sacem.fr/en/results?filters=titles&query=%work-name%#searchBtn",
+							}
+						},
+						sacemWorks: {
+							title: {fr: "SACEM (œuvres)", en: "SACEM (works)"},
+							target: [
+								{
+									fr: "https://repertoire.sacem.fr/resultats?filters=parties&query=%artist-name%#searchBtn",
+									en: "https://repertoire.sacem.fr/en/results?filters=parties&query=%artist-name%#searchBtn",
+								}, {
+									fr: "https://repertoire.sacem.fr/resultats?filters=parties&query=%label-name%#searchBtn",
+									en: "https://repertoire.sacem.fr/en/results?filters=parties&query=%label-name%#searchBtn",
+								}
+							]
+						},
+					}
+				},
+			}
+		},
+	},
+};
+var searchLinks = {items: {
+	web: webSearchLinks,
+	whitelist: whitelistSearchLinks,
+	additional: additionalSearchLinks,
+}};
+var disabledSearchLinks = {};
 var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/61960dd9ebd5b77c6f1199815160e63b3383437e/lib/MusicBrainz/Server/Entity/URL/Sidebar.pm
 	"amazon"                    : "amazon",
 	"allmusic.com"              : "allmusic",
@@ -316,6 +518,20 @@ j2css.insertRule("ul.external_links > li.defaultAutolink > input[type='checkbox'
 j2css.insertRule("ul.external_links > li.defaultAutolink.disabled { text-decoration: line-through; display: none; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink.disabled { display: list-item; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink > input[type='checkbox'] { display: inline; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "searchLinks.emptySection { display: none; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "searchLinks li.emptySection { display: none; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "searchLinks input[type='checkbox'] { display: none; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "searchLinks.disabled { text-decoration: line-through; display: none; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "searchLinks .disabled { text-decoration: line-through; display: none; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks.emptySection { display: block; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks li.emptySection { display: list-item; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks input[type='checkbox'] { display: inline; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks.disabled { display: block; }", 0);
+j2css.insertRule("div#sidebar > ul.configure." + userjs + "searchLinks.disabled { display: none; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks li.disabled { display: list-item; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks ul.disabled { display: none; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "searchLinks h3 { margin: 0; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "searchLinks h4 { margin: 0; }", 0);
 var hrStyle = {css: ""};
 main();
 for (var s = 0; s < document.styleSheets.length; s++) {
@@ -361,6 +577,10 @@ function main() {
 						tokenValues["%artist-family-name-first%"] = artistname;
 						tokenValues["%artist-latin-script-name%"] = artistsortnameSwapped;
 					}
+				} else if (entityType == "url") {
+					delete tokenValues["%entity-name%"];
+					delete tokenValues["%url-name%"];
+					tokenValues["%url-target%"] = entityName;
 				}
 			}
 			extlinks = sidebar.getElementsByClassName("external_links");
@@ -405,6 +625,10 @@ function main() {
 						}
 					}
 				}
+			}
+			loadDisabledSearchLinks();
+			for (var sectionKey in searchLinks.items) if (searchLinks.items.hasOwnProperty(sectionKey)) {
+				addSearchLinksSection([sectionKey], sidebar);
 			}
 		}
 		/* Wikidata to Wikipedia */
@@ -622,6 +846,156 @@ function addHiddenLinks() {
 	xhr.open("GET", entityUrlRelsWS, true);
 	xhr.send(null);
 }
+function addSearchLinksSection(sectionPath, parentNode) {
+	var level = sectionPath.length;
+	var section = pathToItem(sectionPath);
+	var sectionID = pathToID(sectionPath);
+	var sectionTitle = getLocalizedText(section.title);
+	var sectionTitleNode = createTag("h" + (1 + level), {a: {id: sectionID}}, sectionTitle);
+	if (level === 1) {
+		sectionTitleNode.classList.add(userjs + "searchLinks");
+		var landingSibling = false;
+		for (var n = 0; n < parentNode.children.length; n++)
+			if (parentNode.children[n].classList.contains("editing")) {
+				landingSibling = parentNode.children[n];
+				break;
+			}
+		if (landingSibling) parentNode.insertBefore(sectionTitleNode, landingSibling);
+		else parentNode.appendChild(sectionTitleNode);
+		if (section === webSearchLinks) {
+			sectionTitleNode.appendChild(document.createTextNode(" "));
+			sectionTitleNode.appendChild(
+					createTag("a", {a: {title: "filter search links"}, s: {padding: "1px 3px"}, e: {click: configureModule}},
+						createTag("img", {a: {src: "/static/images/icons/filter.png", alt: "filter search links", title: "filter search links"}})
+						));
+		}
+	} else parentNode.appendChild(sectionTitleNode);
+	var sectionListNode = addAfter(createTag("ul", {a: {class: "external_links"}}), sectionTitleNode);
+	if (level === 1) sectionListNode.classList.add(userjs + "searchLinks");
+	if (section !== webSearchLinks) {
+		var sectionCBox = sectionTitleNode.appendChild(
+			createTag("input", {a: {type: "checkbox"}, s: {float: "right", margin: "1px"}, e: {click: function(event) {
+				toggleStorage(this.parentNode.id);
+				this.parentNode.nextElementSibling.classList.toggle("disabled", !this.checked);
+				if (this.parentNode.parentNode.id !== "sidebar") {
+					this.parentNode.parentNode.classList.toggle("disabled", !this.checked);
+					toggleEmpty(this.parentNode.parentNode, !this.checked);
+				} else {
+					this.parentNode.classList.toggle("disabled", !this.checked);
+				}
+			}}}));
+		sectionCBox.checked = !disabledSearchLinks[sectionID];
+		if (disabledSearchLinks[sectionID]) {
+			sectionListNode.classList.add("disabled");
+			if (level === 1) sectionTitleNode.classList.add("disabled");
+			else parentNode.classList.add("disabled");
+		}
+	}
+	var hasNothing = true, hasVisibleContent = false;
+	for (var itemKey in section.items) if (section.items.hasOwnProperty(itemKey)) {
+		var item = section.items[itemKey];
+		var itemPath = sectionPath.concat([itemKey]);
+		var itemID = pathToID(itemPath);
+		var itemNode = createTag("li", {a: {id: itemID}});
+		if (item.items) {
+			hasNothing = false;
+			sectionListNode.appendChild(itemNode);
+			var subIsVisible = addSearchLinksSection(itemPath, itemNode);
+			if (subIsVisible) hasVisibleContent = true;
+			else itemNode.classList.add("emptySection");
+		} else {
+			var itemTarget = false;
+			if (Array.isArray(item.target)) {
+				for (var t = 0; t < item.target.length; t++) {
+					itemTarget = replaceAllTokens(getLocalizedText(item.target[t], item.multilingualKeys));
+					if (itemTarget) break;
+				}
+			} else {
+				itemTarget = replaceAllTokens(getLocalizedText(item.target, item.multilingualKeys));
+			}
+			if (itemTarget) {
+				hasNothing = false;
+				sectionListNode.appendChild(itemNode);
+				var itemTitle = getLocalizedText(item.title);
+				itemNode.appendChild(createTag("a", {a: {href: itemTarget}}, itemTitle));
+				setFavicon(itemNode, itemTarget);
+				var itemCBox = itemNode.appendChild(
+						createTag("input", {a: {type: "checkbox"}, s: {float: "right", margin: "1px"}, e: {click: function(event) {
+							this.parentNode.classList.toggle("disabled", !this.checked);
+							toggleStorage(this.parentNode.id);
+							toggleEmpty(this.parentNode, !this.checked);
+						}}}));
+				itemCBox.checked = !disabledSearchLinks[itemID];
+				if (disabledSearchLinks[itemID]) itemNode.classList.add("disabled");
+				else hasVisibleContent = true;
+			}
+		}
+	}
+	if (!hasVisibleContent) {
+		if (level === 1 && section !== webSearchLinks) {
+			sectionTitleNode.classList.add("emptySection");
+			sectionListNode.classList.add("emptySection");
+		}
+		if (hasNothing) {
+			var noItemNote = {
+				de: "nichts für diesen Entitätstyp",
+				en: "nothing for this entity type",
+				fr: "rien pour ce type d'entité",
+				nl: "niets voor dit soort entiteit",
+			};
+			sectionListNode.appendChild(createTag("li", {s: {fontStyle: "italic", opacity: "0.5"}}, getLocalizedText(noItemNote)));
+		}
+	}
+	return hasVisibleContent && !disabledSearchLinks[sectionID];
+}
+function getLocalizedText(textSet, multilingualKeys) {
+	if (typeof textSet === "string") return textSet;
+	if (multilingualKeys) {
+		var expanded = {};
+		for (var key in textSet) if (textSet.hasOwnProperty(key)) {
+			var allKeys = key.split(" ");
+			for (var ak = 0; ak < allKeys.length; ak++)
+				expanded[allKeys[ak]] = textSet[key].replace(/%language%/g, allKeys[ak]);
+		}
+		textSet = expanded;
+	}
+	var languages = parseLanguages(rawLanguages);
+	for (var l = 0; l < languages.length; l++) {
+		if (textSet.hasOwnProperty(languages[l])) return textSet[languages[l]];
+	}
+	var fallbackLanguages = guessNavigatorLanguages().concat([document.documentElement.getAttribute("lang") || "en"]);
+	for (var fl = 0; fl < fallbackLanguages.length; fl++) {
+		if (textSet.hasOwnProperty(fallbackLanguages[fl])) return textSet[fallbackLanguages[fl]];
+	}
+	return textSet[Object.getOwnPropertyNames(textSet)[0]];
+}
+function idToPath(id) {
+	return id.replace(userjs + "searchLinks-", "").split("-");
+}
+function loadDisabledSearchLinks() {
+	var loadedSettings = JSON.parse(localStorage.getItem(userjs + "disabled-search-links")) || {};
+	for (var itemID in loadedSettings) if (loadedSettings.hasOwnProperty(itemID)) {
+		var itemPath = idToPath(itemID);
+		if (itemPath && pathToItem(itemPath))
+			disabledSearchLinks[itemID] = true;
+	}
+	delete disabledSearchLinks[pathToID(["web"])];
+	localStorage.setItem(userjs + "disabled-search-links", JSON.stringify(disabledSearchLinks));
+}
+function pathToItem(path) {
+	var item = searchLinks;
+	for (var i = 0; i < path.length; i++) {
+		item = item.items[path[i]];
+		if (!item) return false;
+	}
+	return item;
+}
+function pathToID(path) {
+	var id = userjs + "searchLinks";
+	for (var i = 0; i < path.length; i++)
+		id = id + "-" + path[i];
+	return id;
+}
 function replaceAllTokens(string) {
 	var stringTokens = string.match(/%[a-z]+(?:-[a-z]+)+%/g);
 	if (stringTokens)	for (var t = 0; t < stringTokens.length; t++) {
@@ -679,6 +1053,42 @@ function setFavicon(li, url) {
 			}, 5000);
 		}
 	}
+}
+function toggleEmpty(itemNode, hide) {
+	if (!hide) {
+		if (itemNode.parentNode.parentNode.id === "sidebar") {
+			itemNode.parentNode.classList.remove("emptySection");
+			itemNode.parentNode.previousElementSibling.classList.remove("emptySection");
+		}
+		else {
+			itemNode.parentNode.parentNode.classList.remove("emptySection");
+			toggleEmpty(itemNode.parentNode.parentNode, hide);
+		}
+	} else if (!itemNode.parentNode.classList.contains(pathToID(["web"]))) {
+		var allDisabled = true;
+		var siblings = itemNode.parentNode.children;
+		for (var n = 0; n < siblings.length; n++) {
+			if ((!siblings[n].classList.contains("disabled")) && (!siblings[n].classList.contains("emptySection"))) {
+				allDisabled = false;
+				break;
+			}
+		}
+		if (allDisabled) {
+			if (itemNode.parentNode.parentNode.id === "sidebar") {
+				itemNode.parentNode.classList.add("emptySection");
+				itemNode.parentNode.previousElementSibling.classList.add("emptySection");
+			} else {
+				itemNode.parentNode.parentNode.classList.add("emptySection");
+				toggleEmpty(itemNode.parentNode.parentNode, hide);
+			}
+		}
+	}
+}
+function toggleStorage(itemID) {
+	var toggledSettings = JSON.parse(localStorage.getItem(userjs + "disabled-search-links")) || {};
+	if (toggledSettings[itemID]) delete toggledSettings[itemID];
+	else toggledSettings[itemID] = true;
+	localStorage.setItem(userjs + "disabled-search-links", JSON.stringify(toggledSettings));
 }
 function weirdobg() {
 	var weirdo = userjs + (new Date().getTime());
@@ -795,7 +1205,7 @@ function configureModule(event) {
 		case "configure user autolinks":
 			//TODO: provide a real editor
 			var loadedUserAutolinks = localStorage.getItem(userjs + "user-autolinks") || {};
-			var newUserAutolinks = prompt("Edit your user autolinks\r\nCopy/paste in a real editor\r\nSorry for such an awful prompt\r\n\r\nAvailable variables:\r\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\r\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\r\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\r\n\r\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%entity-name%+reviews\",\r\n\"Search for fans\": \"//duckduckgo.com/?q=%artist-name%+fans\",\r\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\r\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
+			var newUserAutolinks = prompt("Edit your user autolinks\r\nCopy/paste in a real editor\r\nSorry for such an awful prompt\r\n\r\nAvailable variables:\r\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\r\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\r\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\r\n- for url entity pages: %url-target% (while %entity-name% and %url-name% are deliberately ignored)\r\n\r\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%entity-name%+reviews\",\r\n\"Search for fans\": \"//duckduckgo.com/?q=%artist-name%+fans\",\r\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\r\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
 			if (newUserAutolinks && newUserAutolinks != loadedUserAutolinks && JSON.stringify(newUserAutolinks)) {
 				localStorage.setItem(userjs + "user-autolinks", newUserAutolinks);
 			}
@@ -803,6 +1213,12 @@ function configureModule(event) {
 		case "configure default autolinks":
 			//TODO: refresh default autolink statuses
 			extlinks.classList.toggle("configure");
+			break;
+		case "filter search links":
+			var topSectionNodes = sidebar.children;
+			for (var n = 0; n < sidebar.children.length; n++)
+				if (sidebar.children[n].classList.contains(userjs + "searchLinks"))
+					sidebar.children[n].classList.toggle("configure");
 			break;
 		case "choose wikipedia languages":
 			var navigatorLanguages = splitLanguages(guessNavigatorLanguages());
