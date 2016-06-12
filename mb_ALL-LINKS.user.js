@@ -145,6 +145,20 @@ var whitelistSearchLinks = {
 				},
 			}
 		},
+		scoreDBs: {
+			title: {
+				de: "Partitur",
+				en: "Score",
+				fr: "Partition",
+				nl: "Bladmuziek",
+			},
+			items: {
+				imslp: {
+					title: {en: "IMSLP/Petrucci Music Library"},
+					target: "//duckduckgo.com/?q=site:imslp.org+%work-name%"
+				},
+			}
+		},
 		regionalDBs: {
 			title: {
 				de: "Pro Gebiet",
@@ -202,6 +216,34 @@ var whitelistSearchLinks = {
 				nl: "Andere databases",
 			},
 			items: {
+				allmusic: {
+					title: {en: "AllMusic"},
+					target: [
+						{en: "//www.allmusic.com/search/artists/%artist-name%"},
+						{en: "//www.allmusic.com/search/labels/%label-name%"},
+						{en: "//www.allmusic.com/search/songs/%recording-name%"},
+						{en: "//www.allmusic.com/search/all/%release-name%"},
+						{en: "//www.allmusic.com/search/albums/%release-group-name%"},
+						{en: "//www.allmusic.com/search/compositions/%work-name%"}
+					]
+				},
+				discogs: {
+					title: {en: "Discogs"},
+					target: [
+						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%artist-name%&type=artist"},
+						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-name%&type=release"},
+						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-group-name%&type=master"},
+						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%label-name%&type=label"}
+					],
+					multilingualKeys: true
+				},
+				geonames: {
+					title: {en: "GeoNames"},
+					target: [
+						{en: "http://www.geonames.org/search.html?q=%area-name%"},
+						{en: "http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"}
+					]
+				},
 				lastfmMBID: {
 					title: {en: "Last.fm (MBID)"},
 					target: {
@@ -217,6 +259,29 @@ var whitelistSearchLinks = {
 						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/search?q=%artist-name%",
 					},
 					multilingualKeys: true
+				},
+				rateYourMusic: {
+					title: {en: "Rate Your Music"},
+					target: [
+						{en: "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%"},
+						{en: "//rateyourmusic.com/search?searchtype=b&searchterm=%label-name%"},
+						{en: "//rateyourmusic.com/search?searchtype=l&searchterm=%release-name%"},
+						{en: "//rateyourmusic.com/search?searchtype=r&searchterm=%work-name%"}
+					]
+				},
+				secondHandSongs: {
+					title: {en: "SecondHandSongs"},
+					target: [
+						{en: "//secondhandsongs.com/search/artist?sel[]=common_name&val[]=%artist-name%"},
+						{en: "//secondhandsongs.com/search/label?sel[]=name&val[]=%label-name%"},
+						{en: "//secondhandsongs.com/search/performance?sel[]=title&val[]=%recording-name%"},
+						{en: "//secondhandsongs.com/search/release?sel[]=title&val[]=%release-name%"},
+						{en: "//secondhandsongs.com/search/work?sel[]=title&val[]=%work-name%"}
+					]
+				},
+				wikipedia: {
+					title: {en: "Wikipedia"},
+					target: "//duckduckgo.com/?q=site:wikipedia.org+%22%entity-name%%22"
 				},
 			}
 		}
