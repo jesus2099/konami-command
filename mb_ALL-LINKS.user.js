@@ -670,36 +670,30 @@ function guessNavigatorLanguages() {
 	}
 }
 function parseLanguages(inputLanguages) {
-	var outputLanguages = [];
+	var detectedLanguages = [];
 	for (var il = 0; il < inputLanguages.length; il++) {
 		var nextLanguage = inputLanguages[il];
-		if (inputLanguages[il] == "navigator") {
-			var navigatorLanguages = guessNavigatorLanguages();
-			for (var nl = 0; nl < navigatorLanguages.length; nl++) {
-				nextLanguage = navigatorLanguages[nl];
-				if (outputLanguages.indexOf(nextLanguage) < 0) {
-					outputLanguages.push(nextLanguage);
-				}
-			}
-		} else {
-			if (inputLanguages[il] == "musicbrainz") {
-				nextLanguage = document.documentElement.getAttribute("lang") || "en";
-			}
-			if (outputLanguages.indexOf(nextLanguage) < 0) {
-				outputLanguages.push(nextLanguage);
-			}
+		switch (nextLanguage) {
+			case "navigator":
+				detectedLanguages = detectedLanguages.concat(guessNavigatorLanguages());
+				break;
+			case "musicbrainz":
+				detectedLanguages.push(document.documentElement.getAttribute("lang") || "en");
+				break;
+			default:
+				detectedLanguages.push(nextLanguage);
 		}
 	}
-	return splitLanguages(outputLanguages);
-}
-function splitLanguages(inputLanguages) {
 	var outputLanguages = [];
-	for (var il = 0; il < inputLanguages.length; il++) {
-		outputLanguages.push(inputLanguages[il]);
-		if (inputLanguages[il].match(/-/)) {
-			var splitLanguage = inputLanguages[il].split("-")[0];
-			if (outputLanguages.indexOf(splitLanguage) < 0) {
-				outputLanguages.push(splitLanguage);
+	for (var dl = 0; dl < detectedLanguages.length; dl++) {
+		var nextLanguage = detectedLanguages[dl];
+		if (outputLanguages.indexOf(nextLanguage) < 0) {
+			outputLanguages.push(nextLanguage);
+			if (nextLanguage.match("-")) {
+				var splitLanguage = nextLanguage.split("-")[0];
+				if (outputLanguages.indexOf(splitLanguage) < 0) {
+					outputLanguages.push(splitLanguage);
+				}
 			}
 		}
 	}
@@ -720,10 +714,11 @@ function configureModule(event) {
 			extlinks.classList.toggle("configure");
 			break;
 		case "choose wikipedia languages":
-			var navigatorLanguages = splitLanguages(guessNavigatorLanguages());
-			var musicbrainzLanguage = splitLanguages([document.documentElement.getAttribute("lang") || "en"])[0];
+			var defaultLanguages = parseLanguages(["navigator", "musicbrainz"]);
+			var navigatorLanguages = guessNavigatorLanguages();
+			var musicbrainzLanguage = document.documentElement.getAttribute("lang") || "en";
 			var loadedLanguages = localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages);
-			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nMeta languages are:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ") : "undetected") + "\r\n- \"musicbrainz\" for MusicBrainz UI settings, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault: [\"navigator\", \"musicbrainz\"]\r\nExample 2: [\"fr\", \"en\", \"vi\", \"ja\"]\r\nExample 3: [\"en\"]\r\nExample 4: []", loadedLanguages.replace(/,/g, "$& "));
+			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nMeta languages are:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ") : "undetected") + "\r\n- \"musicbrainz\" for MusicBrainz UI settings, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault:\t\t[\"navigator\", \"musicbrainz\"]\r\n\t\t\t\tcurrently expanded to " + JSON.stringify(defaultLanguages).replace(/,/g, "$& ") + "\r\nExample 2:\t[\"fr\", \"en\", \"vi\", \"ja\"]\r\nExample 3:\t[\"en\"]\r\nExample 4:\t[]", loadedLanguages.replace(/,/g, "$& "));
 			if (newLanguages && newLanguages != loadedLanguages && JSON.stringify(newLanguages)) {
 				localStorage.setItem(userjs + "languages", newLanguages);
 				rawLanguages = newLanguages;
