@@ -139,9 +139,27 @@ var whitelistSearchLinks = {
 				nl: "Liedtekst",
 			},
 			items: {
+				decoda: {
+					title: {en: "Decoda"},
+					target: [
+						{en: "//www.decoda.com/search?q=%artist-name%"},
+						{en: "//www.decoda.com/search?q=%work-name%"}
+					]
+				},
+				directlyrics: {
+					title: {en: "Directlyrics"},
+					target: [
+						{en: "//startpage.com/do/search?q=site:directlyrics.com/*-artist.html+%artist-name%"},
+						{en: "http://www.directlyrics.com/search/?q=%work-name%"},
+					]
+				},
 				lyricWikia: {
 					title: {en: "LyricWikia"},
-					target: {en: "http://lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
+					target: [
+						{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%artist-name%"},
+						{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%release-group-name%"},
+						{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
+					]
 				},
 			}
 		},
@@ -227,6 +245,11 @@ var whitelistSearchLinks = {
 						{en: "//www.allmusic.com/search/compositions/%work-name%"}
 					]
 				},
+				bbcmusic: {
+					title: {en: "BBC Music"},
+					target: {"cy en ga gd": "//www.bbc.co.uk/music/artists/%artist-mbid%"},
+					multilingualKeys: true
+				},
 				discogs: {
 					title: {en: "Discogs"},
 					target: [
@@ -243,6 +266,10 @@ var whitelistSearchLinks = {
 						{en: "http://www.geonames.org/search.html?q=%area-name%"},
 						{en: "http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"}
 					]
+				},
+				isni: {
+					title: {en: "ISNI"},
+					target: {en: "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%"}
 				},
 				lastfmMBID: {
 					title: {en: "Last.fm (MBID)"},
@@ -277,6 +304,13 @@ var whitelistSearchLinks = {
 						{en: "//secondhandsongs.com/search/performance?sel[]=title&val[]=%recording-name%"},
 						{en: "//secondhandsongs.com/search/release?sel[]=title&val[]=%release-name%"},
 						{en: "//secondhandsongs.com/search/work?sel[]=title&val[]=%work-name%"}
+					]
+				},
+				whoSampled: {
+					title: {en: "WhoSampled"},
+					target: [
+						{en: "//www.whosampled.com/search/artists/?q=%artist-name%"},
+						{en: "//www.whosampled.com/search/tracks/?q=%recording-name%"}
 					]
 				},
 				wikipedia: {
