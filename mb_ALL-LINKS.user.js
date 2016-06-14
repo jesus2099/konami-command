@@ -1,4 +1,3 @@
-
 // ==UserScript==
 // @name         mb. ALL LINKS
 // @version      2016.6.14
@@ -95,7 +94,7 @@ var webSearchLinks = {
 		en: "Search the web",
 		de: "Durchsuchen das Web",
 		fr: "Chercher sur le Web",
-		nl: "Zoeken op het Web",
+		nl: "Zoeken op het Web"
 	},
 	items: {
 		webPageSearch: {
@@ -118,7 +117,7 @@ var webSearchLinks = {
 			target: "//duckduckgo.com/?q=%entity-name%+!v"
 		},
 		waybackMachineHistory: {
-			title: {en: "Archive history", de: "Archivgeschichte", fr: "Historique d'archivage", nl: "Archiefgeschiedenis"},
+			title: {en: "Archive history", de: "Archivgeschichte", fr: "Versions archivées", nl: "Archiefgeschiedenis"},
 			target: "//web.archive.org/web/*/%url-target%"
 		}
 	}
@@ -127,8 +126,8 @@ var whitelistSearchLinks = {
 	title: {
 		de: "Durchsuchen in die weiße Liste",
 		en: "Search in the whitelist",
-		fr: "Chercher dans la liste blanche",
-		nl: "Zoeken in de witte lijst",
+		fr: "Sites autorisés",
+		nl: "Zoeken in de witte lijst"
 	},
 	items: {
 		lyricsDBs: {
@@ -136,7 +135,7 @@ var whitelistSearchLinks = {
 				de: "Liedtext",
 				en: "Lyrics",
 				fr: "Paroles",
-				nl: "Liedtekst",
+				nl: "Liedtekst"
 			},
 			items: {
 				decoda: {
@@ -150,7 +149,7 @@ var whitelistSearchLinks = {
 					title: {en: "Directlyrics"},
 					target: [
 						{en: "//startpage.com/do/search?q=site:directlyrics.com/*-artist.html+%artist-name%"},
-						{en: "http://www.directlyrics.com/search/?q=%work-name%"},
+						{en: "http://www.directlyrics.com/search/?q=%work-name%"}
 					]
 				},
 				lyricWikia: {
@@ -160,21 +159,21 @@ var whitelistSearchLinks = {
 						{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%release-group-name%"},
 						{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
 					]
-				},
+				}
 			}
 		},
 		scoreDBs: {
 			title: {
 				de: "Partitur",
 				en: "Score",
-				fr: "Partition",
-				nl: "Bladmuziek",
+				fr: "Partitions",
+				nl: "Bladmuziek"
 			},
 			items: {
 				imslp: {
 					title: {en: "IMSLP/Petrucci Music Library"},
 					target: "//duckduckgo.com/?q=site:imslp.org+%work-name%"
-				},
+				}
 			}
 		},
 		regionalDBs: {
@@ -182,7 +181,7 @@ var whitelistSearchLinks = {
 				de: "Pro Gebiet",
 				en: "By area",
 				fr: "Par région",
-				nl: "Per Gebied",
+				nl: "Per Gebied"
 			},
 			items: {
 				DE: {
@@ -190,7 +189,7 @@ var whitelistSearchLinks = {
 						de: "Deutschland",
 						en: "Germany",
 						fr: "Allemagne",
-						nl: "Duitsland",
+						nl: "Duitsland"
 					},
 					items: {
 						musikSammler: {
@@ -204,7 +203,7 @@ var whitelistSearchLinks = {
 						dnbMusikarchiv: {
 							title: {de: "DNB - Deutsches Musikarchiv"},
 							target: {de: "https://portal.dnb.de/opac.htm?query=%28mat%3DMusic+OR+cod%3Dmt%29+AND+%release-name%&method=simpleSearch&cqlMode=true"}
-						},
+						}
 					}
 				},
 				FR: {
@@ -212,7 +211,7 @@ var whitelistSearchLinks = {
 						de: "Frankreich",
 						en: "France",
 						fr: "France",
-						nl: "Frankrijk",
+						nl: "Frankrijk"
 					},
 					items: {
 						encyclopedisque: {
@@ -221,9 +220,9 @@ var whitelistSearchLinks = {
 								{fr: "http://www.encyclopedisque.fr/recherche.html?ra=%artist-name%&sp=1#resultat"},
 								{fr: "http://www.encyclopedisque.fr/recherche.html?rd=%release-name%&sp=1#resultat"}
 							]
-						},
+						}
 					}
-				},
+				}
 			}
 		},
 		otherDBs: {
@@ -231,7 +230,7 @@ var whitelistSearchLinks = {
 				de: "Andere Datenbanken",
 				en: "Other databases",
 				fr: "Autres bases de données",
-				nl: "Andere databases",
+				nl: "Andere databases"
 			},
 			items: {
 				allmusic: {
@@ -275,7 +274,7 @@ var whitelistSearchLinks = {
 					title: {en: "Last.fm (MBID)"},
 					target: {
 						"en": "http://last.fm/mbid/%artist-mbid%",
-						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/mbid/%artist-mbid%",
+						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/mbid/%artist-mbid%"
 					},
 					multilingualKeys: true
 				},
@@ -283,7 +282,7 @@ var whitelistSearchLinks = {
 					title: {en: "Last.fm (name)",	de: "Last.fm (Name)", es: "Last.fm (nombre)", fr: "Last.fm (nom)", it: "Last.fm (Nome)", ja: "Last.fm (名)", pl: "Last.fm (Nazwa)", pt: "Last.fm (nome)", ru: "Last.fm (имя)", sv: "Last.fm (namn)", tr: "Last.fm (ad)", zh: "Last.fm (名)"},
 					target: {
 						"en": "http://last.fm/search?q=%artist-name%",
-						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/search?q=%artist-name%",
+						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/search?q=%artist-name%"
 					},
 					multilingualKeys: true
 				},
@@ -316,7 +315,7 @@ var whitelistSearchLinks = {
 				wikipedia: {
 					title: {en: "Wikipedia"},
 					target: "//duckduckgo.com/?q=site:wikipedia.org+%22%entity-name%%22"
-				},
+				}
 			}
 		}
 	}
@@ -326,7 +325,7 @@ var additionalSearchLinks = {
 		de: "Durchsuchen noch mehr",
 		en: "Search further",
 		fr: "Chercher plus loin",
-		nl: "Zoeken verder naar",
+		nl: "Zoeken verder naar"
 	},
 	items: {
 		lyricsDBs: {
@@ -334,13 +333,13 @@ var additionalSearchLinks = {
 				de: "Liedtext",
 				en: "Lyrics",
 				fr: "Paroles",
-				nl: "Liedtekst",
+				nl: "Liedtekst"
 			},
 			items: {
 				lyricWikiaFR: {
 					title: {fr: "WikiParoles"},
 					target: {fr: "http://fr.lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
-				},
+				}
 			}
 		},
 		regionalDBs: {
@@ -348,7 +347,7 @@ var additionalSearchLinks = {
 				de: "Pro Gebiet",
 				en: "By area",
 				fr: "Par région",
-				nl: "Per Gebied",
+				nl: "Per Gebied"
 			},
 			items: {
 				FR: {
@@ -356,14 +355,14 @@ var additionalSearchLinks = {
 						de: "Frankreich",
 						en: "France",
 						fr: "France",
-						nl: "Frankrijk",
+						nl: "Frankrijk"
 					},
 					items: {
 						sacem: {
 							title: {fr: "SACEM"},
 							target: {
 								fr: "https://repertoire.sacem.fr/resultats?filters=titles&query=%work-name%#searchBtn",
-								en: "https://repertoire.sacem.fr/en/results?filters=titles&query=%work-name%#searchBtn",
+								en: "https://repertoire.sacem.fr/en/results?filters=titles&query=%work-name%#searchBtn"
 							}
 						},
 						sacemWorks: {
@@ -371,23 +370,23 @@ var additionalSearchLinks = {
 							target: [
 								{
 									fr: "https://repertoire.sacem.fr/resultats?filters=parties&query=%artist-name%#searchBtn",
-									en: "https://repertoire.sacem.fr/en/results?filters=parties&query=%artist-name%#searchBtn",
+									en: "https://repertoire.sacem.fr/en/results?filters=parties&query=%artist-name%#searchBtn"
 								}, {
 									fr: "https://repertoire.sacem.fr/resultats?filters=parties&query=%label-name%#searchBtn",
-									en: "https://repertoire.sacem.fr/en/results?filters=parties&query=%label-name%#searchBtn",
+									en: "https://repertoire.sacem.fr/en/results?filters=parties&query=%label-name%#searchBtn"
 								}
 							]
-						},
+						}
 					}
-				},
+				}
 			}
-		},
-	},
+		}
+	}
 };
 var searchLinks = {items: {
 	web: webSearchLinks,
 	whitelist: whitelistSearchLinks,
-	additional: additionalSearchLinks,
+	additional: additionalSearchLinks
 }};
 var disabledSearchLinks = {};
 var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/61960dd9ebd5b77c6f1199815160e63b3383437e/lib/MusicBrainz/Server/Entity/URL/Sidebar.pm
@@ -587,7 +586,6 @@ function main() {
 								if (wikiEntry) {
 									var href = wikiEntry.url.replace(/^https?:/, "");
 									var ul;
-									/*if (!existingLinks || !existingLinks[url]) {*/
 									if (!extlinks.querySelector("li a[href$='" + href + "']")) {
 										if (!ul) {
 											ul = wikidataListItem.appendChild(createTag("ul", {s: {listStyle: "none"}}));
@@ -708,23 +706,32 @@ function addSearchLinksSection(sectionPath, parentNode) {
 	if (level === 1) {
 		sectionTitleNode.classList.add(userjs + "searchLinks");
 		var landingSibling = false;
-		for (var n = 0; n < parentNode.children.length; n++)
+		for (var n = 0; n < parentNode.children.length; n++) {
 			if (parentNode.children[n].classList.contains("editing")) {
 				landingSibling = parentNode.children[n];
 				break;
 			}
-		if (landingSibling) parentNode.insertBefore(sectionTitleNode, landingSibling);
-		else parentNode.appendChild(sectionTitleNode);
+		}
+		if (landingSibling) {
+			parentNode.insertBefore(sectionTitleNode, landingSibling);
+		} else {
+			parentNode.appendChild(sectionTitleNode);
+		}
 		if (section === webSearchLinks) {
 			sectionTitleNode.appendChild(document.createTextNode(" "));
 			sectionTitleNode.appendChild(
-					createTag("a", {a: {title: "filter search links"}, s: {padding: "1px 3px"}, e: {click: configureModule}},
-						createTag("img", {a: {src: "/static/images/icons/filter.png", alt: "filter search links", title: "filter search links"}})
-						));
+				createTag("a", {a: {title: "filter search links"}, s: {padding: "1px 3px"}, e: {click: configureModule}},
+					createTag("img", {a: {src: "/static/images/icons/filter.png", alt: "filter search links", title: "filter search links"}})
+				)
+			);
 		}
-	} else parentNode.appendChild(sectionTitleNode);
+	} else {
+		parentNode.appendChild(sectionTitleNode);
+	}
 	var sectionListNode = addAfter(createTag("ul", {a: {class: "external_links"}}), sectionTitleNode);
-	if (level === 1) sectionListNode.classList.add(userjs + "searchLinks");
+	if (level === 1) {
+		sectionListNode.classList.add(userjs + "searchLinks");
+	}
 	if (section !== webSearchLinks) {
 		var sectionCBox = sectionTitleNode.appendChild(
 			createTag("input", {a: {type: "checkbox"}, s: {float: "right", margin: "1px"}, e: {click: function(event) {
@@ -736,15 +743,20 @@ function addSearchLinksSection(sectionPath, parentNode) {
 				} else {
 					this.parentNode.classList.toggle("disabled", !this.checked);
 				}
-			}}}));
+			}}})
+		);
 		sectionCBox.checked = !disabledSearchLinks[sectionID];
 		if (disabledSearchLinks[sectionID]) {
 			sectionListNode.classList.add("disabled");
-			if (level === 1) sectionTitleNode.classList.add("disabled");
-			else parentNode.classList.add("disabled");
+			if (level === 1) {
+				sectionTitleNode.classList.add("disabled");
+			} else {
+				parentNode.classList.add("disabled");
+			}
 		}
 	}
-	var hasNothing = true, hasVisibleContent = false;
+	var hasNothing = true;
+	var hasVisibleContent = false;
 	for (var itemKey in section.items) if (section.items.hasOwnProperty(itemKey)) {
 		var item = section.items[itemKey];
 		var itemPath = sectionPath.concat([itemKey]);
@@ -754,14 +766,19 @@ function addSearchLinksSection(sectionPath, parentNode) {
 			hasNothing = false;
 			sectionListNode.appendChild(itemNode);
 			var subIsVisible = addSearchLinksSection(itemPath, itemNode);
-			if (subIsVisible) hasVisibleContent = true;
-			else itemNode.classList.add("emptySection");
+			if (subIsVisible) {
+				hasVisibleContent = true;
+			} else {
+				itemNode.classList.add("emptySection");
+			}
 		} else {
 			var itemTarget = false;
 			if (Array.isArray(item.target)) {
 				for (var t = 0; t < item.target.length; t++) {
 					itemTarget = replaceAllTokens(getLocalizedText(item.target[t], item.multilingualKeys));
-					if (itemTarget) break;
+					if (itemTarget) {
+						break;
+					}
 				}
 			} else {
 				itemTarget = replaceAllTokens(getLocalizedText(item.target, item.multilingualKeys));
@@ -773,14 +790,18 @@ function addSearchLinksSection(sectionPath, parentNode) {
 				itemNode.appendChild(createTag("a", {a: {href: itemTarget}}, itemTitle));
 				setFavicon(itemNode, itemTarget);
 				var itemCBox = itemNode.appendChild(
-						createTag("input", {a: {type: "checkbox"}, s: {float: "right", margin: "1px"}, e: {click: function(event) {
-							this.parentNode.classList.toggle("disabled", !this.checked);
-							toggleStorage(this.parentNode.id);
-							toggleEmpty(this.parentNode, !this.checked);
-						}}}));
+					createTag("input", {a: {type: "checkbox"}, s: {float: "right", margin: "1px"}, e: {click: function(event) {
+						this.parentNode.classList.toggle("disabled", !this.checked);
+						toggleStorage(this.parentNode.id);
+						toggleEmpty(this.parentNode, !this.checked);
+					}}})
+				);
 				itemCBox.checked = !disabledSearchLinks[itemID];
-				if (disabledSearchLinks[itemID]) itemNode.classList.add("disabled");
-				else hasVisibleContent = true;
+				if (disabledSearchLinks[itemID]) {
+					itemNode.classList.add("disabled");
+				} else {
+					hasVisibleContent = true;
+				}
 			}
 		}
 	}
@@ -793,8 +814,8 @@ function addSearchLinksSection(sectionPath, parentNode) {
 			var noItemNote = {
 				de: "nichts für diesen Entitätstyp",
 				en: "nothing for this entity type",
-				fr: "rien pour ce type d'entité",
-				nl: "niets voor dit soort entiteit",
+				fr: "rien pour ce type d’entité",
+				nl: "niets voor dit soort entiteit"
 			};
 			sectionListNode.appendChild(createTag("li", {s: {fontStyle: "italic", opacity: "0.5"}}, getLocalizedText(noItemNote)));
 		}
@@ -804,7 +825,8 @@ function addSearchLinksSection(sectionPath, parentNode) {
 function addUserLinks() {
 	var loadedUserLinks = JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {};
 	var filteredUserLinks = {};
-	var currentSection = "", currentSectionIsEmpty = true;
+	var currentSection = "";
+	var currentSectionIsEmpty = true;
 	for (var title in loadedUserLinks) if (loadedUserLinks.hasOwnProperty(title)) {
 		var target = loadedUserLinks[title];
 		if (!target || target === "") {
@@ -823,28 +845,36 @@ function addUserLinks() {
 			}
 		}
 	}
-	if (currentSectionIsEmpty) delete filteredUserLinks[currentSection];
-	if (!Object.getOwnPropertyNames(filteredUserLinks).length) return;
+	if (currentSectionIsEmpty) {
+		delete filteredUserLinks[currentSection];
+	}
+	if (!Object.getOwnPropertyNames(filteredUserLinks).length) {
+		return;
+	}
 	var userLinksTitle = {
 		de: "Meine Links",
 		en: "My links",
 		fr: "Mes liens",
-		nl: "Mijn links",
+		nl: "Mijn links"
 	};
 	var userLinksTitleNode = createTag("h2", {}, getLocalizedText(userLinksTitle));
 	userLinksTitleNode.appendChild(document.createTextNode(" "));
 	userLinksTitleNode.appendChild(
-			createTag("a", {a: {title: "configure user autolinks"}, s: {padding: "0px"}, e: {click: configureModule}},
-				createTag("img", {a: {src: "/static/images/icons/cog.png", alt: "configure user autolinks", title: "configure user autolinks"}})
-						));
+		createTag("a", {a: {title: "configure user autolinks"}, s: {padding: "0px"}, e: {click: configureModule}},
+			createTag("img", {a: {src: "/static/images/icons/cog.png", alt: "configure user autolinks", title: "configure user autolinks"}})
+		)
+	);
 	var landingSibling = false;
 	for (var n = 0; n < sidebar.children.length; n++)
 		if (sidebar.children[n].classList.contains("editing")) {
 			landingSibling = sidebar.children[n];
 			break;
 		}
-	if (landingSibling) sidebar.insertBefore(userLinksTitleNode, landingSibling);
-	else parentNode.appendChild(userLinksTitleNode);
+	if (landingSibling) {
+		sidebar.insertBefore(userLinksTitleNode, landingSibling);
+	} else {
+		parentNode.appendChild(userLinksTitleNode);
+	}
 	var userLinksListNode = createTag("ul", {a: {class: "external_links " + userjs + "userLinks"}})
 	addAfter(userLinksListNode, userLinksTitleNode);
 	for (var title in filteredUserLinks) if (filteredUserLinks.hasOwnProperty(title)) {
@@ -853,7 +883,7 @@ function addUserLinks() {
 		if (target === null) {
 			itemNode.classList.add("subsectionHeader");
 			itemNode.appendChild(document.createTextNode(title));
-		  userLinksListNode.appendChild(document.createElement("hr"));
+			userLinksListNode.appendChild(document.createElement("hr"));
 		} else {
 			itemNode.appendChild(createTag("a", {a: {href: target}}, title));
 			setFavicon(itemNode, target);
@@ -862,7 +892,9 @@ function addUserLinks() {
 	}
 }
 function getLocalizedText(textSet, multilingualKeys) {
-	if (typeof textSet === "string") return textSet;
+	if (typeof textSet === "string") {
+		return textSet;
+	}
 	if (multilingualKeys) {
 		var expanded = {};
 		for (var key in textSet) if (textSet.hasOwnProperty(key)) {
@@ -874,11 +906,15 @@ function getLocalizedText(textSet, multilingualKeys) {
 	}
 	var languages = parseLanguages(rawLanguages);
 	for (var l = 0; l < languages.length; l++) {
-		if (textSet.hasOwnProperty(languages[l])) return textSet[languages[l]];
+		if (textSet.hasOwnProperty(languages[l])) {
+			return textSet[languages[l]];
+		}
 	}
 	var fallbackLanguages = guessNavigatorLanguages().concat([document.documentElement.getAttribute("lang") || "en"]);
 	for (var fl = 0; fl < fallbackLanguages.length; fl++) {
-		if (textSet.hasOwnProperty(fallbackLanguages[fl])) return textSet[fallbackLanguages[fl]];
+		if (textSet.hasOwnProperty(fallbackLanguages[fl])) {
+			return textSet[fallbackLanguages[fl]];
+		}
 	}
 	return textSet[Object.getOwnPropertyNames(textSet)[0]];
 }
@@ -889,8 +925,9 @@ function loadDisabledSearchLinks() {
 	var loadedSettings = JSON.parse(localStorage.getItem(userjs + "disabled-search-links")) || {};
 	for (var itemID in loadedSettings) if (loadedSettings.hasOwnProperty(itemID)) {
 		var itemPath = idToPath(itemID);
-		if (itemPath && pathToItem(itemPath))
+		if (itemPath && pathToItem(itemPath)) {
 			disabledSearchLinks[itemID] = true;
+		}
 	}
 	delete disabledSearchLinks[pathToID(["web"])];
 	localStorage.setItem(userjs + "disabled-search-links", JSON.stringify(disabledSearchLinks));
@@ -899,7 +936,9 @@ function pathToItem(path) {
 	var item = searchLinks;
 	for (var i = 0; i < path.length; i++) {
 		item = item.items[path[i]];
-		if (!item) return false;
+		if (!item) {
+			return false;
+		}
 	}
 	return item;
 }
@@ -911,9 +950,11 @@ function pathToID(path) {
 }
 function replaceAllTokens(string) {
 	var stringTokens = string.match(/%[a-z]+(?:-[a-z]+)+%/g);
-	if (stringTokens)	for (var t = 0; t < stringTokens.length; t++) {
+	if (stringTokens) for (var t = 0; t < stringTokens.length; t++) {
 		var token = stringTokens[t];
-		if (!tokenValues.hasOwnProperty(token)) return false;
+		if (!tokenValues.hasOwnProperty(token)) {
+			return false;
+		}
 		string = string.replace(token, encodeURIComponent(tokenValues[token]));
 	}
 	return string;
@@ -972,8 +1013,7 @@ function toggleEmpty(itemNode, hide) {
 		if (itemNode.parentNode.parentNode.id === "sidebar") {
 			itemNode.parentNode.classList.remove("emptySection");
 			itemNode.parentNode.previousElementSibling.classList.remove("emptySection");
-		}
-		else {
+		} else {
 			itemNode.parentNode.parentNode.classList.remove("emptySection");
 			toggleEmpty(itemNode.parentNode.parentNode, hide);
 		}
@@ -999,8 +1039,11 @@ function toggleEmpty(itemNode, hide) {
 }
 function toggleStorage(itemID) {
 	var toggledSettings = JSON.parse(localStorage.getItem(userjs + "disabled-search-links")) || {};
-	if (toggledSettings[itemID]) delete toggledSettings[itemID];
-	else toggledSettings[itemID] = true;
+	if (toggledSettings[itemID]) {
+		delete toggledSettings[itemID];
+	} else {
+		toggledSettings[itemID] = true;
+	}
 	localStorage.setItem(userjs + "disabled-search-links", JSON.stringify(toggledSettings));
 }
 function weirdobg() {
@@ -1117,15 +1160,13 @@ function configureModule(event) {
 				localStorage.setItem(userjs + "user-autolinks", newUserAutolinks);
 			}
 			break;
-		case "configure default autolinks":
-			//TODO: refresh default autolink statuses
-			extlinks.classList.toggle("configure");
-			break;
 		case "filter search links":
 			var topSectionNodes = sidebar.children;
-			for (var n = 0; n < sidebar.children.length; n++)
-				if (sidebar.children[n].classList.contains(userjs + "searchLinks"))
+			for (var n = 0; n < sidebar.children.length; n++) {
+				if (sidebar.children[n].classList.contains(userjs + "searchLinks")) {
 					sidebar.children[n].classList.toggle("configure");
+				}
+			}
 			break;
 		case "choose languages":
 			var defaultLanguages = parseLanguages(["navigator", "musicbrainz"]);
