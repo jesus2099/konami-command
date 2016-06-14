@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2016.2.5
+// @version      2016.6.14
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CHATLOGS-POWER-UP.user.js
 // @description  chatlogs.metabrainz.org/brainzbot. swicth between #musicbrainz, #metabrainz and #musicbrainz-ja channels; previous/next date log page (it was once a better script)
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
@@ -15,7 +15,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
-// @include      http://chatlogs.metabrainz.org/brainzbot/*
+// @match        *://chatlogs.metabrainz.org/brainzbot/*
 // @include      http://hcm.fam.cx/mbja/chatlog.cgi*
 // @run-at       document-end
 // ==/UserScript==
@@ -27,8 +27,13 @@ if (cat) {
 	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 	var css = document.styleSheets[document.styleSheets.length - 1];
 	if (cat != "musicbrainz-ja") {
+		// remove top black bar which overlaps content with Opera 12
 		css.insertRule("header#Site-Header { display: none; }", 0);
 		css.insertRule("header#Log-Header { padding: 0px; }", 0);
+		// remove sidebar which does some funky endless reloading with Opera 12
+		css.insertRule(".timeline-navigation { display: none; }", 0)
+		css.insertRule("#Log-Container { margin-top: 0px; }", 0);
+		css.insertRule("#Log-Container article { margin-right: 0px; }", 0);
 	}
 	var date = self.location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
 	if (date) date = date[1] + "-" + date[2] + "-" + date[3];

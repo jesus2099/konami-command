@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2016.5.25
+// @version      2016.6.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
@@ -34,21 +34,21 @@ var confirmIfMoreThan = 2000;/*-1 to never confirm*/
 var userjs = "jesus2099userjs131731";
 var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var entities = {
-	artist: {path: "/artist/", icon: "artist"},
+	artist: {path: "/artist/", icon: "artist.png"},
 	bug: {fullpath: "http://bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%", HTTPonly: true},
-	cdtoc: {path: "/cdtoc/", icon: "release", id: "[A-Za-z0-9_\\.]+-"},
+	cdtoc: {path: "/cdtoc/", icon: "release.png", id: "[A-Za-z0-9_\\.]+-"},
 	"classic.edit": {path: "/show/edit/?editid=", id: "[0-9]+", label: "edit\u00a0#%id%"},
 	"classic.user": {path: "/show/user/?username=", id: ".+"},
-	edit: {path: "/edit/", id: "[0-9]+", label: "edit\u00a0#%id%"},
-	label: {path: "/label/", icon: "label"},
-	place: {path: "/place/", icon: "blank"},/*MBS-7070*/
-	recording: {path: "/recording/", icon: "recording"},
-	release: {path: "/release/", icon: "release"},
-	"release-group": {path: "/release-group/", icon: "release_group"},
+	edit: {path: "/edit/", id: "[0-9]+", label: "#%id%"},
+	label: {path: "/label/", icon: "label.png"},
+	place: {path: "/place/", icon: "place.svg"},
+	recording: {path: "/recording/", icon: "recording.png"},
+	release: {path: "/release/", icon: "release.png"},
+	"release-group": {path: "/release-group/", icon: "release_group.svg"},
 	ticket: {fullpath: "http://tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", HTTPonly: true},
-	track: {path: "/track/", icon: "recording"},
+	track: {path: "/track/", icon: "recording.png"},
 	user: {path: "/user/", id: ".+", openEdits: "/edits/open", noEdit: true},
-	work: {path: "/work/", icon: "blank"},/*MBS-7070*/
+	work: {path: "/work/", icon: "work.svg"},
 };
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 var j2css = document.styleSheets[document.styleSheets.length - 1];
@@ -63,7 +63,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 	var u = (entities[ent].fullpath ? entities[ent].fullpath : "musicbrainz.org" + entities[ent].path.replace("?", "\\?"));
 	var c = userjs + ent;
 	if (entities[ent].icon) {
-		j2css.insertRule("a." + c + " { background-image: url(//musicbrainz.org/static/images/entity/" + entities[ent].icon + ".png); background-repeat: no-repeat; background-size: contain; padding-left: 16px; }", 0);
+		j2css.insertRule("a." + c + " { background-image: url(//musicbrainz.org/static/images/entity/" + entities[ent].icon + "); background-repeat: no-repeat; background-size: contain; padding-left: 16px; }", 0);
 	}
 	if (contractMBIDs && ent != "user") {
 		j2css.insertRule("a." + c + " > code { display: inline-block; overflow-x: hidden; vertical-align: bottom; }", 0);
@@ -107,35 +107,40 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 				&& (id = href.match(new RegExp(u + "(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
 				&& !as[a].querySelector("img:not(.rendericon)")
 			) {
-				as[a].classList.add(c);
+				var newA = as[a].cloneNode(true);
+				newA.classList.add(c);
 				if (as[a].textContent == href || /*forums*/as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /*edit-notes*/as[a].textContent == href.substr(0, 48) + "…") {
-					as[a].classList.add(userjs);
+					newA.classList.add(userjs);
 					var text = unescape(id[1]);
 					if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);
 					if (text) {
-						as[a].replaceChild(entities[ent].id ? document.createTextNode(text) : createTag("code", {}, text), as[a].firstChild);
+						newA.replaceChild(entities[ent].id ? document.createTextNode(text) : createTag("code", {}, text), newA.firstChild);
 					}
 					if (id[2] || id[3]) {
-						as[a].appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? "…" : ""))).parentNode.style.setProperty("opacity", ".5");
+						newA.appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? "…" : ""))).parentNode.style.setProperty("opacity", ".5");
 					}
 					var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.)/);
 					if (altserv) {
-						as[a].appendChild(document.createTextNode(" (" + altserv[1] + ")"));
+						newA.appendChild(document.createTextNode(" (" + altserv[1] + ")"));
 					}
-					var code = as[a].querySelector("code");
+					var code = newA.querySelector("code");
 					if (contractMBIDs && code) {
 						var width = parseInt(self.getComputedStyle(code).getPropertyValue("width").match(/^\d+/) + "", 10);
 						code.style.setProperty("width", width / code.textContent.length * 8 + "px");
 					}
-					as[a].insertBefore(createTag("b", {}, ent + " "), as[a].firstChild);
+					newA.insertBefore(createTag("b", {}, ent + "\u00A0"), newA.firstChild);
 					if ((ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
-						addAfter(document.createTextNode(">"), as[a]);
-						if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), as[a]); }
-						if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "H"), as[a]); }
-						if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), as[a]); }
-						addAfter(document.createTextNode(" <"), as[a]);
+						var fragment = document.createDocumentFragment();
+						fragment.appendChild(newA);
+						addAfter(document.createTextNode(">"), newA);
+						if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), newA); }
+						if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "H"), newA); }
+						if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), newA); }
+						addAfter(document.createTextNode(" <"), newA);
+						newA = fragment;
 					}
 				}
+				as[a].parentNode.replaceChild(newA, as[a]);
 			}
 		}
 	} else { skip = "1"; }

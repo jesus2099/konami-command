@@ -2,13 +2,13 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2016.5.20
+// @version      2016.6.13
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
 // @compatible   opera(12.18.1872)+violentmonkey     my setup
-// @compatible   firefox(45.0.2)+greasemonkey        quickly tested
+// @compatible   firefox(47.0)+greasemonkey          quickly tested
 // @compatible   chromium(46.0.2471.0)+tampermonkey  quickly tested
 // @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
@@ -165,7 +165,7 @@ function bug(error) {
 	}
 	if (error.report && title) {
 		if (confirm(alrt + "\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
-			self.open(meta.supportURL + "/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent("Hello,\nI am using that awesome *" + meta.name + "* (**" + meta.version + "**).\nI got an error while I was on [" + (document.title ? document.title : "that page") + "](" + self.location.href + "):\n\n    " + error.message.replace(/\n/g, "\n    ")));
+			self.open("https://github.com/jesus2099/konami-command/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent("Hello,\nI am using that awesome *" + meta.name + "* (**" + meta.version + "**).\nI got an error while I was on [" + (document.title ? document.title : "that page") + "](" + self.location.href + "):\n\n    " + error.message.replace(/\n/g, "\n    ")));
 		}
 	} else {
 		alert(alrt);
@@ -361,7 +361,7 @@ if (j2sets.RELEASE_CLONER && account) {
 								};
 								xhr.onerror = function(event) {
 									if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
-										self.open(meta.supportURL + "/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + self.location.href + ").\n"));
+										self.open("https://github.com/jesus2099/konami-command/issues/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + self.location.href + ").\n"));
 									}
 								};
 								xhr.open("get", "/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels&fmt=json", false);
@@ -870,17 +870,19 @@ if (j2sets.SERVER_SWITCH) {
 		}
 		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, createTag("code", {}, [meta.icon.cloneNode(), " ", servname])), document.createElement("ul")]), langMenu);
 		menu.addEventListener("click", function(event) {
-			stop(event);
-			for (var openMenus = document.querySelectorAll(".header ul.menu li.fake-active"), m = 0; m < openMenus.length; m++) if (openMenus[m] != this) {
-				sendEvent(openMenus[m], "click");
-			}
-			if (this.lastChild.style.getPropertyValue("left").match(/inherit|-\d{1,4}px/)) {
-				this.classList.remove("fake-active");
-				this.lastChild.style.setProperty("left", "-10000px");
-			} else {
-				this.classList.add("fake-active");
-				var ulStyle = self.getComputedStyle(this.lastChild);
-				this.lastChild.style.setProperty("left", "-" + (ulStyle.getPropertyValue("width").match(/\d+/) - self.getComputedStyle(this).getPropertyValue("width").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-left").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-right").match(/\d+/)) + "px");
+			if(event.target.tagName == "CODE") {
+				stop(event);
+				for (var openMenus = document.querySelectorAll(".header ul.menu li.fake-active"), m = 0; m < openMenus.length; m++) if (openMenus[m] != this) {
+					sendEvent(openMenus[m], "click");
+				}
+				if (this.lastChild.style.getPropertyValue("left").match(/inherit|-\d{1,4}px/)) {
+					this.classList.remove("fake-active");
+					this.lastChild.style.setProperty("left", "-10000px");
+				} else {
+					this.classList.add("fake-active");
+					var ulStyle = self.getComputedStyle(this.lastChild);
+					this.lastChild.style.setProperty("left", "-" + (ulStyle.getPropertyValue("width").match(/\d+/) - self.getComputedStyle(this).getPropertyValue("width").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-left").match(/\d+/) + 1 * ulStyle.getPropertyValue("padding-right").match(/\d+/)) + "px");
+				}
 			}
 		}, true);
 		menu.lastChild.addEventListener("click", function(event) { event.stopPropagation(); });

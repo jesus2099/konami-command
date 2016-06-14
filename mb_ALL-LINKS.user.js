@@ -1,6 +1,7 @@
+
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2016.5.29
+// @version      2016.6.14
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -83,7 +84,6 @@
 /* hint for Opera 12 users allow opera:config#UserPrefs|Allowscripttolowerwindow and opera:config#UserPrefs|Allowscripttoraisewindow */
 var userjs = "jesus2099_all-links_";
 var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; // U+2FA1D is currently out of js range
-var extlinksOpacity = "1";
 var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["navigator", "musicbrainz"];
 // Available tokens:
 // - for all entity pages: %entity-type% %entity-mbid% %entity-name%
@@ -442,7 +442,7 @@ var guessOtherFavicons = true;
 var sidebar = document.getElementById("sidebar");
 var tokenValues = {};
 var entityUrlRelsWS = "/ws/2/%entity-type%/%entity-mbid%?inc=url-rels";
-var existingLinks, extlinks;
+var extlinks;
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 var j2css = document.styleSheets[document.styleSheets.length - 1];
 j2css.insertRule("ul.external_links > li.defaultAutolink > input[type='checkbox'] { display: none; }", 0);
@@ -515,9 +515,7 @@ function main() {
 					tokenValues["%url-target%"] = entityName;
 				}
 			}
-			extlinks = sidebar.getElementsByClassName("external_links");
-			if (extlinks && extlinks.length > 0) {
-				extlinks = extlinks[0];
+			if (extlinks = sidebar.querySelector(".external_links")) {
 				// Hidden links
 				entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
 				addHiddenLinks();
@@ -538,7 +536,7 @@ function main() {
 				var wikidataID = wikidatas[wd].getAttribute("href").match(/Q\d+$/);
 				if (wikidataID) {
 					if (!wikidatas[wd].parentNode.querySelector("a.edit-languages")) {
-						addAfter(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)", opacity: ".5"}}, createTag("a", {a: {class: "edit-languages", title: "choose wikipedia languages"}, s: {color: "transparent"}, e: {click: configureModule}}, "choose wikipedia languages")), wikidatas[wd]);
+						addAfter(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)", opacity: ".5"}}, createTag("a", {a: {class: "edit-languages", title: "choose languages"}, s: {color: "transparent"}, e: {click: configureModule}}, "choose languages")), wikidatas[wd]);
 						addAfter(document.createTextNode(" "), wikidatas[wd]);
 					}
 					var xhr = new XMLHttpRequest();
@@ -575,27 +573,16 @@ function main() {
 }
 function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, enabledDefaultAutolink*/) {
 	var newLink = true;
-	var lis = extlinks.getElementsByTagName("li");
-	if (!existingLinks) {
-		existingLinks = [];
-		for (var ilis = 0; ilis < lis.length; ilis++) {
-			var lisas = lis[ilis].getElementsByTagName("a");
-			if (lisas.length > 0) {
-				existingLinks.push(lisas[0].getAttribute("href").trim().replace(/^https?:/, ""));
-			}
-		}
-	}
 	if (parameters.target) {
 		// This is a link
 		var li;
 		if (typeof parameters.target === "string") {
-			var exi = existingLinks.indexOf(parameters.target.trim().replace(/^https?:/, ""));
-			if (exi < 0) {
-				existingLinks.push(parameters.target.trim().replace(/^https?:/, ""));
-				li = createTag("li", {a: {ref: parameters.text}}, createTag("a", {a: {href: parameters.target}}, parameters.text));
-			} else {
+			var existingLink = sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "']");
+			if (existingLink) {
 				newLink = false;
-				li = lis[exi];
+				li = getParent(existingLink, "li");
+			} else {
+				li = createTag("li", {a: {ref: parameters.text}}, createTag("a", {a: {href: parameters.target}}, parameters.text));
 			}
 			if (parameters.sntarget && newLink) {
 				li.appendChild(document.createTextNode(" ("));
@@ -632,7 +619,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		extlinks.insertBefore(document.createElement("hr"), li);
 	}
 	if (newLink) {
-		li.style.setProperty("opacity", extlinksOpacity);
+		if (!parameters.mbid) { li.style.setProperty("opacity", ".5"); }
 		if (parameters.target) { extlinks.appendChild(li); }
 	}
 	return newLink;
@@ -1057,36 +1044,30 @@ function guessNavigatorLanguages() {
 	}
 }
 function parseLanguages(inputLanguages) {
-	var outputLanguages = [];
+	var detectedLanguages = [];
 	for (var il = 0; il < inputLanguages.length; il++) {
 		var nextLanguage = inputLanguages[il];
-		if (inputLanguages[il] == "navigator") {
-			var navigatorLanguages = guessNavigatorLanguages();
-			for (var nl = 0; nl < navigatorLanguages.length; nl++) {
-				nextLanguage = navigatorLanguages[nl];
-				if (outputLanguages.indexOf(nextLanguage) < 0) {
-					outputLanguages.push(nextLanguage);
-				}
-			}
-		} else {
-			if (inputLanguages[il] == "musicbrainz") {
-				nextLanguage = document.documentElement.getAttribute("lang") || "en";
-			}
-			if (outputLanguages.indexOf(nextLanguage) < 0) {
-				outputLanguages.push(nextLanguage);
-			}
+		switch (nextLanguage) {
+			case "navigator":
+				detectedLanguages = detectedLanguages.concat(guessNavigatorLanguages());
+				break;
+			case "musicbrainz":
+				detectedLanguages.push(document.documentElement.getAttribute("lang") || "en");
+				break;
+			default:
+				detectedLanguages.push(nextLanguage);
 		}
 	}
-	return splitLanguages(outputLanguages);
-}
-function splitLanguages(inputLanguages) {
 	var outputLanguages = [];
-	for (var il = 0; il < inputLanguages.length; il++) {
-		outputLanguages.push(inputLanguages[il]);
-		if (inputLanguages[il].match(/-/)) {
-			var splitLanguage = inputLanguages[il].split("-")[0];
-			if (outputLanguages.indexOf(splitLanguage) < 0) {
-				outputLanguages.push(splitLanguage);
+	for (var dl = 0; dl < detectedLanguages.length; dl++) {
+		var nextLanguage = detectedLanguages[dl];
+		if (outputLanguages.indexOf(nextLanguage) < 0) {
+			outputLanguages.push(nextLanguage);
+			if (nextLanguage.match("-")) {
+				var splitLanguage = nextLanguage.split("-")[0];
+				if (outputLanguages.indexOf(splitLanguage) < 0) {
+					outputLanguages.push(splitLanguage);
+				}
 			}
 		}
 	}
@@ -1112,14 +1093,21 @@ function configureModule(event) {
 				if (sidebar.children[n].classList.contains(userjs + "searchLinks"))
 					sidebar.children[n].classList.toggle("configure");
 			break;
-		case "choose wikipedia languages":
-			var navigatorLanguages = splitLanguages(guessNavigatorLanguages());
-			var musicbrainzLanguage = splitLanguages([document.documentElement.getAttribute("lang") || "en"])[0];
-			var loadedLanguages = localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages);
-			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nMeta languages are:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ") : "undetected") + "\r\n- \"musicbrainz\" for MusicBrainz UI settings, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault: [\"navigator\", \"musicbrainz\"]\r\nExample 2: [\"fr\", \"en\", \"vi\", \"ja\"]\r\nExample 3: [\"en\"]\r\nExample 4: []", loadedLanguages.replace(/,/g, "$& "));
-			if (newLanguages && newLanguages != loadedLanguages && JSON.stringify(newLanguages)) {
+		case "choose languages":
+			var defaultLanguages = parseLanguages(["navigator", "musicbrainz"]);
+			var navigatorLanguages = guessNavigatorLanguages();
+			var musicbrainzLanguage = document.documentElement.getAttribute("lang") || "en";
+			var loadedLanguages = (localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages)).replace(/,/g, "$& ");
+			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nType a language array: [\"favourite language\", \"second favourite\", …, \"least favourite\"]\r\n\r\nTwo meta languages can be used:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ") : "undetected") + "\r\n- \"musicbrainz\" for selected MusicBrainz UI language, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault:\r\n- [\"navigator\", \"musicbrainz\"], currently expands to " + JSON.stringify(defaultLanguages).replace(/,/g, "$& ") + "\r\n\r\nSome examples:\r\n- [\"musicbrainz\", \"fr-FR\", \"en-GB\", \"vi\", \"ja\", \"navigator\"]\r\n- [\"fr\", \"en\", \"vi\", \"ja\"]\r\n- [\"en-GB\"]\r\n- [\"fr-FR\", \"navigator\", \"en-GB\", \"musicbrainz\"]\r\n- []" + "\r\n\r\nCurrent setting expands to " + JSON.stringify(parseLanguages(JSON.parse(loadedLanguages))).replace(/,/g, "$& "), loadedLanguages);
+			if (
+				newLanguages
+				&& (newLanguages = newLanguages.match(/\[(\s*["'](navigator|musicbrainz|\w{2}(-\w{2,}(-\w{2,})?)?)['"]\s*,?\s*)*]/))
+				&& (newLanguages = newLanguages[0])
+				&& newLanguages != loadedLanguages
+				&& JSON.parse(newLanguages)
+			) {
 				localStorage.setItem(userjs + "languages", newLanguages);
-				rawLanguages = newLanguages;
+				rawLanguages = JSON.parse(newLanguages);
 			}
 			break;
 	}

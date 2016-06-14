@@ -47,7 +47,5 @@ Here is a list of scripts that has not yet been stored here in “**KONAMI COMM
   — In (test.)musicbrainz.org
 * [MB. artist credit entity links](http://userscripts-mirror.org/scripts/show/131649)
   — Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases page’s artist credits section. Additionally spots duplicate aliases.
-* [mb. INLINE TRACK ARTIST](http://userscripts-mirror.org/scripts/show/166877)
-  — musicbrainz.org: highlights track title, length and artist differences in recording page
 * [AMZ. shrink product links and direct link to full size pictures](http://userscripts-mirror.org/scripts/show/139394)
   — Amazon. Shows links to full size images. Shrinks product and search URLs. Prevents from opening new windows in amazn.jp searches.
