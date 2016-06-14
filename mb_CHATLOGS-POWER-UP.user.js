@@ -27,8 +27,13 @@ if (cat) {
 	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 	var css = document.styleSheets[document.styleSheets.length - 1];
 	if (cat != "musicbrainz-ja") {
+		// remove top black bar which overlaps content with Opera 12
 		css.insertRule("header#Site-Header { display: none; }", 0);
 		css.insertRule("header#Log-Header { padding: 0px; }", 0);
+		// remove sidebar which does some funky endless reloading with Opera 12
+		css.insertRule(".timeline-navigation { display: none; }", 0)
+		css.insertRule("#Log-Container { margin-top: 0px; }", 0);
+		css.insertRule("#Log-Container article { margin-right: 0px; }", 0);
 	}
 	var date = self.location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
 	if (date) date = date[1] + "-" + date[2] + "-" + date[3];
