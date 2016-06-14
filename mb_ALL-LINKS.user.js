@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2016.6.12
+// @version      2016.6.14
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -83,8 +83,6 @@
 /* hint for Opera 12 users allow opera:config#UserPrefs|Allowscripttolowerwindow and opera:config#UserPrefs|Allowscripttoraisewindow */
 var userjs = "jesus2099_all-links_";
 var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; // U+2FA1D is currently out of js range
-var extlinksOpacity = "1";
-var autolinksOpacity = ".5";
 var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["navigator", "musicbrainz"];
 // Available tokens:
 // - for all entity pages: %entity-type% %entity-mbid% %entity-name%
@@ -309,7 +307,7 @@ var guessOtherFavicons = true;
 var sidebar = document.getElementById("sidebar");
 var tokenValues = {};
 var entityUrlRelsWS = "/ws/2/%entity-type%/%entity-mbid%?inc=url-rels";
-var existingLinks, extlinks;
+var extlinks;
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 var j2css = document.styleSheets[document.styleSheets.length - 1];
 j2css.insertRule("ul.external_links > li.defaultAutolink > input[type='checkbox'] { display: none; }", 0);
@@ -363,14 +361,11 @@ function main() {
 					}
 				}
 			}
-			extlinks = sidebar.getElementsByClassName("external_links");
-			if (extlinks && extlinks.length > 0) {
-				extlinks = extlinks[0];
+			if (extlinks = sidebar.querySelector(".external_links")) {
 				// Hidden links
 				entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
 				addHiddenLinks();
 				// Autolinks
-				extlinksOpacity = autolinksOpacity;
 				for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
 					var haslinks = false;
 					for (var link in autolinks[defaultOrUser]) if (autolinks[defaultOrUser].hasOwnProperty(link)) {
@@ -415,7 +410,7 @@ function main() {
 				var wikidataID = wikidatas[wd].getAttribute("href").match(/Q\d+$/);
 				if (wikidataID) {
 					if (!wikidatas[wd].parentNode.querySelector("a.edit-languages")) {
-						addAfter(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)", opacity: ".5"}}, createTag("a", {a: {class: "edit-languages", title: "choose wikipedia languages"}, s: {color: "transparent"}, e: {click: configureModule}}, "choose wikipedia languages")), wikidatas[wd]);
+						addAfter(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)", opacity: ".5"}}, createTag("a", {a: {class: "edit-languages", title: "choose languages"}, s: {color: "transparent"}, e: {click: configureModule}}, "choose languages")), wikidatas[wd]);
 						addAfter(document.createTextNode(" "), wikidatas[wd]);
 					}
 					var xhr = new XMLHttpRequest();
@@ -451,16 +446,6 @@ function main() {
 }
 function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, enabledDefaultAutolink*/) {
 	var newLink = true;
-	var lis = extlinks.getElementsByTagName("li");
-	if (!existingLinks) {
-		existingLinks = [];
-		for (var ilis = 0; ilis < lis.length; ilis++) {
-			var lisas = lis[ilis].getElementsByTagName("a");
-			if (lisas.length > 0) {
-				existingLinks.push(lisas[0].getAttribute("href").trim().replace(/^https?:/, ""));
-			}
-		}
-	}
 	if (parameters.target) {
 		// This is a link
 		var li;
@@ -508,13 +493,12 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 			form.appendChild(document.createTextNode("*"));
 			li = createTag("li", {a: {ref: parameters.text}}, form);
 		} else {
-			var exi = existingLinks.indexOf(parameters.target.trim().replace(/^https?:/, ""));
-			if (exi < 0) {
-				existingLinks.push(parameters.target.trim().replace(/^https?:/, ""));
-				li = createTag("li", {a: {ref: parameters.text}}, createTag("a", {a: {href: parameters.target}}, parameters.text));
-			} else {
+			var existingLink = sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "']");
+			if (existingLink) {
 				newLink = false;
-				li = lis[exi];
+				li = getParent(existingLink, "li");
+			} else {
+				li = createTag("li", {a: {ref: parameters.text}}, createTag("a", {a: {href: parameters.target}}, parameters.text));
 			}
 			if (parameters.sntarget && newLink) {
 				li.appendChild(document.createTextNode(" ("));
@@ -575,7 +559,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		extlinks.insertBefore(document.createElement("hr"), li);
 	}
 	if (newLink) {
-		li.style.setProperty("opacity", extlinksOpacity);
+		if (!parameters.mbid) { li.style.setProperty("opacity", ".5"); }
 		if (parameters.target) { extlinks.appendChild(li); }
 	}
 	return newLink;
@@ -797,7 +781,7 @@ function configureModule(event) {
 			//TODO: refresh default autolink statuses
 			extlinks.classList.toggle("configure");
 			break;
-		case "choose wikipedia languages":
+		case "choose languages":
 			var defaultLanguages = parseLanguages(["navigator", "musicbrainz"]);
 			var navigatorLanguages = guessNavigatorLanguages();
 			var musicbrainzLanguage = document.documentElement.getAttribute("lang") || "en";
