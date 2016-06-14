@@ -801,11 +801,17 @@ function configureModule(event) {
 			var defaultLanguages = parseLanguages(["navigator", "musicbrainz"]);
 			var navigatorLanguages = guessNavigatorLanguages();
 			var musicbrainzLanguage = document.documentElement.getAttribute("lang") || "en";
-			var loadedLanguages = localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages);
-			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nMeta languages are:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ") : "undetected") + "\r\n- \"musicbrainz\" for MusicBrainz UI settings, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault:\t\t[\"navigator\", \"musicbrainz\"]\r\n\t\t\t\tcurrently expanded to " + JSON.stringify(defaultLanguages).replace(/,/g, "$& ") + "\r\nExample 2:\t[\"fr\", \"en\", \"vi\", \"ja\"]\r\nExample 3:\t[\"en\"]\r\nExample 4:\t[]", loadedLanguages.replace(/,/g, "$& "));
-			if (newLanguages && newLanguages != loadedLanguages && JSON.stringify(newLanguages)) {
+			var loadedLanguages = (localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages)).replace(/,/g, "$& ");
+			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nType a language array: [\"favourite language\", \"second favourite\", …, \"least favourite\"]\r\n\r\nTwo meta languages can be used:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ") : "undetected") + "\r\n- \"musicbrainz\" for selected MusicBrainz UI language, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault:\r\n- [\"navigator\", \"musicbrainz\"], currently expands to " + JSON.stringify(defaultLanguages).replace(/,/g, "$& ") + "\r\n\r\nSome examples:\r\n- [\"musicbrainz\", \"fr-FR\", \"en-GB\", \"vi\", \"ja\", \"navigator\"]\r\n- [\"fr\", \"en\", \"vi\", \"ja\"]\r\n- [\"en-GB\"]\r\n- [\"fr-FR\", \"navigator\", \"en-GB\", \"musicbrainz\"]\r\n- []" + "\r\n\r\nCurrent setting expands to " + JSON.stringify(parseLanguages(JSON.parse(loadedLanguages))).replace(/,/g, "$& "), loadedLanguages);
+			if (
+				newLanguages
+				&& (newLanguages = newLanguages.match(/\[(\s*["'](navigator|musicbrainz|\w{2}(-\w{2,}(-\w{2,})?)?)['"]\s*,?\s*)*]/))
+				&& (newLanguages = newLanguages[0])
+				&& newLanguages != loadedLanguages
+				&& JSON.parse(newLanguages)
+			) {
 				localStorage.setItem(userjs + "languages", newLanguages);
-				rawLanguages = newLanguages;
+				rawLanguages = JSON.parse(newLanguages);
 			}
 			break;
 	}
