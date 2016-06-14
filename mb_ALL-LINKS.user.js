@@ -18,33 +18,85 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=125133&v=2016.5.11
 // @grant        none
+// @include      http*://*mbsandbox.org/area/*
+// @include      http*://*mbsandbox.org/artist/*
+// @include      http*://*mbsandbox.org/event/*
+// @include      http*://*mbsandbox.org/instrument/*
+// @include      http*://*mbsandbox.org/label/*
+// @include      http*://*mbsandbox.org/place/*
+// @include      http*://*mbsandbox.org/recording/*
+// @include      http*://*mbsandbox.org/release/*
+// @include      http*://*mbsandbox.org/release-group/*
+// @include      http*://*mbsandbox.org/series/*
+// @include      http*://*mbsandbox.org/url/*
+// @include      http*://*mbsandbox.org/work/*
+// @include      http*://*musicbrainz.org/area/*
 // @include      http*://*musicbrainz.org/artist/*
+// @include      http*://*musicbrainz.org/event/*
+// @include      http*://*musicbrainz.org/instrument/*
+// @include      http*://*musicbrainz.org/label/*
+// @include      http*://*musicbrainz.org/place/*
+// @include      http*://*musicbrainz.org/recording/*
 // @include      http*://*musicbrainz.org/release/*
-// @include      http://*.mbsandbox.org/artist/*
+// @include      http*://*musicbrainz.org/release-group/*
+// @include      http*://*musicbrainz.org/series/*
+// @include      http*://*musicbrainz.org/url/*
+// @include      http*://*musicbrainz.org/work/*
 // @include      http://*.mbsandbox.org/release/*
 // @exclude      *//*/*mbsandbox.org/*
 // @exclude      *//*/*musicbrainz.org/*
-// @exclude      *//*musicbrainz.org/artist/*/edit
-// @exclude      *//*musicbrainz.org/artist/*/split
+// @exclude      *//*mbsandbox.org/*/*add*
+// @exclude      *//*mbsandbox.org/*/*annotat*
+// @exclude      *//*mbsandbox.org/*/*create*
+// @exclude      *//*mbsandbox.org/*/*delete*
+// @exclude      *//*mbsandbox.org/*/*edit*
+// @exclude      *//*mbsandbox.org/*/*merge*
+// @exclude      *//*mbsandbox.org/*/*remove*
+// @exclude      *//*mbsandbox.org/*/*split*
+// @exclude      *//*mbsandbox.org/*/*/*add*
+// @exclude      *//*mbsandbox.org/*/*/*annotat*
+// @exclude      *//*mbsandbox.org/*/*/*create*
+// @exclude      *//*mbsandbox.org/*/*/*delete*
+// @exclude      *//*mbsandbox.org/*/*/*edit*
+// @exclude      *//*mbsandbox.org/*/*/*merge*
+// @exclude      *//*mbsandbox.org/*/*/*remove*
+// @exclude      *//*mbsandbox.org/*/*/*split*
+// @exclude      *//*musicbrainz.org/*/*add*
+// @exclude      *//*musicbrainz.org/*/*annotat*
+// @exclude      *//*musicbrainz.org/*/*create*
+// @exclude      *//*musicbrainz.org/*/*delete*
+// @exclude      *//*musicbrainz.org/*/*edit*
+// @exclude      *//*musicbrainz.org/*/*merge*
+// @exclude      *//*musicbrainz.org/*/*remove*
+// @exclude      *//*musicbrainz.org/*/*split*
+// @exclude      *//*musicbrainz.org/*/*/*add*
+// @exclude      *//*musicbrainz.org/*/*/*annotat*
+// @exclude      *//*musicbrainz.org/*/*/*create*
+// @exclude      *//*musicbrainz.org/*/*/*delete*
+// @exclude      *//*musicbrainz.org/*/*/*edit*
+// @exclude      *//*musicbrainz.org/*/*/*merge*
+// @exclude      *//*musicbrainz.org/*/*/*remove*
+// @exclude      *//*musicbrainz.org/*/*/*split*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
 /* hint for Opera 12 users allow opera:config#UserPrefs|Allowscripttolowerwindow and opera:config#UserPrefs|Allowscripttoraisewindow */
 var userjs = "jesus2099_all-links_";
 var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; // U+2FA1D is currently out of js range
+var extlinksOpacity = "1";
 var autolinksOpacity = ".5";
 var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["navigator", "musicbrainz"];
-// %artist-id% (MBID)
-// %arist-name%
-// %artist-sort-name%
-// %artist-family-name-first%
+// Available tokens:
+// - for all entity pages: %entity-type% %entity-mbid% %entity-name%
+// - for artist entity pages: %artist-sort-name% %artist-family-name-first% %artist-latin-script-name%
+// - for that type entity pages: %that-mbid% %that-name% where "that" is an entity type in the above @include list
 var autolinks = {
 	user: JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {},
 	default: {
-		"Web pages": "//duckduckgo.com/?q=%artist-name%",
-		"Web pages (strict)": "//duckduckgo.com/?q=%2B%22%artist-name%%22",
-		"Images": "//duckduckgo.com/?q=%artist-name%+!i",
-		"Videos": "//duckduckgo.com/?q=%artist-name%+!v",
+		"Web pages": "//duckduckgo.com/?q=%entity-name%",
+		"Web pages (strict)": "//duckduckgo.com/?q=%2B%22%entity-name%%22",
+		"Images": "//duckduckgo.com/?q=%entity-name%+!i",
+		"Videos": "//duckduckgo.com/?q=%entity-name%+!v",
 		"Credits": null,
 		"SACEM (Interprète)": {
 			acceptCharset: "ISO-8859-1",
@@ -252,9 +304,11 @@ var favicons = {
 	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
 	"yahoo.": "http://blogs.yahoo.co.jp/favicon.ico",
 };
+var favicontry = [];
 var guessOtherFavicons = true;
 var sidebar = document.getElementById("sidebar");
-var arelsws = "/ws/2/artist/%artist-id%?inc=url-rels";
+var tokenValues = {};
+var entityUrlRelsWS = "/ws/2/%entity-type%/%entity-mbid%?inc=url-rels";
 var existingLinks, extlinks;
 document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
 var j2css = document.styleSheets[document.styleSheets.length - 1];
@@ -276,104 +330,84 @@ if (hrStyle.css) {
 }
 function main() {
 	if (sidebar) {
-		var rgextrels = sidebar.querySelector("ul.external_links_2 > li");
-		if (rgextrels && (rgextrels = rgextrels.parentNode) && rgextrels.previousSibling.tagName == "UL") {
-			rgextrels.parentNode.insertBefore(createTag("h2", {}, "Release group external links"), rgextrels);
-		}
-		var artistid = self.location.href.match(/(?:mbsandbox|musicbrainz)\.org\/artist\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
-		var artistname = document.querySelector("div#content > div.artistheader > h1 a, div#content > div.artistheader > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
-		var artistsortname, artistsortnameSwapped = "";
-		if (artistid && artistname) {
-			artistid = artistid[1];
-			arelsws = arelsws.replace(/%artist-id%/, artistid);
-			artistsortname = artistname.getAttribute("title");
-			var tmpsn = artistsortname.split(",");
-			for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
-				artistsortnameSwapped += tmpsn[isn].trim();
-				if (isn != 0) {
-					artistsortnameSwapped += " ";
+		var entityMatch = self.location.href.match(/\/([a-z\-]*)\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
+		var entityType = tokenValues["%entity-type%"] = entityMatch[1];
+		var entityMBID = tokenValues["%entity-mbid%"] = entityMatch[2];
+		tokenValues["%" + entityType + "-mbid%"] = entityMBID;
+		/* Hidden links and autolinks */
+		if (entityType && entityMBID) {
+			// Tokens for autolinks
+			var entityHeaderClass = (entityType === "release-group" ? "rg" : entityType) + "header";
+			var entityNameNode = document.querySelector("div#content > div." + entityHeaderClass + " > h1 a, div#content > div." + entityHeaderClass + " > h1 span[href]"); /* for compatibilly with https://gist.github.com/jesus2099/4111760 */
+			if (entityNameNode) {
+				var entityName = tokenValues["%entity-name%"] = entityNameNode.textContent.trim();
+				tokenValues["%" + entityType + "-name%"] = entityName;
+				if (entityType == "artist") {
+					var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
+					var artistname = entityName;
+					var artistsortname, artistsortnameSwapped = "";
+					artistsortname = tokenValues["%artist-sort-name%"] = entityNameNode.getAttribute("title");
+					if (!artistname.match(nonLatinName)) {
+						tokenValues["%artist-family-name-first%"] = artistsortname;
+						tokenValues["%artist-latin-script-name%"] = artistname;
+					} else {
+						var tmpsn = artistsortname.split(",");
+						for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
+							artistsortnameSwapped += tmpsn[isn].trim();
+							if (isn != 0) {
+								artistsortnameSwapped += " ";
+							}
+						}
+						tokenValues["%artist-family-name-first%"] = artistname;
+						tokenValues["%artist-latin-script-name%"] = artistsortnameSwapped;
+					}
 				}
 			}
-			artistname = artistname.textContent.trim();
 			extlinks = sidebar.getElementsByClassName("external_links");
 			if (extlinks && extlinks.length > 0) {
 				extlinks = extlinks[0];
-				loading(true);
-				// Attached missing links
-				var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function(event) {
-					if (this.readyState == 4) {
-						if (this.status == 200) {
-							loading(false);
-							var res = this.responseXML;
-							var url, urls = res.evaluate("//mb:relation-list[@target-type='url']/mb:relation", res, nsr, XPathResult.ANY_TYPE, null);
-							var haslinks = false;
-							while (url = urls.iterateNext()) {
-								var target = res.evaluate("./mb:target", url, nsr, XPathResult.ANY_TYPE, null);
-								target = target.iterateNext();
-								var begin, end;
-								if (begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
-									begin = begin.textContent;
+				// Hidden links
+				entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
+				addHiddenLinks();
+				// Autolinks
+				extlinksOpacity = autolinksOpacity;
+				for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
+					var haslinks = false;
+					for (var link in autolinks[defaultOrUser]) if (autolinks[defaultOrUser].hasOwnProperty(link)) {
+						var target = autolinks[defaultOrUser][link];
+						var sntarget = null;
+						if (target) {
+							if (typeof target == "string") {
+								if (target.match(/%artist-name%/) && artistname != artistsortnameSwapped && artistname.match(nonLatinName)) {
+									sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
 								}
-								if (end = res.evaluate("./mb:end", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
-									end = end.textContent;
-								} else if (res.evaluate("./mb:ended", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
-									end = "????";
+								target = replaceAllTokens(target);
+								if (!target) continue;
+							} else {
+								var latinScriptOnly = target.acceptCharset.match(/iso-8859/i);
+								var skippedToken = false;
+								for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
+									if (latinScriptOnly)
+										target.parameters[param] = target.parameters[param].replace(/%artist-name%/, "%artist-latin-script-name%");
+									target.parameters[param] = replaceAllTokens(target.parameters[param]);
+									if (!target.parameters[param]) { skippedToken = true; break; }
 								}
-								if (target) {
-									if (addExternalLink({text: url.getAttribute("type"), target: target.textContent, mbid: target.getAttribute("id"), begin: begin, end: end})) {
-										if (!haslinks) {
-											haslinks = true;
-											addExternalLink({text: " Hidden links"});
-										}
-									}
-								}
+								if (skippedToken) continue;
 							}
-							// Autolinks
-							extlinksOpacity = autolinksOpacity;
-							for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
-								haslinks = false;
-								for (var link in autolinks[defaultOrUser]) if (autolinks[defaultOrUser].hasOwnProperty(link)) {
-									var target = autolinks[defaultOrUser][link];
-									var sntarget = null;
-									if (target) {
-										if (typeof target == "string") {
-											target = target.replace(/%artist-id%/, artistid);
-											if (target.match(/%artist-name%/) && artistname != artistsortnameSwapped && artistname.match(nonLatinName)) {
-												sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
-											}
-											target = target.replace(/%artist-name%/, encodeURIComponent(artistname));
-											target = target.replace(/%artist-family-name-first%/, encodeURIComponent(artistname.match(nonLatinName) ? artistname : artistsortname));
-										} else {
-											var aname = target.acceptCharset;
-											aname = aname && aname.match(/iso-8859/i) && artistname != artistsortnameSwapped && artistname.match(nonLatinName) ? artistsortnameSwapped : artistname;
-											for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
-												target.parameters[param] = target.parameters[param].replace(/%artist-id%/, artistid).replace(/%artist-name%/, aname).replace(/%artist-family-name-first%/, artistname.match(nonLatinName) ? artistname : artistsortname);
-											}
-										}
-									}
-									if (addExternalLink({text: link, target: target, sntarget: sntarget, enabledDefaultAutolink: enabledDefaultAutolinks[link]})) {
-										if (!haslinks) {
-											haslinks = true;
-											addExternalLink({text: " " + defaultOrUser.substr(0, 1).toUpperCase() + defaultOrUser.substr(1).toLowerCase() + " autolinks"});
-											extlinks.lastChild.previousSibling.appendChild(document.createTextNode(" "));
-											extlinks.lastChild.previousSibling.appendChild(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)"}}, createTag("a", {a: {title: "configure " + defaultOrUser + " autolinks"}, s: {color: "transparent"}, e: {click: configureModule}}, "configure")));
-										}
-									}
-								}
+						}
+						if (addExternalLink({text: link, target: target, sntarget: sntarget, enabledDefaultAutolink: enabledDefaultAutolinks[link]})) {
+							if (!haslinks) {
+								haslinks = true;
+								addExternalLink({text: " " + defaultOrUser.substr(0, 1).toUpperCase() + defaultOrUser.substr(1).toLowerCase() + " autolinks"});
+								extlinks.lastChild.previousSibling.appendChild(document.createTextNode(" "));
+								extlinks.lastChild.previousSibling.appendChild(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)"}}, createTag("a", {a: {title: "configure " + defaultOrUser + " autolinks"}, s: {color: "transparent"}, e: {click: configureModule}}, "configure")));
 							}
-						} else if (this.status >= 400) {
-							var txt = this.responseText.match(/<error><text>(.+)<\/text><text>/);
-							txt = txt ? txt[1] : "";
-							error(this.status, txt);
 						}
 					}
-				};
-				xhr.open("GET", arelsws, true);
-				xhr.send(null);
+				}
 			}
-		}/*artist*/
-		/*wikidata to wikipedia*/
+		}
+		/* Wikidata to Wikipedia */
 		if (rawLanguages && Array.isArray(rawLanguages) && rawLanguages.length > 0) {
 			var languages = parseLanguages(rawLanguages);
 			var wikidatas = sidebar.querySelectorAll("ul.external_links > li a[href*='wikidata.org/wiki/Q']");
@@ -415,8 +449,6 @@ function main() {
 		}
 	}
 }
-var favicontry = [];
-var extlinksOpacity = "1";
 function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, enabledDefaultAutolink*/) {
 	var newLink = true;
 	var lis = extlinks.getElementsByTagName("li");
@@ -526,54 +558,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 				cb.checked = false;
 			}
 		}
-		var favurltest = (typeof parameters.target == "string") ? parameters.target : parameters.target.action;
-		var favclass = "no";
-		// MusicBrainz cached favicon CSS classes
-		var searchdomain = favurltest.match(/site:([^+]*)\+/);
-		var urldomain = searchdomain ? searchdomain[1] : favurltest.split("/")[2];
-		for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(classdomain)) {
-			if (urldomain.match(classdomain)) {
-				favclass = faviconClasses[classdomain];
-				break;
-			}
-		}
-		if (favclass != "no") {
-			li.classList.add(favclass + "-favicon");
-		} else {
-			// Static favicon URL dictionary
-			var favurlfound = false;
-			for (var part in favicons) if (favicons.hasOwnProperty(part)) {
-				if (favurltest.indexOf(part) != -1) {
-					favurlfound = favicons[part];
-					break;
-				}
-			}
-			if (!guessOtherFavicons && !favurlfound) {
-				li.classList.add("no-favicon");
-			} else {
-				// arbitrary /favicon.ico load try out
-				if (guessOtherFavicons && !favurlfound) {
-					favurlfound = favurltest.substr(0, favurltest.indexOf("/", 8)) + "/favicon.ico";
-				}
-				var ifit = favicontry.length;
-				favicontry[ifit] = new Image();
-				favicontry[ifit].addEventListener("error", function (event) {
-					this.li.classList.add("no-favicon");
-				});
-				favicontry[ifit].addEventListener("load", function (event) {
-					clearTimeout(this.to);
-					this.li.style.setProperty("background-image", "url(" + this.src + ")");
-					this.li.style.setProperty("background-size", "16px 16px");
-				});
-				favicontry[ifit].li = li;
-				favicontry[ifit].src = favurlfound;
-				favicontry[ifit].to = setTimeout(function() {
-					// don’t wait for more than 5 seconds
-					favicontry[ifit].src = "";
-					this.li.classList.add("no-favicon");
-				}, 5000);
-			}
-		}
+		setFavicon(li, (typeof parameters.target == "string") ? parameters.target : parameters.target.action);
 	} else {
 		// This is a header
 		var li = createTag("li", {s: {fontWeight: "bold"}}, parameters.text);
@@ -595,6 +580,105 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 	}
 	return newLink;
 }
+function addHiddenLinks() {
+	loading(true);
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function(event) {
+		if (this.readyState == 4) {
+			if (this.status == 200) {
+				loading(false);
+				var res = this.responseXML;
+				var url, urls = res.evaluate("//mb:relation-list[@target-type='url']/mb:relation", res, nsr, XPathResult.ANY_TYPE, null);
+				var haslinks = false;
+				while (url = urls.iterateNext()) {
+					var target = res.evaluate("./mb:target", url, nsr, XPathResult.ANY_TYPE, null);
+					target = target.iterateNext();
+					var begin, end;
+					if (begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+						begin = begin.textContent;
+					}
+					if (end = res.evaluate("./mb:end", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+						end = end.textContent;
+					} else if (res.evaluate("./mb:ended", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+						end = "????";
+					}
+					if (target) {
+						if (addExternalLink({text: url.getAttribute("type"), target: target.textContent, mbid: target.getAttribute("id"), begin: begin, end: end})) {
+							if (!haslinks) {
+								haslinks = true;
+								addExternalLink({text: " Hidden links"});
+							}
+						}
+					}
+				}
+			} else if (this.status >= 400) {
+				var txt = this.responseText.match(/<error><text>(.+)<\/text><text>/);
+				txt = txt ? txt[1] : "";
+				error(this.status, txt);
+			}
+		}
+	};
+	xhr.open("GET", entityUrlRelsWS, true);
+	xhr.send(null);
+}
+function replaceAllTokens(string) {
+	var stringTokens = string.match(/%[a-z]+(?:-[a-z]+)+%/g);
+	if (stringTokens)	for (var t = 0; t < stringTokens.length; t++) {
+		var token = stringTokens[t];
+		if (!tokenValues.hasOwnProperty(token)) return false;
+		string = string.replace(token, encodeURIComponent(tokenValues[token]));
+	}
+	return string;
+}
+function setFavicon(li, url) {
+	var favclass = "no";
+	// MusicBrainz cached favicon CSS classes
+	var searchdomain = url.match(/site:([^+]*)\+/);
+	var urldomain = searchdomain ? searchdomain[1] : url.split("/")[2];
+	for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(classdomain)) {
+		if (urldomain.match(classdomain)) {
+			favclass = faviconClasses[classdomain];
+			break;
+		}
+	}
+	if (favclass != "no") {
+		li.classList.add(favclass + "-favicon");
+	} else {
+		// Static favicon URL dictionary
+		var favurlfound = false;
+		for (var part in favicons) if (favicons.hasOwnProperty(part)) {
+			if (url.indexOf(part) != -1) {
+				favurlfound = favicons[part];
+				break;
+			}
+		}
+		if (!guessOtherFavicons && !favurlfound) {
+			li.classList.add("no-favicon");
+		} else {
+			// arbitrary /favicon.ico load try out
+			if (guessOtherFavicons && !favurlfound) {
+				favurlfound = url.substr(0, url.indexOf("/", 8)) + "/favicon.ico";
+			}
+			var ifit = favicontry.length;
+			favicontry[ifit] = new Image();
+			favicontry[ifit].addEventListener("error", function (event) {
+				this.li.classList.add("no-favicon");
+			});
+			favicontry[ifit].addEventListener("load", function (event) {
+				clearTimeout(this.to);
+				this.li.style.setProperty("background-image", "url(" + this.src + ")");
+				this.li.style.setProperty("background-size", "16px 16px");
+			});
+			favicontry[ifit].li = li;
+			favicontry[ifit].src = favurlfound;
+			favicontry[ifit].to = setTimeout(function() {
+				// don’t wait for more than 5 seconds
+				favicontry[ifit].src = "";
+				favicontry[ifit].li.classList.add("no-favicon");
+			}, 5000);
+		}
+	}
+}
 function weirdobg() {
 	var weirdo = userjs + (new Date().getTime());
 	try { open("", weirdo).blur(); } catch(error) {}
@@ -607,14 +691,14 @@ function error(code, text) {
 		ldng.setAttribute("id", userjs + "-error");
 		ldng.style.setProperty("background", "pink");
 		ldng.replaceChild(document.createTextNode("Error " + code), ldng.firstChild);
-		ldng.appendChild(createTag("a", {a: {href: arelsws}}, "*"));
+		ldng.appendChild(createTag("a", {a: {href: entityUrlRelsWS}}, "*"));
 		ldng.appendChild(document.createTextNode(" in "));
 		ldng.appendChild(createTag("a", {a: {href: "http://userscripts-mirror.org/scripts/show/108889"}}, "all links"));
 		ldng.appendChild(document.createTextNode(" ("));
 		ldng.appendChild(createTag("a", {e: {click: function(event) {
 			var err = document.getElementById(userjs + "-error");
 			if (err) { err.parentNode.removeChild(err); }
-			main();
+			addHiddenLinks();
 		}}}, "retry"));
 		ldng.appendChild(document.createTextNode(")"));
 		ldng.appendChild(document.createElement("br"));
@@ -704,7 +788,7 @@ function configureModule(event) {
 		case "configure user autolinks":
 			//TODO: provide a real editor
 			var loadedUserAutolinks = localStorage.getItem(userjs + "user-autolinks") || {};
-			var newUserAutolinks = prompt("Edit your user autolinks\r\nCopy/paste in a real editor\r\nSorry for such an awful prompt\r\n\r\nAvailable variables: %artist-id% (MBID), %arist-name%, %artist-sort-name% and %artist-family-name-first%\r\n\r\nExample: {\"xyz\": \"//duckduckgo.com/?q=%artist-name%+xyz\",\r\n\"XYZ\": \"//duckduckgo.com/?q=%artist-name%+XYZ\",\r\n\"abc\": \"/ws/2/artist/%artist-id%?inc=works\",\r\n\"La FNAC\": \"//recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%artist-name%&sft=1&sa=0\"}", loadedUserAutolinks);
+			var newUserAutolinks = prompt("Edit your user autolinks\r\nCopy/paste in a real editor\r\nSorry for such an awful prompt\r\n\r\nAvailable variables:\r\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\r\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\r\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\r\n\r\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%entity-name%+reviews\",\r\n\"Search for fans\": \"//duckduckgo.com/?q=%artist-name%+fans\",\r\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\r\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
 			if (newUserAutolinks && newUserAutolinks != loadedUserAutolinks && JSON.stringify(newUserAutolinks)) {
 				localStorage.setItem(userjs + "user-autolinks", newUserAutolinks);
 			}
