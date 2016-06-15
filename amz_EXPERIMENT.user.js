@@ -1,17 +1,13 @@
 // ==UserScript==
 // @name         AMZ. shrink product links and direct link to full size pictures
-// @version      2016.5.17
+// @version      2016.6.15
 // @description  Amazon. Shows links to full size images. Shrinks product and search URLs. Prevents from opening new windows in amazn.jp searches.
 // @namespace    https://userscripts.org/139394
 // @author       PATATE12 aka. jesus2099/shamo
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @grant        none
-// @include      http://amazon.*
-// @include      http://www.amazon.*
-// @include      https://amazon.*
-// @include      https://www.amazon.*
-// @exclude      *://amazon.*iframeproxy*
-// @exclude      *://www.amazon.*iframeproxy*
+// @match        *://*.amazon.*/*
+// @exclude      *iframeproxy*
 // @run-at       document-end
 // ==/UserScript==
 /*------------CONFIG-START------------*/

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2016.6.14
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CHATLOGS-POWER-UP.user.js
 // @description  chatlogs.metabrainz.org/brainzbot. swicth between #musicbrainz, #metabrainz and #musicbrainz-ja channels; previous/next date log page (it was once a better script)
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
@@ -16,7 +16,7 @@
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
 // @match        *://chatlogs.metabrainz.org/brainzbot/*
-// @include      http://hcm.fam.cx/mbja/chatlog.cgi*
+// @match        *://hcm.fam.cx/mbja/chatlog.cgi*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

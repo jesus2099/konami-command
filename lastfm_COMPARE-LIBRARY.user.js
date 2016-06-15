@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         lastfm. COMPARE LIBRARY
-// @version      2016.5.17
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_COMPARE-LIBRARY.user.js
 // @description  last.fm: Basic side by side comparison of any library page with ours.
 // @supportURL   https://github.com/jesus2099/konami-command/labels/lastfm_COMPARE-LIBRARY
@@ -16,9 +16,8 @@
 // @since        2015-01-06
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      http://*.last.fm/user/*/library*
-// @include      http://www.lastfm.*/user/*/library*
-// @exclude      *//*/last.fm/*
+// @match        *://*.last.fm/user/*/library*
+// @match        *://www.lastfm.*/user/*/library*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

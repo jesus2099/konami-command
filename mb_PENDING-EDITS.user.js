@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2016.5.29
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -18,32 +18,30 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
 // @grant        none
-// @include      http*://*musicbrainz.org/area/*
-// @include      http*://*musicbrainz.org/artist/*
-// @include      http*://*musicbrainz.org/collection/*
-// @include      http*://*musicbrainz.org/event/*
-// @include      http*://*musicbrainz.org/label/*
-// @include      http*://*musicbrainz.org/place/*
-// @include      http*://*musicbrainz.org/recording/*
-// @include      http*://*musicbrainz.org/release/*
-// @include      http*://*musicbrainz.org/release-group/*
-// @include      http*://*musicbrainz.org/series/*
-// @include      http*://*musicbrainz.org/url/*
-// @include      http*://*musicbrainz.org/work/*
-// @include      http://*.mbsandbox.org/area/*
-// @include      http://*.mbsandbox.org/artist/*
-// @include      http://*.mbsandbox.org/collection/*
-// @include      http://*.mbsandbox.org/event/*
-// @include      http://*.mbsandbox.org/label/*
-// @include      http://*.mbsandbox.org/place/*
-// @include      http://*.mbsandbox.org/recording/*
-// @include      http://*.mbsandbox.org/release/*
-// @include      http://*.mbsandbox.org/release-group/*
-// @include      http://*.mbsandbox.org/series/*
-// @include      http://*.mbsandbox.org/url/*
-// @include      http://*.mbsandbox.org/work/*
-// @exclude      *//*/*mbsandbox.org/*
-// @exclude      *//*/*musicbrainz.org/*
+// @match        *://*.mbsandbox.org/area/*
+// @match        *://*.mbsandbox.org/artist/*
+// @match        *://*.mbsandbox.org/collection/*
+// @match        *://*.mbsandbox.org/event/*
+// @match        *://*.mbsandbox.org/label/*
+// @match        *://*.mbsandbox.org/place/*
+// @match        *://*.mbsandbox.org/recording/*
+// @match        *://*.mbsandbox.org/release/*
+// @match        *://*.mbsandbox.org/release-group/*
+// @match        *://*.mbsandbox.org/series/*
+// @match        *://*.mbsandbox.org/url/*
+// @match        *://*.mbsandbox.org/work/*
+// @match        *://*.musicbrainz.org/area/*
+// @match        *://*.musicbrainz.org/artist/*
+// @match        *://*.musicbrainz.org/collection/*
+// @match        *://*.musicbrainz.org/event/*
+// @match        *://*.musicbrainz.org/label/*
+// @match        *://*.musicbrainz.org/place/*
+// @match        *://*.musicbrainz.org/recording/*
+// @match        *://*.musicbrainz.org/release/*
+// @match        *://*.musicbrainz.org/release-group/*
+// @match        *://*.musicbrainz.org/series/*
+// @match        *://*.musicbrainz.org/url/*
+// @match        *://*.musicbrainz.org/work/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

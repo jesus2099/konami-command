@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2016.2.25
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
@@ -20,39 +20,37 @@ var meta = {rawmdb: function() {
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
 // @grant        none
-// @include      http*://*.mbsandbox.org/
-// @include      http*://*.mbsandbox.org/artist/*
-// @include      http*://*.mbsandbox.org/cdtoc/*
-// @include      http*://*.mbsandbox.org/collection/*
-// @include      http*://*.mbsandbox.org/label/*
-// @include      http*://*.mbsandbox.org/recording/*
-// @include      http*://*.mbsandbox.org/release/*
-// @include      http*://*.mbsandbox.org/release-group/*
-// @include      http*://*.mbsandbox.org/search?*type=annotation*
-// @include      http*://*.mbsandbox.org/search?*type=release*
-// @include      http*://*.mbsandbox.org/series/*
-// @include      http*://*.mbsandbox.org/tag/*
-// @include      http*://*.mbsandbox.org/user/*/ratings*
-// @include      http*://*.mbsandbox.org/user/*/tag/*
-// @include      http*://*musicbrainz.org/
-// @include      http*://*musicbrainz.org/artist/*
-// @include      http*://*musicbrainz.org/cdtoc/*
-// @include      http*://*musicbrainz.org/collection/*
-// @include      http*://*musicbrainz.org/label/*
-// @include      http*://*musicbrainz.org/recording/*
-// @include      http*://*musicbrainz.org/release/*
-// @include      http*://*musicbrainz.org/release-group/*
-// @include      http*://*musicbrainz.org/search?*type=annotation*
-// @include      http*://*musicbrainz.org/search?*type=release*
-// @include      http*://*musicbrainz.org/series/*
-// @include      http*://*musicbrainz.org/tag/*
-// @include      http*://*musicbrainz.org/user/*/ratings*
-// @include      http*://*musicbrainz.org/user/*/tag/*
+// @match        *://*.mbsandbox.org/
+// @match        *://*.mbsandbox.org/artist/*
+// @match        *://*.mbsandbox.org/cdtoc/*
+// @match        *://*.mbsandbox.org/collection/*
+// @match        *://*.mbsandbox.org/label/*
+// @match        *://*.mbsandbox.org/recording/*
+// @match        *://*.mbsandbox.org/release/*
+// @match        *://*.mbsandbox.org/release-group/*
+// @match        *://*.mbsandbox.org/search?*type=annotation*
+// @match        *://*.mbsandbox.org/search?*type=release*
+// @match        *://*.mbsandbox.org/series/*
+// @match        *://*.mbsandbox.org/tag/*
+// @match        *://*.mbsandbox.org/user/*/ratings*
+// @match        *://*.mbsandbox.org/user/*/tag/*
+// @match        *://*.musicbrainz.org/
+// @match        *://*.musicbrainz.org/artist/*
+// @match        *://*.musicbrainz.org/cdtoc/*
+// @match        *://*.musicbrainz.org/collection/*
+// @match        *://*.musicbrainz.org/label/*
+// @match        *://*.musicbrainz.org/recording/*
+// @match        *://*.musicbrainz.org/release/*
+// @match        *://*.musicbrainz.org/release-group/*
+// @match        *://*.musicbrainz.org/search?*type=annotation*
+// @match        *://*.musicbrainz.org/search?*type=release*
+// @match        *://*.musicbrainz.org/series/*
+// @match        *://*.musicbrainz.org/tag/*
+// @match        *://*.musicbrainz.org/user/*/ratings*
+// @match        *://*.musicbrainz.org/user/*/tag/*
 // @exclude      *.org/cdtoc/remove*
 // @exclude      *.org/release/*/*edit*
 // @exclude      *.org/series/*/*edit*
-// @exclude      *//*/*mbsandbox.org/*
-// @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
 // ==OpenUserJS==
