@@ -24,31 +24,30 @@
 // @include      https://www.cdjournal.com/search/do/?k=*&target=a*
 // @run-at       document-end
 // ==/UserScript==
-(function(){"use strict";
-	/*remove crap*/
-	for (var ss=0; ss < document.styleSheets.length; ss++) {
-		if (document.styleSheets[ss].href.match(/\/\/[^/]+/) + "" == "//" + self.location.hostname) {
-			document.styleSheets[ss].insertRule("div#aun_banner, iframe, div#right_body a:not([href*='.cdjournal.com/']) { display: none; }", document.styleSheets[ss].cssRules.length);
-			break;
-		}
+"use strict";
+/*remove crap*/
+for (var ss=0; ss < document.styleSheets.length; ss++) {
+	if (document.styleSheets[ss].href.match(/\/\/[^/]+/) + "" == "//" + self.location.hostname) {
+		document.styleSheets[ss].insertRule("div#aun_banner, iframe, div#right_body a:not([href*='.cdjournal.com/']) { display: none; }", document.styleSheets[ss].cssRules.length);
+		break;
 	}
-	/*add quick links*/
-	var artists = document.querySelectorAll("a:not(.border)[href^='http://artist.cdjournal.com/artist.php?ano='], h1 > a[href^='http://artist.cdjournal.com/a/']");
-	var pages = {
-		CD: "cd",
-		ビデオ: "dvd",
-	};
-	for (var a=0; a < artists.length; a++) {
-		var url = "http://artist.cdjournal.com/a/-/"+artists[a].getAttribute("href").match(/\d+$/);
-		artists[a].setAttribute("href", url);
-		artists[a].style.setProperty("background-color", "#ff9");
-		var quicklinks = artists[a].parentNode.appendChild(document.createElement("span"));
-		for (var p in pages) { if (pages.hasOwnProperty(p)) {
-			quicklinks.appendChild(document.createTextNode(quicklinks.children.length>0?"／":"（"));
-			var anc = quicklinks.appendChild(document.createElement("a")).appendChild(document.createTextNode(p)).parentNode;
-			anc.setAttribute("href", url+"/"+pages[p]+"/");
-			anc.style.setProperty("background-color", "#ff9");
-		} }
-		quicklinks.appendChild(document.createTextNode("）"));
-	}
-})();
+}
+/*add quick links*/
+var artists = document.querySelectorAll("a:not(.border)[href^='http://artist.cdjournal.com/artist.php?ano='], h1 > a[href^='http://artist.cdjournal.com/a/']");
+var pages = {
+	CD: "cd",
+	ビデオ: "dvd"
+};
+for (var a=0; a < artists.length; a++) {
+	var url = "http://artist.cdjournal.com/a/-/"+artists[a].getAttribute("href").match(/\d+$/);
+	artists[a].setAttribute("href", url);
+	artists[a].style.setProperty("background-color", "#ff9");
+	var quicklinks = artists[a].parentNode.appendChild(document.createElement("span"));
+	for (var p in pages) { if (pages.hasOwnProperty(p)) {
+		quicklinks.appendChild(document.createTextNode(quicklinks.children.length>0?"／":"（"));
+		var anc = quicklinks.appendChild(document.createElement("a")).appendChild(document.createTextNode(p)).parentNode;
+		anc.setAttribute("href", url+"/"+pages[p]+"/");
+		anc.style.setProperty("background-color", "#ff9");
+	} }
+	quicklinks.appendChild(document.createTextNode("）"));
+}
