@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2016.4.29
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -20,10 +20,8 @@ var meta = function() {
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
 // @grant        none
-// @include      http*://*musicbrainz.org/release/*
-// @include      http://*.mbsandbox.org/release/*
-// @exclude      *//*/*mbsandbox.org/*
-// @exclude      *//*/*musicbrainz.org/*
+// @match        *://*.mbsandbox.org/release/*
+// @match        *://*.musicbrainz.org/release/*
 // @exclude      *.org/release/*/*
 // @exclude      *.org/release/add
 // @exclude      *.org/release/add?*
@@ -33,7 +31,14 @@ var meta = function() {
 // ==OpenUserJS==
 // @unstableMinify it might break metadata block parser
 // ==/OpenUserJS==
-}; if (meta && meta.toString && (meta = meta.toString())) { meta = {n: meta.match(/@name\s+(.+)/)[1], v: meta.match(/@version\s+(.+)/)[1], ns: meta.match(/@namespace\s+(.+)/)[1]}; }
+};
+if (meta && meta.toString && (meta = meta.toString())) {
+	meta = {
+		n: meta.match(/@name\s+(.+)/)[1],
+		v: meta.match(/@version\s+(.+)/)[1],
+		ns: meta.match(/@namespace\s+(.+)/)[1]
+	}; 
+}
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 /* COLOURS */
 var cOK = "greenyellow";

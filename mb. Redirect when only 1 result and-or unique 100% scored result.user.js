@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         mb: Redirect when only 1 result and/or unique 100% scored result
-// @version      2016.5.17
+// @version      2016.6.15
 // @description  In (test.)musicbrainz.org
 // @namespace    http://userscripts.org/scripts/show/106156
 // @author       N.(stars 2011-06-30) then Tristan DANIEL (PATATE12 aka. jesus2099/shamo)
 // @licence      GPL (http://www.gnu.org/copyleft/gpl.html)
 // @grant        none
-// @include      http*://*musicbrainz.org/search*
+// @match        *://*.mbsandbox.org/search*
+// @match        *://*.musicbrainz.org/search*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

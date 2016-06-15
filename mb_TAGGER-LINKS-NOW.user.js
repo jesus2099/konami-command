@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. TAGGER LINKS NOW
-// @version      2014.11.24.1411
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_TAGGER-LINKS-NOW.user.js
 // @description  musicbrainz.org: Quickly show or update "TAGGER" links with desired port
 // @homepage     http://userscripts-mirror.org/scripts/show/88065
@@ -14,27 +14,25 @@
 // @since        2010-10-13
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      http*://*musicbrainz.org/area/*/releases*
-// @include      http*://*musicbrainz.org/artist/*/releases*
-// @include      http*://*musicbrainz.org/cdtoc/*
-// @include      http*://*musicbrainz.org/label/*
-// @include      http*://*musicbrainz.org/recording/*
-// @include      http*://*musicbrainz.org/release*
-// @include      http*://*musicbrainz.org/search*type=release*
-// @include      http://*.mbsandbox.org/area/*/releases*
-// @include      http://*.mbsandbox.org/artist/*/releases*
-// @include      http://*.mbsandbox.org/cdtoc/*
-// @include      http://*.mbsandbox.org/label/*
-// @include      http://*.mbsandbox.org/recording/*
-// @include      http://*.mbsandbox.org/release*
-// @include      http://*.mbsandbox.org/search*type=release*
+// @match        *://*.mbsandbox.org/area/*/releases*
+// @match        *://*.mbsandbox.org/artist/*/releases*
+// @match        *://*.mbsandbox.org/cdtoc/*
+// @match        *://*.mbsandbox.org/label/*
+// @match        *://*.mbsandbox.org/recording/*
+// @match        *://*.mbsandbox.org/release*
+// @match        *://*.mbsandbox.org/search*type=release*
+// @match        *://*.musicbrainz.org/area/*/releases*
+// @match        *://*.musicbrainz.org/artist/*/releases*
+// @match        *://*.musicbrainz.org/cdtoc/*
+// @match        *://*.musicbrainz.org/label/*
+// @match        *://*.musicbrainz.org/recording/*
+// @match        *://*.musicbrainz.org/release*
+// @match        *://*.musicbrainz.org/search*type=release*
 // @exclude      *.org/cdtoc/*/set-durations*
 // @exclude      *.org/cdtoc/attach?toc=*medium=*
 // @exclude      *.org/cdtoc/search*type=release_group*
 // @exclude      *.org/cdtoc/search*type=release-group*
 // @exclude      *.org/release*/*/*edits*
-// @exclude      *//*/*mbsandbox.org/*
-// @exclude      *//*/*musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

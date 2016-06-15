@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2016.6.6
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
@@ -18,10 +18,8 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
-// @include      http*://*musicbrainz.org/*
-// @include      http://*.mbsandbox.org/*
-// @exclude      *//*/*mbsandbox.org/*
-// @exclude      *//*/*musicbrainz.org/*
+// @match        *://*.mbsandbox.org/*
+// @match        *://*.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2016.5.17.218
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -16,74 +16,85 @@
 // @since        2012-11-16
 // @icon         data:image/gif;base64,R0lGODlhEAAQAOMMAAAAAP8A/wJR1MosEqGhBPyZUAD/APW1hQD///vPp///AP7++P///////////////yH5BAEKAA8ALAAAAAAQABAAAARbUMlJq0Ll6AN6z0liYNnWLV84FmUBLIsAAyqpuTEgA4VomzFUyMfaaDy9WhFw/PRoK6Zn2lFyqNio58DKSAEjQnczPtTEN+ww3AIMBrM1Qpxxud80VWDP7/sNEQA7
 // @grant        none
-// @include      http*://*musicbrainz.org/*edits*
-// @include      http*://*musicbrainz.org/artist/*
-// @include      http*://*musicbrainz.org/edit/*
-// @include      http*://*musicbrainz.org/election*
-// @include      http*://*musicbrainz.org/label/*
-// @include      http*://*musicbrainz.org/recording/*
-// @include      http*://*musicbrainz.org/release/*
-// @include      http*://*musicbrainz.org/release-group/*
-// @include      http*://*musicbrainz.org/search*type=editor*
-// @include      http*://*musicbrainz.org/statistics/editors*
-// @include      http*://*musicbrainz.org/user/*
-// @include      http*://*musicbrainz.org/work/*
-// @exclude      *//*/*musicbrainz.org/*
+// @match        *://*.mbsandbox.org/*edits*
+// @match        *://*.mbsandbox.org/artist/*
+// @match        *://*.mbsandbox.org/edit/*
+// @match        *://*.mbsandbox.org/election*
+// @match        *://*.mbsandbox.org/label/*
+// @match        *://*.mbsandbox.org/recording/*
+// @match        *://*.mbsandbox.org/release/*
+// @match        *://*.mbsandbox.org/release-group/*
+// @match        *://*.mbsandbox.org/search*type=editor*
+// @match        *://*.mbsandbox.org/statistics/editors*
+// @match        *://*.mbsandbox.org/user/*
+// @match        *://*.mbsandbox.org/work/*
+// @match        *://*.musicbrainz.org/*edits*
+// @match        *://*.musicbrainz.org/artist/*
+// @match        *://*.musicbrainz.org/edit/*
+// @match        *://*.musicbrainz.org/election*
+// @match        *://*.musicbrainz.org/label/*
+// @match        *://*.musicbrainz.org/recording/*
+// @match        *://*.musicbrainz.org/release/*
+// @match        *://*.musicbrainz.org/release-group/*
+// @match        *://*.musicbrainz.org/search*type=editor*
+// @match        *://*.musicbrainz.org/statistics/editors*
+// @match        *://*.musicbrainz.org/user/*
+// @match        *://*.musicbrainz.org/work/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 var editors = {
-	  "32978": ["2003-12-13", "2005-12-16", "tenebrous"],
-	  "52273": ["2004-06-14", "2015-06-06", "DrMuller"],
-	  "93418": ["2005-02-08", "2013-03-05", "Rhymeless"],
-	  "95678": ["2005-02-18", "2012-09-24", "brianfreud"],
-	 "129671": ["2005-06-30", "2009-02-02", "Shlublu"],
-	 "157767": ["2005-10-20", "2010-01-05", "michael"],
-	 "161352": ["2005-11-01", "2006-07-08", "claiborne"],
-	 "163497": ["2005-11-09", "2012-07-12", "RedHotHeat"],
-	 "186010": ["2005-12-30", "2012-11-29", "robojock"],
-	 "193948": ["2006-01-20", "2008-01-27", "syserror"],
-	 "240330": ["2006-07-03", "2012-11-27", "theirfour"],
-	 "273412": ["2006-10-28", "2011-02-25", "Sturla"],
-	 "313128": ["2007-03-31", "2009-02-06", "mistoffeles"],
-	 "346478": ["2007-08-31", "2011-05-28", "neothe0ne"],
-	 "386354": ["2008-03-04", "2008-04-03", "grosnombril"],
-	 "420821": ["2008-09-10", "2014-07-19", "kaik", "a.k.a. jozo"],
-	 "448034": ["2009-02-07", "2012-03-05", "maviles"],
-	 "450522": ["2009-02-21", "2011-05-24", "dr_zepsuj"],
-	 "457889": ["2009-04-12", "2014-01-12", "deivsonscherzinger"],
-	 "563581": ["2011-06-13", "2015-04-04", null, "Russian 39,274 edits"],
-	 "619363": ["2012-01-02", "2013-01-15", "ra7h35m20s"],
-	 "629372": ["2012-04-04", "2014-04-08", "nightspirit"],
-	 "638936": ["2012-07-07", "2014-12-21", "betegouveia", "puppet master"],
-	 "667117": ["2012-10-16", "2015-01-02", "m___ah", "the 555,555 edits editor"],
-	 "678525": ["2012-11-05", "2016-05-16", "hcm"],
-	 "692638": ["2012-11-23", "2013-06-25", "macs0647-jd", "puppet master"],
-	 "692651": ["2012-11-24", "2013-06-29", "devore_imperium / rama_3", "macs0647-jd sockpuppet"],
-	 "692817": ["2012-11-25", "2013-06-30", "rama_3 / devore_imperium", "macs0647-jd sockpuppet"],
-	 "696572": ["2012-12-17", "2013-07-02", "commander.atvar", "macs0647-jd sockpuppet"],
-	 "701715": ["2013-01-07", "2013-01-30", "remdia"],
-	 "726919": ["2013-03-26", "2013-09-06", "dirkvd"],
-	 "774387": ["2013-06-06", "2014-12-21", "Wanddis"],
-	 "984246": ["2013-09-14", "2015-03-25", "♀girls"],
-	"1220077": ["2014-01-24", "2014-06-11", "DCEX"],
-	"1304704": ["2014-10-12", "2015-03-22", "superpoota"],
-	"1603482": ["2016-05-12", "2016-05-13", "kemecat"],
+	    "32978": ["2003-12-13", "2005-12-16", "tenebrous"],
+	    "52273": ["2004-06-14", "2015-06-06", "DrMuller"],
+	    "93418": ["2005-02-08", "2013-03-05", "Rhymeless"],
+	    "95678": ["2005-02-18", "2012-09-24", "brianfreud"],
+	   "129671": ["2005-06-30", "2009-02-02", "Shlublu"],
+	   "157767": ["2005-10-20", "2010-01-05", "michael"],
+	   "161352": ["2005-11-01", "2006-07-08", "claiborne"],
+	   "163497": ["2005-11-09", "2012-07-12", "RedHotHeat"],
+	   "186010": ["2005-12-30", "2012-11-29", "robojock"],
+	   "193948": ["2006-01-20", "2008-01-27", "syserror"],
+	   "240330": ["2006-07-03", "2012-11-27", "theirfour"],
+	   "273412": ["2006-10-28", "2011-02-25", "Sturla"],
+	   "313128": ["2007-03-31", "2009-02-06", "mistoffeles"],
+	   "346478": ["2007-08-31", "2011-05-28", "neothe0ne"],
+	   "386354": ["2008-03-04", "2008-04-03", "grosnombril"],
+	   "420821": ["2008-09-10", "2014-07-19", "kaik", "a.k.a. jozo"],
+	   "448034": ["2009-02-07", "2012-03-05", "maviles"],
+	   "450522": ["2009-02-21", "2011-05-24", "dr_zepsuj"],
+	   "457889": ["2009-04-12", "2014-01-12", "deivsonscherzinger"],
+	   "563581": ["2011-06-13", "2015-04-04", null, "Russian 39,274 edits"],
+	   "619363": ["2012-01-02", "2013-01-15", "ra7h35m20s"],
+	   "629372": ["2012-04-04", "2014-04-08", "nightspirit"],
+	   "638936": ["2012-07-07", "2014-12-21", "betegouveia", "puppet master"],
+	   "667117": ["2012-10-16", "2015-01-02", "m___ah", "the 555,555 edits editor"],
+	   "678525": ["2012-11-05", "2016-05-16", "hcm"],
+	   "692638": ["2012-11-23", "2013-06-25", "macs0647-jd", "puppet master"],
+	   "692651": ["2012-11-24", "2013-06-29", "devore_imperium / rama_3", "macs0647-jd sockpuppet"],
+	   "692817": ["2012-11-25", "2013-06-30", "rama_3 / devore_imperium", "macs0647-jd sockpuppet"],
+	   "696572": ["2012-12-17", "2013-07-02", "commander.atvar", "macs0647-jd sockpuppet"],
+	   "701715": ["2013-01-07", "2013-01-30", "remdia"],
+	   "726919": ["2013-03-26", "2013-09-06", "dirkvd"],
+	   "774387": ["2013-06-06", "2014-12-21", "Wanddis"],
+	   "984246": ["2013-09-14", "2015-03-25", "♀girls"],
+	  "1220077": ["2014-01-24", "2014-06-11", "DCEX"],
+	  "1304704": ["2014-10-12", "2015-03-22", "superpoota"],
+	  "1603482": ["2016-05-12", "2016-05-13", "kemecat"],
 	/* mistakes, duplicate accounts, etc. */
-	 "639228": ["2012-07-08", "2014-12-21", "ritaavenida", "betegouveia sockpuppet"],
-	 "639229": ["2012-07-08", "2013-07-12", null, "betegouveia sockpuppet"],
-	 "639231": ["2012-07-08", "2014-12-21", "harrystykes", "betegouveia sockpuppet"],
-	 "639236": ["2012-07-08", "2014-12-21", "niallhoran", "betegouveia sockpuppet"],
-	 "791672": ["2013-06-14", "2013-12-08", "georg187", "only some test edits"],
-	 "800638": ["2013-06-19", "2014-12-21", "nicolebahls", "betegouveia sockpuppet"],
-	 "809366": ["2013-06-23", "2014-12-21", "xoxtina", "betegouveia sockpuppet"],
-	"1024627": ["2013-10-04", "2014-12-21", "bvlgari", "betegouveia sockpuppet"],
-	"1288668": ["2014-06-29", "2014-12-21", "khaleesi", "betegouveia sockpuppet"],
-	"1306704": ["2014-10-22", "2014-10-24", null, "betegouveia sockpuppet"], /* LOL https://musicbrainz.org/edit/29794898 */
+	   "639228": ["2012-07-08", "2014-12-21", "ritaavenida", "betegouveia sockpuppet"],
+	   "639229": ["2012-07-08", "2013-07-12", null, "betegouveia sockpuppet"],
+	   "639231": ["2012-07-08", "2014-12-21", "harrystykes", "betegouveia sockpuppet"],
+	   "639236": ["2012-07-08", "2014-12-21", "niallhoran", "betegouveia sockpuppet"],
+	   "791672": ["2013-06-14", "2013-12-08", "georg187", "only some test edits"],
+	   "800638": ["2013-06-19", "2014-12-21", "nicolebahls", "betegouveia sockpuppet"],
+	   "809366": ["2013-06-23", "2014-12-21", "xoxtina", "betegouveia sockpuppet"],
+	  "1024627": ["2013-10-04", "2014-12-21", "bvlgari", "betegouveia sockpuppet"],
+	  "1288668": ["2014-06-29", "2014-12-21", "khaleesi", "betegouveia sockpuppet"],
+	  "1306704": ["2014-10-22", "2014-10-24", null, "betegouveia sockpuppet"], /* LOL https://musicbrainz.org/edit/29794898 */
 	/* funny stuff */
 	"jesus2099": "GOLD MASTER KING",
-	"%you%": "PROPHET PRINCE CHAMPION",
+	    "%you%": "PROPHET PRINCE CHAMPION",
 };
 var standout /*from the crowd*/ = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */

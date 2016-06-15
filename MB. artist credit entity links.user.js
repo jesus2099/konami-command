@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         MB. artist credit entity links
-// @version      2016.5.27
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/MB.%20artist%20credit%20entity%20links.user.js
 // @description  Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases page’s artist credits section. Additionally spots duplicate aliases.
 // @homepage     http://userscripts-mirror.org/scripts/show/131649
@@ -13,6 +13,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-04-23
 // @grant        none
+// @match        *://*.mbsandbox.org/artist/*/aliases
 // @match        *://*.musicbrainz.org/artist/*/aliases
 // @run-at       document-end
 // ==/UserScript==

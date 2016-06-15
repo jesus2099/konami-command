@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2016.6.2
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -18,30 +18,36 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128868
 // @grant        none
-// @include      http*://*musicbrainz.org/release/*
-// @include      http*://*musicbrainz.org*edit*
-// @include      http*://*musicbrainz.org*edits*
-// @include      http*://*musicbrainz.org/show/edit/?editid=*
-// @include      http*://*musicbrainz.org/mod/search/results.html*
-// @include      http*://*musicbrainz.org/artist/*/recordings*
-// @exclude      http*://*musicbrainz.org/ws/*
-// @exclude      http*://*musicbrainz.org/release/add
-// @exclude      http*://*musicbrainz.org/release/add?artist*
-// @exclude      http*://*musicbrainz.org/release/add?release-group*
-// @exclude      http*://*musicbrainz.org/release/*annotation*
-// @exclude      http*://*musicbrainz.org/release/*cover-art*
-// @exclude      http*://*musicbrainz.org/release/*/relationships
-// @exclude      http*://*musicbrainz.org/release/*/discids
-// @exclude      http*://*musicbrainz.org/release/*/tags
-// @exclude      http*://*musicbrainz.org/release/*/details
-// @exclude      http*://*musicbrainz.org/release/*/edit
-// @exclude      http*://*musicbrainz.org/search?*type=*
-// @exclude      http*://blog.musicbrainz.org*
-// @exclude      http*://bugs.musicbrainz.org*
-// @exclude      http*://forums.musicbrainz.org*
-// @exclude      http*://lists.musicbrainz.org*
-// @exclude      http*://tickets.musicbrainz.org*
-// @exclude      http*://wiki.musicbrainz.org*
+// @macth        *://*.mbsandbox.org*edit*
+// @macth        *://*.mbsandbox.org*edits*
+// @macth        *://*.mbsandbox.org/artist/*/recordings*
+// @macth        *://*.mbsandbox.org/mod/search/results.html*
+// @macth        *://*.mbsandbox.org/release/*
+// @macth        *://*.mbsandbox.org/show/edit/?editid=*
+// @macth        *://*.musicbrainz.org*edit*
+// @macth        *://*.musicbrainz.org*edits*
+// @macth        *://*.musicbrainz.org/artist/*/recordings*
+// @macth        *://*.musicbrainz.org/mod/search/results.html*
+// @macth        *://*.musicbrainz.org/release/*
+// @macth        *://*.musicbrainz.org/show/edit/?editid=*
+// @exclude      *.org/ws/*
+// @exclude      *.org/release/add
+// @exclude      *.org/release/add?artist*
+// @exclude      *.org/release/add?release-group*
+// @exclude      *.org/release/*annotation*
+// @exclude      *.org/release/*cover-art*
+// @exclude      *.org/release/*/relationships
+// @exclude      *.org/release/*/discids
+// @exclude      *.org/release/*/tags
+// @exclude      *.org/release/*/details
+// @exclude      *.org/release/*/edit
+// @exclude      *.org/search?*type=*
+// @exclude      *://blog.musicbrainz.org*
+// @exclude      *://bugs.musicbrainz.org*
+// @exclude      *://forums.musicbrainz.org*
+// @exclude      *://lists.musicbrainz.org*
+// @exclude      *://tickets.musicbrainz.org*
+// @exclude      *://wiki.musicbrainz.org*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

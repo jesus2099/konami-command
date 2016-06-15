@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SPOT DUPLICATE RECORDINGS
-// @version      2015.8.27
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SPOT-DUPLICATE-RECORDINGS.user.js
 // @description  musicbrainz.org: Spot recordings that are linked multiple times to the same work
 // @homepage     http://userscripts-mirror.org/scripts/show/106145
@@ -18,14 +18,12 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
 // @grant        none
-// @include      http*://*musicbrainz.org/recording/*
-// @include      http*://*musicbrainz.org/work/*
-// @include      http://*.mbsandbox.org/recording/*
-// @include      http://*.mbsandbox.org/work/*
-// @exclude      *//*.org/recording/*/*
-// @exclude      *//*.org/work/*/*
-// @exclude      *//*/*mbsandbox.org/*
-// @exclude      *//*/*musicbrainz.org/*
+// @match        *://*.mbsandbox.org/recording/*
+// @match        *://*.mbsandbox.org/work/*
+// @match        *://*.musicbrainz.org/recording/*
+// @match        *://*.musicbrainz.org/work/*
+// @exclude      *.org/recording/*/*
+// @exclude      *.org/work/*/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

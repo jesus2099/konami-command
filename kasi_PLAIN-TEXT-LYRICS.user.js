@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2015.1.21.15.40
+// @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/kasi_PLAIN-TEXT-LYRICS.user.js
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @homepage     http://userscripts-mirror.org/scripts/show/91968
@@ -19,18 +19,18 @@ var meta = {rawmdb: function() {
 // @since        2010-12-05
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      http*://*uta-net.com/movie/*/
-// @include      http*://*uta-net.com/song/*/
-// @include      http*://joysound.com/ex/search/karaoke/_selSongNo_*_songwords.htm
-// @include      http*://petitlyrics.com/lyrics/*
-// @include      http://*utamap.com/*.php?surl=*
-// @include      http://j-lyric.net/artist/*/*.html
-// @include      http://lyrics.gyao.yahoo.co.jp/ly/*
-// @include      http://music.goo.ne.jp/lyric/*
-// @include      http://rio.yahooapis.jp/RioWebService/V2/*
-// @include      http://utaten.com/lyric/*
-// @include      http://www.kasi-time.com/item-*.html
-// @include      http://www.kget.jp/lyric/*
+// @match        *://*.utamap.com/*.php?surl=*
+// @match        *://*.uta-net.com/movie/*/
+// @match        *://*.uta-net.com/song/*/
+// @match        *://j-lyric.net/artist/*/*.html
+// @match        *://joysound.com/ex/search/karaoke/_selSongNo_*_songwords.htm
+// @match        *://lyrics.gyao.yahoo.co.jp/ly/*
+// @match        *://music.goo.ne.jp/lyric/*
+// @match        *://petitlyrics.com/lyrics/*
+// @match        *://rio.yahooapis.jp/RioWebService/V2/*
+// @match        *://utaten.com/lyric/*
+// @match        *://www.kasi-time.com/item-*.html
+// @match        *://www.kget.jp/lyric/*
 // @run-at       document-end
 // ==/UserScript==
 // ==OpenUserJS==
