@@ -17,7 +17,6 @@
 // @include      http://www.priceminister.com/*
 // @run-at       document-end
 // ==/UserScript==
-(function(){
 /* lines you can add to your "blocked content", many advertisement systems used on priceminister that slow down the page display.
 In Opera (FF ok): I've also noticed that some pages (like article pages) were not triggering userjs at once, you have to switch to another tab and come back.
 You can also press ESC key if page is loaded but still waiting.
@@ -95,4 +94,3 @@ function debugg(txt) {
 function deco(obj, ok) {
 	obj.style.textShadow = colouring.colours[ok?"ok":"ng"]+" 0 0 2px";
 }
-})();

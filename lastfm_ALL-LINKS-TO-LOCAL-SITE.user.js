@@ -1,5 +1,5 @@
-(function(){"use strict";
-var metadata=function(){/*
+"use strict";
+var metadata = function() {/*
 // ==UserScript==
 // @name         last.fm. ALL LINKS TO LOCAL SITE
 // @version      2014.6.13.1809
@@ -42,18 +42,17 @@ var preferred_lastfm = "last.fm";
 "www.lastfm.se" → for svenska */
 var meta = metadata && metadata.toString && metadata.toString();
 meta = meta.match(/@name\s+(.+)/i);
-meta = meta?"” ("+meta[1]+")":"”";
+meta = meta ? "” (" + meta[1] + ")" : "”";
 var as = document.querySelectorAll("a[href*='.lastfm.'], a[href*='last.fm/']");
-for (var i=0; i < as.length; i++) {
+for (var i = 0; i < as.length; i++) {
 	var newhref, href = as[i].getAttribute("href");
 	if (
-		href &&
-		(newhref = href.replace(/^(?:https?:)?\/\/(?:(?:cn|www)\.)?(?:last\.fm|lastfm\.(?:com\.)?[a-z][a-z])(\/.*)?$/i, "http://"+preferred_lastfm+"$1")) &&
-		href != newhref
+		href
+		&& (newhref = href.replace(/^(?:https?:)?\/\/(?:(?:cn|www)\.)?(?:last\.fm|lastfm\.(?:com\.)?[a-z][a-z])(\/.*)?$/i, "http://" + preferred_lastfm + "$1"))
+		&& href != newhref
 	) {
 		as[i].setAttribute("href", newhref);
 		var title = as[i].getAttribute("title");
-		as[i].setAttribute("title", (title?title+"\n":"")+"was “"+href+meta);
+		as[i].setAttribute("title", (title ? title + "\n" : "") + "was “" + href + meta);
 	}
 }
-})();
