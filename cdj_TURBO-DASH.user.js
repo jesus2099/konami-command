@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         cdj. TURBO DASH
-// @version      2014.11.24.1449
+// @version      2016.6.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/cdj_TURBO-DASH.user.js
 // @description  CDJournal.com: adds quick links to artists’ CD and ビデオ. removes adcrap
 // @homepage     http://userscripts-mirror.org/scripts/show/180523
@@ -27,7 +27,7 @@ var cdjTURBODASHinterval = setInterval(function() {
 		/*remove crap*/
 		for (var ss = 0; ss < document.styleSheets.length; ss++) {
 			if (document.styleSheets[ss].href.match(/\/\/[^/]+/) + "" == "//" + self.location.hostname) {
-				document.styleSheets[ss].insertRule("div#aun_banner, iframe, div#right_body a:not([href*='.cdjournal.com/']) { display: none; }", document.styleSheets[ss].cssRules.length);
+				document.styleSheets[ss].insertRule("div#aun_banner, div#banner_one, div#banner_two, div.banner, iframe, div#right_body a:not([href*='.cdjournal.com/']) { display: none; }", document.styleSheets[ss].cssRules.length);
 				break;
 			}
 		}
