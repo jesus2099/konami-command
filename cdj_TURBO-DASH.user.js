@@ -22,7 +22,7 @@
 // ==/UserScript==
 "use strict";
 var cdjTURBODASHinterval = setInterval(function() {
-	if (document.querySelector(".m_bottom > form[name='page'] > select[name='page']")) {
+	if (document.querySelector("#right_body")) {
 		clearInterval(cdjTURBODASHinterval);
 		/*remove crap*/
 		for (var ss = 0; ss < document.styleSheets.length; ss++) {
