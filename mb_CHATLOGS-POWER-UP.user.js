@@ -21,6 +21,8 @@
 // ==/UserScript==
 "use strict";
 var userjs = "j2userjs127580";
+var date = self.location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
+if (date) date = date[1] + "-" + date[2] + "-" + date[3];
 var cat = self.location.href.match(/https?:\/\/chatlogs\.metabrainz\.org\/brainzbot\/([^/]+)\/|mbja/);
 if (cat) {
 	cat = cat[1] ? cat[1] : "musicbrainz-ja";
@@ -38,8 +40,6 @@ if (cat) {
 				css.insertRule("#Log-Container { margin-top: 0px; }", 0);
 				css.insertRule("#Log-Container article { margin-right: 0px; }", 0);
 			}
-			var date = self.location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
-			if (date) date = date[1] + "-" + date[2] + "-" + date[3];
 			css.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; z-index: 50; }", 0);
 			css.insertRule("body { padding-bottom: .5em; }", 0);
 			var ctt = createTag("div", {a: {id: userjs + "toolbar"}});
