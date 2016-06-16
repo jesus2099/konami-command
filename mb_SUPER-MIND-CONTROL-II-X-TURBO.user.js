@@ -885,7 +885,7 @@ if (j2sets.SERVER_SWITCH) {
 		}, true);
 		menu.lastChild.addEventListener("click", function(event) { event.stopPropagation(); });
 		menu = menu.firstChild.nextSibling;
-		var mbMains = ["", "beta."];
+		var mbMains = ["http://", "https://", "https://beta."];
 		for (var mb = 0; mb < mbMains.length; mb++) {
 			menu.appendChild(serverSwitch(mbMains[mb] + "musicbrainz.org"));
 		}
@@ -905,12 +905,13 @@ function serverSwitch(server, sep) {
 	if (sep) {
 		li.className = "separator";
 	}
-	var a = li.appendChild(createTag("a", {}, server));
-	if (self.location.host == server) {
+	var protocolAndHost = server.match(/^(https?):\/\/(?:(\w+)\.)?\w+\.\w+$/);
+	var a = li.appendChild(createTag("a", {}, protocolAndHost ? protocolAndHost[1].toUpperCase() + (protocolAndHost[2] ? " " + protocolAndHost[2].toUpperCase() : "") : server));
+	if (self.location.host == server || self.location.protocol + "//" + self.location.host == server) {
 		a.style.setProperty("cursor", "no-drop");
 		a.style.setProperty("font-weight", "bold");
 	} else {
-		a.setAttribute("href", (server.match(/mbsandbox/) ? "http:" : "") + "//" + server + self.location.pathname + self.location.search + self.location.hash);
+		a.setAttribute("href", (server.match(/mbsandbox/) ? "http://" : "") + server + self.location.pathname + self.location.search + self.location.hash);
 		a.classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//linked to mb_PREFERRED-MBS
 	}
 	return li;
