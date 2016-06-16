@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2016.6.15
+// @version      2016.6.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CHATLOGS-POWER-UP.user.js
 // @description  chatlogs.metabrainz.org/brainzbot. swicth between #musicbrainz, #metabrainz and #musicbrainz-ja channels; previous/next date log page (it was once a better script)
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
@@ -40,7 +40,7 @@ if (cat) {
 			}
 			var date = self.location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
 			if (date) date = date[1] + "-" + date[2] + "-" + date[3];
-			css.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; }", 0);
+			css.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; z-index: 50; }", 0);
 			css.insertRule("body { padding-bottom: .5em; }", 0);
 			var ctt = createTag("div", {a: {id: userjs + "toolbar"}});
 			/* cross linking */
