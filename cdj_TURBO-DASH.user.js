@@ -14,14 +14,10 @@
 // @since        2013-10-23
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      http://artist.cdjournal.com/a/*/*
-// @include      http://artist.cdjournal.com/d/*/*
-// @include      http://cdjournal.com/search/do/?k=*&target=a*
-// @include      http://www.cdjournal.com/search/do/?k=*&target=a*
-// @include      https://artist.cdjournal.com/a/*/*
-// @include      https://artist.cdjournal.com/d/*/*
-// @include      https://cdjournal.com/search/do/?k=*&target=a*
-// @include      https://www.cdjournal.com/search/do/?k=*&target=a*
+// @match        *://artist.cdjournal.com/a/*/*
+// @match        *://artist.cdjournal.com/d/*/*
+// @match        *://cdjournal.com/search/do/?k=*&target=a*
+// @match        *://www.cdjournal.com/search/do/?k=*&target=a*
 // @run-at       document-start
 // ==/UserScript==
 "use strict";
