@@ -88,7 +88,7 @@ if (cat) {
 				document.body.appendChild(ctt);
 			}
 		}
-	}, 1000);
+	}, 123);
 }
 function shiftDate(shift) {
 	var sdate = (new Date(date));
