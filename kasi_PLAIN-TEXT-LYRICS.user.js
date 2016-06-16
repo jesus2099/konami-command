@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2016.6.15
+// @version      2016.6.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/kasi_PLAIN-TEXT-LYRICS.user.js
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @homepage     http://userscripts-mirror.org/scripts/show/91968
@@ -221,23 +221,23 @@ var kasimasin = {
 	},
 };
 var kabe, mati;
-var includes = [];
-for (var i=0; i<meta.include.length; i++) {
-	var key = meta.include[i].replace(/^http[s\*]?:\/\/[\.\*]{0,2}(www\.)?|\.(com|co\.jp|ne\.jp|jp|net)\/{1}.*$/g, "");
-	if (includes.indexOf(key) == -1) includes.push(key);
+var matches = [];
+for (var m = 0; m < meta.match.length; m++) {
+	var key = meta.match[m].replace(/^\*:\/\/[\.\*]{0,2}(www\.)?|\.(com|co\.jp|ne\.jp|jp|net)\/{1}.*$/g, "");
+	if (matches.indexOf(key) == -1) matches.push(key);
 }
-db("includes:\n"+includes.join("\n"));
-var doko = self.location.host.match(new RegExp("(?:www\\.)?("+includes.join("|")+")"));
+db("matches:\n" + matches.join("\n"));
+var doko = self.location.host.match(new RegExp("(?:www\\.)?(" + matches.join("|") + ")"));
 var iti = true;
 if (document.head) {
 	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-	var j2ss = document.styleSheets[document.styleSheets.length-1];
+	var j2ss = document.styleSheets[document.styleSheets.length - 1];
 	j2ss.insertRule("*{-moz-user-select:text!important;-webkit-user-select:text!important;}", j2ss.cssRules.length);
 }
 if (doko) {
 	doko = doko[1];
 	kasimasin = kasimasin[doko];
-	if (kasimasin.na) { meta.name = kasimasin.na+" "+meta.name; }
+	if (kasimasin.na) { meta.name = kasimasin.na + " " + meta.name; }
 	db(meta.name + "\n" + self.location.href);
 	var url;
 	if (kasimasin.uta_re && (url = self.location.href.match(kasimasin.uta_re))) {
