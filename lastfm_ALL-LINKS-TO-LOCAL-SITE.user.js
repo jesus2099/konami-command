@@ -1,8 +1,8 @@
 "use strict";
-var metadata = function() {/*
+var metadata = function() {
 // ==UserScript==
 // @name         last.fm. ALL LINKS TO LOCAL SITE
-// @version      2016.6.15
+// @version      2016.6.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @description  Replaces any lastfm link by the desired language, like "www.lastfm.xx" or else
 // @homepage     http://userscripts-mirror.org/scripts/show/29156
@@ -25,7 +25,7 @@ var metadata = function() {/*
 // ==OpenUserJS==
 // @unstableMinify it might break metadata block parser
 // ==/OpenUserJS==
-*/};
+};
 var preferred_lastfm = "last.fm";
 /* In above setting, choose your favourite host :
 "last.fm" for minimalistic auto-lang despatch links (often english)
