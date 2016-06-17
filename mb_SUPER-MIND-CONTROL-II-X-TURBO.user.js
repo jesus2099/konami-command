@@ -905,8 +905,8 @@ function serverSwitch(server, sep) {
 	if (sep) {
 		li.className = "separator";
 	}
-	var protocolAndHost = server.match(/^(https?):\/\/(?:(\w+)\.)?\w+\.\w+$/);
-	var a = li.appendChild(createTag("a", {}, protocolAndHost ? protocolAndHost[1].toUpperCase() + (protocolAndHost[2] ? " " + protocolAndHost[2].toUpperCase() : "") : server));
+	var protocolAndHost = server.match(/^(https?):\/\/(.+)$/);
+	var a = li.appendChild(createTag("a", {}, protocolAndHost ? protocolAndHost[2] + " (" + protocolAndHost[1] + ")" : server));
 	if (self.location.host == server || self.location.protocol + "//" + self.location.host == server) {
 		a.style.setProperty("cursor", "no-drop");
 		a.style.setProperty("font-weight", "bold");
