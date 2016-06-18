@@ -866,7 +866,7 @@ if (j2sets.SERVER_SWITCH) {
 		} else {
 			servname = "MBS";
 		}
-		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, createTag("code", {}, [meta.icon.cloneNode(), " ", servname])), document.createElement("ul")]), langMenu);
+		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [meta.icon.cloneNode(), " ", createTag("code", {}, servname), " ▾"]), document.createElement("ul")]), langMenu);
 		menu.addEventListener("click", function(event) {
 			if(getParent(event.target, "li", userjs + "serverSwitch")) {
 				event.stopPropagation();
