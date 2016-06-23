@@ -16,13 +16,12 @@
 // @grant        none
 // @match        *://artist.cdjournal.com/a/*/*
 // @match        *://artist.cdjournal.com/d/*/*
-// @match        *://cdjournal.com/search/do/?k=*&target=a*
-// @match        *://www.cdjournal.com/search/do/?k=*&target=a*
+// @match        *://*.cdjournal.com/search/do/?k=*&target=a*
 // @run-at       document-start
 // ==/UserScript==
 "use strict";
 var cdjTURBODASHinterval = setInterval(function() {
-	if (document.querySelector("div#contents_body + *")) {
+	if (document.querySelector("div#contents_body + *, div#center_body + *")) {
 		clearInterval(cdjTURBODASHinterval);
 		/*remove crap*/
 		for (var ss = 0; ss < document.styleSheets.length; ss++) {
