@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2016.6.15
+// @version      2016.7.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -18,14 +18,12 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128868
 // @grant        none
-// @match        *://*.mbsandbox.org*edit*
-// @match        *://*.mbsandbox.org*edits*
+// @match        *://*.mbsandbox.org/*edit*
 // @match        *://*.mbsandbox.org/artist/*/recordings*
 // @match        *://*.mbsandbox.org/mod/search/results.html*
 // @match        *://*.mbsandbox.org/release/*
 // @match        *://*.mbsandbox.org/show/edit/?editid=*
-// @match        *://*.musicbrainz.org*edit*
-// @match        *://*.musicbrainz.org*edits*
+// @match        *://*.musicbrainz.org/*edit*
 // @match        *://*.musicbrainz.org/artist/*/recordings*
 // @match        *://*.musicbrainz.org/mod/search/results.html*
 // @match        *://*.musicbrainz.org/release/*
