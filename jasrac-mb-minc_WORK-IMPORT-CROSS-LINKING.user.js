@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2016.6.15
+// @version      2016.7.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
@@ -441,8 +441,8 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						replaceElement(createTag("a", {"href":workLookupURL("jasrac", "code", ddcode)}, {}, {}, ddcode), dd.firstChild);
 						if (donecodes.indexOf(ddcode) < 0) {
 							donecodes.push(ddcode);
-							getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", ddcode)}, {"background":background}, {}, "JASRAC — "+ddcode)));
-							getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", ddcode)}, {"background":background}, {}, "音楽の森 — "+ddcode)));
+							getExtLinks().appendChild(createTag("li", {class: userjs + "jasrac no-favicon"}, null, null, createTag("a", {href: workLookupURL("jasrac", "code", ddcode)}, {background: background}, {}, "JASRAC — " + ddcode)));
+							getExtLinks().appendChild(createTag("li", {class: userjs + "minc no-favicon"}, null, null, createTag("a", {href: workLookupURL("minc", "code", ddcode)}, {background: background}, {}, "音楽の森 — " + ddcode)));
 						} else {
 							if (confirm("Duplicate JASRAC ID detected in work attributes.\nDo you want to edit?")) {
 								self.location.href = self.location.pathname+"/edit";
@@ -456,8 +456,8 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						sakuhincode = sakuhincode[1];
 						if (donecodes.indexOf(sakuhincode) < 0) {
 							donecodes.push(sakuhincode);
-							getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createTag("a", {"href":workLookupURL("jasrac", "code", sakuhincode)}, {"background":background}, {}, "JASRAC — "+sakuhincode)));
-							getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, createTag("a", {"href":workLookupURL("minc", "code", sakuhincode)}, {"background":background}, {}, "音楽の森 — "+sakuhincode)));
+							getExtLinks().appendChild(createTag("li", {class: userjs + "jasrac no-favicon"}, null, null, createTag("a", {href: workLookupURL("jasrac", "code", sakuhincode)}, {background: background}, {}, "JASRAC — " + sakuhincode)));
+							getExtLinks().appendChild(createTag("li", {class: userjs + "minc no-favicon"}, null, null, createTag("a", {href: workLookupURL("minc", "code", sakuhincode)}, {background: background}, {}, "音楽の森 — " + sakuhincode)));
 						} else {
 							if (annotation.textContent.trim().match(new RegExp("^"+reAnnotCode+"( \\(MBS-7359\\))?$", "i"))) {
 								insertBefore(createTag("p", {}, {"background-color":"#ffc"}, {}, [createTag("img", {src: "/static/images/icons/loading.gif"}), " This JASRAC ID is now set as an attribute of this work: Removing obsolete annotation, please wait…"]), annotation.firstChild);
@@ -484,12 +484,12 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				var iswcs = document.querySelectorAll("div#sidebar > dl.properties > dd.iswc > a[href*='/iswc/'] code");
 				for (var iswc=0; iswc<iswcs.length; iswc++) {
 					var iswct = iswcs[iswc].textContent;
-					getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, createA("JASRAC — "+iswct, workLookupURL("jasrac", "iswc", iswct.replace(/T-/, "T-+")), "Search this ISWC in JASRAC")));
+					getExtLinks().appendChild(createTag("li", {class: userjs + "jasrac no-favicon"}, null, null, createA("JASRAC — " + iswct, workLookupURL("jasrac", "iswc", iswct.replace(/T-/, "T-+")), "Search this ISWC in JASRAC")));
 				}
 				/* -- vv ------ JASRAC name search link ------ vv -- */
 				var title = document.querySelector("h1 a").textContent.trim();
-				getExtLinks().appendChild(createTag("li", {"class":userjs+"jasrac"}, null, null, jasracSearch("title", title)));
-				getExtLinks().appendChild(createTag("li", {"class":userjs+"minc"}, null, null, mincSearch("title", title)));
+				getExtLinks().appendChild(createTag("li", {class: userjs + "jasrac no-favicon"}, null, null, jasracSearch("title", title)));
+				getExtLinks().appendChild(createTag("li", {class: userjs + "minc no-favicon"}, null, null, mincSearch("title", title)));
 			}
 			break;
 		case "work/edit":
