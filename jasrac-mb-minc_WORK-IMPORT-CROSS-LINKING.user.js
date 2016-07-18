@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2016.7.11
+// @version      2016.7.18
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
@@ -352,7 +352,8 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						"訳詞": { nomatch:/^権利者　/, type:"da6c5d8a-ce13-474d-9375-61feb29039a5" },
 						"補詞": { nomatch:/^権利者　/, type:"3e48faba-ec01-47fd-8e89-30e81161661c", additional:"1" },
 						"作曲": { nomatch:/^権利者　/, type:"d59d99ea-23d4-4a80-b066-edca32ee158f" },
-						"作曲作詞": { type: "a255bca1-b157-4518-9108-7b147dc3fc68" }
+						"作曲作詞": { type: "a255bca1-b157-4518-9108-7b147dc3fc68" },
+						"不明": { type: "a255bca1-b157-4518-9108-7b147dc3fc68" }
 					}, summary, createWork);
 					createWork += getWorkCredits({
 						/*label-work*/
@@ -732,6 +733,7 @@ function workCredits(txt) {
 		"補詞":{"nomatch":/^権利者　/,"english":"additional lyrics","ar.link_type_id":"165","ar.attrs.additional":"1"},
 		"作曲":{"nomatch":/^権利者　/,"english":"compose","ar.link_type_id":"168"},
 		"作曲作詞":[{"english":"generic write","ar.link_type_id":"167"},{"english":"compose","ar.link_type_id":"168"},{"english":"lyrics","ar.link_type_id":"165"}],
+		"不明":[{"english":"generic write","ar.link_type_id":"167"},{"english":"compose","ar.link_type_id":"168"},{"english":"lyrics","ar.link_type_id":"165"}]
 	}, txt, wcs);
 	workCredit("label", {
 		"作詞":{"match":/^権利者　(.+)$/,"english":"publish","ar.link_type_id":"208"},
@@ -739,7 +741,7 @@ function workCredits(txt) {
 		"補詞":{"match":/^権利者　(.+)$/,"english":"publish","ar.link_type_id":"208"},
 		"作曲":{"match":/^権利者　㈱?(.+)$/,"english":"publish","ar.link_type_id":"208"},
 		"出版者":{"english":"publish","ar.link_type_id":"208"},
-		"サブ出版":{"english":"sub-publish","ar.link_type_id":"208"},
+		"サブ出版":{"english":"sub-publish","ar.link_type_id":"208"}
 	}, txt, wcs);
 }
 function workCredit(enttype, credtypes, source, pTarget) {
