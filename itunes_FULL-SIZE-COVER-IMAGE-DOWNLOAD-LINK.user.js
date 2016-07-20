@@ -25,8 +25,8 @@ var canonical = document.querySelector("head link[rel='canonical']");
 var cover = document.querySelector("div.lockup.product a > div.artwork > img.artwork");
 if (cover) {
 	cover.parentNode.parentNode.setAttribute("href", cover.getAttribute("src-swap").replace(
-	    /^(.*\/\/)\w+(\d+.mzstatic.com)\/\w+\/\w+\/(\w+\/\w+\/\w+\/\w+\/\w+\/[\w-]+)\/cover\d+x\d+.jpeg$/,
-	    "$1is$2/image/thumb/$3/source/99999999x99999999bb-100.jpg"
+		/^(.*\/\/)\w+(\d+.mzstatic.com)\/\w+\/\w+\/(\w+\/\w+\/\w+\/\w+\/\w+\/[\w-]+)\/cover\d+x\d+.jpeg$/,
+		"$1is$2/image/thumb/$3/source/99999999x99999999bb-100.jpg"
 	));
 	cover.parentNode.parentNode.setAttribute("target", "_blank");
 	cover.parentNode.parentNode.style.setProperty("cursor", "zoom-in");

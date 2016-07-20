@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2016.6.13
+// @version      2016.6.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -20,18 +20,16 @@ var meta = {rawmdb: function() {
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
-// @include      http*://*musicbrainz.org/*
-// @include      http://*.mbsandbox.org/*
-// @exclude      *//*/*mbsandbox.org/*
-// @exclude      *//*/*musicbrainz.org/*
-// @exclude      *blog.musicbrainz.org/*
-// @exclude      *bugs.musicbrainz.org/*
-// @exclude      *chatlogs.musicbrainz.org/*
-// @exclude      *forums.musicbrainz.org/*
-// @exclude      *geordi.musicbrainz.org/*
-// @exclude      *musicbrainz.org/ws/*
-// @exclude      *tickets.musicbrainz.org/*
-// @exclude      *wiki.musicbrainz.org/*
+// @match         *://*.mbsandbox.org/*
+// @match         *://*.musicbrainz.org/*
+// @exclude      *://blog.musicbrainz.org/*
+// @exclude      *://bugs.musicbrainz.org/*
+// @exclude      *://chatlogs.musicbrainz.org/*
+// @exclude      *://forums.musicbrainz.org/*
+// @exclude      *://geordi.musicbrainz.org/*
+// @exclude      *://musicbrainz.org/ws/*
+// @exclude      *://tickets.musicbrainz.org/*
+// @exclude      *://wiki.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
 // ==OpenUserJS==
@@ -868,10 +866,10 @@ if (j2sets.SERVER_SWITCH) {
 		} else {
 			servname = "MBS";
 		}
-		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, createTag("code", {}, [meta.icon.cloneNode(), " ", servname])), document.createElement("ul")]), langMenu);
+		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [meta.icon.cloneNode(), " ", createTag("code", {}, servname), " ▾"]), document.createElement("ul")]), langMenu);
 		menu.addEventListener("click", function(event) {
-			if(event.target.tagName == "CODE") {
-				stop(event);
+			if(getParent(event.target, "li", userjs + "serverSwitch")) {
+				event.stopPropagation();
 				for (var openMenus = document.querySelectorAll(".header ul.menu li.fake-active"), m = 0; m < openMenus.length; m++) if (openMenus[m] != this) {
 					sendEvent(openMenus[m], "click");
 				}
@@ -887,7 +885,7 @@ if (j2sets.SERVER_SWITCH) {
 		}, true);
 		menu.lastChild.addEventListener("click", function(event) { event.stopPropagation(); });
 		menu = menu.firstChild.nextSibling;
-		var mbMains = ["", "beta."];
+		var mbMains = ["http://", "https://", "https://beta."];
 		for (var mb = 0; mb < mbMains.length; mb++) {
 			menu.appendChild(serverSwitch(mbMains[mb] + "musicbrainz.org"));
 		}
@@ -907,12 +905,13 @@ function serverSwitch(server, sep) {
 	if (sep) {
 		li.className = "separator";
 	}
-	var a = li.appendChild(createTag("a", {}, server));
-	if (self.location.host == server) {
+	var protocolAndHost = server.match(/^(https?):\/\/(.+)$/);
+	var a = li.appendChild(createTag("a", {}, protocolAndHost ? protocolAndHost[2] + " (" + protocolAndHost[1] + ")" : server));
+	if (self.location.host == server || self.location.protocol + "//" + self.location.host == server) {
 		a.style.setProperty("cursor", "no-drop");
 		a.style.setProperty("font-weight", "bold");
 	} else {
-		a.setAttribute("href", (server.match(/mbsandbox/) ? "http:" : "") + "//" + server + self.location.pathname + self.location.search + self.location.hash);
+		a.setAttribute("href", (server.match(/mbsandbox/) ? "http://" : "") + server + self.location.pathname + self.location.search + self.location.hash);
 		a.classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//linked to mb_PREFERRED-MBS
 	}
 	return li;

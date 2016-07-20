@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2016.6.6
+// @version      2016.6.22
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
@@ -18,10 +18,8 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
-// @include      http*://*musicbrainz.org/*
-// @include      http://*.mbsandbox.org/*
-// @exclude      *//*/*mbsandbox.org/*
-// @exclude      *//*/*musicbrainz.org/*
+// @match        *://*.mbsandbox.org/*
+// @match        *://*.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -34,8 +32,9 @@ var confirmIfMoreThan = 2000;/*-1 to never confirm*/
 var userjs = "jesus2099userjs131731";
 var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var entities = {
+	acoustid: {fullpath: "//acoustid.org/track/"},
 	artist: {path: "/artist/", icon: "artist.png"},
-	bug: {fullpath: "http://bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%", HTTPonly: true},
+	bug: {fullpath: "//bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%", HTTPonly: true},
 	cdtoc: {path: "/cdtoc/", icon: "release.png", id: "[A-Za-z0-9_\\.]+-"},
 	"classic.edit": {path: "/show/edit/?editid=", id: "[0-9]+", label: "edit\u00a0#%id%"},
 	"classic.user": {path: "/show/user/?username=", id: ".+"},
@@ -45,7 +44,7 @@ var entities = {
 	recording: {path: "/recording/", icon: "recording.png"},
 	release: {path: "/release/", icon: "release.png"},
 	"release-group": {path: "/release-group/", icon: "release_group.svg"},
-	ticket: {fullpath: "http://tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", HTTPonly: true},
+	ticket: {fullpath: "//tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", HTTPonly: true},
 	track: {path: "/track/", icon: "recording.png"},
 	user: {path: "/user/", id: ".+", openEdits: "/edits/open", noEdit: true},
 	work: {path: "/work/", icon: "work.svg"},
@@ -71,7 +70,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 	}
 	var as, cssas;
 	if (entities[ent].fullpath) {
-		cssas = "a[href^='" + u + "']";
+		cssas = "a[href^='" + u + "'], a[href^='http:" + u + "'], a[href^='https:" + u + "']";
 	} else if (self.location.href.match(/^https?:\/\/(test\.|beta\.|classic\.)?musicbrainz\.org/)) {
 		cssas = "table.details a[href*='//" + u + "'], ";
 		cssas += "table.details a[href*='//test." + u + "'], ";
@@ -119,7 +118,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 					if (id[2] || id[3]) {
 						newA.appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? "…" : ""))).parentNode.style.setProperty("opacity", ".5");
 					}
-					var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.)/);
+					var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.musicbrainz\.org)/);
 					if (altserv) {
 						newA.appendChild(document.createTextNode(" (" + altserv[1] + ")"));
 					}
@@ -129,7 +128,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 						code.style.setProperty("width", width / code.textContent.length * 8 + "px");
 					}
 					newA.insertBefore(createTag("b", {}, ent + "\u00A0"), newA.firstChild);
-					if ((ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
+					if (u.match(/musicbrainz\.org/) && (ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
 						var fragment = document.createDocumentFragment();
 						fragment.appendChild(newA);
 						addAfter(document.createTextNode(">"), newA);
