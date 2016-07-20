@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2016.6.15
+// @version      2016.7.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -357,16 +357,20 @@ function main() {
 								if (target.match(/%artist-name%/) && artistname != artistsortnameSwapped && artistname.match(nonLatinName)) {
 									sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
 								}
-								target = replaceAllTokens(target);
+								target = replaceAllTokens(target, true);
 								if (!target) continue;
 							} else {
 								var latinScriptOnly = target.acceptCharset.match(/iso-8859/i);
 								var skippedToken = false;
 								for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
-									if (latinScriptOnly)
+									if (latinScriptOnly) {
 										target.parameters[param] = target.parameters[param].replace(/%artist-name%/, "%artist-latin-script-name%");
+									}
 									target.parameters[param] = replaceAllTokens(target.parameters[param]);
-									if (!target.parameters[param]) { skippedToken = true; break; }
+									if (!target.parameters[param]) {
+										skippedToken = true;
+										break;
+									}
 								}
 								if (skippedToken) continue;
 							}
@@ -586,12 +590,12 @@ function addHiddenLinks() {
 	xhr.open("GET", entityUrlRelsWS, true);
 	xhr.send(null);
 }
-function replaceAllTokens(string) {
+function replaceAllTokens(string, encode) {
 	var stringTokens = string.match(/%[a-z]+(?:-[a-z]+)+%/g);
-	if (stringTokens)	for (var t = 0; t < stringTokens.length; t++) {
+	if (stringTokens) for (var t = 0; t < stringTokens.length; t++) {
 		var token = stringTokens[t];
 		if (!tokenValues.hasOwnProperty(token)) return false;
-		string = string.replace(token, encodeURIComponent(tokenValues[token]));
+		string = string.replace(token, encode ? encodeURIComponent(tokenValues[token]) : tokenValues[token]);
 	}
 	return string;
 }
