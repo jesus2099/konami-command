@@ -2,7 +2,7 @@
 // @name         MB. artist credit entity links
 // @version      2016.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/MB.%20artist%20credit%20entity%20links.user.js
-// @description  Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases page’s artist credits section. Additionally spots duplicate aliases.
+// @description  Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases pageâ€™s artist credits section. Additionally spots duplicate aliases.
 // @homepage     http://userscripts-mirror.org/scripts/show/131649
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ARTIST-CREDIT-ENTITY-LINKS
 // @compatible   opera(12.18.1872)+violentmonkey  my setup
