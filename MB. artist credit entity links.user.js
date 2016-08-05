@@ -12,6 +12,7 @@
 // @author       PATATE12
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2012-04-23
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
 // @match        *://*.mbsandbox.org/artist/*/aliases
 // @match        *://*.musicbrainz.org/artist/*/aliases
@@ -40,10 +41,10 @@ var artistCreditMachine = {
 }
 var tables = document.querySelectorAll("body > div#page > div#content > table.tbl");
 for (var tab = 0; tab < tables.length; tab++) {
-	var h2 = previousSibling(tables[tab], "h2")
+	var h2 = getSibling(tables[tab], "h2", null, true);
 	var type = h2.textContent.match(/artist credits/i) ? "ac" : "al";
 	if (type == "ac") {
-		tables[tab].querySelector("tr").insertBefore(createTag("th", {}, {}, {}, "Associated entities"), tables[tab].querySelector("tr > th:nth-last-of-type(1)"));
+		tables[tab].querySelector("tr").insertBefore(createTag("th", {}, "Associated entities"), tables[tab].querySelector("tr > th:nth-last-of-type(1)"));
 	}
 	for (var trs = tables[tab].querySelectorAll("tr"), i = 1; i < trs.length; i++) {
 		artistCreditMachine.values.artistCreditName = trs[i].querySelector("td").textContent.match(/^\s*(.+)\s*$/)[1];
@@ -51,18 +52,18 @@ for (var tab = 0; tab < tables.length; tab++) {
 			artistCreditMachine.values.artistCreditID = trs[i].querySelector("td:nth-last-of-type(1) > a").getAttribute("href").match(/credit\/([0-9]+)\/edit$/)[1];
 			var entd = trs[i].insertBefore(document.createElement("td"), trs[i].querySelector("td:nth-last-of-type(1)"));
 			for (var entity in artistCreditMachine.overrides) if (artistCreditMachine.overrides.hasOwnProperty(entity)) {
-				entd.appendChild(createTag("img", {alt: "icon", src: artistCreditMachine.overrides[entity].img ? artistCreditMachine.overrides[entity].img : artistCreditMachine.defaults.img.replace(/%entityType%/, entity)}, {maxHeight: "16px", verticalAlign: "text-bottom"}));
+				entd.appendChild(createTag("img", {a: {alt: "icon", src: artistCreditMachine.overrides[entity].img ? artistCreditMachine.overrides[entity].img : artistCreditMachine.defaults.img.replace(/%entityType%/, entity)}, s: {maxHeight: "16px", verticalAlign: "text-bottom"}}));
 				entd.appendChild(document.createTextNode(" "));
-				entd.appendChild(createTag("b", {}, {}, {}, entity.replace(/_/, " ")));
+				entd.appendChild(createTag("b", {}, entity.replace(/_/, " ")));
 				entd.appendChild(document.createTextNode(": "));
-				entd.appendChild(createTag("a", {title: entity.replace(/_/, " "), href: expandTokens(artistCreditMachine.overrides[entity].filter ? artistCreditMachine.overrides[entity].filter : artistCreditMachine.defaults.filter.replace(/%entityType%/, entity))}, {}, {}, "filter"));
+				entd.appendChild(createTag("a", {a: {title: entity.replace(/_/, " "), href: expandTokens(artistCreditMachine.overrides[entity].filter ? artistCreditMachine.overrides[entity].filter : artistCreditMachine.defaults.filter.replace(/%entityType%/, entity))}}, "filter"));
 				entd.appendChild(document.createTextNode(" / "));
-				entd.appendChild(createTag("a", {title: entity.replace(/_/, " "), href: expandTokens(artistCreditMachine.overrides[entity].search ? artistCreditMachine.overrides[entity].search : artistCreditMachine.defaults.search.replace(/%entityType%/, entity))}, {}, {}, "search"));
+				entd.appendChild(createTag("a", {a: {title: entity.replace(/_/, " "), href: expandTokens(artistCreditMachine.overrides[entity].search ? artistCreditMachine.overrides[entity].search : artistCreditMachine.defaults.search.replace(/%entityType%/, entity))}}, "search"));
 				entd.appendChild(document.createElement("br"));
 			}
 		}
 		if (artistCreditMachine.values.artistCreditName == artistCreditMachine.values.artistName) {
-			trs[i].querySelector("td").appendChild(createTag("span", {}, {}, {}, " (main)"));
+			trs[i].querySelector("td").appendChild(createTag("span", {}, " (main)"));
 			trs[i].className = trs[i].className.replace(/ev/, "");
 			trs[i].style.setProperty("background-color", "#cfc", "important");
 			if (type == "al") {
@@ -79,25 +80,4 @@ function expandTokens(url) {
 		expandedUrl = expandedUrl.replace(new RegExp("%" + value + "%", "g"), encodeURIComponent(artistCreditMachine.values[value]));
 	}
 	return expandedUrl;
-}
-function previousSibling(obj, tag, className) { return nextSibling(obj, tag, className, true); }
-function nextSibling(obj, tag, className, prev) {
-	var cur = obj;
-	if (cur = prev?cur.previousSibling:cur.nextSibling) {
-		if (cur.tagName == tag.toUpperCase() && (className == null || className && cur.classList.contains(className))) {
-			return cur;
-		} else {
-			return nextSibling(cur, tag, className, prev);
-		}
-	} else {
-		return null;
-	}
-}
-function createTag(tag, attribs, styles, events, child) {
-	var t = document.createElement(tag);
-	for (var attr in attribs) { if (attribs.hasOwnProperty(attr)) { t.setAttribute(attr, attribs[attr]); } }
-	for (var styl in styles) { if (styles.hasOwnProperty(styl)) { t.style[styl] = styles[styl]; } }
-	for (var evt in events) { if (events.hasOwnProperty(evt)) { t.addEventListener(evt, events[evt], false); } }
-	if (child) { t.appendChild(typeof child=="string"?document.createTextNode(child):child); }
-	return t;
 }
