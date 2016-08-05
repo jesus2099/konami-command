@@ -37,7 +37,7 @@ var artistCreditMachine = {
 		artistCreditName: null,
 		artistCreditID: null
 	}
-}
+};
 var tables = document.querySelectorAll("body > div#page > div#content > table.tbl");
 for (var tab = 0; tab < tables.length; tab++) {
 	var h2 = getSibling(tables[tab], "h2", null, true);
