@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         MB. artist credit entity links
-// @version      2016.8.5
+// @version      2016.8.5.1900
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/MB.%20artist%20credit%20entity%20links.user.js
 // @description  Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases page’s artist credits section. Additionally spots duplicate aliases.
 // @homepage     http://userscripts-mirror.org/scripts/show/131649
@@ -53,11 +53,11 @@ for (var tab = 0; tab < tables.length; tab++) {
 			var list = document.createElement("ul");
 			for (var entity in artistCreditMachine.overrides) if (artistCreditMachine.overrides.hasOwnProperty(entity)) {
 				var item = list.appendChild(document.createElement("li"));
-				item.appendChild(createTag("b", {}, entity.replace(/_/, " ")));
-				item.appendChild(document.createTextNode(": "));
-				item.appendChild(createTag("a", {a: {title: entity.replace(/_/, " "), href: expandTokens(artistCreditMachine.overrides[entity].filter ? artistCreditMachine.overrides[entity].filter : artistCreditMachine.defaults.filter.replace(/%entityType%/, entity))}}, "filter"));
-				item.appendChild(document.createTextNode(" / "));
-				item.appendChild(createTag("a", {a: {title: entity.replace(/_/, " "), href: expandTokens(artistCreditMachine.overrides[entity].search ? artistCreditMachine.overrides[entity].search : artistCreditMachine.defaults.search.replace(/%entityType%/, entity))}}, "search"));
+				item.appendChild(createTag("b", {}, entity.replace(/_/, "\u00a0")));
+				item.appendChild(document.createTextNode(":\u00a0"));
+				item.appendChild(createTag("a", {a: {title: entity.replace(/_/, "\u00a0"), href: expandTokens(artistCreditMachine.overrides[entity].filter ? artistCreditMachine.overrides[entity].filter : artistCreditMachine.defaults.filter.replace(/%entityType%/, entity))}}, "filter"));
+				item.appendChild(document.createTextNode("\u00a0/\u00a0"));
+				item.appendChild(createTag("a", {a: {title: entity.replace(/_/, "\u00a0"), href: expandTokens(artistCreditMachine.overrides[entity].search ? artistCreditMachine.overrides[entity].search : artistCreditMachine.defaults.search.replace(/%entityType%/, entity))}}, "search"));
 			}
 			entd.appendChild(list);
 		}
