@@ -21,7 +21,6 @@
 "use strict";
 var artistCreditMachine = {
 	defaults: {
-		img: "/static/images/entity/%entityType%.svg",
 		filter: "/artist/%artistID%/%entityType%s?filter.artist_credit_id=%artistCreditID%",
 		search: "/search?query=arid%3A%artistID%+AND+artist%3A%22%artistCreditName%%22&type=%entityType%&limit=100&method=advanced"
 	},
@@ -51,16 +50,16 @@ for (var tab = 0; tab < tables.length; tab++) {
 		if (type == "artistCredit") {
 			artistCreditMachine.values.artistCreditID = trs[i].querySelector("td:nth-last-of-type(1) > a").getAttribute("href").match(/credit\/([0-9]+)\/edit$/)[1];
 			var entd = trs[i].insertBefore(document.createElement("td"), trs[i].querySelector("td:nth-last-of-type(1)"));
+			var list = document.createElement("ul");
 			for (var entity in artistCreditMachine.overrides) if (artistCreditMachine.overrides.hasOwnProperty(entity)) {
-				entd.appendChild(createTag("img", {a: {alt: "icon", src: artistCreditMachine.overrides[entity].img ? artistCreditMachine.overrides[entity].img : artistCreditMachine.defaults.img.replace(/%entityType%/, entity)}, s: {maxHeight: "16px", verticalAlign: "text-bottom"}}));
-				entd.appendChild(document.createTextNode(" "));
-				entd.appendChild(createTag("b", {}, entity.replace(/_/, " ")));
-				entd.appendChild(document.createTextNode(": "));
-				entd.appendChild(createTag("a", {a: {title: entity.replace(/_/, " "), href: expandTokens(artistCreditMachine.overrides[entity].filter ? artistCreditMachine.overrides[entity].filter : artistCreditMachine.defaults.filter.replace(/%entityType%/, entity))}}, "filter"));
-				entd.appendChild(document.createTextNode(" / "));
-				entd.appendChild(createTag("a", {a: {title: entity.replace(/_/, " "), href: expandTokens(artistCreditMachine.overrides[entity].search ? artistCreditMachine.overrides[entity].search : artistCreditMachine.defaults.search.replace(/%entityType%/, entity))}}, "search"));
-				entd.appendChild(document.createElement("br"));
+				var item = list.appendChild(document.createElement("li"));
+				item.appendChild(createTag("b", {}, entity.replace(/_/, " ")));
+				item.appendChild(document.createTextNode(": "));
+				item.appendChild(createTag("a", {a: {title: entity.replace(/_/, " "), href: expandTokens(artistCreditMachine.overrides[entity].filter ? artistCreditMachine.overrides[entity].filter : artistCreditMachine.defaults.filter.replace(/%entityType%/, entity))}}, "filter"));
+				item.appendChild(document.createTextNode(" / "));
+				item.appendChild(createTag("a", {a: {title: entity.replace(/_/, " "), href: expandTokens(artistCreditMachine.overrides[entity].search ? artistCreditMachine.overrides[entity].search : artistCreditMachine.defaults.search.replace(/%entityType%/, entity))}}, "search"));
 			}
+			entd.appendChild(list);
 		}
 		if (artistCreditMachine.values.artistCreditName == artistCreditMachine.values.artistName) {
 			trs[i].querySelector("td").appendChild(createTag("span", {}, " (main)"));
