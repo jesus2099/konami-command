@@ -42,13 +42,13 @@ var artistCreditMachine = {
 var tables = document.querySelectorAll("body > div#page > div#content > table.tbl");
 for (var tab = 0; tab < tables.length; tab++) {
 	var h2 = getSibling(tables[tab], "h2", null, true);
-	var type = h2.textContent.match(/artist credits/i) ? "ac" : "al";
-	if (type == "ac") {
-		tables[tab].querySelector("tr").insertBefore(createTag("th", {}, "Associated entities"), tables[tab].querySelector("tr > th:nth-last-of-type(1)"));
+	var type = h2.textContent.match(/artist credits/i) ? "artistCredit" : "artistAlias";
+	if (type == "artistCredit") {
+		tables[tab].querySelector("tr").insertBefore(createTag("th", {s: {textShadow: "0 0 2px yellow"}}, "Associated entities"), tables[tab].querySelector("tr > th:nth-last-of-type(1)"));
 	}
 	for (var trs = tables[tab].querySelectorAll("tr"), i = 1; i < trs.length; i++) {
 		artistCreditMachine.values.artistCreditName = trs[i].querySelector("td").textContent.match(/^\s*(.+)\s*$/)[1];
-		if (type == "ac") {
+		if (type == "artistCredit") {
 			artistCreditMachine.values.artistCreditID = trs[i].querySelector("td:nth-last-of-type(1) > a").getAttribute("href").match(/credit\/([0-9]+)\/edit$/)[1];
 			var entd = trs[i].insertBefore(document.createElement("td"), trs[i].querySelector("td:nth-last-of-type(1)"));
 			for (var entity in artistCreditMachine.overrides) if (artistCreditMachine.overrides.hasOwnProperty(entity)) {
@@ -64,13 +64,8 @@ for (var tab = 0; tab < tables.length; tab++) {
 		}
 		if (artistCreditMachine.values.artistCreditName == artistCreditMachine.values.artistName) {
 			trs[i].querySelector("td").appendChild(createTag("span", {}, " (main)"));
-			trs[i].className = trs[i].className.replace(/ev/, "");
-			trs[i].style.setProperty("background-color", "#cfc", "important");
-			if (type == "al") {
-				for (var a = 0, as = trs[i].querySelectorAll("a"); a < as.length; a++) {
-					as[a].setAttribute("href", as[a].getAttribute("href").replace(/(\/artist\/.+\/alias\/[0-9]+\/delete$)/, "$1?confirm.edit_note=" + encodeURIComponent("alias = artist name")));
-				}
-			}
+			trs[i].classList.remove("even");
+			trs[i].style.setProperty("background-color", "#cfc");
 		}
 	}
 }
