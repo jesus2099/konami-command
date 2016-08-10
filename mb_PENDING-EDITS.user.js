@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2016.8.10
+// @version      2016.8.10.1154
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -50,12 +50,13 @@
      It will add other request(s) to MB server, this is why it is an option. */
 var addArtistLinks = true;
 /* END OF CONFIGURATION - --- - --- - --- - */
-var userjs = "jesus2099userjs42102";//linked in mb_MASS-MERGE-RECORDINGS.user.js
+// “const” NG in Opera 12 at least
+var SCRIPT_KEY = "jesus2099userjs42102";//linked in mb_MASS-MERGE-RECORDINGS.user.js
+var EDITS_PER_PAGE = 100;
+var MBS = self.location.protocol + "//" + self.location.host;
 var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var loc, pageEntity, checked = [], xhrPendingEdits = {};
-var MBS = self.location.protocol + "//" + self.location.host;
 var account = document.querySelector("div.header li.account a[href^='" + MBS + "/user/']");
-var EDITS_PER_PAGE = 100;
 //EDITING HISTORY
 if (
 	account
@@ -134,10 +135,10 @@ function createLink(entity, historyType, associatedArtist) {
 }
 function checkOpenEdits(obj) {
 	var smp = getParent(obj.openedits, "li").firstChild;
-	var count = smp.querySelector("span." + userjs + "count");
+	var count = smp.querySelector("span." + SCRIPT_KEY + "count");
 	if (!count) {
 		smp.appendChild(document.createTextNode("\u00a0("));
-		smp.appendChild(createTag("span", {a: {class: userjs + "count"}}, createTag("img", {a: {alt: "⌛ loading…", src: "/static/images/icons/loading.gif", height: self.getComputedStyle(smp).getPropertyValue("font-size")}})));//“userjs + "count"” linked in mb_MASS-MERGE-RECORDINGS.user.js
+		smp.appendChild(createTag("span", {a: {class: SCRIPT_KEY + "count"}}, createTag("img", {a: {alt: "⌛ loading…", src: "/static/images/icons/loading.gif", height: self.getComputedStyle(smp).getPropertyValue("font-size")}})));//“SCRIPT_KEY + "count"” linked in mb_MASS-MERGE-RECORDINGS.user.js
 		smp.appendChild(document.createTextNode(")"));
 	}
 	xhrPendingEdits[obj.base] = {
@@ -180,7 +181,7 @@ function updateLink(obj, pecount, details, more) {
 	var countText;
 	var tooltip;
 	var li = getParent(obj.openedits, "li");
-	var count = li.querySelector("span." + userjs + "count");
+	var count = li.querySelector("span." + SCRIPT_KEY + "count");
 	if (typeof pecount == "number") {
 		countText = pecount;
 		if (more) countText += "+";
@@ -215,8 +216,8 @@ function updateLink(obj, pecount, details, more) {
 				tooltip = titarray.join("\r\n");
 				var expanded = "▼";
 				var collapsed = "◀";
-				var expandEditLists = (localStorage.getItem(userjs + "pendingEditLists") != collapsed);
-				var ul = createTag("ul", {a: {class: userjs + "editlist"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
+				var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "pendingEditLists") != collapsed);
+				var ul = createTag("ul", {a: {class: SCRIPT_KEY + "editlist"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
 				for (var e = 0; e < titarray.length; e++) {
 					var edit1type2editor3count = titarray[e].match(/^(?:- )?([^\(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
 					var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
@@ -234,7 +235,7 @@ function updateLink(obj, pecount, details, more) {
 					tooltip += "\r\n- …";
 					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
 				}
-				var help = createTag("span", {a: {class: userjs + "help"}, s: {display: expandEditLists ? "inline" : "none"}});
+				var help = createTag("span", {a: {class: SCRIPT_KEY + "help"}, s: {display: expandEditLists ? "inline" : "none"}});
 				if (titarray.length > 1) {
 					tooltip += "\r\n \r\n(oldest edit on bottom)";
 					if (obj != pageEntity) {
@@ -244,15 +245,15 @@ function updateLink(obj, pecount, details, more) {
 				}
 				li.appendChild(help);
 				li.appendChild(ul);
-				li.insertBefore(createTag("a", {a: {class: userjs + "toggle"}, s: {position: "absolute", right: "4px"}, e: {click: function(event) {
+				li.insertBefore(createTag("a", {a: {class: SCRIPT_KEY + "toggle"}, s: {position: "absolute", right: "4px"}, e: {click: function(event) {
 					var collapse = (this.textContent == expanded);
-					for (var options = document.querySelectorAll("ul." + userjs + "editlist, span." + userjs + "help"), o = 0; o < options.length; o++) {
+					for (var options = document.querySelectorAll("ul." + SCRIPT_KEY + "editlist, span." + SCRIPT_KEY + "help"), o = 0; o < options.length; o++) {
 						options[o].style.setProperty("display", collapse ? "none" : (options[o].tagName == "UL" ? "block" : "inline"));
 					}
-					for (var toggles = document.querySelectorAll("a." + userjs + "toggle"), t = 0; t < toggles.length; t++) {
+					for (var toggles = document.querySelectorAll("a." + SCRIPT_KEY + "toggle"), t = 0; t < toggles.length; t++) {
 						replaceChildren(document.createTextNode(collapse ? collapsed : expanded), toggles[t]);
 					}
-					localStorage.setItem(userjs + "pendingEditLists", collapse ? collapsed : expanded);
+					localStorage.setItem(SCRIPT_KEY + "pendingEditLists", collapse ? collapsed : expanded);
 				}}}, expandEditLists ? expanded : collapsed), li.firstChild);
 			}
 		}
