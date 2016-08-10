@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2016.6.15
+// @version      2016.8.10
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -55,6 +55,7 @@ var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var loc, pageEntity, checked = [], xhrPendingEdits = {};
 var MBS = self.location.protocol + "//" + self.location.host;
 var account = document.querySelector("div.header li.account a[href^='" + MBS + "/user/']");
+var EDITS_PER_PAGE = 100;
 //EDITING HISTORY
 if (
 	account
@@ -226,10 +227,10 @@ function updateLink(obj, pecount, details, more) {
 						editLi.style.setProperty("font-weight", "bold");
 					}
 				}
-				if (titarray.length < 2 && pecount <= 50) {
+				if (titarray.length < 2 && pecount <= EDITS_PER_PAGE) {
 					tooltip = tooltip.replace(/^- /, "");
 				}
-				if (pecount > 50) {
+				if (pecount > EDITS_PER_PAGE) {
 					tooltip += "\r\n- …";
 					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
 				}
