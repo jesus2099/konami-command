@@ -958,14 +958,18 @@ function jasracSearch(type, query) {
 	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_WORKS_KOUHO_SEQ", value: "1"}}));
 	switch (type) {
 		case "title":
-			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_NAME1", value: nameConform(query)}}));
+			if (!maybeJapanese(query)) {
+				query = removeLeadingArticle(query).toLowerCase();
+			}
+			query = removeAccents(query);
+			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_NAME1", value: query}}));
 			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_CONDITION", value: "1"}}));//or
-			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_NAME2", value: query}}));
+			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_NAME2", value: halfwidthToFullwidth(query)}}));//full width name
 			break;
 	}
 	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_SEARCH_WORKS_NAIGAI", value: "0"}}));
 	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "RESULT_CURRENT_PAGE", value: "1"}}));
-	formJASRAC.appendChild(createCoolSubmit("JASRAC — "+query));
+	formJASRAC.appendChild(createCoolSubmit("JASRAC — " + query));
 	return formJASRAC;
 	
 }
@@ -975,7 +979,11 @@ function mincSearch(type, query) {
 	formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "DATATYPE", value: "2"}}));
 	switch (type) {
 		case "title":
-			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "GTITLE", value: nameConform(query)}}));
+			if (!maybeJapanese(query)) {
+				query = removeLeadingArticle(query);
+			}
+			query = halfwidthToFullwidth(query.toUpperCase());
+			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "GTITLE", value: query}}));
 			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "SAKUSINM", value: ""}}));
 			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "ARTNAME", value: ""}}));
 			break;
@@ -985,8 +993,11 @@ function mincSearch(type, query) {
 	return formMINC;
 	
 }
-function nameConform(n) {
-	return halfwidthToFullwidth(n.toUpperCase().replace(/^(A|THE|UN|UNE|L) (.+)$/, "$2 $1"));
+function removeLeadingArticle(title) {
+	return title.replace(/^((?:LA|LE|LES|UN|UNE|DES|A|AN|THE) |L\W)/i, "");
+}
+function removeAccents(title) {
+	return title.replace(/[đ]/g, "d").replace(/[ñ]/g, "n").replace(/[áàảãạăắằẳẵặâấầẩẫậ]/g, "a").replace(/[ïîíìỉĩị]/g, "i").replace(/[úùủũụưứừửữựû]/g, "u").replace(/[éèẻẽẹêếềểễệ]/g, "e").replace(/[óòỏõọơớờởỡợôốồổỗộ]/g, "o").replace(/[ýỳỷỹỵ]/g, "y")
 }
 function swapTHE(n, swap) {
 	return fullwidthToHalfwidth(n.replace(/^(.+)\s{2}(A|THE|UN|UNE|L)$/i, swap ? "$2 $1" : "$1, $2")).replace(/\w\(/g, " (").replace(/\)\w/g, ") ").trim();
@@ -1268,6 +1279,9 @@ function halfwidthToFullwidth(s) {
 	return s.replace(/[!-}]/g, function(a) {
 		return String.fromCharCode(a.charCodeAt(0) + 65248);
 	}).replace(/\u0020/g, "\u3000");
+}
+function maybeJapanese(text) {
+	return fullwidthToHalfwidth(text).match(/[ぁ-\uFFFF]/);
 }
 function xhrMachine(_job) {
 	var job;
