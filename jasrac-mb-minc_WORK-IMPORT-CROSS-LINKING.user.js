@@ -18,6 +18,7 @@ var meta = function() {
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-01-14
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
 // @match        *://*.mbsandbox.org/work/*
 // @match        *://*.musicbrainz.org/work/*
@@ -71,7 +72,7 @@ var xhrJobs = {
 					xhrWork.aliases = res.aliases;
 					xhrWork.annotation = res.annotation ? res.annotation : "";
 					var code = xhrWork.annotation.match(new RegExp(reAnnotCode, "i"));
-					insertBefore(createTag("div", {class: "row"}, null, null, [createTag("label", null, null, null, "JASRAC作品コード:"), createTag("b", null, {backgroundColor: background}, null, code ? createA(code[1], workLookupURL("jasrac", "code", code[1]), "JASRAC work code from annotation", "_blank") : "なし")]), /*xhrForm.name*/iname.parentNode);
+					insertBefore(createTag("div", {a: {class: "row"}}, [createTag("label", {}, "JASRAC作品コード:"), createTag("b", {s: {backgroundColor: background}}, code ? createA(code[1], workLookupURL("jasrac", "code", code[1]), "JASRAC work code from annotation", "_blank") : "なし")]), /*xhrForm.name*/iname.parentNode);
 					aliasTable();
 				}
 				document.title = oldTitle;
@@ -336,7 +337,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					td.style.setProperty("background-image", "/eJwid/img/kokoronelogo_A-2out.jpg");
 					summary += "※ '''JASRAC work importer''' (" + meta.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account";
 					td.appendChild(document.createTextNode("click to select → "));
-					var ta = createTag("textarea", {name: "tsummary"}, {}, {}, summary);
+					var ta = createTag("textarea", {a: {name: "tsummary"}}, summary);
 					ta.setAttribute("id", ta.getAttribute("name"));
 					ta.style.setProperty("width", "40%");
 					ta.setAttribute("rows", "1");
@@ -358,19 +359,19 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					tr.appendChild(td);
 					work.appendChild(tr);
 			/* -- vv ------ Add to MB ------ vv -- */
-					var form = createTag("form", {action: createWork.split("?")[0], method: "post", "accept-charset": "utf-8", title: "PLEASE REVIEW before final submission!"}, {display: "inline", background: background});
-					form.appendChild(createTag("input", {type: "hidden", name: "edit-work.attributes.0.type_id", value: "3"}));
-					form.appendChild(createTag("input", {type: "hidden", name: "edit-work.attributes.0.value", value: sakuhinCode}));
+					var form = createTag("form", {a: {action: createWork.split("?")[0], method: "post", "accept-charset": "utf-8", title: "PLEASE REVIEW before final submission!"}, s: {display: "inline", background: background}});
+					form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.attributes.0.type_id", value: "3"}}));
+					form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.attributes.0.value", value: sakuhinCode}}));
 					createWork += "&edit-work.attributes.0.type_id=3&edit-work.attributes.0.value=" + sakuhinCode;
 					if (iswc) {
-						form.appendChild(createTag("input", {type: "hidden", name: "edit-work.iswcs.0", value: iswc}));
+						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.iswcs.0", value: iswc}}));
 						createWork += "&edit-work.iswcs.0=" + iswc;
 					}
 					if (isVocal) {
-						form.appendChild(createTag("input", {type: "hidden", name: "edit-work.type_id", value: "17"}));
+						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.type_id", value: "17"}}));
 						createWork += "&edit-work.type_id=17";
 					} else {
-						form.appendChild(createTag("input", {type: "hidden", name: "edit-work.language_id", value: "486"}));
+						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.language_id", value: "486"}}));
 						createWork += "&edit-work.language_id=486";
 					}
 					/* https://musicbrainz.org/relationships */
@@ -392,25 +393,25 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						"出版者": { type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
 						"サブ出版": { type: "05ee6f18-4517-342d-afdf-5897f64276e3" }
 					}, summary, createWork);
-					form.appendChild(createTag("input", {type: "hidden", name: "edit-work.edit_note", value: summary}));
+					form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.edit_note", value: summary}}));
 					createWork += "&edit-work.edit_note=" + encodeURIComponent(summary).replace(/%20/g, "+");
-/*						form.appendChild(createTag("a", {title: MBS7313 + "\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, {background: background, cursor: "pointer", textDecoration: "underline", color: "blue"}, {click: function(event) {
+/*						form.appendChild(createTag("a", {a: {title: MBS7313 + "\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "underline", color: "blue"}, e: {click: function(event) {
 						this.parentNode.setAttribute("target", event.shiftKey || event.ctrlKey ? "_blank" : "_self");
 						this.parentNode.submit();
 						return stop(event);
-					}}, "Add to MB"));*/
-					form.appendChild(createTag("a", {href: createWork, title : MBS7313 + "\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, {background: background, cursor: "pointer", textDecoration: "underline", color: "blue"}, null, "Add to MusicBrainz"))
+					}}}, "Add to MB"));*/
+					form.appendChild(createTag("a", {a: {href: createWork, title : MBS7313 + "\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "underline", color: "blue"}}, "Add to MusicBrainz"))
 					sakuhin.parentNode.appendChild(document.createTextNode(" （"));
 					sakuhin.parentNode.appendChild(form);
 					sakuhin.parentNode.appendChild(document.createTextNode("）"));
 			/* -- vv ------ sakuhin links ------ vv -- */
-					addAfter(createTag("sup"), sakuhin).appendChild(createA("M", workLookupURL("mb", "name", workName), "Search this work name in MusicBrainz"));
+					addAfter(document.createElement("sup"), sakuhin).appendChild(createA("M", workLookupURL("mb", "name", workName), "Search this work name in MusicBrainz"));
 					addAfter(document.createTextNode(" "), sakuhin);
 			/* -- vv ------ sakuhin code links ------ vv -- */
 					var span = document.createElement("span");
 					span.appendChild(document.createTextNode(sakuhinCode));
 					span.appendChild(document.createTextNode(" "));
-					var suppo = span.appendChild(createTag("sup"));
+					var suppo = span.appendChild(document.createElement("sup"));
 					suppo.appendChild(createA("音", workLookupURL("minc", "code", sakuhinCode), "This work in 音楽の森"));
 					suppo.appendChild(createA("M", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz"));
 					span.appendChild(document.createTextNode(" "));
@@ -418,7 +419,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					sakuhin = replaceElement(span, sakuhin); /*TODO replaceChild returns sakuhin already (removed element), no ?*/
 			/* -- vv ------ iswc links ------ vv -- */
 					if (iswc) {
-						addAfter(createTag("sup"), iswcLink[iswcLink.length - 1].parentNode.parentNode.lastChild).appendChild(createA("M", workLookupURL("mb", "iswc", iswc), "Search this ISWC in MusicBrainz"));
+						addAfter(document.createElement("sup"), iswcLink[iswcLink.length - 1].parentNode.parentNode.lastChild).appendChild(createA("M", workLookupURL("mb", "iswc", iswc), "Search this ISWC in MusicBrainz"));
 					}
 				}
 			}
@@ -434,14 +435,14 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				var sakuhincode_v = getSibling(sakuhincode, "td").textContent.match(new RegExp(reCode)) + "";
 				iswccode = getParent(iswccode, "th");
 				var iswccode_v = getSibling(iswccode, "td").textContent.match(new RegExp(reISWC));
-				insertBefore(createTag("sup", {}, {float: "right"}), sakuhinmei.firstChild).appendChild(createA("J", workLookupURL("jasrac", "name", sakuhinmei_v), "Search this work name in JASRAC"));
-				insertBefore(createTag("sup", {}, {float: "right"}), sakuhinmei.firstChild).appendChild(createA("M", workLookupURL("mb", "name", sakuhinmei_v), "Search this work name in MusicBrainz"));
-				insertBefore(createTag("sup", {}, {float: "right"}), sakuhincode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "code", sakuhincode_v), "Go to this work in JASRAC"));
-				insertBefore(createTag("sup", {}, {float: "right"}), sakuhincode.firstChild).appendChild(createA("M", workLookupURL("mb", "code", sakuhincode_v), "Search this work code in MusicBrainz"));
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("J", workLookupURL("jasrac", "name", sakuhinmei_v), "Search this work name in JASRAC"));
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("M", workLookupURL("mb", "name", sakuhinmei_v), "Search this work name in MusicBrainz"));
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "code", sakuhincode_v), "Go to this work in JASRAC"));
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("M", workLookupURL("mb", "code", sakuhincode_v), "Search this work code in MusicBrainz"));
 				if (iswccode_v) {
 					iswccode_v += "";
-					insertBefore(createTag("sup", {}, {float: "right"}), iswccode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "iswc", iswccode_v), "Search this ISWC in JASRAC"));
-					insertBefore(createTag("sup", {}, {float: "right"}), iswccode.firstChild).appendChild(createA("M", workLookupURL("mb", "iswc", iswccode_v.replace(/T- /, "T-")), "Search this ISWC in MusicBrainz"));
+					insertBefore(createTag("sup", {s: {float: "right"}}), iswccode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "iswc", iswccode_v), "Search this ISWC in JASRAC"));
+					insertBefore(createTag("sup", {s: {float: "right"}}), iswccode.firstChild).appendChild(createA("M", workLookupURL("mb", "iswc", iswccode_v.replace(/T- /, "T-")), "Search this ISWC in MusicBrainz"));
 				}
 			} else {
 				var sakuhincodet = document.querySelectorAll("a[href^='SakCdInfo.aspx?SAKUHINCD='], a[href^='SakCDInfo.aspx?SAKUHINCD='], div#ctl00_ctl00_phMain_phDBMain_PanelDetail table.tbl > tbody > tr > td:nth-child(8)");
@@ -467,11 +468,11 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					var dt = getSibling(dd, "dt", null, true);
 					if (dt && dt.textContent.match(/jasrac id/i)) {
 						var ddcode = dd.textContent.trim();
-						replaceElement(createTag("a", {href: workLookupURL("jasrac", "code", ddcode)}, {}, {}, ddcode), dd.firstChild);
+						replaceElement(createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}}, ddcode), dd.firstChild);
 						if (donecodes.indexOf(ddcode) < 0) {
 							donecodes.push(ddcode);
-							getExtLinks().appendChild(createTag("li", {class: userjs + "jasrac no-favicon"}, null, null, createTag("a", {href: workLookupURL("jasrac", "code", ddcode)}, {background: background}, {}, "JASRAC — " + ddcode)));
-							getExtLinks().appendChild(createTag("li", {class: userjs + "minc no-favicon"}, null, null, createTag("a", {href: workLookupURL("minc", "code", ddcode)}, {background: background}, {}, "音楽の森 — " + ddcode)));
+							getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, "JASRAC — " + ddcode)));
+							getExtLinks().appendChild(createTag("li", {a: {class: userjs + "minc no-favicon"}}, createTag("a", {a: {href: workLookupURL("minc", "code", ddcode)}, s: {background: background}}, "音楽の森 — " + ddcode)));
 						} else {
 							if (confirm("Duplicate JASRAC ID detected in work attributes.\nDo you want to edit?")) {
 								self.location.href = self.location.pathname + "/edit";
@@ -485,11 +486,11 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						sakuhincode = sakuhincode[1];
 						if (donecodes.indexOf(sakuhincode) < 0) {
 							donecodes.push(sakuhincode);
-							getExtLinks().appendChild(createTag("li", {class: userjs + "jasrac no-favicon"}, null, null, createTag("a", {href: workLookupURL("jasrac", "code", sakuhincode)}, {background: background}, {}, "JASRAC — " + sakuhincode)));
-							getExtLinks().appendChild(createTag("li", {class: userjs + "minc no-favicon"}, null, null, createTag("a", {href: workLookupURL("minc", "code", sakuhincode)}, {background: background}, {}, "音楽の森 — " + sakuhincode)));
+							getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", sakuhincode)}, s: {background: background}}, "JASRAC — " + sakuhincode)));
+							getExtLinks().appendChild(createTag("li", {a: {class: userjs + "minc no-favicon"}}, createTag("a", {a: {href: workLookupURL("minc", "code", sakuhincode)}, s: {background: background}}, "音楽の森 — " + sakuhincode)));
 						} else {
 							if (annotation.textContent.trim().match(new RegExp("^" + reAnnotCode + "( \\(MBS-7359\\))?$", "i"))) {
-								insertBefore(createTag("p", {}, {backgroundColor: "#ffc"}, {}, [createTag("img", {src: "/static/images/icons/loading.gif"}), " This JASRAC ID is now set as an attribute of this work: Removing obsolete annotation, please wait…"]), annotation.firstChild);
+								insertBefore(createTag("p", {s: {backgroundColor: "#ffc"}}, [createTag("img", {a: {src: "/static/images/icons/loading.gif"}}), " This JASRAC ID is now set as an attribute of this work: Removing obsolete annotation, please wait…"]), annotation.firstChild);
 								simpleXHR(
 									{method: "post", action: self.location.pathname + "/edit_annotation?edit-annotation.text=&edit-annotation.changelog=Removing+obsolete+JASRAC+ID+annotation&edit-annotation.edit_note=The+same+JASRAC+ID+is+now+set+as+an+attribute+to+this+work+(self+cleaning)."},
 									function() {
@@ -497,7 +498,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 											removeElement(document.querySelector("div#content h2.annotation"));
 											removeElement(document.querySelector("div#content div.annotation"));
 										} else {
-											replaceElement(createTag("p", {}, {"background-color": "#fcc"}, {}, "Couldn’t remove obsolete JASRAC ID. Please help. :)"), document.querySelector("div#content div.annotation-body"));
+											replaceElement(createTag("p", {s: {"background-color": "#fcc"}}, "Couldn’t remove obsolete JASRAC ID. Please help. :)"), document.querySelector("div#content div.annotation-body"));
 										}
 									},
 									function() { alert("Got an error while trying to remove obsolete annotation:\n" + this.status + this.responseText.match(/<title>.*(?=<\/title>)/)); /*(?<=<script>) lookbehind is not supported in js*/ }
@@ -513,12 +514,12 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				var iswcs = document.querySelectorAll("div#sidebar > dl.properties > dd.iswc > a[href*='/iswc/'] code");
 				for (var iswc = 0; iswc < iswcs.length; iswc++) {
 					var iswct = iswcs[iswc].textContent;
-					getExtLinks().appendChild(createTag("li", {class: userjs + "jasrac no-favicon"}, null, null, createA("JASRAC — " + iswct, workLookupURL("jasrac", "iswc", iswct.replace(/T-/, "T-+")), "Search this ISWC in JASRAC")));
+					getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, createA("JASRAC — " + iswct, workLookupURL("jasrac", "iswc", iswct.replace(/T-/, "T-+")), "Search this ISWC in JASRAC")));
 				}
 				/* -- vv ------ JASRAC name search link ------ vv -- */
 				var title = document.querySelector("h1 a").textContent.trim();
-				getExtLinks().appendChild(createTag("li", {class: userjs + "jasrac no-favicon"}, null, null, jasracSearch("title", title)));
-				getExtLinks().appendChild(createTag("li", {class: userjs + "minc no-favicon"}, null, null, mincSearch("title", title)));
+				getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, jasracSearch("title", title)));
+				getExtLinks().appendChild(createTag("li", {a: {class: userjs + "minc no-favicon"}}, mincSearch("title", title)));
 			}
 			break;
 		case "work/edit":
@@ -529,7 +530,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			h1 = document.querySelector("h1");
 			var iname = document.getElementById("id-edit-work.name");
 			xhrForm.form = getParent(iname, "form");
-			insertBefore(createTag("p", {}, {color: "purple", border: "1px dashed #fcc", backgroundColor: "#ffc"}, {}, [createTag("h3", {}, {}, {}, meta.name), MBS7313, " ☞ ", createA("Read more…", "https://github.com/jesus2099/konami-command/issues/14", null, "_blank")]), xhrForm.form);
+			insertBefore(createTag("p", {s: {color: "purple", border: "1px dashed #fcc", backgroundColor: "#ffc"}}, [createTag("h3", {}, meta.name), MBS7313, " ☞ ", createA("Read more…", "https://github.com/jesus2099/konami-command/issues/14", null, "_blank")]), xhrForm.form);
 /*				xhrForm.form.addEventListener("submit", function(event) {
 				var inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
 				var changed = !(xhrWork.edit) || (xhrForm.originalInputs.inputs.length != inputs.length);
@@ -590,7 +591,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				}
 			}, false);*/
 			xhrForm.submit = xhrForm.form.querySelector("div.row button.submit.positive[type='submit']");
-			insertBefore(createTag("input", {type: "reset", value: "Reset", title: "reset form values", tabindex: "-1", class: "styled-button"}, {float: "left", fontSize: ".77em", height: "16px", width: "32px", margin: "0 8px", border: "1px solid #ccc"}), xhrForm.submit);
+			insertBefore(createTag("input", {a: {type: "reset", value: "Reset", title: "reset form values", tabindex: "-1", class: "styled-button"}, s: {float: "left", fontSize: ".77em", height: "16px", width: "32px", margin: "0 8px", border: "1px solid #ccc"}}), xhrForm.submit);
 			xhrForm.originalInputs = {inputs: [], values: [], css: "form > div > fieldset:not(." + userjs + ") input:not([type='button']), form > div > fieldset:not(." + userjs + ") select"};
 			xhrForm.originalInputs.inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
 			for (var i = 0; i < xhrForm.originalInputs.inputs.length; i++) {
@@ -609,13 +610,13 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			icomment.addEventListener("focus", function(event){ this.style.setProperty("background", ""); }, false);
 			stypeid.addEventListener("focus", function(event){ this.style.setProperty("background", ""); }, false);
 			stypeid.style.setProperty("width", "260px");
-			var buttons = stypeid.parentNode.appendChild(createTag("span", {class: "buttons"}, {}, {}, [createButtor(vocal), createButtor(instrumental)]));
+			var buttons = stypeid.parentNode.appendChild(createTag("span", {a: {class: "buttons"}}, [createButtor(vocal), createButtor(instrumental)]));
 			stypeid.style.setProperty("width", (parseInt(self.getComputedStyle(stypeid).getPropertyValue("width"), 10) - parseInt(self.getComputedStyle(buttons).getPropertyValue("width"), 10)) + "px");
-			buttons = slangid.parentNode.appendChild(createTag("span", {class: "buttons"}, {}, {}, [createButtol("日", 198), createButtol("EN", 120)]));
+			buttons = slangid.parentNode.appendChild(createTag("span", {a: {class: "buttons"}}, [createButtol("日", 198), createButtol("EN", 120)]));
 			slangid.style.setProperty("width", (parseInt(self.getComputedStyle(slangid).getPropertyValue("width"), 10) - parseInt(self.getComputedStyle(buttons).getPropertyValue("width"), 10)) + "px");
 			teditnote.parentNode.appendChild(document.createElement("br"));
 			var tjasrac = document.querySelector("div.workheader p.subheader") || document.querySelector("h1");
-			tjasrac = tjasrac.appendChild(createTag("textarea", {placeholder: "Paste JASRAC summary here"}));
+			tjasrac = tjasrac.appendChild(createTag("textarea", {a: {placeholder: "Paste JASRAC summary here"}}));
 			addAfter(document.createTextNode(" ← Hover and paste JASRAC summary here for some magic :)"), tjasrac);
 			tjasrac.setAttribute("tabindex", "-1");
 			tjasrac.setAttribute("rows", "1");
@@ -766,11 +767,11 @@ function workSortName(txt) {
 function workCredits(txt) {
 	var wcs = document.getElementById(userjs + "wcs");
 	if (!wcs) {
-		wcs = addAfter(createTag("fieldset", {class: userjs}, {}, {}, [createTag("legend", {}, {}, {}, "Relationships"), createTag("p", {}, {}, {}, [createTag("b", null, null, null, "JASRAC sometimes has wrong credits"), " so, please double-check with your booklet then only lookup for the correct relationship(s) you want to create.", document.createElement("br"), "If you change your mind and want to un-lookup one of them, just select and clear the text field.", document.createElement("br"), "Only green fields will queue relationship edits."]), createTag("div", {id: userjs + "wcs"})]), xhrForm.form.querySelector("form > div > fieldset")).querySelector("div#" + userjs + "wcs");
+		wcs = addAfter(createTag("fieldset", {a: {class: userjs}}, [createTag("legend", {}, "Relationships"), createTag("p", {}, [createTag("b", {}, "JASRAC sometimes has wrong credits"), " so, please double-check with your booklet then only lookup for the correct relationship(s) you want to create.", document.createElement("br"), "If you change your mind and want to un-lookup one of them, just select and clear the text field.", document.createElement("br"), "Only green fields will queue relationship edits."]), createTag("div", {a: {id: userjs + "wcs"}})]), xhrForm.form.querySelector("form > div > fieldset")).querySelector("div#" + userjs + "wcs");
 	}
 	removeChildren(wcs);
 	try { jQuery; } catch (error) {
-		wcs.parentNode.appendChild(createTag("p", {}, {color: "red"}, {}, error.message + " — “Credits inline searches” can’t work. " + chrome));
+		wcs.parentNode.appendChild(createTag("p", {s: {color: "red"}}, error.message + " — “Credits inline searches” can’t work. " + chrome));
 		return;
 	}
 	workCredit("artist", {
@@ -800,7 +801,7 @@ function workCredit(enttype, credtypes, source, pTarget) {
 			var credit, credits = new RegExp("^" + credtype + "：([^\u00a0]+)(?:\u00a0（.+）)?$", "igm");
 			while (credit = credits.exec(source)) {
 				if (cont.tagName != "FIELDSET" && ctype.length > 1) {
-					cont = cont.appendChild(createTag("fieldset", {class: userjs}, {}, {}, [createTag("legend", {}, {}, {}, "choose either")]));
+					cont = cont.appendChild(createTag("fieldset", {a: {class: userjs}}, [createTag("legend", {}, "choose either")]));
 				}
 				credit = credit[1].trim();
 				if (credtypes[credtype].nomatch && credit.match(credtypes[credtype].nomatch)) {
@@ -814,16 +815,16 @@ function workCredit(enttype, credtypes, source, pTarget) {
 					}
 				}
 				var ilookupid = userjs + "ilookup" + i;
-				var target = cont.appendChild(createTag("div", {class: "row", title: credit}));
-				target.appendChild(createTag("label", {for: ilookupid}, {}, {}, ctype[c].english + ":"));
-				target.appendChild(createTag("a", {title: "reset\r\n" + credit, ref: i}, {cursor: "pointer"}, {click: function(event) {
+				var target = cont.appendChild(createTag("div", {a: {class: "row", title: credit}}));
+				target.appendChild(createTag("label", {a: {for: ilookupid}}, ctype[c].english + ":"));
+				target.appendChild(createTag("a", {a: {title: "reset\r\n" + credit, ref: i}, s: {cursor: "pointer"}, e: {click: function(event) {
 					MBlookups[this.getAttribute("ref")].clear(true);
-				}}, "× "));
-				var jQac = jQuery(target.appendChild(createTag("span", {class: enttype + " autocomplete" + (ctype.length == 1 || c > 0 ? "" : " " + userjs + "manu"), ref: enttype}, {}, {}, [
-					createTag("img", {src: "/static/images/icons/search.png", class: "search", alt: "search"}),
-					createTag("input", {type: "text", class: "name", id: ilookupid, ref: credit}, {width: "150px"}),
-					createTag("input", {type: "hidden", class: "id"}),
-					createTag("input", {type: "hidden", class: "gid"}),
+				}}}, "× "));
+				var jQac = jQuery(target.appendChild(createTag("span", {a: {class: enttype + " autocomplete" + (ctype.length == 1 || c > 0 ? "" : " " + userjs + "manu"), ref: enttype}}, [
+					createTag("img", {a: {src: "/static/images/icons/search.png", class: "search", alt: "search"}}),
+					createTag("input", {a: {type: "text", class: "name", id: ilookupid, ref: credit}, s: {width: "150px"}}),
+					createTag("input", {a: {type: "hidden", class: "id"}}),
+					createTag("input", {a: {type: "hidden", class: "gid"}}),
 				])));
 				MBlookups.push(MB.Control.EntityAutocomplete({inputs: jQac}));
 				MBlookups[MBlookups.length - 1].indexedSearch = false;
@@ -868,10 +869,10 @@ function workCredit(enttype, credtypes, source, pTarget) {
 					}
 				});
 				for (var wap in ctype[c]) if (wap != "english" && ctype[c].hasOwnProperty(wap)) {
-					target.appendChild(createTag("input", {type: "hidden", name: wap, value: ctype[c][wap]}));
+					target.appendChild(createTag("input", {a: {type: "hidden", name: wap, value: ctype[c][wap]}}));
 				}
 				target.appendChild(document.createTextNode(" "+credtype));
-				target.appendChild(createTag("br"));
+				target.appendChild(document.createElement("br"));
 				i++;
 			}
 		}
@@ -929,12 +930,6 @@ function disable(w, dis) {
 		return false;
 	}
 }
-function stop(event) {
-	event.cancelBubble = true;
-	if (event.stopPropagation) event.stopPropagation();
-	event.preventDefault();
-	return false;
-}
 function getExtLinks() {
 	var el = document.querySelector("div#sidebar > ul.external_links");
 	var sb, lu, lis;
@@ -950,40 +945,40 @@ function getExtLinks() {
 		} else {
 			lu = sb.lastChild;
 		}
-		el = addAfter(createTag("ul", {class: "external_links"}), lu);
-		addAfter(createTag("h2", {}, {}, {}, "External links"), lu);
+		el = addAfter(createTag("ul", {a: {class: "external_links"}}), lu);
+		addAfter(createTag("h2", {}, "External links"), lu);
 	}
 	return el;
 }
 /*bug I reported DSK-376978, opera adds a "; charset=accept-charset" to the POST Content-Type header: "Content-Type: application/x-www-form-urlencoded; charset=shift_jis"
 workaround here, using multipart/form-data accepted by JASRAC (unlike GET)*/
 function jasracSearch(type, query) {
-	var formJASRAC = createTag("form", {action: "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3", method: "post", "accept-charset": "Shift_JIS", enctype: "multipart/form-data"}, {display: "inline", background: background});
-	formJASRAC.appendChild(createTag("input", {type: "hidden", name: "IN_DEFAULT_WORKS_KOUHO_MAX", value: "100"}));
-	formJASRAC.appendChild(createTag("input", {type: "hidden", name: "IN_DEFAULT_WORKS_KOUHO_SEQ", value: "1"}));
+	var formJASRAC = createTag("form", {a: {action: "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3", method: "post", "accept-charset": "Shift_JIS", enctype: "multipart/form-data"}, s: {display: "inline", background: background}});
+	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_WORKS_KOUHO_MAX", value: "100"}}));
+	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_WORKS_KOUHO_SEQ", value: "1"}}));
 	switch (type) {
 		case "title":
-			formJASRAC.appendChild(createTag("input", {type: "hidden", name: "IN_WORKS_TITLE_NAME1", value: nameConform(query)}));
+			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_NAME1", value: nameConform(query)}}));
 			break;
 	}
-	formJASRAC.appendChild(createTag("input", {type: "hidden", name: "IN_DEFAULT_SEARCH_WORKS_NAIGAI", value: "0"}));
-	formJASRAC.appendChild(createTag("input", {type: "hidden", name: "RESULT_CURRENT_PAGE", value: "1"}));
+	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_SEARCH_WORKS_NAIGAI", value: "0"}}));
+	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "RESULT_CURRENT_PAGE", value: "1"}}));
 	formJASRAC.appendChild(createCoolSubmit("JASRAC — "+query));
 	return formJASRAC;
 	
 }
 /*workaround here, using GET accepted by MINC (unlike multipart)*//*TOTO since minc is now utf-8, see what can be dumped here*/
 function mincSearch(type, query) {
-	var formMINC = createTag("form", {action: "https://www.minc.gr.jp/db/SakCdInfo.aspx", method: "get", "accept-charset": "utf-8"}, {display: "inline", background: background});
-	formMINC.appendChild(createTag("input", {type: "hidden", name: "DATATYPE", value: "2"}));
+	var formMINC = createTag("form", {a: {action: "https://www.minc.gr.jp/db/SakCdInfo.aspx", method: "get", "accept-charset": "utf-8"}, s: {display: "inline", background: background}});
+	formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "DATATYPE", value: "2"}}));
 	switch (type) {
 		case "title":
-			formMINC.appendChild(createTag("input", {type: "hidden", name: "GTITLE", value: nameConform(query)}));
-			formMINC.appendChild(createTag("input", {type: "hidden", name: "SAKUSINM", value: ""}));
-			formMINC.appendChild(createTag("input", {type: "hidden", name: "ARTNAME", value: ""}));
+			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "GTITLE", value: nameConform(query)}}));
+			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "SAKUSINM", value: ""}}));
+			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "ARTNAME", value: ""}}));
 			break;
 	}
-	formMINC.appendChild(createTag("input", {type: "hidden", name: "SRCHTYPE", value: "2"}));
+	formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "SRCHTYPE", value: "2"}}));
 	formMINC.appendChild(createCoolSubmit("音楽の森 — " + query));
 	return formMINC;
 	
@@ -1050,22 +1045,22 @@ function workLookupURL(db, type, q) {
 function aliasTable(add, clear) {
 	var alta = document.getElementById(userjs + "alta");
 	if (!alta) {
-		alta = addAfter(createTag("fieldset", {class: userjs}, null, null, [createTag("legend", {}, {}, {}, "Aliases"), createTag("p", null, null, null, "You can add some aliases including (but not limited to) the default work sort-name and a latin search-hint. The JASRAC readings are almost always already cool. Sometimes you may fix few ツ→ッ but it’s rare. You can visually check the existing aliases."), createTag("table", {id: userjs + "alta"}, null, null, [
-			createTag("thead", null, null, null, createTag("tr", null, null, null, [createTag("th", null, null, null, "Name"), createTag("th", null, null, null, "Sort name"), createTag("th", null, null, null, "Type"), createTag("th", null, null, null, "Locale"), createTag("th", null, null, null, "Add?")])), 
+		alta = addAfter(createTag("fieldset", {a: {class: userjs}}, [createTag("legend", {}, "Aliases"), createTag("p", {}, "You can add some aliases including (but not limited to) the default work sort-name and a latin search-hint. The JASRAC readings are almost always already cool. Sometimes you may fix few ツ→ッ but it’s rare. You can visually check the existing aliases."), createTag("table", {a: {id: userjs + "alta"}}, [
+			createTag("thead", {}, createTag("tr", {}, [createTag("th", {}, "Name"), createTag("th", {}, "Sort name"), createTag("th", {}, "Type"), createTag("th", {}, "Locale"), createTag("th", {}, "Add?")])), 
 			document.createElement("tfoot"), document.createElement("tbody")
 		])]), xhrForm.form.querySelector("form > div > fieldset")).querySelector("table#" + userjs + "alta");
 	}
 	var aliases = add ? add : xhrWork.aliases;
 	var cont = alta.getElementsByTagName(add ? "tfoot" : "tbody")[0];
 	if (clear || !add) {
-		var headr = createTag("tr", null, null, null, createTag("th", {colspan: 5}, {borderTop: "1px solid black", color: "#666"}));
+		var headr = createTag("tr", {}, createTag("th", {a: {colspan: 5}, s: {borderTop: "1px solid black", color: "#666"}}));
 		if (clear) {
 			removeChildren(cont);
 			var th = cont.appendChild(headr).firstChild;
 			th.appendChild(document.createTextNode("Alias suggestions ("));
-			th.appendChild(createTag("a", null, {cursor: "pointer"}, {click: function(event) {
+			th.appendChild(createTag("a", {s: {cursor: "pointer"}, e: {click: function(event) {
 				aliasTable([{name: ""}]);
-			}}, "add another alias"));
+			}}}, "add another alias"));
 			th.appendChild(document.createTextNode(")"));
 		} else if (!add) {
 			cont.appendChild(headr).firstChild.appendChild(createA((aliases.length > 0 ? aliases.length : "no") + " existing aliase" + (aliases.length != 1 ? "s" : ""), "/work/" + xhrWork.mbid + "/aliases", "Work aliases page", "_blank"));
@@ -1076,13 +1071,13 @@ function aliasTable(add, clear) {
 		if (!add && a%2 == 0) {
 			tr.style.setProperty("background-color", "#f2f2f2");
 		}
-		var td = tr.appendChild(createTag("td", null, null, null, add ? createTag("input", {name: "edit-alias.name", value: aliases[a].name, title: aliases[a].name}, {width: "10em"}) : aliases[a].name));
+		var td = tr.appendChild(createTag("td", {}, add ? createTag("input", {a: {name: "edit-alias.name", value: aliases[a].name, title: aliases[a].name}, s: {width: "10em"}}) : aliases[a].name));
 		if (add || aliases[a].name != aliases[a]["sort-name"]) {
-			tr.appendChild(createTag("td", null, null, null, add ? createTag("input", {name: "edit-alias.sort_name", value: aliases[a]["sort-name"] ? aliases[a]["sort-name"] : ""}, {width: "10em"}) : aliases[a]["sort-name"]));
+			tr.appendChild(createTag("td", {}, add ? createTag("input", {a: {name: "edit-alias.sort_name", value: aliases[a]["sort-name"] ? aliases[a]["sort-name"] : ""}, s: {width: "10em"}}) : aliases[a]["sort-name"]));
 		} else {
 			td.setAttribute("colspan", "2");
 		}
-		var se = tr.appendChild(createTag("td", null, null, null, add ? createTag("select", {name: "edit-alias.type_id"}, {width: "8em"}, {change: function(event) {
+		var se = tr.appendChild(createTag("td", {}, add ? createTag("select", {a: {name: "edit-alias.type_id"}, s: {width: "8em"}, e: {change: function(event) {
 			var inps = this.parentNode.parentNode.querySelectorAll("input:not(." + userjs + "addit)");
 			for (var i = 0; i < inps.length; i++) {
 				if (i < 2) {
@@ -1092,8 +1087,8 @@ function aliasTable(add, clear) {
 					inps[i].disabled = this.value == "2" ? true : false;
 				}
 			}
-		}}, [createTag("option", null, null, null, " "), createTag("option", {value: "1"}, null, null, "work name"), createTag("option", {value: "2"}, null, null, "search hint")]) : (aliases[a].type ? aliases[a].type.toLowerCase() : ""))).querySelector("select");
-		td = tr.appendChild(createTag("td", null, null, null, add ? createTag("input", {name: "edit-alias.locale", value: (aliases[a].locale ? aliases[a].locale : "")}, {width: "3em"}, {keyup: function(event) {
+		}}}, [createTag("option", {}, " "), createTag("option", {a: {value: "1"}}, "work name"), createTag("option", {a: {value: "2"}}, "search hint")]) : (aliases[a].type ? aliases[a].type.toLowerCase() : ""))).querySelector("select");
+		td = tr.appendChild(createTag("td", {}, add ? createTag("input", {a: {name: "edit-alias.locale", value: (aliases[a].locale ? aliases[a].locale : "")}, s: {width: "3em"}, e: {keyup: function(event) {
 			var lang = this.value.match(/^$|^en$/);
 			if (lang && event.keyCode != 9) {
 				var titles = this.parentNode.parentNode.querySelectorAll("input[name^='edit-alias.'][name$='name']");
@@ -1101,9 +1096,9 @@ function aliasTable(add, clear) {
 					titles[t].value = lang == "en" ? toCamelCase(titles[t].value) : titles[t].value.toUpperCase();
 				}
 			}
-		}}) : (aliases[a].locale ? aliases[a].locale : "")));
+		}}}) : (aliases[a].locale ? aliases[a].locale : "")));
 		if (add) {
-			var cb = td.appendChild(createTag("input", {name: "edit-alias.primary_for_locale", value: "1", type: "checkbox", title: "primary"}));
+			var cb = td.appendChild(createTag("input", {a: {name: "edit-alias.primary_for_locale", value: "1", type: "checkbox", title: "primary"}}));
 			if (aliases[a].primary) {
 				cb.checked = true;/*for display*/
 				cb.setAttribute("checked", "checked");/*for reset*/
@@ -1112,7 +1107,7 @@ function aliasTable(add, clear) {
 			replaceElement(document.createTextNode("primary " + td.textContent), td.firstChild);
 			td.setAttribute("title", "primary");
 		}
-		tr.appendChild(createTag("td", null, null, null, add ? createTag("input", {type: "checkbox", title: "add this work alias?", class: userjs + "addit"}) : ""));
+		tr.appendChild(createTag("td", {}, add ? createTag("input", {a: {type: "checkbox", title: "add this work alias?", class: userjs + "addit"}}) : ""));
 		if (se) {/*se is the work type <select>*/
 			if (aliases[a].type) {
 				se.value = aliases[a].type;
@@ -1157,7 +1152,7 @@ function aliasTable(add, clear) {
 					wname.setAttribute("readonly", "readonly");
 				}
 				addAfter(document.createTextNode(se.options[se.selectedIndex].textContent), se);
-				replaceElement(createTag("input", {type: "hidden", name: se.getAttribute("name"), value: se.value}), se);
+				replaceElement(createTag("input", {a: {type: "hidden", name: se.getAttribute("name"), value: se.value}}), se);
 			} else if (!clear && add) {
 				wname.focus();
 				wnameaddit.click();
@@ -1234,78 +1229,27 @@ function weirdobg() {
 	return weirdo;
 }
 function createButtor(type) {
-	return createTag("input", {type: "button", value: type.charAt(0).toUpperCase(), title: type, tabindex: "-1", class: "styled-button"}, {width: "10px", padding: "1px 8px"}, {click: function(event) {
+	return createTag("input", {a: {type: "button", value: type.charAt(0).toUpperCase(), title: type, tabindex: "-1", class: "styled-button"}, s: {width: "10px", padding: "1px 8px"}, e: {click: function(event) {
 		setType(this.getAttribute("title"));
-	}});
+	}}});
 }
 function createButtol(txt, val) {
-	return createTag("input", {type: "button", value: txt, title: val, tabindex: "-1", class: "styled-button"}, {width: "10px", padding: "1px 8px", float: "none"}, {click: function(event) {
+	return createTag("input", {a: {type: "button", value: txt, title: val, tabindex: "-1", class: "styled-button"}, s: {width: "10px", padding: "1px 8px", float: "none"}, e: {click: function(event) {
 		var slang;
 		var title = this.getAttribute("title");
 		if (title && title.length > 0 && (slang = getSibling(this.parentNode, "select", null, true))) {
 			slang.value = this.getAttribute("title");
 			slang.focus();
 		}
-	}});
+	}}});
 }
 function isAutoEdit() {
 	var ae = xhrForm.form.querySelector("div.auto-editor > input[type='checkbox'][name='edit-work.as_auto_editor']");
 	return (ae && ae.checked);
 }
-function removeChildren(p) {
-	while (p && p.hasChildNodes()) {
-		p.removeChild(p.firstChild);
-	}
-}
-function addAfter(n, e) {
-	if (n && e && e.parentNode) {
-		if (e.nextSibling) {
-			return e.parentNode.insertBefore(n, e.nextSibling);
-		} else {
-			return e.parentNode.appendChild(n);
-		}
-	} else {
-		return null;
-	}
-}
 function insertBefore(newSibling, element) {
 	if (newSibling && element && element.parentNode) {
 		return element.parentNode.insertBefore(newSibling, element);
-	} else {
-		return null;
-	}
-}
-function createTag(tag, attribs, styles, events, children) {
-	var t = document.createElement(tag);
-	if(t.tagName) {
-		for (var attr in attribs) if (attribs.hasOwnProperty(attr)) { t.setAttribute(attr, attribs[attr]); }
-		for (var styl in styles) if (styles.hasOwnProperty(styl)) { t.style.setProperty(styl.replace(/[A-Z]/g, "-$&").toLowerCase(), styles[styl], "important"); }
-		for (var evt in events) if (events.hasOwnProperty(evt)) { t.addEventListener(evt, events[evt], false); }
-		if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.tagName) { chldrn = [chldrn]; } for (var child = 0; child < chldrn.length; child++) { t.appendChild(typeof chldrn[child] == "string" ? document.createTextNode(chldrn[child]) : chldrn[child]); } }
-	}
-	return t;
-}
-function getParent(obj, tag, cls) {
-	var cur = obj;
-	if (cur.parentNode) {
-		cur = cur.parentNode;
-		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-			return cur;
-		} else {
-			return getParent(cur, tag, cls);
-		}
-	} else {
-		return null;
-	}
-}
-function getSibling(obj, tag, cls, prev) {
-	var cur = obj;
-	if (cur = prev ? cur.previousSibling : cur.nextSibling) {
-		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-			return cur;
-		} else {
-			return getSibling(cur, tag, cls, prev);
-		}
 	} else {
 		return null;
 	}
@@ -1323,8 +1267,6 @@ function halfwidthToFullwidth(s) {
 		return String.fromCharCode(a.charCodeAt(0) + 65248);
 	}).replace(/\u0020/g, "\u3000");
 }
-function decToHex(d) { return d.toString(16); }
-function hexToDec(h) { return parseInt(h, 16); }
 function xhrMachine(_job) {
 	var job;
 	if (_job) {
@@ -1349,7 +1291,9 @@ function xhrMachine(_job) {
 	if (job.onload) {
 		xhr.onload = job.onload;
 	} else if (!async) {
-xhr.onload = function(event) { xhrMachine(); };
+		xhr.onload = function(event) {
+			xhrMachine();
+		};
 		async = true;
 	}
 	if (job.onerror) {
@@ -1365,7 +1309,7 @@ xhr.onload = function(event) { xhrMachine(); };
 		if (h1.textContent.trim().match(/add work/i)) {
 			removeChildren(h1);
 		}
-		h1.appendChild(createTag("div", {}, {}, {}, " " + document.title.replace(/ /g, "\u00a0")));
+		h1.appendChild(createTag("div", {}, " " + document.title.replace(/ /g, "\u00a0")));
 	}
 	xhr.open(job.method ? job.method : "get", job.url, async);
 	if (job.params) {
@@ -1378,11 +1322,6 @@ xhr.onload = function(event) { xhrMachine(); };
 	if (!async) {
 		xhrMachine();
 	}
-}
-function sendEvent(node, eventName) {
-	var event = document.createEvent("HTMLEvents");
-	event.initEvent(eventName, true, true);
-	node.dispatchEvent(event);
 }
 function simpleXHR(_request, onload, onerror) {
 	/* defaults */
