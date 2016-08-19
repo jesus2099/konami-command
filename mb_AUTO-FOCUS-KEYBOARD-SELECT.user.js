@@ -26,10 +26,6 @@
 // @match        *://*.mbsandbox.org/cdtoc/move*
 // @match        *://*.mbsandbox.org/cdtoc/remove*
 // @match        *://*.mbsandbox.org/edit/*/cancel*
-// @match        *://*.mbsandbox.org/edit/relationship/create*
-// @match        *://*.mbsandbox.org/edit/relationship/create_url*
-// @match        *://*.mbsandbox.org/edit/relationship/delete*
-// @match        *://*.mbsandbox.org/edit/relationship/edit*
 // @match        *://*.mbsandbox.org/isrc/delete*
 // @match        *://*.mbsandbox.org/label/*/edit
 // @match        *://*.mbsandbox.org/label/create
@@ -61,10 +57,6 @@
 // @match        *://*.musicbrainz.org/cdtoc/move*
 // @match        *://*.musicbrainz.org/cdtoc/remove*
 // @match        *://*.musicbrainz.org/edit/*/cancel*
-// @match        *://*.musicbrainz.org/edit/relationship/create*
-// @match        *://*.musicbrainz.org/edit/relationship/create_url*
-// @match        *://*.musicbrainz.org/edit/relationship/delete*
-// @match        *://*.musicbrainz.org/edit/relationship/edit*
 // @match        *://*.musicbrainz.org/isrc/delete*
 // @match        *://*.musicbrainz.org/label/*/edit
 // @match        *://*.musicbrainz.org/label/create
@@ -90,7 +82,6 @@
 /* ---------- configuration below ---------- */
 var autoFocus = true; /* focuses on most clever field http://tickets.musicbrainz.org/browse/MBS-2213 */
 var selectText = false; /* selects the focused field’s text */
-var keyboardSelect = true; /* allows relationship keyboard shortcuts */
 var moreURLmatch = true; /* more URL patterns matching in add/edit links (blog, etc.) */
 var tracklistEditorEnhancer = true; /* press UP↓/↑DOWN keys to navigate through track positions, names and lengths, auto clean‐up and format track length */
 /* ---------- configuration above ---------- */
@@ -125,63 +116,11 @@ function mostCleverInputToFocus() {
 				|| document.querySelector("input[id='id-filter-release.query']")
 			);
 			break;
-		case "/edit/relationship/create":
-		case "/edit/relationship/create-recordings":
-		case "/edit/relationship/edit":
-			i = document.querySelector("select[id='id-ar.link_type_id']");
-			if (keyboardSelect && i) {
-				var kbdsel = {
-					/*artist-artist*/
-						103: "m", //member
-						106: ".", //(unblocking member)
-						108: "a", //performs as
-					/*artist-work*/
-						165: "l", //lyrics
-						167: "w", //write
-						168: "c", //compose
-						170: ".", //(unblocking compose)
-					/*artist-recording*/
-						148: "i", //instrument
-						149: "v", //vocal
-						150: "op", //orchestra perf
-						151: "c", //conducted
-						153: "r", //remix
-						156: "p", //performs
-						297: "a", //arrange
-						300: "o", //orchestrate
-					/*artist-release*/
-						19: "ill", //illust(/design)
-						20: "ph", //photo
-						24: "l", //liner notes
-						26: "mix", //mix
-						27: "d", //design
-						28: "e", //engineer
-						30: "pr", //produce
-						36: "rec", //record
-						40: "o", //orchestrate
-						42: "mas", //master
-						44: "ins", //instrument
-						45: "op", //orchestra perf
-						46: "c", //conducted
-						47: "rem", //remix
-						51: "pe", //performs
-						60: "v", //vocal
-						295: "a", //arrange
-					/*recording-work*/
-						244: "m", //medley
-						278: "r", //recording of
-				};
-				for (var relationshipType in kbdsel) if (kbdsel.hasOwnProperty(relationshipType)) {
-					var option = i.querySelector("option[value='" + relationshipType + "']");
-					if (option) {
-						option.replaceChild(document.createTextNode(kbdsel[relationshipType].toUpperCase() + "." + option.textContent), option.firstChild);
-					}
-				}
-			}
-			break;
 		case "/edit/relationship/create_url":
 			i = document.querySelector("input[id='id-ar.url']");
 			if (moreURLmatch) {
+//TODO: see if those selectors are not included in MBS now
+//TODO: convert this code for entity edit case instead of now defunct /edit/relationship/*
 				var type = document.querySelector("select[id='id-ar.link_type_id']");
 				if (type) {
 					i.addEventListener("keyup", function(event) {
