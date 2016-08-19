@@ -257,10 +257,20 @@ if (autoFocus) {
 		}
 		highlight(input);
 	}
+	// re‐focus input field after related tool click http://tickets.musicbrainz.org/browse/MBS-7321
+	var tools = document.querySelectorAll("input.with-guesscase ~ button:not(.guesscase-options)");
+	for (var t = 0; t < tools.length; t++) {
+		tools[t].addEventListener("click", function(event) {
+			var relatedInput = this.parentNode.querySelector("input");
+			relatedInput.focus();
+			highlight(relatedInput);
+		});
+	}
 }
 var hli;
-var rgbi = 0;
+var rgbi;
 function highlight(input) {
+	rgbi = 0;
 	hli = setInterval(function() { hl(input); }, 50);
 }
 function hl(input) {
