@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2016.7.20
+// @version      2016.9.13
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -42,7 +42,6 @@
 // @match        *://*.musicbrainz.org/series/*
 // @match        *://*.musicbrainz.org/url/*
 // @match        *://*.musicbrainz.org/work/*
-// @exclude      *.org/*/*/*add*
 // @exclude      *.org/*/*/*annotat*
 // @exclude      *.org/*/*/*create*
 // @exclude      *.org/*/*/*delete*
@@ -50,7 +49,7 @@
 // @exclude      *.org/*/*/*merge*
 // @exclude      *.org/*/*/*remove*
 // @exclude      *.org/*/*/*split*
-// @exclude      *.org/*/*add*
+// @exclude      *.org/*/*/add-alias*
 // @exclude      *.org/*/*annotat*
 // @exclude      *.org/*/*create*
 // @exclude      *.org/*/*delete*
@@ -58,6 +57,8 @@
 // @exclude      *.org/*/*merge*
 // @exclude      *.org/*/*remove*
 // @exclude      *.org/*/*split*
+// @exclude      *.org/release/add
+// @exclude      *.org/release/add?*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
