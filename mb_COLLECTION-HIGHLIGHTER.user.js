@@ -171,32 +171,32 @@ if (host && cat) {
 					decorate(coll);
 				}
 				var loadButt = [
-					createA("Load",
+					createA("Append",
 						function(event) {
 							var opts = document.querySelectorAll("td." + userjs + " input[type='checkbox']:checked");
 							stuff = {};
 							for (var opt = 0; opt < opts.length; opt++) {
 								stuff[opts[opt].getAttribute("name")] = {};
 							}
-							var noWS;
-							if (typeof opera != "undefined" && (noWS = getParent(this, "tr")) && noWS.textContent.match(/\n\s*Private\s*\n/)) {
-								noWS = true;
+							var pageCrawlMode;
+							if (typeof opera != "undefined" && (pageCrawlMode = getParent(this, "tr")) && pageCrawlMode.textContent.match(/\n\s*Private\s*\n/)) {
+								pageCrawlMode = true;
 							} else {
-								noWS = false;
+								pageCrawlMode = false;
 							}
-							loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !noWS, noWS ? 1 : 0);
+							loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0);
 						},
 						"Add this collection’s content to local storage (" + collid + ")"
 					),
-					"/",
-					createA("re‐load",
+					" | ",
+					createA("Load",
 						function(event) {
 							var cmsg = "This will REPLACE your current loaded stuff.";
 							if (confirm(dialogprefix + cmsg)) {
 								for (var stu = 0; stu < collectedStuff.length; stu++) {
 									localStorage.removeItem(userjs + collectedStuff[stu] + "s");
 								}
-								this.previousSibling.previousSibling.click();/*Load*/
+								this.previousSibling.previousSibling.click();/*Append*/
 							}
 						},
 						"Replace local storage with this collection’s content (" + collid + ")"
@@ -353,19 +353,19 @@ function setTitle(ldng, pc) {
 		document.title = old;
 	}
 }
-function loadCollection(mbid, ws, po) {
+function loadCollection(collectionMBID, WSMode, pageOffset) {
 	var limit = 100;
-	var offset = po;
-	var page = !ws ? po : offset / limit + 1;
+	var offset = pageOffset;
+	var page = !WSMode ? pageOffset : offset / limit + 1;
 	setTitle(true);
-	var url = ws ? "/ws/2/collection/" + mbid + "/releases?limit=" + limit + "&offset=" + offset : "/collection/" + mbid + "?page=" + page;
+	var url = WSMode ? "/ws/2/collection/" + collectionMBID + "/releases?limit=" + limit + "&offset=" + offset : "/collection/" + collectionMBID + "?page=" + page;
 	if (page == 1) {
 		collectionsID = localStorage.getItem(userjs + "collections") || "";
-		if (collectionsID .indexOf(mbid) < 0) {
-			collectionsID += mbid + " ";
+		if (collectionsID .indexOf(collectionMBID) < 0) {
+			collectionsID += collectionMBID + " ";
 		}
 		localStorage.setItem(userjs + "collections", collectionsID);
-		modal(true, "Loading collection " + mbid + "…", 1);
+		modal(true, "Loading collection " + collectionMBID + "…", 1);
 		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page."]), 2);
 		modal(true, concat(["<hr>", "Fetching releases…"]), 2);
 		stuff["release-tmp"] = {ids: []};
@@ -380,9 +380,9 @@ function loadCollection(mbid, ws, po) {
 		if (this.readyState == 4) {
 			if (this.status == 401) {
 				modal(true, concat(["NG.", "<br>", "Private collection problem, switching to slower mode…"]), 1);
-				loadCollection(mbid, false, 1);
+				loadCollection(collectionMBID, false, 1);
 			} else if (this.status == 200) {
-				var re = ws ? '<release id="(' + strMBID + ')">' : '<td>(?:<span class="mp">)?<a href="/release/(' + strMBID + ')">(.+)</a>';
+				var re = WSMode ? '<release id="(' + strMBID + ')">' : '<td>(?:<span class="mp">)?<a href="/release/(' + strMBID + ')">(.+)</a>';
 				var rels = this.responseText.match(new RegExp(re, "g"));
 				if (rels) {
 					for (var rel = 0; rel < rels.length; rel++) {
@@ -396,16 +396,16 @@ function loadCollection(mbid, ws, po) {
 					modal(true, rels.length + " release" + (rels.length == 1 ? "" : "s") + " fetched.", 1);
 				}
 				var ps, lastPage, nextPage;
-				if (ws && (lastPage = this.responseText.match(/<release-list count="(\d+)">/))) {
+				if (WSMode && (lastPage = this.responseText.match(/<release-list count="(\d+)">/))) {
 					lastPage = Math.ceil(parseInt(lastPage[1], 10) / limit);
-				} else if (!ws) {
+				} else if (!WSMode) {
 					var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
 					nextPage = responseDOM.querySelector(css_nextPage);
 				}
 				if (lastPage && page < lastPage || nextPage) {
 					if (lastPage && page == 1) { modal(true, "(total " + lastPage + " pages)", 1); }
 					retry = 0;
-					setTimeout(function() { loadCollection(mbid, ws, ws ? offset + limit : page + 1); }, chrono(MBWSRate));
+					setTimeout(function() { loadCollection(collectionMBID, WSMode, WSMode ? offset + limit : page + 1); }, chrono(MBWSRate));
 				} else if (lastPage && lastPage == page || !nextPage) {
 					modal(true, " ", 1);
 					if (stuff["release-tmp"].ids.length > 0) {
@@ -427,7 +427,7 @@ function loadCollection(mbid, ws, po) {
 					MBWSRate += slowDownStepAfterRetry;
 					modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
 					debugRetry(this.status);
-					setTimeout(function() { loadCollection(mbid, ws, ws ? offset : page); }, chrono(retryPause));
+					setTimeout(function() { loadCollection(collectionMBID, WSMode, WSMode ? offset : page); }, chrono(retryPause));
 				} else {
 					end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
 				}
@@ -481,7 +481,7 @@ function fetchReleasesStuff(pi) {
 							var rgid = xp.snapshotItem(ixp).getAttribute("id");
 							if (stu != "artist" || skipArtists.indexOf(rgid) < 0) {
 								var stupos = stuff[stu].ids.indexOf(rgid);
-								if (stupos<0) {
+								if (stupos < 0) {
 									stuff[stu].ids.push(rgid);
 									stuff[stu].rawids += rgid + " ";
 									addedStuff++; totalAddedStuff++;
