@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.6.15
+// @version      2016.10.1
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -167,9 +167,6 @@ if (host && cat) {
 			for (var i = 0; i < xp.snapshotLength; i++) {
 				var coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
 				var collid = coll.getAttribute("href").match(new RegExp(strMBID));
-				if (collectionsID.indexOf(collid) > -1) {
-					decorate(coll);
-				}
 				var loadButt = [
 					createA("Append",
 						function(event) {
@@ -202,6 +199,12 @@ if (host && cat) {
 						"Replace local storage with this collection’s content (" + collid + ")"
 					)
 				];
+				if (collectionsID.indexOf(collid) > -1) {
+					decorate(coll);
+					var syncButt = createA("Synchronise", "#", "Fast add/remove releases in local storage by comparison with this collection (" + collid + ")");
+					decorate(syncButt);
+					loadButt.push(" | ", syncButt);
+				}
 				xp.snapshotItem(i).appendChild(document.createElement("td")).appendChild(concat(loadButt));
 				if (i == 0) {
 					/* settings */
@@ -353,15 +356,16 @@ function setTitle(ldng, pc) {
 		document.title = old;
 	}
 }
-function loadCollection(collectionMBID, WSMode, pageOffset) {
+function loadCollection(collectionMBID, WSMode, pageOrOffset, syncOnly) {
 	var limit = 100;
-	var offset = pageOffset;
-	var page = !WSMode ? pageOffset : offset / limit + 1;
+	var offset = pageOrOffset;
+	var page = !WSMode ? pageOrOffset : offset / limit + 1;
 	setTitle(true);
 	var url = WSMode ? "/ws/2/collection/" + collectionMBID + "/releases?limit=" + limit + "&offset=" + offset : "/collection/" + collectionMBID + "?page=" + page;
 	if (page == 1) {
+		// Add collection MBID to list of highlighted
 		collectionsID = localStorage.getItem(userjs + "collections") || "";
-		if (collectionsID .indexOf(collectionMBID) < 0) {
+		if (collectionsID.indexOf(collectionMBID) < 0) {
 			collectionsID += collectionMBID + " ";
 		}
 		localStorage.setItem(userjs + "collections", collectionsID);
@@ -423,7 +427,7 @@ function loadCollection(collectionMBID, WSMode, pageOffset) {
 					end(false, "Error while loading page " + page + (lastPage ? "/" + lastPage : "") + ".");
 				}
 			} else {
-				if (retry++ < maxRetry ) {
+				if (retry++ < maxRetry) {
 					MBWSRate += slowDownStepAfterRetry;
 					modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
 					debugRetry(this.status);
@@ -509,7 +513,7 @@ function fetchReleasesStuff(pi) {
 						end(true);
 					}
 				} else {
-					if (retry++ < maxRetry ) {
+					if (retry++ < maxRetry) {
 						MBWSRate += slowDownStepAfterRetry;
 						modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
 						debugRetry(this.status);
@@ -813,7 +817,7 @@ function stuffRemover(checks, pp) {
 								setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
 							}
 						} else {
-							if (retry++ < maxRetry ) {
+							if (retry++ < maxRetry) {
 								MBWSRate += slowDownStepAfterRetry;
 								debugRetry(this.status);
 								setTimeout(function() { stuffRemover(checks, p); }, chrono(retryPause));
