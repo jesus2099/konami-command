@@ -177,44 +177,49 @@ if (host && cat) {
 			for (var i = 0; i < xp.snapshotLength; i++) {
 				var coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
 				var collid = coll.getAttribute("href").match(new RegExp(strMBID));
-				var loadButt = [
-					createA("Append",
-						function(event) {
-							var opts = document.querySelectorAll("td." + userjs + " input[type='checkbox']:checked");
-							stuff = {};
-							for (var opt = 0; opt < opts.length; opt++) {
-								stuff[opts[opt].getAttribute("name")] = {};
-							}
-							var pageCrawlMode;
-							if (typeof opera != "undefined" && (pageCrawlMode = getParent(this, "tr")) && pageCrawlMode.textContent.match(/\n\s*Private\s*\n/)) {
-								pageCrawlMode = true;
-							} else {
-								pageCrawlMode = false;
-							}
-							loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0);
-						},
-						"Add this collection’s content to local storage (" + collid + ")"
-					),
-					" | ",
-					createA("Load",
-						function(event) {
-							var cmsg = "This will REPLACE your current loaded stuff.";
-							if (confirm(dialogprefix + cmsg)) {
-								for (var stu = 0; stu < collectedStuff.length; stu++) {
-									localStorage.removeItem(userjs + collectedStuff[stu] + "s");
-								}
-								this.previousSibling.previousSibling.click();/*Append*/
-							}
-						},
-						"Replace local storage with this collection’s content (" + collid + ")"
-					)
-				];
+				var loadButtons = [];
+				var loadButtonText = "Load";
 				if (collectionsID.indexOf(collid) > -1) {
 					decorate(coll);
-					loadButt[loadButt.length - 1].replaceChild(document.createTextNode("Reload"), loadButt[loadButt.length - 1].firstChild);
-					loadButt.push(" | ", createA("Synchronise", "#", "Fast add/remove releases in local storage by comparison with this collection (" + collid + ")"));
+					loadButtonText = "Reload";
+					if (collectionsID.split(" ").length - 1 < 2) {
+						//Synchronisation (fast add/remove) is available when highlighting only one collection
+						loadButtons.push(createA("Synchronise", "#", "Fast add/remove releases in local storage by comparison with this collection (" + collid + ")"), " | ");
+					}
 				}
-				xp.snapshotItem(i).appendChild(document.createElement("td")).appendChild(concat(loadButt));
+				loadButtons.push(createA(
+					"Append",
+					function(event) {
+						var opts = document.querySelectorAll("td." + userjs + " input[type='checkbox']:checked");
+						stuff = {};
+						for (var opt = 0; opt < opts.length; opt++) {
+							stuff[opts[opt].getAttribute("name")] = {};
+						}
+						var pageCrawlMode;
+						if (typeof opera != "undefined" && (pageCrawlMode = getParent(this, "tr")) && pageCrawlMode.textContent.match(/\n\s*Private\s*\n/)) {
+							pageCrawlMode = true;
+						} else {
+							pageCrawlMode = false;
+						}
+						loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0);
+					},
+					"Add this collection’s content to local storage (" + collid + ")"
+				));
+				loadButtons.push(" | ");
+				loadButtons.push(createA(
+					loadButtonText,
+					function(event) {
+						var cmsg = "This will REPLACE your current loaded stuff.";
+						if (confirm(dialogprefix + cmsg)) {
+							for (var stu = 0; stu < collectedStuff.length; stu++) {
+								localStorage.removeItem(userjs + collectedStuff[stu] + "s");
+							}
+							this.previousSibling.previousSibling.click();/*Append*/
+						}
+					},
+					"Replace local storage with this collection’s content (" + collid + ")"
+				));
+				xp.snapshotItem(i).appendChild(document.createElement("td")).appendChild(concat(loadButtons));
 				if (i == 0) {
 					/* settings */
 					var settings = [];
