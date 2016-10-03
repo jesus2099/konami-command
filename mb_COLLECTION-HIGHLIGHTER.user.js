@@ -183,8 +183,11 @@ if (host && cat) {
 					decorate(coll);
 					loadButtonText = "Reload";
 					if (collectionsID.split(" ").length - 1 < 2) {
-						//Synchronisation (fast add/remove) is available when highlighting only one collection
-						loadButtons.push(createA("Synchronise", "#", "Fast add/remove releases in local storage by comparison with this collection (" + collid + ")"), " | ");
+						// synchronisation (fast add/remove) is available when highlighting only one collection
+						loadButtons.push(createA("Synchronise", function(event) {
+							var pageCrawlMode = cantUseWS(this);
+							loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0, true);
+						}, "Fast(er) add/remove releases in local storage by comparison with this collection (" + collid + ")"), document.createElement("br"));
 					}
 				}
 				loadButtons.push(createA(
@@ -195,12 +198,7 @@ if (host && cat) {
 						for (var opt = 0; opt < opts.length; opt++) {
 							stuff[opts[opt].getAttribute("name")] = {};
 						}
-						var pageCrawlMode;
-						if (typeof opera != "undefined" && (pageCrawlMode = getParent(this, "tr")) && pageCrawlMode.textContent.match(/\n\s*Private\s*\n/)) {
-							pageCrawlMode = true;
-						} else {
-							pageCrawlMode = false;
-						}
+						var pageCrawlMode = cantUseWS(this);
 						loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0);
 					},
 					"Add this collection’s content to local storage (" + collid + ")"
@@ -211,10 +209,12 @@ if (host && cat) {
 					function(event) {
 						var cmsg = "This will REPLACE your current loaded stuff.";
 						if (confirm(dialogprefix + cmsg)) {
+							// erase local stuff
 							for (var stu = 0; stu < collectedStuff.length; stu++) {
 								localStorage.removeItem(userjs + collectedStuff[stu] + "s");
 							}
-							this.previousSibling.previousSibling.click();/*Append*/
+							// then append (previous button)
+							this.previousSibling.previousSibling.click();
 						}
 					},
 					"Replace local storage with this collection’s content (" + collid + ")"
@@ -328,25 +328,25 @@ function decorate(entityLink) {
 				entityType = entityType[1];
 			}
 			if (cat == "edit") {
-				// Entity edit page is boxed.
+				// entity edit page is boxed
 				var editDetails = getParent(entityLink, "table", "details");
 				if (editDetails && entityLink == editDetails.querySelector("a")) {
 					page.classList.add(userjs + "HLbox");
 				}
 			} else if (cat == "edits") {
-				// In edit lists: Release or release group edits are boxed; other entity edits are left bordered.
+				// in edit lists: Release or release group edits are boxed; other entity edits are left bordered
 				var edit = getParent(entityLink, "div", "edit-list");
 				if (edit) {
 					edit.classList.add(userjs + "HL" + (entityLink == edit.querySelector("div.edit-details a") ? "box" : "row"));
 				}
 			} else {
-				// In other pages: Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists.
+				// in other pages: Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists
 				var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
 				if (row) {
 					if (entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/'])") && !(cat == "release" && page.classList.contains(userjs + "HLbox") && entityType == "recording")) {
 						row.classList.add(userjs + "HLrow");
 					}
-					// Decorate tracks without holding them.
+					// decorate tracks without holding them
 					if (cat == "release" && entityType == "recording" || cat == "recording" && entityType == "release") {
 						var track = row.querySelector("a[href*='/track']");
 						if (track) {
@@ -361,7 +361,7 @@ function decorate(entityLink) {
 // ############################################################################
 // #                                   COLLECT RELEASES FROM COLLECTION PAGES #
 // ############################################################################
-function loadCollection(collectionMBID, WSMode, pageOrOffset, syncOnly) {
+function loadCollection(collectionMBID, WSMode, pageOrOffset, syncMode) {
 	var limit = 100;
 	var offset = pageOrOffset;
 	var page = !WSMode ? pageOrOffset : offset / limit + 1;
@@ -863,6 +863,13 @@ function modal(show, txt, brs, gauge) {
 // #                           ACCESSORY TECHNICAL FUNCTIONS                  #
 // #                                                                          #
 // ############################################################################
+function cantUseWS(button) {
+	if (typeof opera != "undefined" && (pageCrawlMode = getParent(button, "tr")) && pageCrawlMode.textContent.match(/\n\s*Private\s*\n/)) {
+		pageCrawlMode = true;
+	} else {
+		pageCrawlMode = false;
+	}
+}
 function lastLink(href) {
 	if (href) {
 		localStorage.setItem(userjs + "lastlink", href);
