@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.6.15
+// @version      2016.10.1
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -97,6 +97,11 @@ if (meta.raw && meta.raw.toString && (meta.raw = meta.raw.toString())) {
 	}
 }
 meta.name = meta.name.substr("4") + " " + meta.version;
+// ############################################################################
+// #                                                                          #
+// #                           MAIN RUN                                       #
+// #                                                                          #
+// ############################################################################
 var host = (["musicbrainz.org", "beta.musicbrainz.org", "test.musicbrainz.org"].indexOf(self.location.host) > -1);
 var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|series|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (host && cat) {
@@ -132,6 +137,9 @@ if (host && cat) {
 	var strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	cat = cat[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
 	debug("CAT: " + cat);
+// ############################################################################
+// #                                       DISPLAY RELEASE PAGE SIDEBAR TOOLS #
+// ############################################################################
 	if (cat == "release" && (releaseID = self.location.pathname.match(new RegExp(strMBID)))) {
 		releaseID = releaseID[0];
 		var mainReleasePage = self.location.pathname.match(new RegExp("^/release/" + strMBID + "$"));
@@ -158,7 +166,9 @@ if (host && cat) {
 		}
 	}
 	if (cat == "collections") {
-		/*collection loader*/
+// ############################################################################
+// #                                     DISPLAY COLLECTION PAGE LOADER TOOLS #
+// ############################################################################
 		var xp1 = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th/text()[contains(., 'Veröffentlichungen') or contains(., 'Väljalasked') or contains(., 'Releases') or contains(., 'Publicaciones') or contains(., 'Parutions') or contains(., 'Pubblicazioni') or contains(., 'Uitgaves') or contains(., 'Julkaisut') or contains(., 'Κυκλοφορίες') or contains(., 'リリース')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		for (var tbl_idx = 0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
 			xp1.snapshotItem(tbl_idx).parentNode.parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, meta.name));
@@ -167,42 +177,42 @@ if (host && cat) {
 			for (var i = 0; i < xp.snapshotLength; i++) {
 				var coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
 				var collid = coll.getAttribute("href").match(new RegExp(strMBID));
+				var loadButtons = [];
+				var loadButtonText = "Load";
 				if (collectionsID.indexOf(collid) > -1) {
 					decorate(coll);
+					loadButtonText = "Reload";
 				}
-				var loadButt = [
-					createA("Append",
-						function(event) {
-							var opts = document.querySelectorAll("td." + userjs + " input[type='checkbox']:checked");
-							stuff = {};
-							for (var opt = 0; opt < opts.length; opt++) {
-								stuff[opts[opt].getAttribute("name")] = {};
+				loadButtons.push(createA(
+					"Append",
+					function(event) {
+						var opts = document.querySelectorAll("td." + userjs + " input[type='checkbox']:checked");
+						stuff = {};
+						for (var opt = 0; opt < opts.length; opt++) {
+							stuff[opts[opt].getAttribute("name")] = {};
+						}
+						var pageCrawlMode = cantUseWS(this);
+						loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0);
+					},
+					"Add this collection’s content to local storage (" + collid + ")"
+				));
+				loadButtons.push(" | ");
+				loadButtons.push(createA(
+					loadButtonText,
+					function(event) {
+						var cmsg = "This will REPLACE your current loaded stuff.";
+						if (confirm(dialogprefix + cmsg)) {
+							// erase local stuff
+							for (var stu = 0; stu < collectedStuff.length; stu++) {
+								localStorage.removeItem(userjs + collectedStuff[stu] + "s");
 							}
-							var pageCrawlMode;
-							if (typeof opera != "undefined" && (pageCrawlMode = getParent(this, "tr")) && pageCrawlMode.textContent.match(/\n\s*Private\s*\n/)) {
-								pageCrawlMode = true;
-							} else {
-								pageCrawlMode = false;
-							}
-							loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0);
-						},
-						"Add this collection’s content to local storage (" + collid + ")"
-					),
-					" | ",
-					createA("Load",
-						function(event) {
-							var cmsg = "This will REPLACE your current loaded stuff.";
-							if (confirm(dialogprefix + cmsg)) {
-								for (var stu = 0; stu < collectedStuff.length; stu++) {
-									localStorage.removeItem(userjs + collectedStuff[stu] + "s");
-								}
-								this.previousSibling.previousSibling.click();/*Append*/
-							}
-						},
-						"Replace local storage with this collection’s content (" + collid + ")"
-					)
-				];
-				xp.snapshotItem(i).appendChild(document.createElement("td")).appendChild(concat(loadButt));
+							// then append (previous button)
+							this.previousSibling.previousSibling.click();
+						}
+					},
+					"Replace local storage with this collection’s content (" + collid + ")"
+				));
+				xp.snapshotItem(i).appendChild(document.createElement("td")).appendChild(concat(loadButtons));
 				if (i == 0) {
 					/* settings */
 					var settings = [];
@@ -253,14 +263,10 @@ if (host && cat) {
 			}
 		}
 	} else {
-		/*almost generic stuff highlighter*/
+// ############################################################################
+// #                                    COLLECT LINKS TO HIGHLIGHT / DECORATE #
+// ############################################################################
 		stuff = {};
-		self.addEventListener("load", function(event) {
-			//TODO: remove that, should not even work well with “//@ run-at document-end” anyway
-			for (var stu = 0; stu < collectedStuff.length; stu++) {
-				localStorage.removeItem("jesus2099skip_linksdeco_" + collectedStuff[stu]);
-			}
-		});
 		for (var stu = 0; stu < collectedStuff.length; stu++) {
 			var cstuff = collectedStuff[stu];
 			stuff[cstuff] = {};
@@ -271,35 +277,36 @@ if (host && cat) {
 			}
 			var path = uphill + "//xhtml:a[starts-with(@href, '/" + cstuff + "/')]" + downhill;
 			var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-			if (xp.snapshotLength > 0) {
-				var skip = localStorage.getItem("jesus2099skip_linksdeco_" + cstuff);/*skip deco shared with ENTITY ICONS asks only once per page*/
-				if (confirmIfMoreThan < 0 || (xp.snapshotLength <= confirmIfMoreThan || skip && skip == "0" || !(skip && skip == "1") && xp.snapshotLength > confirmIfMoreThan && confirm("jesus2099 links decorator (MB entities / collection)\r\n\r\nThere are " + xp.snapshotLength + " " + cstuff.toUpperCase() + "S to parse on this page.\r\nThis can take a great while to check/decorate all these links.\r\n\r\nPress OK if you still want to proceed anyway or\r\npress CANCEL if you want to skip it this time."))) {
-					skip = "0";
-					for (var i = 0; i < xp.snapshotLength; i++) {
-						var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
-						if (mbid) {
-							mbid = mbid[1];
-							if (!stuff[cstuff].loaded) {
-								stuff[cstuff].rawids = localStorage.getItem(userjs + cstuff + "s");
-								if (stuff[cstuff].rawids) {
-									stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
-									debug(" \r\n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded from local storage (" + userjs + cstuff + "s)\r\nMatching: " + path, true);
-								} else { debug(" \r\nNo " + cstuff.toUpperCase() + "S in local storage (" + userjs + cstuff + "s)", true); }
-								stuff[cstuff].loaded = true;
-							}
-							if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
-								debug(mbid + " ● “" + xp.snapshotItem(i).textContent + "”", true);
-								decorate(xp.snapshotItem(i));
-							}
-						}
+			for (var i = 0; i < xp.snapshotLength; i++) {
+				var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
+				if (mbid) {
+					mbid = mbid[1];
+					if (!stuff[cstuff].loaded) {
+						stuff[cstuff].rawids = localStorage.getItem(userjs + cstuff + "s");
+						if (stuff[cstuff].rawids) {
+							stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
+							debug(" \r\n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded from local storage (" + userjs + cstuff + "s)\r\nMatching: " + path, true);
+						} else { debug(" \r\nNo " + cstuff.toUpperCase() + "S in local storage (" + userjs + cstuff + "s)", true); }
+						stuff[cstuff].loaded = true;
 					}
-				} else { skip = "1"; }
-				localStorage.setItem("jesus2099skip_linksdeco_" + cstuff, skip);
+					if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
+						debug(mbid + " ● “" + xp.snapshotItem(i).textContent + "”", true);
+						decorate(xp.snapshotItem(i));
+					}
+				}
 			}
 		}
 		debug("");
 	}
 }
+// ############################################################################
+// #                                                                          #
+// #                           MAIN FUNCTIONS                                 #
+// #                                                                          #
+// ############################################################################
+// ############################################################################
+// #                                              HIGHLIGHT / DECORATE A LINK #
+// ############################################################################
 function decorate(entityLink) {
 	if (!getParent(entityLink, "div", "tabs")) {
 		// Does not highlight tabs.
@@ -314,25 +321,25 @@ function decorate(entityLink) {
 				entityType = entityType[1];
 			}
 			if (cat == "edit") {
-				// Entity edit page is boxed.
+				// entity edit page is boxed
 				var editDetails = getParent(entityLink, "table", "details");
 				if (editDetails && entityLink == editDetails.querySelector("a")) {
 					page.classList.add(userjs + "HLbox");
 				}
 			} else if (cat == "edits") {
-				// In edit lists: Release or release group edits are boxed; other entity edits are left bordered.
+				// in edit lists: Release or release group edits are boxed; other entity edits are left bordered
 				var edit = getParent(entityLink, "div", "edit-list");
 				if (edit) {
 					edit.classList.add(userjs + "HL" + (entityLink == edit.querySelector("div.edit-details a") ? "box" : "row"));
 				}
 			} else {
-				// In other pages: Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists.
+				// in other pages: Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists
 				var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
 				if (row) {
 					if (entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/'])") && !(cat == "release" && page.classList.contains(userjs + "HLbox") && entityType == "recording")) {
 						row.classList.add(userjs + "HLrow");
 					}
-					// Decorate tracks without holding them.
+					// decorate tracks without holding them
 					if (cat == "release" && entityType == "recording" || cat == "recording" && entityType == "release") {
 						var track = row.querySelector("a[href*='/track']");
 						if (track) {
@@ -344,24 +351,19 @@ function decorate(entityLink) {
 		}
 	}
 }
-function setTitle(ldng, pc) {
-	var old = document.title.match(/ :: (.+)$/);
-	old = old ? old[1] : document.title;
-	if (ldng) {
-		document.title = (pc ? pc + "%" : "⌛") + " Altering local collection… :: " + old;
-	} else {
-		document.title = old;
-	}
-}
-function loadCollection(collectionMBID, WSMode, pageOffset) {
+// ############################################################################
+// #                                   COLLECT RELEASES FROM COLLECTION PAGES #
+// ############################################################################
+function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 	var limit = 100;
-	var offset = pageOffset;
-	var page = !WSMode ? pageOffset : offset / limit + 1;
+	var offset = pageOrOffset;
+	var page = !WSMode ? pageOrOffset : offset / limit + 1;
 	setTitle(true);
 	var url = WSMode ? "/ws/2/collection/" + collectionMBID + "/releases?limit=" + limit + "&offset=" + offset : "/collection/" + collectionMBID + "?page=" + page;
 	if (page == 1) {
+		// Add collection MBID to list of highlighted
 		collectionsID = localStorage.getItem(userjs + "collections") || "";
-		if (collectionsID .indexOf(collectionMBID) < 0) {
+		if (collectionsID.indexOf(collectionMBID) < 0) {
 			collectionsID += collectionMBID + " ";
 		}
 		localStorage.setItem(userjs + "collections", collectionsID);
@@ -423,7 +425,7 @@ function loadCollection(collectionMBID, WSMode, pageOffset) {
 					end(false, "Error while loading page " + page + (lastPage ? "/" + lastPage : "") + ".");
 				}
 			} else {
-				if (retry++ < maxRetry ) {
+				if (retry++ < maxRetry) {
 					MBWSRate += slowDownStepAfterRetry;
 					modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
 					debugRetry(this.status);
@@ -439,6 +441,9 @@ function loadCollection(collectionMBID, WSMode, pageOffset) {
 	xhr.open("GET", url, true);
 	xhr.send(null);
 }
+// ############################################################################
+// #                                  COLLECT ALL DATA FROM A SET OF RELEASES #
+// ############################################################################
 function fetchReleasesStuff(pi) {
 	var i = pi ? pi : 0;
 	var mbid = stuff["release-tmp"].ids[i];
@@ -509,7 +514,7 @@ function fetchReleasesStuff(pi) {
 						end(true);
 					}
 				} else {
-					if (retry++ < maxRetry ) {
+					if (retry++ < maxRetry) {
 						MBWSRate += slowDownStepAfterRetry;
 						modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
 						debugRetry(this.status);
@@ -526,24 +531,219 @@ function fetchReleasesStuff(pi) {
 		xhr.send(null);
 	}
 }
-var lastchrono;
-function chrono(delay) {
-	if (delay) {
-		var del = delay + lastchrono - new Date().getTime();
-		del = del > 0 ? del : 0;
-		return del;
-	} else {
-		lastchrono = new Date().getTime();
-		return lastchrono;
+// ############################################################################
+// #                         DYNAMIC COLLECTION UPDATER (FOR CURRENT RELEASE) #
+// ############################################################################
+var altered = false;
+function collectionUpdater(link, action) {
+	if (link && action) {
+		link.addEventListener("click", function(event) {
+			altered = this.getAttribute("href") != self.location.href;
+			modal(true, "Refreshing memory…", 1);
+			collectionsID = localStorage.getItem(userjs + "collections") || "";
+			for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
+				stuff[stu].rawids = localStorage.getItem(userjs + stu + "s");
+				stuff[stu].ids = stuff[stu].rawids != null ? (stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : []) : null;
+			}
+			if (stuff["release"].ids && releaseID) {
+				setTitle(true);
+				var checks = getStuffs();
+				switch (action) {
+					case "add":
+						if (stuff["release"].rawids.indexOf(releaseID) == -1) {
+							modal(true, concat([createTag("b", {}, "Adding this release"), " to loaded collection…"]), 1);
+							stuff["release"].rawids += releaseID + " ";
+							localStorage.setItem(userjs + "releases", stuff["release"].rawids);
+							altered = true;
+						}
+						for (var c = 0; c < checks.length; c++) {
+							var match = checks[c].getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
+							if (match) {
+								var type = match[1], mbid = match[2];
+								if (stuff[type].ids && stuff[type].rawids.indexOf(mbid) < 0 && (type != "artist" || skipArtists.indexOf(mbid) < 0)) {
+									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1);
+									stuff[type].rawids += mbid + " ";
+									localStorage.setItem(userjs + type + "s", stuff[type].rawids);
+									altered = true;
+								}
+							}
+						}
+						setTitle(false);
+						break;
+					case "remove":
+						if (stuff["release"].rawids.indexOf(releaseID) > -1) {
+							modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
+							stuff["release"].rawids = stuff["release"].rawids.replace(new RegExp(releaseID + "( |$)"), "");
+							localStorage.setItem(userjs + "releases", stuff["release"].rawids);
+							altered = true;
+						}
+						if (checks.length > 0) {
+							lastLink(this.getAttribute("href"));
+							stuffRemover(checks);
+							return stop(event);
+						}
+						break;
+				}
+			}
+			if (!altered) {
+				modal(true, "Nothing has changed.", 1);
+				setTimeout(function() { modal(false); }, 1000);
+				return stop(event);
+			} else {
+				modal(true, "Re‐loading page…", 1);
+			}
+		}, false);
+		decorate(link);
 	}
 }
-function sInt2msStr(seconds) {
-	var s = seconds;
-	var div = s % (60 * 60);
-	var h = Math.floor(s / (60 * 60));
-	var m = Math.floor(div / 60);
-	    s = Math.ceil(div % 60);
-	return ( (h > 0 ? h + ":" : "") + (m > 9 ? m : "0" + m) + ":" + (s > 9 ? s : "0" + s) );
+// ############################################################################
+// #                                    COLLECT ALL DATA FROM CURRENT RELEASE #
+// ############################################################################
+function getStuffs(what, pwhere) {
+	var cont = pwhere ? pwhere : document;
+	var selector = {
+		"release": "div#content table.tbl > tbody > tr > td a[href^='/release/']", /*pwhere(lab,rec,rgr)*/
+		"release-group": "div.releaseheader a[href^='/release-group/']", /*rel*/
+		"recording": (pwhere ? "div#content [href^='/recording/']" : "table.medium > tbody > tr > td:not(.pos):not(.video) > a[href^='/recording/'], table.medium > tbody > tr > td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']"), /*pwhere(art,wrk)/rel*/
+		"artist": "div.releaseheader a[href^='/artist/'], div#content table.tbl > tbody > tr > td > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > span > a[href^='/artist/']", /*rel*/
+		"work": "div#content div.ars > dl.ars > dd > a[href^='/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='/work/']", /*rel*/
+		"label": "div#sidebar > ul.links > li a[href^='/label/']", /*rel*/
+	};
+	if (what) {
+		return cont.querySelectorAll(selector[what]);
+	} else {
+		var allrelsel = selector["release-group"];
+		if (stuff["recording"].ids) { allrelsel += ", " + selector["recording"]; }
+		if (stuff["label"].ids) { allrelsel += ", " + selector["label"]; }
+		var all = basicOnly(cont.querySelectorAll(allrelsel));
+		var allrecsel = "", sep = "";
+		if (stuff["artist"].ids) { allrecsel += sep + selector["artist"]; sep = ", "; }
+		if (stuff["work"].ids) { allrecsel += sep + selector["work"]; }
+		if (allrecsel != "") {
+			all = basicOnly(cont.querySelectorAll(allrecsel), all);
+		}
+		return all;
+	}
+	function pathname(href) {
+		return href.match(new RegExp("/[^/]+/" + strMBID)) + "";
+	}
+	function basicOnly(nodes, parr) {
+		var arr = parr ? parr : [];
+		var hrefs = [];
+		for (var a = 0; a < arr.length; a++) {
+			hrefs.push(pathname(arr[a].getAttribute("href")));
+		}
+		for (var n = 0; n < nodes.length; n++) {
+			if (nodes[n].getAttribute) {
+				var href = pathname(nodes[n].getAttribute("href"));
+				if (href && href.match(new RegExp(strMBID + "$")) && hrefs.indexOf(href) == -1) {
+					hrefs.push(href);
+					arr.push(nodes[n]);
+				}
+			}
+		}
+		return arr;
+	}
+}
+// ############################################################################
+// #                                             CHECK IF STUFF IS STILL USED #
+// ############################################################################
+function stuffRemover(checks, pp) {
+	var check = checks[0];
+	if (check) {
+		var p = pp ? pp : 1;
+		var checkMatch = check.getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
+		if (checkMatch) {
+			var checkType = checkMatch[1];
+			var checkID = checkMatch[2]
+			var checkAgainst;
+			switch (checkType) {
+				case "label":
+				case "recording":
+				case "release-group":
+					checkAgainst = "release";
+					break;
+				case "artist":
+				case "work":
+					checkAgainst = "recording";
+					break;
+			}
+			if (stuff[checkAgainst].rawids && stuff[checkType].rawids.indexOf(checkID) > -1) {
+				var url = "/" + checkType + "/" + checkID;
+				if (checkType == "artist") { url += "/recordings"; }
+				url += "?page=" + p;
+				modal(true, concat(["Checking " + checkType + " ", createA(checkType != "release-group" ? check.textContent : checkID, check.getAttribute("href"), checkType), " against all its ", createA(checkAgainst + "s" + (p > 1 ? " (page " + p + ")" : ""), url), "…"]), 1);
+				var xhr = new XMLHttpRequest();
+				xhr.onreadystatechange = function(event) {
+					if (this.readyState == 4) {
+						if (this.status == 200) {
+							var res = document.createElement("html"); res.innerHTML = this.responseText;
+							var nextPage = res.querySelector(css_nextPage);
+							var mates = getStuffs(checkAgainst, res);
+							for (var m = 0; m < mates.length; m++) {
+								if (stuff[checkAgainst].rawids.indexOf(mates[m].getAttribute("href").match(new RegExp(strMBID))) > -1) {
+									modal(true, createTag("span", {s: {color: "grey"}}, ["still used by ", createA(mates[m].textContent, mates[m].getAttribute("href"), checkAgainst), ": keeping."]), 1);
+									retry = 0;
+									setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
+									return;
+								}
+							}
+							if (nextPage) {
+								if (p == 1) { modal(true, createTag("span", {s: {color: "grey"}}, "(several pages but this check will stop as soon as it finds something)"), 1); }
+								retry = 0;
+								setTimeout(function() { stuffRemover(checks, p + 1); }, chrono(MBWSRate));
+							} else {
+								modal(true, concat([createTag("span", {s: {color: "grey"}}, "not used any more: "), createTag("b", {}, "removing"), "…"]), 1);
+								stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
+								localStorage.setItem(userjs + checkType + "s", stuff[checkType].rawids);
+								altered = true;
+								retry = 0;
+								setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
+							}
+						} else {
+							if (retry++ < maxRetry) {
+								MBWSRate += slowDownStepAfterRetry;
+								debugRetry(this.status);
+								setTimeout(function() { stuffRemover(checks, p); }, chrono(retryPause));
+							} else {
+								end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " while checking stuff to remove).");
+							}
+						}
+					}/*4*/
+				};
+				debug(MBS + url);
+				chrono();
+				xhr.open("GET", url, true);
+				xhr.send(null);
+			} else {
+				if (!stuff[checkAgainst].rawids) {/* Protection for some edge cases of new script using old script data */
+					modal(true, concat([createTag("span", {s: {color: "grey"}}, ["no ", checkAgainst, "s at all (", createA("//github.com/jesus2099/konami-command/issues/87", "#87"), "): "]), "removing…"]), 1);
+					stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
+					localStorage.setItem(userjs + checkType + "s", stuff[checkType].rawids);
+					altered = true;
+				}
+				retry = 0;
+				setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
+			}
+		}
+	} else {
+		setTitle(false);
+		if (altered) { lastLink(); } else { modal(false); }
+	}
+}
+// ############################################################################
+// #                                                                          #
+// #                           ACCESSORY DISPLAY FUNCTIONS                    #
+// #                                                                          #
+// ############################################################################
+function setTitle(ldng, pc) {
+	var old = document.title.match(/ :: (.+)$/);
+	old = old ? old[1] : document.title;
+	if (ldng) {
+		document.title = (pc ? pc + "%" : "⌛") + " Altering local collection… :: " + old;
+	} else {
+		document.title = old;
+	}
 }
 function end(ok, msg) {
 	setTitle(false);
@@ -651,196 +851,16 @@ function modal(show, txt, brs, gauge) {
 		return truc;
 	}
 }
-/*dynamic collection updater*/
-var altered = false;
-function collectionUpdater(link, action) {
-	if (link && action) {
-		link.addEventListener("click", function(event) {
-			altered = this.getAttribute("href") != self.location.href;
-			modal(true, "Refreshing memory…", 1);
-			collectionsID = localStorage.getItem(userjs + "collections") || "";
-			for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
-				stuff[stu].rawids = localStorage.getItem(userjs + stu + "s");
-				stuff[stu].ids = stuff[stu].rawids != null ? (stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : []) : null;
-			}
-			if (stuff["release"].ids && releaseID) {
-				setTitle(true);
-				var checks = getStuffs();
-				switch (action) {
-					case "add":
-						if (stuff["release"].rawids.indexOf(releaseID) == -1) {
-							modal(true, concat([createTag("b", {}, "Adding this release"), " to loaded collection…"]), 1);
-							stuff["release"].rawids += releaseID + " ";
-							localStorage.setItem(userjs + "releases", stuff["release"].rawids);
-							altered = true;
-						}
-						for (var c = 0; c < checks.length; c++) {
-							var match = checks[c].getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
-							if (match) {
-								var type = match[1], mbid = match[2];
-								if (stuff[type].ids && stuff[type].rawids.indexOf(mbid) < 0 && (type != "artist" || skipArtists.indexOf(mbid) < 0)) {
-									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1);
-									stuff[type].rawids += mbid + " ";
-									localStorage.setItem(userjs + type + "s", stuff[type].rawids);
-									altered = true;
-								}
-							}
-						}
-						setTitle(false);
-						break;
-					case "remove":
-						if (stuff["release"].rawids.indexOf(releaseID) > -1) {
-							modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
-							stuff["release"].rawids = stuff["release"].rawids.replace(new RegExp(releaseID + "( |$)"), "");
-							localStorage.setItem(userjs + "releases", stuff["release"].rawids);
-							altered = true;
-						}
-						if (checks.length > 0) {
-							lastLink(this.getAttribute("href"));
-							stuffRemover(checks);
-							return stop(event);
-						}
-						break;
-				}
-			}
-			if (!altered) {
-				modal(true, "Nothing has changed.", 1);
-				setTimeout(function() { modal(false); }, 1000);
-				return stop(event);
-			} else {
-				modal(true, "Re‐loading page…", 1);
-			}
-		}, false);
-		decorate(link);
-	}
-}
-function getStuffs(what, pwhere) {
-	var cont = pwhere ? pwhere : document;
-	var selector = {
-		"release": "div#content table.tbl > tbody > tr > td a[href^='/release/']", /*pwhere(lab,rec,rgr)*/
-		"release-group": "div.releaseheader a[href^='/release-group/']", /*rel*/
-		"recording": (pwhere ? "div#content [href^='/recording/']" : "table.medium > tbody > tr > td:not(.pos):not(.video) > a[href^='/recording/'], table.medium > tbody > tr > td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']"), /*pwhere(art,wrk)/rel*/
-		"artist": "div.releaseheader a[href^='/artist/'], div#content table.tbl > tbody > tr > td > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > span > a[href^='/artist/']", /*rel*/
-		"work": "div#content div.ars > dl.ars > dd > a[href^='/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='/work/']", /*rel*/
-		"label": "div#sidebar > ul.links > li a[href^='/label/']", /*rel*/
-	};
-	if (what) {
-		return cont.querySelectorAll(selector[what]);
+// ############################################################################
+// #                                                                          #
+// #                           ACCESSORY TECHNICAL FUNCTIONS                  #
+// #                                                                          #
+// ############################################################################
+function cantUseWS(button) {
+	if (typeof opera != "undefined" && (pageCrawlMode = getParent(button, "tr")) && pageCrawlMode.textContent.match(/\n\s*Private\s*\n/)) {
+		pageCrawlMode = true;
 	} else {
-		var allrelsel = selector["release-group"];
-		if (stuff["recording"].ids) { allrelsel += ", " + selector["recording"]; }
-		if (stuff["label"].ids) { allrelsel += ", " + selector["label"]; }
-		var all = basicOnly(cont.querySelectorAll(allrelsel));
-		var allrecsel = "", sep = "";
-		if (stuff["artist"].ids) { allrecsel += sep + selector["artist"]; sep = ", "; }
-		if (stuff["work"].ids) { allrecsel += sep + selector["work"]; }
-		if (allrecsel != "") {
-			all = basicOnly(cont.querySelectorAll(allrecsel), all);
-		}
-		return all;
-	}
-	function pathname(href) {
-		return href.match(new RegExp("/[^/]+/" + strMBID)) + "";
-	}
-	function basicOnly(nodes, parr) {
-		var arr = parr ? parr : [];
-		var hrefs = [];
-		for (var a = 0; a < arr.length; a++) {
-			hrefs.push(pathname(arr[a].getAttribute("href")));
-		}
-		for (var n = 0; n < nodes.length; n++) {
-			if (nodes[n].getAttribute) {
-				var href = pathname(nodes[n].getAttribute("href"));
-				if (href && href.match(new RegExp(strMBID + "$")) && hrefs.indexOf(href) == -1) {
-					hrefs.push(href);
-					arr.push(nodes[n]);
-				}
-			}
-		}
-		return arr;
-	}
-}
-function stuffRemover(checks, pp) {
-	var check = checks[0];
-	if (check) {
-		var p = pp ? pp : 1;
-		var checkMatch = check.getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
-		if (checkMatch) {
-			var checkType = checkMatch[1];
-			var checkID = checkMatch[2]
-			var checkAgainst;
-			switch (checkType) {
-				case "label":
-				case "recording":
-				case "release-group":
-					checkAgainst = "release";
-					break;
-				case "artist":
-				case "work":
-					checkAgainst = "recording";
-					break;
-			}
-			if (stuff[checkAgainst].rawids && stuff[checkType].rawids.indexOf(checkID) > -1) {
-				var url = "/" + checkType + "/" + checkID;
-				if (checkType == "artist") { url += "/recordings"; }
-				url += "?page=" + p;
-				modal(true, concat(["Checking " + checkType + " ", createA(checkType != "release-group" ? check.textContent : checkID, check.getAttribute("href"), checkType), " against all its ", createA(checkAgainst + "s" + (p > 1 ? " (page " + p + ")" : ""), url), "…"]), 1);
-				var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function(event) {
-					if (this.readyState == 4) {
-						if (this.status == 200) {
-							var res = document.createElement("html"); res.innerHTML = this.responseText;
-							var nextPage = res.querySelector(css_nextPage);
-							var mates = getStuffs(checkAgainst, res);
-							for (var m = 0; m < mates.length; m++) {
-								if (stuff[checkAgainst].rawids.indexOf(mates[m].getAttribute("href").match(new RegExp(strMBID))) > -1) {
-									modal(true, createTag("span", {s: {color: "grey"}}, ["still used by ", createA(mates[m].textContent, mates[m].getAttribute("href"), checkAgainst), ": keeping."]), 1);
-									retry = 0;
-									setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
-									return;
-								}
-							}
-							if (nextPage) {
-								if (p == 1) { modal(true, createTag("span", {s: {color: "grey"}}, "(several pages but this check will stop as soon as it finds something)"), 1); }
-								retry = 0;
-								setTimeout(function() { stuffRemover(checks, p + 1); }, chrono(MBWSRate));
-							} else {
-								modal(true, concat([createTag("span", {s: {color: "grey"}}, "not used any more: "), createTag("b", {}, "removing"), "…"]), 1);
-								stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
-								localStorage.setItem(userjs + checkType + "s", stuff[checkType].rawids);
-								altered = true;
-								retry = 0;
-								setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
-							}
-						} else {
-							if (retry++ < maxRetry ) {
-								MBWSRate += slowDownStepAfterRetry;
-								debugRetry(this.status);
-								setTimeout(function() { stuffRemover(checks, p); }, chrono(retryPause));
-							} else {
-								end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " while checking stuff to remove).");
-							}
-						}
-					}/*4*/
-				};
-				debug(MBS + url);
-				chrono();
-				xhr.open("GET", url, true);
-				xhr.send(null);
-			} else {
-				if (!stuff[checkAgainst].rawids) {/* Protection for some edge cases of new script using old script data */
-					modal(true, concat([createTag("span", {s: {color: "grey"}}, ["no ", checkAgainst, "s at all (", createA("//github.com/jesus2099/konami-command/issues/87", "#87"), "): "]), "removing…"]), 1);
-					stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
-					localStorage.setItem(userjs + checkType + "s", stuff[checkType].rawids);
-					altered = true;
-				}
-				retry = 0;
-				setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
-			}
-		}
-	} else {
-		setTitle(false);
-		if (altered) { lastLink(); } else { modal(false); }
+		pageCrawlMode = false;
 	}
 }
 function lastLink(href) {
@@ -856,6 +876,15 @@ function lastLink(href) {
 			modal(true, " ", 1);
 			end(false, "Sorry, I’m lost. I don’t know what was the link you last clicked.");
 		}
+	}
+}
+function setTitle(ldng, pc) {
+	var old = document.title.match(/ :: (.+)$/);
+	old = old ? old[1] : document.title;
+	if (ldng) {
+		document.title = (pc ? pc + "%" : "⌛") + " Altering local collection… :: " + old;
+	} else {
+		document.title = old;
 	}
 }
 function createA(text, link, title, stay) {
@@ -891,6 +920,25 @@ function concat(tstuff) {
 		concats.appendChild(ccat);
 	}
 	return concats;
+}
+var lastchrono;
+function chrono(delay) {
+	if (delay) {
+		var del = delay + lastchrono - new Date().getTime();
+		del = del > 0 ? del : 0;
+		return del;
+	} else {
+		lastchrono = new Date().getTime();
+		return lastchrono;
+	}
+}
+function sInt2msStr(seconds) {
+	var s = seconds;
+	var div = s % (60 * 60);
+	var h = Math.floor(s / (60 * 60));
+	var m = Math.floor(div / 60);
+	    s = Math.ceil(div % 60);
+	return ( (h > 0 ? h + ":" : "") + (m > 9 ? m : "0" + m) + ":" + (s > 9 ? s : "0" + s) );
 }
 function debug(txt, buffer) {
 	if (DEBUG) {
