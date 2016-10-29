@@ -113,7 +113,7 @@ if (host && cat) {
 	var MBWSRate = 1000;
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var userjs = "jesus2099userjs126380";
-	var DEBUG = true;
+	var DEBUG = false;
 	var dialogprefix = "..:: " + meta.name.replace(/ /g, " :: ") + " ::..\r\n\r\n";
 	var maxRetry = 20;
 	var retryPause = 5000;
@@ -182,13 +182,6 @@ if (host && cat) {
 				if (collectionsID.indexOf(collid) > -1) {
 					decorate(coll);
 					loadButtonText = "Reload";
-					if (collectionsID.split(" ").length - 1 < 2) {
-						// synchronisation (fast add/remove) is available when highlighting only one collection
-						loadButtons.push(createA("Synchronise", function(event) {
-							var pageCrawlMode = cantUseWS(this);
-							loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0, true);
-						}, "Fast(er) add/remove releases in local storage by comparison with this collection (" + collid + ")"), document.createElement("br"));
-					}
 				}
 				loadButtons.push(createA(
 					"Append",
@@ -361,7 +354,7 @@ function decorate(entityLink) {
 // ############################################################################
 // #                                   COLLECT RELEASES FROM COLLECTION PAGES #
 // ############################################################################
-function loadCollection(collectionMBID, WSMode, pageOrOffset, syncMode) {
+function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 	var limit = 100;
 	var offset = pageOrOffset;
 	var page = !WSMode ? pageOrOffset : offset / limit + 1;
