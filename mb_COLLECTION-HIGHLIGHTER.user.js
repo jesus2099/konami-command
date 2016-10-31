@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.10.1
+// @version      2016.10.31
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -857,10 +857,11 @@ function modal(show, txt, brs, gauge) {
 // #                                                                          #
 // ############################################################################
 function cantUseWS(button) {
-	if (typeof opera != "undefined" && (pageCrawlMode = getParent(button, "tr")) && pageCrawlMode.textContent.match(/\n\s*Private\s*\n/)) {
-		pageCrawlMode = true;
+	var privacy;
+	if (typeof opera != "undefined" && (privacy = getParent(button, "tr")) && privacy.textContent.match(/\n\s*Private\s*\n/)) {
+		return true;
 	} else {
-		pageCrawlMode = false;
+		return false;
 	}
 }
 function lastLink(href) {
