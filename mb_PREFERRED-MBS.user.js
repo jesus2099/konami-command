@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2016.6.15
+// @version      2016.11.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
@@ -81,15 +81,34 @@ function process(anchor) {
 	if (HREF) {
 		var newHref = prefer(HREF);
 		if (newHref) {
-			anchor.setAttribute("href", newHref);
-			anchor.style.setProperty("background-color", "#cfc");
-			anchor.style.setProperty("color", "#606");
-			anchor.style.setProperty("text-decoration", "line-through");
-			var tooltip = anchor.getAttribute("title") || "";
-			if (tooltip) {
-				tooltip += "\r\n";
+			if (!anchor.classList.contains("jesus2099-mb_PREFERRED-MBS")) {
+				// In Discourse hack, the anchor HREF never changes so we might go through this more than once.
+				anchor.classList.add("jesus2099-mb_PREFERRED-MBS")
+				anchor.style.setProperty("background-color", "#cfc");
+				anchor.style.setProperty("color", "#606");
+				anchor.style.setProperty("text-decoration", "line-through");
+				var tooltip = anchor.getAttribute("title") || "";
+				if (tooltip) {
+					tooltip += "\r\n";
+				}
+				anchor.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
 			}
-			anchor.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
+			// Discourse hack: Their clickTracker() makes this script fail when host changes and/or when protocol changes to HTTPS. cf. https://github.com/jesus2099/konami-command/issues/258#issuecomment-260579925
+			if (
+				document.querySelector(".discourse-no-touch")
+				&& (
+				newHref.match(/^(.*)\/\//)[1] != HREF.replace(/^\/\//, "https://").match(/^(.*)\/\//)[1] && newHref.match(/^(https:)?\/\//)
+				|| newHref.match(/\/\/(.*)/)[1] != HREF.match(/\/\/(.*)/)[1]
+				)
+			) {
+				// Bypassing their clickTracker() by opening the preferred MBS in new window and temporarily hide the anchor to prevent the click to occur (as we are still earlier on mousedown).
+				anchor.style.setProperty("display", "none");
+				setTimeout(function() { anchor.style.removeProperty("display"); }, 500);
+				open(newHref);
+			} else {
+				// In all other cases (normal behaviour), the anchor is changed.
+				anchor.setAttribute("href", newHref);
+			}
 		}
 	}
 }
