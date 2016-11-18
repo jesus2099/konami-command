@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2016.7.11
+// @version      2016.11.18
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -73,7 +73,7 @@ var str_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(str_GUID, "i");
 var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acoustid&mbid=%mbid&state=%state";
 var css_recording = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
-var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='/work/']";
+var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='/work/'], td:not(.pos):not(.video) div.ars > dl.ars > dd > span.mp > a[href^='/work/']";
 var tracksHtml = null;
 var pagecat = self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
 if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
