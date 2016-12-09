@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.10.31
+// @version      2016.12.9
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -392,8 +392,8 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 						if (stuff["release"].ids.indexOf(release) < 0) {
 							stuff["release"].ids.push(release);
 							stuff["release"].rawids += release + " ";
+							stuff["release-tmp"].ids.push(release);
 						}
-						stuff["release-tmp"].ids.push(release);
 					}
 					modal(true, rels.length + " release" + (rels.length == 1 ? "" : "s") + " fetched.", 1);
 				}
