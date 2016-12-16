@@ -25,13 +25,20 @@ that will allow you to install all scripts directly from
 
 ---
 
-Compatibility:
+Compatibility (tested):
 
-- [Opera 12.18](http://opera.com/download/guide/?ver=12.18) (1872) + [Violentmonkey](https://addons.opera.com/extensions/details/violent-monkey) (**my setup**)
-- Firefox + Greasemonkey (tested sometimes; many users have this)
-- Chromium + Tampermonkey (tested sometimes; some users have this)
-- Chrome + Tampermonkey (never tested but should be same as Chromium; some users have this)
-- Safari + ??? (only tested some years ago; some users)
+- [Opera 12.18](//opera.com/download/guide/?ver=12.18) (1872) + [Violentmonkey](//addons.opera.com/extensions/details/violent-monkey) (**my setup**)
+- [Firefox](//mozilla.org/firefox) + [Greasemonkey](//addons.mozilla.org/firefox/addon/greasemonkey) (tested sometimes; many users have this)
+- Chromium + [Tampermonkey][] (tested sometimes; some users have this)
+
+Should be compatible:
+
+- [Opera (current)](//opera.com/download) + [Tampermonkey][] (tested by [Lotheric](//chatlogs.metabrainz.org/brainzbot/musicbrainz/msg/3763214/))
+- Safari + ??? (only tested some years ago; some users have this)
+- Android + [Dolphin](//dolphin.com) + [Tampermonkey][] (tested [once](//community.metabrainz.org/t/user-scripts-on-mobile/134406/9))
+- Chrome + [Tampermonkey][] (never tested but should be same as Chromium; some users have this)
+
+[Tampermonkey]: //tampermonkey.net
 
 ※ Find more musicbrainz scripts at [GF](https://greasyfork.org/scripts/by-site/musicbrainz.org) and [OUJS](https://openuserjs.org/group/musicbrainz).
 
