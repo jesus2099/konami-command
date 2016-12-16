@@ -46,7 +46,7 @@ Should be compatible:
 [userscripts.org (now read-only)](http://userscripts-mirror.org/users/31010/scripts) 
 since 18/7/2007 and **before the may 2014 break down**.
 
-Here is a list of scripts that has not yet been stored here in “**KONAMI COMMAND**”:
+Here is a list of scripts that have not yet been stored here in “**KONAMI COMMAND**”:
 
 - [mb. ACOUSTICBRAINZ LINKS (for STalKer-X)](https://gist.github.com/jesus2099/8e223f09d64d831a9514)
   — displays AB links for each track in release pages
