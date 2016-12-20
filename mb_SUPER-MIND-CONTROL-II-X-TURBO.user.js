@@ -1107,11 +1107,14 @@ if (enttype) {
 		var nextbutt = document.querySelector("div#release-editor button[data-click='nextTab']");
 		var savebutt = document.querySelector("div#release-editor button[data-click='submitEdits']");
 		if (cancelbutt) {
-			cancelbutt.addEventListener("click", function(event) {
-				if (!confirm("RELEASE EDITOR PROTECTOR\n\nDo you really want to cancel this release " + self.location.href.match(/add|edit/) + "?")) {
-					return stop(event);
-				}
-			}, false);
+			if (typeof window.onbeforeunload == "undefined") {
+				// it seems that only Opera presto needed this
+				cancelbutt.addEventListener("click", function(event) {
+					if (!confirm("RELEASE EDITOR PROTECTOR\n\nDo you really want to cancel this release " + self.location.href.match(/add|edit/) + "?")) {
+						return stop(event);
+					}
+				}, false);
+			}
 			if (editnote && cancelbutt && previousbutt && nextbutt && savebutt) {
 				editnote.setAttribute("tabindex", "1");
 				savebutt.setAttribute("tabindex", "1");
