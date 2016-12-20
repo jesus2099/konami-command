@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2016.6.17
+// @version      2016.12.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -380,7 +380,12 @@ j2setting("USER_STATS", true, true, "adds convenient edit stats to user page (pe
 if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 	var stats = document.querySelectorAll("table.statistics > tbody > tr > td:last-child");
 	var editorPathname = self.location.pathname.lastIndexOf("/") + 1;
-	editorPathname = self.location.pathname.substr(0, editorPathname) + encodeURIComponent(self.location.pathname.substr(editorPathname));
+	editorPathname = self.location.pathname.substr(editorPathname);
+	if (!isEncoded(editorPathname)) {
+		// Opera 12 alone is surprisingly decoding location.pathname
+		editorPathname = encodeURIComponent(editorPathname);
+	}
+	editorPathname = self.location.pathname.substr(0, editorPathname) + editorPathname;
 	if (stats.length > 0) {
 		var accepted = readStat(stats, 0);
 		var autoedits = readStat(stats, 1);
@@ -427,6 +432,17 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 			stats[9].parentNode
 		);
 	}
+}
+function isEncoded(string) {
+	// a mix of http://stackoverflow.com/a/30209048/2236179 and http://stackoverflow.com/a/8267593/2236179
+	if (typeof string != "string") return false;
+	var result;
+	try {
+		result = decodeURIComponent(string);
+	} catch (error) {
+		result =  unescape(string);                                       
+	}
+	return result != string;
 }
 function readStat(stats, i) {
 	return parseInt(stats[i].textContent.split("(")[0].replace(/\D/g, ""), 10);
