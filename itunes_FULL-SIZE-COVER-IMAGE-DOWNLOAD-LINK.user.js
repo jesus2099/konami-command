@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         itunes. FULL SIZE COVER IMAGE DOWNLOAD LINK
-// @version      2016.4.21.1924
+// @version      2016.12.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/itunes_FULL-SIZE-COVER-IMAGE-DOWNLOAD-LINK.user.js
 // @description  iTunes.com: Adds a small link to download full size cover image of an album
 // @supportURL   https://github.com/jesus2099/konami-command/labels/itunes_FULL-SIZE-COVER-IMAGE-DOWNLOAD-LINK
@@ -25,7 +25,7 @@ var canonical = document.querySelector("head link[rel='canonical']");
 var cover = document.querySelector("div.lockup.product a > div.artwork > img.artwork");
 if (cover) {
 	cover.parentNode.parentNode.setAttribute("href", cover.getAttribute("src-swap").replace(
-		/^(.*\/\/)\w+(\d+.mzstatic.com)\/\w+\/\w+\/(\w+\/\w+\/\w+\/\w+\/\w+\/[\w-]+)\/cover\d+x\d+.jpeg$/,
+		/^(.*\/\/)\w+(\d+.mzstatic.com)\/\w+\/\w+\/(\w+\/\w+\/\w+\/\w+\/\w+\/[\w-]+)\/(?:cover|source)\/\d+x\d+.*\.(?:jpeg|jpg)$/,
 		"$1is$2/image/thumb/$3/source/99999999x99999999bb-100.jpg"
 	));
 	cover.parentNode.parentNode.setAttribute("target", "_blank");
