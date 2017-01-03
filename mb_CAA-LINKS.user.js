@@ -36,5 +36,18 @@ for (var filename = 0; filename < coverArtFilenames.length; filename++) {
 		var a = document.createElement("a");
 		a.setAttribute("href", "//archive.org/0/items/mbid-" + mbid[0] + "/" + coverArtFilenames[filename].textContent);
 		a.appendChild(coverArtFilenames[filename].parentNode.replaceChild(a, coverArtFilenames[filename]));
+		a.addEventListener("mouseover", showThumbnail);
+	}
+}
+function showThumbnail(event) {
+	var needsThumbnail = this.parentNode.parentNode.parentNode.querySelector("a[href$='/cover-art']");
+	var stopChecking = this.parentNode.parentNode.parentNode.querySelector("img[src^='//coverartarchive.org/']");
+	if (needsThumbnail) {
+		var thumbnail = document.createElement("img");
+		thumbnail.setAttribute("src", this.getAttribute("href").replace(/(\.\w+)$/, "_thumb$1"));
+		needsThumbnail.parentNode.parentNode.replaceChild(thumbnail, needsThumbnail.parentNode);
+	}
+	if (needsThumbnail || stopChecking) {
+		this.removeEventListener(event.type, showThumbnail);
 	}
 }
