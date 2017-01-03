@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2016.12.12
+// @version      2016.12.30
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -83,7 +83,11 @@ var editors = {
 	  "1220077": ["2014-01-24", "2014-06-11", "DCEX"],
 	  "1304704": ["2014-10-12", "2015-03-22", "superpoota"],
 	  "1603482": ["2016-05-12", "2016-05-13", "kemecat"],
+	  "1629393": ["2016-06-08", "2016-06-28", "Minaya69"],
+	  "1642944": ["2016-06-23", "2016-10-21", "🖕"],
 	  "1667628": ["2016-07-23", "2016-08-02", "gerff93"],
+	  "1732753": ["2016-10-10", "2016-10-11", "aidenpearce", "에이든"],
+	  "1776918": ["2016-12-27", "2016-12-30", "psycosid08"],
 	/* mistakes, duplicate accounts, etc. */
 	   "639228": ["2012-07-08", "2014-12-21", "ritaavenida", "betegouveia sockpuppet"],
 	   "639229": ["2012-07-08", "2013-07-12", null, "betegouveia sockpuppet"],
@@ -95,12 +99,9 @@ var editors = {
 	  "1024627": ["2013-10-04", "2014-12-21", "bvlgari", "betegouveia sockpuppet"],
 	  "1288668": ["2014-06-29", "2014-12-21", "khaleesi", "betegouveia sockpuppet"],
 	  "1306704": ["2014-10-22", "2014-10-24", null, "betegouveia sockpuppet"], /* LOL https://musicbrainz.org/edit/29794898 */
-	  "1629393": ["2016-06-08", "2016-06-28", "Minaya69"],
-	  "1642944": ["2016-06-23", "2016-10-21", "🖕"],
 	  "1676087": ["2016-08-02", "2016-09-06", "itsgbitch", "seung3panda"], /* https://musicbrainz.org/edit/40556089 */
 	  "1687525": ["2016-08-17", "2016-09-14", "seung3panda", "itsgbitch"],
 	  "1712953": ["2016-09-16", "2016-09-17", "itsgbitch", "again, seung3panda"], /* https://musicbrainz.org/edit/40759095 */
-	  "1732753": ["2016-10-10", "2016-10-11", "aidenpearce", "에이든"],
 	/* funny stuff */
 	"jesus2099": "GOLD MASTER KING",
 	    "%you%": "PROPHET PRINCE CHAMPION",
