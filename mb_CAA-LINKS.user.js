@@ -35,19 +35,21 @@ for (var filename = 0; filename < coverArtFilenames.length; filename++) {
 	if (mbid) {
 		var a = document.createElement("a");
 		a.setAttribute("href", "//archive.org/0/items/mbid-" + mbid[0] + "/" + coverArtFilenames[filename].textContent);
+		a.classList.add("jesus2099CAALink");
 		a.appendChild(coverArtFilenames[filename].parentNode.replaceChild(a, coverArtFilenames[filename]));
-		a.addEventListener("mouseover", showThumbnail);
 	}
 }
-function showThumbnail(event) {
-	var needsThumbnail = this.parentNode.parentNode.parentNode.querySelector("a[href$='/cover-art']");
-	var stopChecking = this.parentNode.parentNode.parentNode.querySelector("img[src^='//coverartarchive.org/']");
-	if (needsThumbnail) {
-		var thumbnail = document.createElement("img");
-		thumbnail.setAttribute("src", this.getAttribute("href").replace(/(\.\w+)$/, "_thumb$1"));
-		needsThumbnail.parentNode.parentNode.replaceChild(thumbnail, needsThumbnail.parentNode);
-	}
-	if (needsThumbnail || stopChecking) {
-		this.removeEventListener(event.type, showThumbnail);
+if (document.getElementsByClassName("jesus2099CAALink").length > 0) {
+	setInterval(showThumbnails, 2000);
+}
+function showThumbnails() {
+	var failedCAAImages = document.querySelectorAll(".edit-header[class$='cover-art'] ~ * a[href$='/cover-art']");
+	for (var image = 0; image < failedCAAImages.length; image++) {
+		var associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
+		if (associatedCAALink) {
+			var thumbnail = document.createElement("img");
+			thumbnail.setAttribute("src", associatedCAALink.getAttribute("href").replace(/(\.\w+)$/, "_thumb$1"));
+			failedCAAImages[image].parentNode.parentNode.replaceChild(thumbnail, failedCAAImages[image].parentNode);
+		}
 	}
 }
