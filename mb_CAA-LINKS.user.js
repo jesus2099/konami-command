@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2017.1.3
+// @version      2017.1.3.1655
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CAA-LINKS.user.js
 // @description  musicbrainz.org: Linkifies cover art edit “Filenames” (as specified in http://musicbrainz.org/edit/42525958)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
@@ -27,6 +27,7 @@
 // @match        *://*.musicbrainz.org/search/edits*
 // @match        *://*.musicbrainz.org/user/*/edits/open*
 // @run-at       document-end
+// ==/UserScript==
 "use strict";
 var coverArtFilenames = document.querySelectorAll(".edit-header[class$='cover-art'] ~ * code");
 for (var filename = 0; filename < coverArtFilenames.length; filename++) {
