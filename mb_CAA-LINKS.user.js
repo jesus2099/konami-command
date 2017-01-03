@@ -28,9 +28,12 @@
 // @match        *://*.musicbrainz.org/user/*/edits/open*
 // @run-at       document-end
 "use strict";
-var coverArtFilename = document.querySelectorAll(".edit-header[class$='cover-art'] ~ * code");
-for (var filename = 0; filename < coverArtFilename.length; filename++) {
-	var a = document.createElement("a");
-	a.setAttribute("href", "//ia601200.us.archive.org/21/items/mbid-bfa59d12-804f-4df9-a1a9-b2b539e45162/" + coverArtFilename[filename].textContent);
-	a.appendChild(coverArtFilename[filename].parentNode.replaceChild(a, coverArtFilename[filename]));
+var coverArtFilenames = document.querySelectorAll(".edit-header[class$='cover-art'] ~ * code");
+for (var filename = 0; filename < coverArtFilenames.length; filename++) {
+	var mbid = coverArtFilenames[filename].textContent.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
+	if (mbid) {
+		var a = document.createElement("a");
+		a.setAttribute("href", "//archive.org/0/items/mbid-" + mbid[0] + "/" + coverArtFilenames[filename].textContent);
+		a.appendChild(coverArtFilenames[filename].parentNode.replaceChild(a, coverArtFilenames[filename]));
+	}
 }
