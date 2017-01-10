@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb: Redirect when only 1 result and/or unique 100% scored result
-// @version      2016.6.15
+// @version      2017.1.10
 // @description  In (test.)musicbrainz.org
 // @namespace    http://userscripts.org/scripts/show/106156
 // @author       N.(stars 2011-06-30) then Tristan DANIEL (PATATE12 aka. jesus2099/shamo)
@@ -26,7 +26,7 @@ if (document.getElementById("headerid-query")) {
 		if (rows.length == 1 && redirOnUniqueMatch) {
 			mark(rows[0]);
 			if (!onlyWhenNoReferrer || (onlyWhenNoReferrer && document.referrer=="")) {
-				go(rows[0].querySelector("a").getAttribute("href"));
+				go(rows[0].querySelector("a > bdi").parentNode.getAttribute("href"));
 				
 			}
 		}
@@ -37,7 +37,7 @@ if (document.getElementById("headerid-query")) {
 				if (rows[i].querySelector("td").textContent == "100") {
 					mark(rows[i]);
 					if (exactMatchesCount++ == 0) {
-						exactMatchURL = rows[i].querySelector("a").getAttribute("href");
+						exactMatchURL = rows[i].querySelector("a > bdi").parentNode.getAttribute("href");
 					}
 				}
 			}
