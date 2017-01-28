@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2016.11.15
+// @version      2017.1.28
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
-// @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others
+// @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
 // @compatible   opera(12.18.1872)+violentmonkey  my own setup
@@ -23,10 +23,10 @@
 // ==/UserScript==
 "use strict";
 /*-----------------------------------------------*/
-/* preferredMBS can be either
- * http://musicbrainz.org, https://musicbrainz.org, http://beta.musicbrainz.org or https://beta.musicbrainz.org
+/* preferredMBS can be either (there is no more HTTP)
+ * https://musicbrainz.org or https://beta.musicbrainz.org
  * it is not intended to work with any other values */
-var preferredMBS = "http://musicbrainz.org";
+var preferredMBS = "https://musicbrainz.org";
 /*-----------------------------------------------*/
 /* Simple Discourse click tracker problem work-around ------------- */
 var discourseURL;
