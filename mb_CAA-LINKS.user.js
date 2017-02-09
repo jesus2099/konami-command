@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2017.2.9
+// @version      2017.2.9.1327
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CAA-LINKS.user.js
 // @description  musicbrainz.org: Linkifies cover art edit “Filenames” (as specified in http://musicbrainz.org/edit/42525958)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
@@ -43,13 +43,40 @@ if (document.getElementsByClassName("jesus2099CAALink").length > 0) {
 	setInterval(showThumbnails, 2000);
 }
 function showThumbnails() {
-	var failedCAAImages = document.querySelectorAll(".edit-header[class$='cover-art'] ~ * a[href$='/cover-art']");
+	var failedCAAImages = document.querySelectorAll(".edit-header[class$='cover-art'] ~ * a[href$='/cover-art']:not(.jesus2099CAALink_tn-added)");
 	for (var image = 0; image < failedCAAImages.length; image++) {
+		failedCAAImages[image].classList.add("jesus2099CAALink_tn-added")
 		var associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
 		if (associatedCAALink) {
 			var thumbnail = document.createElement("img");
-			thumbnail.setAttribute("src", associatedCAALink.getAttribute("href").replace(/(\.\w+)$/, "_thumb$1"));
-			failedCAAImages[image].parentNode.parentNode.replaceChild(thumbnail, failedCAAImages[image].parentNode);
+			thumbnail.setAttribute("title", "unlinked image, still in CAA, cf. filename link above");
+			thumbnail.style.setProperty("float", "left");
+			thumbnail.style.setProperty("margin-right", "1em");
+			thumbnail.style.setProperty("max-width", "600px");
+			thumbnail.style.setProperty("border", "thick solid red");
+			var CAAurls = [associatedCAALink.getAttribute("href")];
+			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb500$1"));
+			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb250$1"));
+			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb$1")); // will try this first then fallback to above
+			failedCAAImages[image].parentNode.parentNode.insertBefore(thumbnail, failedCAAImages[image].parentNode);
+			fallbackImageLoader(thumbnail, CAAurls);
 		}
 	}
 }
+function fallbackImageLoader(imgNode, srcs) {
+	imgNode.addEventListener("error", function(event) {
+		if (srcs.length > 1) {
+			// removing event listener(s) with cloneNode
+			var newImgNode = imgNode.cloneNode();
+			newImgNode.removeAttribute("src");
+			imgNode.parentNode.replaceChild(newImgNode, imgNode);
+			fallbackImageLoader(newImgNode, srcs.slice(1));
+		} else {
+			imgNode.setAttribute("alt", "Error loading unlinked images.");
+			imgNode.style.removeProperty("float");
+			imgNode.style.setProperty("display", "block");
+		}
+	});
+	imgNode.setAttribute("alt", srcs[0].match(/[^/]+\.\w+$/));
+	imgNode.setAttribute("src", srcs[0]);
+};
