@@ -29,7 +29,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var coverArtFilenames = document.querySelectorAll(".edit-header[class$='cover-art'] ~ * code");
+var coverArtFilenames = document.querySelectorAll("table.details[class$='cover-art'] > tbody code");
 for (var filename = 0; filename < coverArtFilenames.length; filename++) {
 	var mbid = coverArtFilenames[filename].textContent.match(/^mbid-([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})-\d+\.\w+$/);
 	if (mbid) {
@@ -43,7 +43,7 @@ if (document.getElementsByClassName("jesus2099CAALink").length > 0) {
 	setInterval(showThumbnails, 2000);
 }
 function showThumbnails() {
-	var failedCAAImages = document.querySelectorAll(".edit-header[class$='cover-art'] ~ * a[href$='/cover-art']:not(.jesus2099CAALink_tn-added)");
+	var failedCAAImages = document.querySelectorAll("table.details[class$='cover-art'] > tbody a[href$='/cover-art']:not(.jesus2099CAALink_tn-added)");
 	for (var image = 0; image < failedCAAImages.length; image++) {
 		failedCAAImages[image].classList.add("jesus2099CAALink_tn-added");
 		var associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
