@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2017.2.9.1607
+// @version      2017.2.9.1913
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CAA-LINKS.user.js
 // @description  musicbrainz.org: Linkifies cover art edit “Filenames” (as specified in http://musicbrainz.org/edit/42525958)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
@@ -67,6 +67,7 @@ function showThumbnails() {
 			var CAAurls = [associatedCAALink.getAttribute("href")];
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb500$1"));
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb250$1"));
+			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_itemimage$1")); // same as _thumb below but less frequent
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb$1")); // will try this first then fallback to above
 			failedCAAImages[image].parentNode.parentNode.insertBefore(thumbnail, failedCAAImages[image].parentNode);
 			fallbackImageLoader(thumbnail, CAAurls);
