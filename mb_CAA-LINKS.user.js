@@ -15,6 +15,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2017-01-03
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=126154&v=2015.11.2
 // @grant        none
 // @match        *://*.mbsandbox.org/*/*/edits*
 // @match        *://*.mbsandbox.org/*/*/open_edits*
@@ -37,15 +38,24 @@ for (var filename = 0; filename < coverArtFilenames.length; filename++) {
 		a.setAttribute("href", "//archive.org/0/items/mbid-" + mbid[1] + "/" + coverArtFilenames[filename].textContent);
 		a.classList.add("jesus2099CAALink");
 		a.appendChild(coverArtFilenames[filename].parentNode.replaceChild(a, coverArtFilenames[filename]));
+		var linksRow = getParent(coverArtFilenames[filename], "tbody").insertRow(-1);
+		linksRow.appendChild(createTag("th", {}, "Cool links:"));
+		linksRow.appendChild(createTag("td", {}, [
+			createTag("a", {a: {href: "/release/" + mbid[1] + "/cover-art", class: "jesus2099CAALink_skip"}}, "Cover Art tab"),
+			" | ",
+			createTag("a", {a: {href: "//archive.org/details/mbid-" + mbid[1]}}, "Archive release page"),
+			" | ",
+			createTag("a", {a: {href: "//archive.org/download/mbid-" + mbid[1]}}, "Archive file list")
+		]));
 	}
 }
 if (document.getElementsByClassName("jesus2099CAALink").length > 0) {
 	setInterval(showThumbnails, 2000);
 }
 function showThumbnails() {
-	var failedCAAImages = document.querySelectorAll("table.details[class$='cover-art'] > tbody a[href$='/cover-art']:not(.jesus2099CAALink_tn-added)");
+	var failedCAAImages = document.querySelectorAll("table.details[class$='cover-art'] > tbody a[href$='/cover-art']:not(.jesus2099CAALink_skip)");
 	for (var image = 0; image < failedCAAImages.length; image++) {
-		failedCAAImages[image].classList.add("jesus2099CAALink_tn-added");
+		failedCAAImages[image].classList.add("jesus2099CAALink_skip");
 		var associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
 		if (associatedCAALink) {
 			var thumbnail = document.createElement("img");
