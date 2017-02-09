@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2017.2.9.1327
+// @version      2017.2.9.1607
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CAA-LINKS.user.js
 // @description  musicbrainz.org: Linkifies cover art edit “Filenames” (as specified in http://musicbrainz.org/edit/42525958)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
@@ -45,7 +45,7 @@ if (document.getElementsByClassName("jesus2099CAALink").length > 0) {
 function showThumbnails() {
 	var failedCAAImages = document.querySelectorAll(".edit-header[class$='cover-art'] ~ * a[href$='/cover-art']:not(.jesus2099CAALink_tn-added)");
 	for (var image = 0; image < failedCAAImages.length; image++) {
-		failedCAAImages[image].classList.add("jesus2099CAALink_tn-added")
+		failedCAAImages[image].classList.add("jesus2099CAALink_tn-added");
 		var associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
 		if (associatedCAALink) {
 			var thumbnail = document.createElement("img");
@@ -79,4 +79,4 @@ function fallbackImageLoader(imgNode, srcs) {
 	});
 	imgNode.setAttribute("alt", srcs[0].match(/[^/]+\.\w+$/));
 	imgNode.setAttribute("src", srcs[0]);
-};
+}
