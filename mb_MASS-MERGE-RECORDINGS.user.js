@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2016.6.15
+// @version      2017.2.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -475,7 +475,21 @@ function massMergeGUI() {
 			this.focus();
 		}
 	});
-	MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "↑"), " / ", createTag("kbd", {}, "→"), " / ", createTag("kbd", {}, "↓"), " / ", createTag("kbd", {}, "←"), ": shift up/down", document.createElement("br"), "☞ ", createTag("kbd", {}, "ENTER"), ": queue all"]));
+	MMRdiv.appendChild(createTag("p", {}, [
+		"☞ ",
+		createTag("kbd", {}, "↑"),
+		" / ",
+		createTag("kbd", {}, "→"),
+		" / ",
+		createTag("kbd", {}, "↓"),
+		" / ",
+		createTag("kbd", {}, "←"),
+		": shift up/down",
+		document.createElement("br"),
+		"☞ ",
+		createTag("kbd", {}, "ENTER"),
+		": queue all"
+	]));
 	matchMode.sequential = createInput("button", "", "Sequential");
 	matchMode.sequential.setAttribute("title", "Restore remote tracks order");
 	matchMode.sequential.addEventListener("click", changeMatchMode);
