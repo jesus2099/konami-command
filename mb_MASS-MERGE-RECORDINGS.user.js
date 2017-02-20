@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2016.6.15
+// @version      2017.2.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -966,11 +966,17 @@ function strtime2ms(str) {/*temporary until WS available again*/
 	return ms;
 }
 function time(_ms, pad) {/*from 166877*/
+	console.log(meta.n + " — Time conversion (" + (pad ? "" : "not ") + "padded) for “" + _ms + "”");
 	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
+	console.log(meta.n + " — Input time: " + ms + " milliseconds");
 	if (ms > 0) {
 		var d = new Date();
+		console.log(meta.n + " — parseInt((\"\" + ms).slice(-3), 10): " + parseInt(("" + ms).slice(-3), 10));
+		console.log(meta.n + " — Time zone: " + d.getTimezoneOffset() + " minutes");
+		console.log(meta.n + " — Previous compute: " + (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad&&d.getMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getMinutes() + ":" + (d.getSeconds() < 10 ? "0" : "") + d.getSeconds());/* + (pad||d.getMilliseconds() > 0 ? "." + (d.getMilliseconds() < 100 ? "0" : "") + (d.getMilliseconds() < 10 ? "0" : "") + d.getMilliseconds() : "")*/;
+		console.log(meta.n + " — Full UTC compute: " + (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad&&d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds());/* + (pad||d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() < 100 ? "0" : "") + (d.getUTCMilliseconds() < 10 ? "0" : "") + d.getUTCMilliseconds() : "")*/;
 		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
-		return /*milliseconds temporary hidden*/(d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad&&d.getMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getMinutes() + ":" + (d.getSeconds() < 10 ? "0" : "") + d.getSeconds()/* + (pad||d.getMilliseconds() > 0 ? "." + (d.getMilliseconds() < 100 ? "0" : "") + (d.getMilliseconds() < 10 ? "0" : "") + d.getMilliseconds() : "")*/;
+		return /*milliseconds temporary hidden*/(d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad&&d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds()/* + (pad||d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() < 100 ? "0" : "") + (d.getUTCMilliseconds() < 10 ? "0" : "") + d.getUTCMilliseconds() : "")*/;
 	}
 	return "?:??";
 }
