@@ -476,7 +476,32 @@ function massMergeGUI() {
 			this.focus();
 		}
 	});
-	MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "↑"), " / ", createTag("kbd", {}, "→"), " / ", createTag("kbd", {}, "↓"), " / ", createTag("kbd", {}, "←"), ": shift up/down", document.createElement("br"), "☞ ", createTag("kbd", {}, "ENTER"), ": queue all"]));
+	MMRdiv.appendChild(createTag("p", {}, [
+		"☞ ",
+		createTag("kbd", {a: {class: MMRid + "arrowButton"}, s: {cursor: "pointer"}}, "↑"),
+		" / ",
+		createTag("kbd", {a: {class: MMRid + "arrowButton"}, s: {cursor: "pointer"}}, "→"),
+		" / ",
+		createTag("kbd", {a: {class: MMRid + "arrowButton"}, s: {cursor: "pointer"}}, "↓"),
+		" / ",
+		createTag("kbd", {a: {class: MMRid + "arrowButton"}, s: {cursor: "pointer"}}, "←"),
+		": shift up/down",
+		document.createElement("br"),
+		"☞ ",
+		createTag("kbd", {}, "ENTER"),
+		": queue all"
+	]));
+	MMRdiv.addEventListener("click", function(event) {
+		if (event.target.classList.contains(MMRid + "arrowButton")) {
+			startpos.focus();
+			if (event.target.textContent.match(/[↑←]/) && startpos.selectedIndex > 0) {
+				startpos.selectedIndex -= 1;
+			} else if (event.target.textContent.match(/[↓→]/) && startpos.selectedIndex < startpos.length - 1) {
+				startpos.selectedIndex += 1;
+			}
+			sendEvent(startpos, "change");
+		}
+	});
 	matchMode.sequential = createInput("button", "", "Sequential");
 	matchMode.sequential.setAttribute("title", "Restore remote tracks order");
 	matchMode.sequential.addEventListener("click", changeMatchMode);
