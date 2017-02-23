@@ -339,8 +339,9 @@ function cleanTrack(track, editID, retryCount) {
 	} else {
 		var lengthcell = track.tr.querySelector("td.treleases");
 		if (track.length && lengthcell) {
-			lengthcell.replaceChild(document.createTextNode(time(track.length, true)), lengthcell.firstChild);
+			lengthcell.replaceChild(document.createTextNode(time(track.length, false)), lengthcell.firstChild);
 			lengthcell.style.setProperty("font-family", "monospace");
+			lengthcell.style.setProperty("text-align", "right");
 		}
 	}
 }
