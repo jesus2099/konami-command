@@ -996,7 +996,7 @@ function time(_ms, pad) {/*from 166877*/
 	if (ms > 0) {
 		var d = new Date();
 		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
-		return /*milliseconds temporary hidden*/(d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad&&d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds()/* + (pad||d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() < 100 ? "0" : "") + (d.getUTCMilliseconds() < 10 ? "0" : "") + d.getUTCMilliseconds() : "")*/;
+		return /* milliseconds temporary hidden for MBS reason, don’t uncomment after #315 fix */(d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad&&d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds()/* + (pad||d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() < 100 ? "0" : "") + (d.getUTCMilliseconds() < 10 ? "0" : "") + d.getUTCMilliseconds() : "") */;
 	}
 	return "?:??";
 }

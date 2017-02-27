@@ -142,7 +142,7 @@ function time(_ms) {
 	if (ms > 0) {
 		var d = new Date();
 		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
-		return d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds() + (d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() < 100 ? "0" : "") + (d.getUTCMilliseconds() < 10 ? "0" : "") + d.getUTCMilliseconds() : "");
+		return d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds() /* disable milliseconds until #315 is fixed + (d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() < 100 ? "0" : "") + (d.getUTCMilliseconds() < 10 ? "0" : "") + d.getUTCMilliseconds() : "")*/;
 	}
 	return "?:??";
 }

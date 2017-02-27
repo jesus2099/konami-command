@@ -1403,7 +1403,7 @@ function time(_ms) {/*adaptated from 166877*/
 	if (ms > 0) {
 		var d = new Date();
 		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
-		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : "") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds();
+		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : "") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds() /* no milliseconds until #315 is fixed) */;
 	}
 	return "?:??";
 }
