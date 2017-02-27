@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE TRACK ARTIST
-// @version      2016.6.15
+// @version      2017.2.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-TRACK-ARTIST.user.js
 // @description  musicbrainz.org: highlights track title, length and artist differences in recording page
 // @homepage     http://userscripts-mirror.org/scripts/show/166877
@@ -142,7 +142,7 @@ function time(_ms) {
 	if (ms > 0) {
 		var d = new Date();
 		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
-		return d.getMinutes() + ":" + (d.getSeconds() < 10 ? "0" : "") + d.getSeconds() + (d.getMilliseconds() > 0 ? "." + (d.getMilliseconds() < 100 ? "0" : "") + (d.getMilliseconds() < 10 ? "0" : "") + d.getMilliseconds() : "");
+		return d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds() + (d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() < 100 ? "0" : "") + (d.getUTCMilliseconds() < 10 ? "0" : "") + d.getUTCMilliseconds() : "");
 	}
 	return "?:??";
 }
