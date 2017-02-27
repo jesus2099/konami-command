@@ -138,11 +138,11 @@ if (mbid && tracks.length > 0) {
 	}
 }
 function time(_ms) {
-	var ms = typeof _ms=="string"?parseInt(_ms,10):_ms;
+	var ms = typeof _ms == "string" ? parseInt(_ms,10) : _ms;
 	if (ms > 0) {
 		var d = new Date();
 		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
-		return d.getMinutes()+":"+(d.getSeconds()<10?"0":"")+d.getSeconds()+(d.getMilliseconds()>0?"."+(d.getMilliseconds()<100?"0":"")+(d.getMilliseconds()<10?"0":"")+d.getMilliseconds():"");
+		return d.getMinutes() + ":" + (d.getSeconds() < 10 ? "0" : "") + d.getSeconds() + (d.getMilliseconds() > 0 ? "." + (d.getMilliseconds() < 100 ? "0" : "") + (d.getMilliseconds() < 10 ? "0" : "") + d.getMilliseconds() : "");
 	}
 	return "?:??";
 }
