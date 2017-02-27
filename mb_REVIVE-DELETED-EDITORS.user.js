@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2017.1.3
+// @version      2017.2.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -100,9 +100,10 @@ var editors = {
 	  "1024627": ["2013-10-04", "2014-12-21", "bvlgari", "betegouveia sockpuppet"],
 	  "1288668": ["2014-06-29", "2014-12-21", "khaleesi", "betegouveia sockpuppet"],
 	  "1306704": ["2014-10-22", "2014-10-24", null, "betegouveia sockpuppet"], /* LOL https://musicbrainz.org/edit/29794898 */
-	  "1676087": ["2016-08-02", "2016-09-06", "itsgbitch", "seung3panda"], /* https://musicbrainz.org/edit/40556089 */
+	  "1676087": ["2016-08-02", "2016-09-06", "itsgbitch", "1st, seung3panda"], /* https://musicbrainz.org/edit/40556089 */
 	  "1687525": ["2016-08-17", "2016-09-14", "seung3panda", "itsgbitch"],
-	  "1712953": ["2016-09-16", "2016-09-17", "itsgbitch", "again, seung3panda"], /* https://musicbrainz.org/edit/40759095 */
+	  "1712953": ["2016-09-16", "2016-09-17", "itsgbitch", "2nd"],
+	  "1713810": ["2016-09-18", "2017-02-12", "itsgbitch", "3rd"],
 	/* funny stuff */
 	"jesus2099": "GOLD MASTER KING",
 	    "%you%": "PROPHET PRINCE CHAMPION",
