@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE TRACK ARTIST
-// @version      2017.2.27
+// @version      2017.3.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-TRACK-ARTIST.user.js
 // @description  musicbrainz.org: highlights track title, length and artist differences in recording page
 // @homepage     http://userscripts-mirror.org/scripts/show/166877
@@ -138,11 +138,10 @@ if (mbid && tracks.length > 0) {
 	}
 }
 function time(_ms) {
-	var ms = typeof _ms == "string" ? parseInt(_ms,10) : _ms;
+	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
 	if (ms > 0) {
-		var d = new Date();
-		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
-		return d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds() /* disable milliseconds until #315 is fixed + (d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() < 100 ? "0" : "") + (d.getUTCMilliseconds() < 10 ? "0" : "") + d.getUTCMilliseconds() : "")*/;
+		var d = new Date(ms);
+		return d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2) + (d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() / 1000).toFixed(3).slice(2) : "");
 	}
 	return "?:??";
 }

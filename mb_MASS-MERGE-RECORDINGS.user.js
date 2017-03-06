@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2017.2.23
+// @version      2017.3.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -991,12 +991,11 @@ function strtime2ms(str) {/*temporary until WS available again*/
 	}
 	return ms;
 }
-function time(_ms, pad) {/*from 166877*/
+function time(_ms, pad) {/* adapt mb_INLINE-TRACK-ARTIST’s with milliseconds instead when https://github.com/jesus2099/konami-command/issues/48 is fixed */
 	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
 	if (ms > 0) {
-		var d = new Date();
-		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
-		return /* milliseconds temporary hidden for MBS reason, don’t uncomment after #315 fix */(d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad&&d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds()/* + (pad||d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() < 100 ? "0" : "") + (d.getUTCMilliseconds() < 10 ? "0" : "") + d.getUTCMilliseconds() : "") */;
+		var d = new Date(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000); // a trick to round to nearest second as we hide milliseconds
+		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad && d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2);
 	}
 	return "?:??";
 }
