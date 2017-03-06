@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2017.2.27
+// @version      2017.3.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1256,7 +1256,7 @@ if (enttype) {
 							} else {
 								// normal data row
 								if (recordingLengthFound) {
-									var newCell = createTag("td", {a: {class: "treleases"}});
+									var newCell = createTag("td", {a: {class: "treleases"}, s: {textAlign: "right"}});
 									var recordingID = rows[r].querySelector("a[href*='/recording/']");
 									if (recordingID && (recordingID = recordingID.getAttribute("href").match(re_GUID)[0]) && recordingLengths[recordingID]) {
 										newCell.appendChild(document.createTextNode(time(recordingLengths[recordingID])));
@@ -1398,12 +1398,11 @@ function TRACKLIST_TOOLS_init() {
 		}
 	}, false);
 }
-function time(_ms) {/*adaptated from 166877*/
+function time(_ms) {/* adapted from mb_INLINE-TRACK-ARTIST */
 	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
 	if (ms > 0) {
-		var d = new Date();
-		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
-		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : "") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() < 10 ? "0" : "") + d.getUTCSeconds() /* no milliseconds until #315 is fixed) */;
+		var d = new Date(ms);
+		return d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2) + "." + (d.getUTCMilliseconds() / 1000).toFixed(3).slice(2);
 	}
 	return "?:??";
 }
