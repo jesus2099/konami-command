@@ -217,7 +217,6 @@ function checkMerge(errorText) {
 	infoMerge("Checking merge (" + errorText + ")…", false);
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function(event) {
-		var retryStep = 0;
 		if (this.status == 200 && typeof this.responseText == "string") {
 			if (this.responseText.indexOf('class="edit-list"') > -1) {
 				var editID = this.responseText.match(/>Edit #(\d+)/);
