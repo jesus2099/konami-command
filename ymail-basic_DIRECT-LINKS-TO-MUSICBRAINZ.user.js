@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2016.6.15
+// @version      2017.4.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
 // @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @homepage     http://userscripts-mirror.org/scripts/show/80308
@@ -33,7 +33,7 @@ var preferredProtocol = "http:";/* "https:", "http:" (including “:”) or "" (
 var userjs = "jesus2099userjs80308";
 var edits = [];
 var editTrigger = /^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/;
-var editNoteExtractor = /'[^']+' has added the following note to(?: your)? edit #\d+:<BR>-{72}<BR>(.+)<BR>-{72}<BR>If you would like to reply to this note, please add your note at:<BR>/;
+var editNoteExtractor = /'[^']+' has added the following note to(?: your)? edit #\d+:<BR><\/div><div dir='ltr'>-{72}<BR><\/div><div dir='ltr'>(.+)<BR><\/div><div dir='ltr'>-{72}<BR><\/div><div dir='ltr'>If you would like to reply to this note, please add your note at:<BR>/;
 var jiraTrigger = /^\[jira\](?: \w+){1,3}: \(([A-Z][A-Z\d]*-\d+)\)/;
 var triggerno = /^Someone has voted against your edit(?: #[0-9]+)?$/;
 var triggernoextractorz = /<div class="plainMail">'(.+)' has voted against your edit #([0-9]+)/;
