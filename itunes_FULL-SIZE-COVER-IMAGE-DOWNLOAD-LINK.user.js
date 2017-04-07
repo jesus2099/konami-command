@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         itunes. FULL SIZE COVER IMAGE DOWNLOAD LINK
-// @version      2016.12.20
+// @version      2017.4.7
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/itunes_FULL-SIZE-COVER-IMAGE-DOWNLOAD-LINK.user.js
 // @description  iTunes.com: Adds a small link to download full size cover image of an album
 // @supportURL   https://github.com/jesus2099/konami-command/labels/itunes_FULL-SIZE-COVER-IMAGE-DOWNLOAD-LINK
@@ -17,6 +17,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @grant        none
 // @match        *://itunes.apple.com/*/album/*
+// @match        *://itunes.apple.com/album/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
