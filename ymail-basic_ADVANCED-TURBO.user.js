@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2016.6.15
+// @version      2017.4.19
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @homepage     http://userscripts-mirror.org/scripts/show/177655
 // @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_ADVANCED-TURBO
@@ -32,7 +32,7 @@ var shortcuts = {
 	"CTRL+65": {noreload:true, key: "A", button: "td.main div.contentnav a#select_all.action"},
 	"65": {key: "A", button: "td.main div.contentbuttonbar span.btn > input[type='submit'][name='action_msg_replyall']"},
 	"70": {key: "F", button: "td.main div.contentbuttonbar span.btn > input[type='submit'][name='action_msg_fwd']"},
-	"73": {key: "I", button: "td.main > div.container div.spamwarning > a[href*='blockimages=none']"},
+	"73": {key: "I", button: "td.main > div.container div.spamwarning > a[href*='blockimages=0']"},
 	"77": {key: "M", button: "td.main div.contentbuttonbar select[name='top_action_select'] > option[value='msg.flag']"},
 	"78": {key: "N", button: "div#globalbuttonbartop.globalbuttonbar span.btn > input.composeicon[type='submit']"},
 	"82": {key: "R", button: "td.main div.contentbuttonbar span.btn > input[type='submit'][name='action_msg_reply']"},
