@@ -13,8 +13,8 @@ Mostly for [musicbrainz.org](http://musicbrainz.org).
 ## HOW TO INSTALL ##
 
 For the **easiest installation**, you may use one of 
-[Greasy Fork](https://greasyfork.org/users/2206-jesus2099) or 
-[OpenUserJS](https://openuserjs.org/users/jesus2099) that both are up to date 
+[Greasy Fork](https://greasyfork.org/users/2206-jesus2099?sort=updated#user-script-list) or 
+[OpenUserJS](https://openuserjs.org/users/jesus2099/scripts?orderBy=updated&orderDir=desc) that both are up to date 
 **OFFICIAL DISTRIBUTORS** and that both have some handy **INSTALL** buttons.
 
 You can alternatively 
@@ -40,7 +40,7 @@ Should be compatible:
 
 [Tampermonkey]: //tampermonkey.net
 
-※ Find more musicbrainz scripts at [GF](https://greasyfork.org/scripts/by-site/musicbrainz.org) and [OUJS](https://openuserjs.org/group/musicbrainz).
+※ Find more musicbrainz scripts at [GF](https://greasyfork.org/scripts?set=9) and [OUJS](https://openuserjs.org/group/musicbrainz).
 
 ※ Those scripts used to be hosted at 
 [userscripts.org (now read-only)](http://userscripts-mirror.org/users/31010/scripts) 
