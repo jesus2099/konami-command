@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2017.4.19
+// @version      2017.4.20
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @homepage     http://userscripts-mirror.org/scripts/show/177655
 // @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_ADVANCED-TURBO
@@ -57,10 +57,10 @@ if (emails) {
 	for (var emcb=0; emcb < emcbs.length; emcb++) {
 		hackit(emcbs[emcb], "SHIFT+CLICK for range-(un)select\nCTRL+CLICK for (un)select all");
 		emcbs[emcb].addEventListener("click", function(event) {
-			if (e.ctrlKey || e.shiftKey && lastemcb > -1) {
+			if (event.ctrlKey || event.shiftKey && lastemcb > -1) {
 				var i = 0;
 				var max = emcbs.length;
-				if (!e.ctrlKey) {
+				if (!event.ctrlKey) {
 					i = indexOf(this, emcbs);
 					max = Math.max(lastemcb, i);
 					i = Math.min(lastemcb, i);
@@ -97,10 +97,10 @@ if (emails) {
 	/*keyboard shortcuts*/
 	if (KEYBOARD_SHORTCUTS) {
 		document.addEventListener("keydown", function(event){
-			var key = (e.ctrlKey ? "CTRL+" : "")+e.keyCode;
+			var key = (event.ctrlKey ? "CTRL+" : "") + event.keyCode;
 			try {
-				if (DEBUG) console.log(userjs.name + " key " + key + (shortcuts[key] ? " on " + e.target + ".\n(" + shortcuts[key].key + ") → " + shortcuts[key].button : ""));
-				if (!e.target || !e.target.tagName || !e.target.tagName.match(/input|select|textarea/i) || e.target.tagName.match(/input/i) && e.target.getAttribute("type") && !e.target.getAttribute("type").match(/password|text/i)) {
+				if (DEBUG) console.log(userjs.name + " key " + key + (shortcuts[key] ? " on " + event.target + ".\n(" + shortcuts[key].key + ") → " + shortcuts[key].button : ""));
+				if (!event.target || !event.target.tagName || !event.target.tagName.match(/input|select|textarea/i) || event.target.tagName.match(/input/i) && event.target.getAttribute("type") && !event.target.getAttribute("type").match(/password|text/i)) {
 					doThis(shortcuts[key].button, shortcuts[key].noreload);
 					return stop(event);
 				}
