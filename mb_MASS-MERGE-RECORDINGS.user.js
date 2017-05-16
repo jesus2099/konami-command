@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2017.3.6
+// @version      2017.5.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -69,7 +69,7 @@ var regex_MBID = new RegExp(sregex_MBID, "i");
 var css_track = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
 var css_track_ac = "td:not([class]) + td:not([class])";
 var css_collapsed_medium = "div#content > table.tbl > thead > tr > th > a.expand-medium > span.expand-triangle";
-var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
+var sregex_title = "[^“]+“(.+)” \\S+ (.+)(?: - MusicBrainz)?";
 var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
 var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
 var rem2loc = "◀";
@@ -121,6 +121,8 @@ if (ltitle) {
 		});
 	}
 	//	sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
+} else {
+	console.error("Local title (/^" + sregex_title + "$/) not found in document.title (" + document.title + ").");
 }
 function mergeRecsStep(_step) {
 	var step = _step || 0;
