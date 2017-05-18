@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2017.5.16
+// @version      2017.5.18
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -1082,7 +1082,7 @@ function looseTitle(title) {
 		{from: /ⅹ/ig, to: "X"},
 		{from: /ⅺ/ig, to: "XI"},
 		{from: /ⅻ/ig, to: "XII"},
-		{from: /\s+|[\u0021-\u002F\u003A-\u003F\u005B-\u0060\u007B-\u00BF\u2000-\u2064\u2190-\u21FF\u2460-\u27FF\u2960-\u2B59\u3000-\u3030\u30FB\uFF5E-\uFF65]+|S\b|^(?:AN?|THE)\s+|,\s+(?:AN?|THE)$/g, to: ""}
+		{from: /\s+|[\u0021-\u002F\u003A-\u003F\u005B-\u0060\u007B-\u00BF\u2000-\u2064\u2190-\u21FF\u2460-\u27FF\u2960-\u2B59\u3000-\u3030\u30FB\uFF5E-\uFF65]+|\BS\b|^(?:AN?|THE)\s+|,\s+(?:AN?|THE)$/g, to: ""}
 	];
 	for (var s = 0; s < simplifications.length; s++) {
 		genericTitle = genericTitle.replace(simplifications[s].from, simplifications[s].to);
