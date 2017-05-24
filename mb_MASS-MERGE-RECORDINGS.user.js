@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2017.5.18
+// @version      2017.5.24
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -414,6 +414,7 @@ function massMergeGUI() {
 	//			jsonRelease = scripts[s].textContent.match(/MB\.Release\.init\(([^<]+)\)/);
 	//		}
 	//		if (jsonRelease) jsonRelease = JSON.parse(jsonRelease[1]);
+			var multiDiscRelease = document.querySelectorAll(css_collapsed_medium).length > 1;
 			for (var itrs = 0, t = 0, d = 0, dt = 0; itrs < trs.length; itrs++) {
 				if (!trs[itrs].classList.contains("subh")) {
 					var tracka = trs[itrs].querySelector(css_track);
@@ -442,7 +443,7 @@ function massMergeGUI() {
 	//				}
 					dt++;
 					recid2trackIndex.local[recoid] = t;
-					addOption(startpos, t, d + "." + (dt < 10 ? " " : "") + dt + ". " + trackname);
+					addOption(startpos, t, (multiDiscRelease ? d + "." : "") + dt + ". " + trackname);
 					t++;
 				} else if (!trs[itrs].querySelector("div.data-track")) {
 					d++; dt = 0;
