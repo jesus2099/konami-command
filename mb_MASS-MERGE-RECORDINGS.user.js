@@ -206,7 +206,7 @@ function mergeRecsStep(_step) {
 					}
 				}
 			} else {
-				checkMerge("Error " + this.status + ": “" + this.statusText + "” in step " + (step + 1) + "/2");
+				checkMerge("Error " + this.status + " “" + this.statusText + "” in step " + (step + 1) + "/2");
 			}
 		}
 	};
@@ -231,7 +231,10 @@ function checkMerge(errorText) {
 				tryAgain(errorText);
 			}
 		} else {
-			checkMerge(errorText);
+			setTimeout(function() {
+				infoMerge("Retrying in 2s (error " + this. status + "“" + this.statusText + "”)…", false);
+				checkMerge(errorText);
+			}, 2000);
 		}
 		retry.checking = false;
 	});
@@ -603,7 +606,7 @@ function loadReleasePage() {
 	mbidInfo.appendChild(document.createTextNode(" "));
 	mbidInfo.appendChild(createA(remoteRelease.id.match(/[\w\d]+/), "/release/" + remoteRelease.id));
 	var xhr = new XMLHttpRequest();
-	xhr.addEventListener("error", function() { infoMerge("Error " + this.status + ": “" + this.statusText + "”", false); });
+	xhr.addEventListener("error", function() { infoMerge("Error " + this.status + " “" + this.statusText + "”", false); });
 	xhr.addEventListener("load", function(event) {
 		if (this.status == 200) {
 			var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
@@ -684,8 +687,14 @@ function loadReleasePage() {
 					infoMerge("Disc number out of bounds (1–" + discount + ") or unreadable", false);
 				}
 			}
+		} else if (this.status == 0 || this.status >= 500 && this.status <= 599){
+			infoMerge("Retrying in 2s (error " + this.status + " “" + this.statusText + "”)…", false);
+			setTimeout(function() {
+				infoMerge("Fetching recordings…");
+				loadReleasePage();
+			}, 2000);
 		} else {
-			infoMerge("Error " + this.status + ": “" + this.statusText + "”", false);
+			infoMerge("Error " + this.status + " “" + this.statusText + "”", false);
 		}
 	});
 	xhr.open("GET", "/release/" + remoteRelease.id + remoteRelease.disc, true);
