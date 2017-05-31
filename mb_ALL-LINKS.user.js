@@ -479,18 +479,7 @@ j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks ul.disabled
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks h3 { margin: 0; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks h4 { margin: 0; }", 0);
 j2css.insertRule("div#sidebar > ul." + userjs + "userLinks > li.subsectionHeader { font-weight: 'bold'; padding: '0px'; float: 'right'; }", 0);
-var hrStyle = {css: ""};
 main();
-for (var s = 0; s < document.styleSheets.length; s++) {
-	for (var r = 0; r < document.styleSheets[s].cssRules.length - 1; r++) {
-		if (hrStyle.match = document.styleSheets[s].cssRules[r].cssText.match(/(#sidebar.+ul.+hr) {(.+)}/)) {
-			hrStyle.css += hrStyle.match[2];
-		}
-	}
-}
-if (hrStyle.css) {
-	j2css.insertRule("div#sidebar ul.external_links hr { margin-top: 8px !important; width: inherit !important; " + hrStyle.css + "}", 0);
-}
 function main() {
 	if (sidebar) {
 		var entityMatch = self.location.href.match(/\/([a-z\-]*)\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
@@ -624,13 +613,12 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		setFavicon(li, (typeof parameters.target == "string") ? parameters.target : parameters.target.action);
 	} else {
 		// This is a header
-		var li = createTag("li", {s: {fontWeight: "bold"}}, parameters.text);
+		var li = createTag("li", {s: {fontWeight: "bold"}, a: {class: "separator"}}, parameters.text);
 		if (parameters.text.indexOf(" ") === 0) {
 			// Level 1 header
 			li.style.setProperty("padding-top", "0px");
 			extlinks.insertBefore(li, extlinks.lastChild);
 		}
-		extlinks.insertBefore(document.createElement("hr"), li);
 	}
 	if (newLink) {
 		if (!parameters.mbid) { li.style.setProperty("opacity", ".5"); }
@@ -863,9 +851,8 @@ function addUserLinks() {
 		var target = filteredUserLinks[title];
 		var itemNode = createTag("li", {});
 		if (target === null) {
-			itemNode.classList.add("subsectionHeader");
+			itemNode.classList.add("subsectionHeader", "separator");
 			itemNode.appendChild(document.createTextNode(title));
-			userLinksListNode.appendChild(document.createElement("hr"));
 		} else {
 			itemNode.appendChild(createTag("a", {a: {href: target}}, title));
 			setFavicon(itemNode, target);
