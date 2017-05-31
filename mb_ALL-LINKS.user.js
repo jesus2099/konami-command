@@ -6,7 +6,7 @@
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
 // @compatible   opera(12.18.1872)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey         tested sometimes
+// @compatible   firefox(52.1.2)+greasemonkey     tested sometimes
 // @compatible   chromium(46)+tampermonkey        tested sometimes
 // @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
@@ -16,7 +16,7 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2011-08-02
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=125133&v=2016.5.11
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=126154&v=2015.11.2
 // @grant        none
 // @match        *://*.mbsandbox.org/area/*
 // @match        *://*.mbsandbox.org/artist/*
