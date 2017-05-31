@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2016.9.13
+// @version      2017.5.31
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -1154,8 +1154,8 @@ function configureModule(event) {
 			var defaultLanguages = parseLanguages(["navigator", "musicbrainz"]);
 			var navigatorLanguages = guessNavigatorLanguages();
 			var musicbrainzLanguage = document.documentElement.getAttribute("lang") || "en";
-			var loadedLanguages = (localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages)).replace(/,/g, "$& ");
-			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nType a language array: [\"favourite language\", \"second favourite\", …, \"least favourite\"]\r\n\r\nTwo meta languages can be used:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ") : "undetected") + "\r\n- \"musicbrainz\" for selected MusicBrainz UI language, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault:\r\n- [\"navigator\", \"musicbrainz\"], currently expands to " + JSON.stringify(defaultLanguages).replace(/,/g, "$& ") + "\r\n\r\nSome examples:\r\n- [\"musicbrainz\", \"fr-FR\", \"en-GB\", \"vi\", \"ja\", \"navigator\"]\r\n- [\"fr\", \"en\", \"vi\", \"ja\"]\r\n- [\"en-GB\"]\r\n- [\"fr-FR\", \"navigator\", \"en-GB\", \"musicbrainz\"]\r\n- []" + "\r\n\r\nCurrent setting expands to " + JSON.stringify(parseLanguages(JSON.parse(loadedLanguages))).replace(/,/g, "$& "), loadedLanguages);
+			var loadedLanguages = (localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages)).replace(/,/g, "$& ").replace(/\s+/g, " ");
+			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nType a language array: [\"favourite language\", \"second favourite\", …, \"least favourite\"]\r\n\r\nTwo meta languages can be used:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ").replace(/\s+/g, " ") : "undetected") + "\r\n- \"musicbrainz\" for selected MusicBrainz UI language, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault:\r\n- [\"navigator\", \"musicbrainz\"], currently expands to " + JSON.stringify(defaultLanguages).replace(/,/g, "$& ").replace(/\s+/g, " ") + "\r\n\r\nSome examples:\r\n- [\"musicbrainz\", \"fr-FR\", \"en-GB\", \"vi\", \"ja\", \"navigator\"]\r\n- [\"fr\", \"en\", \"vi\", \"ja\"]\r\n- [\"en-GB\"]\r\n- [\"fr-FR\", \"navigator\", \"en-GB\", \"musicbrainz\"]\r\n- []" + "\r\n\r\nCurrent setting expands to " + JSON.stringify(parseLanguages(JSON.parse(loadedLanguages))).replace(/,/g, "$& ").replace(/\s+/g, " "), loadedLanguages);
 			if (
 				newLanguages
 				&& (newLanguages = newLanguages.match(/\[(\s*["'](navigator|musicbrainz|\w{2}(-\w{2,}(-\w{2,})?)?)['"]\s*,?\s*)*]/))
