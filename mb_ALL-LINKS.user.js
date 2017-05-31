@@ -672,7 +672,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 	var level = sectionPath.length;
 	var section = pathToItem(sectionPath);
 	var sectionID = pathToID(sectionPath);
-	var sectionTitle = getLocalizedText(section.title);
+	var sectionTitle = getLocalisedText(section.title);
 	var sectionTitleNode = createTag("h" + (1 + level), {a: {id: sectionID}}, sectionTitle);
 	if (level === 1) {
 		sectionTitleNode.classList.add(userjs + "searchLinks");
@@ -746,18 +746,18 @@ function addSearchLinksSection(sectionPath, parentNode) {
 			var itemTarget = false;
 			if (Array.isArray(item.target)) {
 				for (var t = 0; t < item.target.length; t++) {
-					itemTarget = replaceAllTokens(getLocalizedText(item.target[t], item.multilingualKeys));
+					itemTarget = replaceAllTokens(getLocalisedText(item.target[t], item.multilingualKeys));
 					if (itemTarget) {
 						break;
 					}
 				}
 			} else {
-				itemTarget = replaceAllTokens(getLocalizedText(item.target, item.multilingualKeys));
+				itemTarget = replaceAllTokens(getLocalisedText(item.target, item.multilingualKeys));
 			}
 			if (itemTarget) {
 				hasNothing = false;
 				sectionListNode.appendChild(itemNode);
-				var itemTitle = getLocalizedText(item.title);
+				var itemTitle = getLocalisedText(item.title);
 				itemNode.appendChild(createTag("a", {a: {href: itemTarget}}, itemTitle));
 				setFavicon(itemNode, itemTarget);
 				var itemCBox = itemNode.appendChild(
@@ -788,7 +788,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 				fr: "rien pour ce type d’entité",
 				nl: "niets voor dit soort entiteit"
 			};
-			sectionListNode.appendChild(createTag("li", {s: {fontStyle: "italic", opacity: "0.5"}}, getLocalizedText(noItemNote)));
+			sectionListNode.appendChild(createTag("li", {s: {fontStyle: "italic", opacity: "0.5"}}, getLocalisedText(noItemNote)));
 		}
 	}
 	return hasVisibleContent && !disabledSearchLinks[sectionID];
@@ -828,7 +828,7 @@ function addUserLinks() {
 		fr: "Mes liens",
 		nl: "Mijn links"
 	};
-	var userLinksTitleNode = createTag("h2", {}, getLocalizedText(userLinksTitle));
+	var userLinksTitleNode = createTag("h2", {}, getLocalisedText(userLinksTitle));
 	userLinksTitleNode.appendChild(document.createTextNode(" "));
 	userLinksTitleNode.appendChild(
 		createTag("a", {a: {title: "configure user autolinks"}, s: {padding: "0px"}, e: {click: configureModule}},
@@ -861,7 +861,7 @@ function addUserLinks() {
 		userLinksListNode.appendChild(itemNode);
 	}
 }
-function getLocalizedText(textSet, multilingualKeys) {
+function getLocalisedText(textSet, multilingualKeys) {
 	if (typeof textSet === "string") {
 		return textSet;
 	}
@@ -874,16 +874,10 @@ function getLocalizedText(textSet, multilingualKeys) {
 		}
 		textSet = expanded;
 	}
-	var languages = parseLanguages(rawLanguages);
+	var languages = parseLanguages(["musicbrainz", "navigator"]);
 	for (var l = 0; l < languages.length; l++) {
 		if (textSet.hasOwnProperty(languages[l])) {
 			return textSet[languages[l]];
-		}
-	}
-	var fallbackLanguages = guessNavigatorLanguages().concat([document.documentElement.getAttribute("lang") || "en"]);
-	for (var fl = 0; fl < fallbackLanguages.length; fl++) {
-		if (textSet.hasOwnProperty(fallbackLanguages[fl])) {
-			return textSet[fallbackLanguages[fl]];
 		}
 	}
 	return textSet[Object.getOwnPropertyNames(textSet)[0]];
