@@ -464,6 +464,7 @@ j2css.insertRule("ul.external_links > li.defaultAutolink > input[type='checkbox'
 j2css.insertRule("ul.external_links > li.defaultAutolink.disabled { text-decoration: line-through; display: none; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink.disabled { display: list-item; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink > input[type='checkbox'] { display: inline; }", 0);
+j2css.insertRule("div#sidebar > [class^='" + userjs + "'], div#sidebar > [class^='" + userjs + "'] + ul  { background-color: #ffe; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks.emptySection { display: none; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks li.emptySection { display: none; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks input[type='checkbox'] { display: none; }", 0);
