@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2016.12.9
+// @version      2017.6.3
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -102,11 +102,9 @@ meta.name = meta.name.substr("4") + " " + meta.version;
 // #                           MAIN RUN                                       #
 // #                                                                          #
 // ############################################################################
-var host = (["musicbrainz.org", "beta.musicbrainz.org", "test.musicbrainz.org"].indexOf(self.location.host) > -1);
 var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|series|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
-if (host && cat) {
+if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
-	var confirmIfMoreThan = 2000; /*-1 to never confirm*/
 	var highlightColour = "purple";
 	var highlightInEditNotes = false;
 	var skipArtists = "89ad4ac3-39f7-470e-963a-56509c546377"; /*put artist GUID separated by space that you want to skip, example here it’s VA*/
