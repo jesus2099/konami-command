@@ -71,6 +71,10 @@ var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["n
 // - for "that" type entity pages: %that-mbid% %that-name% where "that" is an entity type in the above @include list
 // - for artist entity pages: %artist-sort-name% %artist-family-name-first% %artist-latin-script-name%
 // - for url entity pages: %url-target% (while %entity-name% and %url-name% are deliberately ignored)
+var hiddenLinks = {
+	en: "Hidden links",
+	fr: "Liens cachés"
+};
 var webSearchLinks = {
 	title: {
 		en: "Search the web",
@@ -464,7 +468,7 @@ j2css.insertRule("ul.external_links > li.defaultAutolink > input[type='checkbox'
 j2css.insertRule("ul.external_links > li.defaultAutolink.disabled { text-decoration: line-through; display: none; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink.disabled { display: list-item; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink > input[type='checkbox'] { display: inline; }", 0);
-j2css.insertRule("div#sidebar > [class^='" + userjs + "'], div#sidebar > [class^='" + userjs + "'] + ul  { background-color: #ffe; }", 0);
+j2css.insertRule("div#sidebar > [class^='" + userjs + "'], div#sidebar > [class^='" + userjs + "'] + ul  { background-color: #fee; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks.emptySection { display: none; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks li.emptySection { display: none; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks input[type='checkbox'] { display: none; }", 0);
@@ -653,7 +657,7 @@ function addHiddenLinks() {
 						if (addExternalLink({text: url.getAttribute("type"), target: target.textContent, mbid: target.getAttribute("id"), begin: begin, end: end})) {
 							if (!haslinks) {
 								haslinks = true;
-								addExternalLink({text: " Hidden links"});
+								addExternalLink({text: " " + getLocalisedText(hiddenLinks)});
 							}
 						}
 					}
