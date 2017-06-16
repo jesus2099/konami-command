@@ -29,8 +29,10 @@ if (cat) {
 	var mbCHATLOGSPOWERUPinterval = setInterval(function() {
 		if (document.head && document.body) {
 			clearInterval(mbCHATLOGSPOWERUPinterval);
-			document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-			var css = document.styleSheets[document.styleSheets.length - 1];
+			var css = document.createElement("style");
+			css.setAttribute("type", "text/css");
+			document.head.appendChild(css);
+			css = css.sheet;
 			if (cat != "musicbrainz-ja") {
 				// remove top black bar which overlaps content with Opera 12
 				css.insertRule("header#Site-Header { display: none; }", 0);

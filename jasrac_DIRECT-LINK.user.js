@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
-// @version      2016.5.17
+// @version      2017.6.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac_DIRECT-LINK.user.js
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
 // @homepage     http://userscripts-mirror.org/scripts/show/131591
@@ -23,8 +23,10 @@
 "use strict";
 var as, home = "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=F00100";
 /* mark visited links */
-document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-var j2css = document.styleSheets[document.styleSheets.length - 1];
+var j2css = document.createElement("style");
+j2css.setAttribute("type", "text/css");
+document.head.appendChild(j2css);
+j2css = j2css.sheet;
 j2css.insertRule("a:visited { color: #800080; }", 0);
 /* highlight current row */
 var rows = document.querySelectorAll("table.contentsTable > tbody > tr");
