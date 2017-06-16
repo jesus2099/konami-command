@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2017.5.2
+// @version      2017.6.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -123,8 +123,10 @@ if (you) {
 		delete editors["%you%"];
 	}
 	if (standout) {
-		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-		var css = document.styleSheets[document.styleSheets.length - 1];
+		var css = document.createElement("style");
+		css.setAttribute("type", "text/css");
+		document.head.appendChild(css);
+		css = css.sheet;
 		css.insertRule("div#page a[href='" + MBS + "/user/" + you + "'], div#page a[href='/user/" + you + "'] { background-color: yellow; color: purple; }", 0);
 	}
 }
