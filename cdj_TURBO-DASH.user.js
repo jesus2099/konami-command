@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         cdj. TURBO DASH
-// @version      2016.6.23
+// @version      2017.6.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/cdj_TURBO-DASH.user.js
 // @description  CDJournal.com: adds quick links to artists’ CD and ビデオ. removes adcrap
 // @homepage     http://userscripts-mirror.org/scripts/show/180523
@@ -24,12 +24,11 @@ var cdjTURBODASHinterval = setInterval(function() {
 	if (document.querySelector("div#contents_body + *, div#center_body + *")) {
 		clearInterval(cdjTURBODASHinterval);
 		/*remove crap*/
-		for (var ss = 0; ss < document.styleSheets.length; ss++) {
-			if (document.styleSheets[ss].href.match(/\/\/[^/]+/) + "" == "//" + self.location.hostname) {
-				document.styleSheets[ss].insertRule("div#aun_banner, div#banner_one, div#banner_two, div.banner, iframe, div#right_body a:not([href*='.cdjournal.com/']) { display: none; }", document.styleSheets[ss].cssRules.length);
-				break;
-			}
-		}
+		var css = document.createElement("style");
+		css.setAttribute("type", "text/css");
+		document.head.appendChild(css);
+		css = css.sheet;
+		css.insertRule("div#aun_banner, div#banner_one, div#banner_two, div.banner, iframe, div#right_body a:not([href*='.cdjournal.com/']) { display: none; }", 0);
 		/*add quick links*/
 		var artists = document.querySelectorAll("a:not(.border)[href^='http://artist.cdjournal.com/artist.php?ano='], h1 > a[href^='http://artist.cdjournal.com/a/']");
 		var pages = {

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2016.6.15
+// @version      2017.6.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/freenode_WEBCHAT-CONNECT.user.js
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. cleverly focus first empty field.
 // @supportURL   https://github.com/jesus2099/konami-command/labels/freenode_WEBCHAT-CONNECT
@@ -24,8 +24,10 @@ setTimeout(function() {
 	var userjs = {name: "freenode. WEBCHAT CONNECT", key: "j2fwc"};
 	var channels = "#github,#last.fm,##musicbrainz-lol,#musicbrainz";
 	var inputs = document.getElementsByTagName("input");
-	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-	var css = document.styleSheets[document.styleSheets.length - 1];
+	var css = document.createElement("style");
+	css.setAttribute("type", "text/css");
+	document.head.appendChild(css);
+	css = css.sheet;
 	css.insertRule(".qwebirc-qui.topic { font-size: .8em; }", 0);
 	if (document.body.textContent.trim().match(/^412 - Precondition Failed$/) || !document.body.textContent.match(/connect.+nickname.+channels/i)) {
 		self.location.reload();

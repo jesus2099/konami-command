@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2016.6.22
+// @version      2017.6.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
@@ -49,8 +49,10 @@ var entities = {
 	user: {path: "/user/", id: ".+", openEdits: "/edits/open", noEdit: true},
 	work: {path: "/work/", icon: "work.svg"},
 };
-document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-var j2css = document.styleSheets[document.styleSheets.length - 1];
+var j2css = document.createElement("style");
+j2css.setAttribute("type", "text/css");
+document.head.appendChild(j2css);
+j2css = j2css.sheet;
 j2css.insertRule("a." + userjs + " {text-shadow: 1px 1px 2px silver; white-space: nowrap;}", 0);
 j2css.insertRule("a." + userjs + "tool {font-variant: small-caps; vertical-align: super; font-size: xx-small}", 0);
 self.addEventListener("load", function(event){

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2017.4.20
+// @version      2017.6.16
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @homepage     http://userscripts-mirror.org/scripts/show/177655
 // @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_ADVANCED-TURBO
@@ -112,8 +112,10 @@ if (emails) {
 	}
 	/*remove crap*/
 	if (REMOVE_CRAP) {
-		document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-		var j2delcrapss = document.styleSheets[document.styleSheets.length - 1];
+		var j2delcrapss = document.createElement("style");
+		j2delcrapss.setAttribute("type", "text/css");
+		document.head.appendChild(j2delcrapss);
+		j2delcrapss = j2delcrapss.sheet;
 		j2delcrapss.insertRule([
 			"a[href$='relevantads.html']",
 			"a[href*='//beap.adss.yahoo.com/']",
@@ -124,7 +126,7 @@ if (emails) {
 			"img[src*='//beap.adss.yahoo.com/']",
 			"td.sky-ad",
 			"tr.layoutfixer td.c3"
-		].join(",")+"{display:none}", j2delcrapss.cssRules.length);
+		].join(",") + "{display:none}", 0);
 		try {
 			getParent(document.querySelector("table.tbl tr > td.spnsr"), "tr").style.setProperty("display", "none");
 		} catch(error) {}

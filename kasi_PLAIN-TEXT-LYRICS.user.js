@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2016.6.16
+// @version      2017.6.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/kasi_PLAIN-TEXT-LYRICS.user.js
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @homepage     http://userscripts-mirror.org/scripts/show/91968
@@ -230,9 +230,11 @@ db("matches:\n" + matches.join("\n"));
 var doko = self.location.host.match(new RegExp("(?:www\\.)?(" + matches.join("|") + ")"));
 var iti = true;
 if (document.head) {
-	document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-	var j2ss = document.styleSheets[document.styleSheets.length - 1];
-	j2ss.insertRule("*{-moz-user-select:text!important;-webkit-user-select:text!important;}", j2ss.cssRules.length);
+	var j2ss = document.createElement("style");
+	j2ss.setAttribute("type", "text/css");
+	document.head.appendChild(j2ss);
+	j2ss = j2ss.sheet;
+	j2ss.insertRule("*{-moz-user-select:text!important;-webkit-user-select:text!important;}", 0);
 }
 if (doko) {
 	doko = doko[1];

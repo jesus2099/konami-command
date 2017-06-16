@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2017.5.24
+// @version      2017.6.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -75,8 +75,10 @@ var matchMode = {current: null, sequential: null, title: null, titleAndAC: null}
 var rem2loc = "◀";
 var loc2rem = "▶";
 var retry = {count: 0, checking: false};
-document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-var css = document.styleSheets[document.styleSheets.length - 1];
+var css = document.createElement("style");
+css.setAttribute("type", "text/css");
+document.head.appendChild(css);
+css = css.sheet;
 css.insertRule("body." + MMRid + " div#" + MMRid + " > .main-shortcut { display: none; }", 0);
 css.insertRule("body." + MMRid + " div#content table.tbl > * > tr > .rating { display: none; }", 0);
 css.insertRule("body." + MMRid + " div#content table.tbl > tbody > tr > td > div.ars { display: none; }", 0);
