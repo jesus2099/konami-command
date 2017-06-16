@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2016.8.10.1154
+// @version      2017.5.31
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -111,7 +111,7 @@ if (
 					checked.push(art.base);
 					art.editinghistory = createLink(pageEntity, "edits", art);
 					art.openedits = createLink(pageEntity, "open_edits", art);
-					addAfter(document.createElement("hr"), pageEntity.li);
+					getParent(art.openedits, "li").classList.add("separator");
 					checkOpenEdits(art);
 				}
 			}
@@ -126,7 +126,7 @@ function createLink(entity, historyType, associatedArtist) {
 	if (associatedArtist) {
 		addAfter(newLink, entity.li);
 	} else if (!associatedArtist && historyType == "edits") {
-		entity.ul.appendChild(document.createElement("hr"));
+		newLink.classList.add("separator");
 		entity.ul.appendChild(newLink);
 	} else {
 		entity.ul.insertBefore(newLink, entity.li);
