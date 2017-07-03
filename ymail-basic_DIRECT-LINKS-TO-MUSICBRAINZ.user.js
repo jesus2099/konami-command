@@ -38,6 +38,7 @@ var jiraTrigger = /^\[jira\](?: \w+){1,3}: \(([A-Z][A-Z\d]*-\d+)\)/;
 var triggerno = /^Someone has voted against your edit(?: #[0-9]+)?$/;
 var triggernoextractorz = /'([^']+)' has voted against your edit #([0-9]+)/;
 var edittypeextractor = /(deleted|merged) by edit #([0-9]+)/;
+var entitiesEditorsExtractorz = "<BR></div><div dir='ltr'>([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR></div><div dir='ltr'>(?:Open edits: )?<a href=\"(https?://musicbrainz\\.org/(?:artist|collection|label|user)/[^/]+/edits)(?:/open)?\" target=_blank";
 var idextractor = /by edit #([0-9]+)/;
 var triggerResponseURL = /<input type="hidden" name="mid" value="([^"]+)"/;
 var editurl = preferredProtocol + "//musicbrainz.org/edit/";
@@ -127,7 +128,6 @@ if (emails) {
 					} else {
 						susuemail.style.setProperty("background-color", colourclicked);
 					}
-					var entitiesEditorsExtractorz = "<BR></div><div dir='ltr'>([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR></div><div dir='ltr'>(?:Open edits: )?<a href=\"(https?://musicbrainz\\.org/(?:artist|collection|label|user)/[^/]+/edits)(?:/open)?\" target=_blank";
 					var alledits = res.match(new RegExp(entitiesEditorsExtractorz, "g"));
 					for (var ee = 0; ee < alledits.length; ee++) {
 						var allparts = alledits[ee].match(new RegExp(entitiesEditorsExtractorz));
