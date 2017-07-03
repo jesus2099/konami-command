@@ -127,7 +127,7 @@ if (emails) {
 					} else {
 						susuemail.style.setProperty("background-color", colourclicked);
 					}
-					var entitiesEditorsExtractorz = "<BR>([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR>(?:Open edits: )?<a href=\"(https?://musicbrainz\\.org/(?:artist|collection|label|user)/[^/]+/edits)(?:/open)?\" target=_blank";
+					var entitiesEditorsExtractorz = "<BR></div><div dir='ltr'>([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR></div><div dir='ltr'>(?:Open edits: )?<a href=\"(https?://musicbrainz\\.org/(?:artist|collection|label|user)/[^/]+/edits)(?:/open)?\" target=_blank";
 					var alledits = res.match(new RegExp(entitiesEditorsExtractorz, "g"));
 					for (var ee = 0; ee < alledits.length; ee++) {
 						var allparts = alledits[ee].match(new RegExp(entitiesEditorsExtractorz));
