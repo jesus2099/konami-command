@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2017.6.16
+// @version      2017.7.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -551,6 +551,7 @@ function EASY_DATE_init() {
 								sendEvent(input, "change");
 							}
 							this.style.setProperty("background-color", "#cfc");
+							EASY_DATE_cloneDate(this);
 						} else {
 							this.previousSibling.value = this.value;
 							sendEvent(this.previousSibling, "change");
@@ -558,7 +559,7 @@ function EASY_DATE_init() {
 						}
 					},
 					focus: function(event) { this.select(); },
-					keydown: [EASY_DATE_cloneDate, EASY_DATE_nextField]
+					keydown: [EASY_DATE_cloneDateHotkey, EASY_DATE_nextField]
 				}}
 			), years[y]);
 		years[y].classList.add(userjs + "easydate");
@@ -568,21 +569,27 @@ function EASY_DATE_init() {
 				this.nextSibling.value = this.value;
 			}
 		}, false);
-		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_cloneDate);
-		years[y].parentNode.querySelector("input[placeholder='DD']").addEventListener("keydown", EASY_DATE_cloneDate);
+		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_cloneDateHotkey);
+		years[y].parentNode.querySelector("input[placeholder='DD']").addEventListener("keydown", EASY_DATE_cloneDateHotkey);
 		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_nextField);
 	}
 }
-function EASY_DATE_cloneDate(event) {
+function EASY_DATE_cloneDateHotkey(event) {
 	if (!event.ctrlKey && !event.shiftKey && event.keyCode == KEYCODES.C) {
 		stop(event);
-		var ph = ["YYYY", "MM", "DD"];
-		for (var p = 0; p < ph.length; p++) {
-			var inps = this.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='" + ph[p] + "']");
-			var downwards = (this.parentNode == inps[0].parentNode);
-			inps[downwards ? 1 : 0].value = inps[downwards ? 0 : 1].value;
-			sendEvent(inps[downwards ? 1 : 0], "change");
+		EASY_DATE_cloneDate(this, true);
+	}
+}
+function EASY_DATE_cloneDate(current, hotkey) {
+	var ph = ["YYYY", "MM", "DD"];
+	for (var p = 0; p < ph.length; p++) {
+		var inps = current.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='" + ph[p] + "']");
+		var downwards = (current.parentNode == inps[0].parentNode);
+		if (!hotkey && !downwards) {
+			return;
 		}
+		inps[downwards ? 1 : 0].value = inps[downwards ? 0 : 1].value;
+		sendEvent(inps[downwards ? 1 : 0], "change");
 	}
 }
 function EASY_DATE_nextField(event) {
