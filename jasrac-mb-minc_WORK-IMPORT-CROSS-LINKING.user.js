@@ -480,36 +480,6 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						}
 					}
 				}
-				var annotation = document.querySelector("div#content div.annotation div.annotation-body");
-				if (annotation) {
-					while (sakuhincode = codes.exec(annotation.textContent)) {
-						sakuhincode = sakuhincode[1];
-						if (donecodes.indexOf(sakuhincode) < 0) {
-							donecodes.push(sakuhincode);
-							getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", sakuhincode)}, s: {background: background}}, "JASRAC — " + sakuhincode)));
-							getExtLinks().appendChild(createTag("li", {a: {class: userjs + "minc no-favicon"}}, createTag("a", {a: {href: workLookupURL("minc", "code", sakuhincode)}, s: {background: background}}, "音楽の森 — " + sakuhincode)));
-						} else {
-							if (annotation.textContent.trim().match(new RegExp("^" + reAnnotCode + "( \\(MBS-7359\\))?$", "i"))) {
-								insertBefore(createTag("p", {s: {backgroundColor: "#ffc"}}, [createTag("img", {a: {src: "/static/images/icons/loading.gif"}}), " This JASRAC ID is now set as an attribute of this work: Removing obsolete annotation, please wait…"]), annotation.firstChild);
-								simpleXHR(
-									{method: "post", action: self.location.pathname + "/edit_annotation?edit-annotation.text=&edit-annotation.changelog=Removing+obsolete+JASRAC+ID+annotation&edit-annotation.edit_note=The+same+JASRAC+ID+is+now+set+as+an+attribute+to+this+work+(self+cleaning)."},
-									function() {
-										if (this.responseText.indexOf("<h2 class=\"annotation\">Annotation</h2>") == -1) {
-											removeElement(document.querySelector("div#content h2.annotation"));
-											removeElement(document.querySelector("div#content div.annotation"));
-										} else {
-											replaceElement(createTag("p", {s: {"background-color": "#fcc"}}, "Couldn’t remove obsolete JASRAC ID. Please help. :)"), document.querySelector("div#content div.annotation-body"));
-										}
-									},
-									function() { alert("Got an error while trying to remove obsolete annotation:\n" + this.status + this.responseText.match(/<title>.*(?=<\/title>)/)); /*(?<=<script>) lookbehind is not supported in js*/ }
-								);
-								break;
-							} else if (confirm("Bogus JASRAC ID detected in annotation (now is set as work attribute).\nDo you want to edit annotation and remove it now?")) {
-								self.location.href = self.location.pathname + "/edit_annotation?edit-annotation.changelog=JASRAC+ID+is+now+set+as+an+attribute";
-							}
-						}
-					}
-				}
 				/* -- vv ------ JASRAC ISWC link ------ vv -- */
 				var iswcs = document.querySelectorAll("div#sidebar > dl.properties > dd.iswc > a[href*='/iswc/'] code");
 				for (var iswc = 0; iswc < iswcs.length; iswc++) {
@@ -1339,44 +1309,6 @@ function xhrMachine(_job) {
 	if (!async) {
 		xhrMachine();
 	}
-}
-function simpleXHR(_request, onload, onerror) {
-	/* defaults */
-	var request = typeof _request == "string" ? {action: _request} :  _request;
-	if (!request.action) {
-		console.log("simpleXHR has no action do perform.");
-		return;
-	}
-	if (!request.method) {
-		request.method = request.params ? "post" : "get";
-	}
-	if (typeof request.async != "boolean") {
-		request.async = true;
-	}
-	/* process */
-	var xhr = new XMLHttpRequest();
-	xhr.onload = onload;
-	xhr.onerror = onerror;
-	xhr.open(request.method, request.action, request.async);
-	if (request.method == "post") {
-		if (request.action.match(/\?.+=/)) {
-			var action1query2 = request.action.match(/^(.+)\?(.+)$/);
-			request.action = action1query2[1];
-			request.params = action1query2[2];
-		} else if (typeof request.params == "object") {
-			var encodedparams = "";
-			for (var param in request.params) if (request.params.hasOwnProperty(param)) {
-				encodedparams += param + "=" + encodeURIComponent(request.params[param]);
-			}
-			request.params = encodedparams;
-		}
-		if (request.params) {
-			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-			xhr.setRequestHeader("Content-length", request.params.length);
-			xhr.setRequestHeader("Connection", "close");
-		}
-	}
-	xhr.send(request.params);
 }
 function removeElement(element) {
 	return element.parentNode.removeChild(element);
