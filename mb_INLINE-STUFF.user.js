@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2017.6.16
+// @version      2017.8.10
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -84,7 +84,7 @@ if (pagecat) {
 			css.setAttribute("type", "text/css");
 			document.head.appendChild(css);
 			css = css.sheet;
-			css.insertRule("a[" + userjs + "recname], span." + userjs + "recdis { text-shadow: 1px 2px 2px #999; color: maroon}", 0);
+			css.insertRule("a[" + userjs + "recname] { text-shadow: 1px 2px 2px #999; color: maroon }", 0);
 			var relMBID = self.location.href.match(re_GUID);
 			if (relMBID && (tracksHtml = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]:not(.subh)")).length > 0) {
 				if (recUseInRelationshipLink || recAddToMergeLink) {
@@ -286,7 +286,8 @@ function isrcFish() {
 					}
 					if (markTrackRecNameDiff && recnameNet[mbid].comment && !sameCompleteName) {
 						var recdis = document.createElement("span");
-						recdis.className = userjs + "recdis"; //linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
+						recdis.classList.add(userjs + "recdis"); //linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
+						recdis.classList.add("comment");
 						recdis.appendChild(document.createTextNode(" (" + recnameNet[mbid].comment + ")"));
 						addAfter(recdis, aRec);
 					}
