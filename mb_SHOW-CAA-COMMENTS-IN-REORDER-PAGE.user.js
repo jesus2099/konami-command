@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SHOW CAA COMMENTS IN REORDER PAGE
-// @version      2016.6.15
+// @version      2017.8.24
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE.user.js
 // @description  Show cover art comments to ease reordering, especially when thumbnails have not been generated yet.
 // @homepage     http://forums.musicbrainz.org/viewtopic.php?pid=31473#p31473
@@ -13,7 +13,9 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2015-09-09
 // @grant        none
+// @match        *://*.mbsandbox.org/*/add-cover-art
 // @match        *://*.mbsandbox.org/*/reorder-cover-art
+// @match        *://*.musicbrainz.org/*/add-cover-art
 // @match        *://*.musicbrainz.org/*/reorder-cover-art
 // @run-at       document-end
 // ==/UserScript==
