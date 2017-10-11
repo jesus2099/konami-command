@@ -78,6 +78,7 @@ var meta = {raw: function() {
 // @match        *://*.musicbrainz.org/user/*/subscriptions/label*
 // @match        *://*.musicbrainz.org/user/*/tag/*
 // @match        *://*.musicbrainz.org/work/*
+// @match        https://acoustid.org/track/*
 // @exclude      *.org/collection/*/own_collection/*
 // @run-at       document-end
 // ==/UserScript==
@@ -104,7 +105,7 @@ meta.name = meta.name.substr("4") + " " + meta.version;
 // #                           MAIN RUN                                       #
 // #                                                                          #
 // ############################################################################
-var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|series|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
+var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
 	var highlightColour = "purple";
@@ -277,7 +278,8 @@ if (cat) {
 			if (!highlightInEditNotes && (cat == "edit" || cat == "edits")) {
 				downhill += "[count(ancestor::xhtml:div[contains(@class, 'edit-notes')])=0]";
 			}
-			var path = uphill + "//xhtml:a[starts-with(@href, '/" + cstuff + "/')]" + downhill;
+			var root = cat == "track" /* acoustid.org */ ? "//musicbrainz.org/" : "/";
+			var path = uphill + "//xhtml:a[starts-with(@href, '" + root + cstuff + "/')]" + downhill;
 			var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			for (var i = 0; i < xp.snapshotLength; i++) {
 				var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
