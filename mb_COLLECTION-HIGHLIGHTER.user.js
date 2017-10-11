@@ -102,6 +102,16 @@ if (meta.raw && meta.raw.toString && (meta.raw = meta.raw.toString())) {
 meta.name = meta.name.substr("4") + " " + meta.version;
 // ############################################################################
 // #                                                                          #
+// #                           TEMPORARY STORAGE CLEANUP                      #
+// #                                                                          #
+// ############################################################################
+for (var i = 0; i < localStorage.length; i++) {
+	if(localStorage.key(i).indexOf("jesus2099userjs126380") == 0) {
+		localStorage.removeItem(localStorage.key(i));
+	}
+}
+// ############################################################################
+// #                                                                          #
 // #                           MAIN RUN                                       #
 // #                                                                          #
 // ############################################################################
