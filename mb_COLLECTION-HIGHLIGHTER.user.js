@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2017.6.16
+// @version      2017.10.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -19,7 +19,9 @@ var meta = {raw: function() {
 // @since        2012-02-21
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
-// @grant        none
+// @grant        GM_deleteValue
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @match        *://*.mbsandbox.org/*edits*
 // @match        *://*.mbsandbox.org/*votes*
 // @match        *://*.mbsandbox.org/area/*
@@ -130,7 +132,7 @@ if (cat) {
 	j2ss.insertRule("." + userjs + "HLitem { text-shadow: 0 0 8px " + highlightColour + "!important; }", 0);
 	j2ss.insertRule("." + userjs + "HLrow ." + userjs + "HLitem { border: 0; padding: 0; }", 0);
 	var MBS = self.location.protocol + "//" + self.location.host;
-	var collectionsID = localStorage.getItem(userjs + "collections") || "";
+	var collectionsID = GM_getValue(userjs + "collections") || "";
 	var releaseID;
 	var stuff, collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
 	var strType = "release-group|recording|label|artist|work";
@@ -204,7 +206,7 @@ if (cat) {
 						if (confirm(dialogprefix + cmsg)) {
 							// erase local stuff
 							for (var stu = 0; stu < collectedStuff.length; stu++) {
-								localStorage.removeItem(userjs + collectedStuff[stu] + "s");
+								GM_deleteValue(userjs + collectedStuff[stu] + "s");
 							}
 							// then append (previous button)
 							this.previousSibling.previousSibling.click();
@@ -220,7 +222,7 @@ if (cat) {
 						var cstuff = collectedStuff[stu];
 						var lab = document.createElement("label");
 						lab.style.setProperty("white-space", "nowrap");
-						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { localStorage.setItem(userjs + "cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
+						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue(userjs + "cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
 						var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
 						if (cstuff.match(/artist|recording|release(-group)?/)) {/*defaults*/
 							cfgcb.setAttribute("checked", "checked");
@@ -229,7 +231,7 @@ if (cat) {
 							lab.style.setProperty("opacity", ".5");
 							cfgcb.setAttribute("disabled", "disabled");
 						} else {/*read previous settings from local storage*/
-							var cfgstu = localStorage.getItem(userjs + "cfg" + cstuff);
+							var cfgstu = GM_getValue(userjs + "cfg" + cstuff);
 							if (cfgstu == "1") {
 								cfgcb.setAttribute("checked", "checked");
 							} else if (cfgstu == "0") {
@@ -282,7 +284,7 @@ if (cat) {
 				if (mbid) {
 					mbid = mbid[1];
 					if (!stuff[cstuff].loaded) {
-						stuff[cstuff].rawids = localStorage.getItem(userjs + cstuff + "s");
+						stuff[cstuff].rawids = GM_getValue(userjs + cstuff + "s");
 						if (stuff[cstuff].rawids) {
 							stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
 							debug(" \r\n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded from local storage (" + userjs + cstuff + "s)\r\nMatching: " + path, true);
@@ -362,17 +364,17 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 	var url = WSMode ? "/ws/2/collection/" + collectionMBID + "/releases?limit=" + limit + "&offset=" + offset : "/collection/" + collectionMBID + "?page=" + page;
 	if (page == 1) {
 		// Add collection MBID to list of highlighted
-		collectionsID = localStorage.getItem(userjs + "collections") || "";
+		collectionsID = GM_getValue(userjs + "collections") || "";
 		if (collectionsID.indexOf(collectionMBID) < 0) {
 			collectionsID += collectionMBID + " ";
 		}
-		localStorage.setItem(userjs + "collections", collectionsID);
+		GM_setValue(userjs + "collections", collectionsID);
 		modal(true, "Loading collection " + collectionMBID + "…", 1);
 		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page."]), 2);
 		modal(true, concat(["<hr>", "Fetching releases…"]), 2);
 		stuff["release-tmp"] = {ids: []};
 		for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
-			stuff[stu].rawids = localStorage.getItem(userjs + stu + "s") || "";
+			stuff[stu].rawids = GM_getValue(userjs + stu + "s") || "";
 			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
 		}
 	}
@@ -411,7 +413,7 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 				} else if (lastPage && lastPage == page || !nextPage) {
 					modal(true, " ", 1);
 					if (stuff["release-tmp"].ids.length > 0) {
-						localStorage.setItem(userjs + "releases", stuff["release"].rawids);
+						GM_setValue(userjs + "releases", stuff["release"].rawids);
 						modal(true, concat([createTag("b", {}, stuff["release"].ids.length + " release" + (stuff["release"].ids.length == 1 ? "" : "s")), " saved into local storage (" + userjs + "releases)… "]));
 						modal(true, "OK.", 2);
 						retry = 0;
@@ -506,7 +508,7 @@ function fetchReleasesStuff(pi) {
 						modal(true, " ", 1);
 						delete(stuff["release-tmp"]);
 						for (var stu in stuff) if (stu != "release" && stuff.hasOwnProperty(stu)) {
-							localStorage.setItem(userjs + stu + "s", stuff[stu].rawids);
+							GM_setValue(userjs + stu + "s", stuff[stu].rawids);
 							stuff[stu].rawids = "";
 							modal(true, concat([createTag("b", {}, stuff[stu].ids.length + " " + stu + (stuff[stu].ids.length == 1 ? "" : "s")), " saved into local storage (" + userjs + stu + "s)… "]));
 							modal(true, "OK.", 1);
@@ -540,9 +542,9 @@ function collectionUpdater(link, action) {
 		link.addEventListener("click", function(event) {
 			altered = this.getAttribute("href") != self.location.href;
 			modal(true, "Refreshing memory…", 1);
-			collectionsID = localStorage.getItem(userjs + "collections") || "";
+			collectionsID = GM_getValue(userjs + "collections") || "";
 			for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
-				stuff[stu].rawids = localStorage.getItem(userjs + stu + "s");
+				stuff[stu].rawids = GM_getValue(userjs + stu + "s");
 				stuff[stu].ids = stuff[stu].rawids != null ? (stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : []) : null;
 			}
 			if (stuff["release"].ids && releaseID) {
@@ -553,7 +555,7 @@ function collectionUpdater(link, action) {
 						if (stuff["release"].rawids.indexOf(releaseID) == -1) {
 							modal(true, concat([createTag("b", {}, "Adding this release"), " to loaded collection…"]), 1);
 							stuff["release"].rawids += releaseID + " ";
-							localStorage.setItem(userjs + "releases", stuff["release"].rawids);
+							GM_setValue(userjs + "releases", stuff["release"].rawids);
 							altered = true;
 						}
 						for (var c = 0; c < checks.length; c++) {
@@ -563,7 +565,7 @@ function collectionUpdater(link, action) {
 								if (stuff[type].ids && stuff[type].rawids.indexOf(mbid) < 0 && (type != "artist" || skipArtists.indexOf(mbid) < 0)) {
 									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1);
 									stuff[type].rawids += mbid + " ";
-									localStorage.setItem(userjs + type + "s", stuff[type].rawids);
+									GM_setValue(userjs + type + "s", stuff[type].rawids);
 									altered = true;
 								}
 							}
@@ -574,7 +576,7 @@ function collectionUpdater(link, action) {
 						if (stuff["release"].rawids.indexOf(releaseID) > -1) {
 							modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
 							stuff["release"].rawids = stuff["release"].rawids.replace(new RegExp(releaseID + "( |$)"), "");
-							localStorage.setItem(userjs + "releases", stuff["release"].rawids);
+							GM_setValue(userjs + "releases", stuff["release"].rawids);
 							altered = true;
 						}
 						if (checks.length > 0) {
@@ -695,7 +697,7 @@ function stuffRemover(checks, pp) {
 							} else {
 								modal(true, concat([createTag("span", {s: {color: "grey"}}, "not used any more: "), createTag("b", {}, "removing"), "…"]), 1);
 								stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
-								localStorage.setItem(userjs + checkType + "s", stuff[checkType].rawids);
+								GM_setValue(userjs + checkType + "s", stuff[checkType].rawids);
 								altered = true;
 								retry = 0;
 								setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
@@ -719,7 +721,7 @@ function stuffRemover(checks, pp) {
 				if (!stuff[checkAgainst].rawids) {/* Protection for some edge cases of new script using old script data */
 					modal(true, concat([createTag("span", {s: {color: "grey"}}, ["no ", checkAgainst, "s at all (", createA("//github.com/jesus2099/konami-command/issues/87", "#87"), "): "]), "removing…"]), 1);
 					stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
-					localStorage.setItem(userjs + checkType + "s", stuff[checkType].rawids);
+					GM_setValue(userjs + checkType + "s", stuff[checkType].rawids);
 					altered = true;
 				}
 				retry = 0;
@@ -866,11 +868,11 @@ function cantUseWS(button) {
 }
 function lastLink(href) {
 	if (href) {
-		localStorage.setItem(userjs + "lastlink", href);
+		GM_setValue(userjs + "lastlink", href);
 	} else {
-		var ll = localStorage.getItem(userjs + "lastlink");
+		var ll = GM_getValue(userjs + "lastlink");
 		if (ll) {
-			localStorage.removeItem(userjs + "lastlink");
+			GM_deleteValue(userjs + "lastlink");
 			modal(true, "Re‐loading page…", 1);
 			setTimeout(function() { self.location.href = ll; }, chrono(MBWSRate));
 		} else {
