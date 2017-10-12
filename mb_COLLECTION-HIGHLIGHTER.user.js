@@ -105,19 +105,19 @@ meta.name = meta.name.substr("4") + " " + meta.version;
 // #                           LEGACY CLEANUP                                 #
 // # to be deleted…                                                           #
 // ############################################################################
-var oldKey = "jesus2099userjs126380";
+var oldPrefix = "jesus2099userjs126380";
 // cleanup for previous master version (localStorage.setItem to GM_setValue)
 for (var i = 0; i < localStorage.length; i++) {
-	if(localStorage.key(i).indexOf(oldKey) == 0 && localStorage.key(i).length > oldKey.length) {
-		GM_setValue(localStorage.key(i).substr(oldKey.length), localStorage.getItem(localStorage.key(i)));
+	if(localStorage.key(i).indexOf(oldPrefix) == 0 && localStorage.key(i).length > oldPrefix.length) {
+		GM_setValue(localStorage.key(i).substr(oldPrefix.length), localStorage.getItem(localStorage.key(i)));
 		localStorage.removeItem(localStorage.key(i));
 	}
 }
-// cleanup for previous branch version (GM_setValue(userjs + key) to GM_setValue(key))
+// cleanup for previous branch version (GM_setValue(oldPrefix + key) to GM_setValue(key))
 var keysToDelete = []
 for each (var key in GM_listValues()) {
-	if(key.indexOf(oldKey) == 0 && key.length > oldKey.length) {
-		GM_setValue(key.substr(oldKey.length), GM_setValue(key));
+	if(key.indexOf(oldPrefix) == 0 && key.length > oldPrefix.length) {
+		GM_setValue(key.substr(oldPrefix.length), GM_setValue(key));
 		keysToDelete.push(key);
 	}
 }
@@ -137,7 +137,7 @@ if (cat) {
 	var skipArtists = "89ad4ac3-39f7-470e-963a-56509c546377"; /*put artist GUID separated by space that you want to skip, example here it’s VA*/
 	var MBWSRate = 1000;
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
-	var userjs = "jesus2099userjs126380";
+	var prefix = "collectionHighlighter";
 	var DEBUG = false;
 	var dialogprefix = "..:: " + meta.name.replace(/ /g, " :: ") + " ::..\r\n\r\n";
 	var maxRetry = 20;
@@ -151,11 +151,11 @@ if (cat) {
 	document.head.appendChild(j2ss);
 	j2ss = j2ss.sheet;
 	var brdr = " border-left: 4px solid " + highlightColour + "; ";
-	j2ss.insertRule("." + userjs + "HLbox {" + brdr.replace(/-left/, "") + "}", 0);
-	j2ss.insertRule("." + userjs + "HLrow {" + brdr + "}", 0);
-	j2ss.insertRule("li." + userjs + "HLrow { padding-left: 4px; }", 0);
-	j2ss.insertRule("." + userjs + "HLitem { text-shadow: 0 0 8px " + highlightColour + "!important; }", 0);
-	j2ss.insertRule("." + userjs + "HLrow ." + userjs + "HLitem { border: 0; padding: 0; }", 0);
+	j2ss.insertRule("." + prefix + "Box {" + brdr.replace(/-left/, "") + "}", 0);
+	j2ss.insertRule("." + prefix + "Row {" + brdr + "}", 0);
+	j2ss.insertRule("li." + prefix + "Row { padding-left: 4px; }", 0);
+	j2ss.insertRule("." + prefix + "Item { text-shadow: 0 0 8px " + highlightColour + "!important; }", 0);
+	j2ss.insertRule("." + prefix + "Row ." + prefix + "Item { border: 0; padding: 0; }", 0);
 	var MBS = self.location.protocol + "//" + self.location.host;
 	var collectionsID = GM_getValue("collections") || "";
 	var releaseID;
@@ -213,7 +213,7 @@ if (cat) {
 				loadButtons.push(createA(
 					"Append",
 					function(event) {
-						var opts = document.querySelectorAll("td." + userjs + " input[type='checkbox']:checked");
+						var opts = document.querySelectorAll("td." + prefix + " input[type='checkbox']:checked");
 						stuff = {};
 						for (var opt = 0; opt < opts.length; opt++) {
 							stuff[opts[opt].getAttribute("name")] = {};
@@ -285,7 +285,7 @@ if (cat) {
 						settings.push(lab);
 						settings.push(" ");
 					}
-					xp.snapshotItem(i).appendChild(createTag("td", {a: {class: userjs, rowspan: xp.snapshotLength}}, concat(settings)));
+					xp.snapshotItem(i).appendChild(createTag("td", {a: {class: prefix, rowspan: xp.snapshotLength}}, concat(settings)));
 				}
 			}
 		}
@@ -338,11 +338,11 @@ if (cat) {
 function decorate(entityLink) {
 	if (!getParent(entityLink, "div", "tabs")) {
 		// Does not highlight tabs.
-		entityLink.classList.add(userjs + "HLitem");
+		entityLink.classList.add(prefix + "Item");
 		var page = document.getElementById("page");
 		if (getParent(entityLink, "h1")) {
 			// Entity page is boxed.
-			page.classList.add(userjs + "HLbox");
+			page.classList.add(prefix + "Box");
 		} else {
 			var entityType = entityLink.getAttribute("href").match(new RegExp("/(.+?)/" + strMBID, "i")) || "";
 			if (entityType) {
@@ -352,26 +352,26 @@ function decorate(entityLink) {
 				// entity edit page is boxed
 				var editDetails = getParent(entityLink, "table", "details");
 				if (editDetails && entityLink == editDetails.querySelector("a")) {
-					page.classList.add(userjs + "HLbox");
+					page.classList.add(prefix + "Box");
 				}
 			} else if (cat == "edits") {
 				// in edit lists: Release or release group edits are boxed; other entity edits are left bordered
 				var edit = getParent(entityLink, "div", "edit-list");
 				if (edit) {
-					edit.classList.add(userjs + "HL" + (entityLink == edit.querySelector("div.edit-details a") ? "box" : "row"));
+					edit.classList.add(prefix + (entityLink == edit.querySelector("div.edit-details a") ? "Box" : "Row"));
 				}
 			} else {
 				// in other pages: Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists
 				var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
 				if (row) {
-					if (entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/'])") && !(cat == "release" && page.classList.contains(userjs + "HLbox") && entityType == "recording")) {
-						row.classList.add(userjs + "HLrow");
+					if (entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/'])") && !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")) {
+						row.classList.add(prefix + "Row");
 					}
 					// decorate tracks without holding them
 					if (cat == "release" && entityType == "recording" || cat == "recording" && entityType == "release") {
 						var track = row.querySelector("a[href*='/track']");
 						if (track) {
-							track.classList.add(userjs + "HLitem");
+							track.classList.add(prefix + "Item");
 						}
 					}
 				}
@@ -787,7 +787,7 @@ function end(ok, msg) {
 }
 function closeButt() {
 	modal(true, concat(["☞ You can now review these cute logs, or ", createA("close", function(event) { modal(false); }, "this will close this cute little window"), " them. ஜ۩۞۩ஜ"]), 1);
-	document.getElementById(userjs + "modal").previousSibling.addEventListener("click", function(event) {
+	document.getElementById(prefix + "Modal").previousSibling.addEventListener("click", function(event) {
 		if (gaugeto) { clearTimeout(gaugeto); gaugeto = null; }
 		this.parentNode.removeChild(this.nextSibling);
 		this.parentNode.removeChild(this);
@@ -795,11 +795,11 @@ function closeButt() {
 }
 var gaugeto;
 function modal(show, txt, brs, gauge) {
-	var obj = document.getElementById(userjs + "modal");
+	var obj = document.getElementById(prefix + "Modal");
 	if (show && !obj) {
 		coolstuff("div", "50", "100%", "100%", "black", ".6");
 		obj = coolstuff("div", "55", "600px", "50%", "white");
-		obj.setAttribute("id", userjs + "modal");
+		obj.setAttribute("id", prefix + "Modal");
 		obj.style.setProperty("padding", "4px");
 		obj.style.setProperty("overflow", "auto");
 		obj.style.setProperty("white-space", "nowrap");
@@ -838,7 +838,7 @@ function modal(show, txt, brs, gauge) {
 				setTitle(true, pc);
 				if (gauge[0] >= gauge[1]) {
 					gaugeto = setTimeout(function() {
-						if (obj = document.getElementById(userjs + "modal")) {
+						if (obj = document.getElementById(prefix + "Modal")) {
 							obj.firstChild.style.setProperty("display", "none");
 						}
 					}, 4000);
@@ -974,7 +974,7 @@ function debug(txt, buffer) {
 		if (buffer) {
 			debugBuffer += txt + "\r\n";
 		} else {
-			console.log(userjs + "(collec.HL)\r\n" + debugBuffer + txt);
+			console.log(prefix + "\r\n" + debugBuffer + txt);
 			debugBuffer = "";
 		}
 	}
