@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2017.10.12
+// @version      2017.10.12.2301
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -21,6 +21,7 @@ var meta = {raw: function() {
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
 // @grant        GM_deleteValue
 // @grant        GM_getValue
+// @grant        GM_listValues
 // @grant        GM_setValue
 // @match        *://*.mbsandbox.org/*edits*
 // @match        *://*.mbsandbox.org/*votes*
@@ -114,15 +115,12 @@ for (var i = 0; i < localStorage.length; i++) {
 	}
 }
 // cleanup for previous branch version (GM_setValue(oldPrefix + key) to GM_setValue(key))
-var keysToDelete = []
-for each (var key in GM_listValues()) {
-	if(key.indexOf(oldPrefix) == 0 && key.length > oldPrefix.length) {
-		GM_setValue(key.substr(oldPrefix.length), GM_setValue(key));
-		keysToDelete.push(key);
+var keys = GM_listValues();
+for (var j = 0; j < keys.length; j++) {
+	if(keys[j].indexOf(oldPrefix) == 0 && keys[j].length > oldPrefix.length) {
+		GM_setValue(keys[j].substr(oldPrefix.length), GM_getValue(keys[j]));
+		GM_deleteValue(keys[j]);
 	}
-}
-for (var j = 0; j < keysToDelete.length; j++) {
-	gm_deleteValue(keysToDelete[j]);
 }
 // ############################################################################
 // #                                                                          #
