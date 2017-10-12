@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2017.10.11
+// @version      2017.10.12
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -102,13 +102,27 @@ if (meta.raw && meta.raw.toString && (meta.raw = meta.raw.toString())) {
 meta.name = meta.name.substr("4") + " " + meta.version;
 // ############################################################################
 // #                                                                          #
-// #                           TEMPORARY STORAGE CLEANUP                      #
-// #                                                                          #
+// #                           LEGACY CLEANUP                                 #
+// # to be deleted…                                                           #
 // ############################################################################
+var oldKey = "jesus2099userjs126380";
+// cleanup for previous master version (localStorage.setItem to GM_setValue)
 for (var i = 0; i < localStorage.length; i++) {
-	if(localStorage.key(i).indexOf("jesus2099userjs126380") == 0) {
+	if(localStorage.key(i).indexOf(oldKey) == 0 && localStorage.key(i).length > oldKey.length) {
+		GM_setValue(localStorage.key(i).substr(oldKey.length), localStorage.getItem(localStorage.key(i)));
 		localStorage.removeItem(localStorage.key(i));
 	}
+}
+// cleanup for previous branch version (GM_setValue(userjs + key) to GM_setValue(key))
+var keysToDelete = []
+for each (var key in GM_listValues()) {
+	if(key.indexOf(oldKey) == 0 && key.length > oldKey.length) {
+		GM_setValue(key.substr(oldKey.length), GM_setValue(key));
+		keysToDelete.push(key);
+	}
+}
+for (var j = 0; j < keysToDelete.length; j++) {
+	gm_deleteValue(keysToDelete[j]);
 }
 // ############################################################################
 // #                                                                          #
@@ -143,7 +157,7 @@ if (cat) {
 	j2ss.insertRule("." + userjs + "HLitem { text-shadow: 0 0 8px " + highlightColour + "!important; }", 0);
 	j2ss.insertRule("." + userjs + "HLrow ." + userjs + "HLitem { border: 0; padding: 0; }", 0);
 	var MBS = self.location.protocol + "//" + self.location.host;
-	var collectionsID = GM_getValue(userjs + "collections") || "";
+	var collectionsID = GM_getValue("collections") || "";
 	var releaseID;
 	var stuff, collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
 	var strType = "release-group|recording|label|artist|work";
@@ -207,7 +221,7 @@ if (cat) {
 						var pageCrawlMode = cantUseWS(this);
 						loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0);
 					},
-					"Add this collection’s content to local storage (" + collid + ")"
+					"Add this collection’s content to highlighter (" + collid + ")"
 				));
 				loadButtons.push(" | ");
 				loadButtons.push(createA(
@@ -217,13 +231,13 @@ if (cat) {
 						if (confirm(dialogprefix + cmsg)) {
 							// erase local stuff
 							for (var stu = 0; stu < collectedStuff.length; stu++) {
-								GM_deleteValue(userjs + collectedStuff[stu] + "s");
+								GM_deleteValue(collectedStuff[stu] + "s");
 							}
 							// then append (previous button)
 							this.previousSibling.previousSibling.click();
 						}
 					},
-					"Replace local storage with this collection’s content (" + collid + ")"
+					"Replace current highlighted content with this collection’s content (" + collid + ")"
 				));
 				xp.snapshotItem(i).appendChild(document.createElement("td")).appendChild(concat(loadButtons));
 				if (i == 0) {
@@ -233,7 +247,7 @@ if (cat) {
 						var cstuff = collectedStuff[stu];
 						var lab = document.createElement("label");
 						lab.style.setProperty("white-space", "nowrap");
-						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue(userjs + "cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
+						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue("cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
 						var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
 						if (cstuff.match(/artist|recording|release(-group)?/)) {/*defaults*/
 							cfgcb.setAttribute("checked", "checked");
@@ -241,8 +255,8 @@ if (cat) {
 						if (cstuff.match(/release(-group)?/)) {/*forced*/
 							lab.style.setProperty("opacity", ".5");
 							cfgcb.setAttribute("disabled", "disabled");
-						} else {/*read previous settings from local storage*/
-							var cfgstu = GM_getValue(userjs + "cfg" + cstuff);
+						} else {/* read previous settings */
+							var cfgstu = GM_getValue("cfg" + cstuff);
 							if (cfgstu == "1") {
 								cfgcb.setAttribute("checked", "checked");
 							} else if (cfgstu == "0") {
@@ -296,11 +310,11 @@ if (cat) {
 				if (mbid) {
 					mbid = mbid[1];
 					if (!stuff[cstuff].loaded) {
-						stuff[cstuff].rawids = GM_getValue(userjs + cstuff + "s");
+						stuff[cstuff].rawids = GM_getValue(cstuff + "s");
 						if (stuff[cstuff].rawids) {
 							stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
-							debug(" \r\n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded from local storage (" + userjs + cstuff + "s)\r\nMatching: " + path, true);
-						} else { debug(" \r\nNo " + cstuff.toUpperCase() + "S in local storage (" + userjs + cstuff + "s)", true); }
+							debug(" \r\n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\r\nMatching: " + path, true);
+						} else { debug(" \r\nNo " + cstuff.toUpperCase() + "S in highlighter (" + cstuff + "s)", true); }
 						stuff[cstuff].loaded = true;
 					}
 					if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
@@ -376,17 +390,17 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 	var url = WSMode ? "/ws/2/collection/" + collectionMBID + "/releases?limit=" + limit + "&offset=" + offset : "/collection/" + collectionMBID + "?page=" + page;
 	if (page == 1) {
 		// Add collection MBID to list of highlighted
-		collectionsID = GM_getValue(userjs + "collections") || "";
+		collectionsID = GM_getValue("collections") || "";
 		if (collectionsID.indexOf(collectionMBID) < 0) {
 			collectionsID += collectionMBID + " ";
 		}
-		GM_setValue(userjs + "collections", collectionsID);
+		GM_setValue("collections", collectionsID);
 		modal(true, "Loading collection " + collectionMBID + "…", 1);
 		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page."]), 2);
 		modal(true, concat(["<hr>", "Fetching releases…"]), 2);
 		stuff["release-tmp"] = {ids: []};
 		for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
-			stuff[stu].rawids = GM_getValue(userjs + stu + "s") || "";
+			stuff[stu].rawids = GM_getValue(stu + "s") || "";
 			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
 		}
 	}
@@ -425,8 +439,8 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 				} else if (lastPage && lastPage == page || !nextPage) {
 					modal(true, " ", 1);
 					if (stuff["release-tmp"].ids.length > 0) {
-						GM_setValue(userjs + "releases", stuff["release"].rawids);
-						modal(true, concat([createTag("b", {}, stuff["release"].ids.length + " release" + (stuff["release"].ids.length == 1 ? "" : "s")), " saved into local storage (" + userjs + "releases)… "]));
+						GM_setValue("releases", stuff["release"].rawids);
+						modal(true, concat([createTag("b", {}, stuff["release"].ids.length + " release" + (stuff["release"].ids.length == 1 ? "" : "s")), " saved… "]));
 						modal(true, "OK.", 2);
 						retry = 0;
 						setTimeout(function() { fetchReleasesStuff(); }, chrono(MBWSRate));
@@ -520,9 +534,9 @@ function fetchReleasesStuff(pi) {
 						modal(true, " ", 1);
 						delete(stuff["release-tmp"]);
 						for (var stu in stuff) if (stu != "release" && stuff.hasOwnProperty(stu)) {
-							GM_setValue(userjs + stu + "s", stuff[stu].rawids);
+							GM_setValue(stu + "s", stuff[stu].rawids);
 							stuff[stu].rawids = "";
-							modal(true, concat([createTag("b", {}, stuff[stu].ids.length + " " + stu + (stuff[stu].ids.length == 1 ? "" : "s")), " saved into local storage (" + userjs + stu + "s)… "]));
+							modal(true, concat([createTag("b", {}, stuff[stu].ids.length + " " + stu + (stuff[stu].ids.length == 1 ? "" : "s")), " saved… "]));
 							modal(true, "OK.", 1);
 						}
 						end(true);
@@ -554,9 +568,9 @@ function collectionUpdater(link, action) {
 		link.addEventListener("click", function(event) {
 			altered = this.getAttribute("href") != self.location.href;
 			modal(true, "Refreshing memory…", 1);
-			collectionsID = GM_getValue(userjs + "collections") || "";
+			collectionsID = GM_getValue("collections") || "";
 			for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
-				stuff[stu].rawids = GM_getValue(userjs + stu + "s");
+				stuff[stu].rawids = GM_getValue(stu + "s");
 				stuff[stu].ids = stuff[stu].rawids != null ? (stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : []) : null;
 			}
 			if (stuff["release"].ids && releaseID) {
@@ -567,7 +581,7 @@ function collectionUpdater(link, action) {
 						if (stuff["release"].rawids.indexOf(releaseID) == -1) {
 							modal(true, concat([createTag("b", {}, "Adding this release"), " to loaded collection…"]), 1);
 							stuff["release"].rawids += releaseID + " ";
-							GM_setValue(userjs + "releases", stuff["release"].rawids);
+							GM_setValue("releases", stuff["release"].rawids);
 							altered = true;
 						}
 						for (var c = 0; c < checks.length; c++) {
@@ -577,7 +591,7 @@ function collectionUpdater(link, action) {
 								if (stuff[type].ids && stuff[type].rawids.indexOf(mbid) < 0 && (type != "artist" || skipArtists.indexOf(mbid) < 0)) {
 									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1);
 									stuff[type].rawids += mbid + " ";
-									GM_setValue(userjs + type + "s", stuff[type].rawids);
+									GM_setValue(type + "s", stuff[type].rawids);
 									altered = true;
 								}
 							}
@@ -588,7 +602,7 @@ function collectionUpdater(link, action) {
 						if (stuff["release"].rawids.indexOf(releaseID) > -1) {
 							modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
 							stuff["release"].rawids = stuff["release"].rawids.replace(new RegExp(releaseID + "( |$)"), "");
-							GM_setValue(userjs + "releases", stuff["release"].rawids);
+							GM_setValue("releases", stuff["release"].rawids);
 							altered = true;
 						}
 						if (checks.length > 0) {
@@ -709,7 +723,7 @@ function stuffRemover(checks, pp) {
 							} else {
 								modal(true, concat([createTag("span", {s: {color: "grey"}}, "not used any more: "), createTag("b", {}, "removing"), "…"]), 1);
 								stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
-								GM_setValue(userjs + checkType + "s", stuff[checkType].rawids);
+								GM_setValue(checkType + "s", stuff[checkType].rawids);
 								altered = true;
 								retry = 0;
 								setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
@@ -733,7 +747,7 @@ function stuffRemover(checks, pp) {
 				if (!stuff[checkAgainst].rawids) {/* Protection for some edge cases of new script using old script data */
 					modal(true, concat([createTag("span", {s: {color: "grey"}}, ["no ", checkAgainst, "s at all (", createA("//github.com/jesus2099/konami-command/issues/87", "#87"), "): "]), "removing…"]), 1);
 					stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
-					GM_setValue(userjs + checkType + "s", stuff[checkType].rawids);
+					GM_setValue(checkType + "s", stuff[checkType].rawids);
 					altered = true;
 				}
 				retry = 0;
@@ -754,7 +768,7 @@ function setTitle(ldng, pc) {
 	var old = document.title.match(/ :: (.+)$/);
 	old = old ? old[1] : document.title;
 	if (ldng) {
-		document.title = (pc ? pc + "%" : "⌛") + " Altering local collection… :: " + old;
+		document.title = (pc ? pc + "%" : "⌛") + " Altering highlighter content… :: " + old;
 	} else {
 		document.title = old;
 	}
@@ -763,7 +777,7 @@ function end(ok, msg) {
 	setTitle(false);
 	if (debugBuffer != "") { debug(""); }
 	if (ok) {
-		modal(true, concat(["<br>", "<hr>", "Collection succesfully loaded in local storage.", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
+		modal(true, concat(["<br>", "<hr>", "Collection succesfully loaded in highlighter.", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
 	} else {
 		modal(true, msg, 1).style.setProperty("background-color", "pink");
 		alert(dialogprefix + msg);
@@ -880,11 +894,11 @@ function cantUseWS(button) {
 }
 function lastLink(href) {
 	if (href) {
-		GM_setValue(userjs + "lastlink", href);
+		GM_setValue("lastlink", href);
 	} else {
-		var ll = GM_getValue(userjs + "lastlink");
+		var ll = GM_getValue("lastlink");
 		if (ll) {
-			GM_deleteValue(userjs + "lastlink");
+			GM_deleteValue("lastlink");
 			modal(true, "Re‐loading page…", 1);
 			setTimeout(function() { self.location.href = ll; }, chrono(MBWSRate));
 		} else {
@@ -897,7 +911,7 @@ function setTitle(ldng, pc) {
 	var old = document.title.match(/ :: (.+)$/);
 	old = old ? old[1] : document.title;
 	if (ldng) {
-		document.title = (pc ? pc + "%" : "⌛") + " Altering local collection… :: " + old;
+		document.title = (pc ? pc + "%" : "⌛") + " Altering highlighter content… :: " + old;
 	} else {
 		document.title = old;
 	}
