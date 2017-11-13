@@ -1014,7 +1014,7 @@ function workLookupURL(db, type, q) {
 		case "mb": switch (type) {
 			case "name": return "https://musicbrainz.org/search?type=work&limit=100&query=" + encodeURIComponent(q);
 			case "code": return "https://musicbrainz.org/search?type=annotation&limit=100&method=advanced&query=type%3Awork+AND+text%3A" + q;
-			case "iswc": return "https://musicbrainz.org/search?type=work&limit=100&method=advanced&query=iswc%3A" + q;
+			case "iswc": return "https://musicbrainz.org/iswc/" + q;
 		}
 		case "jasrac": switch (type) {
 			case "name": return "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_WORKS_TITLE_NAME1=" + q + "&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1";
