@@ -671,7 +671,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 							iiswcs[iiswcs.length - 1].value = iswc;
 							iiswcs[iiswcs.length - 1].style.setProperty("background", cWARN);
 						} else {
-							document.querySelector("form.edit-work div.form-row-text-list div.form-row-add button.nobutton.add").click();
+							document.querySelector("form.edit-work div.form-row-text-list div.form-row-add button.add-item").click();
 							var iswcn = document.querySelectorAll(insel)[iiswcs.length];
 							iswcn.style.setProperty("background", cWARN);
 							iswcn.value = iswc;
