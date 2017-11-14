@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2017.7.10
+// @version      2017.11.14
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
@@ -72,7 +72,9 @@ var xhrJobs = {
 					xhrWork.aliases = res.aliases;
 					xhrWork.annotation = res.annotation ? res.annotation : "";
 					var code = xhrWork.annotation.match(new RegExp(reAnnotCode, "i"));
-					insertBefore(createTag("div", {a: {class: "row"}}, [createTag("label", {}, "JASRAC作品コード:"), createTag("b", {s: {backgroundColor: background}}, code ? createA(code[1], workLookupURL("jasrac", "code", code[1]), "JASRAC work code from annotation", "_blank") : "なし")]), /*xhrForm.name*/iname.parentNode);
+					if (code) {
+						insertBefore(createTag("div", {a: {class: "row"}}, [createTag("label", {}, "JASRAC作品コード:"), createTag("b", {s: {backgroundColor: background}}, createA(code[1], workLookupURL("jasrac", "code", code[1]), "JASRAC work code from annotation", "_blank"))]), /*xhrForm.name*/iname.parentNode);
+					}
 					aliasTable();
 				}
 				document.title = oldTitle;
