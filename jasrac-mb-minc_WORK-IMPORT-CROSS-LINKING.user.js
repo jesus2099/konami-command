@@ -572,7 +572,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			var icomment = document.getElementById("id-edit-work.comment");
 			var stypeid = document.getElementById("id-edit-work.type_id");
 //TODO: restore language button feature (search slangid) https://github.com/jesus2099/konami-command/issues/321
-			var slangid = document.getElementById("id-edit-work.language_id");
+			var slangid = document.querySelector("select[name='edit-work.languages.0']");
 			var teditnote = document.getElementById("id-edit-work.edit_note");
 			if (document.referrer.match(/jasrac\.or\.jp/) && (sakuhin = teditnote.value.match(new RegExp("^(.+) \\(work code '''(" + reCode + ")'''")))) {
 				xhrWork.code = sakuhin[2];
@@ -987,12 +987,12 @@ function setType(type) {
 				stypeid.style.setProperty("background", cWARN);
 				stypeid.value = 17;
 			}
-//			if (slangid.value != 486) {
-//				slangid.style.setProperty("background", cOK);
-//			} else {
-//				slangid.style.setProperty("background", cWARN);
-//				slangid.selectedIndex = 0;
-//			}
+			if (slangid.value != 486) {
+				slangid.style.setProperty("background", cOK);
+			} else {
+				slangid.style.setProperty("background", cWARN);
+				slangid.selectedIndex = 0;
+			}
 			break;
 		case instrumental.toLowerCase():
 			if (stypeid.selectedIndex == 0) {
@@ -1001,12 +1001,12 @@ function setType(type) {
 				stypeid.style.setProperty("background", cWARN);
 				stypeid.selectedIndex = 0;
 			}
-//			if (slangid.value == 486) {
-//				slangid.style.setProperty("background", cOK);
-//			} else {
-//				slangid.style.setProperty("background", cWARN);
-//				slangid.value = 486;
-//			}
+			if (slangid.value == 486) {
+				slangid.style.setProperty("background", cOK);
+			} else {
+				slangid.style.setProperty("background", cWARN);
+				slangid.value = 486;
+			}
 			break;
 	}
 	stypeid.focus();
