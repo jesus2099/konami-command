@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2017.7.10
+// @version      2017.11.14
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
@@ -72,7 +72,9 @@ var xhrJobs = {
 					xhrWork.aliases = res.aliases;
 					xhrWork.annotation = res.annotation ? res.annotation : "";
 					var code = xhrWork.annotation.match(new RegExp(reAnnotCode, "i"));
-					insertBefore(createTag("div", {a: {class: "row"}}, [createTag("label", {}, "JASRAC作品コード:"), createTag("b", {s: {backgroundColor: background}}, code ? createA(code[1], workLookupURL("jasrac", "code", code[1]), "JASRAC work code from annotation", "_blank") : "なし")]), /*xhrForm.name*/iname.parentNode);
+					if (code) {
+						insertBefore(createTag("div", {a: {class: "row"}}, [createTag("label", {}, "JASRAC作品コード:"), createTag("b", {s: {backgroundColor: background}}, createA(code[1], workLookupURL("jasrac", "code", code[1]), "JASRAC work code from annotation", "_blank"))]), /*xhrForm.name*/iname.parentNode);
+					}
 					aliasTable();
 				}
 				document.title = oldTitle;
@@ -570,7 +572,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			var icomment = document.getElementById("id-edit-work.comment");
 			var stypeid = document.getElementById("id-edit-work.type_id");
 //TODO: restore language button feature (search slangid) https://github.com/jesus2099/konami-command/issues/321
-			var slangid = document.getElementById("id-edit-work.language_id");
+			var slangid = document.querySelector("select[name='edit-work.languages.0']");
 			var teditnote = document.getElementById("id-edit-work.edit_note");
 			if (document.referrer.match(/jasrac\.or\.jp/) && (sakuhin = teditnote.value.match(new RegExp("^(.+) \\(work code '''(" + reCode + ")'''")))) {
 				xhrWork.code = sakuhin[2];
@@ -669,7 +671,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 							iiswcs[iiswcs.length - 1].value = iswc;
 							iiswcs[iiswcs.length - 1].style.setProperty("background", cWARN);
 						} else {
-							document.querySelector("form.edit-work div.form-row-text-list div.form-row-add button.nobutton.add").click();
+							document.querySelector("form.edit-work div.form-row-text-list div.form-row-add button.add-item").click();
 							var iswcn = document.querySelectorAll(insel)[iiswcs.length];
 							iswcn.style.setProperty("background", cWARN);
 							iswcn.value = iswc;
@@ -985,12 +987,12 @@ function setType(type) {
 				stypeid.style.setProperty("background", cWARN);
 				stypeid.value = 17;
 			}
-//			if (slangid.value != 486) {
-//				slangid.style.setProperty("background", cOK);
-//			} else {
-//				slangid.style.setProperty("background", cWARN);
-//				slangid.selectedIndex = 0;
-//			}
+			if (slangid.value != 486) {
+				slangid.style.setProperty("background", cOK);
+			} else {
+				slangid.style.setProperty("background", cWARN);
+				slangid.selectedIndex = 0;
+			}
 			break;
 		case instrumental.toLowerCase():
 			if (stypeid.selectedIndex == 0) {
@@ -999,12 +1001,12 @@ function setType(type) {
 				stypeid.style.setProperty("background", cWARN);
 				stypeid.selectedIndex = 0;
 			}
-//			if (slangid.value == 486) {
-//				slangid.style.setProperty("background", cOK);
-//			} else {
-//				slangid.style.setProperty("background", cWARN);
-//				slangid.value = 486;
-//			}
+			if (slangid.value == 486) {
+				slangid.style.setProperty("background", cOK);
+			} else {
+				slangid.style.setProperty("background", cWARN);
+				slangid.value = 486;
+			}
 			break;
 	}
 	stypeid.focus();
@@ -1014,7 +1016,7 @@ function workLookupURL(db, type, q) {
 		case "mb": switch (type) {
 			case "name": return "https://musicbrainz.org/search?type=work&limit=100&query=" + encodeURIComponent(q);
 			case "code": return "https://musicbrainz.org/search?type=annotation&limit=100&method=advanced&query=type%3Awork+AND+text%3A" + q;
-			case "iswc": return "https://musicbrainz.org/search?type=work&limit=100&method=advanced&query=iswc%3A" + q;
+			case "iswc": return "https://musicbrainz.org/iswc/" + q;
 		}
 		case "jasrac": switch (type) {
 			case "name": return "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_WORKS_TITLE_NAME1=" + q + "&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1";
