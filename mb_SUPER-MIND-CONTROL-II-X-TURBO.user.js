@@ -63,6 +63,8 @@ var KEYCODES = {
 	"NUMPAD-DIVIDE": 0x6F,
 };
 var MBS = self.location.protocol + "//" + self.location.host;
+var lang = document.querySelector("html[lang]");
+lang = lang && lang.getAttribute("lang") || "en-GB";
 var sidebar = document.getElementById("sidebar");
 var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(stre_GUID);
@@ -404,14 +406,14 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		stats[2].parentNode.parentNode.insertBefore(
 			createTag("tr", null, [
 				createTag("th", null, "Ranked total"),
-				createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, separ1000(0 + accepted + autoedits)))
+				createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, (0 + accepted + autoedits).toLocaleString(lang)))
 			]),
 			stats[2].parentNode
 		);
 		stats[6].parentNode.parentNode.insertBefore(
 			createTag("tr", null, [
 				createTag("th", null, "Total"),
-				createTag("th", null, createTag("a", {a: {href: editorPathname + "/edits"}}, separ1000(0 + accepted + autoedits + voteddown + failed + open + cancelled)))
+				createTag("th", null, createTag("a", {a: {href: editorPathname + "/edits"}}, (0 + accepted + autoedits + voteddown + failed + open + cancelled).toLocaleString(lang)))
 			]),
 			stats[6].parentNode
 		);
@@ -430,7 +432,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		stats[9].parentNode.parentNode.insertBefore(
 			createTag("tr", null, [
 				createTag("th", null, "Ranked total"),
-				createTag("th", {a: {colspan: "2"}}, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, separ1000(0 + yes + no + appr) + " (" + percentage(yes + no + appr, yes + no + abs + appr) + ")"))
+				createTag("th", {a: {colspan: "2"}}, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, (0 + yes + no + appr).toLocaleString(lang) + " (" + percentage(yes + no + appr, yes + no + abs + appr) + ")"))
 			]),
 			stats[9].parentNode
 		);
@@ -456,9 +458,6 @@ function writeStat(stats, i, stat, total) {
 }
 function percentage(p, c) {
 	return (c == 0 ? 0 : Math.round(10000 * p / c) / 100) + "%";
-}
-function separ1000(n) {
-	return ("" + n).replace(/(\d)(\d{3})$/, "$1,$2");
 }
 /*==========================================================================
 ## MAX_RECENT_ENTITIES ##
