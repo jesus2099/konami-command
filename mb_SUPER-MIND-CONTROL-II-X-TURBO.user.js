@@ -2,15 +2,16 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2017.10.25
+// @version      2017.11.24
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
-// @compatible   opera(12.18.1872)+violentmonkey     my setup
-// @compatible   firefox(47.0)+greasemonkey          quickly tested
-// @compatible   chromium(46.0.2471.0)+tampermonkey  quickly tested
-// @compatible   chrome+tampermonkey                 should be same as chromium
+// @compatible   opera(12.18.1872)+violentmonkey      my setup
+// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
+// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
+// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
@@ -414,15 +415,13 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 			]),
 			stats[6].parentNode
 		);
-		var votes = stats[6].getElementsByTagName("a")[0].getAttribute("href");
-		votes = votes.replace(/conditions\.0\.field=editor/, "conditions.0.field=vote");
-		votes = votes.replace(/conditions\.0\.name=[^&]+/, "conditions.0.voter_id=" + votes.match(/conditions\.0\.args\.0=(\d+)/)[1]);
-		votes = votes.replace(/conditions\.0\.args\.0=\d+/, "conditions.0.args=%vote%");
-		votes = votes.replace(/\?conditions\.1[^&]+&/, "?");
-		votes = votes.replace(/conditions\.1[^&]+/g, "");
+		var refined24hSearch = stats[6].getElementsByTagName("a")[0].getAttribute("href");
+		var editorID = refined24hSearch.match(/conditions\.0\.args\.0=(\d+)/)[1]; // no longer used below
+		var voteSearch = refined24hSearch.replace(/\bconditions\.\d+\.[^&]+&/gi, "");
+		voteSearch += "&conditions.0.field=voter&conditions.0.operator=me&conditions.0.name=&conditions.0.voter_id=&conditions.0.args=%vote%";
 		for (var i = 7; i < stats.length; i++) {
 			var vote = stats[i];
-			vote.replaceChild(createTag("a", {a: {href: votes.replace(/%vote%/, {7: 1, 8: 0, 9: -1, 10: 2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
+			vote.replaceChild(createTag("a", {a: {href: voteSearch.replace(/%vote%/, {7: 1, 8: 0, 9: -1, 10: 2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
 		}
 		var yes = readStat(stats, 7);
 		var no = readStat(stats, 8);
