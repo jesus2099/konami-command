@@ -29,23 +29,25 @@
 var mbid = self.location.pathname.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
 var tracks = document.querySelectorAll("div#content table.tbl > tbody > tr");
 if (mbid && tracks.length > 0) {
-	var artistth = getParent(tracks[0], "table").querySelectorAll("thead > tr > th");
-	var accol = -1;
-	var lecol = -1;
-	var ticol = -1;
-	for (var thi = 0; thi < artistth.length && (ticol == -1 || accol == -1) ; thi++) {
-		if (artistth[thi].textContent.match(/^title/i)) {
-			ticol = thi + 1;
+	var releaseArtistColumnHeader = getParent(tracks[0], "table").querySelectorAll("thead > tr > th");
+	var releaseArtistColumnIndex;
+	var lengthColumnIndex;
+	var releaseTitleColumnIndex;
+	/* locate length, release title and release artist columns */
+	for (var columnIndex = 0; columnIndex < releaseArtistColumnHeader.length ; columnIndex++) {
+		if (releaseArtistColumnHeader[columnIndex].textContent.match(/^title/i)) {
+			releaseTitleColumnIndex = columnIndex + 1;
 		}
-		if (artistth[thi].textContent.match(/length/i)) {
-			lecol = thi + 1;
+		if (releaseArtistColumnHeader[columnIndex].textContent.match(/length/i)) {
+			lengthColumnIndex = columnIndex + 1;
 		}
-		if (artistth[thi].textContent.match(/release artist/i)) {
-			artistth = artistth[thi];
-			accol = thi + 1;
+		if (releaseArtistColumnHeader[columnIndex].textContent.match(/release artist/i)) {
+			releaseArtistColumnHeader = releaseArtistColumnHeader[columnIndex];
+			releaseArtistColumnIndex = columnIndex + 1;
 		}
 	}
-	if (ticol + lecol + accol > 0) {
+	if (releaseTitleColumnIndex && lengthColumnIndex && releaseArtistColumnIndex) {
+		alert("ok");
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener("load", function(event) {
 			var res = this.responseXML;
@@ -69,7 +71,7 @@ if (mbid && tracks.length > 0) {
 					) {
 						for (var tt = 0; tt < tracks.length; tt++) {
 							if (tracks[tt].querySelector("a[href*='/release/']") && tracks[tt].querySelector("a[href*='/release/']").getAttribute("href").indexOf(relid) > 0 && tracks[tt].querySelector("td:first-of-type").textContent.trim() == discnum + "." + tracknum) {
-								var titlespan = tracks[tt].querySelector("td:nth-child(" + ticol + ")");
+								var titlespan = tracks[tt].querySelector("td:nth-child(" + releaseTitleColumnIndex + ")");
 								if (titlespan) {
 									var tit = document.querySelector("h1 a");
 									var wtit = wstracks[wt].querySelector("title");
@@ -80,7 +82,7 @@ if (mbid && tracks.length > 0) {
 										titlespan.style.setProperty("color", "maroon");
 									}
 								}
-								var lenspan = tracks[tt].querySelector("td:nth-child(" + lecol + ")");
+								var lenspan = tracks[tt].querySelector("td:nth-child(" + lengthColumnIndex + ")");
 								if (lenspan) {
 									var tlen = wstracks[wt].querySelector("length");
 									if (tlen && (tlen = time(tlen.textContent))) {
@@ -96,11 +98,11 @@ if (mbid && tracks.length > 0) {
 								var ac = wstracks[wt].querySelectorAll("artist-credit > name-credit");
 								if (ac.length > 0) {
 									var acdiv = createTag("div", {s: {border: "4px solid gold", padding: "1px 2px", textShadow: "1px 1px 2px #993"}});
-									if (artistth != null) {
-										artistth.insertBefore(acdiv.cloneNode(true), artistth.firstChild).appendChild(document.createTextNode("Track Artist"));
-										artistth = null;
+									if (releaseArtistColumnHeader != null) {
+										releaseArtistColumnHeader.insertBefore(acdiv.cloneNode(true), releaseArtistColumnHeader.firstChild).appendChild(document.createTextNode("Track Artist"));
+										releaseArtistColumnHeader = null;
 									}
-									var artisttd = tracks[tt].querySelector("td:nth-child(" + accol + ")");
+									var artisttd = tracks[tt].querySelector("td:nth-child(" + releaseArtistColumnIndex + ")");
 									if (artisttd) {
 										var acdivc = artisttd.insertBefore(acdiv.cloneNode(true), artisttd.firstChild);
 										for (var nc = 0; nc < ac.length; nc++) {
