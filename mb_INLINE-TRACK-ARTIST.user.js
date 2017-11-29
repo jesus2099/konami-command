@@ -35,13 +35,13 @@ if (mbid && tracks.length > 0) {
 	var releaseTitleColumnIndex;
 	/* locate length, release title and release artist columns */
 	for (var columnIndex = 0; columnIndex < releaseArtistColumnHeader.length ; columnIndex++) {
-		if (releaseArtistColumnHeader[columnIndex].textContent.match(/^title/i)) {
+		if (releaseArtistColumnHeader[columnIndex].textContent.match(/^tit\w+$/i)) {
 			releaseTitleColumnIndex = columnIndex + 1;
 		}
-		if (releaseArtistColumnHeader[columnIndex].textContent.match(/length/i)) {
+		if (releaseArtistColumnHeader[columnIndex].classList.contains("treleases")) {
 			lengthColumnIndex = columnIndex + 1;
 		}
-		if (releaseArtistColumnHeader[columnIndex].textContent.match(/release artist/i)) {
+		if (releaseArtistColumnHeader[columnIndex].textContent.match(/artie?ste?|künstler/i)) {
 			releaseArtistColumnHeader = releaseArtistColumnHeader[columnIndex];
 			releaseArtistColumnIndex = columnIndex + 1;
 		}
