@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE TRACK ARTIST
-// @version      2017.3.6
+// @version      2017.11.30
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-TRACK-ARTIST.user.js
 // @description  musicbrainz.org: highlights track title, length and artist differences in recording page
 // @homepage     http://userscripts-mirror.org/scripts/show/166877
@@ -71,6 +71,7 @@ if (mbid && tracks.length > 0) {
 					) {
 						for (var t = 0; t < tracks.length; t++) {
 							if (tracks[t].querySelector("a[href*='/release/']") && tracks[t].querySelector("a[href*='/release/']").getAttribute("href").indexOf(wsReleaseMBID) > 0 && tracks[t].querySelector("td:first-of-type").textContent.trim() == wsPosition + "." + wsTrackNumber) {
+								/* display recording/track title discrepency */
 								var trackTitleCell = tracks[t].querySelector("td:nth-child(" + trackTitleColumnIndex + ")");
 								if (trackTitleCell) {
 									var trackTitle = document.querySelector("h1 a");
@@ -82,6 +83,7 @@ if (mbid && tracks.length > 0) {
 										trackTitleCell.style.setProperty("color", "maroon");
 									}
 								}
+								/* display recording/track length discrepency */
 								var trackLengthCell = tracks[t].querySelector("td:nth-child(" + lengthColumnIndex + ")");
 								if (trackLengthCell) {
 									var wsTrackLength = wsTracks[wst].querySelector("length");
@@ -95,6 +97,7 @@ if (mbid && tracks.length > 0) {
 										}
 									}
 								}
+								/* artist credit */
 								var wsTrackArtistCredits = wsTracks[wst].querySelectorAll("artist-credit > name-credit");
 								if (wsTrackArtistCredits.length > 0) {
 									var trackArtistCreditHeader = createTag("div", {s: {border: "4px solid gold", padding: "1px 2px", textShadow: "1px 1px 2px #993"}});
@@ -150,19 +153,4 @@ function time(_ms) {
 		return d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2) + (d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() / 1000).toFixed(3).slice(2) : "");
 	}
 	return "?:??";
-}
-function getParent(startingNode, searchedTag, searchedCssClass, searchedId) {
-	var currentNode = startingNode;
-	if (currentNode && (currentNode = currentNode.parentNode)) {
-		if (
-			currentNode.tagName.toUpperCase() == searchedTag.toUpperCase()
-			&& (!searchedCssClass || searchedCssClass && currentNode.classList.contains(searchedCssClass))
-			&& (!searchedId || currentNode.getAttribute && currentNode.getAttribute("id") == searchedId)
-		) {
-			return currentNode;
-		} else {
-			return getParent(currentNode, searchedTag, searchedCssClass, searchedId);
-		}
-	}
-	return null;
 }
