@@ -18,6 +18,7 @@
 // @requester    culinko
 // @since        2013-05-07
 // @require      https://github.com/jesus2099/konami-command/raw/ec7e4fcbaea01784b86159ee50d7098c314202b7/lib/SUPER.js
+// @require      https://github.com/jesus2099/konami-command/raw/84e864a4b2dbc6598e3f3d49af96e09387613f60/lib/SUPER.js
 // @require      https://github.com/jesus2099/konami-command/raw/ec7e4fcbaea01784b86159ee50d7098c314202b7/lib/COOL-BUBBLES.js
 // @grant        none
 // @match        *://*.mbsandbox.org/recording/*
@@ -149,4 +150,19 @@ function time(_ms) {
 		return d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2) + (d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() / 1000).toFixed(3).slice(2) : "");
 	}
 	return "?:??";
+}
+function getParent(startingNode, searchedTag, searchedCssClass, searchedId) {
+	var currentNode = startingNode;
+	if (currentNode && (currentNode = currentNode.parentNode)) {
+		if (
+			currentNode.tagName.toUpperCase() == searchedTag.toUpperCase()
+			&& (!searchedCssClass || searchedCssClass && currentNode.classList.contains(searchedCssClass))
+			&& (!searchedId || currentNode.getAttribute && currentNode.getAttribute("id") == searchedId)
+		) {
+			return currentNode;
+		} else {
+			return getParent(currentNode, searchedTag, searchedCssClass, searchedId);
+		}
+	}
+	return null;
 }
