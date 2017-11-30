@@ -18,7 +18,7 @@
 // @requester    culinko
 // @since        2013-05-07
 // @require      https://github.com/jesus2099/konami-command/raw/ec7e4fcbaea01784b86159ee50d7098c314202b7/lib/SUPER.js
-// @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128868
+// @require      https://github.com/jesus2099/konami-command/raw/ec7e4fcbaea01784b86159ee50d7098c314202b7/lib/COOL-BUBBLES.js
 // @grant        none
 // @match        *://*.mbsandbox.org/recording/*
 // @match        *://*.musicbrainz.org/recording/*
@@ -32,11 +32,11 @@ if (mbid && tracks.length > 0) {
 	var releaseArtistColumnHeader = getParent(tracks[0], "table").querySelectorAll("thead > tr > th");
 	var releaseArtistColumnIndex;
 	var lengthColumnIndex;
-	var releaseTitleColumnIndex;
-	/* locate length, release title and release artist columns */
+	var trackTitleColumnIndex;
+	/* locate length, track title and release artist columns */
 	for (var columnIndex = 0; columnIndex < releaseArtistColumnHeader.length ; columnIndex++) {
 		if (releaseArtistColumnHeader[columnIndex].textContent.match(/^tit\w+$/i)) {
-			releaseTitleColumnIndex = columnIndex + 1;
+			trackTitleColumnIndex = columnIndex + 1;
 		}
 		if (releaseArtistColumnHeader[columnIndex].classList.contains("treleases")) {
 			lengthColumnIndex = columnIndex + 1;
@@ -46,81 +46,79 @@ if (mbid && tracks.length > 0) {
 			releaseArtistColumnIndex = columnIndex + 1;
 		}
 	}
-	if (releaseTitleColumnIndex && lengthColumnIndex && releaseArtistColumnIndex) {
-		alert("ok");
+	if (trackTitleColumnIndex && lengthColumnIndex && releaseArtistColumnIndex) {
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener("load", function(event) {
-			var res = this.responseXML;
+			var wsRecording = this.responseXML;
 			if (
 				this.status == 200
-				&& (res = res.documentElement)
+				&& (wsRecording = wsRecording.documentElement)
 			) {
-				var reclen = res.querySelector("recording-list > recording > length");
-				reclen = time(reclen ? reclen.textContent : 0);
-				var durspan = document.querySelector("div#sidebar dl.properties dd.length");
-				if (durspan) { durspan.replaceChild(document.createTextNode(reclen), durspan.firstChild); }
-				var wstracks = res.querySelectorAll("recording-list > recording > release-list > release > medium-list > medium > track-list > track");/*recording[id='"+mbid+"'] marche pas!?*/
-				for (var wt = 0; wt < wstracks.length; wt++) {
-					var relid = getParent(wstracks[wt], "release");
-					var discnum = wstracks[wt].parentNode.parentNode.querySelector("position");
-					var tracknum = wstracks[wt].querySelector("number");
+				var wsRecordingLength = wsRecording.querySelector("recording-list > recording > length");
+				wsRecordingLength = time(wsRecordingLength ? wsRecordingLength.textContent : 0);
+				var trackLengthCell = document.querySelector("div#sidebar dl.properties dd.length");
+				if (trackLengthCell) { trackLengthCell.replaceChild(document.createTextNode(wsRecordingLength), trackLengthCell.firstChild); }
+				var wsTracks = wsRecording.querySelectorAll("recording-list > recording > release-list > release > medium-list > medium > track-list > track");/*recording[id='" + mbid + "'] marche pas!?*/
+				for (var wst = 0; wst < wsTracks.length; wst++) {
+					var wsReleaseMBID = getParent(wsTracks[wst], "release");
+					var wsPosition = wsTracks[wst].parentNode.parentNode.querySelector("position");
+					var wsTrackNumber = wsTracks[wst].querySelector("number");
 					if (
-						relid && (relid = relid.getAttribute("id"))
-						&& discnum && (discnum = discnum.textContent)
-						&& tracknum && (tracknum = tracknum.textContent)
+						wsReleaseMBID && (wsReleaseMBID = wsReleaseMBID.getAttribute("id"))
+						&& wsPosition && (wsPosition = wsPosition.textContent)
+						&& wsTrackNumber && (wsTrackNumber = wsTrackNumber.textContent)
 					) {
-						for (var tt = 0; tt < tracks.length; tt++) {
-							if (tracks[tt].querySelector("a[href*='/release/']") && tracks[tt].querySelector("a[href*='/release/']").getAttribute("href").indexOf(relid) > 0 && tracks[tt].querySelector("td:first-of-type").textContent.trim() == discnum + "." + tracknum) {
-								var titlespan = tracks[tt].querySelector("td:nth-child(" + releaseTitleColumnIndex + ")");
-								if (titlespan) {
-									var tit = document.querySelector("h1 a");
-									var wtit = wstracks[wt].querySelector("title");
-									if (tit && wtit && tit.textContent != wtit.textContent) {
-										titlespan.setAttribute("title", "≠ " + tit.textContent);
-										titlespan.classList.add("name-variation");
-										titlespan.style.setProperty("text-shadow", "1px 2px 2px #999");
-										titlespan.style.setProperty("color", "maroon");
+						for (var t = 0; t < tracks.length; t++) {
+							if (tracks[t].querySelector("a[href*='/release/']") && tracks[t].querySelector("a[href*='/release/']").getAttribute("href").indexOf(wsReleaseMBID) > 0 && tracks[t].querySelector("td:first-of-type").textContent.trim() == wsPosition + "." + wsTrackNumber) {
+								var trackTitleCell = tracks[t].querySelector("td:nth-child(" + trackTitleColumnIndex + ")");
+								if (trackTitleCell) {
+									var trackTitle = document.querySelector("h1 a");
+									var wsTrackTitle = wsTracks[wst].querySelector("title");
+									if (trackTitle && wsTrackTitle && trackTitle.textContent != wsTrackTitle.textContent) {
+										trackTitleCell.setAttribute("title", "≠ " + trackTitle.textContent);
+										trackTitleCell.classList.add("name-variation");
+										trackTitleCell.style.setProperty("text-shadow", "1px 2px 2px #999");
+										trackTitleCell.style.setProperty("color", "maroon");
 									}
 								}
-								var lenspan = tracks[tt].querySelector("td:nth-child(" + lengthColumnIndex + ")");
-								if (lenspan) {
-									var tlen = wstracks[wt].querySelector("length");
-									if (tlen && (tlen = time(tlen.textContent))) {
-										lenspan.replaceChild(document.createTextNode(tlen), lenspan.firstChild);
-										if (tlen != reclen) {
-											lenspan.setAttribute("title", "≠ " + reclen);
-											lenspan.classList.add("name-variation");
-											lenspan.style.setProperty("text-shadow", "1px 2px 2px #999");
-											lenspan.style.setProperty("color", "maroon");
+								var trackLengthCell = tracks[t].querySelector("td:nth-child(" + lengthColumnIndex + ")");
+								if (trackLengthCell) {
+									var wsTrackLength = wsTracks[wst].querySelector("length");
+									if (wsTrackLength && (wsTrackLength = time(wsTrackLength.textContent))) {
+										trackLengthCell.replaceChild(document.createTextNode(wsTrackLength), trackLengthCell.firstChild);
+										if (wsTrackLength != wsRecordingLength) {
+											trackLengthCell.setAttribute("title", "≠ " + wsRecordingLength);
+											trackLengthCell.classList.add("name-variation");
+											trackLengthCell.style.setProperty("text-shadow", "1px 2px 2px #999");
+											trackLengthCell.style.setProperty("color", "maroon");
 										}
 									}
 								}
-								var ac = wstracks[wt].querySelectorAll("artist-credit > name-credit");
-								if (ac.length > 0) {
-									var acdiv = createTag("div", {s: {border: "4px solid gold", padding: "1px 2px", textShadow: "1px 1px 2px #993"}});
+								var wsTrackArtistCredits = wsTracks[wst].querySelectorAll("artist-credit > name-credit");
+								if (wsTrackArtistCredits.length > 0) {
+									var trackArtistCreditHeader = createTag("div", {s: {border: "4px solid gold", padding: "1px 2px", textShadow: "1px 1px 2px #993"}});
 									if (releaseArtistColumnHeader != null) {
-										releaseArtistColumnHeader.insertBefore(acdiv.cloneNode(true), releaseArtistColumnHeader.firstChild).appendChild(document.createTextNode("Track Artist"));
+										releaseArtistColumnHeader.insertBefore(trackArtistCreditHeader.cloneNode(true), releaseArtistColumnHeader.firstChild).appendChild(document.createTextNode("Track Artist"));
 										releaseArtistColumnHeader = null;
 									}
-									var artisttd = tracks[tt].querySelector("td:nth-child(" + releaseArtistColumnIndex + ")");
-									if (artisttd) {
-										var acdivc = artisttd.insertBefore(acdiv.cloneNode(true), artisttd.firstChild);
-										for (var nc = 0; nc < ac.length; nc++) {
-											var arn = ac[nc].querySelector("artist");
-											var ari, art;
-											if (arn && (ari = arn.getAttribute("id")) && (art = arn.querySelector("name")) && (art = art.textContent) && (arn = ac[nc].querySelector("name")) && (arn = arn.textContent)) {
-												var acpart = createTag("a", {a: {href: "/artist/" + ari}}, arn);
-												if (art != arn) {
-													acpart.setAttribute("title", art);
-													acdivc.appendChild(createTag("span", {a: {class: "name-variation"}}, acpart));
-												}
-												else {
-													acdivc.appendChild(acpart);
+									var releaseArtistCell = tracks[t].querySelector("td:nth-child(" + releaseArtistColumnIndex + ")");
+									if (releaseArtistCell) {
+										var trackArtistCreditFragment = releaseArtistCell.insertBefore(trackArtistCreditHeader.cloneNode(true), releaseArtistCell.firstChild);
+										for (var wstac = 0; wstac < wsTrackArtistCredits.length; wstac++) {
+											var wsArtist = wsTrackArtistCredits[wstac].querySelector("artist");
+											var wsArtistMBID, wsArtistTooltip;
+											if (wsArtist && (wsArtistMBID = wsArtist.getAttribute("id")) && (wsArtistTooltip = wsArtist.querySelector("name")) && (wsArtistTooltip = wsArtistTooltip.textContent) && (wsArtist = wsTrackArtistCredits[wstac].querySelector("name")) && (wsArtist = wsArtist.textContent)) {
+												var trackArtistCreditElement = createTag("a", {a: {href: "/artist/" + wsArtistMBID}}, wsArtist);
+												if (wsArtistTooltip != wsArtist) {
+													trackArtistCreditElement.setAttribute("title", wsArtistTooltip);
+													trackArtistCreditFragment.appendChild(createTag("span", {a: {class: "name-variation"}}, trackArtistCreditElement));
+												} else {
+													trackArtistCreditFragment.appendChild(trackArtistCreditElement);
 												}
 											}
-											var jp = ac[nc].getAttribute("joinphrase");
-											if (jp) {
-												acdivc.appendChild(document.createTextNode(jp));
+											var wsTrackArtistCreditJoinPhrase = wsTrackArtistCredits[wstac].getAttribute("joinphrase");
+											if (wsTrackArtistCreditJoinPhrase) {
+												trackArtistCreditFragment.appendChild(document.createTextNode(wsTrackArtistCreditJoinPhrase));
 											}
 										}
 									}
