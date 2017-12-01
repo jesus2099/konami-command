@@ -17,7 +17,6 @@
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @requester    culinko
 // @since        2013-05-07
-// @require      https://github.com/jesus2099/konami-command/raw/ec7e4fcbaea01784b86159ee50d7098c314202b7/lib/SUPER.js
 // @require      https://github.com/jesus2099/konami-command/raw/84e864a4b2dbc6598e3f3d49af96e09387613f60/lib/SUPER.js
 // @require      https://github.com/jesus2099/konami-command/raw/ec7e4fcbaea01784b86159ee50d7098c314202b7/lib/COOL-BUBBLES.js
 // @grant        none
