@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2017.10.12.2301
+// @version      2017.12.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -30,6 +30,7 @@ var meta = {raw: function() {
 // @match        *://*.mbsandbox.org/cdtoc/*
 // @match        *://*.mbsandbox.org/collection/*
 // @match        *://*.mbsandbox.org/edit/*
+// @match        *://*.mbsandbox.org/event/*
 // @match        *://*.mbsandbox.org/isrc/*
 // @match        *://*.mbsandbox.org/label/*
 // @match        *://*.mbsandbox.org/place/*
@@ -58,6 +59,7 @@ var meta = {raw: function() {
 // @match        *://*.musicbrainz.org/cdtoc/*
 // @match        *://*.musicbrainz.org/collection/*
 // @match        *://*.musicbrainz.org/edit/*
+// @match        *://*.musicbrainz.org/event/*
 // @match        *://*.musicbrainz.org/isrc/*
 // @match        *://*.musicbrainz.org/label/*
 // @match        *://*.musicbrainz.org/place/*
@@ -127,7 +129,7 @@ for (var j = 0; j < keys.length; j++) {
 // #                           MAIN RUN                                       #
 // #                                                                          #
 // ############################################################################
-var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
+var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
 	var highlightColour = "purple";
