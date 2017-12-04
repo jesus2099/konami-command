@@ -5,8 +5,11 @@
 // @description  Show cover art comments to ease reordering, especially when thumbnails have not been generated yet.
 // @homepage     http://forums.musicbrainz.org/viewtopic.php?pid=31473#p31473
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE
-// @compatible   opera(12.18.1872)+violentmonkey     my setup
-// @compatible   vivaldi(1.12.955.48)+violentmonkey  my setup
+// @compatible   opera(12.18.1872)+violentmonkey      my setup
+// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
+// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
+// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    jesus2099/shamo
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE.user.js
