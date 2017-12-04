@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2017.6.16
+// @version      2017.12.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
@@ -45,7 +45,7 @@ var entities = {
 	release: {path: "/release/", icon: "release.png"},
 	"release-group": {path: "/release-group/", icon: "release_group.svg"},
 	ticket: {fullpath: "//tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", HTTPonly: true},
-	track: {path: "/track/", icon: "recording.png"},
+	track: {path: "/track/", icon: "recording.png", noTools: true},
 	user: {path: "/user/", id: ".+", openEdits: "/edits/open", noEdit: true},
 	work: {path: "/work/", icon: "work.svg"},
 };
@@ -130,15 +130,17 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 						code.style.setProperty("width", width / code.textContent.length * 8 + "px");
 					}
 					newA.insertBefore(createTag("b", {}, ent + "\u00A0"), newA.firstChild);
-					if (u.match(/musicbrainz\.org/) && (ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
-						var fragment = document.createDocumentFragment();
-						fragment.appendChild(newA);
-						addAfter(document.createTextNode(">"), newA);
-						if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), newA); }
-						if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "H"), newA); }
-						if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), newA); }
-						addAfter(document.createTextNode(" <"), newA);
-						newA = fragment;
+					if (entities[ent].noTools !== true) {
+						if (u.match(/musicbrainz\.org/) && (ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
+							var fragment = document.createDocumentFragment();
+							fragment.appendChild(newA);
+							addAfter(document.createTextNode(">"), newA);
+							if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), newA); }
+							if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "H"), newA); }
+							if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), newA); }
+							addAfter(document.createTextNode(" <"), newA);
+							newA = fragment;
+						}
 					}
 				}
 				as[a].parentNode.replaceChild(newA, as[a]);
