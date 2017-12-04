@@ -178,7 +178,7 @@ function mergeRecsStep(_step) {
 		if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “" + protectEditNoteText(localRelease.ac) + "”\n";
 		if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “" + protectEditNoteText(localRelease.title) + "”\n";
 		else if (localRelease.title.toUpperCase() == remoteRelease.title.toUpperCase()) paramsup += "👍 '''Same release title''' (case insensitive)\n";
-		else if (localRelease.looseTitle == remoteRelease.looseTitle) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
+		else if (leven(localRelease.looseTitle, remoteRelease.looseTitle)) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
 		if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' (" + MBS + "/release-group/" + localRelease["release-group"] + ")\n";
 		paramsup += " —\n" + meta.n + " (" + meta.v + ") in “" + matchMode.current.value.replace(/^Match unordered /i, "") + "” match mode";
 		if (retry.count > 0) {
@@ -720,8 +720,8 @@ function bestStartPosition(localTrack, matchAC) {
 	for (var loc = singleTrackMode ? localTrack : 0; loc < (singleTrackMode ? localTrack + 1 : localRelease.tracks.length); loc++) {
 		for (var rem = 0; rem < remoteRelease.tracks.length; rem++) {
 			if (
-				localRelease.tracks[loc].looseName == remoteRelease.tracks[rem].looseName
-				&& (!matchAC || localRelease.tracks[loc].looseAC == remoteRelease.tracks[rem].looseAC)
+				leven(localRelease.tracks[loc].looseName, remoteRelease.tracks[rem].looseName) < 5
+				&& (!matchAC || leven(localRelease.tracks[loc].looseAC, remoteRelease.tracks[rem].looseAC) < 5)
 			) {
 				return loc - rem;
 			}
@@ -1139,4 +1139,44 @@ function noScrollFocus(field) {
 	var x = scrollX, y = scrollY;
 	field.focus();
 	scrollTo(x, y);
+}
+// 'leven' function taken from https://github.com/sindresorhus/leven
+// Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+// Released under the MIT License:
+// https://raw.githubusercontent.com/sindresorhus/leven/49baddd/license
+function leven(a, b) {
+	if (a === b) {
+		return 0;
+	}
+	var aLen = a.length;
+	var bLen = b.length;
+	if (aLen === 0) {
+		return bLen;
+	}
+	if (bLen === 0) {
+		return aLen;
+	}
+	var bCharCode;
+	var ret;
+	var tmp;
+	var tmp2;
+	var i = 0;
+	var j = 0;
+	var arr = [];
+	var charCodeCache = [];
+	while (i < aLen) {
+		charCodeCache[i] = a.charCodeAt(i);
+		arr[i] = ++i;
+	}
+	while (j < bLen) {
+		bCharCode = b.charCodeAt(j);
+		tmp = j++;
+		ret = j;
+		for (i = 0; i < aLen; i++) {
+			tmp2 = bCharCode === charCodeCache[i] ? tmp : tmp + 1;
+			tmp = arr[i];
+			ret = arr[i] = tmp > ret ? tmp2 > ret ? ret + 1 : tmp2 : tmp2 > tmp ? tmp + 1 : tmp2;
+		}
+	}
+	return ret;
 }
