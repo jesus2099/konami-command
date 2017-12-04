@@ -5,10 +5,11 @@
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
-// @compatible   opera(12.18.1872)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey         tested sometimes
-// @compatible   chromium(46)+tampermonkey        tested sometimes
-// @compatible   chrome+tampermonkey              should be same as chromium
+// @compatible   opera(12.18.1872)+violentmonkey      my setup
+// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
+// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
+// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js

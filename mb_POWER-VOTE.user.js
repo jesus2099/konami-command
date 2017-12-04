@@ -7,10 +7,11 @@ var meta= { rawmdb: function() {
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
-// @compatible   opera(12.18.1872)+violentmonkey     my setup
-// @compatible   firefox(45.0.2)+greasemonkey        quickly tested
-// @compatible   chromium(46.0.2471.0)+tampermonkey  quickly tested
-// @compatible   chrome+tampermonkey                 should be same as chromium
+// @compatible   opera(12.18.1872)+violentmonkey      my setup
+// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
+// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
+// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js

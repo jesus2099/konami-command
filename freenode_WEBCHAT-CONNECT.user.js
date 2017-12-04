@@ -4,10 +4,11 @@
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/freenode_WEBCHAT-CONNECT.user.js
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. cleverly focus first empty field.
 // @supportURL   https://github.com/jesus2099/konami-command/labels/freenode_WEBCHAT-CONNECT
-// @compatible   opera(12.18.1872)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey         tested sometimes
-// @compatible   chromium(46)+tampermonkey        tested sometimes
-// @compatible   chrome+tampermonkey              should be same as chromium
+// @compatible   opera(12.18.1872)+violentmonkey      my setup
+// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
+// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
+// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/freenode_WEBCHAT-CONNECT.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/freenode_WEBCHAT-CONNECT.user.js

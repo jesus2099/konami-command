@@ -8,7 +8,7 @@
 // @compatible   opera(12.18.1872)+violentmonkey      my setup
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
 // @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47)+greasemonkey             tested sometimes
+// @compatible   firefox(47.0)+greasemonkey           tested sometimes
 // @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-TRACK-ARTIST.user.js

@@ -5,10 +5,11 @@
 // @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
-// @compatible   opera(12.18.1872)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey         quickly tested
-// @compatible   chromium(46)+tampermonkey        quickly tested
-// @compatible   chrome+tampermonkey              should be same as chromium
+// @compatible   opera(12.18.1872)+violentmonkey      my setup
+// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
+// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
+// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    jesus2099/shamo
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
