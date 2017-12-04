@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2017.12.4
+// @version      2017.12.4.1740
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1010,7 +1010,6 @@ function tagswitch(cont, urltxt) {
 ## STATIC_MENU ##
 ==========================================================================*/
 j2setting("STATIC_MENU", true, true, "makes the main MB menu always there when you need it (wihout scrolling top)");
-j2setting("STATIC_MENU_opacity", "1", true, "any value from 0 to 1. 1 means no transparency (normal), 0 means invisible (stupid), .5 means half transparent. less than .666 is hard to see");
 var mmenu = document.querySelector("div.header");
 var mlogo = document.querySelector("img.logo");
 var etais;
@@ -1025,10 +1024,13 @@ function smenu(event) {
 	if (document.body.scrollTop + document.documentElement.scrollTop > self.getComputedStyle(mlogo).getPropertyValue("height").match(/\d+/)) {
 		mmenu.style.setProperty("position", "fixed");
 		mmenu.style.setProperty("top", "0px");
-		mmenu.style.setProperty("width", self.getComputedStyle(mmenu.parentNode).getPropertyValue("width"));
-		mmenu.style.setProperty("opacity", j2sets.STATIC_MENU_opacity);
+		var computedWidth = self.getComputedStyle(mmenu.parentNode).getPropertyValue("width").match(/\d+/)[0];
+		computedWidth -= self.getComputedStyle(mmenu).getPropertyValue("margin-left").match(/\d+/)[0];
+		computedWidth -= self.getComputedStyle(mmenu).getPropertyValue("margin-right").match(/\d+/)[0];
+		mmenu.style.setProperty("width", computedWidth + "px");
+		mmenu.style.setProperty("border-bottom", "10px solid white");
 		mmenu.style.setProperty("background-color", "white");
-		mmenu.style.setProperty("box-shadow", "0 0 30px 5px #999");
+		mmenu.style.setProperty("box-shadow", "0px 10px 5px -4px #ccc");
 		mmenu.style.setProperty("z-index", "9");
 		etais.style.setProperty("display", "block");
 		etais.style.setProperty("height", self.getComputedStyle(mmenu).getPropertyValue("height"));
@@ -1040,7 +1042,7 @@ function smenu(event) {
 		mmenu.style.removeProperty("position");
 		mmenu.style.removeProperty("top");
 		mmenu.style.removeProperty("width");
-		mmenu.style.removeProperty("opacity");
+		mmenu.style.removeProperty("border-bottom");
 		mmenu.style.removeProperty("background-color");
 		mmenu.style.removeProperty("box-shadow");
 		mmenu.style.removeProperty("z-index");
