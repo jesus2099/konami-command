@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2017.11.28
+// @version      2017.12.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -101,6 +101,7 @@ css.insertRule("div#" + MMRid + " { background-color: #fcf; text-shadow: 1px 1px
 css.insertRule("div#" + MMRid + " > .main-shortcut { margin: 0px; }", 0);
 css.insertRule("div#" + MMRid + " h2 { color: maroon; text-shadow: 2px 2px 4px #996; margin: 0px; }", 0);
 css.insertRule("div#" + MMRid + " kbd { background-color: silver; border: 2px grey outset; padding: 0px 4px; font-size: .8em; }", 0);
+css.insertRule(".remoteRecordingLength.largeSpread { color: yellow; background-color: red; text-shadow: 2px 2px 4px black; }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
 if (ltitle) {
@@ -114,6 +115,7 @@ if (ltitle) {
 		tracks: []
 	};
 	var safeLengthDelta = 4;
+	var largeSpread = 15; // MBS-7417 / https://github.com/metabrainz/musicbrainz-server/blob/217111e3a12b705b9499e7fdda6be93876d30fb0/lib/MusicBrainz/Server/Edit/Utils.pm#L467
 	if (localRelease.comment) localRelease.comment = " (" + localRelease.comment.textContent + ")"; else localRelease.comment = "";
 	var remoteRelease = {tracks: []};
 	var collapsedMediums = document.querySelectorAll(css_collapsed_medium);
@@ -795,20 +797,20 @@ function buildMergeForm(loc, rem) {
 		var reclen = remrec.appendChild(document.createElement("span"));
 		reclen.style.setProperty("float", "right");
 		reclen.style.setProperty("font-family", "monospace");
+		reclen.classList.add("remoteRecordingLength");
 		reclen.appendChild(document.createTextNode(" " + time(remTrack.length, true)));
 		if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
 			var delta = Math.abs(locTrack.length - remTrack.length);
-			if (delta != false && delta > safeLengthDelta*1000) {
-				if (delta >= 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
-					reclen.style.setProperty("color", "red");
-					reclen.style.setProperty("background-color", "black");
+			if (delta != false && delta > safeLengthDelta * 1000) {
+				if (delta >= largeSpread * 1000) {
+					reclen.classList.add("largeSpread");
 					reclen.setAttribute("title", "MORE THAN " + 15 + " SECONDS DIFFERENCE");
 				} else {
 					reclen.style.setProperty("background-color", cNG);
 					reclen.setAttribute("title", "more than " + safeLengthDelta + " seconds difference");
 				}
 			} else {
-				reclen.style.setProperty("background-color", delta&&delta > 500 ? cWarning : cOK);
+				reclen.style.setProperty("background-color", delta && delta > 500 ? cWarning : cOK);
 			}
 		}
 		rmForm.appendChild(document.createTextNode(" by "));
