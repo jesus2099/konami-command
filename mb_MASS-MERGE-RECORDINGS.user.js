@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2017.12.4
+// @version      2017.12.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -10,7 +10,7 @@ var meta = function() {
 // @compatible   opera(12.18.1872)+violentmonkey      my setup
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
 // @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   firefox(52.5.2)+greasemonkey         tested sometimes
 // @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
@@ -178,7 +178,8 @@ function mergeRecsStep(_step) {
 		if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “" + protectEditNoteText(localRelease.ac) + "”\n";
 		if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “" + protectEditNoteText(localRelease.title) + "”\n";
 		else if (localRelease.title.toUpperCase() == remoteRelease.title.toUpperCase()) paramsup += "👍 '''Same release title''' (case insensitive)\n";
-		else if (leven(localRelease.looseTitle, remoteRelease.looseTitle)) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
+		else if (localRelease.looseTitle == remoteRelease.looseTitle) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
+//		else if (leven(localRelease.looseTitle, remoteRelease.looseTitle)) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
 		if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' (" + MBS + "/release-group/" + localRelease["release-group"] + ")\n";
 		paramsup += " —\n" + meta.n + " (" + meta.v + ") in “" + matchMode.current.value.replace(/^Match unordered /i, "") + "” match mode";
 		if (retry.count > 0) {
@@ -720,8 +721,10 @@ function bestStartPosition(localTrack, matchAC) {
 	for (var loc = singleTrackMode ? localTrack : 0; loc < (singleTrackMode ? localTrack + 1 : localRelease.tracks.length); loc++) {
 		for (var rem = 0; rem < remoteRelease.tracks.length; rem++) {
 			if (
-				leven(localRelease.tracks[loc].looseName, remoteRelease.tracks[rem].looseName) < 5
-				&& (!matchAC || leven(localRelease.tracks[loc].looseAC, remoteRelease.tracks[rem].looseAC) < 5)
+				localRelease.tracks[loc].looseName == remoteRelease.tracks[rem].looseName
+				&& (!matchAC || localRelease.tracks[loc].looseAC == remoteRelease.tracks[rem].looseAC)
+//				leven(localRelease.tracks[loc].looseName, remoteRelease.tracks[rem].looseName) < 5
+//				&& (!matchAC || leven(localRelease.tracks[loc].looseAC, remoteRelease.tracks[rem].looseAC) < 5)
 			) {
 				return loc - rem;
 			}
