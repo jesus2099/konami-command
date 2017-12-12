@@ -2,13 +2,13 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2016.6.15
+// @version      2017.12.12
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_HYPER-MOULINETTE.user.js
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HYPER-MOULINETTE
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
+// @incompatible opera(12.18.1872)+violentmonkey      my setup
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
+// @compatible   vivaldi(1.13.1008.34)+violentmonkey  my setup (of.)
 // @compatible   firefox(47.0)+greasemonkey           tested sometimes
 // @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
@@ -41,18 +41,18 @@ var DEBUG = false;
 meta.key = "jesus2099"+meta.name.replace(/ /, "-");
 var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(stre_GUID);
-var account = document.querySelector("div#header-menu li.account");
+var account = document.querySelector("ul.menu li.account");
 var target, method, source, client, loaders = [];
 var crawlType = {
-	"^/collection/": "div#content table.tbl a[href*='/release/']",
-	"^/search/edits": "div.edit-details a[href*='/release/']",
+	"^/collection/": "div#page table.tbl tbody a[href*='/release/']",
+	"^/search/edits": "div.edit-details a[href^='/release/']",
 };
 var genuineTitle = document.title;
 /*==========================================================================
 ## MENU ITEM ##
 find this script in front of release collections
 ==========================================================================*/
-if (self.location.href.match(/\/collections/) && document.querySelector("h1").textContent == account.querySelector("a").textContent) {
+if (self.location.href.match(/\/collections/) && document.querySelector("h1").textContent == account.querySelector("span.menu-header").textContent.match(/(\w+)\s.$/)[1]) {
 	var collectionHeaders = document.querySelectorAll("table.tbl > thead > tr")
 	for (var th = 0; th < collectionHeaders.length; th++) {
 		if (collectionHeaders[th].textContent.match(/Veröffentlichungen|Väljalasked|Releases|Publicaciones|Parutions|Pubblicazioni|Uitgaves|Julkaisut|Κυκλοφορίες|リリース/i)) {
@@ -127,7 +127,7 @@ function loadForExtract(page) {
 		}
 	});
 	xhr.openDebug("get", page);
-	xhr.sendDebug(null);
+  xhr.sendDebug(null);
 }
 function requestForAction(method, url) {
 if (self.opera) { modal(createTag("p", {}, ["Will not perform ",createTag("a", {a:{href:url,target:"_blank"}}, method)," (auth-digest does not work in Opera)."])); }
