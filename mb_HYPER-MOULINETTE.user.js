@@ -45,7 +45,7 @@ var account = document.querySelector("ul.menu li.account");
 var target, method, source, client, loaders = [];
 var crawlType = {
 	"^/collection/": "div#page table.tbl tbody a[href*='/release/']",
-	"^/search/edits": "div.edit-details a[href^='/release/']",
+	"^/search/edits": "div.edit-details a[href*='/release/']",
 };
 var genuineTitle = document.title;
 /*==========================================================================
@@ -127,7 +127,7 @@ function loadForExtract(page) {
 		}
 	});
 	xhr.openDebug("get", page);
-  xhr.sendDebug(null);
+	xhr.sendDebug(null);
 }
 function requestForAction(method, url) {
 if (self.opera) { modal(createTag("p", {}, ["Will not perform ",createTag("a", {a:{href:url,target:"_blank"}}, method)," (auth-digest does not work in Opera)."])); }
@@ -210,8 +210,9 @@ XMLHttpRequest.prototype.getID = function() {
 	return this.id;
 };
 XMLHttpRequest.prototype.openDebug = function(method, url) {
-	if (DEBUG) { console.log("XHR-"+this.getID()+" open "+method.toUpperCase()+" "+url); }
-	this.open(method, url);
+	var _url = (url.match(/^https?:\/\//) ? "" : self.location.protocol + "//" + self.location.host) + url;
+	if (DEBUG) { console.log("XHR-"+this.getID()+" open "+method.toUpperCase()+" "+_url); }
+	this.open(method, _url);
 };
 XMLHttpRequest.prototype.sendDebug = function(params) {
 	if (DEBUG) {
