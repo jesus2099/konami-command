@@ -39,7 +39,7 @@ if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString()
 }
 meta.name = meta.name.substr("4");
 var DEBUG = false;
-meta.key = "jesus2099"+meta.name.replace(/ /, "-");
+meta.key = "jesus2099" + meta.name.replace(/ /, "-");
 var stre_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(stre_GUID);
 var account = document.querySelector("ul.menu li.account");
@@ -71,85 +71,86 @@ if (self.location.href.match(/\/collections/) && document.querySelector("h1").te
 function mouli() {
 	target = this.parentNode.parentNode.querySelector("a[href*='/collection/']").getAttribute("href").match(re_GUID);
 	method = this.textContent.toLowerCase();
-	source = prompt("Please paste your release edit search or other collection URL here.\nIt will parse these pages to modify the previously mentionned collection.", localStorage.getItem(meta.key+"_"+method+"-source")||"");
-	client = meta.name.replace(/^mb\. /, "").replace(/ /g, ".").toLowerCase()+"-"+meta.version;
+	source = prompt("Please paste your release edit search or other collection URL here.\nIt will parse these pages to modify the previously mentionned collection.", localStorage.getItem(meta.key + "_" + method + "-source") || "");
+	client = meta.name.replace(/^mb\. /, "").replace(/ /g, ".").toLowerCase() + "-" + meta.version;
 	if (target && method.match(/^(put|delete)$/i) && source) {
-		localStorage.setItem(meta.key+"_"+method+"-source", source);
+		localStorage.setItem(meta.key + "_" + method + "-source", source);
 		source = source.replace(/^(https?:\/\/[^\/]+)?(\/.+)/, "$2");
-		modal(createTag("h3", {}, [createTag("a", {a:{href:meta.namespace, target:"_blank"}}, meta.name), " ", createTag("b", {}, meta.version), " (reload this page to abort)"]));
+		modal(createTag("h3", {}, [createTag("a", {a: {href: meta.namespace, target: "_blank"}}, meta.name), " ", createTag("b", {}, meta.version), " (reload this page to abort)"]));
 		if (source.match(/^\/search\/edits/)) {
 			modal(createTag("p", {}, "(loading first page of an edit search is always long)"));
 		}
-		loadForExtract(source.replace(/([\?&])page=\d+&*/g, "$1")+(source.match(/\?/)?"&":"?")+"page=1");
+		loadForExtract(source.replace(/([\?&])page=\d+&*/g, "$1") + (source.match(/\?/) ? "&" : "?") + "page=1");
 	} else {
-		alert("syntax error\ntarget: "+target+"\nmethod: "+method+" (should be either “put” or “delete”)\nsource: "+source);
+		alert("syntax error\ntarget: " + target + "\nmethod: " + method + " (should be either “put” or “delete”)\nsource: " + source);
 	}
 }
 function loadForExtract(page) {
 	var xhr = new XMLHttpRequest();
-	loaders[xhr.getID()] = {maxRetry:5, url:page};
-	xhr.addEventListener("load", function(e) {
+	loaders[xhr.getID()] = {maxRetry: 5, url: page};
+	xhr.addEventListener("load", function(event) {
 		var sPage = loaders[this.getID()].url.match(/page=(\d+)$/)[1];
 		var iPage = parseInt(sPage, 10);
-		var suffix = {1:"st",2:"nd",3:"rd",digit:sPage.match(/(?:^|[02-9])([123])$/)};
-		sPage = sPage+(suffix.digit?suffix[suffix.digit[1]]:"th")+" page";
-		var ploaded = modal(createTag("h4", {}, [createTag("a", {a:{href:loaders[this.getID()].url, target:"_blank"}}, sPage), " loaded"]));
-		document.title = sPage+" loaded ("+meta.name+") "+genuineTitle;
-		var res = document.createElement("html"); res.innerHTML = this.responseText;
+		var suffix = {1: "st", 2: "nd", 3: "rd", digit: sPage.match(/(?:^|[02-9])([123])$/)};
+		sPage = sPage + (suffix.digit ? suffix[suffix.digit[1]] : "th") + " page";
+		var ploaded = modal(createTag("h4", {}, [createTag("a", {a: {href: loaders[this.getID()].url, target: "_blank"}}, sPage), " loaded"]));
+		document.title = sPage + " loaded (" + meta.name + ") " + genuineTitle;
+		var res = document.createElement("html");
+		res.innerHTML = this.responseText;
 		var releases;
 		for (var type in crawlType) if (crawlType.hasOwnProperty(type) && loaders[this.getID()].url.match(new RegExp(type))) {
 			releases = res.querySelectorAll(crawlType[type]);
-			ploaded.appendChild(document.createTextNode(" ("+releases.length+" release"+(releases.length==1?"":"s")+"):"));
+			ploaded.appendChild(document.createTextNode(" (" + releases.length + " release" + (releases.length == 1 ? "" : "s") + "):"));
 			if (releases.length > 0) {
-				var url = "/ws/2/collection/"+target+"/releases/";
+				var url = "/ws/2/collection/" + target + "/releases/";
 				var cont = modal(createTag("table"));
-				for (var r=0; r < releases.length; r++) {
+				for (var r = 0; r < releases.length; r++) {
 					var guid = releases[r].getAttribute("href").match(re_GUID);
-					cont.appendChild(createTag("tr", {}, [createTag("th", {s:{"padding-right":"6px"}}, (r+1)+"."), createTag("td", {s:{padding:"0px"}}, createTag("img", {a:{src:"http://coverartarchive.org/release/"+guid+"/front-250",alt:""},s:{margin:"0px","max-height":"16px","max-width":"16px","box-shadow":"1px 1px 2px black"},e:{error:function(){this.parentNode.removeChild(this);}}})), createTag("td", {s:{"padding-left":"6px"}}, createTag("a", {a:{href:releases[r].getAttribute("href"),target:"_blank"}}, releases[r].textContent))]));
-					url += (r==0?"":";")+guid;
+					cont.appendChild(createTag("tr", {}, [createTag("th", {s: {paddingRight: "6px"}}, (r + 1) + "."), createTag("td", {s: {padding: "0px"}}, createTag("img", {a: {src: "http://coverartarchive.org/release/" + guid + "/front-250", alt: ""}, s: {margin: "0px", maxHeight: "16px", maxWidth: "16px", boxShadow: "1px 1px 2px black"}, e: {error: function() { this.parentNode.removeChild(this); }}})), createTag("td", {s: {paddingLeft: "6px"}}, createTag("a", {a: {href: releases[r].getAttribute("href"), target: "_blank"}}, releases[r].textContent))]));
+					url += (r == 0 ? "" : ";") + guid;
 				}
-				requestForAction(method, url+"?client="+client);
+				requestForAction(method, url + "?client=" + client);
 			}
 			break;
 		}
 		if (res.querySelector("ul.pagination > li:last-of-type > a")) {
-			loadForExtract(page.replace(/(page=)\d+$/, "$1"+(iPage+1)));
+			loadForExtract(page.replace(/(page=)\d+$/, "$1" + (iPage + 1)));
 		} else {
 			document.title = genuineTitle;
-			modal(createTag("h3", {}, ["Last page processed (", createTag("a",{e:{click:function(){self.location.reload()}}},"RELOAD"), " page to quit this crap)."]));
+			modal(createTag("h3", {}, ["Last page processed (", createTag("a", {e: {click: function() { self.location.reload() }}}, "RELOAD"), " page to quit this crap)."]));
 		}
 	});
-	xhr.addEventListener("error", function(e) {
+	xhr.addEventListener("error", function(event) {
 		if (--loaders[this.getID()].maxRetry > 0) {
-			modal(createTag("fragment", {}, ["Error loading ", createTag("a", {a:{href:loaders[this.getID()].url, target:"_blank"}}, "page"), ", retrying…"]));
+			modal(createTag("fragment", {}, ["Error loading ", createTag("a", {a: {href: loaders[this.getID()].url, target: "_blank"}}, "page"), ", retrying…"]));
 			loadForExtract(loaders[this.getID()].url);
 		} else {
-			alert("XHR-"+this.getID()+" ERROR "+this.status+"\nStopped retrying.\n"+loaders[this.getID].url+"\n\n"+this.responseText);
+			alert("XHR-" + this.getID() + " ERROR " + this.status + "\nStopped retrying.\n" + loaders[this.getID].url + "\n\n" + this.responseText);
 		}
 	});
 	xhr.openDebug("get", page);
 	xhr.sendDebug(null);
 }
 function requestForAction(method, url) {
-if (self.opera) { modal(createTag("p", {}, ["Will not perform ",createTag("a", {a:{href:url,target:"_blank"}}, method)," (auth-digest does not work in Opera)."])); }
+if (self.opera) { modal(createTag("p", {}, ["Will not perform ", createTag("a", {a: {href: url, target: "_blank"}}, method), " (auth-digest does not work in Opera)."])); }
 	else {
 		var xhr = new XMLHttpRequest();
-		loaders[xhr.getID()] = {method:method, url:url, maxRetry:5};
-		xhr.addEventListener("load", function(e) {
+		loaders[xhr.getID()] = {method: method, url: url, maxRetry: 5};
+		xhr.addEventListener("load", function(event) {
 			var node, res = this.responseXML.documentElement;
-			var msg = createTag("fragment", {}, ["Releases “", createTag("a", {a:{title:loaders[this.getID()].method, href:loaders[this.getID()].url, target:"_blank"}}, loaders[this.getID()].method), "” on collection "]);
+			var msg = createTag("fragment", {}, ["Releases “", createTag("a", {a: {title: loaders[this.getID()].method, href: loaders[this.getID()].url, target: "_blank"}}, loaders[this.getID()].method), "” on collection "]);
 			if ((node = res.querySelector("message text")) && node.textContent.match(/ok/i)) {
 				modal(createTag("p", {}, [msg, "OK."]));
 			} else {
-				modal(createTag("p", {}, [msg, "failed.\n\n"+res.textContent]));
+				modal(createTag("p", {}, [msg, "failed.\n\n" + res.textContent]));
 			}
 		});
-		xhr.addEventListener("error", function(e) {
+		xhr.addEventListener("error", function(event) {
 			if (--loaders[this.getID()].maxRetry > 0) {
-				modal(createTag("fragment", {}, ["Error performing ", createTag("a", {a:{title:loaders[this.getID()].method, href:loaders[this.getID()].url, target:"_blank"}}, "“"+loaders[this.getID()].method+"” method"), ", retrying…"]));
+				modal(createTag("fragment", {}, ["Error performing ", createTag("a", {a: {title: loaders[this.getID()].method, href: loaders[this.getID()].url, target: "_blank"}}, "“" + loaders[this.getID()].method + "” method"), ", retrying…"]));
 				loadForAction(loaders[this.getID()].method, loaders[this.getID()].url);
 			} else {
-				alert("XHR-"+this.getID()+" ERROR "+this.status+"\nStopped retrying.\n"+loaders[this.getID].url+"\n\n"+this.responseText);
+				alert("XHR-" + this.getID() + " ERROR " + this.status + "\nStopped retrying.\n" + loaders[this.getID].url + "\n\n" + this.responseText);
 			}
 		});
 		xhr.openDebug(method, url);
@@ -161,20 +162,20 @@ if (self.opera) { modal(createTag("p", {}, ["Will not perform ",createTag("a", {
 ## hacked from COLLECTION HIGHLIGHTER ##
 ======================================*/
 function modal(txt) {
-	var obj = document.getElementById(meta.key+"modal");
+	var obj = document.getElementById(meta.key + "modal");
 	if (txt && !obj) {
 		coolstuff("div", "50", "100%", "100%", "black", ".6");
 		obj = coolstuff("div", "55", "800px", "600px", "white");
-		obj.setAttribute("id", meta.key+"modal");
+		obj.setAttribute("id", meta.key + "modal");
 		obj.style.padding = "4px";
 		obj.style.overflow = "auto";
 		obj.style.whiteSpace = "nowrap";
 		obj.style.border = "4px solid black";
-		obj.addEventListener("mouseover", function(e) { this.style.borderColor = "silver"; }, false);
-		obj.addEventListener("mouseout", function(e) { this.style.borderColor = "black"; }, false);
+		obj.addEventListener("mouseover", function(event) { this.style.borderColor = "silver"; });
+		obj.addEventListener("mouseout", function(event) { this.style.borderColor = "black"; });
 	}
 	if (txt && obj) {
-		var ret = obj.appendChild(typeof txt=="string"?document.createTextNode(txt):txt);
+		var ret = obj.appendChild(typeof txt == "string" ? document.createTextNode(txt) : txt);
 		if (obj.style.borderColor == "black") { obj.scrollTop = obj.scrollHeight; }
 		return ret;
 	}
@@ -182,7 +183,7 @@ function modal(txt) {
 		obj.parentNode.removeChild(obj.previousSibling);
 		obj.parentNode.removeChild(obj);
 	}
-	function coolstuff(t,z,x,y,b,o,a) {
+	function coolstuff(t, z, x, y, b, o, a) {
 		var truc = document.getElementsByTagName("body")[0].appendChild(document.createElement(t));
 		truc.style.position = "fixed";
 		truc.style.zIndex = z;
@@ -212,17 +213,17 @@ XMLHttpRequest.prototype.getID = function() {
 };
 XMLHttpRequest.prototype.openDebug = function(method, url) {
 	var _url = (url.match(/^https?:\/\//) ? "" : self.location.protocol + "//" + self.location.host) + url;
-	if (DEBUG) { console.log("XHR-"+this.getID()+" open "+method.toUpperCase()+" "+_url); }
+	if (DEBUG) { console.log("XHR-" + this.getID() + " open " + method.toUpperCase() + " " + _url); }
 	this.open(method, _url);
 };
 XMLHttpRequest.prototype.sendDebug = function(params) {
 	if (DEBUG) {
-		console.log("XHR-"+this.getID()+" send("+params+")");
-		var loaded = function(e) {
-			console.log("XHR-"+this.getID()+" "+e.type+" "+this.status);
+		console.log("XHR-" + this.getID() + " send(" + params + ")");
+		var loaded = function(event) {
+			console.log("XHR-" + this.getID() + " " + event.type + " " + this.status);
 		};
-		this.addEventListener("load", loaded, false);
-		this.addEventListener("error", loaded, false);
+		this.addEventListener("load", loaded);
+		this.addEventListener("error", loaded);
 	}
 	this.send(params);
 };
