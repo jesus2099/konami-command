@@ -18,6 +18,7 @@ var meta = {rawmdb: function() {
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2014-09-19
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://github.com/jesus2099/konami-command/raw/b7cd8b7f2244b5a0c65933dbee263cb52c3acdad/lib/SUPER.js
 // @grant        none
 // @match        *://*.mbsandbox.org/user/*/collections
 // @match        *://*.musicbrainz.org/user/*/collections
@@ -225,25 +226,3 @@ XMLHttpRequest.prototype.sendDebug = function(params) {
 	}
 	this.send(params);
 };
-/*==========================================================================
-## MY COMMON CRAP : https://github.com/jesus2099/javascript-patate12chips ##
-==========================================================================*/
-function addAfter(n, e) {
-	if (n && e && e.parentNode) {
-		if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
-		else { return e.parentNode.appendChild(n); }
-	} else { return null; }
-}
-function createTag(tag, gadgets, children) {
-	var t = (tag=="fragment"?document.createDocumentFragment():document.createElement(tag));
-	if(t.tagName) {
-		if (gadgets) {
-			for (var attri in gadgets.a) if (gadgets.a.hasOwnProperty(attri)) { t.setAttribute(attri, gadgets.a[attri]); }
-			for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) { t.style.setProperty(style.replace(/!/g,""), gadgets.s[style].replace(/!/g,""), style.match(/!/)||gadgets.s[style].match(/!/)?"important":""); }
-			for (var event in gadgets.e) if (gadgets.e.hasOwnProperty(event)) { t.addEventListener(event, gadgets.e[event], false); }
-		}
-		if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) { t.style.setProperty("cursor", "pointer"); }
-	}
-	if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.tagName) { chldrn = [chldrn]; } for(var child=0; child<chldrn.length; child++) { t.appendChild(typeof chldrn[child]=="string"?document.createTextNode(chldrn[child]):chldrn[child]); } t.normalize(); }
-	return t;
-}
