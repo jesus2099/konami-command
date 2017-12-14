@@ -62,6 +62,7 @@ var recUseInRelationshipLink = "+relate"; /* null or delete for no such tool */
 var recAddToMergeLink = "+merge"; /* null or delete for no such tool */
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs81127";
+var MBS = self.location.protocol + "//" + self.location.host;
 var hasDupeISRCs = 0;
 var hasDupeAcoustIDs = 0;
 var shownisrcs = [];
@@ -69,7 +70,7 @@ var shownacoustids = [];
 var shownworks = {count: 0};
 var isrcURL = "/isrc/%s";
 var acoustidURL = "//acoustid.org/track/%s";
-var releasewsURL = "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musicbrainz.org/XMLWebService#release_resources */ 
+var releasewsURL = MBS + "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musicbrainz.org/XMLWebService#release_resources */ 
 var str_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(str_GUID, "i");
 var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acoustid&mbid=%mbid&state=%state";
