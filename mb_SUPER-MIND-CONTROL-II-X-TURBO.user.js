@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2017.12.7
+// @version      2017.12.22
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -420,10 +420,10 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		var refined24hSearch = stats[6].getElementsByTagName("a")[0].getAttribute("href");
 		var editorID = refined24hSearch.match(/conditions\.0\.args\.0=(\d+)/)[1]; // no longer used below
 		var voteSearch = refined24hSearch.replace(/\bconditions\.\d+\.[^&]+&/gi, "");
-		voteSearch += "&conditions.0.field=voter&conditions.0.operator=me&conditions.0.name=&conditions.0.voter_id=&conditions.0.args=%vote%";
+		voteSearch += "&conditions.0.field=voter&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.voter_id=%editorID%&conditions.0.args=%vote%";
 		for (var i = 7; i < stats.length; i++) {
 			var vote = stats[i];
-			vote.replaceChild(createTag("a", {a: {href: voteSearch.replace(/%vote%/, {7: 1, 8: 0, 9: -1, 10: 2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
+			vote.replaceChild(createTag("a", {a: {href: voteSearch.replace(/%editorName%/, editorPathname).replace(/%editorID%/, editorID).replace(/%vote%/, {7: 1, 8: 0, 9: -1, 10: 2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
 		}
 		var yes = readStat(stats, 7);
 		var no = readStat(stats, 8);
