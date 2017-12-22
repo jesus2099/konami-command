@@ -1186,22 +1186,35 @@ if (enttype) {
 			}}}, [meta.icon.cloneNode(), " Remove recording relationships ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 			/* :::: MASS SET WORKS’ RECORDING DATES :::: */
 			j2superturbo.menu.addItem(createTag("a", {e: {click: function(event) {
-				var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
-				if (date) {
-					if (date = date.match(new RegExp(re_date.ISO + "(?:.+" + re_date.ISO + ")?"))) {
-						MB.relationshipEditor.UI.checkedWorks().forEach(function(work) {
-							work.relationships().forEach(function(relationship) {
-								if (relationship.entityTypes == "recording-work") {
-									relationship.begin_date.year(date[2]);
-									relationship.begin_date.month(date[3]);
-									relationship.begin_date.day(date[4]);
-									relationship.end_date.year(date[5] ? date[6] : date[2]);
-									relationship.end_date.month(date[5] ? date[7] : date[3]);
-									relationship.end_date.day(date[5] ? date[8] : date[4]);
-								}
+				var checkedRelationships = {
+					checkBoxes: document.querySelectorAll("#tracklist tr.track td.works div.ar input[type='checkbox']:checked")
+				};
+				for (var cb = 0; cb < checkedRelationships.checkBoxes.length; cb++) {
+					var recordingGid = getParent(checkedRelationships.checkBoxes[cb], "tr", "track").querySelector("td.recording a[href^='/recording/']").getAttribute("href").match(re_GUID)[0];
+					var workGid = getParent(checkedRelationships.checkBoxes[cb], "div", "ar").querySelector("a[href^='/work/']").getAttribute("href").match(re_GUID)[0];
+					checkedRelationships[recordingGid + "-" + workGid] = true;
+				}
+				if (checkedRelationships.checkBoxes.length > 0) {
+					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
+					if (date) {
+						if (date = date.match(new RegExp(re_date.ISO + "(?:.+" + re_date.ISO + ")?"))) {
+							MB.relationshipEditor.UI.checkedWorks().forEach(function(work) {
+								work.relationships().forEach(function(relationship) {
+									if (
+										relationship.entityTypes == "recording-work"
+										&& checkedRelationships[relationship.entities.saved[0].gid + "-" + relationship.entities.saved[1].gid]
+									) {
+										relationship.begin_date.year(date[2]);
+										relationship.begin_date.month(date[3]);
+										relationship.begin_date.day(date[4]);
+										relationship.end_date.year(date[5] ? date[6] : date[2]);
+										relationship.end_date.month(date[5] ? date[7] : date[3]);
+										relationship.end_date.day(date[5] ? date[8] : date[4]);
+									}
+								});
 							});
-						});
-					} else { alert("Wrong date format"); }
+						} else { alert("Wrong date format"); }
+					}
 				}
 			}}}, [meta.icon.cloneNode(), " Set selected works’ recording dates ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 		}
