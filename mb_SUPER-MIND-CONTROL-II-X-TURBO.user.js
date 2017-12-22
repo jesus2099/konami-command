@@ -1192,12 +1192,12 @@ if (enttype) {
 						MB.relationshipEditor.UI.checkedWorks().forEach(function(work) {
 							work.relationships().forEach(function(relationship) {
 								if (relationship.entityTypes == "recording-work") {
-									relationship.period.beginDate.year(date[2]);
-									relationship.period.beginDate.month(date[3]);
-									relationship.period.beginDate.day(date[4]);
-									relationship.period.endDate.year(date[5] ? date[6] : date[2]);
-									relationship.period.endDate.month(date[5] ? date[7] : date[3]);
-									relationship.period.endDate.day(date[5] ? date[8] : date[4]);
+									relationship.begin_date.year(date[2]);
+									relationship.begin_date.month(date[3]);
+									relationship.begin_date.day(date[4]);
+									relationship.end_date.year(date[5] ? date[6] : date[2]);
+									relationship.end_date.month(date[5] ? date[7] : date[3]);
+									relationship.end_date.day(date[5] ? date[8] : date[4]);
 								}
 							});
 						});
