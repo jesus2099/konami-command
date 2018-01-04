@@ -64,7 +64,7 @@ document.addEventListener("mousedown", function(event) {
 		if (element.tagName != "A") {
 			element = getParent(element, "a");
 		}
-		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) {//linked in mb_SUPER-MIND-CONTROL-II-X-TURBO
+		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) {//mb_SUPER-MIND-CONTROL-II-X-TURBO
 			process(element);
 		}
 	}

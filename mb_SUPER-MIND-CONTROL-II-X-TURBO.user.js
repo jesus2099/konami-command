@@ -895,7 +895,7 @@ if (j2sets.SERVER_SWITCH) {
 	var langMenu = document.querySelector("div.header ul.menu li.language-selector");
 	if (langMenu) {
 		for (var languageLinks = langMenu.querySelectorAll("a[href*='/set-language/']"), a = 0; a < languageLinks.length; a++) {
-			languageLinks[a].classList.add("jesus2099-bypass-mb_PREFERRED-MBS");
+			languageLinks[a].classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//mb_PREFERRED-MBS
 		}
 		var servname;
 		if (servname = self.location.hostname.match(/^([^.]+)\.[^.]+\.[^.]+$/)) {
@@ -957,7 +957,7 @@ function serverSwitch(server, sep) {
 			hrefHost = "//" + server;
 		}
 		a.setAttribute("href", hrefHost + self.location.pathname + self.location.search + self.location.hash);
-		a.classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//linked to mb_PREFERRED-MBS
+		a.classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//mb_PREFERRED-MBS
 	}
 	return li;
 }
