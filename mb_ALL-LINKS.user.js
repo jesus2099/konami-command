@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2017.6.16
+// @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -288,7 +288,7 @@ var favicontry = [];
 var guessOtherFavicons = true;
 var sidebar = document.getElementById("sidebar");
 var tokenValues = {};
-var entityUrlRelsWS = "/ws/2/%entity-type%/%entity-mbid%?inc=url-rels";
+var entityUrlRelsWS = self.location.protocol + "//" + self.location.host + "/ws/2/%entity-type%/%entity-mbid%?inc=url-rels";
 var extlinks;
 var j2css = document.createElement("style");
 j2css.setAttribute("type", "text/css");

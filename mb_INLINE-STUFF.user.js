@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2017.8.10
+// @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -70,7 +70,7 @@ var shownacoustids = [];
 var shownworks = {count: 0};
 var isrcURL = "/isrc/%s";
 var acoustidURL = "//acoustid.org/track/%s";
-var releasewsURL = MBS + "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musicbrainz.org/XMLWebService#release_resources */ 
+var releasewsURL = "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musicbrainz.org/XMLWebService#release_resources */ 
 var str_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(str_GUID, "i");
 var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acoustid&mbid=%mbid&state=%state";
@@ -136,7 +136,7 @@ if (pagecat) {
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = isrcFish;
 				coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow release…");
-				xhr.open("GET", releasewsURL.replace(/%s/, relMBID), true);
+				xhr.open("GET", MBS + releasewsURL.replace(/%s/, relMBID), true);
 				xhr.overrideMimeType("text/xml");
 				xhr.send(null);
 			}

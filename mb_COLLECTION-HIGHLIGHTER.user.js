@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2017.12.2
+// @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -130,6 +130,7 @@ for (var j = 0; j < keys.length; j++) {
 // #                           MAIN RUN                                       #
 // #                                                                          #
 // ############################################################################
+var MBS = self.location.protocol + "//" + self.location.host;
 var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
@@ -157,7 +158,6 @@ if (cat) {
 	j2ss.insertRule("li." + prefix + "Row { padding-left: 4px; }", 0);
 	j2ss.insertRule("." + prefix + "Item { text-shadow: 0 0 8px " + highlightColour + "!important; }", 0);
 	j2ss.insertRule("." + prefix + "Row ." + prefix + "Item { border: 0; padding: 0; }", 0);
-	var MBS = self.location.protocol + "//" + self.location.host;
 	var collectionsID = GM_getValue("collections") || "";
 	var releaseID;
 	var stuff, collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
@@ -467,7 +467,7 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 	};
 	debug(MBS + url, true);
 	chrono();
-	xhr.open("GET", url, true);
+	xhr.open("GET", MBS + url, true);
 	xhr.send(null);
 }
 // ############################################################################
@@ -556,7 +556,7 @@ function fetchReleasesStuff(pi) {
 		};
 		debug(MBS + url, true);
 		chrono();
-		xhr.open("GET", url, true);
+		xhr.open("GET", MBS + url, true);
 		xhr.send(null);
 	}
 }
@@ -742,7 +742,7 @@ function stuffRemover(checks, pp) {
 				};
 				debug(MBS + url);
 				chrono();
-				xhr.open("GET", url, true);
+				xhr.open("GET", MBS + url, true);
 				xhr.send(null);
 			} else {
 				if (!stuff[checkAgainst].rawids) {/* Protection for some edge cases of new script using old script data */

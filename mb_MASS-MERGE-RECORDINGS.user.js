@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2017.12.11
+// @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -226,7 +226,7 @@ function mergeRecsStep(_step) {
 			}
 		}
 	};
-	xhr.open("POST", urls[step], true);
+	xhr.open("POST", MBS + urls[step], true);
 	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	setTimeout(function() { xhr.send(params[step]); }, chrono(MBSminimumDelay));
 }
@@ -254,7 +254,7 @@ function checkMerge(errorText) {
 		}
 		retry.checking = false;
 	});
-	xhr.open("GET", "/search/edits?negation=0&combinator=and&conditions.0.field=recording&conditions.0.operator=%3D&conditions.0.name=" + from.value + "&conditions.0.args.0=" + from.value + "&conditions.1.field=recording&conditions.1.operator=%3D&conditions.1.name=" + to.value + "&conditions.1.args.0=" + to.value + "&conditions.2.field=type&conditions.2.operator=%3D&conditions.2.args=74&conditions.3.field=status&conditions.3.operator=%3D&conditions.3.args=1", true);
+	xhr.open("GET", MBS + "/search/edits?negation=0&combinator=and&conditions.0.field=recording&conditions.0.operator=%3D&conditions.0.name=" + from.value + "&conditions.0.args.0=" + from.value + "&conditions.1.field=recording&conditions.1.operator=%3D&conditions.1.name=" + to.value + "&conditions.1.args.0=" + to.value + "&conditions.2.field=type&conditions.2.operator=%3D&conditions.2.args=74&conditions.3.field=status&conditions.3.operator=%3D&conditions.3.args=1", true);
 	setTimeout(function() { xhr.send(null); }, chrono(retryDelay));
 }
 function nextButt(successOrEditID) {
@@ -713,7 +713,7 @@ function loadReleasePage() {
 			infoMerge("Error " + this.status + " “" + this.statusText + "”", false);
 		}
 	});
-	xhr.open("GET", "/release/" + remoteRelease.id + remoteRelease.disc, true);
+	xhr.open("GET", MBS + "/release/" + remoteRelease.id + remoteRelease.disc, true);
 	setTimeout(function() { xhr.send(null); }, chrono(MBSminimumDelay));
 }
 function bestStartPosition(localTrack, matchAC) {

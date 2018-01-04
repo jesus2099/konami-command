@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. TAGGER LINKS NOW
-// @version      2016.6.15
+// @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_TAGGER-LINKS-NOW.user.js
 // @description  musicbrainz.org: Quickly show or update "TAGGER" links with desired port
 // @homepage     http://userscripts-mirror.org/scripts/show/88065
@@ -39,7 +39,7 @@
 var userjs = "jesus2099userjs88065";
 /* ----- - ----- CONFIG */
 var automatic = true; /*will background load tport (only when none) so TAGGER buttons do appear on next page browsing without bother triggering it manually*/
-var url = "/search?query=artist%3AAJICO+AND+release%3A%22AJICO+SHOW%22+AND+format%3AVHS&type=release&method=advanced&tport=%tagger-port%";
+var url = self.location.protocol + "//" + self.location.host + "/search?query=artist%3AAJICO+AND+release%3A%22AJICO+SHOW%22+AND+format%3AVHS&type=release&method=advanced&tport=%tagger-port%";
 var txt_notaggerlinks = "%tagger-img% (%tagger-port%)"; /* %tagger-port% variable shows the current port and %tagger-img% the tagger image */
 var txt_taggerlinksloaded = "%tagger-img% (%tagger-port%)";
 var txt_loading = "⌛ loading…";
