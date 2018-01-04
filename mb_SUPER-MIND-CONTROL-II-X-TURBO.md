@@ -41,7 +41,6 @@ Content
   1. [ROW_HIGHLIGHTER](#row_highlighter)
   1. [MAX_RECENT_ENTITIES](#max_recent_entities)
   1. [STATIC_MENU](#static_menu) ← <del>STATIC MENU</del>
-  1. [MERGE_USER_MENUS](#merge_user_menus) (default off)
   1. [SLOW_DOWN_RETRY](#slow_down_retry)
   1. [CENTER_FLAGS](#center_flags)
   1. [RATINGS_ON_TOP](#ratings_on_top)
@@ -178,15 +177,6 @@ Adjust the amount of remembered recently used entities in inline searches (defau
 ### STATIC_MENU
 
 Makes the main MB menu always there when you need it (without scrolling top).
-
-### MERGE_USER_MENUS
-
-(default off)
-
-[![combined menus][kHQeOpQs]][kHQeOpQ]
-
-Merges both **MY NAME** user menu and **MY DATA** user menu into one / 
-  also adds **(stop) use beta site link** in **user preferences**.
 
 ### SLOW_DOWN_RETRY
 
