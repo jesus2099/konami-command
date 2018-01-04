@@ -894,6 +894,9 @@ j2setting("SERVER_SWITCH_mbsandbox", "[\"chirlu\", \"reosarevok\"]", true, "type
 if (j2sets.SERVER_SWITCH) {
 	var langMenu = document.querySelector("div.header ul.menu li.language-selector");
 	if (langMenu) {
+		for (var languageLinks = langMenu.querySelectorAll("a[href*='/set-language/']"), a = 0; a < languageLinks.length; a++) {
+			languageLinks[a].classList.add("jesus2099-bypass-mb_PREFERRED-MBS");
+		}
 		var servname;
 		if (servname = self.location.hostname.match(/^([^.]+)\.[^.]+\.[^.]+$/)) {
 			servname = servname[1];
