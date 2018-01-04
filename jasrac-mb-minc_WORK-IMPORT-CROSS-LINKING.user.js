@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2017.11.14
+// @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
@@ -63,7 +63,7 @@ var xhrJobs = {
 		async: true,
 		method: "get",
 		init: function(xhr) {
-			xhrJobs["workinfo-get"].url = "/ws/2/work/" + xhrWork.mbid + "?fmt=json&inc=annotation+aliases";
+			xhrJobs["workinfo-get"].url = MBS + "/ws/2/work/" + xhrWork.mbid + "?fmt=json&inc=annotation+aliases";
 		},
 		onload: function() {
 			if (this.status > 199 && this.status < 400 && this.responseText.match(new RegExp(xhrWork.mbid))) {
@@ -152,7 +152,7 @@ var xhrJobs = {
 		info: "get current work annotation",
 		method: "get",
 		init: function(xhr) {
-			xhrJobs["annotation-get"].url = "/ws/2/work/" + xhrWork.mbid + "?inc=annotation";
+			xhrJobs["annotation-get"].url = MBS + "/ws/2/work/" + xhrWork.mbid + "?inc=annotation";
 		},
 		onload: function() {
 			if (this.status > 199 && this.status < 400 && this.responseText.match(new RegExp("<work.+id=\"" + xhrWork.mbid + "\">"))) {
@@ -171,7 +171,7 @@ var xhrJobs = {
 		info: "JASRAC work code annotation",
 		method: "post",
 		init: function(xhr) {
-			xhrJobs["annotation-add"].url = "/work/" + xhrWork.mbid + "/edit_annotation";
+			xhrJobs["annotation-add"].url = MBS + "/work/" + xhrWork.mbid + "/edit_annotation";
 			var curl = workLookupURL("jasrac", "code", xhrWork.code);
 			xhrJobs["annotation-add"].params = "edit-annotation.text=" + encodeURIComponent("JASRAC: '''" + xhrWork.code + "''' ([http://tickets.musicbrainz.org/browse/MBS-7359|MBS-7359])" + (xhrWork.annotation ? "\n" + xhrWork.annotation : "")) + "&edit-annotation.changelog=" + encodeURIComponent("JASRAC: " + xhrWork.code + " (MBS-7359)") + "&edit-annotation.edit_note=" + encodeURIComponent("JASRAC: '''" + xhrWork.code + "''' (" + curl + ") ← requires JASRACへの直リンク ('''jasrac_DIRECT-LINK''')\nStill needed for JASRAC auto‐linking (until http://tickets.musicbrainz.org/browse/MBS-7359).\n\n" + MBlinks());
 		},
@@ -180,7 +180,7 @@ var xhrJobs = {
 		async: false,
 		method: "post",
 		init: function(xhr) {
-			xhrJobs["alias-add"].url = "/work/" + xhrWork.mbid + "/add-alias";
+			xhrJobs["alias-add"].url = MBS + "/work/" + xhrWork.mbid + "/add-alias";
 			xhrJobs["alias-add"].params = "edit-alias.as_auto_editor=" + (isAutoEdit() ? "1" : "0");
 			var newAlias = xhrWork.newAliases.shift();
 			if (newAlias) {

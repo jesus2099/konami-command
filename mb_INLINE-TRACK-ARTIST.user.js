@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE TRACK ARTIST
-// @version      2017.11.30
+// @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-TRACK-ARTIST.user.js
 // @description  musicbrainz.org: highlights track title, length and artist differences in recording page
 // @homepage     http://userscripts-mirror.org/scripts/show/166877
@@ -139,7 +139,7 @@ if (mbid && tracks.length > 0) {
 			coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching inline track stuff.");
 		});
 		coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow recording…");
-		xhr.open("get", "/ws/2/recording?query=rid:" + mbid, true);
+		xhr.open("get", self.location.protocol + "//" + self.location.host + "/ws/2/recording?query=rid:" + mbid, true);
 		/* xhr.open("get", "/ws/2/recording/" + mbid + "?inc=releases+artist-credits+mediums", true); */
 		xhr.overrideMimeType("text/xml");
 		xhr.send(null);

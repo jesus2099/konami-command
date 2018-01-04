@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2016.6.15
+// @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -281,7 +281,7 @@ function loadEntInfo() {
 		var rowid = entInfoZone.getAttribute("id").match(/\d+$/)[0];
 		entInfoZone.appendChild(loadimg("info"));
 		var mbid = entities[rowid].a.getAttribute("href").match(rembid)[0];
-		var url = "/ws/2/" + mergeType + "/" + mbid + "?inc=";
+		var url = self.location.protocol + "//" + self.location.host + "/ws/2/" + mergeType + "/" + mbid + "?inc=";
 		switch (mergeType) {
 			case "artist":
 				url += "release-groups+works+recordings";
