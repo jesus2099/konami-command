@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2017.12.22.1547
+// @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -939,13 +939,21 @@ function serverSwitch(server, sep) {
 	if (sep) {
 		li.className = "separator";
 	}
-	var protocolAndHost = server.match(/^(https?):\/\/(.+)$/);
-	var a = li.appendChild(createTag("a", {}, protocolAndHost ? protocolAndHost[2] + " (" + protocolAndHost[1] + ")" : server));
+	var protocolAndHost = server.match(/^(https?:)\/\/(.+)$/);
+	var a = li.appendChild(createTag("a", {}, protocolAndHost ? protocolAndHost[2] + " (" + protocolAndHost[1].slice(0, -1) + ")" : server));
 	if (self.location.host == server || self.location.protocol + "//" + self.location.host == server) {
 		a.style.setProperty("cursor", "no-drop");
 		a.style.setProperty("font-weight", "bold");
 	} else {
-		a.setAttribute("href", (server.match(/mbsandbox/) ? "http://" : "") + server + self.location.pathname + self.location.search + self.location.hash);
+		var hrefHost;
+		if (protocolAndHost) {
+			hrefHost = protocolAndHost[1] + "//" + protocolAndHost[2];
+		} else if (server.match(/mbsandbox/)) {
+			hrefHost = "http:" + "//" + server;
+		} else {
+			hrefHost = "//" + server;
+		}
+		a.setAttribute("href", hrefHost + self.location.pathname + self.location.search + self.location.hash);
 		a.classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//linked to mb_PREFERRED-MBS
 	}
 	return li;
