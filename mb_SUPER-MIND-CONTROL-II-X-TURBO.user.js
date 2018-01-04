@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2018.1.4
+// @version      2018.1.4.1454
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -369,7 +369,7 @@ if (j2sets.RELEASE_CLONER && account) {
 										self.open("https://github.com/jesus2099/konami-command/issues/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + self.location.href + ").\n"));
 									}
 								};
-								xhr.open("get", "/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels&fmt=json", false);
+								xhr.open("get", MBS + "/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels&fmt=json", false);
 								xhr.send(null);
 							}
 						}
@@ -1303,7 +1303,7 @@ if (enttype) {
 						}
 					}
 				});
-				xhr.open("get", "/ws/2" + self.location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=recording-rels+release-rels&fmt=json", true);
+				xhr.open("get", MBS + "/ws/2" + self.location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=recording-rels+release-rels&fmt=json", true);
 				xhr.send(null);
 			}
 		}
