@@ -919,7 +919,7 @@ if (j2sets.SERVER_SWITCH) {
 		}, true);
 		menu.lastChild.addEventListener("click", function(event) { event.stopPropagation(); });
 		menu = menu.firstChild.nextSibling;
-		var mbMains = ["http://", "https://", "https://beta."];
+		var mbMains = ["", "beta.", "test."];
 		for (var mb = 0; mb < mbMains.length; mb++) {
 			menu.appendChild(serverSwitch(mbMains[mb] + "musicbrainz.org"));
 		}
