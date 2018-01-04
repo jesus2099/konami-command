@@ -39,7 +39,6 @@ Content
   1. [CHECK_ALL_SUBSCRIPTIONS](#check_all_subscriptions) ← <del>[check all subscriptions][122083]</del>
   1. [EASY_DATE](#easy_date) ← [Kejo feature request][193018], very basic [paste‐a‐date!][121217]‐like ([MBS-1197])
   1. [ROW_HIGHLIGHTER](#row_highlighter)
-  1. [MAX_RECENT_ENTITIES](#max_recent_entities)
   1. [STATIC_MENU](#static_menu) ← <del>STATIC MENU</del>
   1. [SLOW_DOWN_RETRY](#slow_down_retry)
   1. [CENTER_FLAGS](#center_flags)
@@ -169,10 +168,6 @@ Press “c” key to copy current date into the other (begin→end or end→begi
 
 Evolution of brianfreud’s [MusicBrainz row highlighter][118008].
 Now also works in details lists and dynamically added content.
-
-### MAX_RECENT_ENTITIES
-
-Adjust the amount of remembered recently used entities in inline searches (default is taken from MB itself).
 
 ### STATIC_MENU
 

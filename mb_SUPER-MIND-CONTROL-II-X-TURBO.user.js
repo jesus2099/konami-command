@@ -4,7 +4,7 @@ var meta = {rawmdb: function() {
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
 // @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
 // @compatible   opera(12.18.1872)+violentmonkey      my setup
@@ -458,20 +458,6 @@ function writeStat(stats, i, stat, total) {
 }
 function percentage(p, c) {
 	return (c == 0 ? 0 : Math.round(10000 * p / c) / 100) + "%";
-}
-/*==========================================================================
-## MAX_RECENT_ENTITIES ##
-==========================================================================*/
-try {
-	var maxent = MB && MB.constants && MB.constants.MAX_RECENT_ENTITIES;
-	if (maxent && typeof maxent == "number") {
-		j2setting("MAX_RECENT_ENTITIES", maxent + "", true, "adjust the amount of recently used entities in inline searches (default is taken from MB itself)");
-		if (j2sets.MAX_RECENT_ENTITIES) {
-			MB.constants.MAX_RECENT_ENTITIES = parseInt(j2sets.MAX_RECENT_ENTITIES, 10);
-		}
-	}
-} catch(error) {
-	j2setting("MAX_RECENT_ENTITIES", "ERROR", true, error.message + "! — MAX_RECENT_ENTITIES can’t work. — " + chrome);
 }
 /*=================================================================== MOUSE+
 ## CHECK_ALL_SUBSCRIPTIONS ##
