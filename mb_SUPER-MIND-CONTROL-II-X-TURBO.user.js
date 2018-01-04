@@ -4,7 +4,7 @@ var meta = {rawmdb: function() {
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
 // @version      2018.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / MERGE_USER_MENUS / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
+// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / MAX_RECENT_ENTITIES / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
 // @compatible   opera(12.18.1872)+violentmonkey      my setup
@@ -1062,27 +1062,6 @@ function smenu(event) {
 			mmenu.querySelector("div > div.r").style.removeProperty("display");
 		} catch (error) {}
 	}
-}
-/*=================================================================== MOUSE+
-## MERGE_USER_MENUS ## (default off)
-==========================================================================*/
-j2setting("MERGE_USER_MENUS", false, true, "merges “user” and “my data” menus. also adds “use beta site” (yes/no) link in user preferences");
-var data = document.querySelector("div#header-menu li.data");
-var datas = data ? data.querySelectorAll("div.header ul.menu li.data > ul > li") : null;
-if (j2sets.MERGE_USER_MENUS && account && data && datas.length > 0) {
-	data.style.setProperty("display", "none");
-	account.menu.insertBefore(createTag("li", {a: {class: "separator"}}), account.menu.firstChild);
-	for (var d = datas.length - 1; d > -1; d--) {
-		account.menu.insertBefore(datas[d].cloneNode(true), account.menu.firstChild);
-	}
-}
-if (self.location.pathname.match(/\/account\/preferences$/)) {
-	var betalink = document.querySelector("div#footer a.internal[href$='/set-beta-preference']");
-	if (betalink) {
-		var cont = document.querySelector("div#page form") || document.getElementById("page") || document.body;
-		cont.insertBefore(betalink.cloneNode(true), cont.firstChild);
-	}
-	
 }
 /*==========================================================================
 ## SLOW_DOWN_RETRY ##
