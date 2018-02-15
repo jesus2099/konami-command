@@ -79,7 +79,7 @@ function fallbackImageLoader(imgNode, srcs) {
 	imgNode.addEventListener("error", function(event) {
 		if (srcs.length > 1) {
 			// removing event listener(s) with cloneNode
-			var newImgNode = imgNode.cloneNode();
+			var newImgNode = imgNode.cloneNode(false);
 			newImgNode.removeAttribute("src");
 			imgNode.parentNode.replaceChild(newImgNode, imgNode);
 			fallbackImageLoader(newImgNode, srcs.slice(1));

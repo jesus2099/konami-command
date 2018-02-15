@@ -96,7 +96,7 @@ function changeStuff() {
 					installImage = document.createElement("img");
 					installImage.setAttribute("src", meta.icon);
 				}
-				install.appendChild(installImage.cloneNode());
+				install.appendChild(installImage.cloneNode(false));
 				install.className = icon.className;
 			}
 			install.setAttribute("href", host.files[f].getAttribute("href").replace(host.href.match, host.href.replace));
