@@ -157,7 +157,7 @@ j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + meta.descri
 		}
 	}
 	j2setsdiv.scrollIntoView();
-}}}, [meta.icon.cloneNode(), " " + meta.name + " (" + meta.version + ")"]));
+}}}, [meta.icon.cloneNode(false), " " + meta.name + " (" + meta.version + ")"]));
 function bug(error) {
 	var title = "", alrt = meta.name + " (" + meta.version + ")" + " ERROR";
 	if (error.module) {
@@ -376,7 +376,7 @@ if (j2sets.RELEASE_CLONER && account) {
 					} else {
 						alert("Please select at least one release.");
 					}
-				}}}, [meta.icon.cloneNode(), " Clone " + (rcwhere == "release" ? "release" : "selected releases") + " ", createTag("small", {s: {color: "grey"}}, "← RELEASE_CLONER™")]));
+				}}}, [meta.icon.cloneNode(false), " Clone " + (rcwhere == "release" ? "release" : "selected releases") + " ", createTag("small", {s: {color: "grey"}}, "← RELEASE_CLONER™")]));
 		}
 	}
 }
@@ -889,7 +889,7 @@ if (j2sets.SERVER_SWITCH) {
 		} else {
 			servname = "MBS";
 		}
-		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [meta.icon.cloneNode(), " ", createTag("code", {}, servname), " ▾"]), document.createElement("ul")]), langMenu);
+		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [meta.icon.cloneNode(false), " ", createTag("code", {}, servname), " ▾"]), document.createElement("ul")]), langMenu);
 		menu.addEventListener("click", function(event) {
 			if(getParent(event.target, "li", userjs + "serverSwitch")) {
 				event.stopPropagation();
@@ -1159,7 +1159,7 @@ if (enttype) {
 						}
 					}
 				}
-			}}}, [meta.icon.cloneNode(), " Remove recording relationships ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
+			}}}, [meta.icon.cloneNode(false), " Remove recording relationships ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 			/* :::: MASS SET WORKS’ RECORDING DATES :::: */
 			j2superturbo.menu.addItem(createTag("a", {e: {click: function(event) {
 				var checkedRelationships = {
@@ -1192,7 +1192,7 @@ if (enttype) {
 						} else { alert("Wrong date format"); }
 					}
 				}
-			}}}, [meta.icon.cloneNode(), " Set selected works’ recording dates ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
+			}}}, [meta.icon.cloneNode(false), " Set selected works’ recording dates ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 		}
 	}
 	/*================================================================ DISPLAY-
