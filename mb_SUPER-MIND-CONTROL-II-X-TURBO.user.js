@@ -822,8 +822,8 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 		if (searchHelp && refine) {
 			var refines = document.createElement("td");
 			var myID;
-			var notme = "&conditions.2099.field=editor&conditions.2099.operator=%21%3D&conditions.2099.name=COOLEST+EDITOR+2099&conditions.2099.args.0=%myID%";
-			var novote = "&conditions.2098.field=voter&conditions.2098.operator=%3D&conditions.2098.name=COOLEST+EDITOR+2099&conditions.2098.voter_id=%myID%&conditions.2098.args=no";
+			var notme = "&conditions.2099.field=editor&conditions.2099.operator=%21%3D&conditions.2099.name=%myName%&conditions.2099.args.0=%myID%";
+			var novote = "&conditions.2098.field=voter&conditions.2098.operator=%3D&conditions.2098.name=%myName%&conditions.2098.voter_id=%myID%&conditions.2098.args=no";
 			refines.appendChild(createTag("a", {a: {href: self.location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2] ? "edits" : (self.location.pathname.match(re_GUID) ? "open_edits" : "edits/open")) + self.location.search + self.location.hash}}, (refine[1]||refine[2] ? "All " : "Open ") + "edits"));
 			if (
 				self.location.href.indexOf(account.pathname) < 0 &&
@@ -835,10 +835,10 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 					myID = myID[1];
 					if (myID != localStorage.getItem(userjs + "me-userid")) localStorage.setItem(userjs + "me-userid", myID);
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a: {href: refine + notme.replace(/%myID%/g, myID)}}, ["Refine this search (", createTag("strong", null, "+not me"), ")"]));
+					refines.appendChild(createTag("a", {a: {href: refine + notme.replace(/%myID%/g, myID).replace(/%myName%/g, escape(account.name))}}, ["Refine this search (", createTag("strong", null, "+not me"), ")"]));
 					novote = notme + novote;
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a: {href: refine + novote.replace(/%myID%/g, myID)}}, ["Refine this search (", createTag("strong", null, "+not me+not voted"), ")"]));
+					refines.appendChild(createTag("a", {a: {href: refine + novote.replace(/%myID%/g, myID).replace(/%myName%/g, escape(account.name))}}, ["Refine this search (", createTag("strong", null, "+not me+not voted"), ")"]));
 				}
 				if (!self.location.pathname.match(/label|work/)) {
 					refines.appendChild(document.createTextNode(" | "));
