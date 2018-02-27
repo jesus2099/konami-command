@@ -239,7 +239,7 @@ if (j2sets.RELEASE_CLONER && account) {
 		rcwhere && (rcwhere = rcwhere[2] ? rcwhere[2] : rcwhere[3])
 	) {
 		if (account) {
-			j2superturbo.menu.addItem(createTag("a", {a: {title: meta.name + "\nshift+click to open new tab / ctrl+click for background tab" + (rcwhere != "release" ? "\nno need to select if there is only one release on this page" : "")}, e: {click: function(event) {
+			j2superturbo.menu.addItem(createTag("a", {a: {title: meta.name + "\nshift+click to open new tab / ctrl+click for background tab" + (rcwhere != "release" ? "\nno need to select if there is only one release on this page" : "")}, e: {click: function(clickEvent) {
 					var crmbids = [];
 					if (rcwhere == "release") {
 						crmbids.push("" + self.location.pathname.match(re_GUID));
@@ -256,10 +256,10 @@ if (j2sets.RELEASE_CLONER && account) {
 						if (confirm("This will (you can change the settings):\n\n* " + (j2sets.RELEASE_CLONER_release_event ? "" : "NOT ") + "copy release events\n* " + (j2sets.RELEASE_CLONER_additional_information ? "" : "NOT ") + "copy additional information\n* " + (j2sets.RELEASE_CLONER_external_links ? "" : "NOT ") + "copy external links\n* " + (j2sets.RELEASE_CLONER_tracktimes ? "" : "NOT ") + "copy track times")) {
 							for (var crr = crmbids.length - 1; crr >= 0; crr--) {
 								var xhr = new XMLHttpRequest();
-								xhr.onload = function(event) {
+								xhr.onload = function(loadEvent) {
 									var release = JSON.parse(this.responseText);
 									var reled = {
-										form: createTag("form", {a: {action: "/release/add", method: "post", target: crr == 0 ? "_self" : "_blank"}, s: {display: "none"}}),
+										form: createTag("form", {a: {action: "/release/add", method: "post", target: formTarget(crr, clickEvent)}, s: {display: "none"}}),
 										add: function(data, requestParameter, required) {
 											if (data) {
 												/*console.log(requestParameter + " = " + data);*/
@@ -364,7 +364,7 @@ if (j2sets.RELEASE_CLONER && account) {
 									if (ok) document.body.appendChild(reled.form).submit();
 									else sendEvent(this, "error");
 								};
-								xhr.onerror = function(event) {
+								xhr.onerror = function(errorEvent) {
 									if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
 										self.open("https://github.com/jesus2099/konami-command/issues/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + self.location.href + ").\n"));
 									}
@@ -379,6 +379,19 @@ if (j2sets.RELEASE_CLONER && account) {
 				}}}, [meta.icon.cloneNode(false), " Clone " + (rcwhere == "release" ? "release" : "selected releases") + " ", createTag("small", {s: {color: "grey"}}, "← RELEASE_CLONER™")]));
 		}
 	}
+}
+function formTarget(releaseIndex, event) {
+	var target = "_self";
+	if (event.ctrlKey) {
+		target = userjs + (new Date().getTime());
+		try {
+			self.open("", target).blur();
+		} catch(e) {}
+		self.focus();
+	} else if (event.shiftKey || releaseIndex > 0) {
+		target = "_blank";
+	}
+	return target;
 }
 /*================================================================= DISPLAY+
 ## USER_STATS ##
