@@ -405,8 +405,8 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		writeStat(stats, 2, voteddown, total);
 		stats[2].parentNode.parentNode.insertBefore(
 			createTag("tr", null, [
-				createTag("th", null, "Ranked total"),
-				createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, (0 + accepted + autoedits).toLocaleString(lang)))
+				createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, "Ranked total")),
+				createTag("th", null, (0 + accepted + autoedits).toLocaleString(lang))
 			]),
 			stats[2].parentNode
 		);
