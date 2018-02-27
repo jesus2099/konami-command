@@ -837,6 +837,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			var myID;
 			var notme = "&conditions.2099.field=editor&conditions.2099.operator=%21%3D&conditions.2099.name=%myName%&conditions.2099.args.0=%myID%";
 			var novote = "&conditions.2098.field=voter&conditions.2098.operator=%3D&conditions.2098.name=%myName%&conditions.2098.voter_id=%myID%&conditions.2098.args=no";
+			var onlyEffective = "&conditions.2097.field=status&conditions.2097.operator=%3D&conditions.2097.args=1&conditions.2097.args=2";
 			refines.appendChild(createTag("a", {a: {href: self.location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2] ? "edits" : (self.location.pathname.match(re_GUID) ? "open_edits" : "edits/open")) + self.location.search + self.location.hash}}, (refine[1]||refine[2] ? "All " : "Open ") + "edits"));
 			if (
 				self.location.href.indexOf(account.pathname) < 0 &&
@@ -844,6 +845,10 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 				(refine = refine.getAttribute("href").replace(/form_only=yes/, "")) &&
 				(myID = refine.match(/user_id=(\d+)/) || localStorage.getItem(userjs + "me-userid"))
 			) {
+				if (self.location.pathname.match(/\/edits$/)) {
+					refines.appendChild(document.createTextNode(" | "));
+					refines.appendChild(createTag("a", {a: {href: refine + onlyEffective}}, ["Refine this search (", createTag("strong", null, "effective edits only"), ")"]));
+				}
 				if (typeof myID == "object") {
 					myID = myID[1];
 					if (myID != localStorage.getItem(userjs + "me-userid")) localStorage.setItem(userjs + "me-userid", myID);
