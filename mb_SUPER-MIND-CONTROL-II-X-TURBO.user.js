@@ -382,13 +382,13 @@ if (j2sets.RELEASE_CLONER && account) {
 }
 function formTarget(releaseIndex, event) {
 	var target = "_self";
-	if (event.ctrlKey) {
+	if (event.ctrlKey || releaseIndex > 0) {
 		target = userjs + (new Date().getTime());
 		try {
 			self.open("", target).blur();
 		} catch(e) {}
 		self.focus();
-	} else if (event.shiftKey || releaseIndex > 0) {
+	} else if (event.shiftKey) {
 		target = "_blank";
 	}
 	return target;
