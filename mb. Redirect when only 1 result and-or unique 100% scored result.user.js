@@ -4,7 +4,8 @@
 // @description  In (test.)musicbrainz.org
 // @namespace    http://userscripts.org/scripts/show/106156
 // @author       N.(stars 2011-06-30) then Tristan DANIEL (PATATE12 aka. jesus2099/shamo)
-// @licence      GPL (http://www.gnu.org/copyleft/gpl.html)
+// @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+// @licence      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // @grant        none
 // @match        *://*.mbsandbox.org/search*
 // @match        *://*.musicbrainz.org/search*

@@ -4,7 +4,8 @@
 // @description  Amazon. Shows links to full size images. Shrinks product and search URLs. Prevents from opening new windows in amazn.jp searches.
 // @namespace    https://userscripts.org/139394
 // @author       PATATE12 aka. jesus2099/shamo
-// @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+// @licence      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // @grant        none
 // @match        *://*.amazon.*/*
 // @exclude      *iframeproxy*
