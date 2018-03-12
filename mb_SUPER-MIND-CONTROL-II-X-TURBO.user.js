@@ -19,7 +19,7 @@ var meta = {rawmdb: function() {
 // @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
 // @since        2010-09-09
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://github.com/jesus2099/konami-command/raw/84e864a4b2dbc6598e3f3d49af96e09387613f60/lib/SUPER.js
+// @require      https://github.com/jesus2099/konami-command/raw/bb6c1c0827fc37d947efb75d4551de4caa12d598/lib/SUPER.js
 // @grant        none
 // @match         *://*.mbsandbox.org/*
 // @match         *://*.musicbrainz.org/*
