@@ -2,7 +2,7 @@
 var meta= { rawmdb: function() {
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2018.3.12
+// @version      2018.3.14
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
@@ -20,6 +20,7 @@ var meta= { rawmdb: function() {
 // @licence      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2009-09-14
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://github.com/jesus2099/konami-command/raw/5d722a32488ce7672bdc9a2486af1211ba25ff5f/lib/SUPER.js?version=2018.3.14
 // @grant        none
 // @match        *://*.mbsandbox.org/*
 // @match        *://*.musicbrainz.org/*
@@ -78,7 +79,7 @@ if (editform) {
 				var pendingvotes = editform.querySelectorAll("div.voteopts input[type='radio']:not([value='-2']):not([disabled])");
 				for (var pv = 0; pv < pendingvotes.length; pv++) {
 					if (pendingvotes[pv].checked) {
-						click(getParent(pendingvotes[pv], "label") || pendingvotes[pv], "dbl");
+						sendEvent(getParent(pendingvotes[pv], "label") || pendingvotes[pv], "dblclick");
 					}
 				}
 			}
@@ -87,7 +88,7 @@ if (editform) {
 		}
 	}, false);
 	if (inputs = document.querySelector("div#content div.overall-vote")) {
-		del(inputs);
+		removeNode(inputs);
 	}
 	for (var rac = editform.querySelectorAll("tr.rename-artist-credits > td"), r = 0; r < rac.length; r++) {
 		if (rac[r].textContent.match(/jah?|yes|s[íì]|oui|voor|kyllä|ναι|はい/i)) {
@@ -131,7 +132,7 @@ if (editform) {
 						editEntry = getParent(editEntry, "div", "edit-list");
 					}
 					if (this.status == 200 && pendingXHRvote > 0 && !anotherEdit && editEntry) {
-						del(editEntry);
+						removeNode(editEntry);
 					} else {
 						var errorMessage = "Error while voting Edit #" + this.id + " in the background.\n\n";
 						if (this.status != 200) {
@@ -248,7 +249,7 @@ if (editform) {
 								(!editor || editor == getParent(others[other], "div", "edit-header").querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/)[1])
 								&& (!vote || vote == ovote)
 							) {
-								click(others[other]);
+								sendEvent(others[other], "click");
 							}
 						}
 					}
@@ -283,7 +284,7 @@ if (editform) {
 		} else {
 			addedStuff = editform.insertBefore(getParent(foundcount, "div", "search-toggle").cloneNode(true), editform.firstChild);
 		}
-		del(getParent(foundcount, "div", "search-toggle"));
+		removeNode(getParent(foundcount, "div", "search-toggle"));
 		var artistlnk = document.getElementsByClassName("artistheader");
 		if (addedStuff && artistlnk && artistlnk[0] && artistlnk[0].getElementsByTagName("a") && artistlnk[0].getElementsByTagName("a")[0]) {
 			addedStuff.appendChild(document.createTextNode(" for "));
@@ -342,26 +343,13 @@ function doitdoit(event, vote, min, max) {
 	if (vote != "omgcancel") {
 		for (i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : radios.length); i++) {/*FF shift+click label NG*/
 			if (radios[i].getAttribute("value") == vote && !radios[i].checked && !ninja(event, getParent(radios[i], "div", "edit-list")) && (event.shiftKey || isOkToVote(radios[i]))) {
-				click(radios[i]);
+				sendEvent(radios[i], "click");
 			}
 		}
-	} else { for (i = 0; i < radiosafe.length; i++) { click(radiosafe[i]); } }
+	} else { for (i = 0; i < radiosafe.length; i++) { sendEvent(radiosafe[i], click); } }
 }
 function isOkToVote(radiox) {
 	return getParent(radiox, "div", "voteopts").querySelector("input[type='radio'][value='-2']").checked;
-}
-function getParent(obj, tag, cls) {
-	var cur = obj;
-	if (cur.parentNode) {
-		cur = cur.parentNode;
-		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-			return cur;
-		} else {
-			return getParent(cur, tag, cls);
-		}
-	} else {
-		return null;
-	}
 }
 function findPos(obj) { /* http://www.quirksmode.org/js/findpos.html */
 	var curleft = 0, curtop = 0;
@@ -372,16 +360,6 @@ function findPos(obj) { /* http://www.quirksmode.org/js/findpos.html */
 		} while (obj = obj.offsetParent);
 	}
 	return {"x": curleft, "y": curtop};
-}
-function click(n, mod){
-	var clicke = document.createEvent("MouseEvents");
-	clicke.initMouseEvent((mod ? mod : "") + "click", true, true, self, mod ? 2 : 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-	n.dispatchEvent(clicke);
-}
-function sendEvent(node, eventName){
-	var event = document.createEvent("HTMLEvents");
-	event.initEvent(eventName, true, true);
-	node.dispatchEvent(event);
 }
 function disable(cont, dis) {
 	var inputs = cont.querySelectorAll("input, select, textarea, button");
@@ -439,9 +417,6 @@ function updateXHRstat(nbr) {
 		self.location.reload();
 	}
 	stat.style.setProperty("display", nbr > 0 ? "block" : "none");
-}
-function del(o) {
-	return o.parentNode.removeChild(o);
 }
 function submitShiftKey(event) { submitShift = event.shiftKey; }
 function preventDefault(node, eventName) { node.addEventListener(eventName, function(event) { event.preventDefault(); }, false); }

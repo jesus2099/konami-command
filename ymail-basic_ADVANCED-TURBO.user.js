@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2017.6.16
+// @version      2018.3.14
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @homepage     http://userscripts-mirror.org/scripts/show/177655
 // @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_ADVANCED-TURBO
@@ -17,6 +17,7 @@
 // @licence      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2013-09-12
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://github.com/jesus2099/konami-command/raw/5d722a32488ce7672bdc9a2486af1211ba25ff5f/lib/SUPER.js?version=2018.3.14
 // @grant        none
 // @match        *://*.mail.yahoo.com/neo/b/*
 // @exclude      *mail.yahoo.com/mc/md.php*
@@ -165,19 +166,6 @@ function findNode(argh) {
 		}
 	}
 }
-function getParent(obj, tag, cls) {
-	var cur = obj;
-	if (cur.parentNode) {
-		cur = cur.parentNode;
-		if (cur.tagName.toUpperCase() == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-			return cur;
-		} else {
-			return getParent(cur, tag, cls);
-		}
-	} else {
-		return null;
-	}
-}
 function doThis(butt, noreload) {
 	var button = findNode(butt);
 	var opt = (button.tagName == "OPTION");
@@ -199,30 +187,4 @@ function indexOf(element, array) {
 		}
 	}
 	return i;
-}
-function sendEvent(n, _e){
-	var e = _e.toLowerCase();
-	var ev;
-	if (e.match(/click|mouse/)) {
-		var params = {};
-		params.mods = [];
-		if (e.match(/\+/)) {
-			params.mods = e.split("+");
-			e = params.mods.pop();
-		}
-		ev = document.createEvent("MouseEvents");
-		ev.initMouseEvent(e, true, true, self, 0, 0, 0, 0, 0, params.mods.indexOf("ctrl") > -1, params.mods.indexOf("alt") > -1, params.mods.indexOf("shift") > -1, params.mods.indexOf("meta") > -1, 0, null);
-	} else {
-		ev = document.createEvent("HTMLEvents");
-		ev.initEvent(e, true, true);
-	}
-	n.dispatchEvent(ev);
-}
-function stop(event) {
-	event.cancelBubble = true;
-	if (event.stopPropagation) {
-		event.stopPropagation();
-	}
-	event.preventDefault();
-	return false;
 }
