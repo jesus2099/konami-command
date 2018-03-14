@@ -49,6 +49,15 @@ if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString()
 }
 meta.name = meta.name.substr(4).replace(/\s/g, "\u00a0");
 meta.icon = createTag("img", {a: {src: meta.icon}, s: {verticalAlign: "middle", margin: "-8px 0"}});
+var debugBuffer = "";
+var DEBUG = localStorage.getItem("jesus2099debug");
+var pageType = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
+if (pageType) {
+	pageType = pageType[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
+} else {
+	pageType = "other";
+}
+debug("Page type: " + pageType);
 var chrome = "Please run “" + meta.name + "” with Tampermonkey instead of plain Chrome.";
 var userjs = "jesus2099userjs85790"/*have to keep this for legacy saved settings*/;
 var KEYCODES = {
@@ -240,6 +249,7 @@ if (j2sets.RELEASE_CLONER && account) {
 		rcwhere && (rcwhere = rcwhere[2] ? rcwhere[2] : rcwhere[3])
 	) {
 		if (account) {
+			debug("RELEASE_CLONER");
 			j2superturbo.menu.addItem(createTag("a", {a: {title: meta.name + "\nshift+click to open new tab / ctrl+click for background tab" + (rcwhere != "release" ? "\nno need to select if there is only one release on this page" : "")}, e: {click: function(clickEvent) {
 					var crmbids = [];
 					if (rcwhere == "release") {
@@ -408,6 +418,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 	}
 	editorPathname = self.location.pathname.substr(0, editorPathname) + editorPathname;
 	if (stats.length > 0) {
+		debug("USER_STATS");
 		var accepted = readStat(stats, 0);
 		var autoedits = readStat(stats, 1);
 		var voteddown = readStat(stats, 2);
@@ -470,6 +481,7 @@ if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + 
 	var cbs = document.querySelectorAll("div#page > form > table.tbl > tbody > tr > td > input[type='checkbox']");
 	var ths = document.querySelector("div#page > form > table.tbl > thead > tr > th");
 	if (ths && !ths.hasChildNodes() && cbs && cbs.length > 0) {
+		debug("CHECK_ALL_SUBSCRIPTIONS");
 		var cb = ths.appendChild(createTag("input", {a: {type: "checkbox"}, e: {click: function(event) {
 			for (var icb = 0; icb < cbs.length; icb++) {
 				if (cbs[icb].checked != this.checked) {
@@ -495,6 +507,7 @@ function EASY_DATE_calmDOM() {
 	EASY_DATE_calmDOMto = setTimeout(EASY_DATE_init, 100);
 }
 function EASY_DATE_init() {
+	debug("EASY_DATE_init");
 	for (var years = document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(." + userjs + "easydate)"), y = 0; y < years.length; y++) {
 		addAfter(
 			createTag("input", {
@@ -635,6 +648,7 @@ if (j2sets.HIDE_RATINGS) {
 	/*work around for missing rating classes (artist, collection)*/
 	var ratingIndex = document.querySelector("div#content table.tbl > tbody > tr > td:not(.rating) > span.inline-rating");
 	if (ratingIndex) {
+		debug("HIDE_RATINGS");
 		j2superturbo.addCSSRule("div#content table.tbl > * > tr > *:nth-child(" + (ratingIndex.parentNode.cellIndex + 1) + ") { display: none; }");
 	}
 }
@@ -651,6 +665,7 @@ if (j2sets.RATINGS_ON_TOP && sidebar && !j2sets.HIDE_RATINGS) {
 		if (j2sets.RATINGS_ON_TOP_below_image) where = sidebar.querySelector("div.cover-art + *, div.picture + *");
 		if (!where) where = sidebar.firstChild;
 		if (ratings[1] && where) for (var r = 0; r < ratings.length; r++) {
+			debug("RATINGS_ON_TOP");
 			sidebar.insertBefore(sidebar.removeChild(ratings[r]), where);
 		}
 	}
@@ -688,6 +703,7 @@ function ROW_HIGHLIGHTER_calmDOM() {
 	ROW_HIGHLIGHTER_calmDOMto = setTimeout(ROW_HIGHLIGHTER_init, 100);
 }
 function ROW_HIGHLIGHTER_init() {
+	debug("ROW_HIGHLIGHTER_init");
 	ROW_HIGHLIGHTER_calmDOMto = null;
 	var tds = document.querySelectorAll("table:not(#batch-tools):not(.advanced-format):not(.artist-credit):not(.details) > tbody > tr:not(.track-artist-credit) > *, table.details td > span");
 	for (var td = 0; td < tds.length; td++) {
@@ -747,6 +763,7 @@ function parentFormSubmit(input, event) {
 ==========================================================================*/
 j2setting("DOUBLE_CLICK_SUBMIT", true, true, "makes the “radio buttons” and “multi-selects” submit forms on double-click (MBS-3229)");
 if (j2sets.DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdstub\/|edit\/|release\/(add(\?release-group=)?|[^/]+\/edit-cover-art\/)|release-group\/[^/]+\/edit|search|.+\/merge)/)) {
+	debug("DOUBLE_CLICK_SUBMIT");
 	var objs = document.querySelectorAll("div#page form > *:not(.edit-list) input[type='radio'], select[multiple]");
 	for (var o = 0; o < objs.length; o++) {
 		var obj = getParent(objs[o], "label") || objs[o];
@@ -761,8 +778,10 @@ if (j2sets.DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdst
 j2setting("CONTROL_ENTER_SUBMIT", true, true, "hit CTRL+ENTER keys when you’re in a text area to submit the current form");
 if (j2sets.CONTROL_ENTER_SUBMIT) {
 	document.body.addEventListener("keydown", function(event) {
-		if (event.target.tagName && event.target.tagName == "TEXTAREA" && event.ctrlKey && event.keyCode == KEYCODES.ENTER)
+		if (event.target.tagName && event.target.tagName == "TEXTAREA" && event.ctrlKey && event.keyCode == KEYCODES.ENTER) {
+			debug("CONTROL_ENTER_SUBMIT");
 			parentFormSubmit(event.target, event);
+		}
 	});
 }
 /*================================================================ REMEMBER+
@@ -770,6 +789,7 @@ if (j2sets.CONTROL_ENTER_SUBMIT) {
 ==========================================================================*/
 j2setting("LAST_SEEN_EDIT", false, true, "it shows you what edits you have already seen (reviewed) on entities edit histories, yeah man. only saves states when looking at all edits (not only open) of entity");
 if (j2sets.LAST_SEEN_EDIT && account) {
+	debug("LAST_SEEN_EDIT");
 	var what = (self.location.pathname).match(new RegExp("^/(?:(user)/([^/]+)/edits(?:/(open))?|([^/]+)/(" + stre_GUID + ")/(?:(open)_)?edits)"));
 	if (what) {
 		var open = typeof (what[3] || what[6]) != "undefined";
@@ -818,6 +838,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 ==========================================================================*/
 j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” links excluding own edits or PUID edits, cross links between edits / open_edits, etc.");
 if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/search\/edits/)) {
+	debug("COOL_SEARCH_LINKS");
 	var noPUID = "&conditions.2097.field=type&conditions.2097.operator=%21%3D&conditions.2097.args=77&conditions.2097.args=113";
 	if (self.location.pathname.match(new RegExp("/[^/]+/" + stre_GUID + "$")) && !self.location.pathname.match(/label|work/)) {
 		var entityType = self.location.pathname.match(/[^/]+/); entityType = entityType ? (entityType + "").replace(/-/, "_") : "";
@@ -875,6 +896,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 ==========================================================================*/
 j2setting("COPY_TOC", true, true, "re-lookup Disc ID (from cdtoc page)");
 if (j2sets.COPY_TOC && account && self.location.pathname.match(/^\/cdtoc\/[^/]+-$/)) {
+	debug("COPY_TOC");
 	var cdtoctrs = document.querySelectorAll("div#page > table table tr");
 	var TOC = cdtoctrs[2].getElementsByTagName("td")[0].textContent + "%20" + cdtoctrs[cdtoctrs.length - 1].getElementsByTagName("td")[0].textContent + "%20" + cdtoctrs[cdtoctrs.length - 1].getElementsByTagName("td")[6].textContent;/*this should be 1%20totaltracks%20lastsector*/
 	for (var i = 2; i < cdtoctrs.length; i++) { TOC += "%20" + cdtoctrs[i].getElementsByTagName("td")[2].textContent; }
@@ -886,6 +908,7 @@ if (j2sets.COPY_TOC && account && self.location.pathname.match(/^\/cdtoc\/[^/]+-
 j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta and mbsandboxes. look for the new top-right MBS menu");
 j2setting("SERVER_SWITCH_mbsandbox", "[\"chirlu\", \"reosarevok\"]", true, "type an array of subdomains to .mbsandbox.org");
 if (j2sets.SERVER_SWITCH) {
+	debug("SERVER_SWITCH");
 	var langMenu = document.querySelector("div.header ul.menu li.language-selector");
 	if (langMenu) {
 		for (var languageLinks = langMenu.querySelectorAll("a[href*='/set-language/']"), a = 0; a < languageLinks.length; a++) {
@@ -962,6 +985,7 @@ j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag
 if (j2sets.TAG_TOOLS && account) {
 	var tagscope = self.location.pathname.replace(new RegExp("^" + MBS + "|[?#].*$", "g"), "").match(/^(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 	if (tagscope) {
+		debug("TAG_TOOLS");
 		var h1 = document.querySelector("h1");
 		var tags = tagscope[0].match(/tags$/);
 		if (h1 && account.pathname) {
@@ -1018,6 +1042,7 @@ j2setting("STATIC_MENU", true, true, "makes the main MB menu always there when y
 var mmenu = document.querySelector("div.header");
 var etais;
 if (j2sets.STATIC_MENU && mmenu) {
+	debug("STATIC_MENU");
 	etais = mmenu.parentNode.insertBefore(document.createElement("div"), mmenu);
 	//TODO: is this even supposed to work with // @run-at document-end?
 	self.addEventListener("load", smenu, false);
@@ -1064,6 +1089,7 @@ j2setting("SLOW_DOWN_RETRY", false, true, "gently auto‐retries requests when M
 if (j2sets.SLOW_DOWN_RETRY) {
 	var errortype = document.title.match(/^(502 Bad Gateway|504 Gateway Time-out|internal server error|search error|slow down!)/i);
 	if (errortype) {
+		debug("SLOW_DOWN_RETRY");
 		var retrydelay;
 		switch (errortype[1].toLowerCase()) {
 			case "slow down!":
@@ -1110,6 +1136,7 @@ if (enttype) {
 	## RELEASE_EDITOR_PROTECTOR ##
 	=========================================================================*/
 	if (j2sets.RELEASE_EDITOR_PROTECTOR && enttype == "release" && self.location.href.match(new RegExp("^" + MBS + "/release/(add.*|" + stre_GUID + "/edit)$"))) {
+		debug("RELEASE_EDITOR_PROTECTOR");
 		var editnote = document.querySelector("div#release-editor textarea#edit-note-text");
 		var cancelbutt = document.querySelector("div#release-editor button[data-click='cancelPage']");
 		var previousbutt = document.querySelector("div#release-editor button[data-click='previousTab']");
@@ -1137,6 +1164,7 @@ if (enttype) {
 	## MARK_PENDING_EDIT_MEDIUMS ##
 	==========================================================================*/
 	if (j2sets.MARK_PENDING_EDIT_MEDIUMS && enttype == "release") {
+		debug("MARK_PENDING_EDIT_MEDIUMS");
 		for (var pendingEditMediums = document.querySelectorAll("div#content > table.tbl.medium > thead > tr.mp"), m = 0; m < pendingEditMediums.length; m++) {
 			getParent(pendingEditMediums[m], "table").style.setProperty("border", "4px solid #fd9");
 		}
@@ -1211,6 +1239,7 @@ if (enttype) {
 		if (h1link) {
 			var h1 = getParent(h1link, "h1");
 			if (h1.firstChild.nodeType != Node.TEXT_NODE) {
+				debug("UNLINK_ENTITY_HEADER");
 				var unlinkH1Link = function() {
 					h1.removeEventListener("mouseover", unlinkH1Link);
 					h1link.removeAttribute("href");
@@ -1228,6 +1257,7 @@ if (enttype) {
 		||
 		j2sets.RELEASE_EVENT_COLUMN && self.location.pathname.match(new RegExp("^/(artist|label)/" + stre_GUID + "/relationships$"))
 	) {
+		debug("RECORDING_LENGTH_COLUMN and/or RELEASE_EVENT_COLUMN");
 		var relationshipTable = document.querySelector("div#content table.tbl");
 		if (relationshipTable) {
 			var fetchRecordingLength = j2sets.RECORDING_LENGTH_COLUMN && relationshipTable.getElementsByClassName("treleases").length == 0 && relationshipTable.querySelector("a[href*='/recording/']");
@@ -1407,6 +1437,7 @@ function TRACKLIST_TOOLS_getInputs(inputCSS, obj, evt) {
 	return inputs.querySelectorAll("fieldset.advanced-disc " + inputCSS);
 }
 function TRACKLIST_TOOLS_init() {
+	debug("TRACKLIST_TOOLS_init");
 	re.removeEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
 	re.addEventListener("DOMNodeInserted", function(event) {
 		var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
@@ -1427,4 +1458,14 @@ function time(_ms) {/* adapted from mb_INLINE-TRACK-ARTIST */
 		return d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2) + "." + (d.getUTCMilliseconds() / 1000).toFixed(3).slice(2);
 	}
 	return "?:??";
+}
+function debug(txt, buffer) {
+	if (DEBUG) {
+		if (buffer) {
+			debugBuffer += txt + "\r\n";
+		} else {
+			console.log(meta.name + "\r\n" + debugBuffer + txt);
+			debugBuffer = "";
+		}
+	}
 }
