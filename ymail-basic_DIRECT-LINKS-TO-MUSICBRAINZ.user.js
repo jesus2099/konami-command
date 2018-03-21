@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2018.3.14
+// @version      2018.3.21
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
 // @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @homepage     http://userscripts-mirror.org/scripts/show/80308
@@ -24,6 +24,7 @@
 // @exclude      *mail.yahoo.com/mc/md.php*
 // @run-at       document-end
 // ==/UserScript==
+"use strict";
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 var colour = "yellow";
 var colourclicked = "pink";
@@ -209,6 +210,7 @@ function editlink(email, urlOrEditId, dupe, txt) {
 			edits[e].className = edits[e].className.replace(userjs + "new", userjs + "read");
 			edits[e].style.setProperty("background-color", colourclicked);
 			edits[e].style.setProperty("text-decoration", "line-through");
+			var cb;
 			if (markReadEditsForDeletion && (cb = getParent(edits[e], "tr")) && cb.getElementsByClassName(userjs + "new").length == 0 && (cb = cb.querySelector("input.selectmsg[type='checkbox']"))) { cb.checked = true; }
 		}
 	}, true);
