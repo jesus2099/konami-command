@@ -145,7 +145,8 @@ if (emails) {
 						a.style.setProperty("background-color", colourclicked);
 						var im = a.appendChild(document.createElement("img"));
 						var openedits = "/open_edits";
-						if ((type = allparts[4].match(/artist|collection|label|series/))) {
+						var type = allparts[4].match(/artist|collection|label|series/);
+						if (type) {
 							im.setAttribute("src", preferredProtocol + "//musicbrainz.org/static/images/entity/%type%.svg".replace(/%type%/, type).replace(/collection|series/, "release_group"));
 							im.setAttribute("height", "16px");
 							im.setAttribute("width", "16px");
@@ -210,8 +211,16 @@ function editlink(email, urlOrEditId, dupe, txt) {
 			edits[e].className = edits[e].className.replace(userjs + "new", userjs + "read");
 			edits[e].style.setProperty("background-color", colourclicked);
 			edits[e].style.setProperty("text-decoration", "line-through");
-			var cb;
-			if (markReadEditsForDeletion && (cb = getParent(edits[e], "tr")) && cb.getElementsByClassName(userjs + "new").length == 0 && (cb = cb.querySelector("input.selectmsg[type='checkbox']"))) { cb.checked = true; }
+			if (markReadEditsForDeletion) {
+				var cb = getParent(edits[e], "tr");
+				if (
+					cb
+					&& cb.getElementsByClassName(userjs + "new").length == 0
+					&& (cb = cb.querySelector("input.selectmsg[type='checkbox']"))
+				) {
+					cb.checked = true;
+				}
+			}
 		}
 	}, true);
 	a.setAttribute("href", urlOrEditId.match(/^\d+$/) ? editurl + urlOrEditId : urlOrEditId);
