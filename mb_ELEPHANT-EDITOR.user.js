@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2018.3.14
+// @version      2018.3.26
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
@@ -90,7 +90,7 @@ var editpage = (mb && self.location.href.match(/(\.mbsandbox|musicbrainz)\.org\/
 var editsearchpage = (mb && self.location.href.match(/(\.mbsandbox|musicbrainz)\.org\/.+(?:edits|subscribed)/));
 var re = (mb && document.querySelector("div#release-editor"));
 var save = !localStorage.getItem(userjs + "forget") && (editpage || !editsearchpage);
-var content = document.getElementById(mb ? "page" : "content");
+var content = document.querySelector(mb ? "#page" : "div.content");
 var savedHeight = localStorage.getItem(userjs + "_savedHeight");
 if (content) {
 	var notetext = content.querySelectorAll("textarea" + (acoustid ? "" : ".edit-note, textarea#edit-note-text"));
