@@ -25,6 +25,7 @@
 // @match        *://*.mbsandbox.org/*/create*
 // @match        *://*.mbsandbox.org/*/delete
 // @match        *://*.mbsandbox.org/*/edit
+// @match        *://*.mbsandbox.org/*/edit/?*
 // @match        *://*.mbsandbox.org/*/edit_annotation
 // @match        *://*.mbsandbox.org/*/merge
 // @match        *://*.mbsandbox.org/*/merge?*
@@ -48,6 +49,7 @@
 // @match        *://*.musicbrainz.org/*/create*
 // @match        *://*.musicbrainz.org/*/delete
 // @match        *://*.musicbrainz.org/*/edit
+// @match        *://*.musicbrainz.org/*/edit/?*
 // @match        *://*.musicbrainz.org/*/edit_annotation
 // @match        *://*.musicbrainz.org/*/merge
 // @match        *://*.musicbrainz.org/*/merge?*
