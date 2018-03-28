@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2018.3.14
+// @version      2018.3.28
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -346,46 +346,49 @@ function main() {
 					}
 				}
 			}
-			if (extlinks = sidebar.querySelector(".external_links")) {
-				// Hidden links
-				entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
-				addHiddenLinks();
-				// Autolinks
-				for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
-					var haslinks = false;
-					for (var link in autolinks[defaultOrUser]) if (autolinks[defaultOrUser].hasOwnProperty(link)) {
-						var target = autolinks[defaultOrUser][link];
-						var sntarget = null;
-						if (target) {
-							if (typeof target == "string") {
-								if (target.match(/%artist-name%/) && artistname != artistsortnameSwapped && artistname.match(nonLatinName)) {
-									sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
-								}
-								target = replaceAllTokens(target, true);
-								if (!target) continue;
-							} else {
-								var latinScriptOnly = target.acceptCharset.match(/iso-8859/i);
-								var skippedToken = false;
-								for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
-									if (latinScriptOnly) {
-										target.parameters[param] = target.parameters[param].replace(/%artist-name%/, "%artist-latin-script-name%");
-									}
-									target.parameters[param] = replaceAllTokens(target.parameters[param]);
-									if (!target.parameters[param]) {
-										skippedToken = true;
-										break;
-									}
-								}
-								if (skippedToken) continue;
+			extlinks = sidebar.querySelector(".external_links");
+			if (!extlinks) {
+				sidebar.appendChild(createTag("h2", {a: {class: "external-links"}}, "External links"));
+				extlinks = sidebar.appendChild(createTag("ul", {a: {class: "external_links"}}, createTag("li", {}, "No white‐listed links yet.")));
+			} 
+			// Hidden links
+			entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
+			addHiddenLinks();
+			// Autolinks
+			for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
+				var haslinks = false;
+				for (var link in autolinks[defaultOrUser]) if (autolinks[defaultOrUser].hasOwnProperty(link)) {
+					var target = autolinks[defaultOrUser][link];
+					var sntarget = null;
+					if (target) {
+						if (typeof target == "string") {
+							if (target.match(/%artist-name%/) && artistname != artistsortnameSwapped && artistname.match(nonLatinName)) {
+								sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
 							}
+							target = replaceAllTokens(target, true);
+							if (!target) continue;
+						} else {
+							var latinScriptOnly = target.acceptCharset.match(/iso-8859/i);
+							var skippedToken = false;
+							for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
+								if (latinScriptOnly) {
+									target.parameters[param] = target.parameters[param].replace(/%artist-name%/, "%artist-latin-script-name%");
+								}
+								target.parameters[param] = replaceAllTokens(target.parameters[param]);
+								if (!target.parameters[param]) {
+									skippedToken = true;
+									break;
+								}
+							}
+							if (skippedToken) continue;
 						}
-						if (addExternalLink({text: link, target: target, sntarget: sntarget, enabledDefaultAutolink: enabledDefaultAutolinks[link]})) {
-							if (!haslinks) {
-								haslinks = true;
-								addExternalLink({text: " " + defaultOrUser.substr(0, 1).toUpperCase() + defaultOrUser.substr(1).toLowerCase() + " autolinks"});
-								extlinks.lastChild.previousSibling.appendChild(document.createTextNode(" "));
-								extlinks.lastChild.previousSibling.appendChild(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)"}}, createTag("a", {a: {title: "configure " + defaultOrUser + " autolinks"}, s: {color: "transparent"}, e: {click: configureModule}}, "configure")));
-							}
+					}
+					if (addExternalLink({text: link, target: target, sntarget: sntarget, enabledDefaultAutolink: enabledDefaultAutolinks[link]})) {
+						if (!haslinks) {
+							haslinks = true;
+							addExternalLink({text: " " + defaultOrUser.substr(0, 1).toUpperCase() + defaultOrUser.substr(1).toLowerCase() + " autolinks"});
+							extlinks.lastChild.previousSibling.appendChild(document.createTextNode(" "));
+							extlinks.lastChild.previousSibling.appendChild(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)"}}, createTag("a", {a: {title: "configure " + defaultOrUser + " autolinks"}, s: {color: "transparent"}, e: {click: configureModule}}, "configure")));
 						}
 					}
 				}
