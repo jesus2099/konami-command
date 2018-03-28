@@ -485,7 +485,11 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 			form.appendChild(document.createTextNode("*"));
 			li = createTag("li", {a: {ref: parameters.text}}, form);
 		} else {
-			var existingLink = sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "'], ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "/']"); // MBS adds a trailing slash to viaf URL https://github.com/jesus2099/konami-command/issues/293#issuecomment-376875307
+			var existingLink = 
+				sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "']")
+				|| parameters.target.match(/\bamazon\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=musicbrainzjp-22']") // MBS adds a trailing code to ASIN URL
+				|| parameters.target.match(/\bviaf\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "'/]") // MBS adds a trailing slash to viaf URL https://github.com/jesus2099/konami-command/issues/293#issuecomment-376875307
+			;
 			if (existingLink) {
 				newLink = false;
 				li = getParent(existingLink, "li");
