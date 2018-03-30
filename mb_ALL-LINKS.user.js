@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2018.3.28.1500
+// @version      2018.3.30
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -497,7 +497,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 				|| parameters.target.match(/\bamazon\.it\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music084d-21']")
 				|| parameters.target.match(/\bamazon\.es\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music02e-21']")
 				// MBS adds a trailing slash to viaf URL https://github.com/jesus2099/konami-command/issues/293#issuecomment-376875307
-				|| parameters.target.match(/\bviaf\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "'/]")
+				|| parameters.target.match(/\bviaf\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "/']")
 			;
 			if (existingLink) {
 				newLink = false;
