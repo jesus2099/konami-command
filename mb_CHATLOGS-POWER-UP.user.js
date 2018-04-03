@@ -17,7 +17,6 @@
 // @licence      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-03-05
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
 // @match        *://chatlogs.metabrainz.org/brainzbot/*
 // @match        *://hcm.fam.cx/mbja/chatlog.cgi*
@@ -49,7 +48,8 @@ if (cat) {
 			}
 			css.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; z-index: 50; }", 0);
 			css.insertRule("body { padding-bottom: .5em; }", 0);
-			var ctt = createTag("div", {a: {id: userjs + "toolbar"}});
+			var ctt = document.createElement("div");
+			ctt.setAttribute("id", userjs + "toolbar");
 			/* cross linking */
 			separate(ctt);
 			if (!cat.match(/-ja/)) {
