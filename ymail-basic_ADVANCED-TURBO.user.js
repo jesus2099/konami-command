@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2018.4.4
+// @version      2018.4.4.1136
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @homepage     http://userscripts-mirror.org/scripts/show/177655
 // @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_ADVANCED-TURBO
@@ -17,7 +17,7 @@
 // @licence      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2013-09-12
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://github.com/jesus2099/konami-command/raw/5d722a32488ce7672bdc9a2486af1211ba25ff5f/lib/SUPER.js?version=2018.3.14
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
 // @match        *://*.mail.yahoo.com/neo/b/*
 // @exclude      *mail.yahoo.com/mc/md.php*

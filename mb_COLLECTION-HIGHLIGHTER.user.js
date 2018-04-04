@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2018.3.14
+// @version      2018.4.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -20,7 +20,7 @@ var meta = {raw: function() {
 // @licence      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-02-21
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://github.com/jesus2099/konami-command/raw/5d722a32488ce7672bdc9a2486af1211ba25ff5f/lib/SUPER.js?version=2018.3.14
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_listValues

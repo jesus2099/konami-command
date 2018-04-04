@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         USO to USMO
-// @version      2018.3.14
+// @version      2018.4.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/USO-to-USMO.user.js
 // @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long — bypass this script by holding CTRL+ALT+SHIFT
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
@@ -18,7 +18,7 @@
 // @licence      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2015-07-30
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://github.com/jesus2099/konami-command/raw/5d722a32488ce7672bdc9a2486af1211ba25ff5f/lib/SUPER.js?version=2018.3.14
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
 // @match        *://*/*
 // @exclude      *://userscripts-mirror.org/*

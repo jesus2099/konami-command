@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2018.3.12
+// @version      2018.4.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_HYPER-MOULINETTE.user.js
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HYPER-MOULINETTE
@@ -19,7 +19,7 @@ var meta = {rawmdb: function() {
 // @licence      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2014-09-19
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://github.com/jesus2099/konami-command/raw/b7cd8b7f2244b5a0c65933dbee263cb52c3acdad/lib/SUPER.js
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
 // @match        *://*.mbsandbox.org/user/*/collections
 // @match        *://*.musicbrainz.org/user/*/collections
