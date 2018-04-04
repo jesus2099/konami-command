@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2018.3.14
+// @version      2018.4.4
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @homepage     http://userscripts-mirror.org/scripts/show/177655
 // @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_ADVANCED-TURBO
@@ -102,16 +102,8 @@ if (emails) {
 	}
 	/*keyboard shortcuts*/
 	if (KEYBOARD_SHORTCUTS) {
-		document.addEventListener("keydown", function(event){
-			var key = (event.ctrlKey ? "CTRL+" : "") + event.keyCode;
-			try {
-				if (DEBUG) console.log(userjs.name + " key " + key + (shortcuts[key] ? " on " + event.target + ".\n(" + shortcuts[key].key + ") → " + shortcuts[key].button : ""));
-				if (!event.target || !event.target.tagName || !event.target.tagName.match(/input|select|textarea/i) || event.target.tagName.match(/input/i) && event.target.getAttribute("type") && !event.target.getAttribute("type").match(/password|text/i)) {
-					doThis(shortcuts[key].button, shortcuts[key].noreload);
-					return stop(event);
-				}
-			} catch(error) {}
-		}, false);
+		document.addEventListener("keydown", interceptKeys, false);
+		document.addEventListener("keyup", interceptKeys, false);
 		for (var sc in shortcuts) { if (shortcuts.hasOwnProperty(sc)) {
 			try { hackit(shortcuts[sc].button, "", "[" + sc.replace(/\d+$/, shortcuts[sc].key) + "]"); } catch(error) {}
 		} }
@@ -165,6 +157,18 @@ function findNode(argh) {
 			}
 		}
 	}
+}
+function interceptKeys(event) {
+	var key = (event.ctrlKey ? "CTRL+" : "") + event.keyCode;
+	try {
+		if (DEBUG) console.log(userjs.name + " key " + key + (shortcuts[key] ? " on " + event.target + ".\n(" + shortcuts[key].key + ") → " + shortcuts[key].button : ""));
+		if (!event.target || !event.target.tagName || !event.target.tagName.match(/input|select|textarea/i) || event.target.tagName.match(/input/i) && event.target.getAttribute("type") && !event.target.getAttribute("type").match(/password|text/i)) {
+			if (event.type == "keydown") {
+				doThis(shortcuts[key].button, shortcuts[key].noreload);
+			}
+			return stop(event);
+		}
+	} catch(error) {}
 }
 function doThis(butt, noreload) {
 	var button = findNode(butt);
