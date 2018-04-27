@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2018.3.12
+// @version      2018.4.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -117,7 +117,7 @@ var editors = {
 var standout /*from the crowd*/ = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var MBS = self.location.protocol + "//" + self.location.host;
-var you = document.querySelector("div.header ul.menu li.account a[href^='" + MBS + "/user/']");
+var you = document.querySelector("div.header ul.menu li.account a[href^='/user/']");
 if (document.querySelector("div.header ul.menu li.account a[href$='/logout'], div#page") == null) { return; }
 if (you) {
 	if (editors["%you%"]) {

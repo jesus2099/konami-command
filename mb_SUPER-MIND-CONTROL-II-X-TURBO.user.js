@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2018.4.4
+// @version      2018.4.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -89,12 +89,11 @@ var re_date = {
 re_date.ISO = "(" + re_date.YYYY + "(?:-" + re_date.MM + "(?:-" + re_date.DD + ")?)?)";
 var account = document.querySelector("div.header ul.menu li.account");
 if (account) {
-	var a = account.querySelector("a[href^='" + MBS + "/user/']");
+	var a = account.querySelector("a[href^='/user/']");
 	account = {
 		item: account,
 		name: unescape(a.getAttribute("href").match(/[^/]+$/)),
-		href: a.getAttribute("href"),
-		pathname: a.getAttribute("href").replace(MBS, ""),
+		pathname: a.getAttribute("href"),
 		menu: account.querySelector("ul")
 	};
 }

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2018.4.4
+// @version      2018.4.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -58,7 +58,7 @@ var EDITS_PER_PAGE = 100;
 var MBS = self.location.protocol + "//" + self.location.host;
 var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var loc, pageEntity, checked = [], xhrPendingEdits = {};
-var account = document.querySelector("div.header li.account a[href^='" + MBS + "/user/']");
+var account = document.querySelector("div.header li.account a[href^='/user/']");
 //EDITING HISTORY
 if (
 	account
