@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2018.4.27
+// @version      2018.5.7
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -51,6 +51,7 @@ var editors = {
 	    "52273": ["2004-06-14", "2015-06-06", "DrMuller"],
 	    "93418": ["2005-02-08", "2013-03-05", "Rhymeless"],
 	    "95678": ["2005-02-18", "2012-09-24", "brianfreud"],
+	   "112569": ["2005-04-24", "2014-05-30", "c777"],
 	   "129671": ["2005-06-30", "2009-02-02", "Shlublu"],
 	   "157767": ["2005-10-20", "2010-01-05", "michael"],
 	   "161352": ["2005-11-01", "2006-07-08", "claiborne"],
