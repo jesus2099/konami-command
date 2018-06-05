@@ -34,14 +34,14 @@ Some users have Safari and told me it works for most scripts (please report a bu
 
 ## ISSUES ##
 
-If you encounter an issue, you can see if it is already known and you can also 
-upvote issues by clicking the :+1: thumb up icon on the issue description in 
-[konami-command issues](//github.com/jesus2099/konami-command/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc)
+If you encounter a problem, you can see if it is an [already known issue](//github.com/jesus2099/konami-command/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc) 
+and you can also upvote issues by clicking the :+1: thumb up icon on the issue description.
+Please eventually add an issue to report any bug.
 
 ---
 
 ※ Find more MusicBrainz scripts in [Github](//github.com/search?q=topic%3Amusicbrainz+topic%3Auserscripts), 
-[GF](//greasyfork.org/scripts?set=9) and [OUJS](//openuserjs.org/group/musicbrainz).
+[GF](//greasyfork.org/scripts?set=9&sort=ratings) and [OUJS](//openuserjs.org/group/musicbrainz?orderBy=rating&orderDir=desc).
 
 ※ Those scripts used to be hosted at 
 [userscripts.org (now read-only)](http://userscripts-mirror.org/users/31010/scripts) 
