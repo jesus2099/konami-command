@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2018.3.12
+// @version      2018.7.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/INSTALL-USER-SCRIPT.user.js
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
@@ -42,12 +42,13 @@ var supportedFileTypes = [".user.js", ".uc.js", ".uc.xul"];
 var host = {
 	"bitbucket.org": {
 		css: {
-			files: "table#source-list tbody td.filename a[title$='%fileType%']",
-			icon: "span.aui-icon.aui-icon-small.aui-iconfont-devtools-file",
+			files: "table tbody td a[href$='%fileType%']",
+			icon: "svg[width='24'][height='24']",
 			newIcon: "aui-icon aui-icon-small aui-iconfont-devtools-clone", /* https://docs.atlassian.com/aui/5.5.1/docs/icons.html */
 		},
-		href: { match: /^(\/[^/]+\/[^/]+)\/src\/[0-9a-f]{40}\/(.+)\?at=(.+)$/, replace: "$1/raw/$3/$2" },
+		href: { match: /^(.+)$/, replace: "../../raw/master/$1" },
 		unnestIcon: true,
+		dumbMode: true,
 	},
 	"github.com": {
 		css: {
