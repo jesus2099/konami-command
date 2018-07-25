@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2018.7.2
+// @version      2018.7.25
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/INSTALL-USER-SCRIPT.user.js
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
@@ -46,7 +46,8 @@ var host = {
 			icon: "svg[width='24'][height='24']",
 			newIcon: "aui-icon aui-icon-small aui-iconfont-devtools-clone", /* https://docs.atlassian.com/aui/5.5.1/docs/icons.html */
 		},
-		href: { match: /^(.+)$/, replace: "../../raw/master/$1" },
+		href: { match: /^(.+)$/, replace: "../../raw/%from-pathname%/$1" },
+		hrefFromPathname: /\/src\/(\w+)\b/, /* I have yet to find examples of repo with folders to test it more */
 		unnestIcon: true,
 		dumbMode: true,
 	},
@@ -101,8 +102,11 @@ function changeStuff() {
 				install.appendChild(installImage.cloneNode(false));
 				install.className = icon.className;
 			}
+			install.setAttribute("title", "Install “" + (host.files[f].getAttribute("title") || host.files[f].getAttribute("href")) + "”");
 			install.setAttribute("href", host.files[f].getAttribute("href").replace(host.href.match, host.href.replace));
-			install.setAttribute("title", "Install “" + host.files[f].getAttribute("title") + "”");
+			if (install.getAttribute("href").match(/%from-pathname%/) && host.hrefFromPathname) {
+				install.setAttribute("href", install.getAttribute("href").replace(/%from-pathname%/, self.location.pathname.match(host.hrefFromPathname)[1]));
+			}
 			install.style.setProperty("color", "green");
 			install.addEventListener("click", function(e) {
 				e.cancelBubble = true;
