@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2018.4.27
+// @version      2018.7.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @homepage     http://userscripts-mirror.org/scripts/show/42102
@@ -24,6 +24,7 @@
 // @match        *://*.mbsandbox.org/artist/*
 // @match        *://*.mbsandbox.org/collection/*
 // @match        *://*.mbsandbox.org/event/*
+// @match        *://*.mbsandbox.org/instrument/*
 // @match        *://*.mbsandbox.org/label/*
 // @match        *://*.mbsandbox.org/place/*
 // @match        *://*.mbsandbox.org/recording/*
@@ -36,6 +37,7 @@
 // @match        *://*.musicbrainz.org/artist/*
 // @match        *://*.musicbrainz.org/collection/*
 // @match        *://*.musicbrainz.org/event/*
+// @match        *://*.musicbrainz.org/instrument/*
 // @match        *://*.musicbrainz.org/label/*
 // @match        *://*.musicbrainz.org/place/*
 // @match        *://*.musicbrainz.org/recording/*
@@ -64,7 +66,7 @@ if (
 	account
 	&& (account = decodeURIComponent(account.getAttribute("href").match(/[^/]+$/)))
 	&& document.querySelector("div#sidebar")
-	&& (loc = self.location.pathname.match(new RegExp("^/(area|artist|collection|event|label|place|release-group|release|recording|series|work|url)/(" + RE_GUID + ")")))
+	&& (loc = self.location.pathname.match(new RegExp("^/(area|artist|collection|event|instrument|label|place|release-group|release|recording|series|work|url)/(" + RE_GUID + ")")))
 	&& (pageEntity = document.querySelector("div#content > div > h1 a"))
 	&& (pageEntity = a2obj(pageEntity))
 ) {
