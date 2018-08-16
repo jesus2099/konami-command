@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb: Redirect when only 1 result and/or unique 100% scored result
-// @version      2017.1.10
+// @version      2018.8.16
 // @description  In (test.)musicbrainz.org
 // @namespace    http://userscripts.org/scripts/show/106156
 // @author       nikki (stars 2011-06-30) then jesus2099
@@ -32,7 +32,7 @@ if (document.getElementById("headerid-query")) {
 			var exactMatchURL;
 			var exactMatchesCount = 0;
 			for (var i = 0; i < rows.length; i++) {
-				if (rows[i].querySelector("td").textContent == "100") {
+				if (rows[i].getAttribute("data-score") == "100") {
 					mark(rows[i]);
 					if (exactMatchesCount++ == 0) {
 						exactMatchURL = rows[i].querySelector("a > bdi").parentNode.getAttribute("href");
