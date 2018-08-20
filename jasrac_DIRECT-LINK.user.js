@@ -1,15 +1,14 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
-// @version      2017.6.16
+// @version      2018.8.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac_DIRECT-LINK.user.js
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
 // @homepage     http://userscripts-mirror.org/scripts/show/131591
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac_DIRECT-LINK
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @incompatible vivaldi(1.0.435.46)+violentmonkey    my setup (ho.) lack of MS932 charset support
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(1.15.1147.64)+violentmonkey  my o. setup (Chrome based)
+// @compatible   firefox+greasemonkey                sometimes tested
+// @compatible   chrome+tampermonkey                 should be same as Vivaldi
+// @compatible   opera(12.18.1872)+violentmonkey     my former setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/jasrac_DIRECT-LINK.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/jasrac_DIRECT-LINK.user.js
@@ -61,7 +60,7 @@ if (self == top && document.body.textContent.match(/接続が切断されまし�
 		setTimeout(function() { self.location.reload(true); }, 1);
 	}}));
 } else if (self == top && self.location.pathname != "/eJwid/" && document.getElementsByTagName("frameset").length == 0) {
-	try {
+/*	try {
 		if (!document.referer && self.opener && self.opener == self.opener.top && self.opener.location.host == self.location.host) {
 			self.opener.close();
 			if(self.opener) {
@@ -69,10 +68,11 @@ if (self == top && document.body.textContent.match(/接続が切断されまし�
 				if (ajs.length == 1) {
 					self.opener.location.href = ajs[0].getAttribute("href");
 					self.close();
+//					self.opener.history.back(); // better?
 				}
 			}
 		}
-	} catch(error) {}
+	} catch(error) {} */
 	document.body.appendChild(createTag("a", {href: home}, {"background-color": "#ff9", "font-weight": "bold", position: "fixed", top: "0", right: "49%", padding: "0 4px 4px 4px", border: "2px solid orange", "border-top": "none"}, {click: function(event) { hasHome(true); }, mouseover: function(event) { this.replaceChild(hasHome(), this.firstChild); }}, hasHome()));
 	var works = document.querySelectorAll("table.contentsTable td > a[name='AUTO_JUMP'][target='_blank']");
 	for (var a = 0; a < works.length; a++) {
@@ -82,7 +82,7 @@ if (self == top && document.body.textContent.match(/接続が切断されまし�
 	var results = document.querySelector("select[name='IN_DEFAULT_WORKS_KOUHO_MAX']");
 	if (results) { results.selectedIndex = results.options.length - 1; }
 	var title = document.querySelector("input[type='text'][name='IN_WORKS_TITLE_NAME1']");
-	if (title) { title.focus(); }
+	if (title) { setTimeout(function() { title.focus(); }, 500); }
 }
 function hasHome(action) {
 	var has = false;
