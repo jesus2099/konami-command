@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2018.8.18
+// @version      2018.8.21
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -217,7 +217,7 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 		}
 	}
 	if (self.location.href.match(new RegExp("^" + MBS + "/user/" + escape(editorName) + "$"))) {
-		var dts = document.querySelectorAll("dl.profileinfo > dt");
+		var dts = document.querySelectorAll("table.profileinfo > tbody > tr > th");
 		for (var dt = 0; dt < dts.length; dt++) {
 			if (dts[dt].textContent.match(/user type/i)) {
 				var dd = getSibling(dts[dt], "dd");
@@ -231,9 +231,9 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 			} else if (dts[dt].textContent.match(/member since/i)) {
 				if (deletedEditor) {
 					document.title = document.title.replace(new RegExp("(“" + editors[editor].namewas + "”)"), "$1 (" + editors[editor].shortend + ")");
-					dts[dt].parentNode.insertBefore(termDefinition("Membership", editors[editor].duration + " (" + editors[editor].fullspan + ")"), dts[dt]);
+					dts[dt].parentNode.parentNode.insertBefore(termDefinition("Membership", editors[editor].duration + " (" + editors[editor].fullspan + ")"), dts[dt].parentNode);
 					if (editors[editor].comment) {
-						dts[dt].parentNode.insertBefore(termDefinition("Comment", editors[editor].comment), dts[dt]);
+						dts[dt].parentNode.parentNode.insertBefore(termDefinition("Comment", editors[editor].comment), dts[dt].parentNode);
 					}
 				}
 				break;
@@ -242,9 +242,9 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 	}
 }
 function termDefinition(term, definition) {
-	var dtdd = document.createDocumentFragment();
-	dtdd.appendChild(document.createElement("dt")).appendChild(document.createTextNode(term + ":"));
-	var dd = dtdd.appendChild(document.createElement("dd"));
+	var dtdd = document.createElement("tr");
+	dtdd.appendChild(document.createElement("th")).appendChild(document.createTextNode(term + ":"));
+	var dd = dtdd.appendChild(document.createElement("td"));
 	dd.appendChild(document.createTextNode(definition));
 	dd.style.setProperty("font-weight", "bold");
 	dd.style.setProperty("text-shadow", "0 0 4px gold");
