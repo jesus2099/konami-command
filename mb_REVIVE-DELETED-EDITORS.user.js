@@ -217,23 +217,23 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 		}
 	}
 	if (self.location.href.match(new RegExp("^" + MBS + "/user/" + escape(editorName) + "$"))) {
-		var dts = document.querySelectorAll("table.profileinfo > tbody > tr > th");
-		for (var dt = 0; dt < dts.length; dt++) {
-			if (dts[dt].textContent.match(/user type/i)) {
-				var dd = getSibling(dts[dt], "dd");
-				if (dd) {
-					dd.setAttribute("title", dd.textContent.trim());
-					removeChildren(dd);
-					dd.appendChild(document.createTextNode(deletedEditor ? editorName : editors[editor]));
-					dd.style.setProperty("font-weight", "bold");
-					dd.style.setProperty("text-shadow", "0 0 4px gold");
+		var entryHeader = document.querySelectorAll("table.profileinfo > tbody > tr > th");
+		for (var h = 0; h < entryHeader.length; h++) {
+			if (entryHeader[h].textContent.match(/user type/i)) {
+				var userType = getSibling(entryHeader[h], "dd");
+				if (userType) {
+					userType.setAttribute("title", userType.textContent.trim());
+					removeChildren(userType);
+					userType.appendChild(document.createTextNode(deletedEditor ? editorName : editors[editor]));
+					userType.style.setProperty("font-weight", "bold");
+					userType.style.setProperty("text-shadow", "0 0 4px gold");
 				}
-			} else if (dts[dt].textContent.match(/member since/i)) {
+			} else if (entryHeader[h].textContent.match(/member since/i)) {
 				if (deletedEditor) {
 					document.title = document.title.replace(new RegExp("(“" + editors[editor].namewas + "”)"), "$1 (" + editors[editor].shortend + ")");
-					dts[dt].parentNode.parentNode.insertBefore(termDefinition("Membership", editors[editor].duration + " (" + editors[editor].fullspan + ")"), dts[dt].parentNode);
+					entryHeader[h].parentNode.parentNode.insertBefore(profileEntry("Membership", editors[editor].duration + " (" + editors[editor].fullspan + ")"), entryHeader[h].parentNode);
 					if (editors[editor].comment) {
-						dts[dt].parentNode.parentNode.insertBefore(termDefinition("Comment", editors[editor].comment), dts[dt].parentNode);
+						entryHeader[h].parentNode.parentNode.insertBefore(profileEntry("Comment", editors[editor].comment), entryHeader[h].parentNode);
 					}
 				}
 				break;
@@ -241,14 +241,14 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 		}
 	}
 }
-function termDefinition(term, definition) {
-	var dtdd = document.createElement("tr");
-	dtdd.appendChild(document.createElement("th")).appendChild(document.createTextNode(term + ":"));
-	var dd = dtdd.appendChild(document.createElement("td"));
-	dd.appendChild(document.createTextNode(definition));
+function profileEntry(content, header) {
+	var entry = document.createElement("tr");
+	entry.appendChild(document.createElement("th")).appendChild(document.createTextNode(content + ":"));
+	var dd = entry.appendChild(document.createElement("td"));
+	dd.appendChild(document.createTextNode(header));
 	dd.style.setProperty("font-weight", "bold");
 	dd.style.setProperty("text-shadow", "0 0 4px gold");
-	return dtdd;
+	return entry;
 }
 function removeChildren(p) {
 	while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
