@@ -220,7 +220,7 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 		var entryHeader = document.querySelectorAll("table.profileinfo > tbody > tr > th");
 		for (var h = 0; h < entryHeader.length; h++) {
 			if (entryHeader[h].textContent.match(/user type/i)) {
-				var userType = getSibling(entryHeader[h], "dd");
+				var userType = getSibling(entryHeader[h], "td");
 				if (userType) {
 					userType.setAttribute("title", userType.textContent.trim());
 					removeChildren(userType);
