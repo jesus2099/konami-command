@@ -157,8 +157,8 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 			self.location.replace(MBS + "/user/" + encodeURIComponent(editorName));
 			return;
 		} else {
-			editors[editor].fullspan = editors[editor].begin + "—" + editors[editor].end;
-			editors[editor].shortend = "→" + editors[editor].end.substring(0, 4);
+			editors[editor].fullspan = editors[editor].begin + " 〜 " + editors[editor].end;
+			editors[editor].shortend = "until " + editors[editor].end.substring(0, 4);
 			var dur = (new Date(editors[editor].end) - new Date(editors[editor].begin)) / 1000 / 60 / 60 / 24 + 1;
 			var unit = "day";
 			if (dur % 30  < dur) {
@@ -171,7 +171,7 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 				}
 			}
 			dur = Math.round(dur);
-			editors[editor].duration = dur + " " + unit + (dur == 1 ? "" : "s");
+			editors[editor].duration = "active " + dur + " " + unit + (dur == 1 ? "" : "s");
 			editors[editor].title = editorName + "\n" + editors[editor].namewas + (editors[editor].comment ? " (" + editors[editor].comment + ")" : "") + "\n" + editors[editor].duration + " (" + editors[editor].fullspan + ")";
 			var as = document.querySelectorAll("a[href='/user/" + encodeURIComponent(editorName) + "']");
 			for (var a = 0; a < as.length; a++) {
