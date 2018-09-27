@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         sacem. DIRECT LINK
-// @version      2018.8.20
+// @version      2018.9.26
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/sacem_DIRECT-LINK.user.js
 // @description  Automatically clean up cookie to allow direct link to various works even when browsing occurs between them
 // @supportURL   https://github.com/jesus2099/konami-command/labels/sacem_DIRECT-LINK
