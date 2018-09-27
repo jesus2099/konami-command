@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         sacem. DIRECT LINK
-// @version      2018.9.26
+// @version      2018.9.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/sacem_DIRECT-LINK.user.js
 // @description  Automatically clean up cookie to allow direct link to various works even when browsing occurs between them
 // @supportURL   https://github.com/jesus2099/konami-command/labels/sacem_DIRECT-LINK
@@ -17,8 +17,7 @@
 // @since        2018-09-26
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @match        *://sigried.sacem.fr/oeuvres/mobile/detailOeuvre.do?cocv=*
-// @match        *://sigried.sacem.fr/oeuvres/oeuvre/printOeuvre.do?cocv=*
+// @match        *://sigried.sacem.fr/oeuvres/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
