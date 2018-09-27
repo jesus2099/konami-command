@@ -5,7 +5,7 @@
 // @namespace    http://userscripts.org/scripts/show/106156
 // @author       nikki (stars 2011-06-30) then jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
-// @licence      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
+// @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @grant        none
 // @match        *://*.mbsandbox.org/search*
 // @match        *://*.musicbrainz.org/search*
