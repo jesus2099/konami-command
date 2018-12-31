@@ -1,15 +1,14 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2018.3.12
+// @version      2018.12.31
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (ho.)
+// @compatible   vivaldi(2.2.1388.37)+violentmonkey  my setup (of.)
+// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-STUFF.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-STUFF.user.js
@@ -88,6 +87,9 @@ if (pagecat) {
 			document.head.appendChild(css);
 			css = css.sheet;
 			css.insertRule("a[" + userjs + "recname] { text-shadow: 1px 2px 2px #999; color: maroon }", 0);
+			if (contractFingerPrints) {
+				css.insertRule("div.ars[class^='ars AcoustID'] code { display: inline-block; overflow-x: hidden; vertical-align: bottom; width: 6ch}", 0);
+			}
 			var relMBID = self.location.href.match(re_GUID);
 			if (relMBID && (tracksHtml = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]:not(.subh)")).length > 0) {
 				if (recUseInRelationshipLink || recAddToMergeLink) {
@@ -317,14 +319,7 @@ function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid
 		var code = document.createElement("code");
 		if (stufftype == "ISRC") {
 			code = coolifyISRC(stuff);
-		}
-		else {/*AcoustID*/
-			if (contractFingerPrints) {
-				a.style.setProperty("display", "inline-block");
-				a.style.setProperty("overflow-x", "hidden");
-				a.style.setProperty("vertical-align", "bottom");
-				code.setAttribute("title", stuff);
-			}
+		} else {/*AcoustID*/
 			code.appendChild(document.createTextNode(stuff));
 		}
 		a.appendChild(code);
@@ -542,15 +537,6 @@ function acoustidFishBatch(recids) {
 						(trackTitleCell = tracksHtml[th].querySelector("td:not(.pos):not(.video)"))
 					) {
 						var aidtable = insertBeforeARS(trackTitleCell, createStuffFragment("AcoustID", acoustids[recmbid], shownacoustids, acoustidURL, null, recmbid));
-						if (contractFingerPrints) {
-							var show = aidtable.style.getPropertyValue("display") == "block";
-							aidtable.style.setProperty("display", "block");
-							var aids = aidtable.querySelectorAll("a > code[title]");
-							for (var aid=0; aid<aids.length; aid++) {
-								aids[aid].parentNode.style.setProperty("width", parseInt(self.getComputedStyle(aids[aid].parentNode).getPropertyValue("width").match(/^\d+/)+"", 10)/aids[aid].textContent.length*6+"px");
-							}
-							aidtable.style.setProperty("display", show?"block":"none");
-						}
 					}
 				}
 			} else {
