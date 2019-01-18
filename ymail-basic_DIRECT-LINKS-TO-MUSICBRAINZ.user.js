@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2018.4.4
+// @version      2019.1.18
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
 // @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @homepage     http://userscripts-mirror.org/scripts/show/80308
@@ -147,7 +147,7 @@ if (emails) {
 						var openedits = "/open_edits";
 						var type = allparts[4].match(/artist|collection|label|series/);
 						if (type) {
-							im.setAttribute("src", preferredProtocol + "//musicbrainz.org/static/images/entity/%type%.svg".replace(/%type%/, type).replace(/collection|series/, "release_group"));
+							im.setAttribute("src", preferredProtocol + "//musicbrainz.org/static/images/entity/%type%.svg".replace(/%type%/, type).replace(/collection/, "release_group"));
 							im.setAttribute("height", "16px");
 							im.setAttribute("width", "16px");
 						} else if (allparts[4].match(/user/)) {
