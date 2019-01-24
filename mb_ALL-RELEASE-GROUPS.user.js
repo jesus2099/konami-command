@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         mb_ALL-RELEASE-GROUPS
+// @name         mb. ALL RELEASE GROUPS
 // @version      2019.1.7.beta
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-RELEASE-GROUPS.user.js
 // @description  Artist overview page (discography): Show all release groups by default, then you can filter out bootlegs to show only official release groups (instead of the opposite default)
