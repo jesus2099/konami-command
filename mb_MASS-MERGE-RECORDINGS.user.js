@@ -514,7 +514,7 @@ function massMergeGUI() {
 		": queue all"
 	]));
 	MMRdiv.addEventListener("click", function(event) {
-		if (event.target.classList.contains(MMRid + "arrowButton")) {
+		if (matchMode.current == matchMode.sequential && event.target.classList.contains(MMRid + "arrowButton")) {
 			startpos.focus();
 			if (event.target.textContent.match(/[↑←]/) && startpos.selectedIndex > 0) {
 				startpos.selectedIndex -= 1;
