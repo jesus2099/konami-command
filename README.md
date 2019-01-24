@@ -18,9 +18,12 @@ You can start by installing an installer script that will add direct download/in
 buttons/icons in front of each userscripts in github, gitlab and bitbucket file listings:
 [INSTALL-USER-SCRIPT](//github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js)
 
-Alternatively, some of my scripts are mirrored at 
+<ins>I will progressively stop using mirrors and 
+all my scripts will exclusively be found here in this github repo.</ins>
+
+<del>Alternatively, some of my scripts are mirrored at 
 [Greasy Fork](//greasyfork.org/users/2206-jesus2099?sort=updated#user-script-list) and 
-[OpenUserJS](//openuserjs.org/users/jesus2099/scripts?orderBy=updated&orderDir=desc).
+[OpenUserJS](//openuserjs.org/users/jesus2099/scripts?orderBy=updated&orderDir=desc).</del>
 
 ---
 
