@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2019.1.18
+// @version      2019.1.24
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (ho.)
+// @compatible   vivaldi(2.2.1388.37)+violentmonkey  my setup (of.)
+// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_REVIVE-DELETED-EDITORS.user.js
@@ -19,6 +18,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAOMMAAAAAP8A/wJR1MosEqGhBPyZUAD/APW1hQD///vPp///AP7++P///////////////yH5BAEKAA8ALAAAAAAQABAAAARbUMlJq0Ll6AN6z0liYNnWLV84FmUBLIsAAyqpuTEgA4VomzFUyMfaaDy9WhFw/PRoK6Zn2lFyqNio58DKSAEjQnczPtTEN+ww3AIMBrM1Qpxxud80VWDP7/sNEQA7
 // @grant        none
 // @match        *://*.mbsandbox.org/*edits*
+// @match        *://*.mbsandbox.org/area/*/users*
 // @match        *://*.mbsandbox.org/artist/*
 // @match        *://*.mbsandbox.org/edit/*
 // @match        *://*.mbsandbox.org/election*
@@ -31,6 +31,7 @@
 // @match        *://*.mbsandbox.org/user/*
 // @match        *://*.mbsandbox.org/work/*
 // @match        *://*.musicbrainz.org/*edits*
+// @match        *://*.musicbrainz.org/area/*/users*
 // @match        *://*.musicbrainz.org/artist/*
 // @match        *://*.musicbrainz.org/edit/*
 // @match        *://*.musicbrainz.org/election*
