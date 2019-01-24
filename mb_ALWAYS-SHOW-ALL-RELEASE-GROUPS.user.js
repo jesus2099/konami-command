@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         mb. ALWAYS SHOW ALL RELEASE GROUPS
+// @name         mb_ALL-RELEASE-GROUPS
 // @version      2019.1.7.beta
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALWAYS-SHOW-ALL-RELEASE-GROUPS.user.js
+// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-RELEASE-GROUPS.user.js
 // @description  Artist overview page (discography): Show all release groups by default, then you can filter out bootlegs to show only official release groups (instead of the opposite default)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-RELEASE-GROUPS
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (ho.)
