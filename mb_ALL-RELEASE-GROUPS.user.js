@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL RELEASE GROUPS
-// @version      2019.1.7.beta
+// @version      2019.2.1
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-RELEASE-GROUPS.user.js
 // @description  Artist overview page (discography): Show all release groups by default, then you can filter out bootlegs to show only official release groups (instead of the opposite default)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-RELEASE-GROUPS
@@ -12,6 +12,7 @@
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ALL-RELEASE-GROUPS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ALL-RELEASE-GROUPS.user.js
 // @author       jesus2099
+// @contributor  Naja Melan’s “Always show all releases on Musicbrainz v1.0” http://userscripts-mirror.org/scripts/show/9456
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2019-01-03
