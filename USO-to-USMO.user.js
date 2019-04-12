@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         USO to USMO
-// @version      2018.4.4
+// @version      2019.4.12
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/USO-to-USMO.user.js
 // @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long — bypass this script by holding CTRL+ALT+SHIFT
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
@@ -34,7 +34,7 @@ document.addEventListener("mousedown", function(event) {
 			}
 			if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-USO-to-USMO")) { // not linked yet
 				var HREF = element.getAttribute("href");
-				var hrefMatch = HREF && HREF.match(/^(https?:)?(\/\/)?(www\.)?(userscripts\.org)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/);
+				var hrefMatch = HREF && HREF.trim().match(/^(https?:)?(\/\/)?(www\.)?(userscripts\.org)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/);
 				var newHref = HREF;
 				if (hrefMatch) {
 					/* an USO link was (left/middle/right) mouse clicked */

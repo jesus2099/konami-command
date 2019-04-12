@@ -2,7 +2,7 @@
 var metadata = function() {
 // ==UserScript==
 // @name         last.fm. ALL LINKS TO LOCAL SITE
-// @version      2016.6.17
+// @version      2019.4.12
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @description  Replaces any lastfm link by the desired language, like "www.lastfm.xx" or else
 // @homepage     http://userscripts-mirror.org/scripts/show/29156
@@ -54,7 +54,7 @@ for (var i = 0; i < as.length; i++) {
 	var newhref, href = as[i].getAttribute("href");
 	if (
 		href
-		&& (newhref = href.replace(/^(?:https?:)?\/\/(?:(?:cn|www)\.)?(?:last\.fm|lastfm\.(?:com\.)?[a-z][a-z])(\/.*)?$/i, "http://" + preferred_lastfm + "$1"))
+		&& (newhref = href.trim().replace(/^(?:https?:)?\/\/(?:(?:cn|www)\.)?(?:last\.fm|lastfm\.(?:com\.)?[a-z][a-z])(\/.*)?$/i, "http://" + preferred_lastfm + "$1"))
 		&& href != newhref
 	) {
 		as[i].setAttribute("href", newhref);
