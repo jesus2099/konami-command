@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2018.4.4
+// @version      2019.4.12
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
@@ -103,7 +103,7 @@ function process(anchor) {
 }
 function prefer(URL) {
 	var newUrl = preferredMBS;
-	var urlMatch = URL.match(/^(https?:)?(\/\/)?((?:beta\.)?musicbrainz\.org(?::\d+)?)(\/.*)?(\?.*)?(#.*)?$/);
+	var urlMatch = URL.trim().match(/^(https?:)?(\/\/)?((?:beta\.)?musicbrainz\.org(?::\d+)?)(\/.*)?(\?.*)?(#.*)?$/);
 	if (urlMatch) {
 		newUrl += (urlMatch[4] ? urlMatch[4] : "") + (urlMatch[5] ? urlMatch[5] : "") + (urlMatch[6] ? urlMatch[6] : "");
 	} else if (
