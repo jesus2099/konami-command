@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2019.1.24
+// @version      2019.4.24
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -631,7 +631,8 @@ function loadReleasePage() {
 			var trackInfos = releaseWithoutARs.match(new RegExp("<a href=\"/recording/" + sregex_MBID + "\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
 			var trackTimes = releaseWithoutARs.match(/<td class="treleases">[^<]*<\/td>/g);
 			var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
-			var releaseAC = releaseWithoutARs.match(/\s+Release by (<.+>)/);
+			var releaseAC = releaseWithoutARs.match(/<p class="subheader">[\s\S]*?<span class="prefix">~<\/span>(?: <!-- -->)?[\s\w]+ (<a href="\/artist\/.+)[\s\S]+?<span class="small">/);
+//TODO: Cleanup when beta comes live: `an>(?: <!-- -->)?[\s\w]+ (<a` → `an> <!-- -->[\s\w]+ (<a`.
 			var discount = releaseWithoutARs.match(/<a class="expand-medium"/g).length;
 			if (recIDx5 && trackInfos && trackTimes && rtitle) {
 				var recIDs = [];
