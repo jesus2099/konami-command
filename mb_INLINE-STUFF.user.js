@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2018.12.31
+// @version      2019.5.7
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
+// @compatible   vivaldi(2.4.1488.38)+violentmonkey   my setup (of.)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (ho.)
-// @compatible   vivaldi(2.2.1388.37)+violentmonkey  my setup (of.)
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
 // @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
@@ -557,8 +557,6 @@ function acoustidFishBatch(recids) {
 			params += "&mbid="+recids[m];
 		}
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		xhr.setRequestHeader("Content-length", params.length);
-		xhr.setRequestHeader("Connection", "close");
 		xhr.overrideMimeType("text/xml");
 		xhr.send(params);
 	}

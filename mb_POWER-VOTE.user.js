@@ -165,8 +165,6 @@ if (editform) {
 				});
 				xhr.open("POST", self.location.protocol + "//" + self.location.host + "/edit/enter_votes", true);
 				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-				xhr.setRequestHeader("Content-length", params.length);
-				xhr.setRequestHeader("Connection", "close");
 				updateXHRstat(++pendingXHRvote);
 				xhr.send(params);
 				ninja(event, ed, true, "force");
