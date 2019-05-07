@@ -61,11 +61,14 @@ if (mbid && tracks.length > 0) {
 				if (trackLengthCell) { trackLengthCell.replaceChild(document.createTextNode(wsRecordingLength), trackLengthCell.firstChild); }
 				var wsTracks = wsRecording.querySelectorAll("recording[id='" + mbid + "'] > release-list > release > medium-list > medium > track-list > track");
 				for (var wst = 0; wst < wsTracks.length; wst++) {
-					var wsReleaseMBID = getParent(wsTracks[wst], "release");
+					var wsRelease = getParent(wsTracks[wst], "release");
+					var wsReleaseMBID, wsReleaseAC;
 					var wsPosition = wsTracks[wst].parentNode.parentNode.querySelector("position");
 					var wsTrackPosition = wsTracks[wst].querySelector("position");
 					if (
-						wsReleaseMBID && (wsReleaseMBID = wsReleaseMBID.getAttribute("id"))
+						wsRelease
+						&& (wsReleaseMBID = wsRelease.getAttribute("id"))
+						&& (wsReleaseAC = wsRelease.querySelector("artist-credit"))
 						&& wsPosition && (wsPosition = wsPosition.textContent)
 						&& wsTrackPosition && (wsTrackPosition = wsTrackPosition.textContent)
 					) {
@@ -98,31 +101,33 @@ if (mbid && tracks.length > 0) {
 									}
 								}
 								/* artist credit */
-								var wsTrackArtistCredits = wsTracks[wst].querySelectorAll("artist-credit > name-credit");
-								if (wsTrackArtistCredits.length > 0) {
-									var trackArtistCreditHeader = createTag("div", {s: {border: "4px solid gold", padding: "1px 2px", textShadow: "1px 1px 2px #993"}});
-									if (releaseArtistColumnHeader != null) {
-										releaseArtistColumnHeader.insertBefore(trackArtistCreditHeader.cloneNode(true), releaseArtistColumnHeader.firstChild).appendChild(document.createTextNode("Track Artist"));
-										releaseArtistColumnHeader = null;
-									}
-									var releaseArtistCell = tracks[t].querySelector("td:nth-child(" + releaseArtistColumnIndex + ")");
-									if (releaseArtistCell) {
-										var trackArtistCreditFragment = releaseArtistCell.insertBefore(trackArtistCreditHeader.cloneNode(true), releaseArtistCell.firstChild);
-										for (var wstac = 0; wstac < wsTrackArtistCredits.length; wstac++) {
-											var wsArtist = wsTrackArtistCredits[wstac].querySelector("artist");
-											var wsArtistMBID, wsArtistTooltip;
-											if (wsArtist && (wsArtistMBID = wsArtist.getAttribute("id")) && (wsArtistTooltip = wsArtist.querySelector("name")) && (wsArtistTooltip = wsArtistTooltip.textContent) && (wsArtist = wsTrackArtistCredits[wstac].querySelector("name")) && (wsArtist = wsArtist.textContent)) {
-												var trackArtistCreditElement = createTag("a", {a: {href: "/artist/" + wsArtistMBID}}, wsArtist);
-												if (wsArtistTooltip != wsArtist) {
-													trackArtistCreditElement.setAttribute("title", wsArtistTooltip);
-													trackArtistCreditFragment.appendChild(createTag("span", {a: {class: "name-variation"}}, trackArtistCreditElement));
-												} else {
-													trackArtistCreditFragment.appendChild(trackArtistCreditElement);
+								if (!wsTracks[wst].querySelector("artist-credit").isEqualNode(wsReleaseAC)) {
+									var wsTrackArtistCredits = wsTracks[wst].querySelectorAll("artist-credit > name-credit");
+									if (wsTrackArtistCredits.length > 0) {
+										var trackArtistCreditHeader = createTag("div", {s: {border: "4px solid gold", padding: "1px 2px", textShadow: "1px 1px 2px #993"}});
+										if (releaseArtistColumnHeader != null) {
+											releaseArtistColumnHeader.insertBefore(trackArtistCreditHeader.cloneNode(true), releaseArtistColumnHeader.firstChild).appendChild(document.createTextNode("Track Artist"));
+											releaseArtistColumnHeader = null;
+										}
+										var releaseArtistCell = tracks[t].querySelector("td:nth-child(" + releaseArtistColumnIndex + ")");
+										if (releaseArtistCell) {
+											var trackArtistCreditFragment = releaseArtistCell.insertBefore(trackArtistCreditHeader.cloneNode(true), releaseArtistCell.firstChild);
+											for (var wstac = 0; wstac < wsTrackArtistCredits.length; wstac++) {
+												var wsArtist = wsTrackArtistCredits[wstac].querySelector("artist");
+												var wsArtistMBID, wsArtistTooltip;
+												if (wsArtist && (wsArtistMBID = wsArtist.getAttribute("id")) && (wsArtistTooltip = wsArtist.querySelector("name")) && (wsArtistTooltip = wsArtistTooltip.textContent) && (wsArtist = wsTrackArtistCredits[wstac].querySelector("name")) && (wsArtist = wsArtist.textContent)) {
+													var trackArtistCreditElement = createTag("a", {a: {href: "/artist/" + wsArtistMBID}}, wsArtist);
+													if (wsArtistTooltip != wsArtist) {
+														trackArtistCreditElement.setAttribute("title", wsArtistTooltip);
+														trackArtistCreditFragment.appendChild(createTag("span", {a: {class: "name-variation"}}, trackArtistCreditElement));
+													} else {
+														trackArtistCreditFragment.appendChild(trackArtistCreditElement);
+													}
 												}
-											}
-											var wsTrackArtistCreditJoinPhrase = wsTrackArtistCredits[wstac].getAttribute("joinphrase");
-											if (wsTrackArtistCreditJoinPhrase) {
-												trackArtistCreditFragment.appendChild(document.createTextNode(wsTrackArtistCreditJoinPhrase));
+												var wsTrackArtistCreditJoinPhrase = wsTrackArtistCredits[wstac].getAttribute("joinphrase");
+												if (wsTrackArtistCreditJoinPhrase) {
+													trackArtistCreditFragment.appendChild(document.createTextNode(wsTrackArtistCreditJoinPhrase));
+												}
 											}
 										}
 									}
