@@ -63,14 +63,14 @@ if (mbid && tracks.length > 0) {
 				for (var wst = 0; wst < wsTracks.length; wst++) {
 					var wsReleaseMBID = getParent(wsTracks[wst], "release");
 					var wsPosition = wsTracks[wst].parentNode.parentNode.querySelector("position");
-					var wsTrackNumber = wsTracks[wst].querySelector("number");
+					var wsTrackPosition = wsTracks[wst].querySelector("position");
 					if (
 						wsReleaseMBID && (wsReleaseMBID = wsReleaseMBID.getAttribute("id"))
 						&& wsPosition && (wsPosition = wsPosition.textContent)
-						&& wsTrackNumber && (wsTrackNumber = wsTrackNumber.textContent)
+						&& wsTrackPosition && (wsTrackPosition = wsTrackPosition.textContent)
 					) {
 						for (var t = 0; t < tracks.length; t++) {
-							if (tracks[t].querySelector("a[href*='/release/']") && tracks[t].querySelector("a[href*='/release/']").getAttribute("href").indexOf(wsReleaseMBID) > 0 && tracks[t].querySelector("td:first-of-type").textContent.trim() == wsPosition + "." + wsTrackNumber) {
+							if (tracks[t].querySelector("a[href*='/release/']") && tracks[t].querySelector("a[href*='/release/']").getAttribute("href").indexOf(wsReleaseMBID) > 0 && tracks[t].querySelector("td:first-of-type").textContent.trim() == wsPosition + "." + wsTrackPosition) {
 								/* display recording/track title discrepency */
 								var trackTitleCell = tracks[t].querySelector("td:nth-child(" + trackTitleColumnIndex + ")");
 								if (trackTitleCell) {
