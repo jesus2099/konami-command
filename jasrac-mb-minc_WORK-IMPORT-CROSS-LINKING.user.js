@@ -2,14 +2,13 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2018.4.4
+// @version      2019.5.7
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
+// @compatible   vivaldi(2.4.1488.38)+violentmonkey   my setup (of.)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
 // @compatible   firefox(47.0)+greasemonkey           tested sometimes
 // @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
@@ -1305,8 +1304,6 @@ function xhrMachine(_job) {
 	xhr.open(job.method ? job.method : "get", job.url, async);
 	if (job.params) {
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		xhr.setRequestHeader("Content-length", job.params.length);
-		xhr.setRequestHeader("Connection", "close");
 	}
 	if (DEBUG) console.log(job.info + "\n" + job.url + "\n" + (job.params ? job.params.replace(/&/g, "\n") : ""));
 	xhr.send(job.params);
