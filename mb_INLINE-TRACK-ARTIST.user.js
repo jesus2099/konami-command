@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE TRACK ARTIST
-// @version      2019.5.7
+// @version      2019.5.23
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-TRACK-ARTIST.user.js
 // @description  musicbrainz.org: highlights track title, length and artist differences in recording page
 // @homepage     http://userscripts-mirror.org/scripts/show/166877
@@ -54,7 +54,7 @@ if (mbid && tracks.length > 0) {
 				this.status == 200
 				&& (wsRecording = wsRecording.documentElement)
 			) {
-				var wsRecordingLength = wsRecording.querySelector("recording-list > recording > length");
+				var wsRecordingLength = wsRecording.querySelector("recording > length");
 				wsRecordingLength = time(wsRecordingLength ? wsRecordingLength.textContent : 0);
 				var trackLengthCell = document.querySelector("div#sidebar dl.properties dd.length");
 				if (trackLengthCell) { trackLengthCell.replaceChild(document.createTextNode(wsRecordingLength), trackLengthCell.firstChild); }
