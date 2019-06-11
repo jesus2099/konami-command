@@ -29,6 +29,7 @@ var meta = {rawmdb: function() {
 // @match        *://*.mbsandbox.org/label/*
 // @match        *://*.mbsandbox.org/recording/*
 // @match        *://*.mbsandbox.org/release/*
+// @match        *://*.mbsandbox.org/release_group/*
 // @match        *://*.mbsandbox.org/release-group/*
 // @match        *://*.mbsandbox.org/search?*type=annotation*
 // @match        *://*.mbsandbox.org/search?*type=release*
@@ -43,6 +44,7 @@ var meta = {rawmdb: function() {
 // @match        *://*.musicbrainz.org/label/*
 // @match        *://*.musicbrainz.org/recording/*
 // @match        *://*.musicbrainz.org/release/*
+// @match        *://*.musicbrainz.org/release_group/*
 // @match        *://*.musicbrainz.org/release-group/*
 // @match        *://*.musicbrainz.org/search?*type=annotation*
 // @match        *://*.musicbrainz.org/search?*type=release*
