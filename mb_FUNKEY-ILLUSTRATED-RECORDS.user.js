@@ -37,12 +37,13 @@
 // @match        *://*.musicbrainz.org/tag/*
 // @match        *://*.musicbrainz.org/user/*/ratings*
 // @match        *://*.musicbrainz.org/user/*/tag/*
-// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/release\/merge(\?.*)?$/
 // @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/release[-_]group/.+$/
+// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/release\/merge(\?.*)?$/
+// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/search/edits\?.+/
 // @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/search\?.*type=(annotation|release(_group)?).*$/
+// @exclude      *.org/*/*/edit
+// @exclude      *.org/*/*/edit?*
 // @exclude      *.org/cdtoc/remove*
-// @exclude      *.org/release/*/*edit*
-// @exclude      *.org/series/*/*edit*
 // @run-at       document-end
 // ==/UserScript==
 // ==OpenUserJS==
@@ -75,7 +76,7 @@ for (var t = 0; t < types.length; t++) {
 				if (istable) { artistcol = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
 				istablechecked = true;
 			}
-			if (smallpics) {
+			if (smallpics && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
 				var margin = "-12px 0px -14px 0px";
 				as[a].parentNode.insertBefore(
 					createTag("div", {s: {float: "right", marginRight: ".5em"}}, [
