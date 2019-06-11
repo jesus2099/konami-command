@@ -78,7 +78,7 @@ var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var imgurls = [];
 if (forceHTTP && self.location.protocol == "https:") {
 	var caa = document.querySelectorAll("img[src^='//coverartarchive.org/release']");
-	for (var c = 0; c < caa.length; c++) caa[c].setAttribute("src", "http:"+caa[c].getAttribute("src"));
+	for (var c = 0; c < caa.length; c++) caa[c].setAttribute("src", "http:" + caa[c].getAttribute("src"));
 }
 for (var t = 0; t < types.length; t++) {
 	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/'], div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']");
@@ -89,7 +89,7 @@ for (var t = 0; t < types.length; t++) {
 			if (istable) { artistcol = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
 			istablechecked = true;
 		}
-		var imgurl = CAA_URL.replace(/%type%/, types[t]).replace(/%mbid%/,as[a].getAttribute("href").match(new RegExp(RE_GUID)));
+		var imgurl = CAA_URL.replace(/%type%/, types[t]).replace(/%mbid%/, as[a].getAttribute("href").match(new RegExp(RE_GUID)));
 		if (smallpics) {
 			var margin = "-12px 0px -14px 0px";
 			as[a].parentNode.insertBefore(
@@ -101,7 +101,7 @@ for (var t = 0; t < types.length; t++) {
 							s: {cursor: "pointer", boxShadow: "1px 1px 4px black", margin: margin, padding: "none", position: "relative", zIndex: "1"},
 							e: {
 								click: function(event) { big(event, this, SMALL_SIZE); },
-								load: function(event) { this.setAttribute("_height", this.height + "px"); this.setAttribute("_width", this.width+"px"); this.style.setProperty("height", "0"); removeNode(this.parentNode.parentNode.firstChild); this.parentNode.style.setProperty("display", "inline"); big(event, this, SMALL_SIZE) },
+								load: function(event) { this.setAttribute("_height", this.height + "px"); this.setAttribute("_width", this.width + "px"); this.style.setProperty("height", "0"); removeNode(this.parentNode.parentNode.firstChild); this.parentNode.style.setProperty("display", "inline"); big(event, this, SMALL_SIZE) },
 								error: function(event) { removeNode(this.parentNode.parentNode); },
 								mouseover: function(event) { this.style.setProperty("z-index", "2"); this.parentNode.parentNode.nextSibling.style.setProperty("background-color", colour); },
 								mouseout: function(event) { if(this.getAttribute("_size") != "full") this.style.setProperty("z-index", "1"); this.parentNode.parentNode.nextSibling.style.removeProperty("background-color"); }
