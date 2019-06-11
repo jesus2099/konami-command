@@ -2,14 +2,13 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2019.6.4
+// @version      2019.6.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
+// @compatible   vivaldi(2.4.1488.38)+violentmonkey   my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (home, xp)
 // @compatible   firefox(47.0)+greasemonkey           tested sometimes
 // @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
@@ -28,11 +27,6 @@ var meta = {rawmdb: function() {
 // @match        *://*.mbsandbox.org/collection/*
 // @match        *://*.mbsandbox.org/label/*
 // @match        *://*.mbsandbox.org/recording/*
-// @match        *://*.mbsandbox.org/release/*
-// @match        *://*.mbsandbox.org/release_group/*
-// @match        *://*.mbsandbox.org/release-group/*
-// @match        *://*.mbsandbox.org/search?*type=annotation*
-// @match        *://*.mbsandbox.org/search?*type=release*
 // @match        *://*.mbsandbox.org/series/*
 // @match        *://*.mbsandbox.org/tag/*
 // @match        *://*.mbsandbox.org/user/*/ratings*
@@ -43,15 +37,13 @@ var meta = {rawmdb: function() {
 // @match        *://*.musicbrainz.org/collection/*
 // @match        *://*.musicbrainz.org/label/*
 // @match        *://*.musicbrainz.org/recording/*
-// @match        *://*.musicbrainz.org/release/*
-// @match        *://*.musicbrainz.org/release_group/*
-// @match        *://*.musicbrainz.org/release-group/*
-// @match        *://*.musicbrainz.org/search?*type=annotation*
-// @match        *://*.musicbrainz.org/search?*type=release*
 // @match        *://*.musicbrainz.org/series/*
 // @match        *://*.musicbrainz.org/tag/*
 // @match        *://*.musicbrainz.org/user/*/ratings*
 // @match        *://*.musicbrainz.org/user/*/tag/*
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/release/merge(\?.*)?$/
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/release[-_]group/.+$/
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/search\?.*type=(annotation|release(_group)?).*$/
 // @exclude      *.org/cdtoc/remove*
 // @exclude      *.org/release/*/*edit*
 // @exclude      *.org/series/*/*edit*
@@ -88,7 +80,7 @@ if (forceHTTP && self.location.protocol == "https:") {
 	var caa = document.querySelectorAll("img[src^='//coverartarchive.org/release']");
 	for (var c = 0; c < caa.length; c++) caa[c].setAttribute("src", "http:"+caa[c].getAttribute("src"));
 }
-if (!self.location.pathname.match(/^\/$|^\/release\//) || self.location.pathname.match(/^\/$|^\/release\/merge/)) for (var t=0; t<types.length; t++) {
+for (var t = 0; t < types.length; t++) {
 	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/'], div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']");
 	var istable, istablechecked, artistcol;
 	for (var a = 0; a < as.length; a++) if (as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/" + RE_GUID + "$"))) {
