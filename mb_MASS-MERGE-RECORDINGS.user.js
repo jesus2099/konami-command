@@ -214,7 +214,7 @@ function mergeRecsStep(_step) {
 				} else if (step === 1) {
 					if (
 						this.responseText.indexOf('<h1><span class="mp"><a href="/recording/' + to.getAttribute("ref") + '">') > -1
-						&& this.responseText.indexOf('href="' + MBS + '/recording/merge_queue?add-to-merge=' + to.value + '"') > -1
+						&& this.responseText.indexOf('href="/recording/merge_queue?add-to-merge=' + to.value + '"') > -1
 					) {
 						nextButt(true);
 					} else {
