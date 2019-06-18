@@ -1110,7 +1110,7 @@ function looseTitle(title) {
 		{from: /ⅹ/ig, to: "X"},
 		{from: /ⅺ/ig, to: "XI"},
 		{from: /ⅻ/ig, to: "XII"},
-		{from: /[\u0021-\u002F\u003A-\u003F\u005B-\u0060\u007B-\u00BF\u2000-\u2064\u2190-\u21FF\u2460-\u27FF\u2960-\u2B59\u3000-\u3030\u30FB\uFF5E-\uFF65]+/g, to: " "},
+		{from: /[\u0021-\u002F\u003A-\u003F\u005B-\u0060\u007B-\u00BF\u2000-\u2064\u2190-\u21FF\u2460-\u27FF\u2960-\u2B59\u3000-\u3030\u30FB\uFF5E-\uFF65]+/g, to: ""},
 		{from: /\s+|\BS\b|^(?:AN?|THE)\s+|\s+(?:AN?|THE)$/g, to: ""}
 	];
 	for (var s = 0; s < simplifications.length; s++) {
