@@ -2,41 +2,26 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2019.5.17
+// @version      2019.6.18
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MASS-MERGE-RECORDINGS
-// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (ho.)
-// @compatible   vivaldi(2.2.1388.37)+violentmonkey  my setup (of.)
+// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
 // @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-12-13
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
-// @match        *://*.mbsandbox.org/release/*
-// @match        *://*.musicbrainz.org/release/*
-// @exclude      *.org/release/*/aliases
-// @exclude      *.org/release/*/annotations
-// @exclude      *.org/release/*/change-quality
-// @exclude      *.org/release/*/collections
-// @exclude      *.org/release/*/cover-art
-// @exclude      *.org/release/*/delete
-// @exclude      *.org/release/*/details
-// @exclude      *.org/release/*/discids
-// @exclude      *.org/release/*/edit*
-// @exclude      *.org/release/*/open_edits
-// @exclude      *.org/release/*/tags
-// @exclude      *.org/release/add
-// @exclude      *.org/release/add?*
-// @exclude      *.org/release/merge*
+// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/(disc\/\d+)?)?(#.*)?$/
 // @run-at       document-end
 // ==/UserScript==
 // ==OpenUserJS==
