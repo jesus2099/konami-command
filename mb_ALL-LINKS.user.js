@@ -130,6 +130,7 @@ var autolinks = {
 		"音楽の森（著作者）": "//www.minc.gr.jp/db/KenriSrch.aspx?KENRISYANM=%artist-family-name-first%",
 		"Lyrics": null,
 		"decoda": "http://decoda.com/search?q=%artist-name%",
+		"Genius": "//genius.com/search?q=%artist-name%",
 		"LyricWiki": "//lyrics.wikia.com/%artist-name%",
 		"うたまっぷ（アーティスト）": {
 			acceptCharset: "euc-jp",
