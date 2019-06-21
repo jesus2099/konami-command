@@ -192,6 +192,7 @@ var autolinks = {
 		"ISNI": "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 		"Rate Your Music": "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
 		"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
+		"VIAF": "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
 		"WhoSampled": "//www.whosampled.com/search/artists/?h=1&q=%artist-name%", 
 		"Other stuff": null,
 		"en.Wikipedia": "//en.wikipedia.org/w/index.php?search=%artist-name%",
