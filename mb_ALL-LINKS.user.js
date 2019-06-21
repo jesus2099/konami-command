@@ -188,6 +188,7 @@ var autolinks = {
 		"Other databases": null,
 		"AllMusic": "http://www.allmusic.com/search/artist/%artist-name%",
 		"Discogs": "http://www.discogs.com/search?q=%artist-name%&type=artist",
+		"IMDb": "//www.imdb.com/find?q=%artist-name%&s=nm",
 		"ISNI": "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 		"Rate Your Music": "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
 		"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
