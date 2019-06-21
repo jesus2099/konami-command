@@ -193,7 +193,11 @@ var autolinks = {
 		"Rate Your Music": "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
 		"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
 		"VIAF": "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
-		"WhoSampled": "//www.whosampled.com/search/artists/?h=1&q=%artist-name%", 
+		"WhoSampled": "//www.whosampled.com/search/artists/?h=1&q=%artist-name%",
+		"Stores & streaming": null,
+		"Bandcamp": "https://bandcamp.com/search?q=%artist-name%",
+		"Deezer": "https://www.deezer.com/search/%artist-name%",
+		"Spotify": "https://open.spotify.com/search/results/%artist-name%",
 		"Other stuff": null,
 		"en.Wikipedia": "//en.wikipedia.org/w/index.php?search=%artist-name%",
 		"*.Wikipedia": "//duckduckgo.com/?q=site:wikipedia.org+%22%artist-name%%22",
@@ -283,6 +287,7 @@ var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/
 	"cdbaby.com"                : "cdbaby",
 };
 var favicons = {
+	"deezer.com": "https://e-cdns-files.dzcdn.net/cache/images/common/favicon/favicon-16x16.526cde4edf20647be4ee32cdf35c1c13.png",
 	"lastfm.": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
 	"livedoor.jp": "http://blog.livedoor.jp/favicon.ico",
 	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
