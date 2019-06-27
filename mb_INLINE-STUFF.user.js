@@ -1,9 +1,7 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
 // @version      2019.6.27.1449
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -68,25 +66,25 @@ if (pagecat) {
 			var relMBID = self.location.href.match(re_GUID);
 			if (relMBID && (tracksHtml = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]:not(.subh)")).length > 0) {
 				if (recUseInRelationshipLink || recAddToMergeLink) {
-					for (var ith=0; ith < tracksHtml.length; ith++) {
+					for (var ith = 0; ith < tracksHtml.length; ith++) {
 						var toolzone = tracksHtml[ith].querySelector("td.treleases");
 						if (toolzone) {
 							toolzone = toolzone.appendChild(document.createElement("div"));
-							toolzone.className = userjs+"toolzone";
+							toolzone.className = userjs + "toolzone";
 							toolzone.style.setProperty("display", "none");
 							var rec = tracksHtml[ith].querySelector(css_recording);
 							if (recUseInRelationshipLink && rec) {
-								toolzone.appendChild(createA(recUseInRelationshipLink, rec.getAttribute("href")+"/relate", "Use this recording in a relationship…"));
+								toolzone.appendChild(createA(recUseInRelationshipLink, rec.getAttribute("href") + "/relate", "Use this recording in a relationship…"));
 							}
 							var rat = tracksHtml[ith].querySelector("span.star-rating a.set-rating");
 							if (recAddToMergeLink && rat) {
 								if (recUseInRelationshipLink) { toolzone.appendChild(document.createElement("br")); }
-								toolzone.appendChild(createA(recAddToMergeLink, "/recording/merge_queue?add-to-merge="+rat.getAttribute("href").match(/id=([0-9]+)/)[1], "Merge this recording…"));
+								toolzone.appendChild(createA(recAddToMergeLink, "/recording/merge_queue?add-to-merge=" + rat.getAttribute("href").match(/id=([0-9]+)/)[1], "Merge this recording…"));
 							}
 							toolzone = toolzone.parentNode.appendChild(document.createElement("div"));
-							toolzone.className = userjs+"editbutt";
+							toolzone.className = userjs + "editbutt";
 							toolzone.style.setProperty("display", "none");
-							toolzone.appendChild(createA("Edit", rec.getAttribute("href")+"/edit", "Edit this recording"));
+							toolzone.appendChild(createA("Edit", rec.getAttribute("href") + "/edit", "Edit this recording"));
 							toolzone = toolzone.parentNode.appendChild(document.createElement("div"));
 							toolzone.className = userjs + "openEdits";
 							toolzone.style.setProperty("display", "none");
@@ -96,8 +94,8 @@ if (pagecat) {
 						}
 						var works = tracksHtml[ith].querySelectorAll(css_work);
 						if (works) {
-							for (var w=0; w<works.length; w++) {
-								var workid = works[w].getAttribute("href").match(new RegExp("/work/("+str_GUID+")$"));
+							for (var w = 0; w < works.length; w++) {
+								var workid = works[w].getAttribute("href").match(new RegExp("/work/(" + str_GUID + ")$"));
 								if (workid) {
 									if (!shownworks[workid[1]]) {
 										shownworks[workid[1]] = 0;
@@ -120,13 +118,13 @@ if (pagecat) {
 			}
 			break;
 		case "recordings":
-			document.querySelector("div#content table.tbl").classList.add(userjs + "-has-isrcs");/*for later duplicate spot*/
+			document.querySelector("div#content table.tbl").classList.add(userjs + "-has-isrcs"); // for later duplicate spot
 		case "edits":
 			var iedits = document.querySelectorAll("div#page table.add-isrcs, div#page table.merge-recordings, div#page table.remove-isrc, div#page table." + userjs + "-has-isrcs");
-			for (var ied=0; ied<iedits.length; ied++) {
+			for (var ied = 0; ied < iedits.length; ied++) {
 				shownisrcs = [];
 				var as = iedits[ied].getElementsByTagName("a");
-				for (var ia=0; ia<as.length; ia++) {
+				for (var ia = 0; ia < as.length; ia++) {
 					var href = as[ia].getAttribute("href").match(/isrc[=/]([^?]+)$/);
 					if (href) {
 						as[ia].replaceChild(coolifyISRC(as[ia].textContent), as[ia].firstChild);
@@ -142,6 +140,7 @@ if (pagecat) {
 			}
 	}
 }
+
 function createA(text, link, title, target) {
 	var a = document.createElement("a");
 	if (link) { a.setAttribute("href", link); }
@@ -152,12 +151,14 @@ function createA(text, link, title, target) {
 	if (target){ a.setAttribute("target", target); }
 	return a;
 }
+
 function addAfter(n, e) {
 	if (n && e) {
 		if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
 		else { return e.parentNode.appendChild(n); }
 	} else { return null; }
 }
+
 function isrcFish() {
 	if (this.readyState == 4 && this.status == 200 && tracksHtml) {
 		if (document.body.classList.contains("MMR2099userjs120382")) { // linked to mb_MASS-MERGE-RECORDINGS
@@ -166,17 +167,17 @@ function isrcFish() {
 			var res = this.responseXML;
 			var CAAcnt, CAAtab, CAAtxt;
 			if (
-				(CAAcnt = res.documentElement.querySelector("release > cover-art-archive > count")) && 
-				(CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']")) && 
-				(CAAtxt = "CAA")
+				(CAAcnt = res.documentElement.querySelector("release > cover-art-archive > count"))
+				&& (CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']"))
+				&& (CAAtxt = "CAA")
 			) {
 				CAAcnt = parseInt(CAAcnt.textContent, 10);
 				if (CAAcnt > 0) {
-					CAAtxt += " ("+CAAcnt+")";
+					CAAtxt += " (" + CAAcnt + ")";
 					CAAtab.style.setProperty("background-color", "#6f9");
 				}
 				else {
-					CAAtxt = "Add "+CAAtxt;
+					CAAtxt = "Add " + CAAtxt;
 					CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
 					CAAtab.style.setProperty("background-color", "#ff6");
 				}
@@ -190,7 +191,7 @@ function isrcFish() {
 			var acoustidNet = [];
 			var tracks = res.evaluate("//mb:recording", res, nsr, XPathResult.ANY_TYPE, null);
 			var track;
-			for (var pos=1; track = tracks.iterateNext(); pos++) {
+			for (var pos = 1; track = tracks.iterateNext(); pos++) {
 				var trackMBID = track.getAttribute("id");
 				if (acoustidNet.indexOf(trackMBID) < 0) { acoustidNet.push(trackMBID); }
 				isrcNet[trackMBID] = [];
@@ -212,7 +213,7 @@ function isrcFish() {
 				}
 			}
 			acoustidFishBatch(acoustidNet);
-			for (var i=0 ; i < tracksHtml.length ; i++) {
+			for (var i = 0 ; i < tracksHtml.length ; i++) {
 				var aRec = tracksHtml[i].querySelector(css_recording);
 				if (aRec) {
 					var mbid = aRec.getAttribute("href").match(re_GUID);
@@ -235,14 +236,14 @@ function isrcFish() {
 									}
 									trackNameFragment.appendChild(document.createTextNode(trackNameRows[row]));
 								}
-								aRec.setAttribute(userjs + "recname", aRec.textContent); //linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
+								aRec.setAttribute(userjs + "recname", aRec.textContent); // linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
 								aRec.replaceChild(trackNameFragment, aRec.firstChild);
 							}
 						}
 					}
 					if (markTrackRecNameDiff && recnameNet[mbid].comment && !sameCompleteName) {
 						var recdis = document.createElement("span");
-						recdis.classList.add(userjs + "recdis"); //linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
+						recdis.classList.add(userjs + "recdis"); // linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
 						recdis.classList.add("comment");
 						recdis.appendChild(document.createTextNode(" (" + recnameNet[mbid].comment + ")"));
 						addAfter(recdis, aRec);
@@ -256,11 +257,12 @@ function isrcFish() {
 		coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching MB inline stuff.");
 	}
 }
+
 function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid) {
 	var td = document.createElement("dd");
-	for (var i=0; i < stuffs.length; i++) {
+	for (var i = 0; i < stuffs.length; i++) {
 		var adisabled = (stufftype == "AcoustID" && stuffs[i][1]);
-		var stuff = (stufftype == "AcoustID"?stuffs[i][0]:stuffs[i]);
+		var stuff = (stufftype == "AcoustID" ? stuffs[i][0] : stuffs[i]);
 		if (i > 0) {
 			td.appendChild(document.createTextNode(", "));
 		}
@@ -277,8 +279,8 @@ function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid
 		if (adisabled) {
 			code.style.setProperty("text-decoration", "line-through");
 			code.style.setProperty("opacity", ".2");
-			a.addEventListener("mouseover",function(e){this.firstChild.style.removeProperty("text-decoration");this.firstChild.style.removeProperty("opacity");},false);
-			a.addEventListener("mouseout",function(e){this.firstChild.style.setProperty("text-decoration","line-through");this.firstChild.style.setProperty("opacity",".2");},false);
+			a.addEventListener("mouseover", function(event) { this.firstChild.style.removeProperty("text-decoration"); this.firstChild.style.removeProperty("opacity"); }, false);
+			a.addEventListener("mouseout", function(event) { this.firstChild.style.setProperty("text-decoration", "line-through"); this.firstChild.style.setProperty("opacity", ".2"); }, false);
 		}
 		td.appendChild(a);
 		if (!adisabled) {
@@ -288,7 +290,7 @@ function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid
 					bgColour = infoColour;
 				}
 				else {
-					eval("hasDupe"+stufftype+"s++");
+					eval("hasDupe" + stufftype +"s++");
 				}
 				if (shownstuffs[stuff]["a"].style.getPropertyValue("background-color") != dupeColour) {
 					shownstuffs[stuff]["a"].style.setProperty("background-color", bgColour);
@@ -305,24 +307,27 @@ function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid
 	}
 	var tr = document.createElement("dl");
 	tr.className = "ars";
-	tr.appendChild(document.createElement("dt").appendChild(document.createTextNode(stufftype+(stuffs.length>1?"s":"")+":")).parentNode);
+	tr.appendChild(document.createElement("dt").appendChild(document.createTextNode(stufftype + (stuffs.length > 1 ? "s" : "") + ":")).parentNode);
 	tr.appendChild(td);
 	var table = document.createElement("div");
-	table.className = "ars "+stufftype+"81127";
-	table.style.setProperty("display", localStorage.getItem("hide"+stufftype+"81127")=="1"?"none":"block");
+	table.className = "ars " + stufftype + "81127";
+	table.style.setProperty("display", localStorage.getItem("hide" + stufftype + "81127") == "1" ? "none" : "block");
 	table.appendChild(tr);
 	return table;
 }
+
 function togAID(rec, aid, dis) {
-	var acoustracktoggle = createA(dis?"+":"×", AcoustIDlinkingURL.replace(/%acoustid/, aid).replace(/%mbid/, rec).replace(/%state/, dis?"0":"1"), dis?"Link AcoustID to this recording":"Unlink AcoustID from this recording", "_blank");
-	acoustracktoggle.style.setProperty("color", dis?"green":"red");
+	var acoustracktoggle = createA(dis ? "+" : "×", AcoustIDlinkingURL.replace(/%acoustid/, aid).replace(/%mbid/, rec).replace(/%state/, dis ? "0" : "1"), dis ? "Link AcoustID to this recording" : "Unlink AcoustID from this recording", "_blank");
+	acoustracktoggle.style.setProperty("color", dis ? "green" : "red");
 	return acoustracktoggle;
 }
+
 function insertBeforeARS(par, chi) {
 	var ars = par.getElementsByClassName("ars");
 	if (ars.length > 0) { return par.insertBefore(chi, ars[0]); }
 	else { return par.appendChild(chi); }
 }
+
 function nsr(prefix) {
 	switch (prefix) {
 		case "mb":
@@ -331,12 +336,13 @@ function nsr(prefix) {
 			return null;
 	}
 }
+
 var bonusclicks = [];
 function idCount(type, count) {
-	var idCountZone = document.querySelector("div#sidebar div#"+userjs+"idcountzone");
+	var idCountZone = document.querySelector("div#sidebar div#" + userjs + "idcountzone");
 	if (!idCountZone) {
 		idCountZone = document.querySelector("div#sidebar > dl.properties").appendChild(document.createElement("div"));
-		idCountZone.setAttribute("id", userjs+"idcountzone");
+		idCountZone.setAttribute("id", userjs + "idcountzone");
 		idCountZone.style.setProperty("border", "1px dashed silver");
 		var showOE = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createElement("label")).appendChild(document.createElement("input"));
 		showOE.setAttribute("type", "checkbox");
@@ -350,69 +356,69 @@ function idCount(type, count) {
 		var showTZ = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createElement("label")).appendChild(document.createElement("input"));
 		showTZ.setAttribute("type", "checkbox");
 		showTZ.parentNode.appendChild(document.createTextNode(" Show relate/merge tools"));
-		showTZ.addEventListener("click", function(e) {
-			var tzs = document.querySelectorAll("div."+userjs+"toolzone");
+		showTZ.addEventListener("click", function(event) {
+			var tzs = document.querySelectorAll("div." + userjs + "toolzone");
 			for (var tz = 0; tz < tzs.length; tz++) {
-				tzs[tz].style.setProperty("display", this.checked?"block":"none");
+				tzs[tz].style.setProperty("display", this.checked ? "block" : "none");
 			}
 		}, false);
 		var showEB = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createElement("label")).appendChild(document.createElement("input"));
 		showEB.setAttribute("type", "checkbox");
 		showEB.parentNode.appendChild(document.createTextNode(" Show Edit rec. buttons"));
-		showEB.addEventListener("click", function(e) {
-			var ebs = document.querySelectorAll("div."+userjs+"editbutt");
+		showEB.addEventListener("click", function(event) {
+			var ebs = document.querySelectorAll("div." + userjs + "editbutt");
 			for (var eb = 0; eb < ebs.length; eb++) {
-				ebs[eb].style.setProperty("display", this.checked?"block":"none");
+				ebs[eb].style.setProperty("display", this.checked ? "block" : "none");
 			}
 		}, false);
 	}
 	if (count != 0) {
 		var errorMsg = { "-20": "acoustid.org unreachable", "-21": "Strange result from acoustid.org" };
-		var cooldt = idCountZone.appendChild(document.createElement("dt")).appendChild(document.createTextNode(type+(count>1?"s":"")+":")).parentNode;
-		var cooldd = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createTextNode(count<0?errorMsg[count]+" (or\u00a0something\u00a0like\u00a0that)":count)).parentNode;
-		if (count<0) { 
-			cooldt.setAttribute("title", "Error "+count);
+		var cooldt = idCountZone.appendChild(document.createElement("dt")).appendChild(document.createTextNode(type + (count > 1 ? "s" : "") + ":")).parentNode;
+		var cooldd = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createTextNode(count < 0 ? errorMsg[count] + " (or\u00a0something\u00a0like\u00a0that)" : count)).parentNode;
+		if (count < 0) { 
+			cooldt.setAttribute("title", "Error " + count);
 			cooldt.style.setProperty("background-color", dupeColour);
 		}
 		else if (count >= 0 && type != "Track" && type != "Work") {
 			var dupes = 0;
-			try { eval("dupes = hasDupe"+type+"s;"); } catch(e) {}
+			try { eval("dupes = hasDupe" + type + "s;"); } catch(error) {}
 			if (dupes > 0) {
-				cooldt.setAttribute("title", "There "+(dupes==1?"is 1":"are "+dupes)+" duplicate"+(dupes==1?"":"s"));
+				cooldt.setAttribute("title", "There " + (dupes == 1 ? "is 1" : "are " + dupes) + " duplicate" + (dupes == 1 ? "" : "s"));
 				cooldt.style.setProperty("background-color", dupeColour);
 			}
 			cooldd.appendChild(document.createTextNode(" ("));
-			var typetoggle = cooldd.appendChild(createA(localStorage.getItem("hide"+type+"81127")=="1"?"show":"hide", null, "shift+click to hide/show all"));
+			var typetoggle = cooldd.appendChild(createA(localStorage.getItem("hide" + type + "81127") == "1" ? "show" : "hide", null, "shift+click to hide/show all"));
 			typetoggle.style.setProperty("cursor", "pointer");
-			typetoggle.setAttribute("id", "tog81127"+type);
-			typetoggle.addEventListener("click", function(e) {
+			typetoggle.setAttribute("id", "tog81127" + type);
+			typetoggle.addEventListener("click", function(event) {
 				var type =  this.getAttribute("id").match(/^tog81127([a-z]+)$/i)[1];
 				var show = (this.textContent == "show");
-				localStorage.setItem("hide"+type+"81127", show?"0":"1");
-				var togstuffs = document.getElementsByClassName(type+81127);
-				for (var itog=0; itog < togstuffs.length; itog++) {
-					togstuffs[itog].style.setProperty("display", show?"block":"none");
+				localStorage.setItem("hide" + type + "81127", show ? "0" : "1");
+				var togstuffs = document.getElementsByClassName(type + 81127);
+				for (var itog = 0; itog < togstuffs.length; itog++) {
+					togstuffs[itog].style.setProperty("display", show ? "block" : "none");
 				}
-				this.replaceChild(document.createTextNode(show?"hide":"show"), this.firstChild);
+				this.replaceChild(document.createTextNode(show ? "hide" : "show"), this.firstChild);
 				if (e.shiftKey && bonusclicks.length == 0) {
-					if (showHideARSButt = document.querySelector("a."+(show?"show":"hide")+"-credits")) {
+					if (showHideARSButt = document.querySelector("a." + (show ? "show" : "hide") + "-credits")) {
 						showHideARSButt[0].click();
 					} else {
 						var ars = document.querySelectorAll("div.ars");
-						for (var iar=0; iar< ars.length; iar++) {
-							ars[iar].style.setProperty("display", show?"block":"none");
+						for (var iar = 0; iar < ars.length; iar++) {
+							ars[iar].style.setProperty("display", show ? "block" : "none");
 						}
 					}
-					if ((showToolZones = document.querySelectorAll("div#sidebar div#"+userjs+"idcountzone input[type='checkbox']"))) {
-						for (var stz=0; stz < showToolZones.length; stz++) {
+					if ((showToolZones = document.querySelectorAll("div#sidebar div#" + userjs + "idcountzone input[type='checkbox']"))) {
+						for (var stz = 0; stz < showToolZones.length; stz++) {
 							if (showToolZones[stz].checked != show) showToolZones[stz].click();
 						}
 					}
 					var otogs = ["AcoustID", "ISRC"];
-					for (var iotog=0; iotog < otogs.length; iotog++) {
-						var togid = "tog81127"+otogs[iotog];
+					for (var iotog = 0; iotog < otogs.length; iotog++) {
+						var togid = "tog81127" + otogs[iotog];
 						var toglnk = document.getElementById(togid);
-						if (this.id != togid && toglnk && toglnk.textContent == (show?"show":"hide")) {
+						if (this.id != togid && toglnk && toglnk.textContent == (show ? "show" : "hide")) {
 							bonusclicks.push(toglnk);
 						}
 					}
@@ -420,11 +426,12 @@ function idCount(type, count) {
 				if (bonusclicks.length > 0) {
 					bonusclicks.pop().click();
 				}
-			}, false);/*onclick*/
+			}, false); // onclick
 			cooldd.appendChild(document.createTextNode(")"));
 		}
 	}
 }
+
 function coolifyISRC(isrc) {
 	function truc(txt, i) {
 		var ivt = document.createElement("span");
@@ -438,15 +445,16 @@ function coolifyISRC(isrc) {
 	}
 	if (isrc.match(/[a-z]{2}\-?[a-z0-9]{3}\-?[0-9]{2}\-?[0-9]{5}/i)) {
 		var coolISRC = document.createElement("code");
-		coolISRC.appendChild(truc(isrc.substr(0,2), true));
-		coolISRC.appendChild(truc("-" + isrc.substr(2,3) + "-", false));
-		coolISRC.appendChild(truc(isrc.substr(5,2), true));
-		coolISRC.appendChild(truc("-" + isrc.substr(7,5), false));
+		coolISRC.appendChild(truc(isrc.substr(0, 2), true));
+		coolISRC.appendChild(truc("-" + isrc.substr(2, 3) + "-", false));
+		coolISRC.appendChild(truc(isrc.substr(5, 2), true));
+		coolISRC.appendChild(truc("-" + isrc.substr(7, 5), false));
 		return coolISRC;
 	}
 	else { return document.createTextNode(isrc); }
 }
-/* http://tiffanybbrown.com/presentations/2011/xhr2/ */
+
+// http://tiffanybbrown.com/presentations/2011/xhr2/
 function acoustidFishBatch(recids) {
 	if (recids.length > 0) {
 		var xhr = new XMLHttpRequest();
@@ -454,11 +462,11 @@ function acoustidFishBatch(recids) {
 			var res = this.responseXML;
 			var wsstatus, mbids;
 			if (
-				this.status == 200 && 
-				(res = res.documentElement) &&
-				(wsstatus = res.querySelector("response > status")) && 
-				wsstatus.textContent == "ok" && 
-				(mbids = res.querySelectorAll("response > mbids > mbid > mbid:not(:empty)"))
+				this.status == 200
+				&& (res = res.documentElement)
+				&& (wsstatus = res.querySelector("response > status"))
+				&& wsstatus.textContent == "ok"
+				&& (mbids = res.querySelectorAll("response > mbids > mbid > mbid:not(:empty)"))
 			) {
 				var acoustids = {};
 				for (var m = 0; m < mbids.length; m++) {
@@ -481,11 +489,11 @@ function acoustidFishBatch(recids) {
 				for (var th = 0; th < tracksHtml.length; th++) {
 					var recmbid, trackTitleCell;
 					if (
-						(recmbid = tracksHtml[th].querySelector(css_recording)) && 
-						(recmbid = recmbid.getAttribute("href").match(new RegExp("/("+str_GUID+")$"))) && 
-						(recmbid = recmbid[1]) && 
-						acoustids[recmbid].length > 0 &&
-						(trackTitleCell = tracksHtml[th].querySelector("td:not(.pos):not(.video)"))
+						(recmbid = tracksHtml[th].querySelector(css_recording))
+						&& (recmbid = recmbid.getAttribute("href").match(new RegExp("/(" + str_GUID + ")$")))
+						&& (recmbid = recmbid[1])
+						&& acoustids[recmbid].length > 0
+						&& (trackTitleCell = tracksHtml[th].querySelector("td:not(.pos):not(.video)"))
 					) {
 						var aidtable = insertBeforeARS(trackTitleCell, createStuffFragment("AcoustID", acoustids[recmbid], shownacoustids, acoustidURL, null, recmbid));
 					}
@@ -497,7 +505,7 @@ function acoustidFishBatch(recids) {
 			shownacoustids = count(shownacoustids);
 			idCount("AcoustID", shownacoustids);
 		};
-		xhr.onerror = function(e) {
+		xhr.onerror = function(error) {
 			idCount("AcoustID", -20);
 			coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching AcoustIDs.");
 		};
@@ -512,6 +520,7 @@ function acoustidFishBatch(recids) {
 		xhr.send(params);
 	}
 }
+
 function count(hash) {
 	var count = 0;
 	for (var key in hash) if (hash.hasOwnProperty(key)) {
