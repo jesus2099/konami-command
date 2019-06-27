@@ -468,9 +468,9 @@ function coolifyISRC(isrc) {
 	if (isrc.match(/[a-z]{2}\-?[a-z0-9]{3}\-?[0-9]{2}\-?[0-9]{5}/i)) {
 		var coolISRC = document.createElement("code");
 		coolISRC.appendChild(truc(isrc.substr(0,2), true));
-		coolISRC.appendChild(truc(isrc.substr(2,3), false));
+		coolISRC.appendChild(truc("-" + isrc.substr(2,3) + "-", false));
 		coolISRC.appendChild(truc(isrc.substr(5,2), true));
-		coolISRC.appendChild(truc(isrc.substr(7,5), false));
+		coolISRC.appendChild(truc("-" + isrc.substr(7,5), false));
 		return coolISRC;
 	}
 	else { return document.createTextNode(isrc); }
