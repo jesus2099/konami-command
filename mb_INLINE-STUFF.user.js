@@ -3,50 +3,24 @@
 // @version      2019.6.27.1449
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
-// @homepage     http://userscripts-mirror.org/scripts/show/81127
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
-// @compatible   vivaldi(2.4.1488.38)+violentmonkey   my setup (of.)
-// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (ho.)
+// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
 // @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-STUFF.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-STUFF.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2010-07-09
+// @since        2010-07-09 http://userscripts-mirror.org/scripts/show/81127
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128868
 // @grant        none
-// @match        *://*.mbsandbox.org/*edit*
-// @match        *://*.mbsandbox.org/artist/*/recordings*
-// @match        *://*.mbsandbox.org/mod/search/results.html*
-// @match        *://*.mbsandbox.org/release/*
-// @match        *://*.mbsandbox.org/show/edit/?editid=*
-// @match        *://*.musicbrainz.org/*edit*
-// @match        *://*.musicbrainz.org/artist/*/recordings*
-// @match        *://*.musicbrainz.org/mod/search/results.html*
-// @match        *://*.musicbrainz.org/release/*
-// @match        *://*.musicbrainz.org/show/edit/?editid=*
-// @exclude      *.org/ws/*
-// @exclude      *.org/release/add
-// @exclude      *.org/release/add?artist*
-// @exclude      *.org/release/add?release-group*
-// @exclude      *.org/release/*annotation*
-// @exclude      *.org/release/*cover-art*
-// @exclude      *.org/release/*/relationships
-// @exclude      *.org/release/*/discids
-// @exclude      *.org/release/*/tags
-// @exclude      *.org/release/*/details
-// @exclude      *.org/release/*/edit
-// @exclude      *.org/search?*type=*
-// @exclude      *://blog.musicbrainz.org*
-// @exclude      *://bugs.musicbrainz.org*
-// @exclude      *://forums.musicbrainz.org*
-// @exclude      *://lists.musicbrainz.org*
-// @exclude      *://tickets.musicbrainz.org*
-// @exclude      *://wiki.musicbrainz.org*
+// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/[^/]+/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/(open_)?edits/
+// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/artist/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/recordings/
+// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/edit/\d+/
+// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/release/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$)/
+// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/search/edits\?/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -182,9 +156,6 @@ function addAfter(n, e) {
 		if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
 		else { return e.parentNode.appendChild(n); }
 	} else { return null; }
-}
-function removeChildren(p) {
-	while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
 }
 function isrcFish() {
 	if (this.readyState == 4 && this.status == 200 && tracksHtml) {
