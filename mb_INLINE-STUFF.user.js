@@ -53,13 +53,14 @@ var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='/work/
 var tracksHtml = null;
 var pagecat = self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
 if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
+var css = document.createElement("style");
+css.setAttribute("type", "text/css");
+document.head.appendChild(css);
+css = css.sheet;
+css.insertRule("div#page table.add-isrcs tbody a[href^='/isrc/'], div#page table.merge-recordings tbody a[href^='/isrc/'], div#page table.remove-isrc tbody a[href^='/isrc/'], div#page table." + userjs + "-has-isrcs tbody a[href^='/isrc/'] { white-space: nowrap !important; }", 0);
 if (pagecat) {
 	switch(pagecat) {
 		case "release":
-			var css = document.createElement("style");
-			css.setAttribute("type", "text/css");
-			document.head.appendChild(css);
-			css = css.sheet;
 			css.insertRule("a[" + userjs + "recname] { text-shadow: 1px 2px 2px #999; color: maroon }", 0);
 			if (contractFingerPrints) {
 				css.insertRule("div.ars[class^='ars AcoustID'] code { display: inline-block; overflow-x: hidden; vertical-align: bottom; width: 6ch}", 0);
