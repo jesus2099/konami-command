@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2019.6.27
+// @version      2019.6.27.1449
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -145,10 +145,9 @@ if (pagecat) {
 			}
 			break;
 		case "recordings":
-			var rectable = document.querySelector("div#content table.tbl");
-			rectable.classList.add("add-isrcs");/*for later duplicate spot*/
+			document.querySelector("div#content table.tbl").classList.add(userjs + "-has-isrcs");/*for later duplicate spot*/
 		case "edits":
-			var iedits = document.querySelectorAll("div#page table.add-isrcs");
+			var iedits = document.querySelectorAll("div#page table.add-isrcs, div#page table.merge-recordings, div#page table.remove-isrc, div#page table." + userjs + "-has-isrcs");
 			for (var ied=0; ied<iedits.length; ied++) {
 				shownisrcs = [];
 				var as = iedits[ied].getElementsByTagName("a");
