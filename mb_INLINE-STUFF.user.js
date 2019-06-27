@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2019.5.7
+// @version      2019.6.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-STUFF.user.js
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @homepage     http://userscripts-mirror.org/scripts/show/81127
@@ -147,26 +147,6 @@ if (pagecat) {
 		case "recordings":
 			var rectable = document.querySelector("div#content table.tbl");
 			rectable.classList.add("add-isrcs");/*for later duplicate spot*/
-			var reclines = rectable.getElementsByTagName("tr");
-			var icol;
-			var rectabhd = reclines[0].getElementsByTagName("th");
-			for (icol=0; icol < rectabhd.length; icol++) {
-				if (rectabhd[icol].textContent.toLowerCase() == "isrcs") {
-					break;
-				}
-			}
-			for (var irl=1; irl < reclines.length; irl++) {
-				var isrctd = reclines[irl].getElementsByTagName("td")[icol];
-				var tdi = isrctd.textContent.trim();
-				if (tdi != "") {
-					tdi = tdi.replace(/[^\w]{2,}/g, " ").split(" ");
-					removeChildren(isrctd);
-					for (var itdi=0; itdi < tdi.length; itdi++) {
-						if (itdi>0) { isrctd.appendChild(document.createElement("br")); }
-						isrctd.appendChild(createA(tdi[itdi], isrcURL.replace(/%s/, tdi[itdi])));
-					}
-				}
-			}/*no-break, do the duplicate spot below*/
 		case "edits":
 			var iedits = document.querySelectorAll("div#page table.add-isrcs");
 			for (var ied=0; ied<iedits.length; ied++) {
