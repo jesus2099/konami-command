@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2018.4.4
+// @version      2019.6.21
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -130,6 +130,7 @@ var autolinks = {
 		"音楽の森（著作者）": "//www.minc.gr.jp/db/KenriSrch.aspx?KENRISYANM=%artist-family-name-first%",
 		"Lyrics": null,
 		"decoda": "http://decoda.com/search?q=%artist-name%",
+		"Genius": "//genius.com/search?q=%artist-name%",
 		"LyricWiki": "//lyrics.wikia.com/%artist-name%",
 		"うたまっぷ（アーティスト）": {
 			acceptCharset: "euc-jp",
@@ -187,10 +188,20 @@ var autolinks = {
 		"Other databases": null,
 		"AllMusic": "http://www.allmusic.com/search/artist/%artist-name%",
 		"Discogs": "http://www.discogs.com/search?q=%artist-name%&type=artist",
+		"IMDb": "//www.imdb.com/find?q=%artist-name%&s=nm",
 		"ISNI": "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 		"Rate Your Music": "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
 		"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
-		"WhoSampled": "//www.whosampled.com/search/artists/?h=1&q=%artist-name%", 
+		"VIAF": "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
+		"WhoSampled": "//www.whosampled.com/search/artists/?h=1&q=%artist-name%",
+		"Stores & streaming": null,
+		"Bandcamp": "https://bandcamp.com/search?q=%artist-name%",
+		"Deezer": "https://www.deezer.com/search/%artist-name%",
+		"Spotify": "https://open.spotify.com/search/results/%artist-name%",
+		"Social media": null,
+		"Facebook": "https://www.facebook.com/s.php?q=%artist-name%",
+		"Twitter": "https://twitter.com/search?f=users&q=%artist-name%",
+		"YouTube": "https://www.youtube.com/results?search_query=%artist-name%&sp=EgIQAg%253D%253D",
 		"Other stuff": null,
 		"en.Wikipedia": "//en.wikipedia.org/w/index.php?search=%artist-name%",
 		"*.Wikipedia": "//duckduckgo.com/?q=site:wikipedia.org+%22%artist-name%%22",
@@ -280,6 +291,7 @@ var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/
 	"cdbaby.com"                : "cdbaby",
 };
 var favicons = {
+	"deezer.com": "https://e-cdns-files.dzcdn.net/cache/images/common/favicon/favicon-16x16.526cde4edf20647be4ee32cdf35c1c13.png",
 	"lastfm.": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
 	"livedoor.jp": "http://blog.livedoor.jp/favicon.ico",
 	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
