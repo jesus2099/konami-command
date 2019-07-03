@@ -77,9 +77,9 @@ if (emails) {
 	}
 	/*auto apply actions (star/read/unread flags, move, etc.)*/
 	var autofire = [
-		{triggers: "div.contentbuttonbar select[name='top_action_select']", "submit": "div.contentbuttonbar input.action[type='submit'][name='self_action_msg_topaction']" },
-		{triggers: "div.sortpane select[name*='sor']", "submit": "div.sortpane input.action[type='submit'][name='self_action_msg_filter']" },
-		{triggers: "table.uh td.uh-rt select.uh-mnu[name='jumpTo']", "submit": "table.uh td.uh-rt button.uh-mnu-btn[type='submit']" }
+		{triggers: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[top]']", submit: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[top]'] + button[type='submit'][name='toolbar_action'][value='top']" },
+		{triggers: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[bottom]']", submit: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[bottom]'] + button[type='submit'][name='toolbar_action'][value='bottom']" },
+		{triggers: "#content table > tbody table > tbody select[name='sort_option[bottom]']", submit: "#content table > tbody table > tbody select[name='sort_option[bottom]'] + button[type='submit'][name='sort_action'][value='bottom']" },
 	];
 	for (var af = 0; af < autofire.length; af++) {
 		var triggers = document.querySelectorAll(autofire[af].triggers);
