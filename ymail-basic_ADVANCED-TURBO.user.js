@@ -25,19 +25,19 @@ var REMOVE_CRAP = true; /*FULL SCREEN DISPLAY. removes various distracting cra
 var userjs = {key: 177655, name: "ymail-basic. ADVANCED TURBO"};
 var DEBUG = localStorage.getItem("jesus2099debug");
 var shortcuts = {
-	"27": {key: "ESC", button: ["#top_backSearch", "td.main div.contentbuttonbar span.btn > input#cancelbuttontop[name='action_cancel_compose']", "td.navigation ul.folders li.selected > a"]},
+	"27": {key: "ESC", button: ["#content > table > tbody table[data-test-id='message-toolbar'] > tbody td:last-child > a"]},
 	"37": {key: "←", button: "td.main > div.container a#top_prev.action:not(.no-prev), td.main div.contentnav > div.pagination > span#top_pagination > a + a"},
 	"39": {key: "→", button: "td.main > div.container a#top_next.action:not(.no-next), td.main div.contentnav > div.pagination > span#top_pagination > span.pageno > a:not([href^='#'])"},
-	"46": {key: "DEL", button: "td.main div.contentbuttonbar input[id='top_delete'][type='submit']"},
+	"46": {key: "DEL", button: "#content table > tbody table > tbody button[name='action'][value='moveToFolder']"},
 	"CTRL+65": {noreload:true, key: "A", button: "td.main div.contentnav a#select_all.action"},
 	"65": {key: "A", button: "td.main div.contentbuttonbar span.btn > input[type='submit'][name='action_msg_replyall']"},
 	"70": {key: "F", button: "td.main div.contentbuttonbar span.btn > input[type='submit'][name='action_msg_fwd']"},
-	"73": {key: "I", button: "td.main > div.container div.spamwarning > a[href*='blockimages=0']"},
+	"73": {key: "I", button: "#content > table > tbody div[data-test-id='blocked-images'] > a[href$='unblockNow=true']"},
 	"77": {key: "M", button: "td.main div.contentbuttonbar select[name='top_action_select'] > option[value='msg.flag']"},
 	"78": {key: "N", button: "div#globalbuttonbartop.globalbuttonbar span.btn > input.composeicon[type='submit']"},
 	"82": {key: "R", button: "td.main div.contentbuttonbar span.btn > input[type='submit'][name='action_msg_reply']"},
-	"83": {key: "S", button: "td.main div.contentbuttonbar span.btn > input#top_spam[type='submit'][name='action_msg_topspam'], td.main div.contentbuttonbar span.btn > input#top_ham[type='submit'][name='msg_topham'], td.main div.contentbuttonbar select[name='top_action_select'] > option[value='msg.ham'], td.main div.contentbuttonbar select[name='top_action_select'] > option[value='msg.spam']"},
-	"85": {key: "U", button: "td.main div.contentbuttonbar select[name='top_action_select'] > option[value='msg.unread']"},
+	"83": {key: "S", button: "#content table > tbody table > tbody button[name='action'][value='markAsSpam'], #content table > tbody table > tbody button[name='action'][value='markAsNotSpam']"},
+	"85": {key: "U", button: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[top]'] > option[value='markAsUnread']"},
 };
 var emails = document.querySelectorAll("table#datatable > tbody > tr > td > h2 > a.mlink");
 if (emails) {
