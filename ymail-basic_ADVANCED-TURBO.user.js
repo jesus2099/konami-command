@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2019.7.3
+// @version      2019.7.4
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -25,9 +25,9 @@ var REMOVE_CRAP = true; /*FULL SCREEN DISPLAY. removes various distracting cra
 var userjs = {key: 177655, name: "ymail-basic. ADVANCED TURBO"};
 var DEBUG = localStorage.getItem("jesus2099debug");
 var shortcuts = {
-	"27": {key: "ESC", button: ["#content > table > tbody table[data-test-id='message-toolbar'] > tbody td:last-child > a"]},
-	"37": {key: "←", button: "td.main > div.container a#top_prev.action:not(.no-prev), td.main div.contentnav > div.pagination > span#top_pagination > a + a"},
-	"39": {key: "→", button: "td.main > div.container a#top_next.action:not(.no-next), td.main div.contentnav > div.pagination > span#top_pagination > span.pageno > a:not([href^='#'])"},
+	"27": {key: "ESC", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a:not([href*='/messages/'])"},
+	"37": {key: "←", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a[href*='/messages/']:first-child"},
+	"39": {key: "→", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a[href*='/messages/']:nth-child(2)"},
 	"46": {key: "DEL", button: "#content table > tbody table > tbody button[name='action'][value='moveToFolder']"},
 	"CTRL+65": {noreload:true, key: "A", button: "td.main div.contentnav a#select_all.action"},
 	"65": {key: "A", button: "td.main div.contentbuttonbar span.btn > input[type='submit'][name='action_msg_replyall']"},
