@@ -1,21 +1,16 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2018.4.4.1136
+// @version      2019.7.3
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
-// @homepage     http://userscripts-mirror.org/scripts/show/177655
-// @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_ADVANCED-TURBO
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/ymail-basic_ADVANCED-TURBO.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/ymail-basic_ADVANCED-TURBO.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2013-09-12
+// @since        2013-09-12 http://userscripts-mirror.org/scripts/show/177655
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
@@ -60,7 +55,7 @@ if (emails) {
 			}
 		}, false);
 	}
-	for (var emcb=0; emcb < emcbs.length; emcb++) {
+	for (var emcb = 0; emcb < emcbs.length; emcb++) {
 		hackit(emcbs[emcb], "SHIFT+CLICK for range-(un)select\nCTRL+CLICK for (un)select all");
 		emcbs[emcb].addEventListener("click", function(event) {
 			if (event.ctrlKey || event.shiftKey && lastemcb > -1) {
@@ -126,7 +121,7 @@ if (emails) {
 			"img[src*='//beap.adss.yahoo.com/']",
 			"td.sky-ad",
 			"tr.layoutfixer td.c3"
-		].join(",") + "{display:none}", 0);
+		].join(", ") + "{ display: none; }", 0);
 		try {
 			getParent(document.querySelector("table.tbl tr > td.spnsr"), "tr").style.setProperty("display", "none");
 		} catch(error) {}
@@ -142,7 +137,7 @@ function hackit(_obj, title, text) {
 		if (obj.tagName && obj.tagName == "INPUT") {
 			obj.setAttribute("value", obj.getAttribute("value") + " " + text);
 		} else if (obj.tagName && obj.textContent.match(/\w+/)) {
-			var label = obj.firstChild.tagName ? obj.firstChild:obj;
+			var label = obj.firstChild.tagName ? obj.firstChild : obj;
 			label.appendChild(document.createTextNode(" " + text));
 		}
 	}
@@ -186,7 +181,7 @@ function doThis(butt, noreload) {
 }
 function indexOf(element, array) {
 	var i = -1;
-	for (var a=0; a < array.length; a++) {
+	for (var a = 0; a < array.length; a++) {
 		if (array[a] == element) {
 			i = a;
 			break;
