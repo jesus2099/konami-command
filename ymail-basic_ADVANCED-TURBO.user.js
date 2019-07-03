@@ -115,12 +115,14 @@ if (emails) {
 		document.head.appendChild(j2delcrapss);
 		j2delcrapss = j2delcrapss.sheet;
 		j2delcrapss.insertRule([
+			"#app > div > table > tbody > tr > td[rowspan='2']",
 			"a[href$='relevantads.html']",
 			"a[href*='//beap.adss.yahoo.com/']",
 			"a[href*='//beap.gemini.yahoo.com/mbclk']",
 			"div.left_mb",
 			"div[class$='-ad']",
 			"div[class^='ad-']",
+			"div[data-test-id='pencil-ad']",
 			"img[src*='//beap.adss.yahoo.com/']",
 			"td.sky-ad",
 			"tr.layoutfixer td.c3"
