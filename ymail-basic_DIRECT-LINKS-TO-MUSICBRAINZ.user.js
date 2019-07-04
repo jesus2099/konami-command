@@ -29,7 +29,6 @@ var colourloading = "gold";
 var loadingtxt = "⌛ loading…";
 var edittypes = {deleted: "×", merged: "+"};
 var markReadEditsForDeletion = true;
-var preferredProtocol = "http:"; // "https:", "http:" (including “:”) or "" (empty string) if you prefer using the same current protocol as Yahoo! Mail
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs80308";
 var edits = [];
@@ -42,8 +41,8 @@ var edittypeextractor = /(deleted|merged) by edit #([0-9]+)/;
 var entitiesEditorsExtractorz = "<BR>(?:</div><div dir='ltr'>)?([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR>(?:</div><div dir='ltr'>)?(?:Open edits: )?<a href=\"(https?://musicbrainz\\.org/(?:artist|collection|label|series|user)/[^/]+/edits)(?:/open)?\" target=_blank";
 var idextractor = /by edit #([0-9]+)/;
 var triggerResponseURL = /<input type="hidden" name="mid" value="([^"]+)"/;
-var editurl = preferredProtocol + "//musicbrainz.org/edit/";
-var jiraurl = "http://tickets.musicbrainz.org/browse/";
+var editurl = "//musicbrainz.org/edit/";
+var jiraurl = "//tickets.musicbrainz.org/browse/";
 var emails = document.querySelectorAll("table#datatable > tbody > tr > td > h2 > a.mlink");
 var emailnovotes = [];
 var emailsubscrs = [];
@@ -67,7 +66,7 @@ if (emails) {
 			editid = editid[editid.length - 1];
 			email.replaceChild(document.createTextNode(emailtxt.substring(0, emailtxt.length - editid.length - 2)), email.firstChild);
 			var emailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
-			emailfrom.setAttribute("href", preferredProtocol + "//musicbrainz.org/user/" + encodeURIComponent(emailfrom.textContent.trim()));
+			emailfrom.setAttribute("href", "//musicbrainz.org/user/" + encodeURIComponent(emailfrom.textContent.trim()));
 			emailfrom.setAttribute("target", "_blank");
 			emailfrom.style.setProperty("background-color", colour);
 			if (!edits[editid]) {
@@ -141,11 +140,11 @@ if (emails) {
 						var openedits = "/open_edits";
 						var type = allparts[4].match(/artist|collection|label|series/);
 						if (type) {
-							im.setAttribute("src", preferredProtocol + "//musicbrainz.org/static/images/entity/%type%.svg".replace(/%type%/, type).replace(/collection/, "release_group"));
+							im.setAttribute("src", "//musicbrainz.org/static/images/entity/%type%.svg".replace(/%type%/, type).replace(/collection/, "release_group"));
 							im.setAttribute("height", "16px");
 							im.setAttribute("width", "16px");
 						} else if (allparts[4].match(/user/)) {
-							im.setAttribute("src", preferredProtocol + "//gravatar.com/avatar/placeholder?d=mm&s=12");
+							im.setAttribute("src", "//gravatar.com/avatar/placeholder?d=mm&s=12");
 							openedits = "/edits/open";
 						}
 						im.style.setProperty("margin-right", "4px");
