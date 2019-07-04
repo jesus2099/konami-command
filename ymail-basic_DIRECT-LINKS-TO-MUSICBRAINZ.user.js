@@ -14,8 +14,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
-// @match        *://*.mail.yahoo.com/neo/b/*
-// @exclude      *mail.yahoo.com/mc/md.php*
+// @include      /^https?://mail.yahoo.com/b/.*/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -43,7 +42,7 @@ var idextractor = /by edit #([0-9]+)/;
 var triggerResponseURL = /<input type="hidden" name="mid" value="([^"]+)"/;
 var editurl = "//musicbrainz.org/edit/";
 var jiraurl = "//tickets.musicbrainz.org/browse/";
-var emails = document.querySelectorAll("table#datatable > tbody > tr > td > h2 > a.mlink");
+var emails = document.querySelectorAll("table#messageListContainer > tbody td[data-test-id='subject'] > a");
 var emailnovotes = [];
 var emailsubscrs = [];
 if (emails) {
@@ -65,7 +64,7 @@ if (emails) {
 		} else if (editid) { // An email about an edit
 			editid = editid[editid.length - 1];
 			email.replaceChild(document.createTextNode(emailtxt.substring(0, emailtxt.length - editid.length - 2)), email.firstChild);
-			var emailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
+			var emailfrom = getParent(email, "tr").querySelector("td[data-test-id='sender'] > a");
 			emailfrom.setAttribute("href", "//musicbrainz.org/user/" + encodeURIComponent(emailfrom.textContent.trim()));
 			emailfrom.setAttribute("target", "_blank");
 			emailfrom.style.setProperty("background-color", colour);
