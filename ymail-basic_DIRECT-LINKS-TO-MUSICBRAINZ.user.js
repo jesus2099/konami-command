@@ -1,22 +1,16 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2019.1.18
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
+// @version      2019.7.4
 // @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
-// @homepage     http://userscripts-mirror.org/scripts/show/80308
-// @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2010-06-28
+// @since        2010-06-28 http://userscripts-mirror.org/scripts/show/80308
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
@@ -35,7 +29,7 @@ var colourloading = "gold";
 var loadingtxt = "⌛ loading…";
 var edittypes = {deleted: "×", merged: "+"};
 var markReadEditsForDeletion = true;
-var preferredProtocol = "http:";/* "https:", "http:" (including “:”) or "" (empty string) if you prefer using the same current protocol as Yahoo! Mail*/
+var preferredProtocol = "http:"; // "https:", "http:" (including “:”) or "" (empty string) if you prefer using the same current protocol as Yahoo! Mail
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs80308";
 var edits = [];
@@ -70,7 +64,7 @@ if (emails) {
 				editlink(email, jiraurl + jiraid, true, jiraid);
 			}
 		} else if (editid) { // An email about an edit
-			editid = editid[editid.length-1];
+			editid = editid[editid.length - 1];
 			email.replaceChild(document.createTextNode(emailtxt.substring(0, emailtxt.length - editid.length - 2)), email.firstChild);
 			var emailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
 			emailfrom.setAttribute("href", preferredProtocol + "//musicbrainz.org/user/" + encodeURIComponent(emailfrom.textContent.trim()));
@@ -187,7 +181,7 @@ if (emails) {
 						var nono = this.responseText.match(triggernoextractorz);
 						nonoemail = nonoemail.querySelector("tr > td > div > a");
 						if (nono) {
-							nonoemail.replaceChild(document.createTextNode(nono[1]), nonoemail.firstChild);/* from: xxx */
+							nonoemail.replaceChild(document.createTextNode(nono[1]), nonoemail.firstChild); // from: xxx
 							nonoemail.style.setProperty("background-color", colournobg);
 							nonoemail.style.setProperty("color", colourno);
 							nonoemail.setAttribute("href", nonoemail.getAttribute("href").replace(/[^/]+$/, encodeURIComponent(nono[1])));
@@ -206,7 +200,7 @@ function editlink(email, urlOrEditId, dupe, txt) {
 	var fragment = document.createDocumentFragment();
 	var a = document.createElement("a");
 	a.addEventListener("click", function(event) {
-		var edits = getParent(this, "table", "tbldata").querySelectorAll("table#datatable > tbody > tr > td > h2 > a." + userjs + "new[href$='" + this.getAttribute("href").replace(/^(https?:)?\/\/(beta\.)?/g, "") + "']"); //in case of on the fly change by mb-PREFERRED-MBS
+		var edits = getParent(this, "table", "tbldata").querySelectorAll("table#datatable > tbody > tr > td > h2 > a." + userjs + "new[href$='" + this.getAttribute("href").replace(/^(https?:)?\/\/(beta\.)?/g, "") + "']"); // in case of on the fly change by mb-PREFERRED-MBS
 		for (var e = 0; e < edits.length; e++) {
 			edits[e].className = edits[e].className.replace(userjs + "new", userjs + "read");
 			edits[e].style.setProperty("background-color", colourclicked);
