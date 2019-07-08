@@ -39,7 +39,7 @@ var triggernoextractorz = /'([^']+)' has voted against your edit #([0-9]+)/;
 var edittypeextractor = /(deleted|merged) by edit #([0-9]+)/;
 var entitiesEditorsExtractorz = "<BR>(?:</div><div dir='ltr'>)?([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR>(?:</div><div dir='ltr'>)?(?:Open edits: )?<a href=\"(https?://musicbrainz\\.org/(?:artist|collection|label|series|user)/[^/]+/edits)(?:/open)?\" target=_blank";
 var idextractor = /by edit #([0-9]+)/;
-var triggerResponseURL = /<input type="hidden" name="mid" value="([^"]+)"/;
+var triggerResponseURL = /<input type="hidden" name="mids\[\]" value="([^"]+)"\/>/;
 var editurl = "//musicbrainz.org/edit/";
 var jiraurl = "//tickets.musicbrainz.org/browse/";
 var emails = document.querySelectorAll("table#messageListContainer > tbody td[data-test-id='subject'] > a");
@@ -98,7 +98,7 @@ if (emails) {
 		} else if (email.getAttribute("title").match(/^Edits for your subscriptions$/)) { // A subscription email
 			getParent(email, "tr").style.setProperty("background-color", colourloading);
 			email.insertBefore(loading(), email.firstChild);
-			emailsubscrs[decodeURIComponent(email.getAttribute("href").match(/(?:&|\?)mid=([^&$]+)/)[1])] = email;
+			emailsubscrs[decodeURIComponent(email.getAttribute("href").match(/\/messages\/([^&$]+)\?/)[1])] = email;
 			var xhr = new XMLHttpRequest();
 			xhr.addEventListener("load", function(event) {
 				if (this.status == 200) {
