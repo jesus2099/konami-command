@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2019.7.4
+// @version      2019.7.8
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -24,12 +24,13 @@ var REMOVE_CRAP = true; /*FULL SCREEN DISPLAY. removes various distracting cra
 /*---CONFIG---*/
 var userjs = {key: 177655, name: "ymail-basic. ADVANCED TURBO"};
 var DEBUG = localStorage.getItem("jesus2099debug");
+var selectAllSelector = "div#selectAllButton > button[name='action'][type='submit'][value='selectAll']";
 var shortcuts = {
 	"27": {key: "ESC", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a:not([href*='/messages/'])"},
 	"37": {key: "←", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a[href*='/messages/']:first-child"},
 	"39": {key: "→", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a[href*='/messages/']:nth-child(2)"},
 	"46": {key: "DEL", button: "#content table > tbody table > tbody button[name='action'][value='moveToFolder']"},
-	"CTRL+65": {noreload:true, key: "A", button: "td.main div.contentnav a#select_all.action"},
+	"CTRL+65": {noreload: true, key: "A", button: selectAllSelector},
 	"65": {key: "A", button: "td.main div.contentbuttonbar span.btn > input[type='submit'][name='action_msg_replyall']"},
 	"70": {key: "F", button: "td.main div.contentbuttonbar span.btn > input[type='submit'][name='action_msg_fwd']"},
 	"73": {key: "I", button: "#content > table > tbody div[data-test-id='blocked-images'] > a[href$='unblockNow=true']"},
@@ -43,11 +44,11 @@ var emails = document.querySelectorAll("table#datatable > tbody > tr > td > h2 >
 if (emails) {
 	/*select multiple e-mails with shift+click first last (range click)*/
 	var lastemcb = -1;
-	var emcbs = document.querySelectorAll("table#datatable > tbody > tr > td > input.selectmsg[type='checkbox'][name='mid']");
-	var selectall = document.querySelector("td.main div.contentnav a#select_all.action");
+	var emcbs = document.querySelectorAll("table#messageListContainer > tbody > tr > td > input[type='checkbox'][name='mids[]']");
+	var selectall = document.querySelector(selectAllSelector);
 	if (selectall && emcbs) {
 		hackit(selectall, "(TURBO)");
-		selectall.addEventListener("click", function(event){
+		selectall.addEventListener("click", function(event) {
 			stop(event);
 			if (emcbs.length > 0) {
 				sendEvent(emcbs[0], "ctrl+click");
