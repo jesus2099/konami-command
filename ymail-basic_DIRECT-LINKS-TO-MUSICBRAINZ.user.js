@@ -199,9 +199,9 @@ function editlink(email, urlOrEditId, dupe, txt) {
 	var fragment = document.createDocumentFragment();
 	var a = document.createElement("a");
 	a.addEventListener("click", function(event) {
-		var edits = getParent(this, "table", "tbldata").querySelectorAll("table#datatable > tbody > tr > td > h2 > a." + userjs + "new[href$='" + this.getAttribute("href").replace(/^(https?:)?\/\/(beta\.)?/g, "") + "']"); // in case of on the fly change by mb-PREFERRED-MBS
+		var edits = document.querySelectorAll("table#messageListContainer > tbody a." + userjs + "new[href$='" + this.getAttribute("href").replace(/^(https?:)?\/\/(beta\.)?/g, "") + "']"); // in case of on the fly change by mb-PREFERRED-MBS
 		for (var e = 0; e < edits.length; e++) {
-			edits[e].className = edits[e].className.replace(userjs + "new", userjs + "read");
+			edits[e].className = edits[e].classList.replace(userjs + "new", userjs + "read");
 			edits[e].style.setProperty("background-color", colourclicked);
 			edits[e].style.setProperty("text-decoration", "line-through");
 			if (markReadEditsForDeletion) {
@@ -209,7 +209,7 @@ function editlink(email, urlOrEditId, dupe, txt) {
 				if (
 					cb
 					&& cb.getElementsByClassName(userjs + "new").length == 0
-					&& (cb = cb.querySelector("input.selectmsg[type='checkbox']"))
+					&& (cb = cb.querySelector("input[name='mids[]'][type='checkbox']"))
 				) {
 					cb.checked = true;
 				}
@@ -217,7 +217,7 @@ function editlink(email, urlOrEditId, dupe, txt) {
 		}
 	}, true);
 	a.setAttribute("href", urlOrEditId.match(/^\d+$/) ? editurl + urlOrEditId : urlOrEditId);
-	a.className = userjs + "new";
+	a.classList.add(userjs + "new");
 	a.setAttribute("target", "_blank");
 	a.style.setProperty("background-color", dupe ? colourdupe : colour);
 	a.appendChild(document.createTextNode(txt ? txt : "Edit #" + urlOrEditId));
