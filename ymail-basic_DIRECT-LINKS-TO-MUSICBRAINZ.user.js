@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2019.7.8
+// @version      2019.7.8.1552
 // @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -40,6 +40,7 @@ var edittypeextractor = /(deleted|merged) by edit #([0-9]+)/;
 var entitiesEditorsExtractorz = "<BR>(?:</div><div dir='ltr'>)?([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR>(?:</div><div dir='ltr'>)?(?:Open edits: )?<a href=\"(https?://musicbrainz\\.org/(?:artist|collection|label|series|user)/[^/]+/edits)(?:/open)?\" target=_blank";
 var idextractor = /by edit #([0-9]+)/;
 var triggerResponseURL = /<input type="hidden" name="mids\[\]" value="([^"]+)"\/>/;
+var emailSenderSelector = "td[data-test-id='sender'] > a";
 var editurl = "//musicbrainz.org/edit/";
 var jiraurl = "//tickets.musicbrainz.org/browse/";
 var emails = document.querySelectorAll("table#messageListContainer > tbody td[data-test-id='subject'] > a");
@@ -52,6 +53,7 @@ if (emails) {
 		var editid = emailtxt.match(editTrigger);
 		var jiraid = emailtxt.match(jiraTrigger);
 		email.parentNode.style.setProperty("line-height", "13px");
+		var emailfrom = getParent(email, "tr").querySelector(emailSenderSelector);
 		if (jiraid) { // An email about a JIRA ticket
 			jiraid = jiraid[1];
 			if (!edits[jiraid]) {
@@ -65,7 +67,6 @@ if (emails) {
 		} else if (editid) { // An email about an edit
 			editid = editid[editid.length - 1];
 			email.replaceChild(document.createTextNode(emailtxt.substring(0, emailtxt.length - editid.length - 2)), email.firstChild);
-			var emailfrom = getParent(email, "tr").querySelector("td[data-test-id='sender'] > a");
 			emailfrom.setAttribute("href", "//musicbrainz.org/user/" + encodeURIComponent(emailfrom.textContent.trim()));
 			emailfrom.setAttribute("target", "_blank");
 			emailfrom.style.setProperty("background-color", colour);
@@ -107,7 +108,7 @@ if (emails) {
 					var susu = res.match(/(deleted|merged) by edit #([0-9]+)/g);
 					var susuemail = emailsubscrs[this.responseText.match(triggerResponseURL)[1]];
 					var susuemailine = getParent(susuemail, "tr");
-					susuemailine.classList.remove("msgnew");
+					susuemailine.classList.remove("u_b"); // mark as read
 					susuemailine.style.setProperty("background-color", "");
 					susuemail.removeChild(susuemail.firstChild);
 					if (susu) {
@@ -166,19 +167,18 @@ if (emails) {
 			xhr.send(null);
 		}
 		if (email.getAttribute("title").match(triggerno)) { // An own no‐voted edit
-			var nonoemailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
-			nonoemailfrom.style.setProperty("background-color", colourloading);
-			nonoemailfrom.replaceChild(loading(), nonoemailfrom.firstChild);
-			emailnovotes[decodeURIComponent(email.getAttribute("href").match(/(?:&|\?)mid=([^&$]+)/)[1])] = email;
+			emailfrom.style.setProperty("background-color", colourloading);
+			emailfrom.replaceChild(loading(), emailfrom.firstChild);
+			emailnovotes[decodeURIComponent(email.getAttribute("href").match(/\/messages\/([^&$]+)\?/)[1])] = email;
 			var xhr = new XMLHttpRequest();
 			xhr.addEventListener("readystatechange", function(event) {
-				if (this.readyState > 2 && this.status < 400 && this.status > 199) {
+				if (this.readyState > 3 && this.status < 400 && this.status > 199) {
 					var nonoemail = this.responseText.match(triggerResponseURL);
 					if (nonoemail && (nonoemail = emailnovotes[this.responseText.match(triggerResponseURL)[1]])) {
 						nonoemail = getParent(nonoemail, "tr");
-						nonoemail.classList.remove("msgnew");
+						nonoemail.classList.remove("u_b"); // mark as read
 						var nono = this.responseText.match(triggernoextractorz);
-						nonoemail = nonoemail.querySelector("tr > td > div > a");
+						nonoemail = nonoemail.querySelector(emailSenderSelector);
 						if (nono) {
 							nonoemail.replaceChild(document.createTextNode(nono[1]), nonoemail.firstChild); // from: xxx
 							nonoemail.style.setProperty("background-color", colournobg);
