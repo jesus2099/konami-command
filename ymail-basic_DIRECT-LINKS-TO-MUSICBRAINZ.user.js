@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2019.7.8.1552
+// @version      2019.7.10
 // @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -37,20 +37,21 @@ if (emailSubjects) {
 		var emailSubject = emailSubjects[i];
 		var emailtxt = emailSubject.getAttribute("title");
 		var editid = emailtxt.match(/^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/);
-		var jiraid = emailtxt.match(/^\[jira\](?: \w+){1,3}: \(([A-Z][A-Z\d]*-\d+)\)/);
+		var jiraIdTitle = emailtxt.match(/^\[MeB JIRA\] \(([A-Z][A-Z\d]*-\d+)\) (.+)$/);
 		emailSubject.parentNode.style.setProperty("line-height", "13px");
 		var emailSender = getParent(emailSubject, "tr").querySelector("td[data-test-id='sender'] > a");
-		if (jiraid) { // An email about a JIRA ticket
-			jiraid = jiraid[1];
+		if (jiraIdTitle) { // An email about a JIRA ticket
+			var jiraId = jiraIdTitle[1];
 			var jiraurl = "//tickets.musicbrainz.org/browse/";
-			if (!edits[jiraid]) {
-				edits[jiraid] = emailSubject;
-				editlink(emailSubject, jiraurl + jiraid, false, jiraid);
+			if (!edits[jiraId]) {
+				edits[jiraId] = emailSubject;
+				editlink(emailSubject, jiraurl + jiraId, false, jiraId);
 			} else {
-				edits[jiraid].style.setProperty("background-color", colourdupe);
+				edits[jiraId].style.setProperty("background-color", colourdupe);
 				emailSubject.style.setProperty("background-color", colourdupe);
-				editlink(emailSubject, jiraurl + jiraid, true, jiraid);
+				editlink(emailSubject, jiraurl + jiraId, true, jiraId);
 			}
+			emailSubject.replaceChild(document.createTextNode(jiraIdTitle[2]), emailSubject.lastChild);
 		} else if (editid) { // An email about an edit (edit note or no vote)
 			editid = editid[editid.length - 1];
 			emailSubject.replaceChild(document.createTextNode(emailtxt.substring(0, emailtxt.length - editid.length - 2)), emailSubject.firstChild);
