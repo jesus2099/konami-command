@@ -43,13 +43,9 @@ if (emailSubjects) {
 		if (jiraIdTitle) { // An email about a JIRA ticket
 			var jiraId = jiraIdTitle[1];
 			var jiraurl = "//tickets.musicbrainz.org/browse/";
+			editlink(emailSubject, jiraurl + jiraId, edits[jiraId], jiraId);
 			if (!edits[jiraId]) {
 				edits[jiraId] = emailSubject;
-				editlink(emailSubject, jiraurl + jiraId, false, jiraId);
-			} else {
-				edits[jiraId].style.setProperty("background-color", colourdupe);
-				emailSubject.style.setProperty("background-color", colourdupe);
-				editlink(emailSubject, jiraurl + jiraId, true, jiraId);
 			}
 			emailSubject.replaceChild(document.createTextNode(jiraIdTitle[2]), emailSubject.lastChild);
 		} else if (editid) { // An email about an edit (edit note or no vote)
@@ -58,13 +54,9 @@ if (emailSubjects) {
 			emailSender.setAttribute("href", "//musicbrainz.org/user/" + encodeURIComponent(emailSender.textContent.trim()));
 			emailSender.setAttribute("target", "_blank");
 			emailSender.style.setProperty("background-color", colour);
+			editlink(emailSubject, editid, edits[editid]);
 			if (!edits[editid]) {
 				edits[editid] = emailSubject;
-				editlink(emailSubject, editid);
-			} else {
-				edits[editid].style.setProperty("background-color", colourdupe);
-				emailSubject.style.setProperty("background-color", colourdupe);
-				editlink(emailSubject, editid, true);
 			}
 			var xhr = new XMLHttpRequest();
 			xhr.emailSubject = emailSubject;
@@ -102,15 +94,9 @@ if (emailSubjects) {
 						for (var i = 0; i < deletedOrMergedEntities.length; i++) {
 							var modid = deletedOrMergedEntities[i].match(/by edit #([0-9]+)/)[1];
 							var type = deletedOrMergedEntities[i].match(/(deleted|merged) by edit #([0-9]+)/)[1];
-							if (edits[modid]) {
-								edits[modid].style.setProperty("background-color", colourdupe);
-								if (deletedOrMergedEntities.length <= 1) {
-									this.emailSubject.style.setProperty("background-color", colourdupe);
-								}
-								editlink(this.emailSubject, modid, true, edittypes[type] + modid).setAttribute("title", type);
-							} else {
+							editlink(this.emailSubject, modid, edits[modid], edittypes[type] + modid).setAttribute("title", type);
+							if (!edits[modid]) {
 								edits[modid] = this.emailSubject;
-								editlink(this.emailSubject, modid, false, edittypes[type] + modid).setAttribute("title", type);
 							}
 						}
 					} else {
@@ -184,13 +170,13 @@ function editlink(emailSubject, urlOrEditId, dupe, txt) {
 	var fragment = document.createDocumentFragment();
 	var a = document.createElement("a");
 	a.addEventListener("click", function(event) {
-		var edits = document.querySelectorAll("table#messageListContainer > tbody a." + userjs + "new[href$='" + this.getAttribute("href").replace(/^(https?:)?\/\/(beta\.)?/g, "") + "']"); // in case of on the fly change by mb-PREFERRED-MBS
-		for (var e = 0; e < edits.length; e++) {
-			edits[e].className = edits[e].classList.replace(userjs + "new", userjs + "read");
-			edits[e].style.setProperty("background-color", colourclicked);
-			edits[e].style.setProperty("text-decoration", "line-through");
+		var sameEditLinks = document.querySelectorAll("table#messageListContainer > tbody a." + userjs + "new[href$='" + this.getAttribute("href").replace(/^(https?:)?\/\/(beta\.)?/g, "") + "']"); // in case of on the fly change by mb-PREFERRED-MBS
+		for (var e = 0; e < sameEditLinks.length; e++) {
+			sameEditLinks[e].className = sameEditLinks[e].classList.replace(userjs + "new", userjs + "read");
+			sameEditLinks[e].style.setProperty("background-color", colourclicked);
+			sameEditLinks[e].style.setProperty("text-decoration", "line-through");
 			if (markReadEditsForDeletion) {
-				var cb = getParent(edits[e], "tr");
+				var cb = getParent(sameEditLinks[e], "tr");
 				if (
 					cb
 					&& cb.getElementsByClassName(userjs + "new").length == 0
@@ -205,6 +191,10 @@ function editlink(emailSubject, urlOrEditId, dupe, txt) {
 	a.classList.add(userjs + "new");
 	a.setAttribute("target", "_blank");
 	a.style.setProperty("background-color", dupe ? colourdupe : colour);
+	if (dupe) {
+		edits[urlOrEditId].style.setProperty("background-color", colourdupe);
+		emailSubject.style.setProperty("background-color", colourdupe);
+	}
 	a.appendChild(document.createTextNode(txt ? txt : "Edit #" + urlOrEditId));
 	fragment.appendChild(a);
 	fragment.appendChild(document.createElement("br"));
