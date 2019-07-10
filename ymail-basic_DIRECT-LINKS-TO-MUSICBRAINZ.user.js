@@ -41,11 +41,10 @@ if (emailSubjects) {
 		emailSubject.parentNode.style.setProperty("line-height", "13px");
 		var emailSender = getParent(emailSubject, "tr").querySelector("td[data-test-id='sender'] > a");
 		if (jiraIdTitle) { // An email about a JIRA ticket
-			var jiraId = jiraIdTitle[1];
-			var jiraurl = "//tickets.musicbrainz.org/browse/";
-			editlink(emailSubject, jiraurl + jiraId, edits[jiraId], jiraId);
-			if (!edits[jiraId]) {
-				edits[jiraId] = emailSubject;
+			var jiraURL = "//tickets.musicbrainz.org/browse/" + jiraIdTitle[1];
+			editlink(emailSubject, jiraURL, edits[jiraURL], jiraIdTitle[1]);
+			if (!edits[jiraURL]) {
+				edits[jiraURL] = emailSubject;
 			}
 			emailSubject.replaceChild(document.createTextNode(jiraIdTitle[2]), emailSubject.lastChild);
 		} else if (editid) { // An email about an edit (edit note or no vote)
