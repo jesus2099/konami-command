@@ -1,0 +1,15 @@
+/* ==UserStyle==
+@name           fb. NO CONNECT NAG
+@namespace      https://github.com/jesus2099/konami-command
+@version        2019.7.12
+@description    Browse Facebook public pages without FB account without log in / connect / sign in nag
+@author         jesus2099
+==/UserStyle== */
+
+@-moz-document domain("facebook.com") {
+
+	#pagelet_growth_expanding_cta {
+		display: none;
+	}
+
+}
