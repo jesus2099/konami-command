@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2019.7.13
+// @version      2019.7.13.1957
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/INSTALL-USER-SCRIPT.user.js
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user css/js auto‐update, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
@@ -72,7 +72,7 @@ var host = {
 		dumbMode: true,
 	},
 };
-var installImage;
+var installIcons = {};
 host = host[self.location.host];
 host.css.files = supportedFileTypes.map(function(fileType) { return host.css.files.replace(/%fileType%/g, fileType) + ":not(.j2installUserScript)"; }).join(", ");
 if (host.dumbMode) {
@@ -95,11 +95,7 @@ function changeStuff() {
 			if (host.css.newIcon) {
 				install.className = host.css.newIcon;
 			} else {
-				if (!installImage) {
-					installImage = document.createElement("img");
-					installImage.setAttribute("src", meta.icon);
-				}
-				install.appendChild(installImage.cloneNode(false));
+				install.appendChild(getInstallIcon(host.files[f].getAttribute("href").match(/(\.[^.]+){2}$/)[0]));
 				install.className = icon.className;
 			}
 			install.setAttribute("title", "Install “" + (host.files[f].getAttribute("title") || host.files[f].getAttribute("href")) + "”");
@@ -123,4 +119,12 @@ function changeStuff() {
 			}
 		}
 	}
+}
+function getInstallIcon(fileExtension) {
+	var iconURL = fileExtension == ".user.js" ? "https://github.com/violentmonkey/violentmonkey/raw/1d911bffd7d4c37f82b5bcdada16f0b79fe0a70a/src/public/images/icon16.png" : fileExtension == ".user.css" ? "https://github.com/openstyles/stylus/raw/c2e83fb3c4dc4d980e07c5ce92e9250af3eb5609/images/icon/16.png" : meta.icon;
+	if (!installIcons[fileExtension]) {
+		installIcons[fileExtension] = document.createElement("img");
+		installIcons[fileExtension].setAttribute("src", iconURL);
+	}
+	return installIcons[fileExtension].cloneNode(false);
 }
