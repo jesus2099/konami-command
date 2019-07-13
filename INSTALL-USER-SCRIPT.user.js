@@ -2,9 +2,9 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2018.7.25
+// @version      2019.7.13
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/INSTALL-USER-SCRIPT.user.js
-// @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts from file lists. This will also allow user script auto‐update in most greasemonkey engines, even if the script author has not set @downloadURL and @updateURL.
+// @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user script auto‐update, even if the script author has not set @downloadURL and @updateURL.
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
 // @compatible   opera(12.18.1872)+violentmonkey      my setup
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
@@ -14,7 +14,7 @@ var meta = {rawmdb: function() {
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2014-11-14
@@ -38,7 +38,7 @@ if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString()
 		} else meta[kv[1]] = kv[2];
 	}
 }
-var supportedFileTypes = [".user.js", ".uc.js", ".uc.xul"];
+var supportedFileTypes = [".user.js", ".uc.js", ".uc.xul", ".user.css"];
 var host = {
 	"bitbucket.org": {
 		css: {
