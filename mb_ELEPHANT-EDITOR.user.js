@@ -19,6 +19,7 @@
 // @since        2011-01-13
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
+/* globals self, addAfter, createTag, getParent, sendEvent */
 // @grant        none
 // @match        *://*.mbsandbox.org/*/add-alias
 // @match        *://*.mbsandbox.org/*/change-quality
@@ -148,7 +149,7 @@ if (content) {
 					if (fs) {
 						fs.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
 					}
-				} 
+				}
 			}
 			notetext.style.setProperty("width", "98%");
 			var removeLabels = ["label-id-ar.edit_note", "label-id-edit_note", "label-id-edit-artist.edit_note", "label-id-edit-label.edit_note", "label-id-edit-recording.edit_note", "label-id-edit-release-group.edit_note", "label-id-edit-url.edit_note", "label-id-edit-work.edit_note"];
