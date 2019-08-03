@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2019.8.2
+// @version      2019.8.3
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -14,12 +14,12 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128868
 // @grant        none
-// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/[^/]+/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/(open_)?edits/
-// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/artist/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/recordings/
-// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/edit/\d+/
-// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/edit/subscribed/
-// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/release/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$)/
-// @include      /^https?://(\w+\.mbsandbox|(test.)?musicbrainz)\.org/search/edits\?/
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/[^/]+/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/(open_)?edits/
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/artist/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/recordings/
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/edit/\d+/
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/edit/subscribed/
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/release/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$)/
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/search/edits\?/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
