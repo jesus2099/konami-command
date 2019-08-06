@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2019.7.10
+// @version      2019.8.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -125,6 +125,14 @@ if (ltitle) {
 	console.error("Local title (/^" + sregex_title + "$/) not found in document.title (" + document.title + ").");
 }
 function mergeRecsStep(_step) {
+	if (!editNote.value || editNote.value.match(/\w{4,}/g).length < 4) {
+		alert("Merging recordings is a destructive edit that is impossible to undo without loosing ISRCs, AcoustIDs, edit histories, etc.\r\n\r\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc.");
+		editNote.style.setProperty("background-color", cNG);
+		infoMerge("Proper edit note missing.", false, true);
+		return;
+	} else {
+		editNote.style.removeProperty("background-color");
+	}
 	var step = _step || 0;
 	var MMR = document.getElementById(MMRid);
 	var statuses = ["adding recs. to merge", "applying merge edit"];
