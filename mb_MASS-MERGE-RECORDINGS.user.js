@@ -125,103 +125,102 @@ if (ltitle) {
 	console.error("Local title (/^" + sregex_title + "$/) not found in document.title (" + document.title + ").");
 }
 function mergeRecsStep(_step) {
-	if (!editNote.value || editNote.value.match(/\w{4,}/g).length < 4) {
+	if (editNote.value && editNote.value.match(/\w{4,}/g).length > 3) {
+		editNote.style.removeProperty("background-color");
+		var step = _step || 0;
+		var MMR = document.getElementById(MMRid);
+		var statuses = ["adding recs. to merge", "applying merge edit"];
+		var buttStatuses = ["Stacking…", "Merging…"];
+		var urls = ["/recording/merge_queue", "/recording/merge"];
+		var params = [
+			"add-to-merge=" + to.value + "&add-to-merge=" + from.value,
+			"merge.merging.0=" + to.value + "&merge.target=" + to.value + "&merge.merging.1=" + from.value
+		];
+		disableInputs([matchMode.sequential, matchMode.title, matchMode.titleAndAC, startpos, mergeStatus]);
+		if (step == 1) {
+			disableInputs([editNote, currentButt, currentButt.parentNode.querySelector("input." + MMRid + "dirbutt")]);
+			params[step] += "&merge.edit_note=";
+			var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
+			if (paramsup != "") paramsup += "\n —\n";
+			paramsup += releaseInfoRow("source", swap.value == "no" ? remoteRelease : localRelease, swap.value == "no" ? recid2trackIndex.remote[from.value] : recid2trackIndex.local[from.value]);
+			paramsup += releaseInfoRow("target", swap.value == "no" ? localRelease : remoteRelease, swap.value == "no" ? recid2trackIndex.local[to.value] : recid2trackIndex.remote[to.value]);
+			paramsup += " —\n";
+			var targetID = parseInt(to.value, 10);
+			var sourceID = parseInt(from.value, 10);
+			if (sourceID > targetID) {
+				paramsup += "👍 '''Targetting oldest [MBID]''' (" + format(to.value) + " ← " + format(from.value) + ")" + "\n";
+			}
+			var locTrack = localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]];
+			var remTrack = remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]];
+			if (locTrack.name == remTrack.name) paramsup += "👍 '''Same track title''' “" + protectEditNoteText(locTrack.name) + "”\n";
+			else if (locTrack.name.toUpperCase() == remTrack.name.toUpperCase()) paramsup += "👍 '''Same track title''' (case insensitive)\n";
+			else if (locTrack.looseName == remTrack.looseName) paramsup += "👍 '''Similar track title''' (loose comparison)\n";
+			if (locTrack.artistCredit == remTrack.artistCreditAsPlainText) paramsup += "👍 '''Same track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
+			else if (locTrack.artistCredit.toUpperCase() == remTrack.artistCreditAsPlainText.toUpperCase()) paramsup += "👍 '''Same track artist credit ([AC])''' (case insensitive)\n";
+			else if (locTrack.looseAC == remTrack.looseAC) paramsup += "👍 '''Similar track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
+			if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
+				var delta = Math.abs(locTrack.length - remTrack.length);
+				if (delta <= safeLengthDelta * 1000) paramsup += "👍 '''" + (delta === 0 ? "Same" : "Very close") + " track times''' " + /*temporary hidden until milliseconds are back(delta === 0 ? "(in milliseconds)" : */ "(" + (time(locTrack.length) == time(remTrack.length) ? time(locTrack.length) : "within " + safeLengthDelta + " seconds: " + time((swap.value == "no" ? locTrack : remTrack).length) + " ← " + time((swap.value == "no" ? remTrack : locTrack).length)) + ")" /*)temporary*/ + "\n";
+			}
+			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “" + protectEditNoteText(localRelease.ac) + "”\n";
+			if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “" + protectEditNoteText(localRelease.title) + "”\n";
+			else if (localRelease.title.toUpperCase() == remoteRelease.title.toUpperCase()) paramsup += "👍 '''Same release title''' (case insensitive)\n";
+			else if (localRelease.looseTitle == remoteRelease.looseTitle) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
+	//		else if (leven(localRelease.looseTitle, remoteRelease.looseTitle)) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
+			if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' (" + MBS + "/release-group/" + localRelease["release-group"] + ")\n";
+			paramsup += " —\n" + meta.n + " (" + meta.v + ") in “" + matchMode.current.value.replace(/^Match unordered /i, "") + "” match mode";
+			if (retry.count > 0) {
+				paramsup += " — '''retry'''" + (retry.count > 1 ? " #" + retry.count : "") + " (" + protectEditNoteText(retry.message) + ")";
+			}
+			params[step] += encodeURIComponent(paramsup);
+		}
+		infoMerge("#" + from.value + " to #" + to.value + " " + statuses[step] + "…");
+		currentButt.setAttribute("value", buttStatuses[step] + " " + (step + 1) + "/2");
+		currentButt.setAttribute("ref", step);
+		var xhr = new XMLHttpRequest();
+		function releaseInfoRow(sourceOrTarget, rel, trackIndex) {
+			return sourceOrTarget + ": " + MBS + "/release/" + rel.id + " #'''" + (trackIndex + 1) + "'''/" + rel.tracks.length + ". “'''" + protectEditNoteText(rel.title) + "'''”" + protectEditNoteText(rel.comment) + " by '''" + protectEditNoteText(rel.ac) + "'''\n";
+		}
+		xhr.onreadystatechange = function(event) {
+			if (this.readyState == 4) {
+				if (to.value === "") {
+					nextButt(false);
+				} else if (this.status == 200) {
+					if (step === 0) {
+						if (
+							this.responseText.indexOf('<form action="' + MBS + '/recording/merge" method="post">') > -1
+							&& this.responseText.indexOf('value="' + from.value + '"') > -1
+							&& this.responseText.indexOf('<a href="/recording/' + from.getAttribute("ref") + '">') > -1
+							&& this.responseText.indexOf('value="' + to.value + '"') > -1
+							&& this.responseText.indexOf('<a href="/recording/' + to.getAttribute("ref") + '">') > -1
+						) {
+							mergeRecsStep(1);
+						} else {
+							tryAgain("Did not queue");
+						}
+					} else if (step === 1) {
+						if (
+							this.responseText.indexOf('<h1><span class="mp"><a href="/recording/' + to.getAttribute("ref") + '">') > -1
+							&& this.responseText.indexOf('href="/recording/merge_queue?add-to-merge=' + to.value + '"') > -1
+						) {
+							nextButt(true);
+						} else {
+							checkMerge("Did not merge");
+						}
+					}
+				} else {
+					checkMerge("Error " + this.status + " “" + this.statusText + "” in step " + (step + 1) + "/2");
+				}
+			}
+		};
+		xhr.open("POST", MBS + urls[step], true);
+		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		setTimeout(function() { xhr.send(params[step]); }, chrono(MBSminimumDelay));
+	} else {
 		alert("Merging recordings is a destructive edit that is impossible to undo without loosing ISRCs, AcoustIDs, edit histories, etc.\r\n\r\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc.");
 		editNote.style.setProperty("background-color", cNG);
 		infoMerge("Proper edit note missing.", false, true);
-		return;
-	} else {
-		editNote.style.removeProperty("background-color");
 	}
-	var step = _step || 0;
-	var MMR = document.getElementById(MMRid);
-	var statuses = ["adding recs. to merge", "applying merge edit"];
-	var buttStatuses = ["Stacking…", "Merging…"];
-	var urls = ["/recording/merge_queue", "/recording/merge"];
-	var params = [
-		"add-to-merge=" + to.value + "&add-to-merge=" + from.value,
-		"merge.merging.0=" + to.value + "&merge.target=" + to.value + "&merge.merging.1=" + from.value
-	];
-	disableInputs([matchMode.sequential, matchMode.title, matchMode.titleAndAC, startpos, mergeStatus]);
-	if (step == 1) {
-		disableInputs([editNote, currentButt, currentButt.parentNode.querySelector("input." + MMRid + "dirbutt")]);
-		params[step] += "&merge.edit_note=";
-		var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
-		if (paramsup != "") paramsup += "\n —\n";
-		paramsup += releaseInfoRow("source", swap.value == "no" ? remoteRelease : localRelease, swap.value == "no" ? recid2trackIndex.remote[from.value] : recid2trackIndex.local[from.value]);
-		paramsup += releaseInfoRow("target", swap.value == "no" ? localRelease : remoteRelease, swap.value == "no" ? recid2trackIndex.local[to.value] : recid2trackIndex.remote[to.value]);
-		paramsup += " —\n";
-		var targetID = parseInt(to.value, 10);
-		var sourceID = parseInt(from.value, 10);
-		if (sourceID > targetID) {
-			paramsup += "👍 '''Targetting oldest [MBID]''' (" + format(to.value) + " ← " + format(from.value) + ")" + "\n";
-		}
-		var locTrack = localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]];
-		var remTrack = remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]];
-		if (locTrack.name == remTrack.name) paramsup += "👍 '''Same track title''' “" + protectEditNoteText(locTrack.name) + "”\n";
-		else if (locTrack.name.toUpperCase() == remTrack.name.toUpperCase()) paramsup += "👍 '''Same track title''' (case insensitive)\n";
-		else if (locTrack.looseName == remTrack.looseName) paramsup += "👍 '''Similar track title''' (loose comparison)\n";
-		if (locTrack.artistCredit == remTrack.artistCreditAsPlainText) paramsup += "👍 '''Same track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
-		else if (locTrack.artistCredit.toUpperCase() == remTrack.artistCreditAsPlainText.toUpperCase()) paramsup += "👍 '''Same track artist credit ([AC])''' (case insensitive)\n";
-		else if (locTrack.looseAC == remTrack.looseAC) paramsup += "👍 '''Similar track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
-		if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
-			var delta = Math.abs(locTrack.length - remTrack.length);
-			if (delta <= safeLengthDelta * 1000) paramsup += "👍 '''" + (delta === 0 ? "Same" : "Very close") + " track times''' " + /*temporary hidden until milliseconds are back(delta === 0 ? "(in milliseconds)" : */ "(" + (time(locTrack.length) == time(remTrack.length) ? time(locTrack.length) : "within " + safeLengthDelta + " seconds: " + time((swap.value == "no" ? locTrack : remTrack).length) + " ← " + time((swap.value == "no" ? remTrack : locTrack).length)) + ")" /*)temporary*/ + "\n";
-		}
-		if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “" + protectEditNoteText(localRelease.ac) + "”\n";
-		if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “" + protectEditNoteText(localRelease.title) + "”\n";
-		else if (localRelease.title.toUpperCase() == remoteRelease.title.toUpperCase()) paramsup += "👍 '''Same release title''' (case insensitive)\n";
-		else if (localRelease.looseTitle == remoteRelease.looseTitle) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
-//		else if (leven(localRelease.looseTitle, remoteRelease.looseTitle)) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
-		if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' (" + MBS + "/release-group/" + localRelease["release-group"] + ")\n";
-		paramsup += " —\n" + meta.n + " (" + meta.v + ") in “" + matchMode.current.value.replace(/^Match unordered /i, "") + "” match mode";
-		if (retry.count > 0) {
-			paramsup += " — '''retry'''" + (retry.count > 1 ? " #" + retry.count : "") + " (" + protectEditNoteText(retry.message) + ")";
-		}
-		params[step] += encodeURIComponent(paramsup);
-	}
-	infoMerge("#" + from.value + " to #" + to.value + " " + statuses[step] + "…");
-	currentButt.setAttribute("value", buttStatuses[step] + " " + (step + 1) + "/2");
-	currentButt.setAttribute("ref", step);
-	var xhr = new XMLHttpRequest();
-	function releaseInfoRow(sourceOrTarget, rel, trackIndex) {
-		return sourceOrTarget + ": " + MBS + "/release/" + rel.id + " #'''" + (trackIndex + 1) + "'''/" + rel.tracks.length + ". “'''" + protectEditNoteText(rel.title) + "'''”" + protectEditNoteText(rel.comment) + " by '''" + protectEditNoteText(rel.ac) + "'''\n";
-	}
-	xhr.onreadystatechange = function(event) {
-		if (this.readyState == 4) {
-			if (to.value === "") {
-				nextButt(false);
-			} else if (this.status == 200) {
-				if (step === 0) {
-					if (
-						this.responseText.indexOf('<form action="' + MBS + '/recording/merge" method="post">') > -1
-						&& this.responseText.indexOf('value="' + from.value + '"') > -1
-						&& this.responseText.indexOf('<a href="/recording/' + from.getAttribute("ref") + '">') > -1
-						&& this.responseText.indexOf('value="' + to.value + '"') > -1
-						&& this.responseText.indexOf('<a href="/recording/' + to.getAttribute("ref") + '">') > -1
-					) {
-						mergeRecsStep(1);
-					} else {
-						tryAgain("Did not queue");
-					}
-				} else if (step === 1) {
-					if (
-						this.responseText.indexOf('<h1><span class="mp"><a href="/recording/' + to.getAttribute("ref") + '">') > -1
-						&& this.responseText.indexOf('href="/recording/merge_queue?add-to-merge=' + to.value + '"') > -1
-					) {
-						nextButt(true);
-					} else {
-						checkMerge("Did not merge");
-					}
-				}
-			} else {
-				checkMerge("Error " + this.status + " “" + this.statusText + "” in step " + (step + 1) + "/2");
-			}
-		}
-	};
-	xhr.open("POST", MBS + urls[step], true);
-	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-	setTimeout(function() { xhr.send(params[step]); }, chrono(MBSminimumDelay));
 }
 function checkMerge(errorText) {
 	retry.checking = true;
