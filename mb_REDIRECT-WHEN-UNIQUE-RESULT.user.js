@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2019.8.8
+// @version      2019.8.8.1706
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @homepage     http://userscripts-mirror.org/scripts/show/106156
 // @namespace    https://github.com/jesus2099/konami-command
@@ -34,7 +34,7 @@ if (document.getElementById("headerid-query")) {
 			var exactMatchURL;
 			var exactMatchesCount = 0;
 			for (var i = 0; i < rows.length; i++) {
-				if (rows[i].getAttribute("data-score") == "100") {
+				if (parseInt(rows[i].getAttribute("data-score"), 10) > 90) {
 					mark(rows[i]);
 					if (exactMatchesCount++ == 0) {
 						exactMatchURL = rows[i].querySelector("a > bdi").parentNode.getAttribute("href");
