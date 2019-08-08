@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb: Redirect when only 1 result and/or unique 100% scored result
-// @version      2018.8.16
+// @version      2019.8.8
 // @description  In (test.)musicbrainz.org
 // @namespace    http://userscripts.org/scripts/show/106156
 // @author       nikki (stars 2011-06-30) then jesus2099
@@ -21,11 +21,12 @@ var textShadowMarking = "1px 2px 2px #cc6";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 if (document.getElementById("headerid-query")) {
 	var rows = document.querySelector("div#content tbody");
-	if (rows) { 
+	if (rows) {
+		onlyWhenNoReferrer = !onlyWhenNoReferrer || (onlyWhenNoReferrer && (document.referrer == "" || document.referrer.match(/^https?:\/\/duckduckgo\.com/)));
 		rows = rows.getElementsByTagName("tr");
 		if (rows.length == 1 && redirOnUniqueMatch) {
 			mark(rows[0]);
-			if (!onlyWhenNoReferrer || (onlyWhenNoReferrer && document.referrer == "")) {
+			if (onlyWhenNoReferrer) {
 				go(rows[0].querySelector("a > bdi").parentNode.getAttribute("href"));
 			}
 		} else if (redirOnUniqueExactMatch) {
@@ -39,7 +40,7 @@ if (document.getElementById("headerid-query")) {
 					}
 				}
 			}
-			if (exactMatchesCount == 1 && (!onlyWhenNoReferrer || (onlyWhenNoReferrer && document.referrer == ""))) {
+			if (exactMatchesCount == 1 && onlyWhenNoReferrer) {
 				go(exactMatchURL);
 			}
 		}
