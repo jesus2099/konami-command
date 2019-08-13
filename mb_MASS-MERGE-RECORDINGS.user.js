@@ -217,7 +217,7 @@ function mergeRecsStep(_step) {
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		setTimeout(function() { xhr.send(params[step]); }, chrono(MBSminimumDelay));
 	} else {
-		alert("Merging recordings is a destructive edit that is impossible to undo without loosing ISRCs, AcoustIDs, edit histories, etc.\r\n\r\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc.");
+		alert("Merging recordings is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\r\n\r\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc.");
 		editNote.style.setProperty("background-color", cNG);
 		infoMerge("Proper edit note missing.", false, true);
 	}
