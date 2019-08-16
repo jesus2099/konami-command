@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         AMZ. shrink product links and direct link to full size pictures
-// @version      2016.6.15
+// @version      2019.8.16
 // @description  Amazon. Shows links to full size images. Shrinks product and search URLs. Prevents from opening new windows in amazn.jp searches.
 // @namespace    https://userscripts.org/139394
 // @author       PATATE12 aka. jesus2099/shamo
@@ -25,7 +25,7 @@ var amzn_re = "https?://(?:www\.)?amazon\.(ca|cn|co\.jp|co\.uk|com|de|es|fr|it)"
 function shrinkASINurl(url, extreme) {
 	var ret = false;
 	if (split = url.match(new RegExp("\u000a*"+amzn_re+".*/(?:dp|exec/obidos/ASIN|gp/product)/([A-Z0-9]{10}).*\u000a*", "i"))) {
-		ret = "http://www.amazon."+split[1]+"/dp/"+split[2];
+		ret = "https://www.amazon."+split[1]+"/dp/"+split[2];
 	}
 	if (ret && extreme) { ret = extremeShrinkUrl(ret); }
 	if (ret && ret != url) { return ret; }
