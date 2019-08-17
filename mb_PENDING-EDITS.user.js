@@ -1,72 +1,36 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2018.7.27
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PENDING-EDITS.user.js
+// @version      2019.8.17
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
-// @homepage     http://userscripts-mirror.org/scripts/show/42102
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PENDING-EDITS.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PENDING-EDITS.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2009-02-09
+// @since        2009-02-09; http://userscripts-mirror.org/scripts/show/42102
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
-// @match        *://*.mbsandbox.org/area/*
-// @match        *://*.mbsandbox.org/artist/*
-// @match        *://*.mbsandbox.org/collection/*
-// @match        *://*.mbsandbox.org/event/*
-// @match        *://*.mbsandbox.org/instrument/*
-// @match        *://*.mbsandbox.org/label/*
-// @match        *://*.mbsandbox.org/place/*
-// @match        *://*.mbsandbox.org/recording/*
-// @match        *://*.mbsandbox.org/release/*
-// @match        *://*.mbsandbox.org/release-group/*
-// @match        *://*.mbsandbox.org/series/*
-// @match        *://*.mbsandbox.org/url/*
-// @match        *://*.mbsandbox.org/work/*
-// @match        *://*.musicbrainz.org/area/*
-// @match        *://*.musicbrainz.org/artist/*
-// @match        *://*.musicbrainz.org/collection/*
-// @match        *://*.musicbrainz.org/event/*
-// @match        *://*.musicbrainz.org/instrument/*
-// @match        *://*.musicbrainz.org/label/*
-// @match        *://*.musicbrainz.org/place/*
-// @match        *://*.musicbrainz.org/recording/*
-// @match        *://*.musicbrainz.org/release/*
-// @match        *://*.musicbrainz.org/release-group/*
-// @match        *://*.musicbrainz.org/series/*
-// @match        *://*.musicbrainz.org/url/*
-// @match        *://*.musicbrainz.org/work/*
+// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/[^/]+\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-/* START OF CONFIGURATION - --- - --- - --- - */
-/* true: show additional artist "editing history" and "open edits" links on some non artist pages.
-     It will add other request(s) to MB server, this is why it is an option. */
-var addArtistLinks = true;
-/* END OF CONFIGURATION - --- - --- - --- - */
 // “const” NG in Opera 12 at least
-var SCRIPT_KEY = "jesus2099userjs42102";//linked in mb_MASS-MERGE-RECORDINGS.user.js
+var SCRIPT_KEY = "jesus2099PendingEdits"; // linked in mb_MASS-MERGE-RECORDINGS.user.js
 var EDITS_PER_PAGE = 100;
 var MBS = self.location.protocol + "//" + self.location.host;
-var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+var RE_GUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 var loc, pageEntity, checked = [], xhrPendingEdits = {};
 var account = document.querySelector("div.header li.account a[href^='/user/']");
-//EDITING HISTORY
+// EDITING HISTORY
 if (
 	account
 	&& (account = decodeURIComponent(account.getAttribute("href").match(/[^/]+$/)))
 	&& document.querySelector("div#sidebar")
-	&& (loc = self.location.pathname.match(new RegExp("^/(area|artist|collection|event|instrument|label|place|release-group|release|recording|series|work|url)/(" + RE_GUID + ")")))
+	&& (loc = self.location.pathname.match(new RegExp("^/([^/]+)/(" + RE_GUID + ")")))
 	&& (pageEntity = document.querySelector("div#content > div > h1 a"))
 	&& (pageEntity = a2obj(pageEntity))
 ) {
@@ -75,25 +39,25 @@ if (
 		pageEntity.ul = getParent(pageEntity.editinghistory, "ul");
 	} else {
 		pageEntity.ul = document.querySelector("div#sidebar ul.links");
-		pageEntity.editinghistory = createLink(pageEntity, "edits");//reverts MBS-57 (Remove “normal artist” functionality from Various Artists) drawback
+		pageEntity.editinghistory = createLink(pageEntity, "edits"); // reverts MBS-57 (Remove “normal artist” functionality from Various Artists) drawback
 	}
 	pageEntity.li = getParent(pageEntity.editinghistory, "li");
-//OPEN EDITS
+// OPEN EDITS
 	pageEntity.openedits = document.querySelector("div#sidebar a[href$='" + pageEntity.base + "/open_edits']");
 	if (pageEntity.openedits) {
-		pageEntity.openedits.removeAttribute("title");//removes bogus tooltip (artist disambiguation or swapped sort name) that is masking our useful tooltip
-		if (pageEntity.openedits.parentNode.tagName == "LI") {//fixes MBS-2298 (“Open edits” link should share same styling as pending edit items)
+		pageEntity.openedits.removeAttribute("title"); // removes bogus tooltip (artist disambiguation or swapped sort name) that is masking our useful tooltip
+		if (pageEntity.openedits.parentNode.tagName == "LI") { // fixes MBS-2298 (“Open edits” link should share same styling as pending edit items)
 			var pendingEditsMarkedLink = createTag("span", {a: {class: "mp"}});
 			pageEntity.openedits.parentNode.replaceChild(pendingEditsMarkedLink.appendChild(pageEntity.openedits.cloneNode(true)).parentNode, pageEntity.openedits);
-			pageEntity.openedits = pendingEditsMarkedLink.firstChild;//restore node parental context
+			pageEntity.openedits = pendingEditsMarkedLink.firstChild; // restore node parental context
 		}
 	} else {
-		pageEntity.openedits = createLink(pageEntity, "open_edits");//fixes MBS-3386 (“Open edits” link not always displayed)
+		pageEntity.openedits = createLink(pageEntity, "open_edits"); // fixes MBS-3386 (“Open edits” link not always displayed)
 	}
 	checked.push(pageEntity.base);
 	checkOpenEdits(pageEntity);
-//ASSOCIATED ARTIST LINKS
-	if (addArtistLinks && !/(area|artist|collection|label)/.test(loc[1])) {
+// ASSOCIATED ARTIST LINKS
+	if (!/(area|artist|collection|label)/.test(loc[1])) {
 		var artists;
 		switch (loc[1]) {
 			case "release-group":
@@ -126,7 +90,7 @@ function createLink(entity, historyType, associatedArtist) {
 	var currentEntity = associatedArtist || entity;
 	var linkLabel = (historyType == "edits" ? "editing\u00a0history" : "open\u00a0edits");
 	linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2, offset, string) { return g1.toUpperCase() + g2; });
-	var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel)));//“span.(""|"mp")” linked in mb_MASS-MERGE-RECORDINGS.user.js
+	var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel))); // “span.(""|"mp")” linked in mb_MASS-MERGE-RECORDINGS.user.js
 	if (associatedArtist) {
 		addAfter(newLink, entity.li);
 	} else if (!associatedArtist && historyType == "edits") {
@@ -139,10 +103,10 @@ function createLink(entity, historyType, associatedArtist) {
 }
 function checkOpenEdits(obj) {
 	var smp = getParent(obj.openedits, "li").firstChild;
-	var count = smp.querySelector("span." + SCRIPT_KEY + "count");
+	var count = smp.querySelector("span." + SCRIPT_KEY + "Count");
 	if (!count) {
 		smp.appendChild(document.createTextNode("\u00a0("));
-		smp.appendChild(createTag("span", {a: {class: SCRIPT_KEY + "count"}}, createTag("img", {a: {alt: "⌛ loading…", src: "/static/images/icons/loading.gif", height: self.getComputedStyle(smp).getPropertyValue("font-size")}})));//“SCRIPT_KEY + "count"” linked in mb_MASS-MERGE-RECORDINGS.user.js
+		smp.appendChild(createTag("span", {a: {class: SCRIPT_KEY + "Count"}}, createTag("img", {a: {alt: "⌛ loading…", src: "/static/images/icons/loading.gif", height: self.getComputedStyle(smp).getPropertyValue("font-size")}}))); // “SCRIPT_KEY + "Count"” linked in mb_MASS-MERGE-RECORDINGS.user.js
 		smp.appendChild(document.createTextNode(")"));
 	}
 	xhrPendingEdits[obj.base] = {
@@ -185,7 +149,7 @@ function updateLink(obj, pecount, details, more) {
 	var countText;
 	var tooltip;
 	var li = getParent(obj.openedits, "li");
-	var count = li.querySelector("span." + SCRIPT_KEY + "count");
+	var count = li.querySelector("span." + SCRIPT_KEY + "Count");
 	if (typeof pecount == "number") {
 		countText = pecount;
 		if (more) countText += "+";
@@ -220,8 +184,8 @@ function updateLink(obj, pecount, details, more) {
 				tooltip = titarray.join("\r\n");
 				var expanded = "▼";
 				var collapsed = "◀";
-				var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "pendingEditLists") != collapsed);
-				var ul = createTag("ul", {a: {class: SCRIPT_KEY + "editlist"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
+				var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
+				var ul = createTag("ul", {a: {class: SCRIPT_KEY + "EditList"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
 				for (var e = 0; e < titarray.length; e++) {
 					var edit1type2editor3count = titarray[e].match(/^(?:- )?([^\(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
 					var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
@@ -239,7 +203,7 @@ function updateLink(obj, pecount, details, more) {
 					tooltip += "\r\n- …";
 					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
 				}
-				var help = createTag("span", {a: {class: SCRIPT_KEY + "help"}, s: {display: expandEditLists ? "inline" : "none"}});
+				var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
 				if (titarray.length > 1) {
 					tooltip += "\r\n \r\n(oldest edit on bottom)";
 					if (obj != pageEntity) {
@@ -249,26 +213,26 @@ function updateLink(obj, pecount, details, more) {
 				}
 				li.appendChild(help);
 				li.appendChild(ul);
-				li.insertBefore(createTag("a", {a: {class: SCRIPT_KEY + "toggle"}, s: {position: "absolute", right: "4px"}, e: {click: function(event) {
+				li.insertBefore(createTag("a", {a: {class: SCRIPT_KEY + "Toggle"}, s: {position: "absolute", right: "4px"}, e: {click: function(event) {
 					var collapse = (this.textContent == expanded);
-					for (var options = document.querySelectorAll("ul." + SCRIPT_KEY + "editlist, span." + SCRIPT_KEY + "help"), o = 0; o < options.length; o++) {
+					for (var options = document.querySelectorAll("ul." + SCRIPT_KEY + "EditList, span." + SCRIPT_KEY + "Help"), o = 0; o < options.length; o++) {
 						options[o].style.setProperty("display", collapse ? "none" : (options[o].tagName == "UL" ? "block" : "inline"));
 					}
-					for (var toggles = document.querySelectorAll("a." + SCRIPT_KEY + "toggle"), t = 0; t < toggles.length; t++) {
+					for (var toggles = document.querySelectorAll("a." + SCRIPT_KEY + "Toggle"), t = 0; t < toggles.length; t++) {
 						replaceChildren(document.createTextNode(collapse ? collapsed : expanded), toggles[t]);
 					}
-					localStorage.setItem(SCRIPT_KEY + "pendingEditLists", collapse ? collapsed : expanded);
+					localStorage.setItem(SCRIPT_KEY + "PendingEditLists", collapse ? collapsed : expanded);
 				}}}, expandEditLists ? expanded : collapsed), li.firstChild);
 			}
 		}
 	} else {
 		countText = pecount.status;
 		tooltip = pecount.responseText;
-		count.style.setProperty("background-color", "pink");//“pink” linked in mb_MASS-MERGE-RECORDINGS.user.js
+		count.style.setProperty("background-color", "pink"); // “pink” linked in mb_MASS-MERGE-RECORDINGS.user.js
 	}
 	count.replaceChild(document.createTextNode(countText), count.firstChild);//“countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
 	if (tooltip) {
-		obj.openedits.setAttribute("title", tooltip);//linked in mb_MASS-MERGE-RECORDINGS.user.js
+		obj.openedits.setAttribute("title", tooltip); // linked in mb_MASS-MERGE-RECORDINGS.user.js
 	}
 }
 function mp(o, set) {
@@ -282,8 +246,8 @@ function mp(o, set) {
 			if (mp(o)) {
 				li.firstChild.classList.remove("mp");
 			}
-			o.style.setProperty("text-decoration", "line-through");//linked in mb_MASS-MERGE-RECORDINGS.user.js
-			li.style.setProperty("opacity", ".5");//linked in mb_MASS-MERGE-RECORDINGS.user.js
+			o.style.setProperty("text-decoration", "line-through"); // linked in mb_MASS-MERGE-RECORDINGS.user.js
+			li.style.setProperty("opacity", ".5"); // linked in mb_MASS-MERGE-RECORDINGS.user.js
 		}
 	}
 }
@@ -315,21 +279,21 @@ function workMainArtists() {
 	}
 	var mainArtists = [];
 	var max = 0;
-	//find most frequent performer(s)
+	// find most frequent performer(s)
 	for (var href in groupedPerformers) if (groupedPerformers.hasOwnProperty(href)) {
 		if (groupedPerformers[href].length > max) {
 			max = groupedPerformers[href].length;
 			mainArtists = [groupedPerformers[href][0]];
 		} else if (groupedPerformers[href].length == max) {
-			//take first ex‐æquo artist(s) too
+			// take first ex‐æquo artist(s) too
 			mainArtists.push(groupedPerformers[href][0]);
 		}
 	}
-	//take all singer/song‐writers; take all writers if no performers
+	// take all singer/song‐writers; take all writers if no performers
 	for (var href in groupedWriters) if (groupedWriters.hasOwnProperty(href) && (groupedPerformers[href] || performers.length < 1)) {
 		mainArtists.push(groupedWriters[href][0]);
 	}
-	//get artist main names whenever possible
+	// get artist main names whenever possible
 	for (var f = 0; f < mainArtists.length; f++) {
 		var noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + mainArtists[f].getAttribute("href") + "']");
 		mainArtists[f] = noNameVariationArtist || mainArtists[f];
