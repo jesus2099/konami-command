@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2019.8.7
+// @version      2019.8.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @homepage     http://userscripts-mirror.org/scripts/show/120382
@@ -307,7 +307,7 @@ function cleanTrack(track, editID, retryCount) {
 		if (editID) {
 			mp(track.tr.querySelector(css_track), true);
 			var noPendingOpenEdits = document.querySelector("div#sidebar :not(.mp) > a[href='/release/" + localRelease.id + "/open_edits']");
-			var mb_PENDING_EDITS = document.querySelectorAll("div#sidebar .jesus2099userjs42102count");
+			var mb_PENDING_EDITS = document.querySelectorAll("div#sidebar .jesus2099PendingEditsCount");
 			for (var counts = 0; counts < mb_PENDING_EDITS.length; counts++) {
 				var currentCount = mb_PENDING_EDITS[counts].textContent.trim();
 				if ((currentCount = currentCount.match(/^\d+$/)) && mb_PENDING_EDITS[counts].style.getPropertyValue("background-color") != "pink") {
