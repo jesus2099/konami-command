@@ -23,24 +23,26 @@ var SCRIPT_KEY = "jesus2099PendingEdits"; // linked in mb_MASS-MERGE-RECORDINGS.
 var EDITS_PER_PAGE = 100;
 var MBS = self.location.protocol + "//" + self.location.host;
 var RE_GUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
-var loc, pageEntity, checked = [], xhrPendingEdits = {};
+var pageEntity, checked = [], xhrPendingEdits = {};
 var account = document.querySelector("div.header li.account a[href^='/user/']");
 // EDITING HISTORY
 if (
 	account
 	&& (account = decodeURIComponent(account.getAttribute("href").match(/[^/]+$/)))
 	&& document.querySelector("div#sidebar")
-	&& (loc = self.location.pathname.match(new RegExp("^/([^/]+)/(" + RE_GUID + ")")))
 	&& (pageEntity = document.querySelector("div#content > div > h1 a"))
 	&& (pageEntity = a2obj(pageEntity))
+	&& (pageEntity.type = self.location.pathname.match(new RegExp("^/([^/]+)/(" + RE_GUID + ")")))
+	&& (pageEntity.type = pageEntity.type[1].replace("-", "_"))
 ) {
 	pageEntity.editinghistory = document.querySelector("div#sidebar ul.links a[href$='" + pageEntity.base + "/edits']");
 	if (pageEntity.editinghistory) {
 		pageEntity.ul = getParent(pageEntity.editinghistory, "ul");
 	} else {
 		pageEntity.ul = document.querySelector("div#sidebar ul.links");
-		pageEntity.editinghistory = createLink(pageEntity, "edits"); // reverts MBS-57 (Remove “normal artist” functionality from Various Artists) drawback
+		pageEntity.editinghistory = createLink("edits"); // reverts MBS-57 (Remove “normal artist” functionality from Various Artists) drawback
 	}
+	appendRefineSearchFormLink(pageEntity.editinghistory);
 	pageEntity.li = getParent(pageEntity.editinghistory, "li");
 // OPEN EDITS
 	pageEntity.openedits = document.querySelector("div#sidebar a[href$='" + pageEntity.base + "/open_edits']");
@@ -52,15 +54,16 @@ if (
 			pageEntity.openedits = pendingEditsMarkedLink.firstChild; // restore node parental context
 		}
 	} else {
-		pageEntity.openedits = createLink(pageEntity, "open_edits"); // fixes MBS-3386 (“Open edits” link not always displayed)
+		pageEntity.openedits = createLink("open_edits"); // fixes MBS-3386 (“Open edits” link not always displayed)
 	}
+	appendRefineSearchFormLink(pageEntity.openedits);
 	checked.push(pageEntity.base);
 	checkOpenEdits(pageEntity);
 // ASSOCIATED ARTIST LINKS
-	if (!/(area|artist|collection|label)/.test(loc[1])) {
+	if (!/(area|artist|collection|label)/.test(pageEntity.type)) {
 		var artists;
-		switch (loc[1]) {
-			case "release-group":
+		switch (pageEntity.type) {
+			case "release_group":
 			case "release":
 			case "recording":
 				artists = document.querySelectorAll("p.subheader a[href^='/artist/']");
@@ -77,8 +80,8 @@ if (
 				var art = a2obj(artists[arti]);
 				if (checked.indexOf(art.base) < 0) {
 					checked.push(art.base);
-					art.editinghistory = createLink(pageEntity, "edits", art);
-					art.openedits = createLink(pageEntity, "open_edits", art);
+					art.editinghistory = createLink("edits", art);
+					art.openedits = createLink("open_edits", art);
 					getParent(art.openedits, "li").classList.add("separator");
 					checkOpenEdits(art);
 				}
@@ -86,20 +89,33 @@ if (
 		}
 	}
 }
-function createLink(entity, historyType, associatedArtist) {
-	var currentEntity = associatedArtist || entity;
+function createLink(historyType, associatedArtist) {
+	var currentEntity = associatedArtist || pageEntity;
 	var linkLabel = (historyType == "edits" ? "editing\u00a0history" : "open\u00a0edits");
 	linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2, offset, string) { return g1.toUpperCase() + g2; });
 	var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel))); // “span.(""|"mp")” linked in mb_MASS-MERGE-RECORDINGS.user.js
 	if (associatedArtist) {
-		addAfter(newLink, entity.li);
+		addAfter(newLink, pageEntity.li);
 	} else if (!associatedArtist && historyType == "edits") {
 		newLink.classList.add("separator");
-		entity.ul.appendChild(newLink);
+		pageEntity.ul.appendChild(newLink);
 	} else {
-		entity.ul.insertBefore(newLink, entity.li);
+		pageEntity.ul.insertBefore(newLink, pageEntity.li);
 	}
 	return newLink.firstChild.firstChild;
+}
+function appendRefineSearchFormLink(baseEditLink) {
+	pageEntity.id = document.querySelector("div#sidebar a[href^='/rating/rate/?entity_type=" + pageEntity.type + "'], div#sidebar a[href*='/merge_queue?add-to-merge='], div#sidebar a[href^='/collection/create?']");
+	if (pageEntity.id) {
+		pageEntity.id = pageEntity.id.getAttribute("href").match(/=(\d+)/);
+		if (pageEntity.id) {
+			var row = getParent(baseEditLink, "li")
+			pageEntity.id = pageEntity.id[1];
+			row.appendChild(document.createTextNode(" ("));
+			row.appendChild(createTag("a", {a: {href: "/search/edits?conditions.1.field=" + pageEntity.type + "&conditions.1.operator=%3D&conditions.1.name=" + encodeURIComponent(pageEntity.name) + "&conditions.1.args.0=" + pageEntity.id + "&form_only=yes" + (baseEditLink == pageEntity.openedits ? "&conditions.0.field=status&conditions.0.operator=%3D&conditions.0.args=1" : "")}}, "refine"));
+			row.appendChild(document.createTextNode(")"));
+		}
+	}
 }
 function checkOpenEdits(obj) {
 	var smp = getParent(obj.openedits, "li").firstChild;
@@ -206,9 +222,7 @@ function updateLink(obj, pecount, details, more) {
 				var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
 				if (titarray.length > 1) {
 					tooltip += "\r\n \r\n(oldest edit on bottom)";
-					if (obj != pageEntity) {
-						help.appendChild(document.createElement("br"));
-					}
+					help.appendChild(document.createElement("br"));
 					help.appendChild(document.createTextNode(" newest edit on top"));
 				}
 				li.appendChild(help);
