@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2018.4.4
+// @version      2019.8.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @homepage     http://userscripts-mirror.org/scripts/show/126380
@@ -172,7 +172,7 @@ if (cat) {
 	if (cat == "release" && (releaseID = self.location.pathname.match(new RegExp(strMBID)))) {
 		releaseID = releaseID[0];
 		var mainReleasePage = self.location.pathname.match(new RegExp("^/release/" + strMBID + "$"));
-		var colls = document.querySelectorAll("div#sidebar a[href*='/own_collection/add?release='], div#sidebar a[href*='/own_collection/remove?release=']");
+		var colls = document.querySelectorAll("div#sidebar a[href*='/collection_collaborator/add?release='], div#sidebar a[href*='/collection_collaborator/remove?release=']");
 		for (var coll = 0; coll < colls.length; coll++) {
 			if (collectionsID.indexOf(colls[coll].getAttribute("href").match(new RegExp(strMBID))) > -1) {
 				if (mainReleasePage) {
@@ -183,7 +183,7 @@ if (cat) {
 			}
 		}
 		if (mainReleasePage) {
-			var lili = document.querySelector("div#sidebar > h2.collections + ul.links");
+			var lili = document.querySelector("div#sidebar > h2.collections ~ ul.links");
 			if (lili) {
 				var buttxt = " this release to your local collection highlighter,\r\nwithout changing its status among you MB collection(s)";
 				lili = lili.insertBefore(document.createElement("li"), lili.firstChild);
