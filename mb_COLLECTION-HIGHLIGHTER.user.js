@@ -53,7 +53,7 @@ if (cat) {
 	var highlightColour = "purple";
 	var highlightInEditNotes = false;
 	var skipArtists = "89ad4ac3-39f7-470e-963a-56509c546377"; /*put artist GUID separated by space that you want to skip, example here it’s VA*/
-	var MBWSRate = 1000;
+	var MBWSRate = 999;
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var prefix = "collectionHighlighter";
 	var DEBUG = false;
@@ -79,6 +79,7 @@ if (cat) {
 	var stuff, collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
 	var strType = "release-group|recording|label|artist|work";
 	var strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+	var collectionLoadingStartDate;
 	cat = cat[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
 	debug("CAT: " + cat);
 // ############################################################################
@@ -360,7 +361,7 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 						modal(true, concat([createTag("b", {}, stuff["release"].ids.length + " release" + (stuff["release"].ids.length == 1 ? "" : "s")), " saved… "]));
 						modal(true, "OK.", 2);
 						retry = 0;
-						setTimeout(function() { fetchReleasesStuff(); }, chrono(MBWSRate));
+						setTimeout(function() { collectionLoadingStartDate = Date.now(); fetchReleasesStuff(); }, chrono(MBWSRate));
 					} else {
 						modal(true, "No new releases.", 2);
 						end(true);
@@ -742,6 +743,7 @@ function modal(show, txt, brs, gauge) {
 	}
 	if (show && obj && txt) {
 		if (gauge) {
+			// gauge[0] stands for processed releases, gauge[1] stands for remaining releases
 			var pc = Math.floor(100 * gauge[0] / gauge[1]);
 			if (pc) {
 				var gau = obj.firstChild;
@@ -751,7 +753,9 @@ function modal(show, txt, brs, gauge) {
 					gau.style.setProperty("display", "block");
 				}
 				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge[0] / gauge[1]) + "px");
-				gau.lastChild.replaceChild(document.createTextNode(gauge[0] + "/" + gauge[1] + " (" + pc + "%) approx. remaining " + sInt2msStr(Math.ceil((gauge[1] - gauge[0]) * MBWSRate / 1000))), gau.lastChild.firstChild);
+				var elapsedSeconds = Math.floor((Date.now() - collectionLoadingStartDate) / 1000);
+				var totalSeconds = Math.ceil(elapsedSeconds > 0 ? elapsedSeconds * gauge[1] / gauge[0] : (gauge[1] - gauge[0]) * MBWSRate / 1000);
+				gau.lastChild.replaceChild(document.createTextNode(gauge[0] + "/" + gauge[1] + " (" + pc + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
 				setTitle(true, pc);
 				if (gauge[0] >= gauge[1]) {
 					gaugeto = setTimeout(function() {
