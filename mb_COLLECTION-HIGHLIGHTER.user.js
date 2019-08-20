@@ -23,7 +23,6 @@ var meta = {raw: function() {
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        GM_deleteValue
 // @grant        GM_getValue
-// @grant        GM_listValues
 // @grant        GM_setValue
 // @match        *://*.mbsandbox.org/*edits*
 // @match        *://*.mbsandbox.org/*votes*
@@ -105,27 +104,6 @@ if (meta.raw && meta.raw.toString && (meta.raw = meta.raw.toString())) {
 	}
 }
 meta.name = meta.name.substr("4") + " " + meta.version;
-// ############################################################################
-// #                                                                          #
-// #                           LEGACY CLEANUP                                 #
-// # to be deleted…                                                           #
-// ############################################################################
-var oldPrefix = "jesus2099userjs126380";
-// cleanup for previous master version (localStorage.setItem to GM_setValue)
-for (var i = 0; i < localStorage.length; i++) {
-	if(localStorage.key(i).indexOf(oldPrefix) == 0 && localStorage.key(i).length > oldPrefix.length) {
-		GM_setValue(localStorage.key(i).substr(oldPrefix.length), localStorage.getItem(localStorage.key(i)));
-		localStorage.removeItem(localStorage.key(i));
-	}
-}
-// cleanup for previous branch version (GM_setValue(oldPrefix + key) to GM_setValue(key))
-var keys = GM_listValues();
-for (var j = 0; j < keys.length; j++) {
-	if(keys[j].indexOf(oldPrefix) == 0 && keys[j].length > oldPrefix.length) {
-		GM_setValue(keys[j].substr(oldPrefix.length), GM_getValue(keys[j]));
-		GM_deleteValue(keys[j]);
-	}
-}
 // ############################################################################
 // #                                                                          #
 // #                           MAIN RUN                                       #
