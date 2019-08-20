@@ -506,7 +506,7 @@ function collectionUpdater(link, action) {
 							if (match) {
 								var type = match[1], mbid = match[2];
 								if (stuff[type].ids && stuff[type].rawids.indexOf(mbid) < 0 && (type != "artist" || skipArtists.indexOf(mbid) < 0)) {
-									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1);
+									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].getAttribute("jesus2099userjs81127recname") || checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1); // jesus2099userjs81127recname linked to mb_INLINE-STUFF
 									stuff[type].rawids += mbid + " ";
 									GM_setValue(type + "s", stuff[type].rawids);
 									altered = true;
@@ -617,7 +617,7 @@ function stuffRemover(checks, pp) {
 				var url = "/" + checkType + "/" + checkID;
 				if (checkType == "artist") { url += "/recordings"; }
 				url += "?page=" + p;
-				modal(true, concat(["Checking " + checkType + " ", createA(checkType != "release-group" ? check.textContent : checkID, check.getAttribute("href"), checkType), " against all its ", createA(checkAgainst + "s" + (p > 1 ? " (page " + p + ")" : ""), url), "…"]), 1);
+				modal(true, concat(["Checking " + checkType + " ", createA(checkType != "release-group" ? check.getAttribute("jesus2099userjs81127recname") || check.textContent : checkID, check.getAttribute("href"), checkType), " against all its ", createA(checkAgainst + "s" + (p > 1 ? " (page " + p + ")" : ""), url), "…"]), 1); // jesus2099userjs81127recname linked to mb_INLINE-STUFF
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function(event) {
 					if (this.readyState == 4) {

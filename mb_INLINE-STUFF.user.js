@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2019.8.3
+// @version      2019.8.20
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -237,7 +237,7 @@ function isrcFish() {
 									}
 									trackNameFragment.appendChild(document.createTextNode(trackNameRows[row]));
 								}
-								aRec.setAttribute(userjs + "recname", aRec.textContent); // linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
+								aRec.setAttribute(userjs + "recname", aRec.textContent); // linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST, mb_COLLECTION-HIGHLIGHTER
 								aRec.replaceChild(trackNameFragment, aRec.firstChild);
 							}
 						}
