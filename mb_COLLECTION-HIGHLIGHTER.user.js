@@ -828,15 +828,6 @@ function lastLink(href) {
 		}
 	}
 }
-function setTitle(ldng, pc) {
-	var old = document.title.match(/ :: (.+)$/);
-	old = old ? old[1] : document.title;
-	if (ldng) {
-		document.title = (pc ? pc + "%" : "⌛") + " Altering highlighter content… :: " + old;
-	} else {
-		document.title = old;
-	}
-}
 function createA(text, link, title, stay) {
 	var a = document.createElement("a");
 	a.appendChild(document.createTextNode(text));
