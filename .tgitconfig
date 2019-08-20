@@ -1,5 +1,6 @@
 [tgit]
 	projectlanguage = 2057
+	logwidthmarker = 50
 [bugtraq]
 	url = https://github.com/jesus2099/konami-command/issues/%BUGID%
 	logregex = "#(\\d+)\\b"
