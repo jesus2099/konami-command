@@ -183,7 +183,7 @@ function mergeRecsStep(_step) {
 				} else if (this.status == 200) {
 					if (step === 0) {
 						if (
-							this.responseText.indexOf('<form action="' + MBS + '/recording/merge" method="post">') > -1
+							this.responseText.indexOf('<form action="' + MBS + '/recording/merge?returnto=' + encodeURIComponent(MBS + self.location.pathname) + '" method="post">') > -1
 							&& this.responseText.indexOf('value="' + from.value + '"') > -1
 							&& this.responseText.indexOf('<a href="/recording/' + from.getAttribute("ref") + '">') > -1
 							&& this.responseText.indexOf('value="' + to.value + '"') > -1
