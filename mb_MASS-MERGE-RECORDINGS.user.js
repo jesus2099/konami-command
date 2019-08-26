@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2019.8.17
+// @version      2019.8.26
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -120,7 +120,7 @@ if (ltitle) {
 	console.error("Local title (/^" + sregex_title + "$/) not found in document.title (" + document.title + ").");
 }
 function mergeRecsStep(_step) {
-	if (editNote.value && editNote.value.match(/\w{4,}/g).length > 3) {
+	if (editNote.value && editNote.value.match(/\w{4,}/g) && editNote.value.match(/\w{4,}/g).length > 3) {
 		editNote.style.removeProperty("background-color");
 		var step = _step || 0;
 		var MMR = document.getElementById(MMRid);
