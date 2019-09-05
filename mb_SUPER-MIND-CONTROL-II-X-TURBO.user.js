@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2018.11.27
+// @version      2019.9.5
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1136,6 +1136,7 @@ j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the 
 j2setting("MARK_PENDING_EDIT_MEDIUMS", true, true, "puts a border around mediums with pending edits");
 j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
+j2setting("RECORDING_ISRC_COLUMN", true, true, "Displays recording ISRC in work page as well as in artist relationships page");
 j2setting("RECORDING_LENGTH_COLUMN", true, true, "Displays recording lengths in work page (similar to Loujine’s script) as well as in artist relationships page");
 j2setting("RELEASE_EVENT_COLUMN", true, true, "Displays release dates in label relationships page");
 var enttype = self.location.href.match(new RegExp("^" + MBS + "/(area|artist|collection|event|label|place|recording|release|release-group|series|work)/.*$"));
@@ -1258,29 +1259,40 @@ if (enttype) {
 		}
 	}
 	/*================================================================ DISPLAY+
+	## RECORDING_ISRC_COLUMN ##
 	## RECORDING_LENGTH_COLUMN ## inspired by loujine’s https://bitbucket.org/loujine/musicbrainz-scripts/src/default/mbz-showperformancedurations.user.js for work page
 	## RELEASE_EVENT_COLUMN ## requested by Lotheric https://github.com/jesus2099/konami-command/issues/132
+    This part should go to INLINE STUFF (and be less monobloc?)
 	=========================================================================*/
 	if (
+		j2sets.RECORDING_ISRC_COLUMN && (enttype == "work" && self.location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && self.location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$")) || enttype == "place" && self.location.pathname.match(new RegExp("^/place/" + stre_GUID + "/performances$")))
+		||
 		j2sets.RECORDING_LENGTH_COLUMN && (enttype == "work" && self.location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && self.location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$")) || enttype == "place" && self.location.pathname.match(new RegExp("^/place/" + stre_GUID + "/performances$")))
 		||
 		j2sets.RELEASE_EVENT_COLUMN && self.location.pathname.match(new RegExp("^/(artist|label)/" + stre_GUID + "/relationships$"))
 	) {
-		debug("RECORDING_LENGTH_COLUMN and/or RELEASE_EVENT_COLUMN");
+		debug("RECORDING_ISRC_COLUMN and/or RECORDING_LENGTH_COLUMN and/or RELEASE_EVENT_COLUMN");
 		var relationshipTable = document.querySelector("div#content table.tbl");
 		if (relationshipTable) {
+			var fetchRecordingIsrcs = j2sets.RECORDING_ISRC_COLUMN && relationshipTable.getElementsByClassName("treleases").length == 0 && relationshipTable.querySelector("a[href*='/recording/']");
 			var fetchRecordingLength = j2sets.RECORDING_LENGTH_COLUMN && relationshipTable.getElementsByClassName("treleases").length == 0 && relationshipTable.querySelector("a[href*='/recording/']");
 			var fetchReleaseEvents = j2sets.RELEASE_EVENT_COLUMN && relationshipTable.getElementsByClassName(userjs + "releaseEvents").length == 0 && relationshipTable.querySelector("a[href*='/release/']");
-			if (fetchRecordingLength || fetchReleaseEvents) {
+			if (fetchRecordingIsrcs || fetchRecordingLength || fetchReleaseEvents) {
 				var xhr = new XMLHttpRequest();
 				xhr.addEventListener("load", function(event) {
 					var relations = JSON.parse(this.responseText).relations;
+					var recordingIsrcs = {};
+					var recordingIsrcsFound = false;
 					var recordingLengths = {};
 					var recordingLengthFound = false;
 					var releaseEvents = {};
 					var releaseEventFound = false;
-					// collecting recording length and release events
+					// collecting recording ISRC, length and release events
 					for (var r = 0; r < relations.length; r++) {
+						if (fetchRecordingIsrcs && relations[r].recording && relations[r].recording.id && relations[r].recording.isrcs && relations[r].recording.isrcs.length > 0) {
+							recordingIsrcsFound = true;
+							recordingIsrcs[relations[r].recording.id] = relations[r].recording.isrcs;
+						}
 						if (fetchRecordingLength && relations[r].recording && relations[r].recording.id && relations[r].recording.length) {
 							recordingLengthFound = true;
 							recordingLengths[relations[r].recording.id] = relations[r].recording.length;
@@ -1290,8 +1302,11 @@ if (enttype) {
 							releaseEvents[relations[r].release.id] = relations[r].release["release-events"];
 						}
 					}
-					if (recordingLengthFound || releaseEventFound) {
+					if (recordingIsrcsFound || recordingLengthFound || releaseEventFound) {
 						// column headers
+						if (recordingIsrcsFound) {
+							relationshipTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name, class: "isrcs"}, s: {textShadow: "0 0 2px yellow"}}, "ISRCs"));
+						}
 						if (recordingLengthFound) {
 							relationshipTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
 						}
@@ -1302,6 +1317,12 @@ if (enttype) {
 						for (var r = 0; r < rows.length; r++) {
 							if (rows[r].classList.contains("subh")) {
 								// sub title row
+								if (recordingIsrcsFound) {
+									var lastHeader = rows[r].querySelector("tr.subh > th + th[colspan]");
+									if (lastHeader) {
+										lastHeader.setAttribute("colspan", parseInt(lastHeader.getAttribute("colspan"), 10) + 1);
+									}
+								}
 								if (recordingLengthFound) {
 									var lastHeader = rows[r].querySelector("tr.subh > th + th[colspan]");
 									if (lastHeader) {
@@ -1316,6 +1337,17 @@ if (enttype) {
 								}
 							} else {
 								// normal data row
+								if (recordingIsrcsFound) {
+									var newCell = createTag("td", {a: {class: "isrc"}});
+									var recordingID = rows[r].querySelector("a[href*='/recording/']");
+									if (recordingID && (recordingID = recordingID.getAttribute("href").match(re_GUID)[0]) && recordingIsrcs[recordingID]) {
+										var isrcsFragment = document.createDocumentFragment();
+										for (var i = 0; i < recordingIsrcs[recordingID].length; i++) {
+											isrcsFragment.appendChild(createTag("a", {a: {href: "prout"}}, "toto"));
+										}
+									}
+									rows[r].appendChild(isrcsFragment);
+								}
 								if (recordingLengthFound) {
 									var newCell = createTag("td", {a: {class: "treleases"}, s: {textAlign: "right"}});
 									var recordingID = rows[r].querySelector("a[href*='/recording/']");
@@ -1350,7 +1382,7 @@ if (enttype) {
 						}
 					}
 				});
-				xhr.open("get", MBS + "/ws/2" + self.location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + "?inc=recording-rels+release-rels&fmt=json", true);
+				xhr.open("get", MBS + "/ws/2" + self.location.pathname.match(new RegExp("^/" + enttype + "/" + stre_GUID)) + /* adding recordings+isrcs here NG because of https://tickets.metabrainz.org/browse/MBS-10339 */ "?inc=recording-rels+release-rels&fmt=json", true);
 				xhr.send(null);
 			}
 		}
