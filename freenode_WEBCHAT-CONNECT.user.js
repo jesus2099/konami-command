@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2019.8.23
+// @version      2019.9.12
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. cleverly focus first empty field.
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -20,8 +20,9 @@ setTimeout(function() {
 	"use strict";
 	var userjs = {name: "freenode. WEBCHAT CONNECT", key: "j2fwc"};
 	var defaultChannels = "#github,#last.fm,##musicbrainz-lol,#musicbrainz";
-	var nicknameField = document.querySelector("div.kiwi-welcome-simple-nick > input");
-	var channelsField = document.querySelector("div.kiwi-welcome-simple-channel > input");
+	var kiwiInputs = document.querySelectorAll("div.u-input-text-inputs > input");
+	var nicknameField = kiwiInputs[0];
+	var channelsField = kiwiInputs[kiwiInputs.length - 1];
 
 //	var css = document.createElement("style");
 //	css.setAttribute("type", "text/css");
