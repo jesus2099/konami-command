@@ -1,15 +1,14 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2019.4.12
+// @version      2019.9.13
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(68.0.1)+violentmonkey       tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    jesus2099/shamo
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
@@ -22,6 +21,8 @@
 // @grant        none
 // @match        *://*/*
 // @run-at       document-start
+// @inject-into  auto
+// "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
 "use strict";
 /*-----------------------------------------------*/

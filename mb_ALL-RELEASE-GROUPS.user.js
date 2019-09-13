@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         mb. ALL RELEASE GROUPS
-// @version      2019.4.12
+// @version      2019.9.13
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-RELEASE-GROUPS.user.js
 // @description  Artist overview page (discography): Show all release groups by default, then you can filter out bootlegs to show only official release groups (instead of the opposite default)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-RELEASE-GROUPS
-// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (ho.)
-// @compatible   vivaldi(2.2.1388.37)+violentmonkey  my setup (of.)
-// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(68.0.1)+violentmonkey       tested sometimes
 // @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    jesus2099/shamo
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ALL-RELEASE-GROUPS.user.js
@@ -21,6 +21,8 @@
 // @grant        none
 // @match        *://*/*
 // @run-at       document-start
+// @inject-into  auto
+// "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
 "use strict";
 var str_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";

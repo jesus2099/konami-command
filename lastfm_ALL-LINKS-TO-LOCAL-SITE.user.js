@@ -2,16 +2,15 @@
 var metadata = function() {
 // ==UserScript==
 // @name         last.fm. ALL LINKS TO LOCAL SITE
-// @version      2019.4.12
+// @version      2019.9.13
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @description  Replaces any lastfm link by the desired language, like "www.lastfm.xx" or else
 // @homepage     http://userscripts-mirror.org/scripts/show/29156
 // @supportURL   https://github.com/jesus2099/konami-command/labels/lastfm_ALL-LINKS-TO-LOCAL-SITE
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(68.0.1)+violentmonkey       tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
@@ -26,6 +25,8 @@ var metadata = function() {
 // @exclude      *://www.last.fm/*
 // @exclude      *://www.lastfm.*
 // @run-at       document-end
+// @inject-into  auto
+// "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
 // ==OpenUserJS==
 // @unstableMinify it might break metadata block parser

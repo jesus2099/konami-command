@@ -1,15 +1,14 @@
 // ==UserScript==
 // @name         USO to USMO
-// @version      2019.4.12
+// @version      2019.9.13
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/USO-to-USMO.user.js
 // @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long — bypass this script by holding CTRL+ALT+SHIFT
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/labels/USO-to-USMO
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(68.0.1)+violentmonkey       tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/USO-to-USMO.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/USO-to-USMO.user.js
@@ -23,6 +22,8 @@
 // @match        *://*/*
 // @exclude      *://userscripts-mirror.org/*
 // @run-at       document-start
+// @inject-into  auto
+// "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
 "use strict";
 document.addEventListener("mousedown", function(event) {

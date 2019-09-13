@@ -4,9 +4,9 @@ var meta = {rawmdb: function() {
 // @name         INSTALL USER SCRIPT
 // @version      2019.9.13
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user css/js auto‐update, even if the script author has not set @downloadURL and @updateURL.
-// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
+// @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
-// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   firefox(68.0.1)+violentmonkey       tested sometimes
 // @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
@@ -19,6 +19,8 @@ var meta = {rawmdb: function() {
 // @include      https://github.com/*
 // @include      https://gitlab.com/*
 // @run-at       document-end
+// @inject-into  auto
+// "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
 // ==OpenUserJS==
 // @unstableMinify it might break metadata block parser
