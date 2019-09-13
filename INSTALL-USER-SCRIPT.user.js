@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2019.7.13.1957
+// @version      2019.9.13
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user css/js auto‐update, even if the script author has not set @downloadURL and @updateURL.
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -37,12 +37,11 @@ var supportedFileTypes = [".user.js", ".uc.js", ".uc.xul", ".user.css"];
 var host = {
 	"bitbucket.org": {
 		css: {
-			files: "table tbody td a[href$='%fileType%']",
+			files: "table tbody td a[href*='%fileType%']",
 			icon: "svg[width='24'][height='24']",
 			newIcon: "aui-icon aui-icon-small aui-iconfont-devtools-clone", /* https://docs.atlassian.com/aui/5.5.1/docs/icons.html */
 		},
-		href: { match: /^(.+)$/, replace: "../../raw/%from-pathname%/$1" },
-		hrefFromPathname: /\/src\/(\w+)\b/, /* I have yet to find examples of repo with folders to test it more */
+		href: { match: /(\/[^/]+\/[^/]+)\/src\//, replace: "$1/raw/" },
 		unnestIcon: true,
 		dumbMode: true,
 	},
