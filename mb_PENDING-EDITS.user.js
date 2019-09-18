@@ -56,7 +56,6 @@ if (
 	} else {
 		pageEntity.openedits = createLink("open_edits"); // fixes MBS-3386 (“Open edits” link not always displayed)
 	}
-	appendRefineSearchFormLink(pageEntity.openedits);
 	checked.push(pageEntity.base);
 	checkOpenEdits(pageEntity);
 // ASSOCIATED ARTIST LINKS
@@ -112,7 +111,7 @@ function appendRefineSearchFormLink(baseEditLink) {
 			var row = getParent(baseEditLink, "li")
 			pageEntity.id = pageEntity.id[1];
 			row.appendChild(document.createTextNode(" ("));
-			row.appendChild(createTag("a", {a: {href: "/search/edits?conditions.1.field=" + pageEntity.type + "&conditions.1.operator=%3D&conditions.1.name=" + encodeURIComponent(pageEntity.name) + "&conditions.1.args.0=" + pageEntity.id + "&form_only=yes" + (baseEditLink == pageEntity.openedits ? "&conditions.0.field=status&conditions.0.operator=%3D&conditions.0.args=1" : "")}}, "refine"));
+			row.appendChild(createTag("a", {a: {href: "/search/edits?order=desc&negation=0&combinator=and&conditions.0.field=" + pageEntity.type + "&conditions.0.operator=%3D&conditions.0.name=" + encodeURIComponent(pageEntity.name) + "&conditions.0.args.0=" + pageEntity.id + "&conditions.1.field=status&conditions.1.operator=%3D&conditions.1.args=1&conditions.1.args=2&conditions.2.field=type&conditions.2.operator=!%3D&conditions.2.args=77&conditions.2.args=113"}}, "effective"));
 			row.appendChild(document.createTextNode(")"));
 		}
 	}
