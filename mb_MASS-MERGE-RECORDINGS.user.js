@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2019.8.26
+// @version      2019.9.18
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -183,7 +183,7 @@ function mergeRecsStep(_step) {
 				} else if (this.status == 200) {
 					if (step === 0) {
 						if (
-							this.responseText.indexOf('<form action="' + MBS + '/recording/merge?returnto=' + encodeURIComponent(MBS + self.location.pathname) + '" method="post">') > -1
+							this.responseText.match(new RegExp('<form action="' + MBS.replace(/[./]/g, "\\$&") + '\\/recording\\/merge\\?returnto=([^"]+)?" method="post">'))
 							&& this.responseText.indexOf('value="' + from.value + '"') > -1
 							&& this.responseText.indexOf('<a href="/recording/' + from.getAttribute("ref") + '">') > -1
 							&& this.responseText.indexOf('value="' + to.value + '"') > -1
