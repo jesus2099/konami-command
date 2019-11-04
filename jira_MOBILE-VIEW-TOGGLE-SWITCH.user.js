@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         jira. MOBILE VIEW TOGGLE SWITCH
-// @version      2019.11.3
+// @version      2019.11.3.1855
 // @description  JIRA. Provides a convenient "Switch to mobile version" big header toggle link as JIRA now only provides the opposite "Switch to desktop version"
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
@@ -10,7 +10,7 @@
 // ==/UserScript==
 // First rough version
 "use strict";
-if (self.innerWidth < 888 && document.head.querySelector("meta[name='application-name'][content='JIRA']")) {
+if (document.head.querySelector("meta[name='application-name'][content='JIRA']")) {
 	var ticket = location.pathname.match(/\/browse\/([A-Z][A-Z_0-9]+-[0-9]+)\b/);
 	if (ticket) {
 		var mobilePageBanner = document.createElement("h1");
