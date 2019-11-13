@@ -282,12 +282,12 @@ function decorate(entityLink) {
 				// in other pages: Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists
 				var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
 				if (row) {
-					if (entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/'])") && !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")) {
+					if (entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/'])" + (cat == "recording" ? ":not([href^='/artist/'])" : "")) && !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")) {
 						row.classList.add(prefix + "Row");
 					}
 					// decorate tracks without holding them
 					if (cat == "release" && entityType == "recording" || cat == "recording" && entityType == "release") {
-						var track = row.querySelector("a[href*='/track']");
+						var track = row.querySelector("a[href*='/track/']");
 						if (track) {
 							track.classList.add(prefix + "Item");
 						}
