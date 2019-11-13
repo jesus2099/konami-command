@@ -94,7 +94,7 @@ if (cat) {
 				if (mainReleasePage) {
 					collectionUpdater(colls[coll], colls[coll].getAttribute("href").match(/add|remove/).toString());
 				} else {
-					addAfter(createTag("div", {s: {textShadow: "0 0 8px " + highlightColour}}, ["(please go to ", createTag("a", {a: {href: "/release/" + releaseID}}, "main release page"), " for this button to auto‐update your collection highlighter)"]), colls[coll])
+					addAfter(createTag("div", {s: {textShadow: "0 0 8px " + highlightColour}}, ["(please go to ", createTag("a", {a: {href: "/release/" + releaseID}}, "main release page"), " for this button to auto‐update your collection highlighter)"]), colls[coll]);
 				}
 			}
 		}
@@ -427,7 +427,7 @@ function fetchReleasesStuff(pi) {
 						"<br>",
 					]), 0, [i + 1, stuff["release-tmp"].ids.length]);
 					var sep = "";
-					var totalAddedStuff = 0
+					var totalAddedStuff = 0;
 					for (var stu in stuff) if (stu != "release" && stuff.hasOwnProperty(stu)) {
 						var addedStuff = 0;
 						xp = res.evaluate("//mb:release[1]//mb:" + stu, res, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -604,7 +604,7 @@ function stuffRemover(checks, pp) {
 		var checkMatch = check.getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
 		if (checkMatch) {
 			var checkType = checkMatch[1];
-			var checkID = checkMatch[2]
+			var checkID = checkMatch[2];
 			var checkAgainst;
 			switch (checkType) {
 				case "label":
