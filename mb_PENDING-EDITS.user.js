@@ -104,7 +104,7 @@ function createLink(historyType, associatedArtist) {
 	return newLink.firstChild.firstChild;
 }
 function appendRefineSearchFormLink(baseEditLink) {
-	pageEntity.id = document.querySelector("div#sidebar a[href^='/rating/rate/?entity_type=" + pageEntity.type + "'], div#sidebar a[href*='/merge_queue?add-to-merge='], div#sidebar a[href^='/collection/create?']");
+	pageEntity.id = document.querySelector("div#sidebar a[href^='/rating/rate/?entity_type=" + pageEntity.type + "&entity_id='], div#sidebar a[href*='/merge_queue?add-to-merge='], div#sidebar a[href^='/collection/create?']");
 	if (pageEntity.id) {
 		pageEntity.id = pageEntity.id.getAttribute("href").match(/=(\d+)/);
 		if (pageEntity.id) {
