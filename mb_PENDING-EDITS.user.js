@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2019.8.17
+// @version      2019.11.18
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
-// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
+// @compatible   vivaldi(2.8.1664.40)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
 // @compatible   chrome+violentmonkey                should be same as vivaldi
@@ -47,7 +47,7 @@ if (
 // OPEN EDITS
 	pageEntity.openedits = document.querySelector("div#sidebar a[href$='" + pageEntity.base + "/open_edits']");
 	if (pageEntity.openedits) {
-		pageEntity.openedits.removeAttribute("title"); // removes bogus tooltip (artist disambiguation or swapped sort name) that is masking our useful tooltip
+//		pageEntity.openedits.removeAttribute("title"); // removes bogus tooltip (artist disambiguation or swapped sort name) that is masking our useful tooltip
 		if (pageEntity.openedits.parentNode.tagName == "LI") { // fixes MBS-2298 (“Open edits” link should share same styling as pending edit items)
 			var pendingEditsMarkedLink = createTag("span", {a: {class: "mp"}});
 			pageEntity.openedits.parentNode.replaceChild(pendingEditsMarkedLink.appendChild(pageEntity.openedits.cloneNode(true)).parentNode, pageEntity.openedits);
@@ -162,7 +162,7 @@ function checkOpenEdits(obj) {
 }
 function updateLink(obj, pecount, details, more) {
 	var countText;
-	var tooltip;
+//	var tooltip;
 	var li = getParent(obj.openedits, "li");
 	var count = li.querySelector("span." + SCRIPT_KEY + "Count");
 	if (typeof pecount == "number") {
@@ -170,7 +170,7 @@ function updateLink(obj, pecount, details, more) {
 		if (more) countText += "+";
 		if (pecount == 0) {
 			mp(obj.openedits, false);
-			tooltip = "no pending edits";
+//			tooltip = "no pending edits";
 		} else if (pecount > 0) {
 			mp(obj.openedits, true);
 			if (details.types.length > 0 && details.types.length == details.editors.length) {
@@ -196,7 +196,7 @@ function updateLink(obj, pecount, details, more) {
 					}
 					dupreset = false;
 				}
-				tooltip = titarray.join("\r\n");
+//				tooltip = titarray.join("\r\n");
 				var expanded = "▼";
 				var collapsed = "◀";
 				var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
@@ -211,16 +211,16 @@ function updateLink(obj, pecount, details, more) {
 						editLi.style.setProperty("font-weight", "bold");
 					}
 				}
-				if (titarray.length < 2 && pecount <= EDITS_PER_PAGE) {
-					tooltip = tooltip.replace(/^- /, "");
-				}
+//				if (titarray.length < 2 && pecount <= EDITS_PER_PAGE) {
+//					tooltip = tooltip.replace(/^- /, "");
+//				}
 				if (pecount > EDITS_PER_PAGE) {
-					tooltip += "\r\n- …";
+//					tooltip += "\r\n- …";
 					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
 				}
 				var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
 				if (titarray.length > 1) {
-					tooltip += "\r\n \r\n(oldest edit on bottom)";
+//					tooltip += "\r\n \r\n(oldest edit on bottom)";
 					help.appendChild(document.createElement("br"));
 					help.appendChild(document.createTextNode(" newest edit on top"));
 				}
@@ -240,13 +240,13 @@ function updateLink(obj, pecount, details, more) {
 		}
 	} else {
 		countText = pecount.status;
-		tooltip = pecount.responseText;
+//		tooltip = pecount.responseText;
 		count.style.setProperty("background-color", "pink"); // “pink” linked in mb_MASS-MERGE-RECORDINGS.user.js
 	}
 	count.replaceChild(document.createTextNode(countText), count.firstChild);//“countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
-	if (tooltip) {
-		obj.openedits.setAttribute("title", tooltip); // linked in mb_MASS-MERGE-RECORDINGS.user.js
-	}
+//	if (tooltip) {
+//		obj.openedits.setAttribute("title", tooltip); // linked in mb_MASS-MERGE-RECORDINGS.user.js
+//	}
 }
 function mp(o, set) {
 	var li = getParent(o, "li");
