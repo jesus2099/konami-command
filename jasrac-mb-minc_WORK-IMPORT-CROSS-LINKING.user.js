@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2019.11.20.1302
+// @version      2019.11.20.1310
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
@@ -471,21 +471,18 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			if (getExtLinks()) {
 				/* -- vv ------ JASRAC + ongakunomori sakuhin code link ------ vv -- */
 				var sakuhincode, codes = new RegExp(reAnnotCode, "ig"), donecodes = [];
-				for (var workattr = document.querySelectorAll("div#sidebar > dl.properties > dd:not(.iswc):not(.lyrics-language):not(.type)"), at = 0; at < workattr.length; at++) {
-					var dd = workattr[at];
-					var dt = getSibling(dd, "dt", null, true);
-					if (dt && dt.textContent.match(/jasrac id/i)) {
-						var ddcode = dd.textContent.trim();
-						replaceElement(createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}}, ddcode), dd.firstChild);
-						if (donecodes.indexOf(ddcode) < 0) {
-							donecodes.push(ddcode);
-							getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, "JASRAC — " + ddcode)));
-							getExtLinks().appendChild(createTag("li", {a: {class: userjs + "minc no-favicon"}}, createTag("a", {a: {href: workLookupURL("minc", "code", ddcode)}, s: {background: background}}, "音楽の森 — " + ddcode)));
-							getExtLinks().appendChild(createTag("li", {a: {class: userjs + "nextone no-favicon"}}, createTag("a", {a: {href: workLookupURL("nextone", "code", ddcode)}, s: {background: background}}, "NexTone — " + ddcode)));
-						} else {
-							if (confirm("Duplicate JASRAC ID detected in work attributes.\nDo you want to edit?")) {
-								self.location.href = self.location.pathname + "/edit";
-							}
+				var jasracIDs = document.querySelectorAll("div#sidebar > dl.properties > dd.work-attribute-jasrac-id");
+				for (i = 0; i < jasracIDs.length; i++) {
+					var ddcode = jasracIDs[i].textContent.trim();
+					replaceElement(createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, ddcode), jasracIDs[i].firstChild);
+					if (donecodes.indexOf(ddcode) < 0) {
+						donecodes.push(ddcode);
+						getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, "JASRAC — " + ddcode)));
+						getExtLinks().appendChild(createTag("li", {a: {class: userjs + "minc no-favicon"}}, createTag("a", {a: {href: workLookupURL("minc", "code", ddcode)}, s: {background: background}}, "音楽の森 — " + ddcode)));
+						getExtLinks().appendChild(createTag("li", {a: {class: userjs + "nextone no-favicon"}}, createTag("a", {a: {href: workLookupURL("nextone", "code", ddcode)}, s: {background: background}}, "NexTone — " + ddcode)));
+					} else {
+						if (confirm("Duplicate JASRAC ID detected in work attributes.\nDo you want to edit?")) {
+							self.location.href = self.location.pathname + "/edit";
 						}
 					}
 				}
@@ -504,7 +501,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				var NexToneIDs = document.querySelectorAll("div#sidebar > dl.properties > dd.work-attribute-nex-tone-id");
 				for (var i = 0; i < NexToneIDs.length; i++) {
 					ddcode = NexToneIDs[i].textContent.trim();
-					replaceElement(createTag("a", {a: {href: workLookupURL("nextone", "code", ddcode)}}, ddcode), NexToneIDs[i].firstChild);
+					replaceElement(createTag("a", {a: {href: workLookupURL("nextone", "code", ddcode)}, s: {background: background}}, ddcode), NexToneIDs[i].firstChild);
 				}
 			}
 			break;
