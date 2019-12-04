@@ -1,70 +1,47 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
-// @version      2016.6.15
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-ISRC.user.js
-// @description  notlob.eu/isrc. BATCH SUBMIT ISRCs. Allows pasting all ISRCs at once (from Simonf’s mediatool on multi-disc releases or from 音楽の森/ongakunomori/minc) - does not work in Opera for AUTH bug reason :/
-// @homepage     http://userscripts-mirror.org/scripts/show/151040
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MASS-ISRC
-// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @version      2019.11.25
+// @description  kepstin’s magicisrc. Paste a bunch of ISRC instead of one by one
+// @compatible   vivaldi(2.9.1705.41)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_MASS-ISRC.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_MASS-ISRC.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2012-10-26
+// @since        2012-10-26; http://userscripts-mirror.org/scripts/show/151040
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @match        *://*.kepstin.ca/magicisrc/*
-// @match        *://*.musicbrainz.org/ws/1/track/
-// @match        *://mb.lmfao.org.uk/isrc/*
-// @match        *://notlob.eu/isrc/*
+// @match        *://magicisrc.kepstin.ca/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var home = "http://notlob.eu/isrc/";
-var dummySkip = "JESUS2099999";
-var inputs, submit = document.querySelector("form > input[type='submit']");
-if (self.location.href.match(/^https?:\/\/[^/]+\/ws\/1\//)) {
-	var p = document.body.querySelector("pre, p");
-	if (p && p.textContent.trim() == "") {
-		document.body.appendChild(document.createTextNode("ISRC submission seems OK. "));
-		document.body.appendChild(document.createElement("a")).appendChild(document.createTextNode("Going back to submission page (in 4 seconds).")).parentNode.setAttribute("href", home);
-		setTimeout(function() { self.location = home; }, 4000);
-	}
-} else if (inputs = document.querySelector("form input[name='mbid']")) {
-	inputs.addEventListener("focus", function(event) { this.select(); }, false);
-	inputs.focus();
-} else if ((inputs = document.querySelectorAll("form table input[type='text'][name^='track'][name$='-isrc']")) && inputs.length > 0) {
-	for (var input = 0; input < inputs.length; input++) {
-		inputs[input].style.setProperty("font-family", "monospace");
-		inputs[input].setAttribute("maxlength", "12");
-		inputs[input].setAttribute("size", "12");
-	}
-	var f = document.querySelector("form");
-	f.appendChild(document.createElement("strong")).appendChild(document.createTextNode(" - Paste your batch of ISRCs below — dummy ISRC if you need to skip a track: " + dummySkip));
-	f.appendChild(document.createElement("br"));
-	var t = f.appendChild(document.createElement("textarea"));
-	t.style.setProperty("width", "100%");
-	t.style.setProperty("height", "400px");
-	t.addEventListener("keyup", function(event) {
-		var isrcs = this.value.match(/[a-z]{2}\-?[a-z0-9]{3}\-?[0-9]{2}\-?[0-9]{5}/gi);
-		if (isrcs && isrcs.length > 0 && inputs.length > 0) {
-			this.style.setProperty("background-color", arrHasDupes(isrcs) ? "pink" : "transparent");
-			for (var isrc = 0, input = 0; input < inputs.length; input++) {
-				inputs[input].value = (isrc < isrcs.length && isrcs[isrc] != dummySkip ? isrcs[isrc] : "");
-				if (isrc > 0) {
-					inputs[input].style.setProperty("background-color", inputs[input].value==inputs[input-1].value && inputs[input].value != "" ? "pink" : "transparent");
+document.addEventListener("input", function(event) {
+	if (event && event.target && event.target.classList.contains("form-control") && event.target.getAttribute("id").match(/^isrc\d+-\d+$/)) {
+		var isrcList = event.target.value.toUpperCase().match(/[A-Z]{2}\-?[A-Z0-9]{3}\-?[0-9]{2}\-?[0-9]{5}/g);
+		if (isrcList && !arrHasDupes(isrcList) || confirm("Achtung, there are duplicates!")) {
+			var isrcInputs = event.currentTarget.querySelectorAll("table > tbody > tr > td input.form-control[id^='isrc']");
+			for (var isrc = 0, input = 0, startingInputIndex = null; input < isrcInputs.length; input += 1) {
+				isrcInputs[input].style.removeProperty("background-color");
+				if (isrc < isrcList.length) {
+					if (isrcInputs[input] === event.target) {
+						startingInputIndex = input;
+					}
+					if (startingInputIndex !== null) {
+						isrcInputs[input].value = isrcList[isrc];
+						sendEvent(isrcInputs[input], "change");
+						if (isrcInputs[input].getAttribute("oldValue") !== isrcInputs[input].value) {
+							isrcInputs[input].style.setProperty("background-color", "#ff6");
+							isrcInputs[input].setAttribute("oldValue", isrcInputs[input].value)
+						}
+						isrc += 1;
+					}
 				}
-				isrc++;
 			}
-		} else { this.style.setProperty("background-color", "transparent"); }
-		if (submit && event.ctrlKey && event.keyCode == 86) { submit.focus(); }
-	}, false);
-	t.select();
-} else if (submit && (inputs = document.querySelectorAll("form input:not([type='submit']):not([type='hidden'])")) && inputs.length == 0) {
-	submit.focus();
-}
+		}
+	}
+});
 /* http://www.groggyjava.tv/freebies/duplicates.html */
 function arrHasDupes(arr) {
 	var i, j, n;
@@ -75,4 +52,9 @@ function arrHasDupes(arr) {
 		}
 	}
 	return false;
+}
+function sendEvent(node, eventName) {
+	event = document.createEvent("HTMLEvents");
+	event.initEvent(eventName, true, true);
+	node.dispatchEvent(event);
 }
