@@ -22,21 +22,24 @@
 // @run-at       document-end
 // ==/UserScript==
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - 
-patterns	: tweak the result tracklist using \n for new lines [normal tracklist, various artists (VA) tracklist]
+patterns	: tweak the result tracklist using \n for new lines
 nextDisc	: used to show when going next medium/tracklist in multi-discs releases */
 var patterns = {
-	"MB": [
-		"%tracknumber%. %title%\n",
-		"%tracknumber%. %title% - %artist%\n"
-	],
-	"MB+times": [
-		"%tracknumber%. %title% (%length%)\n", 
-		"%tracknumber%. %title% - %artist% (%length%)\n"
-	],
-	"EAC": [
-		"%title%\n", 
-		"%title% / %artist%\n"
-	],
+	"Track\u00A0parser": {
+		withoutTrackArtists: "%tracknumber%. %title% (%length%)\n",
+		withTrackArtists: "%tracknumber%. %title% - %artist% (%length%)\n"
+	},
+	"Always\u00A0artists": {
+		withTrackArtists: "%tracknumber%. %title% - %artist% (%length%)\n"
+	},
+	"No\u00A0times": {
+		withoutTrackArtists: "%tracknumber%. %title%\n",
+		withTrackArtists: "%tracknumber%. %title% - %artist%\n"
+	},
+	"EAC": {
+		withoutTrackArtists: "%title%\n",
+		withTrackArtists: "%title% / %artist%\n"
+	},
 };
 var nextDisc = "\n";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
@@ -55,12 +58,12 @@ function textTracklist(tracks, patt) {
 		removeNode(inlineStuffedRecordingComments[c]);
 	}
 	//link to mb_INLINE-STUFF (end)
-	var pattern = patterns[patt][0];
+	var pattern = patterns[patt].withoutTrackArtists;
 	var replaces = [
-	    [/%artist%/g, "artist"],
-	    [/%length%/g, "length"],
-	    [/%title%/g, "title"],
-	    [/%tracknumber%/g, "tracknumber"],
+		[/%artist%/g, "artist"],
+		[/%length%/g, "length"],
+		[/%title%/g, "title"],
+		[/%tracknumber%/g, "tracknumber"],
 	];
 	var tracklist = "";
 	for (var i = 0 ; i < tracks.length ; i++) {
@@ -70,7 +73,10 @@ function textTracklist(tracks, patt) {
 		var artist = tracks[i].querySelector("td:not([class]) + td:not([class])");
 		if (artist) {
 			artist = artist.textContent.trim();
-			pattern = patterns[patt][1];
+			pattern = patterns[patt].withTrackArtists || patterns[patt].withoutTrackArtists;
+		} else if (!patterns[patt].withoutTrackArtists) {
+			pattern = patterns[patt].withTrackArtists;
+			artist = JSON.parse(document.querySelector("script[type='application/ld+json']").textContent).creditedTo;
 		}
 		var length = tracks[i].querySelector("td.treleases").textContent.replace(/[^0-9:(?)]/g, "");
 		var txt = pattern;
