@@ -1025,7 +1025,7 @@ function updateTags(event) {
 			for (var t = 0; t < mytags.length; t++) {
 				ownifyTag(mytags[t].previousSibling);
 			}
-		} else if (event.target) {
+		} else if (event.target && event.target.nodeType === Node.ELEMENT_NODE) {
 			var newTag = event.target.querySelector("span.tag-upvoted") && event.target.querySelector("a[href^='/tag/']");
 			if (newTag) {
 				ownifyTag(newTag);
