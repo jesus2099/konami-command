@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2019.12.20
+// @version      2019.12.20.1700
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -424,6 +424,26 @@ function removeFromMerge(event) {
 		var href = "?submit=remove";
 		for (var cb = 0; cb < checkedRemoves.length; cb++) {
 			href += "&remove=" + checkedRemoves[cb].value;
+			/* remove mediums */
+			var toBeDeletedMediumRows = [];
+			var allMediums = document.querySelector("#merge-strategy-1 table.tbl");
+			var bogusMediumStarts = allMediums.querySelectorAll("tbody input[id$='.release_id'][type='hidden'][value='" + checkedRemoves[cb].value + "']")
+			for (var s = 0; s < bogusMediumStarts.length; s++) {
+				var bogusMediumStart = bogusMediumStarts[s];
+				if (
+					bogusMediumStart
+					&& (bogusMediumStart = getParent(bogusMediumStart, "tr", "subh"))
+					&& (bogusMediumStart = bogusMediumStart.rowIndex) !== null
+				) {
+					for (var m = bogusMediumStart; m < allMediums.rows.length && (!allMediums.rows[m].classList.contains("subh") || m == bogusMediumStart); m++) {
+						toBeDeletedMediumRows.push(allMediums.rows[m]);
+					}
+				}
+			}
+			for (var d = 0; d < toBeDeletedMediumRows.length; d++) {
+				console.log(toBeDeletedMediumRows[d].parentNode);
+				allMediums.querySelector("tbody").removeChild(toBeDeletedMediumRows[d]);
+			}
 			delete entities[checkedRemoves[cb].value];
 			checkedRemoves[cb].parentNode.parentNode.parentNode.parentNode.removeChild(checkedRemoves[cb].parentNode.parentNode.parentNode);
 		}
