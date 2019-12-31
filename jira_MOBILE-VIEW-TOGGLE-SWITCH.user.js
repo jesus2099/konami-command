@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         jira. MOBILE VIEW TOGGLE SWITCH
-// @version      2019.12.31.1245
+// @version      2019.12.31.1254
 // @description  Provides a convenient "Switch to mobile version" big header toggle link in all JIRA sites, in addition to the existing reverse "Switch to desktop version"
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
@@ -28,8 +28,8 @@ if (
 	document.head.appendChild(css);
 	css = css.sheet;
 	css.insertRule("a#switch-to-desktop-header, a#key-val + a[href^='" + issuePrefix.mobile + "'], a#switch-to-desktop-footer { background: #ff6; color: black !important; text-decoration: underline; }", 0);
-	css.insertRule("a#switch-to-desktop-header, a#switch-to-desktop-footer { font-size: 4em; }", 0);
-	css.insertRule("a#switch-to-desktop-header { display: block; padding: 1em; text-align: center; }", 0);
+	css.insertRule("a#switch-to-desktop-header { display: block; font-size: 4em; padding: 1em; text-align: center; }", 0);
+	css.insertRule("a#switch-to-desktop-footer { font-size: 2em; }", 0);
 	var issueLink;
 	if (issueLink = document.querySelector("a[href='" + issuePrefix.desktop + issue + "']")) {
 		if (isMobileDevice) {
