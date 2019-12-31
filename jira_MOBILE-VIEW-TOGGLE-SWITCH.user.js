@@ -43,4 +43,35 @@ if (
 			issueLink.parentNode.appendChild(document.createElement("a")).appendChild(document.createTextNode("Switch to mobile version")).parentNode.setAttribute("href", issuePrefix.mobile + issue);
 		}
 	}
+	if (isMobilePage) {
+		document.addEventListener("mousedown", function(event) {
+			var element = event.target || event.srcElement;
+			if (element && element.nodeType == Node.ELEMENT_NODE) {
+				if (element.tagName != "A") {
+					element = element.parentNode;
+				}
+				if (element && element.tagName == "A" && element.classList.contains("issue-link") && element.getAttribute("data-issue-key").match(new RegExp("^" + issuePattern + "$"))) {
+					process(element);
+				}
+			}
+		});
+	}
+}
+function process(anchor) {
+	var HREF = anchor.getAttribute("href");
+	var issueKey = anchor.getAttribute("data-issue-key");
+	if (HREF && issueKey && HREF.match(new RegExp(issuePrefix.desktop + issueKey + "$"))) {
+		var newHref = issuePrefix.mobile + issueKey;
+		if (newHref) {
+			anchor.setAttribute("href", newHref);
+			anchor.style.setProperty("background-color", "#cfc");
+			anchor.style.setProperty("color", "#606");
+			anchor.style.setProperty("text-decoration", "line-through");
+			var tooltip = anchor.getAttribute("title") || "";
+			if (tooltip) {
+				tooltip += "\r\n";
+			}
+			anchor.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
+		}
+	}
 }
