@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2018.11.27
+// @version      2020.1.3
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -63,6 +63,7 @@ var userjs = "jesus2099userjs85790"/*have to keep this for legacy saved settings
 var KEYCODES = {
 	ENTER:           0x0D,
 	C:               0x43,
+	D:               0x44,
 	M:               0x4D,
 	O:               0x4F,
 	S:               0x53,
@@ -504,7 +505,7 @@ if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + 
 /*=============================================================== KEYBOARD+
 ## EASY_DATE ## basic paste-a-date!-like (https://userscripts.org/121217)
 =========================================================================*/
-j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it — ascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197) — type “c” to copy current date into the other (begin→end or end→begin)");
+j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it\r\nascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197)\r\n\r\nPress “C” to copy current date into the other (begin→end or end→begin)\r\nPress “D” to delete dates");
 if (j2sets.EASY_DATE) {
 	EASY_DATE_init();
 	document.body.addEventListener("DOMNodeInserted", EASY_DATE_calmDOM, false);
@@ -571,7 +572,7 @@ function EASY_DATE_init() {
 						}
 					},
 					focus: function(event) { this.select(); },
-					keydown: [EASY_DATE_cloneDateHotkey, EASY_DATE_nextField]
+					keydown: [EASY_DATE_cloneDateHotkey, EASY_DATE_nextField, EASY_DATE_deleteDatesHotkey]
 				}}
 			), years[y]);
 		years[y].classList.add(userjs + "easydate");
@@ -582,7 +583,9 @@ function EASY_DATE_init() {
 			}
 		}, false);
 		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_cloneDateHotkey);
+		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_deleteDatesHotkey);
 		years[y].parentNode.querySelector("input[placeholder='DD']").addEventListener("keydown", EASY_DATE_cloneDateHotkey);
+		years[y].parentNode.querySelector("input[placeholder='DD']").addEventListener("keydown", EASY_DATE_deleteDatesHotkey);
 		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_nextField);
 	}
 }
@@ -602,6 +605,27 @@ function EASY_DATE_cloneDate(current, hotkey) {
 		}
 		inps[downwards ? 1 : 0].value = inps[downwards ? 0 : 1].value;
 		sendEvent(inps[downwards ? 1 : 0], "change");
+	}
+}
+function EASY_DATE_deleteDatesHotkey(event) {
+	//TODO: would better be attached at form itself instead of on each inputs
+	if (!event.ctrlKey && !event.shiftKey && event.keyCode == KEYCODES.D) {
+		stop(event);
+		EASY_DATE_deleteDates(this);
+	}
+}
+function EASY_DATE_deleteDates(current) {
+	var ph = ["YYYY", "MM", "DD"];
+	for (var p = 0; p < ph.length; p++) {
+		var inps = current.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='" + ph[p] + "']");
+	for (var i = 0; i < inps.length; i++) {
+		inps[i].value = "";
+		sendEvent(inps[i], "change");
+	}
+	var endedCheckbox = getParent(current, "tbody").querySelector("input[type='checkbox'][data-bind^='checked: relationship().ended']");
+	if (endedCheckbox.checked == true) {
+		endedCheckbox.click();
+	}
 	}
 }
 function EASY_DATE_nextField(event) {
