@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2019.9.18
+// @version      2020.1.10
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -625,7 +625,7 @@ function loadReleasePage() {
 				for (var i5 = 0; i5 < recIDx5.length; i5 += 5) {
 					recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
 				}
-				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
+				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>){0,2}<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>){0,2}\)/)[1];
 				remoteRelease.title = HTMLToText(rtitle[1]);
 				remoteRelease.looseTitle = looseTitle(remoteRelease.title);
 				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
