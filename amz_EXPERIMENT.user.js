@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         AMZ. shrink product links and direct link to full size pictures
-// @version      2019.8.16
+// @version      2020.1.24
 // @description  Amazon. Shows links to full size images. Shrinks product and search URLs. Prevents from opening new windows in amazn.jp searches.
-// @namespace    https://userscripts.org/139394
-// @author       PATATE12 aka. jesus2099/shamo
+// @namespace    https://github.com/jesus2099/konami-command
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @since        2013?; https://userscripts.org/139394
 // @grant        none
-// @match        *://*.amazon.*/*
+// @include      /^https?:\/\/[^.]+\.amazon\.[^/]+/
 // @exclude      *iframeproxy*
 // @run-at       document-end
 // ==/UserScript==
