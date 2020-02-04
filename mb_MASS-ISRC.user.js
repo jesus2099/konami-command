@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
-// @version      2019.11.25
+// @version      2020.2.4
 // @description  kepstin’s magicisrc. Paste a bunch of ISRC instead of one by one
 // @compatible   vivaldi(2.9.1705.41)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -48,7 +48,7 @@ function arrHasDupes(arr) {
 	n = arr.length;
 	for (i = 0; i < n; i++) {
 		for (j = i + 1; j < n; j++) {
-			if (arr[i] == arr[j] && arr[i] != dummySkip) return true;
+			if (arr[i] == arr[j]) return true;
 		}
 	}
 	return false;
