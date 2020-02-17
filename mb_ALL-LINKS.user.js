@@ -528,11 +528,14 @@ function main() {
 					tokenValues["%url-target%"] = entityName;
 				}
 			}
-			if (extlinks = sidebar.querySelector(".external_links")) {
-				// Hidden links
-				entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
-				addHiddenLinks();
-			}
+			extlinks = sidebar.querySelector(".external_links");
+			if (!extlinks) {
+				extlinks = addAfter(createTag("ul", {a: {class: "external_links"}}, createTag("li", {}, "No white‐listed links yet.")), sidebar.querySelector("div.sidebar-tags"));
+				addAfter(createTag("h2", {a: {class: "external-links"}}, "External links"), sidebar.querySelector("div.sidebar-tags"));
+			} 
+			// Hidden links
+			entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
+			addHiddenLinks();
 			// Search links
 			loadDisabledSearchLinks();
 			for (var sectionKey in searchLinks.items) if (searchLinks.items.hasOwnProperty(sectionKey)) {
