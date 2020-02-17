@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2017.6.10
+// @version      2020.2.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -10,13 +10,14 @@
 // @compatible   chromium(46)+tampermonkey        tested sometimes
 // @compatible   chrome+tampermonkey              should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/%23244_y-van-z_all-shook-up-links/mb_ALL-LINKS.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/%23244_y-van-z_all-shook-up-links/mb_ALL-LINKS.user.js
-// @author       PATATE12
-// @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ALL-LINKS.user.js
+// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ALL-LINKS.user.js
+// @author       jesus2099
+// @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+// @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-08-02
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=126154&v=2015.11.2
+// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
 // @match        *://*.mbsandbox.org/area/*
 // @match        *://*.mbsandbox.org/artist/*
@@ -451,6 +452,7 @@ var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/
 	"cdbaby.com"                : "cdbaby",
 };
 var favicons = {
+	"deezer.com": "https://e-cdns-files.dzcdn.net/cache/images/common/favicon/favicon-16x16.526cde4edf20647be4ee32cdf35c1c13.png",
 	"lastfm.": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
 	"livedoor.jp": "http://blog.livedoor.jp/favicon.ico",
 	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
@@ -460,10 +462,12 @@ var favicontry = [];
 var guessOtherFavicons = true;
 var sidebar = document.getElementById("sidebar");
 var tokenValues = {};
-var entityUrlRelsWS = "/ws/2/%entity-type%/%entity-mbid%?inc=url-rels";
+var entityUrlRelsWS = self.location.protocol + "//" + self.location.host + "/ws/2/%entity-type%/%entity-mbid%?inc=url-rels";
 var extlinks;
-document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-var j2css = document.styleSheets[document.styleSheets.length - 1];
+var j2css = document.createElement("style");
+j2css.setAttribute("type", "text/css");
+document.head.appendChild(j2css);
+j2css = j2css.sheet;
 j2css.insertRule("ul.external_links > li.defaultAutolink > input[type='checkbox'] { display: none; }", 0);
 j2css.insertRule("ul.external_links > li.defaultAutolink.disabled { text-decoration: line-through; display: none; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink.disabled { display: list-item; }", 0);
@@ -562,7 +566,7 @@ function main() {
 								if (wikiEntry) {
 									var href = wikiEntry.url.replace(/^https?:/, "");
 									var ul;
-									if (!extlinks.querySelector("li a[href$='" + href + "']")) {
+									if (!sidebar.querySelector("ul.external_links > li a[href$='" + href + "']")) {
 										if (!ul) {
 											ul = wikidataListItem.appendChild(createTag("ul", {s: {listStyle: "none"}}));
 										}
@@ -585,7 +589,20 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		// This is a link
 		var li;
 		if (typeof parameters.target === "string") {
-			var existingLink = sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "']");
+			var existingLink = 
+				sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "']")
+				// MBS adds a trailing code to ASIN URL https://github.com/metabrainz/musicbrainz-server/blob/7b16dfae25fef7ef570bbc96e2d7cb71f123139e/lib/DBDefs/Default.pm#L318-L328
+				|| parameters.target.match(/\bamazon\.ca\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music0b72-20']")
+				|| parameters.target.match(/\bamazon\.co\.jp\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=musicbrainzjp-22']")
+				|| parameters.target.match(/\bamazon\.co\.uk\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music080d-21']")
+				|| parameters.target.match(/\bamazon\.com\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=musicbrainz0d-20']")
+				|| parameters.target.match(/\bamazon\.de\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music059-21']")
+				|| parameters.target.match(/\bamazon\.fr\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music083d-21']")
+				|| parameters.target.match(/\bamazon\.it\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music084d-21']")
+				|| parameters.target.match(/\bamazon\.es\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music02e-21']")
+				// MBS adds a trailing slash to viaf URL https://github.com/jesus2099/konami-command/issues/293#issuecomment-376875307
+				|| parameters.target.match(/\bviaf\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "/']")
+			;
 			if (existingLink) {
 				newLink = false;
 				li = getParent(existingLink, "li");
@@ -623,6 +640,11 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 			// Level 1 header
 			li.style.setProperty("padding-top", "0px");
 			extlinks.insertBefore(li, extlinks.lastChild);
+		} else {
+			// Level 2 header
+			li.style.setProperty("padding", "0px");
+			li.style.setProperty("float", "right");
+			extlinks.appendChild(li);
 		}
 	}
 	if (newLink) {
@@ -662,7 +684,7 @@ function addHiddenLinks() {
 						}
 					}
 				}
-			} else if (this.status >= 400) {
+			} else if (this.status >= 400 || this.status == 0) {
 				var txt = this.responseText.match(/<error><text>(.+)<\/text><text>/);
 				txt = txt ? txt[1] : "";
 				error(this.status, txt);
