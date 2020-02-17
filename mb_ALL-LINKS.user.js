@@ -233,8 +233,7 @@ var whitelistSearchLinks = {
 				},
 				bbcmusic: {
 					title: {en: "BBC Music"},
-					target: {"cy en ga gd": "//www.bbc.co.uk/music/artists/%artist-mbid%"},
-					multilingualKeys: true
+					target: {"cy en ga gd": "//www.bbc.co.uk/music/artists/%artist-mbid%"}
 				},
 				discogs: {
 					title: {en: "Discogs"},
@@ -243,8 +242,7 @@ var whitelistSearchLinks = {
 						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-name%&type=release"},
 						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-group-name%&type=master"},
 						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%label-name%&type=label"}
-					],
-					multilingualKeys: true
+					]
 				},
 				geonames: {
 					title: {en: "GeoNames"},
@@ -262,16 +260,14 @@ var whitelistSearchLinks = {
 					target: {
 						"en": "http://last.fm/mbid/%artist-mbid%",
 						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/mbid/%artist-mbid%"
-					},
-					multilingualKeys: true
+					}
 				},
 				lastfmName: {
 					title: {en: "Last.fm (name)",	de: "Last.fm (Name)", es: "Last.fm (nombre)", fr: "Last.fm (nom)", it: "Last.fm (Nome)", ja: "Last.fm (名)", pl: "Last.fm (Nazwa)", pt: "Last.fm (nome)", ru: "Last.fm (имя)", sv: "Last.fm (namn)", tr: "Last.fm (ad)", zh: "Last.fm (名)"},
 					target: {
 						"en": "http://last.fm/search?q=%artist-name%",
 						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/search?q=%artist-name%"
-					},
-					multilingualKeys: true
+					}
 				},
 				rateYourMusic: {
 					title: {en: "Rate Your Music"},
@@ -775,13 +771,13 @@ function addSearchLinksSection(sectionPath, parentNode) {
 			var itemTarget = false;
 			if (Array.isArray(item.target)) {
 				for (var t = 0; t < item.target.length; t++) {
-					itemTarget = replaceAllTokens(getLocalisedText(item.target[t], item.multilingualKeys));
+					itemTarget = replaceAllTokens(getLocalisedText(item.target[t]));
 					if (itemTarget) {
 						break;
 					}
 				}
 			} else {
-				itemTarget = replaceAllTokens(getLocalisedText(item.target, item.multilingualKeys));
+				itemTarget = replaceAllTokens(getLocalisedText(item.target));
 			}
 			if (itemTarget) {
 				hasNothing = false;
@@ -890,19 +886,18 @@ function addUserLinks() {
 		userLinksListNode.appendChild(itemNode);
 	}
 }
-function getLocalisedText(textSet, multilingualKeys) {
+function getLocalisedText(textSet) {
 	if (typeof textSet === "string") {
 		return textSet;
 	}
-	if (multilingualKeys) {
-		var expanded = {};
-		for (var key in textSet) if (textSet.hasOwnProperty(key)) {
-			var allKeys = key.split(" ");
-			for (var ak = 0; ak < allKeys.length; ak++)
-				expanded[allKeys[ak]] = textSet[key].replace(/%language%/g, allKeys[ak]);
-		}
-		textSet = expanded;
+	// Manages both "fr" and multinligual "fr vi ja en" formats
+	var expanded = {};
+	for (var key in textSet) if (textSet.hasOwnProperty(key)) {
+		var allKeys = key.split(" ");
+		for (var ak = 0; ak < allKeys.length; ak++)
+			expanded[allKeys[ak]] = textSet[key].replace(/%language%/g, allKeys[ak]);
 	}
+	textSet = expanded;
 	var languages = parseLanguages(["musicbrainz", "navigator"]);
 	for (var l = 0; l < languages.length; l++) {
 		if (textSet.hasOwnProperty(languages[l])) {
