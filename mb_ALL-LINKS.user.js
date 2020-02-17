@@ -1,21 +1,15 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
 // @version      2020.2.17
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
-// @homepage     http://userscripts-mirror.org/scripts/show/108889
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
-// @compatible   opera(12.18.1872)+violentmonkey  my setup
-// @compatible   firefox(52.1.2)+greasemonkey     tested sometimes
-// @compatible   chromium(46)+tampermonkey        tested sometimes
-// @compatible   chrome+tampermonkey              should be same as chromium
+// @compatible   vivaldi(2.11.1811.33)+violentmonkey my setup
+// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ALL-LINKS.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ALL-LINKS.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2011-08-02
+// @since        2011-08-02; http://userscripts-mirror.org/scripts/show/108889
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
