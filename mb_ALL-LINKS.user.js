@@ -119,22 +119,19 @@ var whitelistSearchLinks = {
 				nl: "Liedtekst"
 			},
 			items: {
-				decoda: {
-					title: {en: "Decoda"},
+				Decoda: {
 					target: [
 						{en: "//www.decoda.com/search?q=%artist-name%"},
 						{en: "//www.decoda.com/search?q=%work-name%"}
 					]
 				},
-				directlyrics: {
-					title: {en: "Directlyrics"},
+				Directlyrics: {
 					target: [
 						{en: "//startpage.com/do/search?q=site:directlyrics.com/*-artist.html+%artist-name%"},
 						{en: "http://www.directlyrics.com/search/?q=%work-name%"}
 					]
 				},
-				lyricWikia: {
-					title: {en: "LyricWikia"},
+				LyricWikia: {
 					target: [
 						{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%artist-name%"},
 						{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%release-group-name%"},
@@ -151,8 +148,7 @@ var whitelistSearchLinks = {
 				nl: "Bladmuziek"
 			},
 			items: {
-				imslp: {
-					title: {en: "IMSLP/Petrucci Music Library"},
+				"IMSLP/Petrucci Music Library": {
 					target: "//duckduckgo.com/?q=site:imslp.org+%work-name%"
 				}
 			}
@@ -173,16 +169,14 @@ var whitelistSearchLinks = {
 						nl: "Duitsland"
 					},
 					items: {
-						musikSammler: {
-							title: {de: "Musik-Sammler.de"},
+						"Musik-Sammler.de": {
 							target: [
 								{de: "https://www.musik-sammler.de/search/%artist-name%/?q=artist"},
 								{de: "https://www.musik-sammler.de/search/%release-name%/?q=medium"},
 								{de: "https://www.musik-sammler.de/search/%release-group-name%/?q=album"}
 							]
 						},
-						dnbMusikarchiv: {
-							title: {de: "DNB - Deutsches Musikarchiv"},
+						"DNB - Deutsches Musikarchiv": {
 							target: {de: "https://portal.dnb.de/opac.htm?query=%28mat%3DMusic+OR+cod%3Dmt%29+AND+%release-name%&method=simpleSearch&cqlMode=true"}
 						}
 					}
@@ -195,8 +189,7 @@ var whitelistSearchLinks = {
 						nl: "Frankrijk"
 					},
 					items: {
-						encyclopedisque: {
-							title: {fr: "Encyclopédisque"},
+						"Encyclopédisque": {
 							target: [
 								{fr: "http://www.encyclopedisque.fr/recherche.html?ra=%artist-name%&sp=1#resultat"},
 								{fr: "http://www.encyclopedisque.fr/recherche.html?rd=%release-name%&sp=1#resultat"}
@@ -214,8 +207,7 @@ var whitelistSearchLinks = {
 				nl: "Andere databases"
 			},
 			items: {
-				allmusic: {
-					title: {en: "AllMusic"},
+				AllMusic: {
 					target: [
 						{en: "//www.allmusic.com/search/artists/%artist-name%"},
 						{en: "//www.allmusic.com/search/labels/%label-name%"},
@@ -225,12 +217,10 @@ var whitelistSearchLinks = {
 						{en: "//www.allmusic.com/search/compositions/%work-name%"}
 					]
 				},
-				bbcmusic: {
-					title: {en: "BBC Music"},
+				"BBC Music": {
 					target: {"cy en ga gd": "//www.bbc.co.uk/music/artists/%artist-mbid%"}
 				},
-				discogs: {
-					title: {en: "Discogs"},
+				Discogs: {
 					target: [
 						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%artist-name%&type=artist"},
 						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-name%&type=release"},
@@ -238,19 +228,16 @@ var whitelistSearchLinks = {
 						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%label-name%&type=label"}
 					]
 				},
-				geonames: {
-					title: {en: "GeoNames"},
+				GeoNames: {
 					target: [
 						{en: "http://www.geonames.org/search.html?q=%area-name%"},
 						{en: "http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"}
 					]
 				},
-				isni: {
-					title: {en: "ISNI"},
+				ISNI: {
 					target: {en: "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%"}
 				},
-				lastfmMBID: {
-					title: {en: "Last.fm (MBID)"},
+				"Last.fm (MBID)": {
 					target: {
 						"en": "http://last.fm/mbid/%artist-mbid%",
 						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/mbid/%artist-mbid%"
@@ -263,8 +250,7 @@ var whitelistSearchLinks = {
 						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/search?q=%artist-name%"
 					}
 				},
-				rateYourMusic: {
-					title: {en: "Rate Your Music"},
+				"Rate Your Music": {
 					target: [
 						{en: "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%"},
 						{en: "//rateyourmusic.com/search?searchtype=b&searchterm=%label-name%"},
@@ -272,8 +258,7 @@ var whitelistSearchLinks = {
 						{en: "//rateyourmusic.com/search?searchtype=r&searchterm=%work-name%"}
 					]
 				},
-				secondHandSongs: {
-					title: {en: "SecondHandSongs"},
+				SecondHandSongs: {
 					target: [
 						{en: "//secondhandsongs.com/search/artist?sel[]=common_name&val[]=%artist-name%"},
 						{en: "//secondhandsongs.com/search/label?sel[]=name&val[]=%label-name%"},
@@ -282,15 +267,13 @@ var whitelistSearchLinks = {
 						{en: "//secondhandsongs.com/search/work?sel[]=title&val[]=%work-name%"}
 					]
 				},
-				whoSampled: {
-					title: {en: "WhoSampled"},
+				WhoSampled: {
 					target: [
 						{en: "//www.whosampled.com/search/artists/?q=%artist-name%"},
 						{en: "//www.whosampled.com/search/tracks/?q=%recording-name%"}
 					]
 				},
-				wikipedia: {
-					title: {en: "Wikipedia"},
+				Wikipedia: {
 					target: "//duckduckgo.com/?q=site:wikipedia.org+%22%entity-name%%22"
 				}
 			}
@@ -313,8 +296,7 @@ var additionalSearchLinks = {
 				nl: "Liedtekst"
 			},
 			items: {
-				lyricWikiaFR: {
-					title: {fr: "WikiParoles"},
+				WikiParoles: {
 					target: {fr: "http://fr.lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
 				}
 			}
@@ -335,8 +317,7 @@ var additionalSearchLinks = {
 						nl: "Frankrijk"
 					},
 					items: {
-						sacem: {
-							title: {fr: "SACEM"},
+						SACEM: {
 							target: {
 								fr: "https://repertoire.sacem.fr/resultats?filters=titles&query=%work-name%#searchBtn",
 								en: "https://repertoire.sacem.fr/en/results?filters=titles&query=%work-name%#searchBtn"
@@ -691,8 +672,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 	var level = sectionPath.length;
 	var section = pathToItem(sectionPath);
 	var sectionID = pathToID(sectionPath);
-	var sectionTitle = getLocalisedText(section.title);
-	var sectionTitleNode = createTag("h" + (1 + level), {a: {id: sectionID}}, sectionTitle);
+	var sectionTitleNode = createTag("h" + (1 + level), {a: {id: sectionID}}, section.title ? getLocalisedText(section.title) : sectionPath[sectionPath.length - 1]);
 	if (level === 1) {
 		sectionTitleNode.classList.add(userjs + "searchLinks");
 		var landingSibling = false;
@@ -776,8 +756,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 			if (itemTarget) {
 				hasNothing = false;
 				sectionListNode.appendChild(itemNode);
-				var itemTitle = getLocalisedText(item.title);
-				itemNode.appendChild(createTag("a", {a: {href: itemTarget}}, itemTitle));
+				itemNode.appendChild(createTag("a", {a: {href: itemTarget}}, item.title ? getLocalisedText(item.title) : itemKey));
 				setFavicon(itemNode, itemTarget);
 				var itemCBox = itemNode.appendChild(
 					createTag("input", {a: {type: "checkbox"}, s: {float: "right", margin: "1px"}, e: {click: function(event) {
