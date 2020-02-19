@@ -119,14 +119,17 @@ var whitelistSearchLinks = {
 				nl: "Liedtekst"
 			},
 			items: {
+				Genius: "//genius.com/search?q=%artist-name%",
 				Decoda: [
 					{en: "//www.decoda.com/search?q=%artist-name%"},
 					{en: "//www.decoda.com/search?q=%work-name%"}
 				],
+				"歌詞タイム": "//duckduckgo.com/?q=site%3Akasi-time.com+subcat+intitle:%artist-name%",
 				Directlyrics: [
 					{en: "//startpage.com/do/search?q=site:directlyrics.com/*-artist.html+%artist-name%"},
 					{en: "http://www.directlyrics.com/search/?q=%work-name%"}
 				],
+				LyricWiki: "//lyrics.wikia.com/%artist-name%",
 				LyricWikia: [
 					{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%artist-name%"},
 					{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%release-group-name%"},
@@ -153,6 +156,26 @@ var whitelistSearchLinks = {
 				nl: "Per Gebied"
 			},
 			items: {
+				JP: {
+					title: {
+						fr: "Japon",
+						en: "Japan"
+					},
+					items: {
+						VGMdb: "http://vgmdb.net/search?q=%artist-name%",
+						Yunisan: "//duckduckgo.com/?q=site:www22.big.or.jp+%22%2F%7Eyunisan%2Fvi%2F%22+%artist-name%",
+						VKDB: "//duckduckgo.com/?q=site:vkdb.jp+%artist-name%"
+					}
+				},
+				KR: {
+					title: {
+						fr: "Corée",
+						en: "Korea"
+					},
+					items: {
+						maniadb: "http://www.maniadb.com/search.asp?sr=PO&q=%artist-name%"
+					}
+				},
 				DE: {
 					title: {
 						de: "Deutschland",
@@ -185,6 +208,28 @@ var whitelistSearchLinks = {
 				}
 			}
 		},
+		stores: {
+			title: {
+				fr: "Musique téléchargeable",
+				en: "Digital releases"
+			},
+			items: {
+				Bandcamp: "https://bandcamp.com/search?q=%artist-name%",
+				Deezer: "https://www.deezer.com/search/%artist-name%",
+				Spotify: "https://open.spotify.com/search/results/%artist-name%"
+			},
+		},
+		socialNetworks: {
+			title: {
+				fr: "Réseaux sociaux",
+				en: "Social networks"
+			},
+			items: {
+				Facebook: "https://www.facebook.com/s.php?q=%artist-name%",
+				Twitter: "https://twitter.com/search?f=users&q=%artist-name%",
+				YouTube: "https://www.youtube.com/results?search_query=%artist-name%&sp=EgIQAg%253D%253D"
+			},
+		},
 		otherDBs: {
 			title: {
 				de: "Andere Datenbanken",
@@ -214,7 +259,10 @@ var whitelistSearchLinks = {
 					{en: "http://www.geonames.org/search.html?q=%area-name%"},
 					{en: "http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"}
 				],
+				IMDb: "//www.imdb.com/find?q=%artist-name%&s=nm",
+				//TODO: ISNI: "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 				ISNI: {en: "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%"},
+				VIAF: "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
 				"Last.fm (MBID)": {
 					"en": "http://last.fm/mbid/%artist-mbid%",
 					"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/mbid/%artist-mbid%"
@@ -226,12 +274,14 @@ var whitelistSearchLinks = {
 						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/search?q=%artist-name%"
 					}
 				},
+				"BBC Music": "http://www.bbc.co.uk/music/artists/%artist-id%",
 				"Rate Your Music": [
 					{en: "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%"},
 					{en: "//rateyourmusic.com/search?searchtype=b&searchterm=%label-name%"},
 					{en: "//rateyourmusic.com/search?searchtype=l&searchterm=%release-name%"},
 					{en: "//rateyourmusic.com/search?searchtype=r&searchterm=%work-name%"}
 				],
+				"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
 				SecondHandSongs: [
 					{en: "//secondhandsongs.com/search/artist?sel[]=common_name&val[]=%artist-name%"},
 					{en: "//secondhandsongs.com/search/label?sel[]=name&val[]=%label-name%"},
@@ -239,11 +289,16 @@ var whitelistSearchLinks = {
 					{en: "//secondhandsongs.com/search/release?sel[]=title&val[]=%release-name%"},
 					{en: "//secondhandsongs.com/search/work?sel[]=title&val[]=%work-name%"}
 				],
+				xWhoSampled: "//www.whosampled.com/search/artists/?h=1&q=%artist-name%",
 				WhoSampled: [
 					{en: "//www.whosampled.com/search/artists/?q=%artist-name%"},
 					{en: "//www.whosampled.com/search/tracks/?q=%recording-name%"}
 				],
-				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+%22%entity-name%%22"
+				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+%22%entity-name%%22",
+				"Wikipedia (en)": "//en.wikipedia.org/w/index.php?search=%artist-name%",
+				"Wikipedia (fr)": "//fr.wikipedia.org/w/index.php?search=%artist-name%",
+				"Wikipedia (ja)": "//ja.wikipedia.org/w/index.php?search=%artist-name%",
+				"Wikipedia (vi)": "//vi.wikipedia.org/w/index.php?search=%artist-name%"
 			}
 		}
 	}
@@ -264,6 +319,7 @@ var additionalSearchLinks = {
 				nl: "Liedtekst"
 			},
 			items: {
+				"J-Lyric（歌手）": "http://j-lyric.net/index.php?ka=%artist-name%",
 				WikiParoles: {fr: "http://fr.lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
 			}
 		},
@@ -299,6 +355,26 @@ var additionalSearchLinks = {
 								}
 							]
 						}
+					}
+				},
+				JP: {
+					title: {
+						fr: "Japon",
+						en: "Japan"
+					},
+					items: {
+						"音楽の森（アーティスト）": "//www.minc.gr.jp/db/ArtNmSrch.aspx?ArtNm=%artist-name%",
+						"音楽の森（著作者）": "//www.minc.gr.jp/db/KenriSrch.aspx?KENRISYANM=%artist-family-name-first%"
+					}
+				},
+				VN: {
+					title: {
+						vi: "Việt Nam",
+						fr: "Viêtnam",
+						en: "Vietnam"
+					},
+					items: {
+						"nhạc số": "http://nhacso.net/tim-kiem-nghe-si.html?keyName=%artist-name%",
 					}
 				}
 			}
