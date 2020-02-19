@@ -712,15 +712,14 @@ function addSearchLinksSection(sectionPath, parentNode) {
 				// section.items[itemKey] = item; // not sure I need this
 			}
 			var itemTarget = false;
-			if (Array.isArray(item.target)) {
-				for (var t = 0; t < item.target.length; t++) {
-					itemTarget = replaceAllTokens(getLocalisedText(item.target[t]));
-					if (itemTarget) {
-						break;
-					}
+			if (!Array.isArray(item.target)) {
+				item.target = [item.target];
+			}
+			for (var t = 0; t < item.target.length; t++) {
+				itemTarget = replaceAllTokens(getLocalisedText(item.target[t]));
+				if (itemTarget) {
+					break;
 				}
-			} else {
-				itemTarget = replaceAllTokens(getLocalisedText(item.target));
 			}
 			if (itemTarget) {
 				hasNothing = false;
