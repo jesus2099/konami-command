@@ -119,25 +119,19 @@ var whitelistSearchLinks = {
 				nl: "Liedtekst"
 			},
 			items: {
-				Decoda: {
-					target: [
-						{en: "//www.decoda.com/search?q=%artist-name%"},
-						{en: "//www.decoda.com/search?q=%work-name%"}
-					]
-				},
-				Directlyrics: {
-					target: [
-						{en: "//startpage.com/do/search?q=site:directlyrics.com/*-artist.html+%artist-name%"},
-						{en: "http://www.directlyrics.com/search/?q=%work-name%"}
-					]
-				},
-				LyricWikia: {
-					target: [
-						{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%artist-name%"},
-						{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%release-group-name%"},
-						{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
-					]
-				}
+				Decoda: [
+					{en: "//www.decoda.com/search?q=%artist-name%"},
+					{en: "//www.decoda.com/search?q=%work-name%"}
+				],
+				Directlyrics: [
+					{en: "//startpage.com/do/search?q=site:directlyrics.com/*-artist.html+%artist-name%"},
+					{en: "http://www.directlyrics.com/search/?q=%work-name%"}
+				],
+				LyricWikia: [
+					{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%artist-name%"},
+					{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%release-group-name%"},
+					{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
+				]
 			}
 		},
 		scoreDBs: {
@@ -148,9 +142,7 @@ var whitelistSearchLinks = {
 				nl: "Bladmuziek"
 			},
 			items: {
-				"IMSLP/Petrucci Music Library": {
-					target: "//duckduckgo.com/?q=site:imslp.org+%work-name%"
-				}
+				"IMSLP/Petrucci Music Library": "//duckduckgo.com/?q=site:imslp.org+%work-name%"
 			}
 		},
 		regionalDBs: {
@@ -169,16 +161,12 @@ var whitelistSearchLinks = {
 						nl: "Duitsland"
 					},
 					items: {
-						"Musik-Sammler.de": {
-							target: [
-								{de: "https://www.musik-sammler.de/search/%artist-name%/?q=artist"},
-								{de: "https://www.musik-sammler.de/search/%release-name%/?q=medium"},
-								{de: "https://www.musik-sammler.de/search/%release-group-name%/?q=album"}
-							]
-						},
-						"DNB - Deutsches Musikarchiv": {
-							target: {de: "https://portal.dnb.de/opac.htm?query=%28mat%3DMusic+OR+cod%3Dmt%29+AND+%release-name%&method=simpleSearch&cqlMode=true"}
-						}
+						"Musik-Sammler.de": [
+							{de: "https://www.musik-sammler.de/search/%artist-name%/?q=artist"},
+							{de: "https://www.musik-sammler.de/search/%release-name%/?q=medium"},
+							{de: "https://www.musik-sammler.de/search/%release-group-name%/?q=album"}
+						],
+						"DNB - Deutsches Musikarchiv": {de: "https://portal.dnb.de/opac.htm?query=%28mat%3DMusic+OR+cod%3Dmt%29+AND+%release-name%&method=simpleSearch&cqlMode=true"}
 					}
 				},
 				FR: {
@@ -189,12 +177,10 @@ var whitelistSearchLinks = {
 						nl: "Frankrijk"
 					},
 					items: {
-						"Encyclopédisque": {
-							target: [
-								{fr: "http://www.encyclopedisque.fr/recherche.html?ra=%artist-name%&sp=1#resultat"},
-								{fr: "http://www.encyclopedisque.fr/recherche.html?rd=%release-name%&sp=1#resultat"}
-							]
-						}
+						"Encyclopédisque": [
+							{fr: "http://www.encyclopedisque.fr/recherche.html?ra=%artist-name%&sp=1#resultat"},
+							{fr: "http://www.encyclopedisque.fr/recherche.html?rd=%release-name%&sp=1#resultat"}
+						]
 					}
 				}
 			}
@@ -217,31 +203,21 @@ var whitelistSearchLinks = {
 						{en: "//www.allmusic.com/search/compositions/%work-name%"}
 					]
 				},
-				"BBC Music": {
-					target: {"cy en ga gd": "//www.bbc.co.uk/music/artists/%artist-mbid%"}
-				},
-				Discogs: {
-					target: [
-						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%artist-name%&type=artist"},
-						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-name%&type=release"},
-						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-group-name%&type=master"},
-						{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%label-name%&type=label"}
-					]
-				},
-				GeoNames: {
-					target: [
-						{en: "http://www.geonames.org/search.html?q=%area-name%"},
-						{en: "http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"}
-					]
-				},
-				ISNI: {
-					target: {en: "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%"}
-				},
+				"BBC Music": {"cy en ga gd": "//www.bbc.co.uk/music/artists/%artist-mbid%"},
+				Discogs: [
+					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%artist-name%&type=artist"},
+					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-name%&type=release"},
+					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-group-name%&type=master"},
+					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%label-name%&type=label"}
+				],
+				GeoNames: [
+					{en: "http://www.geonames.org/search.html?q=%area-name%"},
+					{en: "http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"}
+				],
+				ISNI: {en: "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%"},
 				"Last.fm (MBID)": {
-					target: {
-						"en": "http://last.fm/mbid/%artist-mbid%",
-						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/mbid/%artist-mbid%"
-					}
+					"en": "http://last.fm/mbid/%artist-mbid%",
+					"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/mbid/%artist-mbid%"
 				},
 				lastfmName: {
 					title: {en: "Last.fm (name)",	de: "Last.fm (Name)", es: "Last.fm (nombre)", fr: "Last.fm (nom)", it: "Last.fm (Nome)", ja: "Last.fm (名)", pl: "Last.fm (Nazwa)", pt: "Last.fm (nome)", ru: "Last.fm (имя)", sv: "Last.fm (namn)", tr: "Last.fm (ad)", zh: "Last.fm (名)"},
@@ -250,32 +226,24 @@ var whitelistSearchLinks = {
 						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/search?q=%artist-name%"
 					}
 				},
-				"Rate Your Music": {
-					target: [
-						{en: "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%"},
-						{en: "//rateyourmusic.com/search?searchtype=b&searchterm=%label-name%"},
-						{en: "//rateyourmusic.com/search?searchtype=l&searchterm=%release-name%"},
-						{en: "//rateyourmusic.com/search?searchtype=r&searchterm=%work-name%"}
-					]
-				},
-				SecondHandSongs: {
-					target: [
-						{en: "//secondhandsongs.com/search/artist?sel[]=common_name&val[]=%artist-name%"},
-						{en: "//secondhandsongs.com/search/label?sel[]=name&val[]=%label-name%"},
-						{en: "//secondhandsongs.com/search/performance?sel[]=title&val[]=%recording-name%"},
-						{en: "//secondhandsongs.com/search/release?sel[]=title&val[]=%release-name%"},
-						{en: "//secondhandsongs.com/search/work?sel[]=title&val[]=%work-name%"}
-					]
-				},
-				WhoSampled: {
-					target: [
-						{en: "//www.whosampled.com/search/artists/?q=%artist-name%"},
-						{en: "//www.whosampled.com/search/tracks/?q=%recording-name%"}
-					]
-				},
-				Wikipedia: {
-					target: "//duckduckgo.com/?q=site:wikipedia.org+%22%entity-name%%22"
-				}
+				"Rate Your Music": [
+					{en: "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%"},
+					{en: "//rateyourmusic.com/search?searchtype=b&searchterm=%label-name%"},
+					{en: "//rateyourmusic.com/search?searchtype=l&searchterm=%release-name%"},
+					{en: "//rateyourmusic.com/search?searchtype=r&searchterm=%work-name%"}
+				],
+				SecondHandSongs: [
+					{en: "//secondhandsongs.com/search/artist?sel[]=common_name&val[]=%artist-name%"},
+					{en: "//secondhandsongs.com/search/label?sel[]=name&val[]=%label-name%"},
+					{en: "//secondhandsongs.com/search/performance?sel[]=title&val[]=%recording-name%"},
+					{en: "//secondhandsongs.com/search/release?sel[]=title&val[]=%release-name%"},
+					{en: "//secondhandsongs.com/search/work?sel[]=title&val[]=%work-name%"}
+				],
+				WhoSampled: [
+					{en: "//www.whosampled.com/search/artists/?q=%artist-name%"},
+					{en: "//www.whosampled.com/search/tracks/?q=%recording-name%"}
+				],
+				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+%22%entity-name%%22"
 			}
 		}
 	}
@@ -296,9 +264,7 @@ var additionalSearchLinks = {
 				nl: "Liedtekst"
 			},
 			items: {
-				WikiParoles: {
-					target: {fr: "http://fr.lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
-				}
+				WikiParoles: {fr: "http://fr.lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
 			}
 		},
 		regionalDBs: {
@@ -318,10 +284,8 @@ var additionalSearchLinks = {
 					},
 					items: {
 						SACEM: {
-							target: {
-								fr: "https://repertoire.sacem.fr/resultats?filters=titles&query=%work-name%#searchBtn",
-								en: "https://repertoire.sacem.fr/en/results?filters=titles&query=%work-name%#searchBtn"
-							}
+							fr: "https://repertoire.sacem.fr/resultats?filters=titles&query=%work-name%#searchBtn",
+							en: "https://repertoire.sacem.fr/en/results?filters=titles&query=%work-name%#searchBtn"
 						},
 						sacemWorks: {
 							title: {fr: "SACEM (œuvres)", en: "SACEM (works)"},
@@ -732,7 +696,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 		var itemPath = sectionPath.concat([itemKey]);
 		var itemID = pathToID(itemPath);
 		var itemNode = createTag("li", {a: {id: itemID}});
-		if (item.items) {
+		if (typeof item === "object" && item.items) {
 			hasNothing = false;
 			sectionListNode.appendChild(itemNode);
 			var subIsVisible = addSearchLinksSection(itemPath, itemNode);
@@ -742,6 +706,11 @@ function addSearchLinksSection(sectionPath, parentNode) {
 				itemNode.classList.add("emptySection");
 			}
 		} else {
+			// "key": <target> → "key": {"target": <target>}
+			if (typeof item !== "object" || !item.target) {
+				item = {target: item};
+				// section.items[itemKey] = item; // not sure I need this
+			}
 			var itemTarget = false;
 			if (Array.isArray(item.target)) {
 				for (var t = 0; t < item.target.length; t++) {
