@@ -119,21 +119,25 @@ var whitelistSearchLinks = {
 				nl: "Liedtekst"
 			},
 			items: {
-				Genius: "//genius.com/search?q=%artist-name%",
+				Genius: [
+					"//genius.com/search?q=%artist-name%",
+					"//genius.com/search?q=%recording-name%",
+					"//genius.com/search?q=%work-name%",
+				],
 				Decoda: [
 					{en: "//www.decoda.com/search?q=%artist-name%"},
 					{en: "//www.decoda.com/search?q=%work-name%"}
 				],
 				"歌詞タイム": "//duckduckgo.com/?q=site%3Akasi-time.com+subcat+intitle:%artist-name%",
 				Directlyrics: [
-					{en: "//startpage.com/do/search?q=site:directlyrics.com/*-artist.html+%artist-name%"},
-					{en: "http://www.directlyrics.com/search/?q=%work-name%"}
+					"//directlyrics.com/search?q=%artist-name%+inurl%3A-artist.html",
+					"//directlyrics.com/search?q=%work-name%+inurl%3A-lyrics.html"
 				],
-				LyricWiki: "//lyrics.wikia.com/%artist-name%",
-				LyricWikia: [
-					{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%artist-name%"},
-					{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%release-group-name%"},
-					{en: "http://lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
+				LyricWiki: [
+					"//lyrics.fandom.com/wiki/%artist-name%",
+					"//lyrics.fandom.com/wiki/Special:Search?search=%release-group-name%",
+					"//lyrics.fandom.com/wiki/Special:Search?search=%release-name%",
+					"//lyrics.fandom.com/wiki/Special:Search?search=%work-name%"
 				]
 			}
 		},
@@ -289,16 +293,16 @@ var whitelistSearchLinks = {
 					{en: "//secondhandsongs.com/search/release?sel[]=title&val[]=%release-name%"},
 					{en: "//secondhandsongs.com/search/work?sel[]=title&val[]=%work-name%"}
 				],
-				xWhoSampled: "//www.whosampled.com/search/artists/?h=1&q=%artist-name%",
 				WhoSampled: [
-					{en: "//www.whosampled.com/search/artists/?q=%artist-name%"},
-					{en: "//www.whosampled.com/search/tracks/?q=%recording-name%"}
+					"//www.whosampled.com/search/artists/?q=%artist-name%",
+					"//www.whosampled.com/search/tracks/?q=%recording-name%",
+					"//www.whosampled.com/search/tracks/?q=%work-name%"
 				],
-				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+%22%entity-name%%22",
-				"Wikipedia (en)": "//en.wikipedia.org/w/index.php?search=%artist-name%",
-				"Wikipedia (fr)": "//fr.wikipedia.org/w/index.php?search=%artist-name%",
-				"Wikipedia (ja)": "//ja.wikipedia.org/w/index.php?search=%artist-name%",
-				"Wikipedia (vi)": "//vi.wikipedia.org/w/index.php?search=%artist-name%"
+				"Wikipedia (*)": "//duckduckgo.com/?q=site:wikipedia.org+%22%entity-name%%22",
+				WikipediaGenuine: {
+					title: {"en fr ja vi": "Wikipedia (%language%)"},
+					target: {"en fr ja vi": "//%language%.wikipedia.org/w/index.php?search=%artist-name%"}
+				}
 			}
 		}
 	}
