@@ -366,9 +366,9 @@ var additionalSearchLinks = {
 	}
 };
 var searchLinks = {items: {
-	web: webSearchLinks,
+	additional: additionalSearchLinks,
 	whitelist: whitelistSearchLinks,
-	additional: additionalSearchLinks
+	web: webSearchLinks
 }};
 var disabledSearchLinks = {};
 var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/61960dd9ebd5b77c6f1199815160e63b3383437e/lib/MusicBrainz/Server/Entity/URL/Sidebar.pm
@@ -524,11 +524,17 @@ function main() {
 					tokenValues["%url-target%"] = entityName;
 				}
 			}
-			extlinks = sidebar.querySelector(".external_links");
+			extlinks = sidebar.querySelector("h2.external-links + ul.external_links");
 			if (!extlinks) {
 				extlinks = addAfter(createTag("ul", {a: {class: "external_links"}}, createTag("li", {}, "No white‐listed links yet.")), sidebar.querySelector("div.sidebar-tags"));
 				addAfter(createTag("h2", {a: {class: "external-links"}}, "External links"), sidebar.querySelector("div.sidebar-tags"));
 			} 
+			var editingBlock = sidebar.querySelector("h2.editing + ul.links");
+			if (editingBlock) {
+				// We want to move external links (including release group ones) after editing block
+				editingBlock = sidebar.insertBefore(sidebar.removeChild(editingBlock), sidebar.querySelector("h2.external-links"));
+				sidebar.insertBefore(sidebar.removeChild(sidebar.querySelector("h2.editing")), editingBlock);
+			}
 			// Hidden links
 			entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
 			addHiddenLinks();
@@ -700,15 +706,8 @@ function addSearchLinksSection(sectionPath, parentNode) {
 	var sectionTitleNode = createTag("h" + (1 + level), {a: {id: sectionID}}, section.title ? getLocalisedText(section.title) : sectionPath[sectionPath.length - 1]);
 	if (level === 1) {
 		sectionTitleNode.classList.add(userjs + "searchLinks");
-		var landingSibling = false;
-		for (var n = 0; n < parentNode.children.length; n++) {
-			if (parentNode.children[n].classList.contains("editing")) {
-				landingSibling = parentNode.children[n];
-				break;
-			}
-		}
-		if (landingSibling) {
-			parentNode.insertBefore(sectionTitleNode, landingSibling);
+		if (parentNode == extlinks.parentNode) {
+			addAfter(sectionTitleNode, extlinks);
 		} else {
 			parentNode.appendChild(sectionTitleNode);
 		}
@@ -862,14 +861,8 @@ function addUserLinks() {
 			createTag("img", {a: {src: "/static/images/icons/cog.png", alt: "configure user autolinks", title: "configure user autolinks"}})
 		)
 	);
-	var landingSibling = false;
-	for (var n = 0; n < sidebar.children.length; n++)
-		if (sidebar.children[n].classList.contains("editing")) {
-			landingSibling = sidebar.children[n];
-			break;
-		}
-	if (landingSibling) {
-		sidebar.insertBefore(userLinksTitleNode, landingSibling);
+	if (parentNode == extlinks.parentNode) {
+		addAfter(userLinksTitleNode, extlinks);
 	} else {
 		parentNode.appendChild(userLinksTitleNode);
 	}
