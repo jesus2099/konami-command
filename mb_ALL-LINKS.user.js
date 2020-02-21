@@ -128,6 +128,7 @@ var whitelistSearchLinks = {
 					{en: "//www.decoda.com/search?q=%artist-name%"},
 					{en: "//www.decoda.com/search?q=%work-name%"}
 				],
+				"J-Lyric（歌手）": "http://j-lyric.net/index.php?ka=%artist-name%",
 				"歌詞タイム": "//duckduckgo.com/?q=site%3Akasi-time.com+subcat+intitle:%artist-name%",
 				Directlyrics: [
 					"//directlyrics.com/search?q=%artist-name%+inurl%3A-artist.html",
@@ -138,6 +139,12 @@ var whitelistSearchLinks = {
 					"//lyrics.fandom.com/wiki/Special:Search?search=%release-group-name%",
 					"//lyrics.fandom.com/wiki/Special:Search?search=%release-name%",
 					"//lyrics.fandom.com/wiki/Special:Search?search=%work-name%"
+				],
+				WikiParoles: [
+					"//lyrics.fandom.com/fr/wiki/%artist-name%",
+					"//lyrics.fandom.com/fr/wiki/Spécial:Recherche?search=%release-group-name%",
+					"//lyrics.fandom.com/fr/wiki/Spécial:Recherche?search=%release-name%",
+					"//lyrics.fandom.com/fr/wiki/Spécial:Recherche?search=%work-name%"
 				]
 			}
 		},
@@ -205,8 +212,8 @@ var whitelistSearchLinks = {
 					},
 					items: {
 						"Encyclopédisque": [
-							{fr: "http://www.encyclopedisque.fr/recherche.html?ra=%artist-name%&sp=1#resultat"},
-							{fr: "http://www.encyclopedisque.fr/recherche.html?rd=%release-name%&sp=1#resultat"}
+							"http://www.encyclopedisque.fr/recherche.html?ra=%artist-name%&sp=1#resultat",
+							"http://www.encyclopedisque.fr/recherche.html?rd=%release-name%&sp=1#resultat"
 						]
 					}
 				}
@@ -252,7 +259,6 @@ var whitelistSearchLinks = {
 						{en: "//www.allmusic.com/search/compositions/%work-name%"}
 					]
 				},
-				"BBC Music": {"cy en ga gd": "//www.bbc.co.uk/music/artists/%artist-mbid%"},
 				Discogs: [
 					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%artist-name%&type=artist"},
 					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-name%&type=release"},
@@ -278,30 +284,30 @@ var whitelistSearchLinks = {
 						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/search?q=%artist-name%"
 					}
 				},
-				"BBC Music": "http://www.bbc.co.uk/music/artists/%artist-id%",
+				"BBC Music": "http://www.bbc.co.uk/music/artists/%artist-mbid%",
 				"Rate Your Music": [
 					{en: "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%"},
 					{en: "//rateyourmusic.com/search?searchtype=b&searchterm=%label-name%"},
 					{en: "//rateyourmusic.com/search?searchtype=l&searchterm=%release-name%"},
 					{en: "//rateyourmusic.com/search?searchtype=r&searchterm=%work-name%"}
 				],
-				"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
 				SecondHandSongs: [
-					{en: "//secondhandsongs.com/search/artist?sel[]=common_name&val[]=%artist-name%"},
-					{en: "//secondhandsongs.com/search/label?sel[]=name&val[]=%label-name%"},
-					{en: "//secondhandsongs.com/search/performance?sel[]=title&val[]=%recording-name%"},
-					{en: "//secondhandsongs.com/search/release?sel[]=title&val[]=%release-name%"},
-					{en: "//secondhandsongs.com/search/work?sel[]=title&val[]=%work-name%"}
+					"//secondhandsongs.com/search/artist?op_commonName=contains&commonName=%artist-name%&op_type=equals&display=commonName.type&sort=simplifiedCommonName",
+					"//secondhandsongs.com/search/label?op_name=contains&name=%label-name%&display=name&sort=simplifiedName",
+					"//secondhandsongs.com/search/performance?op_title=contains&title=%recording-name%&op_performer=contains&display=title.performer&sort=simplifiedTitle",
+					"//secondhandsongs.com/search/release?op_title=contains&title=%release-name%&op_performer=contains&display=title.performer&sort=simplifiedTitle",
+					"//secondhandsongs.com/search/work?op_title=contains&title=%work-name%&op_credits=contains&display=title.credits&sort=simplifiedTitle"
 				],
 				WhoSampled: [
 					"//www.whosampled.com/search/artists/?q=%artist-name%",
 					"//www.whosampled.com/search/tracks/?q=%recording-name%",
 					"//www.whosampled.com/search/tracks/?q=%work-name%"
 				],
-				"Wikipedia (*)": "//duckduckgo.com/?q=site:wikipedia.org+%22%entity-name%%22",
-				WikipediaGenuine: {
-					title: {"en fr ja vi": "Wikipedia (%language%)"},
-					target: {"en fr ja vi": "//%language%.wikipedia.org/w/index.php?search=%artist-name%"}
+				Wikidata: "//www.wikidata.org/w?search=%entity-name%",
+				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+intitle%3A%22%entity-name%%22",
+				LocalWikipedia: {
+					title: {"en fr ja vi de nl": "Wikipedia (%language%)"},
+					target: {"en fr ja vi de nl": "//%language%.wikipedia.org/w?search=%entity-name%"}
 				}
 			}
 		}
@@ -315,18 +321,6 @@ var additionalSearchLinks = {
 		nl: "Zoeken verder naar"
 	},
 	items: {
-		lyricsDBs: {
-			title: {
-				de: "Liedtext",
-				en: "Lyrics",
-				fr: "Paroles",
-				nl: "Liedtekst"
-			},
-			items: {
-				"J-Lyric（歌手）": "http://j-lyric.net/index.php?ka=%artist-name%",
-				WikiParoles: {fr: "http://fr.lyrics.wikia.com/wiki/Special:Search?search=%work-name%"}
-			}
-		},
 		regionalDBs: {
 			title: {
 				de: "Pro Gebiet",
@@ -343,22 +337,18 @@ var additionalSearchLinks = {
 						nl: "Frankrijk"
 					},
 					items: {
-						SACEM: {
-							fr: "https://repertoire.sacem.fr/resultats?filters=titles&query=%work-name%#searchBtn",
-							en: "https://repertoire.sacem.fr/en/results?filters=titles&query=%work-name%#searchBtn"
-						},
-						sacemWorks: {
-							title: {fr: "SACEM (œuvres)", en: "SACEM (works)"},
-							target: [
-								{
-									fr: "https://repertoire.sacem.fr/resultats?filters=parties&query=%artist-name%#searchBtn",
-									en: "https://repertoire.sacem.fr/en/results?filters=parties&query=%artist-name%#searchBtn"
-								}, {
-									fr: "https://repertoire.sacem.fr/resultats?filters=parties&query=%label-name%#searchBtn",
-									en: "https://repertoire.sacem.fr/en/results?filters=parties&query=%label-name%#searchBtn"
-								}
-							]
-						}
+						SACEM: [
+							{
+								fr: "//repertoire.sacem.fr/resultats?filters=titles&query=%work-name%#searchBtn",
+								"de en nl": "//repertoire.sacem.fr/en/results?filters=titles&query=%work-name%#searchBtn"
+							}, {
+								fr: "//repertoire.sacem.fr/resultats?filters=parties&query=%artist-name%#searchBtn",
+								"de en nl": "//repertoire.sacem.fr/en/results?filters=parties&query=%artist-name%#searchBtn"
+							}, {
+								fr: "//repertoire.sacem.fr/resultats?filters=parties&query=%label-name%#searchBtn",
+								"de en nl": "//repertoire.sacem.fr/en/results?filters=parties&query=%label-name%#searchBtn"
+							}
+						]
 					}
 				},
 				JP: {
@@ -369,16 +359,6 @@ var additionalSearchLinks = {
 					items: {
 						"音楽の森（アーティスト）": "//www.minc.gr.jp/db/ArtNmSrch.aspx?ArtNm=%artist-name%",
 						"音楽の森（著作者）": "//www.minc.gr.jp/db/KenriSrch.aspx?KENRISYANM=%artist-family-name-first%"
-					}
-				},
-				VN: {
-					title: {
-						vi: "Việt Nam",
-						fr: "Viêtnam",
-						en: "Vietnam"
-					},
-					items: {
-						"nhạc số": "http://nhacso.net/tim-kiem-nghe-si.html?keyName=%artist-name%",
 					}
 				}
 			}
@@ -522,6 +502,7 @@ function main() {
 					var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
 					var artistname = entityName;
 					var artistsortname, artistsortnameSwapped = "";
+					//TODO: artistsortname now gets disambiguation comment instead of sortname
 					artistsortname = tokenValues["%artist-sort-name%"] = entityNameNode.getAttribute("title");
 					if (!artistname.match(nonLatinName)) {
 						tokenValues["%artist-family-name-first%"] = artistsortname;
