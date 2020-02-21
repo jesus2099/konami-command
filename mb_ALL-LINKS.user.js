@@ -501,9 +501,9 @@ function main() {
 				if (entityType == "artist") {
 					var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
 					var artistname = entityName;
-					var artistsortname, artistsortnameSwapped = "";
-					//TODO: artistsortname now gets disambiguation comment instead of sortname
-					artistsortname = tokenValues["%artist-sort-name%"] = entityNameNode.getAttribute("title");
+					var artistsortname = sidebar.querySelector("dd.sort-name");
+					var artistsortnameSwapped = "";
+					artistsortname = tokenValues["%artist-sort-name%"] = artistsortname ? artistsortname.textContent : artistname;
 					if (!artistname.match(nonLatinName)) {
 						tokenValues["%artist-family-name-first%"] = artistsortname;
 						tokenValues["%artist-latin-script-name%"] = artistname;
