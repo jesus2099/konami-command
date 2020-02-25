@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2019.8.20
+// @version      2020.2.5
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -18,7 +18,7 @@
 // @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/artist/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/recordings/
 // @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/edit/\d+/
 // @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/edit/subscribed/
-// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/release/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$)/
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/release/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
 // @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/search/edits\?/
 // @run-at       document-end
 // ==/UserScript==
