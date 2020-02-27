@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2019.11.20.1310
+// @version      2020.2.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
@@ -417,7 +417,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					span.appendChild(document.createTextNode(" "));
 					var suppo = span.appendChild(document.createElement("sup"));
 					suppo.appendChild(createA("音", workLookupURL("minc", "code", sakuhinCode), "This work in 音楽の森"));
-					suppo.appendChild(createA("N", workLookupURL("minc", "code", sakuhinCode), "This work in NexTone"));
+					suppo.appendChild(createA("N", workLookupURL("nextone", "code", sakuhinCode), "This work in NexTone"));
 					suppo.appendChild(createA("M", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz"));
 					span.appendChild(document.createTextNode(" "));
 					span.appendChild(document.createTextNode(workName));
