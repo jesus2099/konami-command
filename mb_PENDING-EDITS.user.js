@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2019.11.18
+// @version      2020.3.4
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @compatible   vivaldi(2.8.1664.40)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -145,8 +145,8 @@ function checkOpenEdits(obj) {
 				&& !isNaN(editCount)
 			) {
 				editDetails = {
-					types: this.responseText.match(/[^<>]+(?=<\/bdi><\/a><\/h2>)/g),
-					editors: this.responseText.match(new RegExp("</h2><p class=\"subheader\">[\\S\\s]+?<a href=\"/user/[^/]+\">[\\S\\s]+?</p>", "g"))
+					types: Array.from(this.responseText.match(/<h2><a href="[^"]+"><bdi>[^<]+<\/bdi><\/a><\/h2>/g), x => x.replace(/^.+ - /, "- ").replace(/<\/bdi>.+$/, "")),
+					editors: Array.from(this.responseText.match(/<\/h2><p class="subheader">[\S\s]+?<a href="\/user\/[^/]+">[\S\s]+?<\/p>/g), x => decodeURIComponent(x.replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, "")))
 				};
 			} else {
 				editCount = 0;
@@ -176,8 +176,8 @@ function updateLink(obj, pecount, details, more) {
 			if (details.types.length > 0 && details.types.length == details.editors.length) {
 				var titarray = [], dupcount = 0, dupreset;
 				for (var d = 0; d < details.types.length; d++) {
-					var thistit = details.types[d].replace(/^.+ - /, "- ");
-					var editor = decodeURIComponent(details.editors[d].replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""));
+					var thistit = details.types[d];
+					var editor = details.editors[d];
 					if (editor != account) {
 						thistit += " (" + editor + ")";
 					}
