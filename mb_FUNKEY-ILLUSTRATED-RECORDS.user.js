@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2020.2.25
+// @version      2020.3.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @homepage     http://userscripts-mirror.org/scripts/show/154481
@@ -79,7 +79,7 @@ for (var t = 0; t < types.length; t++) {
 			if (smallpics && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
 				var margin = "-12px 0px -14px 0px";
 				as[a].parentNode.insertBefore(
-					createTag("div", {s: {float: "right", marginRight: ".5em"}}, [
+					createTag("div", {a: {class: userjs}, s: {float: "right", marginRight: ".5em"}}, [
 						"⌛",
 						createTag("a", {a: {href: imgurl}, s: {display: "none"}}, [
 							createTag("img", {

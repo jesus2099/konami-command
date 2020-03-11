@@ -183,6 +183,7 @@ if (mergeType) {
 					for (var c = 0; c < releaseCell.childNodes.length; c++) {
 						releases[mediums[m].value].fragment.appendChild(releaseCell.childNodes[c].cloneNode(true));
 					}
+					removeNode(releases[mediums[m].value].fragment.querySelector("div.jesus2099userjs154481"));
 					var a = releases[mediums[m].value].fragment.querySelector("a[href^='/release/']");
 					if (a.tagName != "A") a = a.getElementsByTagName("a")[0];
 					a.setAttribute("target", "_blank");
