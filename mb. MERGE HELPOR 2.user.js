@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2019.12.20.1700
+// @version      2020.3.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -183,7 +183,7 @@ if (mergeType) {
 					for (var c = 0; c < releaseCell.childNodes.length; c++) {
 						releases[mediums[m].value].fragment.appendChild(releaseCell.childNodes[c].cloneNode(true));
 					}
-					var a = releases[mediums[m].value].fragment.firstChild;
+					var a = releases[mediums[m].value].fragment.querySelector("a[href^='/release/']");
 					if (a.tagName != "A") a = a.getElementsByTagName("a")[0];
 					a.setAttribute("target", "_blank");
 					a.style.setProperty("color", self.getComputedStyle(releaseCell.getElementsByTagName("a")[0]).getPropertyValue("color"));
