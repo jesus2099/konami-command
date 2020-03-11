@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2020.1.3
+// @version      2020.3.11
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -506,7 +506,7 @@ if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + 
 ## EASY_DATE ## basic paste-a-date!-like (https://userscripts.org/121217)
 =========================================================================*/
 j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it\r\nascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197)\r\n\r\nPress “C” to copy current date into the other (begin→end or end→begin)\r\nPress “D” to delete dates");
-if (j2sets.EASY_DATE) {
+if (j2sets.EASY_DATE && !location.pathname.match(/^\/account\/edit/)) {
 	EASY_DATE_init();
 	document.body.addEventListener("DOMNodeInserted", EASY_DATE_calmDOM, false);
 }
