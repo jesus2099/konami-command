@@ -185,7 +185,6 @@ if (mergeType) {
 					}
 					removeNode(releases[mediums[m].value].fragment.querySelector("div.jesus2099userjs154481"));
 					var a = releases[mediums[m].value].fragment.querySelector("a[href^='/release/']");
-					if (a.tagName != "A") a = a.getElementsByTagName("a")[0];
 					a.setAttribute("target", "_blank");
 					a.style.setProperty("color", self.getComputedStyle(releaseCell.getElementsByTagName("a")[0]).getPropertyValue("color"));
 					releases[mediums[m].value].title = a.textContent;
