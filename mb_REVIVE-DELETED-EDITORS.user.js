@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2019.6.2
+// @version      2020.4.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
-// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (ho.)
-// @compatible   vivaldi(2.2.1388.37)+violentmonkey  my setup (of.)
+// @compatible   vivaldi(2.11.1811.52)+violentmonkey my setup
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
 // @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
@@ -71,6 +70,7 @@ var editors = {
 	   "448034": ["2009-02-07", "2012-03-05", "maviles"],
 	   "450522": ["2009-02-21", "2011-05-24", "dr_zepsuj"],
 	   "457889": ["2009-04-12", "2014-01-12", "deivsonscherzinger"],
+	   "503832": ["2010-05-04", "2014-09-02", "Arctic"],
 	   "563581": ["2011-06-13", "2015-04-04", null, "Russian 39,274 edits"],
 	   "619363": ["2012-01-02", "2013-01-15", "ra7h35m20s"],
 	   "629372": ["2012-04-04", "2014-04-08", "nightspirit"],
