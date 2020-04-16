@@ -2,10 +2,9 @@
 // @name         mb. PENDING EDITS
 // @version      2020.3.4
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
-// @compatible   vivaldi(2.8.1664.40)+violentmonkey  my setup (office)
-// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
-// @compatible   firefox(64.0)+greasemonkey          tested sometimes
-// @compatible   chrome+violentmonkey                should be same as vivaldi
+// @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
+// @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/

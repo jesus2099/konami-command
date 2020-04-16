@@ -1,21 +1,15 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
 // @version      2020.4.16
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac_DIRECT-LINK.user.js
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
-// @homepage     http://userscripts-mirror.org/scripts/show/131591
-// @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac_DIRECT-LINK
-// @compatible   vivaldi(1.15.1147.64)+violentmonkey  my o. setup (Chrome based)
-// @compatible   firefox+greasemonkey                sometimes tested
-// @compatible   chrome+tampermonkey                 should be same as Vivaldi
-// @compatible   opera(12.18.1872)+violentmonkey     my former setup
+// @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
+// @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/jasrac_DIRECT-LINK.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/jasrac_DIRECT-LINK.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2012-04-22
+// @since        2012-04-22; http://userscripts-mirror.org/scripts/show/131591
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @include      http://www2.jasrac.or.jp/eJwid/*
