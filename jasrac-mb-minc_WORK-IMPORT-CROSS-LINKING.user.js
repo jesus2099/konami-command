@@ -202,7 +202,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 	var instrumental = "instrumental";
 	if (DEBUG) console.log(userjs + " pagecat : " + pagecat);
 	switch (pagecat) {
-		case "jasrac":
+		case "jasrac":setTimeout(function(){ // quick and dirty patch
 			var workName;
 			var sakuhinCode;
 			var iswc;
@@ -212,21 +212,19 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			var tables = document.getElementsByTagName("table");
 			if (tables) {
 				var work = tables[1];
-				if (work) {
-					var sakuhin = work.getElementsByTagName("b")[2].firstChild;
-					var tmp = sakuhin.nodeValue.split("\u00a0");
-					workName = fixSTR(tmp[2]);
-					sakuhinCode = tmp[1];
+				if (true || work) { // quick and dirty patch
+					workName = document.querySelector(".baseinfo--name").textContent.trim();
+					sakuhinCode = document.querySelector(".baseinfo--code strong").textContent;
 					document.title = workName + "　" + sakuhinCode + "　" + document.title;
 					createWork += encodeURIComponent(fullwidthToHalfwidth(workName)).replace(/%20/g, "+");
 					summary += workName + " (work code '''" + sakuhinCode + "'''/" + sakuhinCode.replace(/-/g, "");
-					var iswcLink = work.getElementsByTagName("a");
-					if (iswcLink.length > 3) {
-						iswc = iswcLink[3].parentNode.parentNode.lastChild.nodeValue.replace(" ", "").substring(0, 15);
-						summary += " — ISWC '''" + iswc + "'''/" + iswc.replace(/[-\.]/g, "");
+					iswc = document.querySelector(".baseinfo--iswc strong");
+					if (iswc) {
+						iswc = {node: iswc, value: iswc.textContent};
+						summary += " — ISWC '''" + iswc.value + "'''/" + iswc.value.replace(/[-\.]/g, "");
 					}
 					summary += ")\n";
-					var srccred = tables[3];
+					/*var srccred = tables[3];
 					if (srccred) {
 						var tmpcred = "";
 						var credtr = srccred.getElementsByTagName("tr");
@@ -237,7 +235,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 									var credit = {role: credtd[2].textContent.trim(), who: credtd[1].textContent.trim()};
 									credit["trust"] = credtd[4].textContent.trim();
 									if (credit.trust != "") {
-										credit.trust = "\u00a0（信託状況：" + credit.trust /* + (!credit.trust.match(/全信託/) ? "sic" : "")*/;
+										credit.trust = "\u00a0（信託状況：" + credit.trust; // + (!credit.trust.match(/全信託/) ? "sic" : "")
 									}
 									credit["manager"] = credtd[5].textContent.trim();
 									if (credit.manager != "") {
@@ -325,7 +323,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 							summary += tmpali + "\n";
 						}
 						summary += "\n";
-					}
+					}*/
 			/* -- vv ------ copiable full summary ------ vv -- */
 					var tr = document.createElement("tr");
 					var td = document.createElement("td");
@@ -361,8 +359,8 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.attributes.0.value", value: sakuhinCode}}));
 					createWork += "&edit-work.attributes.0.type_id=3&edit-work.attributes.0.value=" + sakuhinCode;
 					if (iswc) {
-						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.iswcs.0", value: iswc}}));
-						createWork += "&edit-work.iswcs.0=" + iswc;
+						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.iswcs.0", value: iswc.value}}));
+						createWork += "&edit-work.iswcs.0=" + iswc.value;
 					}
 					if (isVocal) {
 						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.type_id", value: "17"}}));
@@ -397,7 +395,8 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						this.parentNode.submit();
 						return stop(event);
 					}}}, "Add to MB"));*/
-					form.appendChild(createTag("a", {a: {href: createWork, title : MBS7313 + "\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "underline", color: "blue"}}, "Add to MusicBrainz"))
+					form.appendChild(createTag("a", {a: {href: createWork, title : MBS7313 + "\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "blink line-through", color: "blue"}}, "BROKEN")) // textDecoration: "underline" Add to MusicBrainz
+					var sakuhin = document.querySelector(".baseinfo--name").firstChild; // quick and dirty patch
 					sakuhin.parentNode.appendChild(document.createTextNode(" （"));
 					sakuhin.parentNode.appendChild(form);
 					sakuhin.parentNode.appendChild(document.createTextNode("）"));
@@ -418,10 +417,11 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					sakuhin = replaceElement(span, sakuhin); /*TODO replaceChild returns sakuhin already (removed element), no ?*/
 			/* -- vv ------ iswc links ------ vv -- */
 					if (iswc) {
-						addAfter(document.createElement("sup"), iswcLink[iswcLink.length - 1].parentNode.parentNode.lastChild).appendChild(createA("M", workLookupURL("mb", "iswc", iswc), "Search this ISWC in MusicBrainz"));
+						addAfter(createTag("sup", {}, createA("M", workLookupURL("mb", "iswc", iswc.value), "Search this ISWC in MusicBrainz")), iswc.node);
+						addAfter(document.createTextNode(" "), iswc.node);
 					}
 				}
-			}
+			}}, 4000); // quick and dirty patch
 			break;
 		case "minc":
 			var sakuhinmei = document.querySelector("a[href='#sakuhinmei']");
