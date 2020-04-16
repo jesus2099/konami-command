@@ -67,6 +67,7 @@ if (self == top && document.body.textContent.match(/システムエラーが発�
 			}
 		}
 	} catch(error) {} */
+	selectDomain();
 	document.body.appendChild(createTag("a", {href: home}, {"background-color": "#ff9", "font-weight": "bold", position: "fixed", top: "0", right: "49%", padding: "0 4px 4px 4px", border: "2px solid orange", "border-top": "none"}, {click: function(event) { hasHome(true); }, mouseover: function(event) { this.replaceChild(hasHome(), this.firstChild); }}, hasHome()));
 	var works = document.querySelectorAll("table.contentsTable td > a[name='AUTO_JUMP'][target='_blank']");
 	for (var a = 0; a < works.length; a++) {
@@ -118,4 +119,14 @@ function createTag(tag, attribs, styles, events, child) {
 	for (var evt in events) { if (events.hasOwnProperty(evt)) { t.addEventListener(evt, events[evt], false); } }
 	if (child) { t.appendChild(child); }
 	return t;
+}
+function selectDomain() {
+	if (!document.querySelector("#loading")) {
+		var recordsButton = document.querySelector("ul.management-main > li > a > .rec_btn");
+		if (recordsButton) {
+			recordsButton.parentNode.click();
+		}
+	} else {
+		setTimeout(selectDomain, 333);
+	}
 }
