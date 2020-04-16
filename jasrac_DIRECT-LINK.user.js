@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
-// @version      2018.8.20
+// @version      2020.4.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac_DIRECT-LINK.user.js
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
 // @homepage     http://userscripts-mirror.org/scripts/show/131591
@@ -22,7 +22,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var as, home = "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=F00100";
+var proceedButton, home = "http://www2.jasrac.or.jp/eJwid/main?trxID=F00100";
 /* mark visited links */
 var j2css = document.createElement("style");
 j2css.setAttribute("type", "text/css");
@@ -50,7 +50,7 @@ for (var c = 0; c < cells.length; c++) if (!cells[c].textContent.match(/\d[A-Z\d
 	}
 }
 /* make connection, etc. */
-if (self == top && document.body.textContent.match(/接続が切断されました。再度、了承画面からお願い致します。|システムエラーです。(.+)/) && (as = document.querySelectorAll("body > a")).length == 1 && as[0].textContent.match(/作品データベース検索サービスへ/) && as[0].getAttribute("target").match(/_top/i)) {
+if (self == top && document.body.textContent.match(/システムエラーが発生しました。（エラー番号021）/) && (proceedButton = document.querySelector("form > button[type='submit']")) && proceedButton.textContent.match(/J-WID トップページに進む/)) {
 	removeChildren(document.body);
 	var toto = document.body.appendChild(createTag("div", {}, {"background-color": "purple", border: ".5em solid black", color: "white", "font-size": "2em", "font-weight": "bold", margin: "1em", padding: "2em", "text-align": "center", "text-shadow": "1px 2px 2px black"}, {}, document.createTextNode("接続中")));
 	document.title = toto.textContent;
@@ -78,7 +78,7 @@ if (self == top && document.body.textContent.match(/接続が切断されまし�
 	for (var a = 0; a < works.length; a++) {
 		works[a].removeAttribute("target");
 	}
-} else if (self.location.pathname == "/eJwid/main.jsp") {
+} else if (self.location.pathname == "/eJwid/main") {
 	var results = document.querySelector("select[name='IN_DEFAULT_WORKS_KOUHO_MAX']");
 	if (results) { results.selectedIndex = results.options.length - 1; }
 	var title = document.querySelector("input[type='text'][name='IN_WORKS_TITLE_NAME1']");
