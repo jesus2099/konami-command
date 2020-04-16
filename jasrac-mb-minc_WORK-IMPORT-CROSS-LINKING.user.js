@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2020.2.27
+// @version      2020.4.16
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @homepage     http://userscripts-mirror.org/scripts/show/94676
@@ -24,7 +24,7 @@ var meta = function() {
 // @match        *://*.mbsandbox.org/work/*
 // @match        *://*.musicbrainz.org/work/*
 // @match        *://www.minc.gr.jp/db/*
-// @match        *://www2.jasrac.or.jp/eJwid/main.jsp?trxID=*WORKS_CD=*
+// @match        *://www2.jasrac.or.jp/eJwid/main?trxID=*WORKS_CD=*
 // @exclude      *.org/work/*/*edits*
 // @run-at       document-end
 // ==/UserScript==
@@ -937,7 +937,7 @@ function getExtLinks() {
 /*bug I reported DSK-376978, opera adds a "; charset=accept-charset" to the POST Content-Type header: "Content-Type: application/x-www-form-urlencoded; charset=shift_jis"
 workaround here, using multipart/form-data accepted by JASRAC (unlike GET)*/
 function jasracSearch(type, query) {
-	var formJASRAC = createTag("form", {a: {action: "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3", method: "post", "accept-charset": "Shift_JIS", enctype: "multipart/form-data"}, s: {display: "inline", background: background}});
+	var formJASRAC = createTag("form", {a: {action: "http://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3", method: "post", "accept-charset": "Shift_JIS", enctype: "multipart/form-data"}, s: {display: "inline", background: background}});
 	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_WORKS_KOUHO_MAX", value: "100"}}));
 	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_WORKS_KOUHO_SEQ", value: "1"}}));
 	switch (type) {
@@ -1030,9 +1030,9 @@ function workLookupURL(db, type, q) {
 			case "iswc": return "https://musicbrainz.org/iswc/" + q;
 		}
 		case "jasrac": switch (type) {
-			case "name": return "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_WORKS_TITLE_NAME1=" + q + "&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1";
-			case "code": return "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=F20101&WORKS_CD=" + q.replace(/-/g, "") + "&subSessionID=001&subSession=start";
-			case "iswc": return "http://www2.jasrac.or.jp/eJwid/main.jsp?trxID=A00401-3&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_ISWC=" + q.replace(/ /, "+") + "&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1";
+			case "name": return "http://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_WORKS_TITLE_NAME1=" + q + "&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1";
+			case "code": return "http://www2.jasrac.or.jp/eJwid/main?trxID=F20101&WORKS_CD=" + q.replace(/-/g, "") + "&subSessionID=001&subSession=start";
+			case "iswc": return "http://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_ISWC=" + q.replace(/ /, "+") + "&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1";
 		}
 		case "minc": switch (type) {
 			case "code": return "https://www.minc.gr.jp/db/SakCdInfo.aspx?SAKUHINCD=" + q.replace(/-/g, "");
