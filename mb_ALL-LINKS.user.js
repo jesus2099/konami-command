@@ -199,7 +199,7 @@ var autolinks = {
 		"Deezer": "https://www.deezer.com/search/%artist-name%",
 		"Spotify": "https://open.spotify.com/search/%artist-name%",
 		"Social media": null,
-		"Facebook": "https://www.facebook.com/s.php?q=%artist-name%",
+		"Facebook": "https://www.facebook.com/search/pages/?q=%artist-name%",
 		"Twitter": "https://twitter.com/search?f=users&q=%artist-name%",
 		"YouTube": "https://www.youtube.com/results?search_query=%artist-name%&sp=EgIQAg%253D%253D",
 		"Other stuff": null,
