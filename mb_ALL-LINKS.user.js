@@ -197,7 +197,7 @@ var autolinks = {
 		"Stores & streaming": null,
 		"Bandcamp": "https://bandcamp.com/search?q=%artist-name%",
 		"Deezer": "https://www.deezer.com/search/%artist-name%",
-		"Spotify": "https://open.spotify.com/search/results/%artist-name%",
+		"Spotify": "https://open.spotify.com/search/%artist-name%",
 		"Social media": null,
 		"Facebook": "https://www.facebook.com/s.php?q=%artist-name%",
 		"Twitter": "https://twitter.com/search?f=users&q=%artist-name%",
