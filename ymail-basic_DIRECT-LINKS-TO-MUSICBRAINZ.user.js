@@ -36,6 +36,7 @@ if (emailSubjects) {
 	for (var i = 0; i < emailSubjects.length; i++) {
 		var emailSubject = emailSubjects[i];
 		var emailtxt = emailSubject.getAttribute("title");
+		var emailHref = self.location.protocol + "//" + self.location.host + emailSubject.getAttribute("href");
 		var editid = emailtxt.match(/^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/);
 		var jiraIdTitle = emailtxt.match(/^\[MeB JIRA\] \(([A-Z][A-Z\d]*-\d+)\) (.+)$/);
 		emailSubject.parentNode.style.setProperty("line-height", "13px");
@@ -74,7 +75,7 @@ if (emailSubjects) {
 					}
 				}
 			});
-			xhr.open("get", emailSubject.getAttribute("href"), true);
+			xhr.open("get", emailHref, true);
 			xhr.send(null);
 		} else if (emailSubject.getAttribute("title").match(/^Edits for your subscriptions$/)) { // A subscription email
 			getParent(emailSubject, "tr").style.setProperty("background-color", colourloading);
@@ -136,7 +137,7 @@ if (emailSubjects) {
 					}
 				}
 			});
-			xhr.open("get", emailSubject.getAttribute("href"), true);
+			xhr.open("get", emailHref, true);
 			xhr.send(null);
 		}
 		if (emailSubject.getAttribute("title").match(/^Someone has voted against your edit(?: #[0-9]+)?$/)) { // An own no‐voted edit
@@ -160,7 +161,7 @@ if (emailSubjects) {
 					}
 				}
 			});
-			xhr.open("get", emailSubject.getAttribute("href"), true);
+			xhr.open("get", emailHref, true);
 			xhr.send(null);
 		}
 	}
