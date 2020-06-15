@@ -2,22 +2,16 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2017.6.16
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/kasi_PLAIN-TEXT-LYRICS.user.js
+// @version      2020.6.15
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
-// @homepage     http://userscripts-mirror.org/scripts/show/91968
-// @supportURL   https://github.com/jesus2099/konami-command/labels/kasi_PLAIN-TEXT-LYRICS
-// @compatible   opera(12.18.1872)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey         quickly tested
-// @compatible   chromium(46)+tampermonkey        quickly tested
-// @compatible   chrome+tampermonkey              should be same as chromium
+// @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
+// @compatible   firefox(77.0.1)+greasemonkey        my setup
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/kasi_PLAIN-TEXT-LYRICS.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/kasi_PLAIN-TEXT-LYRICS.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2010-12-05
+// @since        2010-12-05; http://userscripts-mirror.org/scripts/show/91968
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @match        *://*.utamap.com/*.php?surl=*
@@ -178,7 +172,7 @@ var kasimasin = {
 	},
 	"utamap": {
 		"na": "うたまっぷ",
-		"clean_url": "http://www.utamap.com/showkasi.php?surl=%uta%",
+		"clean_url": "https://www.utamap.com/showkasi.php?surl=%uta%",
 		"init": function(start) {
 			if (start) { machine(); }
 		},
