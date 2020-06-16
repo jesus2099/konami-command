@@ -1,21 +1,15 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2020.3.11
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
+// @version      2020.6.16
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
-// @homepage     http://userscripts-mirror.org/scripts/show/154481
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
-// @compatible   vivaldi(2.4.1488.38)+violentmonkey   my setup (office)
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (home, xp)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
+// @compatible   firefox(77.0.1)+greasemonkey        my setup
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2012-12-19
+// @since        2012-12-19; http://userscripts-mirror.org/scripts/show/154481
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
@@ -53,7 +47,8 @@
 
 /*---CONFIG-START---*/
 var bigpics = true; /*displays big pics illustrated discography in main artist page*/
-var smallpics = true; /*displays small pics for every releases and release groups, everywhere*/
+var smallpics = false; /*displays small pics for every releases and release groups, everywhere*/
+var verysmallpics = true; /*displays small pics inside the release MBS-4644 CAA placeholders*/
 var colour = "yellow"; /*used for various mouse-over highlights*/
 /*---CONFIG-STOPR---*/
 
@@ -63,6 +58,10 @@ var SMALL_SIZE = "42px";
 var BIG_SIZE = "125px";
 var types = ["release-group", "release"];
 
+var caaIcons = document.querySelectorAll("a[href$='/cover-art'] > span.caa-icon");
+for (var ci = 0; ci < caaIcons.length; ci++) {
+	loadCaaIcon(caaIcons[ci]);
+}
 var imgurls = [];
 for (var t = 0; t < types.length; t++) {
 	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/'], div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']");
@@ -176,4 +175,16 @@ function complete(fallback) {
 	var enlarge = (node.getAttribute("_size") == "full");
 	node.setAttribute("title", node.getAttribute("title").replace(/\w+$/, enlarge ? "shrink" : "enlarge"));
 	node.style.setProperty("z-index", enlarge ? "2" : "1");
+}
+function loadCaaIcon(caaIcon) {
+	var imgurl = "//coverartarchive.org/release/" + caaIcon.parentNode.getAttribute("href").match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) + "/front-250";
+	createTag("img", {
+		a: { src: imgurl },
+		e: {
+			load: function(event) {
+				caaIcon.style.setProperty("background-size", "contain");
+				caaIcon.style.setProperty("background-image", "url(" + this.getAttribute("src") + ")");
+			}
+		}
+	});
 }
