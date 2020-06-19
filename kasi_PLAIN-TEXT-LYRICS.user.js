@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2020.6.15
+// @version      2020.6.19
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -186,7 +186,7 @@ var kasimasin = {
 	},
 	"uta-net": {
 		"na": "歌ネット",
-		"clean_url": "https://uta-net.com/song/%uta%/",
+		"clean_url": "https://www.uta-net.com/song/%uta%/",
 		"init": function(start) {
 			if (start) { machine(); }
 		},
