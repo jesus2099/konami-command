@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2019.11.13
+// @version      2020.6.23
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -283,7 +283,7 @@ function decorate(entityLink) {
 				var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
 				if (row) {
 					if (
-						entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))
+						entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/']):not([href$='/cover-art'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))
 						&& !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")
 					) {
 						row.classList.add(prefix + "Row");
