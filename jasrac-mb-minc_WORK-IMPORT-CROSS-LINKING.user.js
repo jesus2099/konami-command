@@ -2,11 +2,11 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2020.4.16
+// @version      2020.6.26
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
-// @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
-// @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
+// @compatible   firefox(77.0.1)+greasemonkey        my setup
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -424,16 +424,16 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			}}, 4000); // quick and dirty patch
 			break;
 		case "minc":
-			var sakuhinmei = document.querySelector("a[href='#sakuhinmei']");
-			var sakuhincode = document.querySelector("a[href='#sakuhincode']");
-			var iswccode = document.querySelector("a[href='#iswccode']");
+			var sakuhinmei = document.querySelector("span[id$='_lbl_jas_nt_sakuhinnm']");
+			var sakuhincode = document.querySelector("span[id$='_jas_sakucd']");
+			var iswccode = document.querySelector("span[id$='_lbl_jas_nt_iswc']");
 			if (sakuhinmei && sakuhincode && iswccode) {
-				sakuhinmei = getParent(sakuhinmei, "th");
-				var sakuhinmei_v = getSibling(sakuhinmei, "td").textContent;
-				sakuhincode = getParent(sakuhincode, "th");
-				var sakuhincode_v = getSibling(sakuhincode, "td").textContent.match(new RegExp(reCode)) + "";
-				iswccode = getParent(iswccode, "th");
-				var iswccode_v = getSibling(iswccode, "td").textContent.match(new RegExp(reISWC));
+				sakuhinmei = getParent(sakuhinmei, "td");
+				var sakuhinmei_v = sakuhinmei.textContent;
+				sakuhincode = getParent(sakuhincode, "td");
+				var sakuhincode_v = sakuhincode.textContent.match(new RegExp(reCode)) + "";
+				iswccode = getParent(iswccode, "td");
+				var iswccode_v = iswccode.textContent.match(new RegExp(reISWC));
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("J", workLookupURL("jasrac", "name", sakuhinmei_v), "Search this work name in JASRAC"));
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("N", workLookupURL("nextone", "name", sakuhinmei_v), "Search this work name in NexTone"));
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("M", workLookupURL("mb", "name", sakuhinmei_v), "Search this work name in MusicBrainz"));
