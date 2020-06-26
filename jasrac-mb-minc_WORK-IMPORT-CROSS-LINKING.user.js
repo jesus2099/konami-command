@@ -435,7 +435,12 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				var sakuhincode_v = sakuhincode.textContent.match(new RegExp(reCode)) + "";
 				iswccode = getParent(iswccode, "td");
 				var iswccode_v = iswccode.textContent.match(new RegExp(reISWC));
-				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("JW *", workLookupURL("jasrac", "name", sakuhinmei_v), "Search this work name in JASRAC (* encoding issue)"));
+				var jwForm = jasracSearch("title", sakuhinmei_v);
+				var jwSubmit = jwForm.querySelector("a[target='_self']");
+				jwSubmit.replaceChild(document.createTextNode("JW"), jwSubmit.firstChild);
+				jwSubmit.setAttribute("title", "Search this work name in JASRAC");
+				jwSubmit.style.setProperty("text-decoration", "underline");
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(jwForm);
 				//insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("NT", workLookupURL("nextone", "name", sakuhinmei_v), "Search this work name in NexTone"));
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("MB", workLookupURL("mb", "name", sakuhinmei_v), "Search this work name in MusicBrainz"));
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("JW", workLookupURL("jasrac", "code", sakuhincode_v), "Go to this work in JASRAC"));
@@ -950,7 +955,6 @@ function jasracSearch(type, query) {
 	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "RESULT_CURRENT_PAGE", value: "1"}}));
 	formJASRAC.appendChild(createCoolSubmit("JASRAC — " + query));
 	return formJASRAC;
-	
 }
 /*workaround here, using GET accepted by MINC (unlike multipart)*//*TOTO since minc is now utf-8, see what can be dumped here*/
 function mincSearch(type, query) {
