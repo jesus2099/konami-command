@@ -401,23 +401,23 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					sakuhin.parentNode.appendChild(form);
 					sakuhin.parentNode.appendChild(document.createTextNode("）"));
 			/* -- vv ------ sakuhin links ------ vv -- */
-					addAfter(document.createElement("sup"), sakuhin).appendChild(createA("M", workLookupURL("mb", "name", workName), "Search this work name in MusicBrainz"));
-					addAfter(document.createElement("sup"), sakuhin).appendChild(createA("N", workLookupURL("nextone", "name", workName), "Search this work name in NexTone"));
+					addAfter(document.createElement("sup"), sakuhin).appendChild(createA("MB", workLookupURL("mb", "name", workName), "Search this work name in MusicBrainz"));
+					addAfter(document.createElement("sup"), sakuhin).appendChild(createA("NT", workLookupURL("nextone", "name", workName), "Search this work name in NexTone"));
 					addAfter(document.createTextNode(" "), sakuhin);
 			/* -- vv ------ sakuhin code links ------ vv -- */
 					var span = document.createElement("span");
 					span.appendChild(document.createTextNode(sakuhinCode));
 					span.appendChild(document.createTextNode(" "));
 					var suppo = span.appendChild(document.createElement("sup"));
-					suppo.appendChild(createA("音", workLookupURL("minc", "code", sakuhinCode), "This work in 音楽の森"));
-					suppo.appendChild(createA("N", workLookupURL("nextone", "code", sakuhinCode), "This work in NexTone"));
-					suppo.appendChild(createA("M", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz"));
+					suppo.appendChild(createA("MF", workLookupURL("minc", "code", sakuhinCode), "This work in 音楽の森 music FOREST"));
+					suppo.appendChild(createA("NT", workLookupURL("nextone", "code", sakuhinCode), "This work in NexTone"));
+					suppo.appendChild(createA("MB *", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz (* should not work any more)"));
 					span.appendChild(document.createTextNode(" "));
 					span.appendChild(document.createTextNode(workName));
 					sakuhin = replaceElement(span, sakuhin); /*TODO replaceChild returns sakuhin already (removed element), no ?*/
 			/* -- vv ------ iswc links ------ vv -- */
 					if (iswc) {
-						addAfter(createTag("sup", {}, createA("M", workLookupURL("mb", "iswc", iswc.value), "Search this ISWC in MusicBrainz")), iswc.node);
+						addAfter(createTag("sup", {}, createA("MB", workLookupURL("mb", "iswc", iswc.value), "Search this ISWC in MusicBrainz")), iswc.node);
 						addAfter(document.createTextNode(" "), iswc.node);
 					}
 				}
@@ -427,6 +427,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			var sakuhinmei = document.querySelector("span[id$='_lbl_jas_nt_sakuhinnm']");
 			var sakuhincode = document.querySelector("span[id$='_jas_sakucd']");
 			var iswccode = document.querySelector("span[id$='_lbl_jas_nt_iswc']");
+			var nextonecode = document.querySelector("span[id$='_nt_sakucd']");
 			if (sakuhinmei && sakuhincode && iswccode) {
 				sakuhinmei = getParent(sakuhinmei, "td");
 				var sakuhinmei_v = sakuhinmei.textContent;
@@ -434,16 +435,16 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				var sakuhincode_v = sakuhincode.textContent.match(new RegExp(reCode)) + "";
 				iswccode = getParent(iswccode, "td");
 				var iswccode_v = iswccode.textContent.match(new RegExp(reISWC));
-				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("J", workLookupURL("jasrac", "name", sakuhinmei_v), "Search this work name in JASRAC"));
-				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("N", workLookupURL("nextone", "name", sakuhinmei_v), "Search this work name in NexTone"));
-				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("M", workLookupURL("mb", "name", sakuhinmei_v), "Search this work name in MusicBrainz"));
-				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "code", sakuhincode_v), "Go to this work in JASRAC"));
-				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("N", workLookupURL("nextone", "code", sakuhincode_v), "Go to this work in NexTone"));
-				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("M", workLookupURL("mb", "code", sakuhincode_v), "Search this work code in MusicBrainz"));
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("JW *", workLookupURL("jasrac", "name", sakuhinmei_v), "Search this work name in JASRAC (* encoding issue)"));
+				//insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("NT", workLookupURL("nextone", "name", sakuhinmei_v), "Search this work name in NexTone"));
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("MB", workLookupURL("mb", "name", sakuhinmei_v), "Search this work name in MusicBrainz"));
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("JW", workLookupURL("jasrac", "code", sakuhincode_v), "Go to this work in JASRAC"));
+				//insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("NT", workLookupURL("nextone", "code", sakuhincode_v), "Go to this work in NexTone"));
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("MB *", workLookupURL("mb", "code", sakuhincode_v), "Search this work code in MusicBrainz (* should not work any more)"));
 				if (iswccode_v) {
 					iswccode_v += "";
-					insertBefore(createTag("sup", {s: {float: "right"}}), iswccode.firstChild).appendChild(createA("J", workLookupURL("jasrac", "iswc", iswccode_v), "Search this ISWC in JASRAC"));
-					insertBefore(createTag("sup", {s: {float: "right"}}), iswccode.firstChild).appendChild(createA("M", workLookupURL("mb", "iswc", iswccode_v.replace(/T- /, "T-")), "Search this ISWC in MusicBrainz"));
+					insertBefore(createTag("sup", {s: {float: "right"}}), iswccode.firstChild).appendChild(createA("JW", workLookupURL("jasrac", "iswc", iswccode_v), "Search this ISWC in JASRAC"));
+					insertBefore(createTag("sup", {s: {float: "right"}}), iswccode.firstChild).appendChild(createA("MB", workLookupURL("mb", "iswc", iswccode_v.replace(/T- /, "T-")), "Search this ISWC in MusicBrainz"));
 				}
 			} else {
 				var sakuhincodet = document.querySelectorAll("a[href^='SakCdInfo.aspx?SAKUHINCD='], a[href^='SakCDInfo.aspx?SAKUHINCD='], div#ctl00_ctl00_phMain_phDBMain_PanelDetail table.tbl > tbody > tr > td:nth-child(8)");
@@ -455,9 +456,9 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						sakuhincode += sakuhincodet[st].textContent.trim().replace(/-/, "");
 						prec = prec.lastChild;
 					}
-					addAfter(createA("M", workLookupURL("mb", "code", sakuhincode), "Search this work code in MusicBrainz"), prec);
-					addAfter(createA("J", workLookupURL("jasrac", "code", sakuhincode), "Go to this work in JASRAC"), prec);
-					addAfter(createA("N", workLookupURL("nextone", "code", sakuhincode), "Go to this work in NexTone"), prec);
+					addAfter(createA("MB *", workLookupURL("mb", "code", sakuhincode), "Search this work code in MusicBrainz (* should not work any more)"), prec);
+					addAfter(createA("JW", workLookupURL("jasrac", "code", sakuhincode), "Go to this work in JASRAC"), prec);
+					addAfter(createA("NT", workLookupURL("nextone", "code", sakuhincode), "Go to this work in NexTone"), prec);
 				}
 			}
 			break;
@@ -1179,6 +1180,7 @@ function aliasTable(add, clear) {
 function createA(text, link, title, tgt) {
 	var a = document.createElement("a");
 	a.style.setProperty("background", background);
+	a.style.setProperty("padding", "0 4px");
 	a.setAttribute("target", tgt || "_self");
 	if (typeof link == "string") {
 		a.setAttribute("href", link);
