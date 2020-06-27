@@ -49,8 +49,8 @@ var host = {
 	},
 	"github.com": {
 		css: {
-			files: "table.files tbody td.content a.js-navigation-open[title$='%fileType%']",
-			icon: "td.icon svg.octicon.octicon-file",
+			files: ".js-details-container .js-navigation-item div:nth-child(2) a.js-navigation-open[title$='%fileType%']",
+      icon: ".js-navigation-item div:nth-child(1) svg.octicon.octicon-file",
 			/*//TODO: find why a.octicon.octicon-cloud-download does not show icon any more // newIcon: "octicon octicon-cloud-download", /* https://octicons.github.com */
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
