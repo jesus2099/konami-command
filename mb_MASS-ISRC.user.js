@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
-// @version      2020.2.4
+// @version      2020.7.14
 // @description  kepstin’s magicisrc. Paste a bunch of ISRC instead of one by one
 // @compatible   vivaldi(2.9.1705.41)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -22,6 +22,7 @@ document.addEventListener("input", function(event) {
 		var isrcList = event.target.value.toUpperCase().match(/[A-Z]{2}\-?[A-Z0-9]{3}\-?[0-9]{2}\-?[0-9]{5}/g);
 		if (isrcList && !arrHasDupes(isrcList) || confirm("Achtung, there are duplicates!")) {
 			var isrcInputs = event.currentTarget.querySelectorAll("table > tbody > tr > td input.form-control[id^='isrc']");
+			var lastUpdatedInput;
 			for (var isrc = 0, input = 0, startingInputIndex = null; input < isrcInputs.length; input += 1) {
 				isrcInputs[input].style.removeProperty("background-color");
 				if (isrc < isrcList.length) {
@@ -33,11 +34,15 @@ document.addEventListener("input", function(event) {
 						sendEvent(isrcInputs[input], "change");
 						if (isrcInputs[input].getAttribute("oldValue") !== isrcInputs[input].value) {
 							isrcInputs[input].style.setProperty("background-color", "#ff6");
-							isrcInputs[input].setAttribute("oldValue", isrcInputs[input].value)
+							isrcInputs[input].setAttribute("oldValue", isrcInputs[input].value);
+							lastUpdatedInput = isrcInputs[input];
 						}
 						isrc += 1;
 					}
 				}
+			}
+			if (lastUpdatedInput) {
+				lastUpdatedInput.focus();
 			}
 		}
 	}
