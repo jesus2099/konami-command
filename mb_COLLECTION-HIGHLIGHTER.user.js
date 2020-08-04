@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2020.6.23
+// @version      2020.8.4
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -167,7 +167,7 @@ if (cat) {
 						lab.style.setProperty("white-space", "nowrap");
 						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue("cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
 						var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
-						if (cstuff.match(/artist|recording|release(-group)?/)) {/*defaults*/
+						if (cstuff.match(/artist|recording|release(-group)?|work/)) {/*defaults*/
 							cfgcb.setAttribute("checked", "checked");
 						}
 						if (cstuff.match(/release(-group)?/)) {/*forced*/
