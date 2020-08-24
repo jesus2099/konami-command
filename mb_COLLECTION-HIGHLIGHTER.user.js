@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2020.8.4
+// @version      2020.8.25
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -164,7 +164,6 @@ if (cat) {
 					for (var stu = 0; stu < collectedStuff.length; stu++) if (collectedStuff[stu] != "collection") {
 						var cstuff = collectedStuff[stu];
 						var lab = document.createElement("label");
-						lab.style.setProperty("white-space", "nowrap");
 						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue("cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
 						var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
 						if (cstuff.match(/artist|recording|release(-group)?|work/)) {/*defaults*/
@@ -723,7 +722,6 @@ function modal(show, txt, brs, gauge) {
 		obj.setAttribute("id", prefix + "Modal");
 		obj.style.setProperty("padding", "4px");
 		obj.style.setProperty("overflow", "auto");
-		obj.style.setProperty("white-space", "nowrap");
 		obj.style.setProperty("border", "4px solid black");
 		obj.addEventListener("mouseover", function(event) { this.style.setProperty("border-color", "silver"); }, false);
 		obj.addEventListener("mouseout", function(event) { this.style.setProperty("border-color", "black"); }, false);
@@ -790,11 +788,13 @@ function modal(show, txt, brs, gauge) {
 		truc.style.setProperty("z-index", z);
 		truc.style.setProperty("width", x);
 		var xx = x.match(/^([0-9]+)(px|%)$/);
-		if (xx[2] == "px" && xx[1] >= self.innerWidth) {
-			truc.style.setProperty("width", self.innerWidth + "px");
-			truc.style.setProperty("left", self.pageXOffset + "px");  
-		} else {
-			truc.style.setProperty("left", ((xx[2] == "%" ? 100 : self.innerWidth) - xx[1]) / 2 + xx[2]);
+		if (xx) {
+			if (xx[2] == "px" && xx[1] >= self.innerWidth) {
+				truc.style.setProperty("width", self.innerWidth + "px");
+				truc.style.setProperty("left", self.pageXOffset + "px"); // unfortunately always returns 0 (?!)
+			} else {
+				truc.style.setProperty("left", ((xx[2] == "%" ? 100 : self.innerWidth) - xx[1]) / 2 + xx[2]);
+			}
 		}
 		truc.style.setProperty("height", y);
 		var yy = y.match(/^([0-9]+)(px|%)$/);
