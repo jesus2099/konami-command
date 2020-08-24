@@ -790,7 +790,10 @@ function modal(show, txt, brs, gauge) {
 		truc.style.setProperty("z-index", z);
 		truc.style.setProperty("width", x);
 		var xx = x.match(/^([0-9]+)(px|%)$/);
-		if (xx) {
+		if (xx[2] == "px" && xx[1] >= self.innerWidth) {
+			truc.style.setProperty("width", self.innerWidth + "px");
+			truc.style.setProperty("left", self.pageXOffset + "px");  
+		} else {
 			truc.style.setProperty("left", ((xx[2] == "%" ? 100 : self.innerWidth) - xx[1]) / 2 + xx[2]);
 		}
 		truc.style.setProperty("height", y);
