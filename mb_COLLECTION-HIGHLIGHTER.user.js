@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2020.8.25
+// @version      2020.8.25.2117
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -790,8 +790,8 @@ function modal(show, txt, brs, gauge) {
 		var xx = x.match(/^([0-9]+)(px|%)$/);
 		if (xx) {
 			if (xx[2] == "px" && xx[1] >= self.innerWidth) {
-				truc.style.setProperty("width", self.innerWidth + "px");
-				truc.style.setProperty("left", self.pageXOffset + "px"); // unfortunately always returns 0 (?!)
+				truc.style.setProperty("width", (self.innerWidth - 8) + "px");
+				truc.style.setProperty("left", (self.pageXOffset - 4) + "px"); // pageXOffset unfortunately always returns 0 (?!)
 			} else {
 				truc.style.setProperty("left", ((xx[2] == "%" ? 100 : self.innerWidth) - xx[1]) / 2 + xx[2]);
 			}
