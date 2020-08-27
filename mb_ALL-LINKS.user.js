@@ -58,9 +58,9 @@
 // ==/UserScript==
 "use strict";
 /* hint for Opera 12 users allow opera:config#UserPrefs|Allowscripttolowerwindow and opera:config#UserPrefs|Allowscripttoraisewindow */
-var userjs = "jesus2099_all-links_";
+var userjs = "jesus2099_all-links";
 var nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; // U+2FA1D is currently out of js range
-var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["navigator", "musicbrainz"];
+var rawLanguages = JSON.parse(localStorage.getItem(userjs + "_languages")) || ["navigator", "musicbrainz"];
 // Available tokens:
 // - for all entity pages: %entity-type% %entity-mbid% %entity-name%
 // - for "that" type entity pages: %that-mbid% %that-name% where "that" is an entity type in the above @include list
@@ -468,21 +468,21 @@ j2css.insertRule("ul.external_links > li.defaultAutolink.disabled { text-decorat
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink.disabled { display: list-item; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink > input[type='checkbox'] { display: inline; }", 0);
 j2css.insertRule("div#sidebar [class^='" + userjs + "'], div#sidebar [class^='" + userjs + "'] + ul, div#sidebar [class*='" + userjs + "_wd-'] ul { background-color: #FF9; }", 0);
-j2css.insertRule("div#sidebar > ." + userjs + "searchLinks.emptySection { display: none; }", 0);
-j2css.insertRule("div#sidebar > ." + userjs + "searchLinks li.emptySection { display: none; }", 0);
-j2css.insertRule("div#sidebar > ." + userjs + "searchLinks input[type='checkbox'] { display: none; }", 0);
-j2css.insertRule("div#sidebar > ." + userjs + "searchLinks.disabled { text-decoration: line-through; display: none; }", 0);
-j2css.insertRule("div#sidebar > ." + userjs + "searchLinks .disabled { text-decoration: line-through; display: none; }", 0);
-j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks.emptySection { display: block; }", 0);
-j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks li.emptySection { display: list-item; }", 0);
-j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks input[type='checkbox'] { display: inline; }", 0);
-j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks.disabled { display: block; }", 0);
-j2css.insertRule("div#sidebar > ul.configure." + userjs + "searchLinks.disabled { display: none; }", 0);
-j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks li.disabled { display: list-item; }", 0);
-j2css.insertRule("div#sidebar > .configure." + userjs + "searchLinks ul.disabled { display: none; }", 0);
-j2css.insertRule("div#sidebar > ." + userjs + "searchLinks h3 { margin: 0; }", 0);
-j2css.insertRule("div#sidebar > ." + userjs + "searchLinks h4 { margin: 0; }", 0);
-j2css.insertRule("div#sidebar > ul." + userjs + "userLinks > li.subsectionHeader { font-weight: 'bold'; padding: '0px'; float: 'right'; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "_searchLinks.emptySection { display: none; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "_searchLinks li.emptySection { display: none; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "_searchLinks input[type='checkbox'] { display: none; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "_searchLinks.disabled { text-decoration: line-through; display: none; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "_searchLinks .disabled { text-decoration: line-through; display: none; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "_searchLinks.emptySection { display: block; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "_searchLinks li.emptySection { display: list-item; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "_searchLinks input[type='checkbox'] { display: inline; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "_searchLinks.disabled { display: block; }", 0);
+j2css.insertRule("div#sidebar > ul.configure." + userjs + "_searchLinks.disabled { display: none; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "_searchLinks li.disabled { display: list-item; }", 0);
+j2css.insertRule("div#sidebar > .configure." + userjs + "_searchLinks ul.disabled { display: none; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "_searchLinks h3 { margin: 0; }", 0);
+j2css.insertRule("div#sidebar > ." + userjs + "_searchLinks h4 { margin: 0; }", 0);
+j2css.insertRule("div#sidebar > ul." + userjs + "_userLinks > li.subsectionHeader { font-weight: 'bold'; padding: '0px'; float: 'right'; }", 0);
 main();
 function main() {
 	if (sidebar) {
@@ -704,7 +704,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 	var sectionID = pathToID(sectionPath);
 	var sectionTitleNode = createTag("h" + (1 + level), {a: {id: sectionID}}, section.title ? getLocalisedText(section.title) : sectionPath[sectionPath.length - 1]);
 	if (level === 1) {
-		sectionTitleNode.classList.add(userjs + "searchLinks");
+		sectionTitleNode.classList.add(userjs + "_searchLinks");
 		if (parentNode == extlinks.parentNode) {
 			addAfter(sectionTitleNode, extlinks);
 		} else {
@@ -723,7 +723,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 	}
 	var sectionListNode = addAfter(createTag("ul", {a: {class: "external_links"}}), sectionTitleNode);
 	if (level === 1) {
-		sectionListNode.classList.add(userjs + "searchLinks");
+		sectionListNode.classList.add(userjs + "_searchLinks");
 	}
 	if (section !== webSearchLinks) {
 		var sectionCBox = sectionTitleNode.appendChild(
@@ -819,7 +819,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 	return hasVisibleContent && !disabledSearchLinks[sectionID];
 }
 function addUserLinks() {
-	var loadedUserLinks = JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {};
+	var loadedUserLinks = JSON.parse(localStorage.getItem(userjs + "_user-autolinks")) || {};
 	var filteredUserLinks = {};
 	var currentSection = "";
 	var currentSectionIsEmpty = true;
@@ -865,7 +865,7 @@ function addUserLinks() {
 	} else {
 		parentNode.appendChild(userLinksTitleNode);
 	}
-	var userLinksListNode = createTag("ul", {a: {class: userjs + "userLinks external_links"}})
+	var userLinksListNode = createTag("ul", {a: {class: userjs + "_userLinks external_links"}})
 	addAfter(userLinksListNode, userLinksTitleNode);
 	for (var title in filteredUserLinks) if (filteredUserLinks.hasOwnProperty(title)) {
 		var target = filteredUserLinks[title];
@@ -901,10 +901,10 @@ function getLocalisedText(textSet) {
 	return textSet[Object.getOwnPropertyNames(textSet)[0]];
 }
 function idToPath(id) {
-	return id.replace(userjs + "searchLinks-", "").split("-");
+	return id.replace(userjs + "_searchLinks-", "").split("-");
 }
 function loadDisabledSearchLinks() {
-	var loadedSettings = JSON.parse(localStorage.getItem(userjs + "disabled-search-links")) || {};
+	var loadedSettings = JSON.parse(localStorage.getItem(userjs + "_disabled-search-links")) || {};
 	for (var itemID in loadedSettings) if (loadedSettings.hasOwnProperty(itemID)) {
 		var itemPath = idToPath(itemID);
 		if (itemPath && pathToItem(itemPath)) {
@@ -912,7 +912,7 @@ function loadDisabledSearchLinks() {
 		}
 	}
 	delete disabledSearchLinks[pathToID(["web"])];
-	localStorage.setItem(userjs + "disabled-search-links", JSON.stringify(disabledSearchLinks));
+	localStorage.setItem(userjs + "_disabled-search-links", JSON.stringify(disabledSearchLinks));
 }
 function pathToItem(path) {
 	var item = searchLinks;
@@ -925,7 +925,7 @@ function pathToItem(path) {
 	return item;
 }
 function pathToID(path) {
-	var id = userjs + "searchLinks";
+	var id = userjs + "_searchLinks";
 	for (var i = 0; i < path.length; i++)
 		id = id + "-" + path[i];
 	return id;
@@ -1020,16 +1020,16 @@ function toggleEmpty(itemNode, hide) {
 	}
 }
 function toggleStorage(itemID) {
-	var toggledSettings = JSON.parse(localStorage.getItem(userjs + "disabled-search-links")) || {};
+	var toggledSettings = JSON.parse(localStorage.getItem(userjs + "_disabled-search-links")) || {};
 	if (toggledSettings[itemID]) {
 		delete toggledSettings[itemID];
 	} else {
 		toggledSettings[itemID] = true;
 	}
-	localStorage.setItem(userjs + "disabled-search-links", JSON.stringify(toggledSettings));
+	localStorage.setItem(userjs + "_disabled-search-links", JSON.stringify(toggledSettings));
 }
 function weirdobg() {
-	var weirdo = userjs + (new Date().getTime());
+	var weirdo = userjs + " _" + (new Date().getTime());
 	try { open("", weirdo).blur(); } catch(error) {}
 	self.focus();
 	return weirdo;
@@ -1136,16 +1136,16 @@ function configureModule(event) {
 	switch (event.target.getAttribute("title")) {
 		case "configure user autolinks":
 			//TODO: provide a real editor
-			var loadedUserAutolinks = localStorage.getItem(userjs + "user-autolinks") || {};
+			var loadedUserAutolinks = localStorage.getItem(userjs + "_user-autolinks") || {};
 			var newUserAutolinks = prompt("Edit your user autolinks\r\nCopy/paste in a real editor\r\nSorry for such an awful prompt\r\n\r\nAvailable variables:\r\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\r\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\r\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\r\n- for url entity pages: %url-target% (while %entity-name% and %url-name% are deliberately ignored)\r\n\r\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%entity-name%+reviews\",\r\n\"Search for fans\": \"//duckduckgo.com/?q=%artist-name%+fans\",\r\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\r\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
 			if (newUserAutolinks && newUserAutolinks != loadedUserAutolinks && JSON.stringify(newUserAutolinks)) {
-				localStorage.setItem(userjs + "user-autolinks", newUserAutolinks);
+				localStorage.setItem(userjs + "_user-autolinks", newUserAutolinks);
 			}
 			break;
 		case "filter search links":
 			var topSectionNodes = sidebar.children;
 			for (var n = 0; n < sidebar.children.length; n++) {
-				if (sidebar.children[n].classList.contains(userjs + "searchLinks")) {
+				if (sidebar.children[n].classList.contains(userjs + "_searchLinks")) {
 					sidebar.children[n].classList.toggle("configure");
 				}
 			}
@@ -1154,7 +1154,7 @@ function configureModule(event) {
 			var defaultLanguages = parseLanguages(["navigator", "musicbrainz"]);
 			var navigatorLanguages = guessNavigatorLanguages();
 			var musicbrainzLanguage = document.documentElement.getAttribute("lang") || "en";
-			var loadedLanguages = (localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages)).replace(/,/g, "$& ").replace(/\s+/g, " ");
+			var loadedLanguages = (localStorage.getItem(userjs + "_languages") || JSON.stringify(rawLanguages)).replace(/,/g, "$& ").replace(/\s+/g, " ");
 			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nType a language array: [\"favourite language\", \"second favourite\", …, \"least favourite\"]\r\n\r\nTwo meta languages can be used:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ").replace(/\s+/g, " ") : "undetected") + "\r\n- \"musicbrainz\" for selected MusicBrainz UI language, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault:\r\n- [\"navigator\", \"musicbrainz\"], currently expands to " + JSON.stringify(defaultLanguages).replace(/,/g, "$& ").replace(/\s+/g, " ") + "\r\n\r\nSome examples:\r\n- [\"musicbrainz\", \"fr-FR\", \"en-GB\", \"vi\", \"ja\", \"navigator\"]\r\n- [\"fr\", \"en\", \"vi\", \"ja\"]\r\n- [\"en-GB\"]\r\n- [\"fr-FR\", \"navigator\", \"en-GB\", \"musicbrainz\"]\r\n- []" + "\r\n\r\nCurrent setting expands to " + JSON.stringify(parseLanguages(JSON.parse(loadedLanguages))).replace(/,/g, "$& ").replace(/\s+/g, " "), loadedLanguages);
 			if (
 				newLanguages
@@ -1163,7 +1163,7 @@ function configureModule(event) {
 				&& newLanguages != loadedLanguages
 				&& JSON.parse(newLanguages)
 			) {
-				localStorage.setItem(userjs + "languages", newLanguages);
+				localStorage.setItem(userjs + "_languages", newLanguages);
 				rawLanguages = JSON.parse(newLanguages);
 			}
 			break;
