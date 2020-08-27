@@ -467,7 +467,7 @@ j2css.insertRule("ul.external_links > li.defaultAutolink > input[type='checkbox'
 j2css.insertRule("ul.external_links > li.defaultAutolink.disabled { text-decoration: line-through; display: none; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink.disabled { display: list-item; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink > input[type='checkbox'] { display: inline; }", 0);
-j2css.insertRule("div#sidebar > [class^='" + userjs + "'], div#sidebar > [class^='" + userjs + "'] + ul  { background-color: #FF9; }", 0);
+j2css.insertRule("div#sidebar [class^='" + userjs + "'], div#sidebar [class^='" + userjs + "'] + ul, div#sidebar [class*='" + userjs + "_wd-'] ul { background-color: #FF9; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks.emptySection { display: none; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks li.emptySection { display: none; }", 0);
 j2css.insertRule("div#sidebar > ." + userjs + "searchLinks input[type='checkbox'] { display: none; }", 0);
@@ -559,10 +559,10 @@ function main() {
 					}
 					var xhr = new XMLHttpRequest();
 					xhr.id = wikidataID[0];
-					getParent(wikidatas[wd], "li").classList.add(userjs + "-wd-" + xhr.id);
+					getParent(wikidatas[wd], "li").classList.add(userjs + "_wd-" + xhr.id);
 					wikidatas[wd].parentNode.appendChild(createTag("img", {a: {alt: "checking available wikipedia languages…", src: "/static/images/icons/loading.gif"}}));
 					xhr.addEventListener("load", function(event) {
-						var wikidataListItem = sidebar.querySelector("ul.external_links > li." + userjs + "-wd-" + this.id);
+						var wikidataListItem = sidebar.querySelector("ul.external_links > li." + userjs + "_wd-" + this.id);
 						removeNode(wikidataListItem.querySelector("img[src$='loading.gif']"));
 						var wikidata = JSON.parse(this.responseText);
 						if (wikidata && wikidata.entities && (wikidata = wikidata.entities[this.id])) {
@@ -639,8 +639,8 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		}
 		setFavicon(li, (typeof parameters.target == "string") ? parameters.target : parameters.target.action);
 	} else {
-		// This is a header
-		var li = createTag("li", {s: {fontWeight: "bold"}, a: {class: "separator"}}, parameters.text);
+		// This is a Hidden links header
+		var li = createTag("li", {s: {fontWeight: "bold"}, a: {class: userjs + "_hidden-links " + "separator"}}, parameters.text);
 		if (parameters.text.indexOf(" ") === 0) {
 			// Level 1 header
 			li.style.setProperty("padding-top", "0px");
@@ -653,7 +653,6 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		}
 	}
 	if (newLink) {
-		if (!parameters.mbid) { li.style.setProperty("opacity", ".5"); }
 		if (parameters.target) { extlinks.appendChild(li); }
 	}
 	return newLink;
@@ -866,7 +865,7 @@ function addUserLinks() {
 	} else {
 		parentNode.appendChild(userLinksTitleNode);
 	}
-	var userLinksListNode = createTag("ul", {a: {class: "external_links " + userjs + "userLinks"}})
+	var userLinksListNode = createTag("ul", {a: {class: userjs + "userLinks external_links"}})
 	addAfter(userLinksListNode, userLinksTitleNode);
 	for (var title in filteredUserLinks) if (filteredUserLinks.hasOwnProperty(title)) {
 		var target = filteredUserLinks[title];
@@ -1036,9 +1035,9 @@ function weirdobg() {
 	return weirdo;
 }
 function error(code, text) {
-	var ldng = document.getElementById(userjs + "-loading");
+	var ldng = document.getElementById(userjs + "_loading");
 	if (ldng) {
-		ldng.setAttribute("id", userjs + "-error");
+		ldng.setAttribute("id", userjs + "_error");
 		ldng.style.setProperty("background", "pink");
 		ldng.replaceChild(document.createTextNode("Error " + code), ldng.firstChild);
 		ldng.appendChild(createTag("a", {a: {href: entityUrlRelsWS}}, "*"));
@@ -1046,7 +1045,7 @@ function error(code, text) {
 		ldng.appendChild(createTag("a", {a: {href: "http://userscripts-mirror.org/scripts/show/108889"}}, "all links"));
 		ldng.appendChild(document.createTextNode(" ("));
 		ldng.appendChild(createTag("a", {e: {click: function(event) {
-			var err = document.getElementById(userjs + "-error");
+			var err = document.getElementById(userjs + "_error");
 			if (err) { err.parentNode.removeChild(err); }
 			addHiddenLinks();
 		}}}, "retry"));
@@ -1059,9 +1058,9 @@ function error(code, text) {
 	}
 }
 function loading(on) {
-	var ldng = document.getElementById(userjs + "-loading");
+	var ldng = document.getElementById(userjs + "_loading");
 	if (on && !ldng) {
-		extlinks.appendChild(createTag("li", {a: {id: userjs + "-loading"}}, createTag("img", {a: {alt: "loading all links…", src: "/static/images/icons/loading.gif"}})));
+		extlinks.appendChild(createTag("li", {a: {id: userjs + "_loading"}}, createTag("img", {a: {alt: "loading all links…", src: "/static/images/icons/loading.gif"}})));
 		var li = extlinks.querySelector("ul.external_links > li.all-relationships");
 		if (li) {
 			li.style.setProperty("display", "none");
