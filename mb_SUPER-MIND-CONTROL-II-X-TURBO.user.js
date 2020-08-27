@@ -423,7 +423,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		var autoedits = readStat(stats, 1);
 		var voteddown = readStat(stats, 3);
 		var failed = readStat(stats, 4);
-        var cancelled = readStat(stats, 5);
+		var cancelled = readStat(stats, 5);
 		var open = readStat(stats, 6);
 		var total = accepted + voteddown;
 		writeStat(stats, 0, accepted, total);
