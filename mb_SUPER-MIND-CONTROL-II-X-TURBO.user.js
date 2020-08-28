@@ -421,45 +421,39 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		debug("USER_STATS");
 		var accepted = readStat(stats, 0);
 		var autoedits = readStat(stats, 1);
-		var voteddown = readStat(stats, 2);
-		var failed = readStat(stats, 3);
-		var open = readStat(stats, 4);
+		var voteddown = readStat(stats, 3);
+		var failed = readStat(stats, 4);
 		var cancelled = readStat(stats, 5);
+		var open = readStat(stats, 6);
 		var total = accepted + voteddown;
 		writeStat(stats, 0, accepted, total);
-		writeStat(stats, 2, voteddown, total);
-		stats[2].parentNode.parentNode.insertBefore(
-			createTag("tr", null, [
-				createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, "Ranked total")),
-				createTag("th", null, (0 + accepted + autoedits).toLocaleString(lang))
-			]),
-			stats[2].parentNode
-		);
-		stats[6].parentNode.parentNode.insertBefore(
+		writeStat(stats, 3, voteddown, total);
+		stats[2].parentNode.replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, stats[2].parentNode.firstChild.textContent )), stats[2].parentNode.firstChild);
+		stats[7].parentNode.parentNode.insertBefore(
 			createTag("tr", null, [
 				createTag("th", null, "Total"),
 				createTag("th", null, createTag("a", {a: {href: editorPathname + "/edits"}}, (0 + accepted + autoedits + voteddown + failed + open + cancelled).toLocaleString(lang)))
 			]),
-			stats[6].parentNode
+			stats[7].parentNode
 		);
-		var refined24hSearch = stats[6].getElementsByTagName("a")[0].getAttribute("href");
+		var refined24hSearch = stats[7].getElementsByTagName("a")[0].getAttribute("href");
 		var voteSearch = "https://musicbrainz.org/search/edits?conditions.0.field=voter&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.voter_id=%editorID%&conditions.0.args=%vote%";
 		voteSearch = voteSearch.replace(/%editorName%/, editorPathname);
 		voteSearch = voteSearch.replace(/%editorID%/, refined24hSearch.match(/conditions\.0\.args\.0=(\d+)/)[1]);
-		for (var i = 7; i < stats.length; i++) {
+		for (var i = 8; i < stats.length; i++) {
 			var vote = stats[i];
 			vote.replaceChild(createTag("a", {a: {href: voteSearch.replace(/%vote%/, {7: 1, 8: 0, 9: -1, 10: 2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
 		}
-		var yes = readStat(stats, 7);
-		var no = readStat(stats, 8);
-		var abstain = readStat(stats, 9);
-		var approve = stats.length > 10 ? readStat(stats, 10) : 0;
-		stats[9].parentNode.parentNode.insertBefore(
+		var yes = readStat(stats, 8);
+		var no = readStat(stats, 9);
+		var abstain = readStat(stats, 10);
+		var approve = stats.length > 11 ? readStat(stats, 11) : 0;
+		stats[10].parentNode.parentNode.insertBefore(
 			createTag("tr", null, [
-				createTag("th", null, [createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, "Theoritical ranked total"), " (", createTag("a", {a: {href: "//tickets.metabrainz.org/browse/MBS-9651", title: "Top voters overall includes more edits than editor profile’s yes+no+approve"}, s: {cursor: "help"}}, "MBS-9651"), ")"]),
+				createTag("th", null, [createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, "Theoretical ranked total"), " (", createTag("a", {a: {href: "//tickets.metabrainz.org/browse/MBS-9651", title: "Top voters overall includes more edits than editor profile’s yes+no+approve"}, s: {cursor: "help"}}, "MBS-9651"), ")"]),
 				createTag("th", {a: {colspan: "2"}}, (0 + yes + no + approve).toLocaleString(lang) + " (" + percentage(yes + no + approve, yes + no + abstain + approve) + ")")
 			]),
-			stats[9].parentNode
+			stats[10].parentNode
 		);
 	}
 }
