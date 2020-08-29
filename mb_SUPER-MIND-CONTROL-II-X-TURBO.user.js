@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2020.3.11
+// @version      2020.8.28
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -428,14 +428,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		var total = accepted + voteddown;
 		writeStat(stats, 0, accepted, total);
 		writeStat(stats, 3, voteddown, total);
-		stats[2].parentNode.replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, stats[2].parentNode.firstChild.textContent )), stats[2].parentNode.firstChild);
-		stats[7].parentNode.parentNode.insertBefore(
-			createTag("tr", null, [
-				createTag("th", null, "Total"),
-				createTag("th", null, createTag("a", {a: {href: editorPathname + "/edits"}}, (0 + accepted + autoedits + voteddown + failed + open + cancelled).toLocaleString(lang)))
-			]),
-			stats[7].parentNode
-		);
+		stats[2].parentNode.replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top editors"}, s: {cursor: "help"}}, stats[2].parentNode.firstChild.textContent )), stats[2].parentNode.firstChild);
 		var refined24hSearch = stats[7].getElementsByTagName("a")[0].getAttribute("href");
 		var voteSearch = "https://musicbrainz.org/search/edits?conditions.0.field=voter&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.voter_id=%editorID%&conditions.0.args=%vote%";
 		voteSearch = voteSearch.replace(/%editorName%/, editorPathname);
@@ -448,9 +441,13 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		var no = readStat(stats, 9);
 		var abstain = readStat(stats, 10);
 		var approve = stats.length > 11 ? readStat(stats, 11) : 0;
+		if (approve > 0) {
+			// Move Approve before effective vote total and leave Abstain last
+			stats[10].parentNode.parentNode.insertBefore(stats[11].parentNode.parentNode.removeChild(stats[11].parentNode), stats[10].parentNode);
+		}
 		stats[10].parentNode.parentNode.insertBefore(
 			createTag("tr", null, [
-				createTag("th", null, [createTag("a", {a: {href: "/statistics/editors", title: "see editor rankings"}, s: {cursor: "help"}}, "Theoretical ranked total"), " (", createTag("a", {a: {href: "//tickets.metabrainz.org/browse/MBS-9651", title: "Top voters overall includes more edits than editor profile’s yes+no+approve"}, s: {cursor: "help"}}, "MBS-9651"), ")"]),
+				createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top voters"}, s: {cursor: "help"}}, "Total effective votes")),
 				createTag("th", {a: {colspan: "2"}}, (0 + yes + no + approve).toLocaleString(lang) + " (" + percentage(yes + no + approve, yes + no + abstain + approve) + ")")
 			]),
 			stats[10].parentNode
