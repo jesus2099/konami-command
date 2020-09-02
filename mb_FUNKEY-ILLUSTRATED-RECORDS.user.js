@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2020.6.16
+// @version      2020.9.2
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -47,20 +47,23 @@
 
 /*---CONFIG-START---*/
 var bigpics = true; /*displays big pics illustrated discography in main artist page*/
-var smallpics = false; /*displays small pics for every releases and release groups, everywhere*/
+var smallpics = true; /*displays small pics for every releases and release groups, everywhere*/
 var verysmallpics = true; /*displays small pics inside the release MBS-4644 CAA placeholders*/
 var colour = "yellow"; /*used for various mouse-over highlights*/
 /*---CONFIG-STOPR---*/
 
-var chrome = "Please run “mb. FUNKEY ILLUSTRATED RECORDS” with Tampermonkey instead of plain Chrome.";
+var chrome = "Please run “mb. FUNKEY ILLUSTRATED RECORDS” with (Grease/Tamper/Violent)monkey instead of plain Chrome.";
 var userjs = "jesus2099userjs154481";
 var SMALL_SIZE = "42px";
 var BIG_SIZE = "125px";
 var types = ["release-group", "release"];
 
 var caaIcons = document.querySelectorAll("a[href$='/cover-art'] > span.caa-icon");
-for (var ci = 0; ci < caaIcons.length; ci++) {
-	loadCaaIcon(caaIcons[ci]);
+if (caaIcons.length > 0) {
+	smallpics = false;
+	for (var ci = 0; ci < caaIcons.length; ci++) {
+		loadCaaIcon(caaIcons[ci]);
+	}
 }
 var imgurls = [];
 for (var t = 0; t < types.length; t++) {
@@ -75,26 +78,13 @@ for (var t = 0; t < types.length; t++) {
 				if (istable) { artistcol = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
 				istablechecked = true;
 			}
-			if (smallpics && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
+			if (smallpics && types[t] == "release-group" && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
 				var margin = "-12px 0px -14px 0px";
-				as[a].parentNode.insertBefore(
-					createTag("div", {a: {class: userjs}, s: {float: "right", marginRight: ".5em"}}, [
-						"⌛",
-						createTag("a", {a: {href: imgurl}, s: {display: "none"}}, [
-							createTag("img", {
-								a: {alt: as[a].textContent, class: userjs, title: "click to enlarge", src: imgurl + "-250", "_size": "_", "_margin": margin, "_istable": istable ? "1" : "0"},
-								s: {cursor: "pointer", boxShadow: "1px 1px 4px black", margin: margin, padding: "none", position: "relative", zIndex: "1"},
-								e: {
-									click: function(event) { big(event, this, SMALL_SIZE); },
-									load: function(event) { this.setAttribute("_height", this.height + "px"); this.setAttribute("_width", this.width + "px"); this.style.setProperty("height", "0"); removeNode(this.parentNode.parentNode.firstChild); this.parentNode.style.setProperty("display", "inline"); big(event, this, SMALL_SIZE) },
-									error: function(event) { removeNode(this.parentNode.parentNode); },
-									mouseover: function(event) { this.style.setProperty("z-index", "2"); this.parentNode.parentNode.nextSibling.style.setProperty("background-color", colour); },
-									mouseout: function(event) { if(this.getAttribute("_size") != "full") this.style.setProperty("z-index", "1"); this.parentNode.parentNode.nextSibling.style.removeProperty("background-color"); }
-								}
-							})
-						])
-					])
-				, as[a]);
+				loadCaaIcon(as[a].parentNode.insertBefore(
+					createTag("a", {a: {href: as[a].getAttribute("href")}},
+						createTag("span", {a: {class: "caa-icon " + userjs}})
+					)
+				, as[a]).firstChild);
 			}
 			document.body.addEventListener("click", function(event) {
 				for (var imgs = document.querySelectorAll("img[_size='full']." + userjs), i = 0; i < imgs.length; i++) {
@@ -177,13 +167,18 @@ function complete(fallback) {
 	node.style.setProperty("z-index", enlarge ? "2" : "1");
 }
 function loadCaaIcon(caaIcon) {
-	var imgurl = "//coverartarchive.org/release/" + caaIcon.parentNode.getAttribute("href").match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) + "/front-250";
+	var imgurl = "//coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) + "/front-250";
 	createTag("img", {
 		a: { src: imgurl },
 		e: {
 			load: function(event) {
 				caaIcon.style.setProperty("background-size", "contain");
 				caaIcon.style.setProperty("background-image", "url(" + this.getAttribute("src") + ")");
+			},
+			error: function(event) {
+				if (caaIcon.classList.contains(userjs)) {
+					removeNode(caaIcon);
+				}
 			}
 		}
 	});
