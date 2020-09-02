@@ -167,19 +167,45 @@ function complete(fallback) {
 	node.style.setProperty("z-index", enlarge ? "2" : "1");
 }
 function loadCaaIcon(caaIcon) {
-	var imgurl = "//coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) + "/front-250";
-	createTag("img", {
-		a: { src: imgurl },
-		e: {
-			load: function(event) {
-				caaIcon.style.setProperty("background-size", "contain");
-				caaIcon.style.setProperty("background-image", "url(" + this.getAttribute("src") + ")");
-			},
-			error: function(event) {
-				if (caaIcon.classList.contains(userjs)) {
-					removeNode(caaIcon);
+	if (caaIcon.classList.contains(userjs)) {
+		// https://tickets.metabrainz.org/browse/MBS-11059
+		// For the moment, release group CAA icons have to be added by userscript
+		var CAALoader = new XMLHttpRequest();
+		CAALoader.addEventListener("load", function(event) {
+			var RGCAAThumbnailFound = false;
+			if (this.status == 200) {
+				var RGCAA = JSON.parse(this.responseText);
+				for (var i = 0; i < RGCAA.images.length; i++) {
+					if (RGCAA.images.approved && RGCAA.images.front) {
+						caaIcon.parentNode.setAttribute("href", RGCAA.release + "/cover-art");
+						caaIcon.style.setProperty("background-size", "contain");
+						caaIcon.style.setProperty("background-image", "url(" + RGCAA.release.thumbnails[250] + ")");
+						RGCAAThumbnailFound = true;
+						break;
+					}
 				}
 			}
-		}
-	});
+			if (!RGCAAThumbnailFound) {
+				removeNode(caaIcon.parentNode);
+			}
+		});
+		// Currently blocked by:
+		//   https://tickets.metabrainz.org/browse/CAA-122
+		//   Enable CORS on API (web services)
+		// https://musicbrainz.org/doc/Cover_Art_Archive/API#.2Frelease-group.2F.7Bmbid.7D.2F
+		CAALoader.open("GET", "https://covertartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
+		CAALoader.send(null);
+	} else {
+		// Adding thumbnails to release CAA icons
+		var imgurl = "//coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) + "/front-250";
+		createTag("img", {
+			a: { src: imgurl },
+			e: {
+				load: function(event) {
+					caaIcon.style.setProperty("background-size", "contain");
+					caaIcon.style.setProperty("background-image", "url(" + this.getAttribute("src") + ")");
+				}
+			}
+		});
+	}
 }
