@@ -193,7 +193,7 @@ function loadCaaIcon(caaIcon) {
 		//   https://tickets.metabrainz.org/browse/CAA-122
 		//   Enable CORS on API (web services)
 		// https://musicbrainz.org/doc/Cover_Art_Archive/API#.2Frelease-group.2F.7Bmbid.7D.2F
-		CAALoader.open("GET", "https://covertartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
+		CAALoader.open("GET", "https://coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
 		CAALoader.send(null);
 	} else {
 		// Adding thumbnails to release CAA icons
