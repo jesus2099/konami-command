@@ -15,7 +15,7 @@ var issuePrefix = {
 	desktop: "/browse/",
 	mobile: "/plugins/servlet/mobile#issue/"
 };
-var rawIssueLinkPattern = new RegExp("^(?:(?:https?:)?\/\/" + location.host + ")?" + issuePrefix.desktop + "(" + issuePattern + ")");
+var rawIssueLinkPattern = new RegExp("^(?:(?:https?:)?\/\/" + location.host + ")?" + issuePrefix.desktop + "(" + issuePattern + "\\b).*");
 var isMobilePage = !(new RegExp("^" + issuePrefix.desktop)).test(location.pathname);
 var isMobileDevice = navigator.userAgent.match(/\bmobile\b/i);
 var issue;
@@ -73,7 +73,7 @@ function process(anchor, rawLink) {
 		newHref = oldHref.replace(rawIssueLinkPattern, issuePrefix.mobile + "$1");
 	} else {
 		var issueKey = anchor.getAttribute("data-issue-key");
-		if (HREF && issueKey && HREF.match(new RegExp(issuePrefix.desktop + issueKey + "$"))) {
+		if (oldHref && issueKey && oldHref.match(new RegExp(issuePrefix.desktop + issueKey + "$"))) {
 			newHref = issuePrefix.mobile + issueKey;
 		}
 	}
