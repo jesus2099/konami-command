@@ -15,7 +15,7 @@ var issuePrefix = {
 	desktop: "/browse/",
 	mobile: "/plugins/servlet/mobile#issue/"
 };
-var rawIssueLinkPattern = new RegExp("^(?:(?:https?:)?\/\/" + location.host + ")?" + issuePrefix.desktop + "(" + issuePattern + "\\b).*");
+var rawIssueLinkPattern = new RegExp("^(?:(?:https?:)?//[^/]+)?" + issuePrefix.desktop + "(" + issuePattern + "\\b).*");
 var isMobilePage = !(new RegExp("^" + issuePrefix.desktop)).test(location.pathname);
 var isMobileDevice = navigator.userAgent.match(/\bmobile\b/i);
 var issue;
