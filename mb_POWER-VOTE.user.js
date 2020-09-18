@@ -2,7 +2,7 @@
 var meta= { rawmdb: function() {
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2019.5.7
+// @version      2020.9.18
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
@@ -346,7 +346,7 @@ function doitdoit(event, vote, min, max) {
 				sendEvent(radios[i], "click");
 			}
 		}
-	} else { for (i = 0; i < radiosafe.length; i++) { sendEvent(radiosafe[i], click); } }
+	} else { for (i = 0; i < radiosafe.length; i++) { sendEvent(radiosafe[i], "click"); } }
 }
 function isOkToVote(radiox) {
 	return getParent(radiox, "div", "voteopts").querySelector("input[type='radio'][value='-2']").checked;
