@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         jira. MOBILE VIEW TOGGLE SWITCH
-// @version      2019.12.31.1818
+// @version      2020.9.18
 // @description  Provides a convenient "Switch to mobile version" big header toggle link in all JIRA sites, in addition to the existing reverse "Switch to desktop version"
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
@@ -15,6 +15,7 @@ var issuePrefix = {
 	desktop: "/browse/",
 	mobile: "/plugins/servlet/mobile#issue/"
 };
+var rawIssueLinkPattern = new RegExp("^(?:(?:https?:)?//[^/]+)?" + issuePrefix.desktop + "(" + issuePattern + "\\b).*");
 var isMobilePage = !(new RegExp("^" + issuePrefix.desktop)).test(location.pathname);
 var isMobileDevice = navigator.userAgent.match(/\bmobile\b/i);
 var issue;
@@ -33,12 +34,14 @@ if (
 	var issueLink;
 	if (issueLink = document.querySelector("a[href='" + issuePrefix.desktop + issue + "']")) {
 		if (isMobileDevice) {
+			// Big banner link on mobile device
 			var mobileSwitch = document.createElement("a");
 			mobileSwitch.setAttribute("id", "switch-to-desktop-header");
 			mobileSwitch.appendChild(document.createTextNode("Switch to mobile version"));
 			mobileSwitch.setAttribute("href", "/plugins/servlet/mobile#issue/" + issue)
 			document.body.insertBefore(mobileSwitch, document.body.firstChild);
 		} else {
+			// Discrete link on desktop
 			issueLink.parentNode.appendChild(document.createTextNode(" / "));
 			issueLink.parentNode.appendChild(document.createElement("a")).appendChild(document.createTextNode("Switch to mobile version")).parentNode.setAttribute("href", issuePrefix.mobile + issue);
 		}
@@ -54,26 +57,35 @@ function pressed(event) {
 		if (element.tagName != "A") {
 			element = element.parentNode;
 		}
-		if (element && element.tagName == "A" && element.classList.contains("issue-link") && element.getAttribute("data-issue-key").match(new RegExp("^" + issuePattern + "$"))) {
-			process(element);
+		if (element && element.tagName == "A") {
+			if (element.classList.contains("issue-link") && element.getAttribute("data-issue-key").match(new RegExp("^" + issuePattern + "$"))) {
+				process(element);
+			} else if (element.getAttribute("href").match(rawIssueLinkPattern)) {
+				process(element, true);
+			}
 		}
 	}
 }
-function process(anchor) {
-	var HREF = anchor.getAttribute("href");
-	var issueKey = anchor.getAttribute("data-issue-key");
-	if (HREF && issueKey && HREF.match(new RegExp(issuePrefix.desktop + issueKey + "$"))) {
-		var newHref = issuePrefix.mobile + issueKey;
-		if (newHref) {
-			anchor.setAttribute("href", newHref);
-			anchor.style.setProperty("background-color", "#cfc");
-			anchor.style.setProperty("color", "#606");
-			anchor.style.setProperty("text-decoration", "line-through");
-			var tooltip = anchor.getAttribute("title") || "";
-			if (tooltip) {
-				tooltip += "\r\n";
-			}
-			anchor.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
+function process(anchor, rawLink) {
+	var oldHref = anchor.getAttribute("href");
+	var newHref;
+	if (rawLink) {
+		newHref = oldHref.replace(rawIssueLinkPattern, issuePrefix.mobile + "$1");
+	} else {
+		var issueKey = anchor.getAttribute("data-issue-key");
+		if (oldHref && issueKey && oldHref.match(new RegExp(issuePrefix.desktop + issueKey + "$"))) {
+			newHref = issuePrefix.mobile + issueKey;
 		}
+	}
+	if (newHref && newHref != oldHref) {
+		anchor.setAttribute("href", newHref);
+		anchor.style.setProperty("background-color", "#cfc");
+		anchor.style.setProperty("color", "#606");
+		anchor.style.setProperty("text-decoration", "line-through");
+		var tooltip = anchor.getAttribute("title") || "";
+		if (tooltip) {
+			tooltip += "\n";
+		}
+		anchor.setAttribute("title", tooltip + "old: " + HREF + "\nnew: " + newHref);
 	}
 }
