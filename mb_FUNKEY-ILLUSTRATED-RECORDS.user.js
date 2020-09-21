@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2020.9.21
+// @version      2020.9.2
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -188,6 +188,9 @@ function loadCaaIcon(caaIcon) {
 			if (!RGCAAThumbnailFound) {
 				removeNode(caaIcon.parentNode);
 			}
+		});
+		CAALoader.addEventListener("error", function(event) {
+			removeNode(caaIcon.parentNode);
 		});
 		CAALoader.open("GET", "https://coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
 		CAALoader.send(null);
