@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2020.9.2
+// @version      2020.9.21
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -167,19 +167,41 @@ function complete(fallback) {
 	node.style.setProperty("z-index", enlarge ? "2" : "1");
 }
 function loadCaaIcon(caaIcon) {
-	var imgurl = "//coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) + "/front-250";
-	createTag("img", {
-		a: { src: imgurl },
-		e: {
-			load: function(event) {
-				caaIcon.style.setProperty("background-size", "contain");
-				caaIcon.style.setProperty("background-image", "url(" + this.getAttribute("src") + ")");
-			},
-			error: function(event) {
-				if (caaIcon.classList.contains(userjs)) {
-					removeNode(caaIcon);
+	if (caaIcon.classList.contains(userjs)) {
+		// https://tickets.metabrainz.org/browse/MBS-11059
+		// For the moment, release group CAA icons have to be added by userscript
+		var CAALoader = new XMLHttpRequest();
+		CAALoader.addEventListener("load", function(event) {
+			var RGCAAThumbnailFound = false;
+			if (this.status == 200) {
+				var RGCAA = JSON.parse(this.responseText);
+				for (var i = 0; i < RGCAA.images.length; i++) {
+					if (RGCAA.images[i].approved && RGCAA.images[i].front) {
+						caaIcon.parentNode.setAttribute("href", RGCAA.release + "/cover-art");
+						caaIcon.style.setProperty("background-size", "contain");
+						caaIcon.style.setProperty("background-image", "url(" + RGCAA.images[i].thumbnails.small.replace(/^https?:\/\//, "//") + ")");
+						RGCAAThumbnailFound = true;
+						break;
+					}
 				}
 			}
-		}
-	});
+			if (!RGCAAThumbnailFound) {
+				removeNode(caaIcon.parentNode);
+			}
+		});
+		CAALoader.open("GET", "https://coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
+		CAALoader.send(null);
+	} else {
+		// Adding thumbnails to release CAA icons
+		var imgurl = "//coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) + "/front-250";
+		createTag("img", {
+			a: { src: imgurl },
+			e: {
+				load: function(event) {
+					caaIcon.style.setProperty("background-size", "contain");
+					caaIcon.style.setProperty("background-image", "url(" + this.getAttribute("src") + ")");
+				}
+			}
+		});
+	}
 }
