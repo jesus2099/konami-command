@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2020.9.2
+// @version      2020.9.21
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -176,10 +176,10 @@ function loadCaaIcon(caaIcon) {
 			if (this.status == 200) {
 				var RGCAA = JSON.parse(this.responseText);
 				for (var i = 0; i < RGCAA.images.length; i++) {
-					if (RGCAA.images.approved && RGCAA.images.front) {
+					if (RGCAA.images[i].approved && RGCAA.images[i].front) {
 						caaIcon.parentNode.setAttribute("href", RGCAA.release + "/cover-art");
 						caaIcon.style.setProperty("background-size", "contain");
-						caaIcon.style.setProperty("background-image", "url(" + RGCAA.release.thumbnails[250] + ")");
+						caaIcon.style.setProperty("background-image", "url(" + RGCAA.images[i].thumbnails.small.replace(/^https?:\/\//, "//") + ")");
 						RGCAAThumbnailFound = true;
 						break;
 					}
@@ -189,10 +189,6 @@ function loadCaaIcon(caaIcon) {
 				removeNode(caaIcon.parentNode);
 			}
 		});
-		// Currently blocked by:
-		//   https://tickets.metabrainz.org/browse/CAA-122
-		//   Enable CORS on API (web services)
-		// https://musicbrainz.org/doc/Cover_Art_Archive/API#.2Frelease-group.2F.7Bmbid.7D.2F
 		CAALoader.open("GET", "https://coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
 		CAALoader.send(null);
 	} else {
