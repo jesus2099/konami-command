@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2020.3.11
+// @version      2020.9.24
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -110,7 +110,7 @@ if (mergeType) {
 		}
 		var rowIDzone = [];
 		for (var row = 0; row < entityRows.length; row++) {
-			var a = entityRows[row].querySelector("a");
+			var a = entityRows[row].querySelector("a[href^='/" + mergeType + "/']");
 			var rad = entityRows[row].querySelector("input[type='radio'][name='merge.target']");
 			if (a && rad) {
 				if (showEntityInfo) {
@@ -148,7 +148,7 @@ if (mergeType) {
 				batchRemove.appendChild(document.createTextNode("remove"));
 				removeZone.appendChild(batchRemove);
 				removeZone.appendChild(document.createTextNode(" ("));
-				removeZone.appendChild(createA("now", null, "remove this and all selected "+mergeType+"s from merge")).addEventListener("click", removeFromMerge);
+				removeZone.appendChild(createA("now", null, "remove this and all selected " + mergeType + "s from merge")).addEventListener("click", removeFromMerge);
 				removeZone.appendChild(document.createTextNode(")"));
 			}
 		}
