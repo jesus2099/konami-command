@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2020.9.24
+// @version      2020.9.24.1149
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -517,12 +517,8 @@ function thousandSeparator(number) {
 	return (number + "").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
 }
 function chrono(minimumDelay) {
-	if (minimumDelay) {
-		var del = minimumDelay + lastTick - new Date().getTime();
-		del = del > 0 ? del : 0;
-		return del;
-	} else {
-		lastTick = new Date().getTime();
-		return lastTick;
-	}
+	var del = minimumDelay + lastTick - new Date().getTime();
+	del = del > 0 ? del : 0;
+	lastTick = new Date().getTime();
+	return del;
 }
