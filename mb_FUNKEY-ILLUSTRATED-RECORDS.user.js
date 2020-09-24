@@ -75,12 +75,34 @@ for (var t = 0; t < types.length; t++) {
 				istablechecked = true;
 			}
 			if (smallpics && types[t] == "release-group" && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
-				var margin = "-12px 0px -14px 0px";
-				loadCaaIcon(as[a].parentNode.insertBefore(
-					createTag("a", {a: {ref: as[a].getAttribute("href")}},
-						createTag("span", {a: {class: "caa-icon " + userjs}})
-					)
-				, as[a]).firstChild);
+				// https://tickets.metabrainz.org/browse/MBS-11059
+				// For the moment, release group CAA icons have to be added by userscript
+				var CAALoader = new XMLHttpRequest();
+				CAALoader.addEventListener("load", function(event) {
+					var RGCAAThumbnailFound = false;
+					if (this.status == 200) {
+						var RGCAA = JSON.parse(this.responseText);
+						if (RGCAA.images.length > 0) {
+							loadCaaIcon(this.releaseGroup.parentNode.insertBefore(
+								createTag("a", {a: {
+										href: RGCAA.release + "/cover-art",
+										ref: this.releaseGroup.getAttribute("href"),
+										title: RGCAA.images.length + " image" + (RGCAA.images.length != 1 ? "s" : "") + " found in this release"
+									}},
+									createTag("span", {a: {class: "caa-icon " + userjs}})
+								)
+							, this.releaseGroup).firstChild);
+						}
+					} else {
+						console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
+					}
+				});
+				CAALoader.addEventListener("error", function(event) {
+					console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
+				});
+				CAALoader.releaseGroup = as[a];
+				CAALoader.open("GET", "https://coverartarchive.org" + as[a].getAttribute("href").match(/\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
+				CAALoader.send(null);
 			}
 			document.body.addEventListener("click", function(event) {
 				for (var imgs = document.querySelectorAll("img[_size='full']." + userjs), i = 0; i < imgs.length; i++) {
@@ -163,48 +185,15 @@ function complete(fallback) {
 	node.style.setProperty("z-index", enlarge ? "2" : "1");
 }
 function loadCaaIcon(caaIcon) {
-	if (caaIcon.classList.contains(userjs)) {
-		// https://tickets.metabrainz.org/browse/MBS-11059
-		// For the moment, release group CAA icons have to be added by userscript
-		var CAALoader = new XMLHttpRequest();
-		CAALoader.addEventListener("load", function(event) {
-			var RGCAAThumbnailFound = false;
-			if (this.status == 200) {
-				var RGCAA = JSON.parse(this.responseText);
-				for (var i = 0; i < RGCAA.images.length; i++) {
-					if (RGCAA.images[i].front) {
-						caaIcon.parentNode.setAttribute("href", RGCAA.release + "/cover-art");
-						caaIcon.parentNode.setAttribute("title", RGCAA.images.length + " image" + (RGCAA.images.length != 1 ? "s" : "") + " for the release that provides this front cover");
-						caaIcon.style.setProperty("background-size", "contain");
-						caaIcon.style.setProperty("background-image", "url(" + RGCAA.images[i].thumbnails.small.replace(/^https?:\/\//, "//") + ")");
-						RGCAAThumbnailFound = true;
-						break;
-					}
-				}
+	// Adding thumbnails to release CAA icons
+	var imgurl = "//coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) + "/front-250";
+	createTag("img", {
+		a: { src: imgurl },
+		e: {
+			load: function(event) {
+				caaIcon.style.setProperty("background-size", "contain");
+				caaIcon.style.setProperty("background-image", "url(" + this.getAttribute("src") + ")");
 			}
-			if (!RGCAAThumbnailFound) {
-				console.log("Approved front cover art thumbnail not found for " + CAALoader.releaseGroup);
-				removeNode(caaIcon.parentNode);
-			}
-		});
-		CAALoader.addEventListener("error", function(event) {
-			console.log("Error " + CAALoader.status + ": " + CAALoader.statustext + " for " + CAALoader.releaseGroup);
-			removeNode(caaIcon.parentNode);
-		});
-		CAALoader.releaseGroup = caaIcon.parentNode.getAttribute("ref");
-		CAALoader.open("GET", "https://coverartarchive.org/" + caaIcon.parentNode.getAttribute("ref").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
-		CAALoader.send(null);
-	} else {
-		// Adding thumbnails to release CAA icons
-		var imgurl = "//coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) + "/front-250";
-		createTag("img", {
-			a: { src: imgurl },
-			e: {
-				load: function(event) {
-					caaIcon.style.setProperty("background-size", "contain");
-					caaIcon.style.setProperty("background-image", "url(" + this.getAttribute("src") + ")");
-				}
-			}
-		});
-	}
+		}
+	});
 }
