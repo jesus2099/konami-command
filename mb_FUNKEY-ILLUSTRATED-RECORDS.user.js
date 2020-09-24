@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2020.9.2.1710
+// @version      2020.9.24
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -48,7 +48,6 @@
 /*---CONFIG-START---*/
 var bigpics = true; /*displays big pics illustrated discography in main artist page*/
 var smallpics = true; /*displays small pics for every releases and release groups, everywhere*/
-var verysmallpics = true; /*displays small pics inside the release MBS-4644 CAA placeholders*/
 var colour = "yellow"; /*used for various mouse-over highlights*/
 /*---CONFIG-STOPR---*/
 
@@ -81,7 +80,7 @@ for (var t = 0; t < types.length; t++) {
 			if (smallpics && types[t] == "release-group" && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
 				var margin = "-12px 0px -14px 0px";
 				loadCaaIcon(as[a].parentNode.insertBefore(
-					createTag("a", {a: {href: as[a].getAttribute("href")}},
+					createTag("a", {a: {ref: as[a].getAttribute("href")}},
 						createTag("span", {a: {class: "caa-icon " + userjs}})
 					)
 				, as[a]).firstChild);
@@ -194,8 +193,8 @@ function loadCaaIcon(caaIcon) {
 			console.log("Error " + CAALoader.status + ": " + CAALoader.statustext + " for " + CAALoader.releaseGroup);
 			removeNode(caaIcon.parentNode);
 		});
-		CAALoader.releaseGroup = caaIcon.parentNode.getAttribute("href");
-		CAALoader.open("GET", "https://coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
+		CAALoader.releaseGroup = caaIcon.parentNode.getAttribute("ref");
+		CAALoader.open("GET", "https://coverartarchive.org/" + caaIcon.parentNode.getAttribute("ref").match(/release(?:-group)?\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
 		CAALoader.send(null);
 	} else {
 		// Adding thumbnails to release CAA icons
