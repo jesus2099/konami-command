@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2020.9.24.1149
+// @version      2020.9.24.1245
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -53,41 +53,44 @@ if (mergeType) {
 			* what else ?	*/
 		mergeForm.addEventListener("submit", function(event) {
 			var editNote = this.querySelector("textarea[name='merge.edit_note']");
-			if (editNote && editNote.value && editNote.value.match(/\w{4,}/g) && editNote.value.match(/\w{4,}/g).length > 3) {
-				editNote.style.removeProperty("background-color");
-				editNote.value = editNote.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");//linked in mb_ELEPHANT-EDITOR.user.js
-				var mergeTargets = mergeForm.querySelectorAll("form > table.tbl > tbody input[type='radio'][name='merge.target'], form > ul > li input[type='radio'][name='merge.target']");
-				var mergeTarget;
-				var sortedTargets = [];
-				for (var t = 0; t < mergeTargets.length; t++) {
-					var id = parseInt(mergeTargets[t].value, 10);
-					if (mergeTargets[t].checked) {
-						mergeTarget = id;
-					}
-					if (sortedTargets.length == 0 || id > sortedTargets[sortedTargets.length - 1]) {
-						sortedTargets.push(id);
-					} else if (id < sortedTargets[0]) {
-						sortedTargets.unshift(id);
-					} else {
-						for (var s = 0; s < sortedTargets.length; s++) {
-							if (id < sortedTargets[s]) {
-								sortedTargets.splice(s, 0, id);
-								break;
+			if (event.submitter && event.submitter.classList.contains("positive")) {
+				// Script only triggered by Submit (button.positive), not Cancel (button.negative)
+				if (editNote && editNote.value && editNote.value.match(/\w{4,}/g) && editNote.value.match(/\w{4,}/g).length > 3) {
+					editNote.style.removeProperty("background-color");
+					editNote.value = editNote.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");//linked in mb_ELEPHANT-EDITOR.user.js
+					var mergeTargets = mergeForm.querySelectorAll("form > table.tbl > tbody input[type='radio'][name='merge.target'], form > ul > li input[type='radio'][name='merge.target']");
+					var mergeTarget;
+					var sortedTargets = [];
+					for (var t = 0; t < mergeTargets.length; t++) {
+						var id = parseInt(mergeTargets[t].value, 10);
+						if (mergeTargets[t].checked) {
+							mergeTarget = id;
+						}
+						if (sortedTargets.length == 0 || id > sortedTargets[sortedTargets.length - 1]) {
+							sortedTargets.push(id);
+						} else if (id < sortedTargets[0]) {
+							sortedTargets.unshift(id);
+						} else {
+							for (var s = 0; s < sortedTargets.length; s++) {
+								if (id < sortedTargets[s]) {
+									sortedTargets.splice(s, 0, id);
+									break;
+								}
 							}
 						}
 					}
-				}
-				if (mergeTarget && mergeTarget == sortedTargets[0]) {
-					mergeTargets = "'''" + thousandSeparator(mergeTarget) + "'''";
-					for (var i = 1; i < sortedTargets.length; i++) {
-						mergeTargets += (i == 1 ? " ← " : " + ") + thousandSeparator(sortedTargets[i]);
+					if (mergeTarget && mergeTarget == sortedTargets[0]) {
+						mergeTargets = "'''" + thousandSeparator(mergeTarget) + "'''";
+						for (var i = 1; i < sortedTargets.length; i++) {
+							mergeTargets += (i == 1 ? " ← " : " + ") + thousandSeparator(sortedTargets[i]);
+						}
+						editNote.value = (editNote.value ? editNote.value + "\r\n — \r\n" : "") + "Merging into oldest [MBID] (" + mergeTargets + ").";
 					}
-					editNote.value = (editNote.value ? editNote.value + "\r\n — \r\n" : "") + "Merging into oldest [MBID] (" + mergeTargets + ").";
+				} else {
+					alert("Merging entities is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\r\n\r\nPlease make sure your edit note makes it clear why you are sure that these entities are exactly the same versions, mixes, cuts, etc.");
+					editNote.style.setProperty("background-color", "pink");
+					return stop(event);
 				}
-			} else {
-				alert("Merging entities is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\r\n\r\nPlease make sure your edit note makes it clear why you are sure that these entities are exactly the same versions, mixes, cuts, etc.");
-				editNote.style.setProperty("background-color", "pink");
-				return stop(event);
 			}
 		});
 		var tbl = mergeForm.querySelector("table.tbl");
