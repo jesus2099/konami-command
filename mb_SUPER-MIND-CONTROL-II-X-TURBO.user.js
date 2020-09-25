@@ -419,6 +419,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 	editorPathname = self.location.pathname.substr(0, editorPathname) + editorPathname;
 	if (stats.length == 3) {
 		debug("USER_STATS");
+		// Edits
 		var accepted = readStat(stats[0].rows[0].cells[1]);
 		var autoedits = readStat(stats[0].rows[1].cells[1]);
 		var voteddown = readStat(stats[0].rows[3].cells[1]);
@@ -427,8 +428,11 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		var open = readStat(stats[0].rows[6].cells[1]);
 		var total = accepted + voteddown;
 		writeStat(stats[0].rows[0].cells[1], accepted, total);
+		stats[0].rows[0].cells[1].style.setProperty("font-weight", "bold");
 		writeStat(stats[0].rows[3].cells[1], voteddown, total);
+		stats[0].rows[3].cells[1].style.setProperty("font-weight", "bold");
 		stats[0].rows[2].replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top editors"}, s: {cursor: "help"}}, stats[0].rows[2].cells[0].firstChild.textContent )), stats[0].rows[2].cells[0]);
+		// Votes
 		var refined24hSearch = stats[0].rows[7].cells[1].getElementsByTagName("a")[0].getAttribute("href");
 		var voteSearch = MBS + "/search/edits?conditions.0.field=voter&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.voter_id=%editorID%&conditions.0.args=%vote%";
 		voteSearch = voteSearch.replace(/%editorName%/, editorPathname);
@@ -452,6 +456,20 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 			]),
 			stats[1].rows[3]
 		);
+		// Added entities
+		var addedEntities = 0;
+		for (var i = 0; i < stats[2].rows.length; i++) {
+			addedEntities += readStat(stats[2].rows[i].cells[1]);
+		}
+		stats[2].appendChild(
+			createTag("tr", null, [
+				createTag("th", null, "Total"),
+				createTag("td", null, addedEntities.toLocaleString(lang))
+			])
+		);
+		for (var i = 0; i < stats[2].rows.length - 1; i++) {
+			writeStat(stats[2].rows[i].cells[1], readStat(stats[2].rows[i].cells[1]), addedEntities);
+		}
 	}
 }
 function isEncoded(string) {
@@ -473,7 +491,7 @@ function writeStat(statsCell, stat, total) {
 	a.replaceChild(document.createTextNode(percentage(stat, total)), a.firstChild);
 }
 function percentage(p, c) {
-	return (c == 0 ? 0 : Math.round(10000 * p / c) / 100) + "%";
+	return (c == 0 ? 0 : Math.round(10000 * p / c) / 100).toLocaleString(lang) + "%";
 }
 /*=================================================================== MOUSE+
 ## CHECK_ALL_SUBSCRIPTIONS ##
