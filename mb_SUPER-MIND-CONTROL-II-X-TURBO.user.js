@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2020.9.25
+// @version      2020.9.25.1142
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -489,6 +489,10 @@ function readStat(statsCell) {
 function writeStat(statsCell, stat, total) {
 	var a = statsCell.getElementsByTagName("a")[0];
 	a.replaceChild(document.createTextNode(percentage(stat, total)), a.firstChild);
+	if(parseInt(a.firstChild.textContent, 10) >= 30) {
+		a.style.setProperty("background-color", "#ff6");
+		getParent(statsCell, "tr").querySelector("th").style.setProperty("background-color", "#ff6");
+	}
 }
 function percentage(p, c) {
 	return (c == 0 ? 0 : Math.round(10000 * p / c) / 100).toLocaleString(lang) + "%";
