@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2020.9.18
+// @version      2020.9.25
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -409,7 +409,7 @@ function formTarget(releaseIndex, event) {
 ==========================================================================*/
 j2setting("USER_STATS", true, true, "adds convenient edit stats to user page (percentage of yes/no voted edits)");
 if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
-	var stats = document.querySelectorAll("table.statistics > tbody > tr > td:last-child");
+	var stats = document.querySelectorAll("table.statistics > tbody");
 	var editorPathname = self.location.pathname.lastIndexOf("/") + 1;
 	editorPathname = self.location.pathname.substr(editorPathname);
 	if (!isEncoded(editorPathname)) {
@@ -417,40 +417,40 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		editorPathname = encodeURIComponent(editorPathname);
 	}
 	editorPathname = self.location.pathname.substr(0, editorPathname) + editorPathname;
-	if (stats.length > 0) {
+	if (stats.length == 3) {
 		debug("USER_STATS");
-		var accepted = readStat(stats, 0);
-		var autoedits = readStat(stats, 1);
-		var voteddown = readStat(stats, 3);
-		var failed = readStat(stats, 4);
-		var cancelled = readStat(stats, 5);
-		var open = readStat(stats, 6);
+		var accepted = readStat(stats[0].rows[0].cells[1]);
+		var autoedits = readStat(stats[0].rows[1].cells[1]);
+		var voteddown = readStat(stats[0].rows[3].cells[1]);
+		var failed = readStat(stats[0].rows[4].cells[1]);
+		var cancelled = readStat(stats[0].rows[5].cells[1]);
+		var open = readStat(stats[0].rows[6].cells[1]);
 		var total = accepted + voteddown;
-		writeStat(stats, 0, accepted, total);
-		writeStat(stats, 3, voteddown, total);
-		stats[2].parentNode.replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top editors"}, s: {cursor: "help"}}, stats[2].parentNode.firstChild.textContent )), stats[2].parentNode.firstChild);
-		var refined24hSearch = stats[7].getElementsByTagName("a")[0].getAttribute("href");
-		var voteSearch = "https://musicbrainz.org/search/edits?conditions.0.field=voter&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.voter_id=%editorID%&conditions.0.args=%vote%";
+		writeStat(stats[0].rows[0].cells[1], accepted, total);
+		writeStat(stats[0].rows[3].cells[1], voteddown, total);
+		stats[0].rows[2].replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top editors"}, s: {cursor: "help"}}, stats[0].rows[2].cells[0].firstChild.textContent )), stats[0].rows[2].cells[0]);
+		var refined24hSearch = stats[0].rows[7].cells[1].getElementsByTagName("a")[0].getAttribute("href");
+		var voteSearch = MBS + "/search/edits?conditions.0.field=voter&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.voter_id=%editorID%&conditions.0.args=%vote%";
 		voteSearch = voteSearch.replace(/%editorName%/, editorPathname);
 		voteSearch = voteSearch.replace(/%editorID%/, refined24hSearch.match(/conditions\.0\.args\.0=(\d+)/)[1]);
-		for (var i = 8; i < stats.length; i++) {
-			var vote = stats[i];
-			vote.replaceChild(createTag("a", {a: {href: voteSearch.replace(/%vote%/, {7: 1, 8: 0, 9: -1, 10: 2}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
+		for (var i = 0; i < stats[1].rows.length; i++) {
+			var vote = stats[1].rows[i].cells[2];
+			vote.replaceChild(createTag("a", {a: {href: voteSearch.replace(/%vote%/, {0: 1/*Yes*/, 1: 0/*No*/, 2: -1/*Abstain*/, 3: 2/*Approve*/}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
 		}
-		var yes = readStat(stats, 8);
-		var no = readStat(stats, 9);
-		var abstain = readStat(stats, 10);
-		var approve = stats.length > 11 ? readStat(stats, 11) : 0;
+		var yes = readStat(stats[1].rows[0].cells[2]);
+		var no = readStat(stats[1].rows[1].cells[2]);
+		var abstain = readStat(stats[1].rows[2].cells[2]);
+		var approve = stats[1].rows.length > 3 ? readStat(stats[1].rows[3].cells[2]) : 0;
 		if (approve > 0) {
-			// Move Approve before effective vote total and leave Abstain last
-			stats[10].parentNode.parentNode.insertBefore(stats[11].parentNode.parentNode.removeChild(stats[11].parentNode), stats[10].parentNode);
+			// Move Approve before Yes votes to include it in effective votes and leave Abstain last
+			stats[1].insertBefore(stats[1].removeChild(stats[1].rows[3]), stats[1].rows[0]);
 		}
-		stats[10].parentNode.parentNode.insertBefore(
+		stats[1].insertBefore(
 			createTag("tr", null, [
 				createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top voters"}, s: {cursor: "help"}}, "Total effective votes")),
 				createTag("th", {a: {colspan: "2"}}, (0 + yes + no + approve).toLocaleString(lang) + " (" + percentage(yes + no + approve, yes + no + abstain + approve) + ")")
 			]),
-			stats[10].parentNode
+			stats[1].rows[3]
 		);
 	}
 }
@@ -465,11 +465,11 @@ function isEncoded(string) {
 	}
 	return result != string;
 }
-function readStat(stats, i) {
-	return parseInt(stats[i].textContent.split("(")[0].replace(/\D/g, ""), 10);
+function readStat(statsCell) {
+	return parseInt(statsCell.textContent.replace(/\D/g, ""), 10);
 }
-function writeStat(stats, i, stat, total) {
-	var a = stats[i].getElementsByTagName("a")[0];
+function writeStat(statsCell, stat, total) {
+	var a = statsCell.getElementsByTagName("a")[0];
 	a.replaceChild(document.createTextNode(percentage(stat, total)), a.firstChild);
 }
 function percentage(p, c) {
