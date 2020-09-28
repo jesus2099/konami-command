@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2020.8.25.2117
+// @version      2020.9.28
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -57,7 +57,7 @@ if (cat) {
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var prefix = "collectionHighlighter";
 	var DEBUG = false;
-	var dialogprefix = "..:: " + meta.nameAndVersion.replace(/ /g, " :: ") + " ::..\r\n\r\n";
+	var dialogprefix = "..:: " + meta.nameAndVersion.replace(/ /g, " :: ") + " ::..\n\n";
 	var maxRetry = 20;
 	var retryPause = 5000;
 	var slowDownStepAfterRetry = 0;
@@ -101,7 +101,7 @@ if (cat) {
 		if (mainReleasePage) {
 			var lili = document.querySelector("div#sidebar > h2.collections ~ ul.links");
 			if (lili) {
-				var buttxt = " this release to your local collection highlighter,\r\nwithout changing its status among you MB collection(s)";
+				var buttxt = " this release to your local collection highlighter,\nwithout changing its status among you MB collection(s)";
 				lili = lili.insertBefore(document.createElement("li"), lili.firstChild);
 				lili.appendChild(document.createTextNode("Force highlight "));
 				collectionUpdater(lili.appendChild(createA("ON", self.location.href, "Add" + buttxt, true)), "add");
@@ -230,8 +230,8 @@ if (cat) {
 						stuff[cstuff].rawids = GM_getValue(cstuff + "s");
 						if (stuff[cstuff].rawids) {
 							stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
-							debug(" \r\n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\r\nMatching: " + path, true);
-						} else { debug(" \r\nNo " + cstuff.toUpperCase() + "S in highlighter (" + cstuff + "s)", true); }
+							debug(" \n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\nMatching: " + path, true);
+						} else { debug(" \nNo " + cstuff.toUpperCase() + "S in highlighter (" + cstuff + "s)", true); }
 						stuff[cstuff].loaded = true;
 					}
 					if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
@@ -890,15 +890,15 @@ function sInt2msStr(seconds) {
 function debug(txt, buffer) {
 	if (DEBUG) {
 		if (buffer) {
-			debugBuffer += txt + "\r\n";
+			debugBuffer += txt + "\n";
 		} else {
-			console.log(prefix + "\r\n" + debugBuffer + txt);
+			console.log(prefix + "\n" + debugBuffer + txt);
 			debugBuffer = "";
 		}
 	}
 }
 function debugRetry(status) {
-	debug("Error " + status + "\r\nRetrying (" + retry + "/" + maxRetry + ") in " + retryPause + " ms\r\nSlowing down, new rate: " + (MBWSRate - slowDownStepAfterRetry) + "+" + slowDownStepAfterRetry + " = " + MBWSRate + " ms");
+	debug("Error " + status + "\nRetrying (" + retry + "/" + maxRetry + ") in " + retryPause + " ms\nSlowing down, new rate: " + (MBWSRate - slowDownStepAfterRetry) + "+" + slowDownStepAfterRetry + " = " + MBWSRate + " ms");
 }
 function nsr(prefix) {
 	var ns = {
