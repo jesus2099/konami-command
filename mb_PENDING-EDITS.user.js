@@ -195,7 +195,7 @@ function updateLink(obj, pecount, details, more) {
 					}
 					dupreset = false;
 				}
-//				tooltip = titarray.join("\r\n");
+//				tooltip = titarray.join("\n");
 				var expanded = "▼";
 				var collapsed = "◀";
 				var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
@@ -214,12 +214,12 @@ function updateLink(obj, pecount, details, more) {
 //					tooltip = tooltip.replace(/^- /, "");
 //				}
 				if (pecount > EDITS_PER_PAGE) {
-//					tooltip += "\r\n- …";
+//					tooltip += "\n- …";
 					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
 				}
 				var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
 				if (titarray.length > 1) {
-//					tooltip += "\r\n \r\n(oldest edit on bottom)";
+//					tooltip += "\n \n(oldest edit on bottom)";
 					help.appendChild(document.createElement("br"));
 					help.appendChild(document.createTextNode(" newest edit on top"));
 				}
