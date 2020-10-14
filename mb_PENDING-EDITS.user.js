@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2020.3.4
+// @version      2020.10.14
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
@@ -110,7 +110,7 @@ function appendRefineSearchFormLink(baseEditLink) {
 			var row = getParent(baseEditLink, "li")
 			pageEntity.id = pageEntity.id[1];
 			row.appendChild(document.createTextNode(" ("));
-			row.appendChild(createTag("a", {a: {href: "/search/edits?order=desc&negation=0&combinator=and&conditions.0.field=" + pageEntity.type + "&conditions.0.operator=%3D&conditions.0.name=" + encodeURIComponent(pageEntity.name) + "&conditions.0.args.0=" + pageEntity.id + "&conditions.1.field=status&conditions.1.operator=%3D&conditions.1.args=1&conditions.1.args=2&conditions.2.field=type&conditions.2.operator=!%3D&conditions.2.args=77&conditions.2.args=113"}}, "effective"));
+			row.appendChild(createTag("a", {s: {backgroundColor: "#FF6"}, a: {title: "Exclude failed edits\n(this link is added by mb. PENDING EDITS)", href: "/search/edits?order=desc&negation=0&combinator=and&conditions.0.field=" + pageEntity.type + "&conditions.0.operator=%3D&conditions.0.name=" + encodeURIComponent(pageEntity.name) + "&conditions.0.args.0=" + pageEntity.id + "&conditions.1.field=status&conditions.1.operator=%3D&conditions.1.args=1&conditions.1.args=2"}}, "effective"));
 			row.appendChild(document.createTextNode(")"));
 		}
 	}
