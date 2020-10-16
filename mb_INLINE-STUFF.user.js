@@ -18,6 +18,7 @@
 // @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/artist/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/recordings/
 // @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/edit/\d+/
 // @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/edit/subscribed/
+// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/recording/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!/edit$)/
 // @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/release/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
 // @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/search/edits\?/
 // @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/user/[^/]+/edits/
@@ -53,6 +54,7 @@ var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='/work/
 var tracksHtml = null;
 var pagecat = self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
 if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
+if (pagecat != "edits" && self.location.pathname.match(/^\/recording\//i)) { pagecat = "recording"; }
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
@@ -139,6 +141,12 @@ if (pagecat) {
 						}
 					}
 				}
+			}
+			break;
+		case "recording":
+			var sideBarISRCs = document.querySelectorAll("div#sidebar dd.isrc a[href^='/isrc']");
+			for (var i = 0; i < sideBarISRCs.length; i++) {
+				sideBarISRCs[i].replaceChild(coolifyISRC(sideBarISRCs[i].textContent), sideBarISRCs[i].firstChild);
 			}
 	}
 }
