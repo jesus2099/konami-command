@@ -62,6 +62,14 @@ css.insertRule("div#page table.add-isrcs tbody a[href^='/isrc/'], div#page table
 if (pagecat) {
 	switch(pagecat) {
 		case "release":
+			// CAA tab / Add link
+			var CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']");
+			if (CAAtab && CAAtab.textContent.match(/\(0\)$/)) {
+				CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
+				CAAtab.style.setProperty("background-color", "#FF6");
+				CAAtab.replaceChild(document.createTextNode("Add Cover Art"), CAAtab.firstChild);
+			}
+			// Tracklist stuff
 			css.insertRule("a[" + userjs + "recname] { text-shadow: 1px 2px 2px #999; color: maroon }", 0);
 			if (contractFingerPrints) {
 				css.insertRule("div.ars[class^='ars AcoustID'] code { display: inline-block; overflow-x: hidden; vertical-align: bottom; width: 6ch}", 0);
@@ -174,27 +182,6 @@ function isrcFish() {
 			coolBubble.warn("INLINE STUFF abandoned in favour of MASS MERGE session.");
 		} else {
 			var res = this.responseXML;
-			var CAAcnt, CAAtab, CAAtxt;
-			if (
-				(CAAcnt = res.documentElement.querySelector("release > cover-art-archive > count"))
-				&& (CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']"))
-				&& (CAAtxt = "CAA")
-			) {
-				CAAcnt = parseInt(CAAcnt.textContent, 10);
-				if (CAAcnt > 0) {
-					CAAtxt += " (" + CAAcnt + ")";
-					CAAtab.style.setProperty("background-color", "#6f9");
-				}
-				else {
-					CAAtxt = "Add " + CAAtxt;
-					CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
-					CAAtab.style.setProperty("background-color", "#ff6");
-				}
-				CAAtab.style.setProperty("width", self.getComputedStyle(CAAtab).getPropertyValue("width"));
-				CAAtab.style.setProperty("height", self.getComputedStyle(CAAtab).getPropertyValue("height"));
-				CAAtab.style.setProperty("text-align", "center");
-				CAAtab.replaceChild(document.createTextNode(CAAtxt), CAAtab.firstChild);
-			}
 			var isrcNet = {};
 			var recnameNet = {};
 			var acoustidNet = [];
