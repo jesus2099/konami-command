@@ -2,10 +2,9 @@
 // @name         mb. INLINE STUFF
 // @version      2020.10.16
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
-// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
-// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
-// @compatible   firefox(64.0)+greasemonkey          tested sometimes
-// @compatible   chrome+violentmonkey                should be same as vivaldi
+// @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
+// @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -233,9 +232,7 @@ function isrcFish() {
 					}
 					var sameCompleteName = aRec.textContent == recnameNet[mbid].name + " (" + recnameNet[mbid].comment + ")";
 					if (aRec.textContent != recnameNet[mbid].name && !sameCompleteName) {
-						var ntit = aRec.getAttribute("title");
-						ntit = (ntit ? ntit + " —\u00a0" : "") + "track name: " + aRec.textContent + "\r\n≠rec. name: " + recnameNet[mbid].name;
-						aRec.setAttribute("title", ntit);
+						aRec.setAttribute("title", "track name: " + aRec.textContent + "\n≠rec. name: " + recnameNet[mbid].name);
 						if (markTrackRecNameDiff) {
 							if (typeof markTrackRecNameDiff == "string") {
 								var trackNameFragment = document.createDocumentFragment();
