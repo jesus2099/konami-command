@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2020.1.10
+// @version      2020.1.10b
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -212,7 +212,7 @@ function mergeRecsStep(_step) {
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		setTimeout(function() { xhr.send(params[step]); }, chrono(MBSminimumDelay));
 	} else {
-		alert("Merging recordings is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\r\n\r\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc.");
+		alert("Merging recordings is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\n\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc.");
 		editNote.style.setProperty("background-color", cNG);
 		infoMerge("Proper edit note missing.", false, true);
 	}
@@ -726,7 +726,7 @@ function spreadTracks(event) {
 	for (var ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
 		cleanTrack(localRelease.tracks[ltrack]);
 		if(ltrack >= startpos.value && rtrack < remoteRelease.tracks.length) {
-			var ntitl = "local recording #" + format(localRelease.tracks[ltrack].recid) + "\r\n" + localRelease.tracks[ltrack].looseName + "\r\n" + localRelease.tracks[ltrack].looseAC;
+			var ntitl = "local recording #" + format(localRelease.tracks[ltrack].recid) + "\n" + localRelease.tracks[ltrack].looseName + "\n" + localRelease.tracks[ltrack].looseAC;
 			var ntit = localRelease.tracks[ltrack].a.getAttribute("title");
 			if (!ntit || (ntit && !ntit.match(new RegExp(ntitl)))) {
 				localRelease.tracks[ltrack].a.setAttribute("title", (ntit ? ntit + " — " : "") + ntitl);
@@ -749,7 +749,7 @@ function buildMergeForm(loc, rem) {
 	rmForm.setAttribute("action", "/recording/merge");
 	rmForm.setAttribute("method", "post");
 //		rmForm.setAttribute("title", "AC: " + ac2str(remTrack.artistCredit) + "\nremote recording #" + remTrack.recording.rowid);
-	rmForm.setAttribute("title", "remote recording #" + format(remTrack.recording.rowid) + "\r\n" + remTrack.looseName + "\r\n" + remTrack.looseAC);
+	rmForm.setAttribute("title", "remote recording #" + format(remTrack.recording.rowid) + "\n" + remTrack.looseName + "\n" + remTrack.looseAC);
 	rmForm.setAttribute("class", MMRid);
 	rmForm.style.setProperty("display", "inline");
 	rmForm.appendChild(createInput("hidden", "merge.merging.0", locTrack.recid)).setAttribute("ref", locTrack.a.getAttribute("href").match(regex_MBID)[0]);

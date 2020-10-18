@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL RELEASE GROUPS
-// @version      2019.9.13
+// @version      2019.9.13b
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-RELEASE-GROUPS.user.js
 // @description  Artist overview page (discography): Show all release groups by default, then you can filter out bootlegs to show only official release groups (instead of the opposite default)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-RELEASE-GROUPS
@@ -48,9 +48,9 @@ function process(anchor) {
 			anchor.style.setProperty("text-decoration", "line-through");
 			var tooltip = anchor.getAttribute("title") || "";
 			if (tooltip) {
-				tooltip += "\r\n";
+				tooltip += "\n";
 			}
-			anchor.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
+			anchor.setAttribute("title", tooltip + "old: " + HREF + "\nnew: " + newHref);
 		}
 	}
 }
