@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2020.9.25.2000b
+// @version      2020.10.18
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -454,7 +454,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 				createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top voters"}, s: {cursor: "help"}}, "Total effective votes")),
 				createTag("th", {a: {colspan: "2"}}, (0 + yes + no + approve).toLocaleString(lang) + " (" + percentage(yes + no + approve, yes + no + abstain + approve) + ")")
 			]),
-			stats[1].rows[3]
+			stats[1].rows[stats[1].rows.length > 3 ? 3 : 2]
 		);
 		// Added entities
 		var addedEntities = 0;
