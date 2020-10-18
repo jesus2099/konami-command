@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2020.9.28
+// @version      2020.10.18
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -211,6 +211,10 @@ if (cat) {
 // #                                    COLLECT LINKS TO HIGHLIGHT / DECORATE #
 // ############################################################################
 		stuff = {};
+		// Annotation link trim spaces and protocol + "//" + host
+		for (var annotationLinks = document.querySelectorAll("div#content div.annotation a"), l = 0; l < annotationLinks.length; l++) {
+			annotationLinks[l].setAttribute("href", annotationLinks[l].getAttribute("href").trim().replace(/^((https?:)?\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org)\//, "/"));
+		}
 		for (var stu = 0; stu < collectedStuff.length; stu++) {
 			var cstuff = collectedStuff[stu];
 			stuff[cstuff] = {};
