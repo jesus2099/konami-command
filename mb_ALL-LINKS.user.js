@@ -184,7 +184,7 @@ var autolinks = {
 		"vi.Wikipedia": "//vi.wikipedia.org/w/index.php?search=%artist-name%",
 		"nhạc số": "http://nhacso.net/tim-kiem-nghe-si.html?keyName=%artist-name%",
 		"Korean stuff": null,
-		"maniadb": "http://www.maniadb.com/search.asp?sr=PO&q=%artist-name%",
+		"maniadb": "http://www.maniadb.com/search/%artist-name%/?sr=P",
 		"Other databases": null,
 		"AllMusic": "http://www.allmusic.com/search/artist/%artist-name%",
 		"Discogs": "http://www.discogs.com/search?q=%artist-name%&type=artist",
