@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2020.10.23
+// @version      2020.10.23.2053
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -189,7 +189,7 @@ var autolinks = {
 		"AllMusic": "http://www.allmusic.com/search/artist/%artist-name%",
 		"Discogs": "http://www.discogs.com/search?q=%artist-name%&type=artist",
 		"IMDb": "//www.imdb.com/find?q=%artist-name%&s=nm",
-		"ISNI": "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
+		"ISNI": "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 		"Rate Your Music": "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
 		"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
 		"VIAF": "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
