@@ -184,7 +184,7 @@ var whitelistSearchLinks = {
 						en: "Korea"
 					},
 					items: {
-						maniadb: "http://www.maniadb.com/search.asp?sr=PO&q=%artist-name%"
+						maniadb: "http://www.maniadb.com/search/%artist-name%/?sr=P"
 					}
 				},
 				DE: {
