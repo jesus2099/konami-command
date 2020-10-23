@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2019.6.21b
+// @version      2020.10.23
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -294,9 +294,7 @@ var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/
 var favicons = {
 	"deezer.com": "https://e-cdns-files.dzcdn.net/cache/images/common/favicon/favicon-16x16.526cde4edf20647be4ee32cdf35c1c13.png",
 	"lastfm.": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
-	"livedoor.jp": "http://blog.livedoor.jp/favicon.ico",
 	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
-	"yahoo.": "http://blogs.yahoo.co.jp/favicon.ico",
 };
 var favicontry = [];
 var guessOtherFavicons = true;
@@ -659,7 +657,7 @@ function setFavicon(li, url) {
 		} else {
 			// arbitrary /favicon.ico load try out
 			if (guessOtherFavicons && !favurlfound) {
-				favurlfound = url.substr(0, url.indexOf("/", 8)) + "/favicon.ico";
+				favurlfound = url.match(/(\/\/[^/]+)\//)[1] + "/favicon.ico";
 			}
 			var ifit = favicontry.length;
 			favicontry[ifit] = new Image();
