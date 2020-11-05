@@ -19,7 +19,6 @@
 "use strict";
 // “const” NG in Opera 12 at least
 var SCRIPT_KEY = "jesus2099PendingEdits"; // linked in mb_MASS-MERGE-RECORDINGS.user.js
-var EDITS_PER_PAGE = 50;
 var MBS = self.location.protocol + "//" + self.location.host;
 var RE_GUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 var pageEntity, checked = [], xhrPendingEdits = {};
@@ -136,7 +135,7 @@ function checkOpenEdits(obj) {
 		if (this.status == 200) {
 			var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
 			var editCount = responseDOM.querySelector("div.search-toggle");
-			var editDetails;
+			var editDetails = {types: [], editors: [], editCount: 0, paginated: false};
 			if (
 				editCount
 				&& (editCount = editCount.textContent.match(/\d+/))
@@ -145,102 +144,103 @@ function checkOpenEdits(obj) {
 			) {
 				editDetails = {
 					types: Array.from(this.responseText.match(/<h2><a href="[^"]+"><bdi>[^<]+<\/bdi><\/a><\/h2>/g), x => x.replace(/^.+ - /, "- ").replace(/<\/bdi>.+$/, "")),
-					editors: Array.from(this.responseText.match(/<\/h2><p class="subheader">[\S\s]+?<a href="\/user\/[^/]+">[\S\s]+?<\/p>/g), x => decodeURIComponent(x.replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, "")))
+					editors: Array.from(this.responseText.match(/<\/h2><p class="subheader">[\S\s]+?<a href="\/user\/[^/]+">[\S\s]+?<\/p>/g), x => decodeURIComponent(x.replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""))),
+					editCount: editCount,
+					paginated: responseDOM.querySelector("ul.pagination") != null
 				};
-			} else {
-				editCount = 0;
 			}
-			updateLink(xhrpe.object, editCount, editDetails, editCount == 500);
+			if (editDetails.editCount == 0 || editDetails.types.length == editDetails.editors.length) {
+				updateLink(xhrpe.object, editDetails);
+			} else {
+				updateLink(xhrpe.object, "type and editor counts mismatch");
+			}
 		} else {
-			updateLink(xhrpe.object, this);
+			updateLink(xhrpe.object, this.status + ": " + this.statusText);
 		}
 	});
 	xhrPendingEdits[obj.base].xhr.open("get", MBS + obj.openedits.getAttribute("href"), true);
 	xhrPendingEdits[obj.base].xhr.setRequestHeader("base", obj.base);
 	xhrPendingEdits[obj.base].xhr.send(null);
 }
-function updateLink(obj, pecount, details, more) {
+function updateLink(obj, details) {
 	var countText;
 //	var tooltip;
 	var li = getParent(obj.openedits, "li");
 	var count = li.querySelector("span." + SCRIPT_KEY + "Count");
-	if (typeof pecount == "number") {
-		countText = pecount;
-		if (more) countText += "+";
-		if (pecount == 0) {
+	if (typeof details == "object") {
+		countText = details.editCount;
+		if (details.editCount == 0) {
 			mp(obj.openedits, false);
 //			tooltip = "no pending edits";
-		} else if (pecount > 0) {
+		} else if (details.editCount > 0) {
 			mp(obj.openedits, true);
-			if (details.types.length > 0 && details.types.length == details.editors.length) {
-				var titarray = [], dupcount = 0, dupreset;
-				for (var d = 0; d < details.types.length; d++) {
-					var thistit = details.types[d];
-					var editor = details.editors[d];
-					if (editor != account) {
-						thistit += " (" + editor + ")";
-					}
-					if (thistit != titarray[titarray.length - 1]) {
-						titarray.push(thistit);
-						if (d > 0) {
-							dupreset = true;
-						}
-					} else {
-						dupcount++;
-					}
-					var last = (d == details.types.length - 1);
-					if (dupcount > 0 && (dupreset || last)) {
-						titarray[titarray.length - 2 + (!dupreset && last ? 1 : 0)] += " ×" + (dupcount + 1);
-						dupcount = 0;
-					}
-					dupreset = false;
+			if (details.editCount == 500) countText += "+";
+			var titarray = [], dupcount = 0, dupreset;
+			for (var d = 0; d < details.types.length; d++) {
+				var thistit = details.types[d];
+				var editor = details.editors[d];
+				if (editor != account) {
+					thistit += " (" + editor + ")";
 				}
+				if (thistit != titarray[titarray.length - 1]) {
+					titarray.push(thistit);
+					if (d > 0) {
+						dupreset = true;
+					}
+				} else {
+					dupcount++;
+				}
+				var last = (d == details.types.length - 1);
+				if (dupcount > 0 && (dupreset || last)) {
+					titarray[titarray.length - 2 + (!dupreset && last ? 1 : 0)] += " ×" + (dupcount + 1);
+					dupcount = 0;
+				}
+				dupreset = false;
+			}
 //				tooltip = titarray.join("\n");
-				var expanded = "▼";
-				var collapsed = "◀";
-				var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
-				var ul = createTag("ul", {a: {class: SCRIPT_KEY + "EditList"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
-				for (var e = 0; e < titarray.length; e++) {
-					var edit1type2editor3count = titarray[e].match(/^(?:- )?([^\(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
-					var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
-					if (edit1type2editor3count[2]) {
-						editLi.appendChild(document.createTextNode(" by "));
-						editLi.appendChild(createTag("a", {a: {href: "/user/" + escape(edit1type2editor3count[2])}}, edit1type2editor3count[2]));
-					} else {
-						editLi.style.setProperty("font-weight", "bold");
-					}
+			var expanded = "▼";
+			var collapsed = "◀";
+			var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
+			var ul = createTag("ul", {a: {class: SCRIPT_KEY + "EditList"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
+			for (var e = 0; e < titarray.length; e++) {
+				var edit1type2editor3count = titarray[e].match(/^(?:- )?([^\(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
+				var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
+				if (edit1type2editor3count[2]) {
+					editLi.appendChild(document.createTextNode(" by "));
+					editLi.appendChild(createTag("a", {a: {href: "/user/" + escape(edit1type2editor3count[2])}}, edit1type2editor3count[2]));
+				} else {
+					editLi.style.setProperty("font-weight", "bold");
 				}
+			}
 //				if (titarray.length < 2 && pecount <= EDITS_PER_PAGE) {
 //					tooltip = tooltip.replace(/^- /, "");
 //				}
-				if (pecount > EDITS_PER_PAGE) {
+			if (details.paginated) {
 //					tooltip += "\n- …";
-					ul.appendChild(createTag("li", {}, ["And ", createTag("span", {a: {class: "mp"}}, (pecount - EDITS_PER_PAGE) + " more edit" + (pecount == 51 ? "" : "s")), "…"]));
-				}
-				var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
-				if (titarray.length > 1) {
-//					tooltip += "\n \n(oldest edit on bottom)";
-					help.appendChild(document.createElement("br"));
-					help.appendChild(document.createTextNode(" newest edit on top"));
-				}
-				li.appendChild(help);
-				li.appendChild(ul);
-				li.insertBefore(createTag("a", {a: {class: SCRIPT_KEY + "Toggle"}, s: {position: "absolute", right: "4px"}, e: {click: function(event) {
-					var collapse = (this.textContent == expanded);
-					for (var options = document.querySelectorAll("ul." + SCRIPT_KEY + "EditList, span." + SCRIPT_KEY + "Help"), o = 0; o < options.length; o++) {
-						options[o].style.setProperty("display", collapse ? "none" : (options[o].tagName == "UL" ? "block" : "inline"));
-					}
-					for (var toggles = document.querySelectorAll("a." + SCRIPT_KEY + "Toggle"), t = 0; t < toggles.length; t++) {
-						replaceChildren(document.createTextNode(collapse ? collapsed : expanded), toggles[t]);
-					}
-					localStorage.setItem(SCRIPT_KEY + "PendingEditLists", collapse ? collapsed : expanded);
-				}}}, expandEditLists ? expanded : collapsed), li.firstChild);
+				ul.appendChild(createTag("li", {}, ["And ", createTag("span", {a: {class: "mp"}}, (details.editCount - details.types.length) + " older edit" + (details.editCount == (details.types.length + 1) ? "" : "s")), "…"]));
 			}
+			var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
+			if (titarray.length > 1) {
+//					tooltip += "\n \n(oldest edit on bottom)";
+				help.appendChild(document.createElement("br"));
+				help.appendChild(document.createTextNode(" newest edit on top"));
+			}
+			li.appendChild(help);
+			li.appendChild(ul);
+			li.insertBefore(createTag("a", {a: {class: SCRIPT_KEY + "Toggle"}, s: {position: "absolute", right: "4px"}, e: {click: function(event) {
+				var collapse = (this.textContent == expanded);
+				for (var options = document.querySelectorAll("ul." + SCRIPT_KEY + "EditList, span." + SCRIPT_KEY + "Help"), o = 0; o < options.length; o++) {
+					options[o].style.setProperty("display", collapse ? "none" : (options[o].tagName == "UL" ? "block" : "inline"));
+				}
+				for (var toggles = document.querySelectorAll("a." + SCRIPT_KEY + "Toggle"), t = 0; t < toggles.length; t++) {
+					replaceChildren(document.createTextNode(collapse ? collapsed : expanded), toggles[t]);
+				}
+				localStorage.setItem(SCRIPT_KEY + "PendingEditLists", collapse ? collapsed : expanded);
+			}}}, expandEditLists ? expanded : collapsed), li.firstChild);
 		}
 	} else {
-		countText = pecount.status;
-//		tooltip = pecount.responseText;
 		count.style.setProperty("background-color", "pink"); // “pink” linked in mb_MASS-MERGE-RECORDINGS.user.js
+		countText = details;
 	}
 	count.replaceChild(document.createTextNode(countText), count.firstChild);//“countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
 //	if (tooltip) {
