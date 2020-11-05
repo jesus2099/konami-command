@@ -215,7 +215,7 @@ function updateLink(obj, pecount, details, more) {
 //				}
 				if (pecount > EDITS_PER_PAGE) {
 //					tooltip += "\n- …";
-					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
+					ul.appendChild(createTag("li", {}, ["And ", createTag("span", {a: {class: "mp"}}, (pecount - EDITS_PER_PAGE) + " more edit" + (pecount == 51 ? "" : "s")), "…"]));
 				}
 				var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
 				if (titarray.length > 1) {
