@@ -128,26 +128,37 @@ function checkOpenEdits(obj) {
 	};
 	xhrPendingEdits[obj.base].xhr.addEventListener("load", function() {
 		var xhrpe;
-		for (var x in xhrPendingEdits) if (xhrPendingEdits.hasOwnProperty(x) && xhrPendingEdits[x].xhr == this) {
-			xhrpe = xhrPendingEdits[x];
+		for (var entityBasePath in xhrPendingEdits) if (xhrPendingEdits.hasOwnProperty(entityBasePath) && xhrPendingEdits[entityBasePath].xhr == this) {
+			xhrpe = xhrPendingEdits[entityBasePath];
 			break;
 		}
 		if (this.status == 200) {
 			var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
 			var editCount = responseDOM.querySelector("div.search-toggle");
-			var editDetails = {types: [], editors: [], editCount: 0, paginated: false};
+			var editDetails = {types: [], editors: [], editCount: 0, paginated: false, atLeast: false};
 			if (
 				editCount
 				&& (editCount = editCount.textContent.match(/\d+/))
 				&& (editCount = parseInt(editCount[0], 10))
 				&& !isNaN(editCount)
 			) {
+				var pagination = responseDOM.querySelector("ul.pagination");
 				editDetails = {
 					types: Array.from(this.responseText.match(/<h2><a href="[^"]+"><bdi>[^<]+<\/bdi><\/a><\/h2>/g), x => x.replace(/^.+ - /, "- ").replace(/<\/bdi>.+$/, "")),
 					editors: Array.from(this.responseText.match(/<\/h2><p class="subheader">[\S\s]+?<a href="\/user\/[^/]+">[\S\s]+?<\/p>/g), x => decodeURIComponent(x.replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""))),
-					editCount: editCount,
-					paginated: responseDOM.querySelector("ul.pagination") != null
+					editCount: editCount
 				};
+				if (pagination) {
+					var pages = pagination.getElementsByTagName("li");
+					if (
+						pages[pages.length - 1].querySelector("a[href$='" + xhrpe.object.base + "/open_edits?page=2']")
+						&& pages[pages.length - 2].classList.contains("separator")
+						&& pages[pages.length - 3].textContent.trim() == "…"
+					) {
+						editDetails.atLeast = true;
+					}
+					editDetails.paginated = true;
+				}
 			}
 			if (editDetails.editCount == 0 || editDetails.types.length == editDetails.editors.length) {
 				updateLink(xhrpe.object, editDetails);
@@ -174,7 +185,7 @@ function updateLink(obj, details) {
 //			tooltip = "no pending edits";
 		} else if (details.editCount > 0) {
 			mp(obj.openedits, true);
-			if (details.editCount == 500) countText += "+";
+			if (details.atLeast) countText += "+";
 			var titarray = [], dupcount = 0, dupreset;
 			for (var d = 0; d < details.types.length; d++) {
 				var thistit = details.types[d];
