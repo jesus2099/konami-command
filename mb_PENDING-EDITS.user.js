@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2020.10.14
+// @version      2020.11.5
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
@@ -19,7 +19,7 @@
 "use strict";
 // “const” NG in Opera 12 at least
 var SCRIPT_KEY = "jesus2099PendingEdits"; // linked in mb_MASS-MERGE-RECORDINGS.user.js
-var EDITS_PER_PAGE = 100;
+var EDITS_PER_PAGE = 50;
 var MBS = self.location.protocol + "//" + self.location.host;
 var RE_GUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 var pageEntity, checked = [], xhrPendingEdits = {};
