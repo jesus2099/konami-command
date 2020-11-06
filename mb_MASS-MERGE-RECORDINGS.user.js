@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2020.1.10b
+// @version      2020.11.6
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -98,14 +98,6 @@ if (ltitle) {
 	var largeSpread = 15; // MBS-7417 / https://github.com/metabrainz/musicbrainz-server/blob/217111e3a12b705b9499e7fdda6be93876d30fb0/lib/MusicBrainz/Server/Edit/Utils.pm#L467
 	if (localRelease.comment) localRelease.comment = " (" + localRelease.comment.textContent + ")"; else localRelease.comment = "";
 	var remoteRelease = {tracks: []};
-	var collapsedMediums = document.querySelectorAll(css_collapsed_medium);
-	if (collapsedMediums.length > 1) {
-		var tracklistHeader = document.querySelector("h2.tracklist");
-		if (tracklistHeader) {
-			tracklistHeader.appendChild(createTag("span", {a: {title: "by and for " + meta.n}, s: {color: "#999", opacity: ".5"}}, [" (", createTag("a", {a: {ref: "▶"}}, "expand"), "/", createTag("a", {a: {ref: "▼"}}, "collapse"), " all mediums)"]));
-			tracklistHeader.addEventListener("click", function(event) { if (event.target.tagName == "A") expandCollapseAllMediums(event.target.getAttribute("ref")); });
-		}
-	}
 	if (document.getElementsByClassName("account").length > 0) {
 		sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 		document.body.addEventListener("keydown", function(event) {
@@ -881,6 +873,7 @@ function buildMergeForm(loc, rem) {
 	}
 }
 function expandCollapseAllMediums(clickThis) {
+	// MBS expand-all-mediums loads them from top to bottom, I want them from bottom to top to avoid creating a please wait loading message
 	if (clickThis) for (var collapsedMediums = document.querySelectorAll(css_collapsed_medium), a = collapsedMediums.length - 1; a >= 0; a--) {
 		if (collapsedMediums[a].textContent.trim() == clickThis) {
 			collapsedMediums[a].click();
