@@ -196,7 +196,12 @@ function mergeRecsStep(_step) {
 						}
 					}
 				} else {
-					checkMerge("Error " + this.status + " “" + this.statusText + "” in step " + (step + 1) + "/2");
+					var errorText = "Error " + this.status + " “" + this.statusText + "” in step " + (step + 1) + "/2";
+					if (step === 0) {
+						tryAgain(errorText);
+					} else {
+						checkMerge(errorText);
+					}
 				}
 			}
 		};
@@ -682,7 +687,7 @@ function loadReleasePage() {
 					infoMerge("Disc number out of bounds (1–" + discount + ") or unreadable", false);
 				}
 			}
-		} else if (this.status == 0 || this.status >= 500 && this.status <= 599){
+		} else if (this.status == 0 || this.status >= 500 && this.status <= 599) {
 			infoMerge("Retrying in 2s (error " + this.status + " “" + this.statusText + "”)…", false);
 			setTimeout(function() {
 				infoMerge("Fetching recordings…");
