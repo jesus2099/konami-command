@@ -218,8 +218,14 @@ function checkMerge(errorText) {
 	retry.checking = true;
 	infoMerge("Checking merge (" + errorText + ")…", false);
 	var xhr = new XMLHttpRequest();
+	xhr.addEventListener("error", function(event) {
+		setTimeout(function() {
+			infoMerge("Retrying in 2s (error " + this. status + "“" + this.statusText + "”)…", false);
+			checkMerge(errorText);
+		}, 2000);
+	});
 	xhr.addEventListener("load", function(event) {
-		if (this.status == 200 && typeof this.responseText == "string") {
+		if (typeof this.responseText == "string") {
 			if (this.responseText.indexOf('class="edit-list"') > -1) {
 				var editID = this.responseText.match(/>Edit #(\d+)/);
 				nextButt(editID ? editID[1] : true);
@@ -231,10 +237,7 @@ function checkMerge(errorText) {
 				tryAgain(errorText);
 			}
 		} else {
-			setTimeout(function() {
-				infoMerge("Retrying in 2s (error " + this. status + "“" + this.statusText + "”)…", false);
-				checkMerge(errorText);
-			}, 2000);
+			sendEvent(this, "error");
 		}
 		retry.checking = false;
 	});
@@ -608,59 +611,58 @@ function loadReleasePage() {
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("error", function() { infoMerge("Error " + this.status + " “" + this.statusText + "”", false); });
 	xhr.addEventListener("load", function(event) {
-		if (this.status == 200) {
-			var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
-			var recIDx5 = releaseWithoutARs.match(/entity_id=\d+[^"]*entity_type=recording|entity_type=recording[^"]*entity_id=\d+/g);
-			var trackRows = releaseWithoutARs.match(/<tr class="(even|odd)" id="[-\da-z]{36}">[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
-			var trackInfos = releaseWithoutARs.match(new RegExp("<a href=\"/recording/" + sregex_MBID + "\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
-			var trackTimes = releaseWithoutARs.match(/<td class="treleases">[^<]*<\/td>/g);
-			var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
-			var releaseAC = releaseWithoutARs.match(/<p class="subheader"><span class="prefix">~<\/span> <!-- -->[^<]+ (<.+?) <span class="small">\(/);
-			var discount = releaseWithoutARs.match(/<a class="expand-medium"/g).length;
-			if (recIDx5 && trackInfos && trackTimes && rtitle) {
-				var recIDs = [];
-				for (var i5 = 0; i5 < recIDx5.length; i5 += 5) {
-					recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
+		var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
+		var recIDx5 = releaseWithoutARs.match(/entity_id=\d+[^"]*entity_type=recording|entity_type=recording[^"]*entity_id=\d+/g);
+		var trackRows = releaseWithoutARs.match(/<tr class="(even|odd)" id="[-\da-z]{36}">[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
+		var trackInfos = releaseWithoutARs.match(new RegExp("<a href=\"/recording/" + sregex_MBID + "\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
+		var trackTimes = releaseWithoutARs.match(/<td class="treleases">[^<]*<\/td>/g);
+		var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
+		var releaseAC = releaseWithoutARs.match(/<p class="subheader"><span class="prefix">~<\/span> <!-- -->[^<]+ (<.+?) <span class="small">\(/);
+		var discount = releaseWithoutARs.match(/<a class="expand-medium"/g).length;
+		if (recIDx5 && trackInfos && trackTimes && rtitle) {
+			var recIDs = [];
+			for (var i5 = 0; i5 < recIDx5.length; i5 += 5) {
+				recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
+			}
+			remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>){0,2}<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>){0,2}\)/)[1];
+			remoteRelease.title = HTMLToText(rtitle[1]);
+			remoteRelease.looseTitle = looseTitle(remoteRelease.title);
+			remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
+			if (remoteRelease.comment) remoteRelease.comment = " (" + HTMLToText(remoteRelease.comment[1]) + ")"; else remoteRelease.comment = "";
+			remoteRelease.ac = rtitle[2];
+			removeChildren(mbidInfo);
+			if (remoteRelease.id == localRelease.id) {
+				mbidInfo.appendChild(document.createTextNode(" (same" + (remoteRelease.disc ? ", " + remoteRelease.disc.substr(1).replace(/\//, "\u00a0") + "/" + discount : "") + ")"));
+			} else {
+				mbidInfo.appendChild(document.createTextNode(" “"));
+				mbidInfo.appendChild(createA(remoteRelease.title, "/release/" + remoteRelease.id));
+				mbidInfo.appendChild(document.createTextNode("”" + remoteRelease.comment));
+				if (remoteRelease.disc) {
+					mbidInfo.appendChild(createTag("fragment", null, [" (", createA(remoteRelease.disc.substr(1).replace(/\//, "\u00a0"), "/release/" + remoteRelease.id + remoteRelease.disc + "#" + remoteRelease.disc.replace(/\//g, "")),  "/" + discount + ")"]));
 				}
-				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>){0,2}<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>){0,2}\)/)[1];
-				remoteRelease.title = HTMLToText(rtitle[1]);
-				remoteRelease.looseTitle = looseTitle(remoteRelease.title);
-				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
-				if (remoteRelease.comment) remoteRelease.comment = " (" + HTMLToText(remoteRelease.comment[1]) + ")"; else remoteRelease.comment = "";
-				remoteRelease.ac = rtitle[2];
-				removeChildren(mbidInfo);
-				if (remoteRelease.id == localRelease.id) {
-					mbidInfo.appendChild(document.createTextNode(" (same" + (remoteRelease.disc ? ", " + remoteRelease.disc.substr(1).replace(/\//, "\u00a0") + "/" + discount : "") + ")"));
-				} else {
-					mbidInfo.appendChild(document.createTextNode(" “"));
-					mbidInfo.appendChild(createA(remoteRelease.title, "/release/" + remoteRelease.id));
-					mbidInfo.appendChild(document.createTextNode("”" + remoteRelease.comment));
-					if (remoteRelease.disc) {
-						mbidInfo.appendChild(createTag("fragment", null, [" (", createA(remoteRelease.disc.substr(1).replace(/\//, "\u00a0"), "/release/" + remoteRelease.id + remoteRelease.disc + "#" + remoteRelease.disc.replace(/\//g, "")),  "/" + discount + ")"]));
-					}
-				}
-				remoteRelease.tracks = [];
-				for (var t = 0; t < recIDs.length; t++) {
-					var trackLength = trackTimes[t].match(/(\d+:)?\d+:\d+/);
-					if (trackLength) trackLength = strtime2ms(trackLength[0]);
-					remoteRelease.tracks.push({
-						number: trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + MBS + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
-						name: HTMLToText(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
-						artistCredit: trackRows[t].match(/<td>/g).length > 1 ? trackRows[t].match(/[\s\S]*<td>([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : releaseAC[1],
-						length: trackLength,
-						recording: {
-							rowid: recIDs[t],
-							id: trackInfos[t].match(/\/recording\/([^"]+)/)[1],
-							video: trackRows[t].match(/<td[^>]+?is-video/),
-							editsPending: 0
-						},
-						isDataTrack: false
-					});
-					remoteRelease.tracks[t].artistCreditAsPlainText = HTMLToText(remoteRelease.tracks[t].artistCredit);
-					remoteRelease.tracks[t].looseName = looseTitle(remoteRelease.tracks[t].name);
-					remoteRelease.tracks[t].looseAC = looseTitle(remoteRelease.tracks[t].artistCreditAsPlainText);
-					recid2trackIndex.remote[recIDs[t]] = t;
-				}
+			}
+			remoteRelease.tracks = [];
+			for (var t = 0; t < recIDs.length; t++) {
+				var trackLength = trackTimes[t].match(/(\d+:)?\d+:\d+/);
+				if (trackLength) trackLength = strtime2ms(trackLength[0]);
+				remoteRelease.tracks.push({
+					number: trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + MBS + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
+					name: HTMLToText(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
+					artistCredit: trackRows[t].match(/<td>/g).length > 1 ? trackRows[t].match(/[\s\S]*<td>([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : releaseAC[1],
+					length: trackLength,
+					recording: {
+						rowid: recIDs[t],
+						id: trackInfos[t].match(/\/recording\/([^"]+)/)[1],
+						video: trackRows[t].match(/<td[^>]+?is-video/),
+						editsPending: 0
+					},
+					isDataTrack: false
+				});
+				remoteRelease.tracks[t].artistCreditAsPlainText = HTMLToText(remoteRelease.tracks[t].artistCredit);
+				remoteRelease.tracks[t].looseName = looseTitle(remoteRelease.tracks[t].name);
+				remoteRelease.tracks[t].looseAC = looseTitle(remoteRelease.tracks[t].artistCreditAsPlainText);
+				recid2trackIndex.remote[recIDs[t]] = t;
+			}
 //									for (var rd = 0; rd < jsonRelease.mediums.length; rd++) {
 //										for (var rt = 0; rt < jsonRelease.mediums[rd].tracks.length; rt++) {
 //											remoteRelease.tracks.push(jsonRelease.mediums[rd].tracks[rt]);
@@ -668,33 +670,24 @@ function loadReleasePage() {
 //										}
 //									}
 //									jsonRelease = null;/*maybe it frees up memory*/
-				/*(re)build negative startpos*/
-				var negativeOptions = startpos.querySelectorAll("option[value^='-']");
-				for (var nopt = 0; nopt < negativeOptions.length; nopt++) {
-					removeNode(negativeOptions[nopt]);
-				}
-				for (var rtrack = 0; rtrack < remoteRelease.tracks.length - 1; rtrack++) {
-					addOption(startpos, 0 - rtrack - 1, 0 - rtrack - 1, true);
-				}
-				startpos.value = bestStartPosition() || 0;
-				spreadTracks(event);
-			} else if(discount > 10) {
-				var disc = prompt("This release has " + discount + " discs.\n11+ disc releases can only be used as local release.\nDo you want to load one of its mediums?\n\nNext time you can directly paste the medium link (" + MBS + "/release/" + remoteRelease.id + "/disc/1).", "1");
-				if (disc && disc.match(/^\d+$/) && disc > 0 && disc <= discount) {
-					remoteRelease.disc = "/disc/" + disc;
-					loadReleasePage();
-				} else {
-					infoMerge("Disc number out of bounds (1–" + discount + ") or unreadable", false);
-				}
+			/*(re)build negative startpos*/
+			var negativeOptions = startpos.querySelectorAll("option[value^='-']");
+			for (var nopt = 0; nopt < negativeOptions.length; nopt++) {
+				removeNode(negativeOptions[nopt]);
 			}
-		} else if (this.status == 0 || this.status >= 500 && this.status <= 599) {
-			infoMerge("Retrying in 2s (error " + this.status + " “" + this.statusText + "”)…", false);
-			setTimeout(function() {
-				infoMerge("Fetching recordings…");
+			for (var rtrack = 0; rtrack < remoteRelease.tracks.length - 1; rtrack++) {
+				addOption(startpos, 0 - rtrack - 1, 0 - rtrack - 1, true);
+			}
+			startpos.value = bestStartPosition() || 0;
+			spreadTracks(event);
+		} else if(discount > 10) {
+			var disc = prompt("This release has " + discount + " discs.\n11+ disc releases can only be used as local release.\nDo you want to load one of its mediums?\n\nNext time you can directly paste the medium link (" + MBS + "/release/" + remoteRelease.id + "/disc/1).", "1");
+			if (disc && disc.match(/^\d+$/) && disc > 0 && disc <= discount) {
+				remoteRelease.disc = "/disc/" + disc;
 				loadReleasePage();
-			}, 2000);
-		} else {
-			infoMerge("Error " + this.status + " “" + this.statusText + "”", false);
+			} else {
+				infoMerge("Disc number out of bounds (1–" + discount + ") or unreadable", false);
+			}
 		}
 	});
 	xhr.open("GET", MBS + "/release/" + remoteRelease.id + remoteRelease.disc, true);
