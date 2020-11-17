@@ -26,7 +26,7 @@
 // ==/UserScript==
 "use strict";
 var cdjTURBODASHinterval = setInterval(function() {
-	if (document.querySelector("div#contents_body + *, div#center_body + *")) {
+	if (document.querySelector("div#top_right_body")) {
 		clearInterval(cdjTURBODASHinterval);
 		/*remove crap*/
 		var css = document.createElement("style");
@@ -54,4 +54,4 @@ var cdjTURBODASHinterval = setInterval(function() {
 			quicklinks.appendChild(document.createTextNode("）"));
 		}
 	}
-}, 1000);
+}, 500);
