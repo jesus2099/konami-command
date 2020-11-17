@@ -1,27 +1,19 @@
 // ==UserScript==
 // @name         cdj. TURBO DASH
-// @version      2018.11.16
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/cdj_TURBO-DASH.user.js
+// @version      2020.11.17
 // @description  CDJournal.com: adds quick links to artists’ CD and ビデオ. removes adcrap
-// @homepage     http://userscripts-mirror.org/scripts/show/180523
-// @supportURL   https://github.com/jesus2099/konami-command/labels/cdj_TURBO-DASH
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   vivaldi(3.4.2066.106)+violentmonkey  my setup
+// @compatible   firefox(82.0.3)+violentmonkey        my other setup
 // @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/cdj_TURBO-DASH.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/cdj_TURBO-DASH.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2013-10-23
+// @since        2013-10-23; https://web.archive.org/web/20131105122005/userscripts.org/scripts/show/180523
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @match        https://artist.cdjournal.com/a/*/*
-// @match        https://artist.cdjournal.com/d/*/*
-// @match        https://*.cdjournal.com/search/do/?k=*&target=a*
+// @include      /^https?:\/\/artist\.cdjournal\.com\/[ad]\/[^/]+\/.+/
+// @include      /^https?:\/\/www\.cdjournal\.com\/search\/do\/\?k=.+&target=a/
 // @run-at       document-start
 // ==/UserScript==
 "use strict";
