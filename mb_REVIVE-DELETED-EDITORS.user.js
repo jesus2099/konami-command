@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2020.11.3
+// @version      2020.11.3.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -16,19 +16,6 @@
 // @since        2012-11-16
 // @icon         data:image/gif;base64,R0lGODlhEAAQAOMMAAAAAP8A/wJR1MosEqGhBPyZUAD/APW1hQD///vPp///AP7++P///////////////yH5BAEKAA8ALAAAAAAQABAAAARbUMlJq0Ll6AN6z0liYNnWLV84FmUBLIsAAyqpuTEgA4VomzFUyMfaaDy9WhFw/PRoK6Zn2lFyqNio58DKSAEjQnczPtTEN+ww3AIMBrM1Qpxxud80VWDP7/sNEQA7
 // @grant        none
-// @match        *://*.mbsandbox.org/*edits*
-// @match        *://*.mbsandbox.org/area/*/users*
-// @match        *://*.mbsandbox.org/artist/*
-// @match        *://*.mbsandbox.org/edit/*
-// @match        *://*.mbsandbox.org/election*
-// @match        *://*.mbsandbox.org/label/*
-// @match        *://*.mbsandbox.org/recording/*
-// @match        *://*.mbsandbox.org/release/*
-// @match        *://*.mbsandbox.org/release-group/*
-// @match        *://*.mbsandbox.org/search*type=editor*
-// @match        *://*.mbsandbox.org/statistics/editors*
-// @match        *://*.mbsandbox.org/user/*
-// @match        *://*.mbsandbox.org/work/*
 // @match        *://*.musicbrainz.org/*edits*
 // @match        *://*.musicbrainz.org/area/*/users*
 // @match        *://*.musicbrainz.org/artist/*

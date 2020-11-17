@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE TRACK ARTIST
-// @version      2019.8.4
+// @version      2019.8.4.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-TRACK-ARTIST.user.js
 // @description  musicbrainz.org: highlights track title, length and artist differences in recording page
 // @homepage     http://userscripts-mirror.org/scripts/show/166877
@@ -20,7 +20,6 @@
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL%20BUBBLES.js?version=258510&v=2016.6.1.1310
 // @grant        none
-// @match        *://*.mbsandbox.org/recording/*
 // @match        *://*.musicbrainz.org/recording/*
 // @exclude      *.org/recording/*/*
 // @run-at       document-end

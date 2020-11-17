@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2016.6.15b
+// @version      2016.6.15.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @homepage     http://userscripts-mirror.org/scripts/show/126475
@@ -17,7 +17,6 @@ var meta = {rawmdb: function() {
 // @since        2012-02-22
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @match        *://*.mbsandbox.org/*
 // @match        *://*.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
