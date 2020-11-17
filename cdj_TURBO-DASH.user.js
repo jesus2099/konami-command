@@ -18,7 +18,7 @@
 // ==/UserScript==
 "use strict";
 var cdjTURBODASHinterval = setInterval(function() {
-	if (document.querySelector("div#top_right_body")) {
+	if (document.querySelector("form[name='page'] /* for search */, div#data_request /* for artist and disc pages */")) {
 		clearInterval(cdjTURBODASHinterval);
 		/*remove crap*/
 		var css = document.createElement("style");
