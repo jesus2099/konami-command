@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2020.6.26
+// @version      2020.6.26.2
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -15,7 +15,6 @@ var meta = function() {
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
-// @match        *://*.mbsandbox.org/work/*
 // @match        *://*.musicbrainz.org/work/*
 // @match        *://www.minc.gr.jp/db/*
 // @match        *://www2.jasrac.or.jp/eJwid/main?trxID=*WORKS_CD=*
@@ -37,7 +36,7 @@ meta = {
 	POST work credits NG https://chatlogs.musicbrainz.org/musicbrainz/2015/2015-04/2015-04-09.html#T16-34-38-396540
 	GET JASRAC ID (work attributes) NG http://tickets.musicbrainz.org/browse/MBS-8341
 */
-var MBS7313 = "This script has been partially fixed now but is back to VERY EXPERIMENTAL status!\r\n(ノ ゜Д゜)ノ 彡┻━┻ Work credits are back on import (not on edit yet). Aliases are still disabled (maybe forever?).";
+var MBS7313 = "This script has been partially fixed now but is back to VERY EXPERIMENTAL status!\n(ノ ゜Д゜)ノ 彡┻━┻ Work credits are back on import (not on edit yet). Aliases are still disabled (maybe forever?).";
 var chrome = "Please run “" + meta.name + "” with Tampermonkey instead of plain Chrome.";
 var DEBUG = localStorage.getItem("jesus2099debug");
 var userjs = "jesus2099userjs94676";
@@ -390,12 +389,12 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					}, summary, createWork);
 					form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.edit_note", value: summary}}));
 					createWork += "&edit-work.edit_note=" + encodeURIComponent(summary).replace(/%20/g, "+");
-/*						form.appendChild(createTag("a", {a: {title: MBS7313 + "\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "underline", color: "blue"}, e: {click: function(event) {
+/*						form.appendChild(createTag("a", {a: {title: MBS7313 + "\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "underline", color: "blue"}, e: {click: function(event) {
 						this.parentNode.setAttribute("target", event.shiftKey || event.ctrlKey ? "_blank" : "_self");
 						this.parentNode.submit();
 						return stop(event);
 					}}}, "Add to MB"));*/
-					form.appendChild(createTag("a", {a: {href: createWork, title : MBS7313 + "\r\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "blink line-through", color: "blue"}}, "BROKEN")) // textDecoration: "underline" Add to MusicBrainz
+					form.appendChild(createTag("a", {a: {href: createWork, title : MBS7313 + "\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "blink line-through", color: "blue"}}, "BROKEN")) // textDecoration: "underline" Add to MusicBrainz
 					var sakuhin = document.querySelector(".baseinfo--name").firstChild; // quick and dirty patch
 					sakuhin.parentNode.appendChild(document.createTextNode(" （"));
 					sakuhin.parentNode.appendChild(form);
@@ -801,7 +800,7 @@ function workCredit(enttype, credtypes, source, pTarget) {
 				var ilookupid = userjs + "ilookup" + i;
 				var target = cont.appendChild(createTag("div", {a: {class: "row", title: credit}}));
 				target.appendChild(createTag("label", {a: {for: ilookupid}}, ctype[c].english + ":"));
-				target.appendChild(createTag("a", {a: {title: "reset\r\n" + credit, ref: i}, s: {cursor: "pointer"}, e: {click: function(event) {
+				target.appendChild(createTag("a", {a: {title: "reset\n" + credit, ref: i}, s: {cursor: "pointer"}, e: {click: function(event) {
 					MBlookups[this.getAttribute("ref")].clear(true);
 				}}}, "× "));
 				var jQac = jQuery(target.appendChild(createTag("span", {a: {class: enttype + " autocomplete" + (ctype.length == 1 || c > 0 ? "" : " " + userjs + "manu"), ref: enttype}}, [

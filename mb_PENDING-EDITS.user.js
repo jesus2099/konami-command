@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2020.3.4
+// @version      2020.11.5.2
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
@@ -13,13 +13,12 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
-// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/[^/]+\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
 // “const” NG in Opera 12 at least
 var SCRIPT_KEY = "jesus2099PendingEdits"; // linked in mb_MASS-MERGE-RECORDINGS.user.js
-var EDITS_PER_PAGE = 100;
 var MBS = self.location.protocol + "//" + self.location.host;
 var RE_GUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 var pageEntity, checked = [], xhrPendingEdits = {};
@@ -110,7 +109,7 @@ function appendRefineSearchFormLink(baseEditLink) {
 			var row = getParent(baseEditLink, "li")
 			pageEntity.id = pageEntity.id[1];
 			row.appendChild(document.createTextNode(" ("));
-			row.appendChild(createTag("a", {a: {href: "/search/edits?order=desc&negation=0&combinator=and&conditions.0.field=" + pageEntity.type + "&conditions.0.operator=%3D&conditions.0.name=" + encodeURIComponent(pageEntity.name) + "&conditions.0.args.0=" + pageEntity.id + "&conditions.1.field=status&conditions.1.operator=%3D&conditions.1.args=1&conditions.1.args=2&conditions.2.field=type&conditions.2.operator=!%3D&conditions.2.args=77&conditions.2.args=113"}}, "effective"));
+			row.appendChild(createTag("a", {s: {backgroundColor: "#FF6"}, a: {title: "Exclude failed edits\n(this link is added by mb. PENDING EDITS)", href: "/search/edits?order=desc&negation=0&combinator=and&conditions.0.field=" + pageEntity.type + "&conditions.0.operator=%3D&conditions.0.name=" + encodeURIComponent(pageEntity.name) + "&conditions.0.args.0=" + pageEntity.id + "&conditions.1.field=status&conditions.1.operator=%3D&conditions.1.args=1&conditions.1.args=2"}}, "effective"));
 			row.appendChild(document.createTextNode(")"));
 		}
 	}
@@ -129,118 +128,130 @@ function checkOpenEdits(obj) {
 	};
 	xhrPendingEdits[obj.base].xhr.addEventListener("load", function() {
 		var xhrpe;
-		for (var x in xhrPendingEdits) if (xhrPendingEdits.hasOwnProperty(x) && xhrPendingEdits[x].xhr == this) {
-			xhrpe = xhrPendingEdits[x];
+		for (var entityBasePath in xhrPendingEdits) if (xhrPendingEdits.hasOwnProperty(entityBasePath) && xhrPendingEdits[entityBasePath].xhr == this) {
+			xhrpe = xhrPendingEdits[entityBasePath];
 			break;
 		}
 		if (this.status == 200) {
 			var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
 			var editCount = responseDOM.querySelector("div.search-toggle");
-			var editDetails;
+			var editDetails = {types: [], editors: [], editCount: 0, paginated: false, atLeast: false};
 			if (
 				editCount
 				&& (editCount = editCount.textContent.match(/\d+/))
 				&& (editCount = parseInt(editCount[0], 10))
 				&& !isNaN(editCount)
 			) {
+				var pagination = responseDOM.querySelector("ul.pagination");
 				editDetails = {
 					types: Array.from(this.responseText.match(/<h2><a href="[^"]+"><bdi>[^<]+<\/bdi><\/a><\/h2>/g), x => x.replace(/^.+ - /, "- ").replace(/<\/bdi>.+$/, "")),
-					editors: Array.from(this.responseText.match(/<\/h2><p class="subheader">[\S\s]+?<a href="\/user\/[^/]+">[\S\s]+?<\/p>/g), x => decodeURIComponent(x.replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, "")))
+					editors: Array.from(this.responseText.match(/<\/h2><p class="subheader">[\S\s]+?<a href="\/user\/[^/]+">[\S\s]+?<\/p>/g), x => decodeURIComponent(x.replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""))),
+					editCount: editCount
 				};
-			} else {
-				editCount = 0;
+				if (pagination) {
+					var pages = pagination.getElementsByTagName("li");
+					if (
+						pages[pages.length - 1].querySelector("a[href$='" + xhrpe.object.base + "/open_edits?page=2']")
+						&& pages[pages.length - 2].classList.contains("separator")
+						&& pages[pages.length - 3].textContent.trim() == "…"
+					) {
+						editDetails.atLeast = true;
+					}
+					editDetails.paginated = true;
+				}
 			}
-			updateLink(xhrpe.object, editCount, editDetails, editCount == 500);
+			if (editDetails.editCount == 0 || editDetails.types.length == editDetails.editors.length) {
+				updateLink(xhrpe.object, editDetails);
+			} else {
+				updateLink(xhrpe.object, "type and editor counts mismatch");
+			}
 		} else {
-			updateLink(xhrpe.object, this);
+			updateLink(xhrpe.object, this.status + ": " + this.statusText);
 		}
 	});
 	xhrPendingEdits[obj.base].xhr.open("get", MBS + obj.openedits.getAttribute("href"), true);
 	xhrPendingEdits[obj.base].xhr.setRequestHeader("base", obj.base);
 	xhrPendingEdits[obj.base].xhr.send(null);
 }
-function updateLink(obj, pecount, details, more) {
+function updateLink(obj, details) {
 	var countText;
 //	var tooltip;
 	var li = getParent(obj.openedits, "li");
 	var count = li.querySelector("span." + SCRIPT_KEY + "Count");
-	if (typeof pecount == "number") {
-		countText = pecount;
-		if (more) countText += "+";
-		if (pecount == 0) {
+	if (typeof details == "object") {
+		countText = details.editCount;
+		if (details.editCount == 0) {
 			mp(obj.openedits, false);
 //			tooltip = "no pending edits";
-		} else if (pecount > 0) {
+		} else if (details.editCount > 0) {
 			mp(obj.openedits, true);
-			if (details.types.length > 0 && details.types.length == details.editors.length) {
-				var titarray = [], dupcount = 0, dupreset;
-				for (var d = 0; d < details.types.length; d++) {
-					var thistit = details.types[d];
-					var editor = details.editors[d];
-					if (editor != account) {
-						thistit += " (" + editor + ")";
-					}
-					if (thistit != titarray[titarray.length - 1]) {
-						titarray.push(thistit);
-						if (d > 0) {
-							dupreset = true;
-						}
-					} else {
-						dupcount++;
-					}
-					var last = (d == details.types.length - 1);
-					if (dupcount > 0 && (dupreset || last)) {
-						titarray[titarray.length - 2 + (!dupreset && last ? 1 : 0)] += " ×" + (dupcount + 1);
-						dupcount = 0;
-					}
-					dupreset = false;
+			if (details.atLeast) countText += "+";
+			var titarray = [], dupcount = 0, dupreset;
+			for (var d = 0; d < details.types.length; d++) {
+				var thistit = details.types[d];
+				var editor = details.editors[d];
+				if (editor != account) {
+					thistit += " (" + editor + ")";
 				}
-//				tooltip = titarray.join("\r\n");
-				var expanded = "▼";
-				var collapsed = "◀";
-				var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
-				var ul = createTag("ul", {a: {class: SCRIPT_KEY + "EditList"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
-				for (var e = 0; e < titarray.length; e++) {
-					var edit1type2editor3count = titarray[e].match(/^(?:- )?([^\(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
-					var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
-					if (edit1type2editor3count[2]) {
-						editLi.appendChild(document.createTextNode(" by "));
-						editLi.appendChild(createTag("a", {a: {href: "/user/" + escape(edit1type2editor3count[2])}}, edit1type2editor3count[2]));
-					} else {
-						editLi.style.setProperty("font-weight", "bold");
+				if (thistit != titarray[titarray.length - 1]) {
+					titarray.push(thistit);
+					if (d > 0) {
+						dupreset = true;
 					}
+				} else {
+					dupcount++;
 				}
+				var last = (d == details.types.length - 1);
+				if (dupcount > 0 && (dupreset || last)) {
+					titarray[titarray.length - 2 + (!dupreset && last ? 1 : 0)] += " ×" + (dupcount + 1);
+					dupcount = 0;
+				}
+				dupreset = false;
+			}
+//				tooltip = titarray.join("\n");
+			var expanded = "▼";
+			var collapsed = "◀";
+			var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
+			var ul = createTag("ul", {a: {class: SCRIPT_KEY + "EditList"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
+			for (var e = 0; e < titarray.length; e++) {
+				var edit1type2editor3count = titarray[e].match(/^(?:- )?([^\(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
+				var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
+				if (edit1type2editor3count[2]) {
+					editLi.appendChild(document.createTextNode(" by "));
+					editLi.appendChild(createTag("a", {a: {href: "/user/" + escape(edit1type2editor3count[2])}}, edit1type2editor3count[2]));
+				} else {
+					editLi.style.setProperty("font-weight", "bold");
+				}
+			}
 //				if (titarray.length < 2 && pecount <= EDITS_PER_PAGE) {
 //					tooltip = tooltip.replace(/^- /, "");
 //				}
-				if (pecount > EDITS_PER_PAGE) {
-//					tooltip += "\r\n- …";
-					ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, "etc.")));
-				}
-				var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
-				if (titarray.length > 1) {
-//					tooltip += "\r\n \r\n(oldest edit on bottom)";
-					help.appendChild(document.createElement("br"));
-					help.appendChild(document.createTextNode(" newest edit on top"));
-				}
-				li.appendChild(help);
-				li.appendChild(ul);
-				li.insertBefore(createTag("a", {a: {class: SCRIPT_KEY + "Toggle"}, s: {position: "absolute", right: "4px"}, e: {click: function(event) {
-					var collapse = (this.textContent == expanded);
-					for (var options = document.querySelectorAll("ul." + SCRIPT_KEY + "EditList, span." + SCRIPT_KEY + "Help"), o = 0; o < options.length; o++) {
-						options[o].style.setProperty("display", collapse ? "none" : (options[o].tagName == "UL" ? "block" : "inline"));
-					}
-					for (var toggles = document.querySelectorAll("a." + SCRIPT_KEY + "Toggle"), t = 0; t < toggles.length; t++) {
-						replaceChildren(document.createTextNode(collapse ? collapsed : expanded), toggles[t]);
-					}
-					localStorage.setItem(SCRIPT_KEY + "PendingEditLists", collapse ? collapsed : expanded);
-				}}}, expandEditLists ? expanded : collapsed), li.firstChild);
+			if (details.paginated) {
+//					tooltip += "\n- …";
+				ul.appendChild(createTag("li", {}, ["And ", createTag("span", {a: {class: "mp"}}, (details.editCount - details.types.length) + " older edit" + (details.editCount == (details.types.length + 1) ? "" : "s")), "…"]));
 			}
+			var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
+			if (titarray.length > 1) {
+//					tooltip += "\n \n(oldest edit on bottom)";
+				help.appendChild(document.createElement("br"));
+				help.appendChild(document.createTextNode(" newest edit on top"));
+			}
+			li.appendChild(help);
+			li.appendChild(ul);
+			li.insertBefore(createTag("a", {a: {class: SCRIPT_KEY + "Toggle"}, s: {position: "absolute", right: "4px"}, e: {click: function(event) {
+				var collapse = (this.textContent == expanded);
+				for (var options = document.querySelectorAll("ul." + SCRIPT_KEY + "EditList, span." + SCRIPT_KEY + "Help"), o = 0; o < options.length; o++) {
+					options[o].style.setProperty("display", collapse ? "none" : (options[o].tagName == "UL" ? "block" : "inline"));
+				}
+				for (var toggles = document.querySelectorAll("a." + SCRIPT_KEY + "Toggle"), t = 0; t < toggles.length; t++) {
+					replaceChildren(document.createTextNode(collapse ? collapsed : expanded), toggles[t]);
+				}
+				localStorage.setItem(SCRIPT_KEY + "PendingEditLists", collapse ? collapsed : expanded);
+			}}}, expandEditLists ? expanded : collapsed), li.firstChild);
 		}
 	} else {
-		countText = pecount.status;
-//		tooltip = pecount.responseText;
 		count.style.setProperty("background-color", "pink"); // “pink” linked in mb_MASS-MERGE-RECORDINGS.user.js
+		countText = details;
 	}
 	count.replaceChild(document.createTextNode(countText), count.firstChild);//“countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
 //	if (tooltip) {

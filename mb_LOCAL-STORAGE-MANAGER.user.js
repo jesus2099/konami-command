@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2016.6.15
+// @version      2016.6.15.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @homepage     http://userscripts-mirror.org/scripts/show/126475
@@ -17,7 +17,6 @@ var meta = {rawmdb: function() {
 // @since        2012-02-22
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @match        *://*.mbsandbox.org/*
 // @match        *://*.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
@@ -53,7 +52,7 @@ if (j2set) {
 						loadLS();
 						var key = prompt("Type new key name");
 						if (key) {
-							if (lskeys.indexOf(key) == -1 || confirm("THIS KEY ALREADY EXISTS\r\nDo you want to replace it\u00a0?\r\n\r\n“" + key + "”\u00a0:\r\n" + localStorage.getItem(key))) {
+							if (lskeys.indexOf(key) == -1 || confirm("THIS KEY ALREADY EXISTS\nDo you want to replace it\u00a0?\n\n“" + key + "”\u00a0:\n" + localStorage.getItem(key))) {
 								var newValue = prompt("Type value for key “" + key + "”");
 								if (newValue) {
 									localStorage.setItem(key, newValue);
@@ -67,8 +66,8 @@ if (j2set) {
 					"/",
 					createTag("a", {a: {title: "Clear all local storage keys"}, e: {click: function(event) {
 						loadLS();
-						if (!event.shiftKey) { alert("SHIFT+CLICK\r\n\r\nIn order to avoid GROß MALHEUR,\r\nyou must hold down shift key\r\nif you really really want to erase\r\nall your local storage for this website."); return true; }
-						if (confirm("Are you sure you want to clear all those keys\r\nfrom your local storage memory\r\nfor this website?\r\nYOU CANNOT UNDO THIS ACTION.")) {
+						if (!event.shiftKey) { alert("SHIFT+CLICK\n\nIn order to avoid GROß MALHEUR,\nyou must hold down shift key\nif you really really want to erase\nall your local storage for this website."); return true; }
+						if (confirm("Are you sure you want to clear all those keys\nfrom your local storage memory\nfor this website?\nYOU CANNOT UNDO THIS ACTION.")) {
 							localStorage.clear();
 							loadLS();
 						} 
@@ -116,7 +115,7 @@ function loadLS() {
 					function(event) {
 						stop(event);
 						var item = this.getAttribute("title").match(/^remove (.+)$/)[1];
-						if (confirm("Do you want to remove following item?\r\n" + item)) {
+						if (confirm("Do you want to remove following item?\n" + item)) {
 							localStorage.removeItem(item);
 						}
 						loadLS();
@@ -147,7 +146,7 @@ function loadLS() {
 				var item = this.getAttribute("title");
 				var oval = localStorage.getItem(item);
 				var nval = this.nextSibling.value;
-				if (oval != nval && confirm("Do you want to save following item?\r\n" + item)) {
+				if (oval != nval && confirm("Do you want to save following item?\n" + item)) {
 					localStorage.setItem(item, nval);
 				}
 				this.parentNode.removeChild(this.nextSibling);

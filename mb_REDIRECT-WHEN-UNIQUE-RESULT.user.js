@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2019.8.8.1706
+// @version      2019.8.8.1707
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @homepage     http://userscripts-mirror.org/scripts/show/106156
 // @namespace    https://github.com/jesus2099/konami-command
@@ -9,7 +9,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-06-30; http://web.archive.org/web/20150915074449/http://chatlogs.musicbrainz.org/musicbrainz/2011/2011-06/2011-06-30.html#T15-59-01-950029
 // @grant        none
-// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/search/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

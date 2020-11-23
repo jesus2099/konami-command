@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2019.6.21
+// @version      2020.10.23.2053
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -184,12 +184,12 @@ var autolinks = {
 		"vi.Wikipedia": "//vi.wikipedia.org/w/index.php?search=%artist-name%",
 		"nhạc số": "http://nhacso.net/tim-kiem-nghe-si.html?keyName=%artist-name%",
 		"Korean stuff": null,
-		"maniadb": "http://www.maniadb.com/search.asp?sr=PO&q=%artist-name%",
+		"maniadb": "http://www.maniadb.com/search/%artist-name%/?sr=P",
 		"Other databases": null,
 		"AllMusic": "http://www.allmusic.com/search/artist/%artist-name%",
 		"Discogs": "http://www.discogs.com/search?q=%artist-name%&type=artist",
 		"IMDb": "//www.imdb.com/find?q=%artist-name%&s=nm",
-		"ISNI": "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
+		"ISNI": "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 		"Rate Your Music": "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
 		"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
 		"VIAF": "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
@@ -294,9 +294,7 @@ var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/
 var favicons = {
 	"deezer.com": "https://e-cdns-files.dzcdn.net/cache/images/common/favicon/favicon-16x16.526cde4edf20647be4ee32cdf35c1c13.png",
 	"lastfm.": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
-	"livedoor.jp": "http://blog.livedoor.jp/favicon.ico",
 	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
-	"yahoo.": "http://blogs.yahoo.co.jp/favicon.ico",
 };
 var favicontry = [];
 var guessOtherFavicons = true;
@@ -312,18 +310,7 @@ j2css.insertRule("ul.external_links > li.defaultAutolink > input[type='checkbox'
 j2css.insertRule("ul.external_links > li.defaultAutolink.disabled { text-decoration: line-through; display: none; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink.disabled { display: list-item; }", 0);
 j2css.insertRule("ul.external_links.configure > li.defaultAutolink > input[type='checkbox'] { display: inline; }", 0);
-var hrStyle = {css: ""};
 main();
-for (var s = 0; s < document.styleSheets.length; s++) {
-	for (var r = 0; r < document.styleSheets[s].cssRules.length - 1; r++) {
-		if (hrStyle.match = document.styleSheets[s].cssRules[r].cssText.match(/(#sidebar.+ul.+hr) {(.+)}/)) {
-			hrStyle.css += hrStyle.match[2];
-		}
-	}
-}
-if (hrStyle.css) {
-	j2css.insertRule("div#sidebar ul.external_links hr { margin-top: 8px !important; width: inherit !important; " + hrStyle.css + "}", 0);
-}
 function main() {
 	if (sidebar) {
 		var entityMatch = self.location.href.match(/\/([a-z\-]*)\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
@@ -459,11 +446,11 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 			if (parameters.target.title) {
 				form.style.setProperty("cursor", "help");
 			}
-			var info = "\r\n" + parameters.target.action;
+			var info = "\n" + parameters.target.action;
 			for (var attr in parameters.target) if (parameters.target.hasOwnProperty(attr)) {
 				if (attr == "parameters") {
 					for (var param in parameters.target.parameters) if (parameters.target.parameters.hasOwnProperty(param)) {
-						info += "\r\n" + param + "=" + parameters.target.parameters[param];
+						info += "\n" + param + "=" + parameters.target.parameters[param];
 						form.appendChild(createTag("input", {a: {name: param, type: "hidden", value: parameters.target.parameters[param]}}));
 					}
 				} else {
@@ -563,7 +550,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		setFavicon(li, (typeof parameters.target == "string") ? parameters.target : parameters.target.action);
 	} else {
 		// This is a header
-		var li = createTag("li", {s: {fontWeight: "bold"}}, parameters.text);
+		var li = createTag("li", {s: {fontWeight: "bold"}, a: {class: "separator"}}, createTag("span", {}, parameters.text));
 		if (parameters.text.indexOf(" ") === 0) {
 			// Level 1 header
 			li.style.setProperty("padding-top", "0px");
@@ -571,10 +558,9 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		} else {
 			// Level 2 header
 			li.style.setProperty("padding", "0px");
-			li.style.setProperty("float", "right");
+			li.firstChild.style.setProperty("float", "right");
 			extlinks.appendChild(li);
 		}
-		extlinks.insertBefore(document.createElement("hr"), li);
 	}
 	if (newLink) {
 		if (!parameters.mbid) { li.style.setProperty("opacity", ".5"); }
@@ -659,7 +645,7 @@ function setFavicon(li, url) {
 		} else {
 			// arbitrary /favicon.ico load try out
 			if (guessOtherFavicons && !favurlfound) {
-				favurlfound = url.substr(0, url.indexOf("/", 8)) + "/favicon.ico";
+				favurlfound = url.match(/(\/\/[^/]+)\//)[1] + "/favicon.ico";
 			}
 			var ifit = favicontry.length;
 			favicontry[ifit] = new Image();
@@ -790,7 +776,7 @@ function configureModule(event) {
 		case "configure user autolinks":
 			//TODO: provide a real editor
 			var loadedUserAutolinks = localStorage.getItem(userjs + "user-autolinks") || {};
-			var newUserAutolinks = prompt("Edit your user autolinks\r\nCopy/paste in a real editor\r\nSorry for such an awful prompt\r\n\r\nAvailable variables:\r\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\r\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\r\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\r\n\r\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%entity-name%+reviews\",\r\n\"Search for fans\": \"//duckduckgo.com/?q=%artist-name%+fans\",\r\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\r\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
+			var newUserAutolinks = prompt("Edit your user autolinks\nCopy/paste in a real editor\nSorry for such an awful prompt\n\nAvailable variables:\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\n\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%entity-name%+reviews\",\n\"Search for fans\": \"//duckduckgo.com/?q=%artist-name%+fans\",\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
 			if (newUserAutolinks && newUserAutolinks != loadedUserAutolinks && JSON.stringify(newUserAutolinks)) {
 				localStorage.setItem(userjs + "user-autolinks", newUserAutolinks);
 			}
@@ -804,7 +790,7 @@ function configureModule(event) {
 			var navigatorLanguages = guessNavigatorLanguages();
 			var musicbrainzLanguage = document.documentElement.getAttribute("lang") || "en";
 			var loadedLanguages = (localStorage.getItem(userjs + "languages") || JSON.stringify(rawLanguages)).replace(/,/g, "$& ");
-			var newLanguages = prompt("Choose your favourite language(s)\r\n\r\nType a language array: [\"favourite language\", \"second favourite\", …, \"least favourite\"]\r\n\r\nTwo meta languages can be used:\r\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ") : "undetected") + "\r\n- \"musicbrainz\" for selected MusicBrainz UI language, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\r\n\r\nDefault:\r\n- [\"navigator\", \"musicbrainz\"], currently expands to " + JSON.stringify(defaultLanguages).replace(/,/g, "$& ") + "\r\n\r\nSome examples:\r\n- [\"musicbrainz\", \"fr-FR\", \"en-GB\", \"vi\", \"ja\", \"navigator\"]\r\n- [\"fr\", \"en\", \"vi\", \"ja\"]\r\n- [\"en-GB\"]\r\n- [\"fr-FR\", \"navigator\", \"en-GB\", \"musicbrainz\"]\r\n- []" + "\r\n\r\nCurrent setting expands to " + JSON.stringify(parseLanguages(JSON.parse(loadedLanguages))).replace(/,/g, "$& "), loadedLanguages);
+			var newLanguages = prompt("Choose your favourite language(s)\n\nType a language array: [\"favourite language\", \"second favourite\", …, \"least favourite\"]\n\nTwo meta languages can be used:\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ") : "undetected") + "\n- \"musicbrainz\" for selected MusicBrainz UI language, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\n\nDefault:\n- [\"navigator\", \"musicbrainz\"], currently expands to " + JSON.stringify(defaultLanguages).replace(/,/g, "$& ") + "\n\nSome examples:\n- [\"musicbrainz\", \"fr-FR\", \"en-GB\", \"vi\", \"ja\", \"navigator\"]\n- [\"fr\", \"en\", \"vi\", \"ja\"]\n- [\"en-GB\"]\n- [\"fr-FR\", \"navigator\", \"en-GB\", \"musicbrainz\"]\n- []" + "\n\nCurrent setting expands to " + JSON.stringify(parseLanguages(JSON.parse(loadedLanguages))).replace(/,/g, "$& "), loadedLanguages);
 			if (
 				newLanguages
 				&& (newLanguages = newLanguages.match(/\[(\s*["'](navigator|musicbrainz|\w{2}(-\w{2,}(-\w{2,})?)?)['"]\s*,?\s*)*]/))

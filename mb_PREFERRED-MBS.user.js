@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2019.9.13
+// @version      2019.9.13b
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
@@ -96,9 +96,9 @@ function process(anchor) {
 			anchor.style.setProperty("text-decoration", "line-through");
 			var tooltip = anchor.getAttribute("title") || "";
 			if (tooltip) {
-				tooltip += "\r\n";
+				tooltip += "\n";
 			}
-			anchor.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
+			anchor.setAttribute("title", tooltip + "old: " + HREF + "\nnew: " + newHref);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2017.2.9.1913
+// @version      2017.2.9.1914
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CAA-LINKS.user.js
 // @description  musicbrainz.org: Linkifies cover art edit “Filenames” (as specified in http://musicbrainz.org/edit/42525958)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
@@ -19,11 +19,6 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=126154&v=2015.11.2
 // @grant        none
-// @match        *://*.mbsandbox.org/*/*/edits*
-// @match        *://*.mbsandbox.org/*/*/open_edits*
-// @match        *://*.mbsandbox.org/edit/*
-// @match        *://*.mbsandbox.org/search/edits*
-// @match        *://*.mbsandbox.org/user/*/edits/open*
 // @match        *://*.musicbrainz.org/*/*/edits*
 // @match        *://*.musicbrainz.org/*/*/open_edits*
 // @match        *://*.musicbrainz.org/edit/*

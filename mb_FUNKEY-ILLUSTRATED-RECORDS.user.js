@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2020.9.24.1418
+// @version      2020.9.24.1419
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -13,28 +13,12 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
-// @match        *://*.mbsandbox.org/artist/*
-// @match        *://*.mbsandbox.org/cdtoc/*
-// @match        *://*.mbsandbox.org/collection/*
-// @match        *://*.mbsandbox.org/label/*
-// @match        *://*.mbsandbox.org/recording/*
-// @match        *://*.mbsandbox.org/series/*
-// @match        *://*.mbsandbox.org/tag/*
-// @match        *://*.mbsandbox.org/user/*/ratings*
-// @match        *://*.mbsandbox.org/user/*/tag/*
-// @match        *://*.musicbrainz.org/artist/*
-// @match        *://*.musicbrainz.org/cdtoc/*
-// @match        *://*.musicbrainz.org/collection/*
-// @match        *://*.musicbrainz.org/label/*
-// @match        *://*.musicbrainz.org/recording/*
-// @match        *://*.musicbrainz.org/series/*
-// @match        *://*.musicbrainz.org/tag/*
-// @match        *://*.musicbrainz.org/user/*/ratings*
-// @match        *://*.musicbrainz.org/user/*/tag/*
-// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/release[-_]group\/.+$/
-// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/release\/merge(\?.*)?$/
-// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/search\/edits\?.+/
-// @include      /^https?:\/\/(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org\/search\?.*type=(annotation|release(_group)?).*$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/(artist|cdtoc|collection|label|recording|series|tag)\//
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release[-_]group\/.+$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/merge(\?.*)?$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\?.+/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\?.*type=(annotation|release(_group)?).*$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/user\/[^/]+\/(ratings|tag\/)/
 // @exclude      *.org/*/*/edit
 // @exclude      *.org/*/*/edit?*
 // @exclude      *.org/cdtoc/remove*

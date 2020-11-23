@@ -1,27 +1,18 @@
 // ==UserScript==
 // @name         mb. SHOW CAA COMMENTS IN REORDER PAGE
-// @version      2018.3.12
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE.user.js
+// @version      2020.11.17
 // @description  Show cover art comments to ease reordering, especially when thumbnails have not been generated yet.
-// @homepage     http://forums.musicbrainz.org/viewtopic.php?pid=31473#p31473
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   vivaldi(3.4.2066.106)+violentmonkey  my setup
+// @compatible   firefox(82.0.3)+violentmonkey        my other setup
 // @compatible   chrome+violentmonkey                 should be same as vivaldi
-// @namespace    jesus2099/shamo
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE.user.js
-// @author       PATATE12
+// @namespace    https://github.com/jesus2099/konami-command
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2015-09-09
+// @since        2015-09-09; http://forums.musicbrainz.org/viewtopic.php?pid=31473#p31473
+// @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @match        *://*.mbsandbox.org/*/add-cover-art
-// @match        *://*.mbsandbox.org/*/reorder-cover-art
-// @match        *://*.musicbrainz.org/*/add-cover-art
-// @match        *://*.musicbrainz.org/*/reorder-cover-art
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(add|reorder)-cover-art/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

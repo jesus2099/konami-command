@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2016.8.19
+// @version      2016.8.19.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_AUTO-FOCUS-KEYBOARD-SELECT.user.js
 // @description  musicbrainz.org: MOUSE-LESS EDITING ! Cleverly focuses fields in various musicbrainz edit pages and allows keyboard selection of relationship types as well as some release editor keyboard navigation performance features
 // @homepage     http://userscripts-mirror.org/scripts/show/135547
@@ -15,37 +15,6 @@
 // @since        2012-06-08
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @match        *://*.mbsandbox.org/*/*/add-alias
-// @match        *://*.mbsandbox.org/*/*/alias/*/delete
-// @match        *://*.mbsandbox.org/*/*/alias/*/edit
-// @match        *://*.mbsandbox.org/*/*/edit_annotation*
-// @match        *://*.mbsandbox.org/*/*/tags*
-// @match        *://*.mbsandbox.org/artist/*/edit
-// @match        *://*.mbsandbox.org/artist/create
-// @match        *://*.mbsandbox.org/cdtoc/*/set-durations?tracklist=*
-// @match        *://*.mbsandbox.org/cdtoc/attach*
-// @match        *://*.mbsandbox.org/cdtoc/move*
-// @match        *://*.mbsandbox.org/cdtoc/remove*
-// @match        *://*.mbsandbox.org/edit/*/cancel*
-// @match        *://*.mbsandbox.org/isrc/delete*
-// @match        *://*.mbsandbox.org/label/*/edit
-// @match        *://*.mbsandbox.org/label/create
-// @match        *://*.mbsandbox.org/recording/*/add-isrc
-// @match        *://*.mbsandbox.org/recording/*/edit
-// @match        *://*.mbsandbox.org/recording/*/remove-puid*
-// @match        *://*.mbsandbox.org/recording/create*
-// @match        *://*.mbsandbox.org/release/*/add-cover-art
-// @match        *://*.mbsandbox.org/release/*/edit
-// @match        *://*.mbsandbox.org/release/*/edit-cover-art/*
-// @match        *://*.mbsandbox.org/release/*/remove-cover-art/*
-// @match        *://*.mbsandbox.org/release/*/reorder-cover-art
-// @match        *://*.mbsandbox.org/release/add*
-// @match        *://*.mbsandbox.org/release-group/*/edit
-// @match        *://*.mbsandbox.org/release-group/create*
-// @match        *://*.mbsandbox.org/url/*/edit
-// @match        *://*.mbsandbox.org/work/*/add-iswc
-// @match        *://*.mbsandbox.org/work/*/edit
-// @match        *://*.mbsandbox.org/work/create*
 // @match        *://*.musicbrainz.org/*/*/add-alias
 // @match        *://*.musicbrainz.org/*/*/alias/*/delete
 // @match        *://*.musicbrainz.org/*/*/alias/*/edit

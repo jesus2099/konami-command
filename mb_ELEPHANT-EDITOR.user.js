@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2018.4.4
+// @version      2018.4.4.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
@@ -20,30 +20,6 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
-// @match        *://*.mbsandbox.org/*/add-alias
-// @match        *://*.mbsandbox.org/*/change-quality
-// @match        *://*.mbsandbox.org/*/create*
-// @match        *://*.mbsandbox.org/*/delete
-// @match        *://*.mbsandbox.org/*/edit
-// @match        *://*.mbsandbox.org/*/edit/?*
-// @match        *://*.mbsandbox.org/*/edit_annotation
-// @match        *://*.mbsandbox.org/*/merge
-// @match        *://*.mbsandbox.org/*/merge?*
-// @match        *://*.mbsandbox.org/*/move?dest=*
-// @match        *://*.mbsandbox.org/*/remove*
-// @match        *://*.mbsandbox.org/*edits*
-// @match        *://*.mbsandbox.org/artist/*/split
-// @match        *://*.mbsandbox.org/cdtoc/*
-// @match        *://*.mbsandbox.org/edit/*
-// @match        *://*.mbsandbox.org/edit/artist/add.html?*
-// @match        *://*.mbsandbox.org/edit/subscribed*
-// @match        *://*.mbsandbox.org/isrc/delete*
-// @match        *://*.mbsandbox.org/mod/*
-// @match        *://*.mbsandbox.org/recording/*/add-isrc
-// @match        *://*.mbsandbox.org/release*/*/*-cover-art*
-// @match        *://*.mbsandbox.org/release/*/edit*
-// @match        *://*.mbsandbox.org/release/add*
-// @match        *://*.mbsandbox.org/work/*/add-iswc
 // @match        *://*.musicbrainz.org/*/add-alias
 // @match        *://*.musicbrainz.org/*/change-quality
 // @match        *://*.musicbrainz.org/*/create*
@@ -88,8 +64,8 @@ var userjs = "jesus2099userjs94629";
 var notetextStorage = "jesus2099userjs::last_editnotetext";
 var acoustid = self.location.href.match(/acoustid\.org\/edit\//);
 var mb = !acoustid;
-var editpage = (mb && self.location.href.match(/(\.mbsandbox|musicbrainz)\.org\/edit\/\d+($|[?#&])/));
-var editsearchpage = (mb && self.location.href.match(/(\.mbsandbox|musicbrainz)\.org\/.+(?:edits|subscribed)/));
+var editpage = (mb && self.location.href.match(/musicbrainz\.org\/edit\/\d+($|[?#&])/));
+var editsearchpage = (mb && self.location.href.match(/musicbrainz\.org\/.+(?:edits|subscribed)/));
 var re = (mb && document.querySelector("div#release-editor"));
 var save = !localStorage.getItem(userjs + "forget") && (editpage || !editsearchpage);
 var content = document.querySelector(mb ? "#page" : "div.content");

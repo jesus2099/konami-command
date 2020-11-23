@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2020.2.5
+// @version      2020.10.16.2
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
-// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
-// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
-// @compatible   firefox(64.0)+greasemonkey          tested sometimes
-// @compatible   chrome+violentmonkey                should be same as vivaldi
+// @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
+// @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -14,12 +13,14 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128868
 // @grant        none
-// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/[^/]+/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/(open_)?edits/
-// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/artist/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/recordings/
-// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/edit/\d+/
-// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/edit/subscribed/
-// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/release/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
-// @include      /^https?://(\w+\.mbsandbox|(\w+\.)?musicbrainz)\.org/search/edits\?/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/recordings/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/subscribed/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/edit$)/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\?/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/user\/[^/]+\/edits/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -52,6 +53,7 @@ var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='/work/
 var tracksHtml = null;
 var pagecat = self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
 if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
+if (pagecat != "edits" && self.location.pathname.match(/^\/recording\//i)) { pagecat = "recording"; }
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
@@ -60,6 +62,14 @@ css.insertRule("div#page table.add-isrcs tbody a[href^='/isrc/'], div#page table
 if (pagecat) {
 	switch(pagecat) {
 		case "release":
+			// CAA tab / Add link
+			var CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']");
+			if (CAAtab && CAAtab.textContent.match(/\(0\)$/)) {
+				CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
+				CAAtab.style.setProperty("background-color", "#FF6");
+				CAAtab.replaceChild(document.createTextNode("Add Cover Art"), CAAtab.firstChild);
+			}
+			// Tracklist stuff
 			css.insertRule("a[" + userjs + "recname] { text-shadow: 1px 2px 2px #999; color: maroon }", 0);
 			if (contractFingerPrints) {
 				css.insertRule("div.ars[class^='ars AcoustID'] code { display: inline-block; overflow-x: hidden; vertical-align: bottom; width: 6ch}", 0);
@@ -139,6 +149,12 @@ if (pagecat) {
 					}
 				}
 			}
+			break;
+		case "recording":
+			var sideBarISRCs = document.querySelectorAll("div#sidebar dd.isrc a[href^='/isrc']");
+			for (var i = 0; i < sideBarISRCs.length; i++) {
+				sideBarISRCs[i].replaceChild(coolifyISRC(sideBarISRCs[i].textContent), sideBarISRCs[i].firstChild);
+			}
 	}
 }
 
@@ -166,27 +182,6 @@ function isrcFish() {
 			coolBubble.warn("INLINE STUFF abandoned in favour of MASS MERGE session.");
 		} else {
 			var res = this.responseXML;
-			var CAAcnt, CAAtab, CAAtxt;
-			if (
-				(CAAcnt = res.documentElement.querySelector("release > cover-art-archive > count"))
-				&& (CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']"))
-				&& (CAAtxt = "CAA")
-			) {
-				CAAcnt = parseInt(CAAcnt.textContent, 10);
-				if (CAAcnt > 0) {
-					CAAtxt += " (" + CAAcnt + ")";
-					CAAtab.style.setProperty("background-color", "#6f9");
-				}
-				else {
-					CAAtxt = "Add " + CAAtxt;
-					CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
-					CAAtab.style.setProperty("background-color", "#ff6");
-				}
-				CAAtab.style.setProperty("width", self.getComputedStyle(CAAtab).getPropertyValue("width"));
-				CAAtab.style.setProperty("height", self.getComputedStyle(CAAtab).getPropertyValue("height"));
-				CAAtab.style.setProperty("text-align", "center");
-				CAAtab.replaceChild(document.createTextNode(CAAtxt), CAAtab.firstChild);
-			}
 			var isrcNet = {};
 			var recnameNet = {};
 			var acoustidNet = [];
@@ -224,9 +219,7 @@ function isrcFish() {
 					}
 					var sameCompleteName = aRec.textContent == recnameNet[mbid].name + " (" + recnameNet[mbid].comment + ")";
 					if (aRec.textContent != recnameNet[mbid].name && !sameCompleteName) {
-						var ntit = aRec.getAttribute("title");
-						ntit = (ntit ? ntit + " —\u00a0" : "") + "track name: " + aRec.textContent + "\r\n≠rec. name: " + recnameNet[mbid].name;
-						aRec.setAttribute("title", ntit);
+						aRec.setAttribute("title", "track name: " + aRec.textContent + "\n≠rec. name: " + recnameNet[mbid].name);
 						if (markTrackRecNameDiff) {
 							if (typeof markTrackRecNameDiff == "string") {
 								var trackNameFragment = document.createDocumentFragment();

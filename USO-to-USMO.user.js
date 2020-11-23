@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         USO to USMO
-// @version      2019.9.13
+// @version      2019.9.13b
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/USO-to-USMO.user.js
 // @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long — bypass this script by holding CTRL+ALT+SHIFT
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275
@@ -52,9 +52,9 @@ document.addEventListener("mousedown", function(event) {
 					element.style.setProperty("text-decoration", "line-through");
 					var tooltip = element.getAttribute("title") || "";
 					if (tooltip) {
-						tooltip += "\r\n";
+						tooltip += "\n";
 					}
-					element.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
+					element.setAttribute("title", tooltip + "old: " + HREF + "\nnew: " + newHref);
 				}
 			}
 		}

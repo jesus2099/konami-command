@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2020.9.24.1245
+// @version      2020.9.24.1246
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -20,7 +20,6 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
-// @match        *://*.mbsandbox.org/*
 // @match        *://*.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
@@ -84,10 +83,10 @@ if (mergeType) {
 						for (var i = 1; i < sortedTargets.length; i++) {
 							mergeTargets += (i == 1 ? " ← " : " + ") + thousandSeparator(sortedTargets[i]);
 						}
-						editNote.value = (editNote.value ? editNote.value + "\r\n — \r\n" : "") + "Merging into oldest [MBID] (" + mergeTargets + ").";
+						editNote.value = (editNote.value ? editNote.value + "\n — \n" : "") + "Merging into oldest [MBID] (" + mergeTargets + ").";
 					}
 				} else {
-					alert("Merging entities is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\r\n\r\nPlease make sure your edit note makes it clear why you are sure that these entities are exactly the same versions, mixes, cuts, etc.");
+					alert("Merging entities is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\n\nPlease make sure your edit note makes it clear why you are sure that these entities are exactly the same versions, mixes, cuts, etc.");
 					editNote.style.setProperty("background-color", "pink");
 					return stop(event);
 				}

@@ -2,9 +2,9 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2020.9.25.2000
+// @version      2020.11.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
-// @description  musicbrainz.org power-ups (mbsandbox.org too): RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
+// @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
 // @compatible   opera(12.18.1872)+violentmonkey      my setup
@@ -22,7 +22,6 @@ var meta = {rawmdb: function() {
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
 // @grant        none
-// @match         *://*.mbsandbox.org/*
 // @match         *://*.musicbrainz.org/*
 // @exclude      *://blog.musicbrainz.org/*
 // @exclude      *://bugs.musicbrainz.org/*
@@ -454,7 +453,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 				createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top voters"}, s: {cursor: "help"}}, "Total effective votes")),
 				createTag("th", {a: {colspan: "2"}}, (0 + yes + no + approve).toLocaleString(lang) + " (" + percentage(yes + no + approve, yes + no + abstain + approve) + ")")
 			]),
-			stats[1].rows[3]
+			stats[1].rows[stats[1].rows.length > 3 ? 3 : 2]
 		);
 		// Added entities
 		var addedEntities = 0;
@@ -518,7 +517,7 @@ if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + 
 /*=============================================================== KEYBOARD+
 ## EASY_DATE ## basic paste-a-date!-like (https://userscripts.org/121217)
 =========================================================================*/
-j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it\r\nascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197)\r\n\r\nPress “C” to copy current date into the other (begin→end or end→begin)\r\nPress “D” to delete dates");
+j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it\nascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197)\n\nPress “C” to copy current date into the other (begin→end or end→begin)\nPress “D” to delete dates");
 if (j2sets.EASY_DATE && !location.pathname.match(/^\/account\/edit/)) {
 	EASY_DATE_init();
 	document.body.addEventListener("DOMNodeInserted", EASY_DATE_calmDOM, false);
@@ -946,8 +945,7 @@ if (j2sets.COPY_TOC && account && self.location.pathname.match(/^\/cdtoc\/[^/]+-
 /*==================================================================== LINK+
 ## SERVER_SWITCH ##
 ==========================================================================*/
-j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta and mbsandboxes. look for the new top-right MBS menu");
-j2setting("SERVER_SWITCH_mbsandbox", "[\"chirlu\", \"reosarevok\"]", true, "type an array of subdomains to .mbsandbox.org");
+j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta and test. look for the new top-right MBS menu");
 if (j2sets.SERVER_SWITCH) {
 	debug("SERVER_SWITCH");
 	var langMenu = document.querySelector("div.header ul.menu li.language-selector");
@@ -984,20 +982,11 @@ if (j2sets.SERVER_SWITCH) {
 		for (var mb = 0; mb < mbMains.length; mb++) {
 			menu.appendChild(serverSwitch(mbMains[mb] + "musicbrainz.org"));
 		}
-		if (j2sets.SERVER_SWITCH_mbsandbox) {
-			var mbSandBoxes = JSON.parse(j2sets.SERVER_SWITCH_mbsandbox);
-			if (mbSandBoxes.length) {
-				mbSandBoxes.sort();
-				for (var sb = 0; sb < mbSandBoxes.length; sb++) {
-					menu.appendChild(serverSwitch(mbSandBoxes[sb] + ".mbsandbox.org", sb == 0));
-				}
-			}
-		}
 	}
 }
-function serverSwitch(server, sep) {
+function serverSwitch(server, separator) {
 	var li = document.createElement("li");
-	if (sep) {
+	if (separator) {
 		li.className = "separator";
 	}
 	var protocolAndHost = server.match(/^(https?:)\/\/(.+)$/);
@@ -1009,8 +998,6 @@ function serverSwitch(server, sep) {
 		var hrefHost;
 		if (protocolAndHost) {
 			hrefHost = protocolAndHost[1] + "//" + protocolAndHost[2];
-		} else if (server.match(/mbsandbox/)) {
-			hrefHost = "http:" + "//" + server;
 		} else {
 			hrefHost = "//" + server;
 		}
@@ -1502,9 +1489,9 @@ function time(_ms) {/* adapted from mb_INLINE-TRACK-ARTIST */
 function debug(txt, buffer) {
 	if (DEBUG) {
 		if (buffer) {
-			debugBuffer += txt + "\r\n";
+			debugBuffer += txt + "\n";
 		} else {
-			console.log(meta.name + "\r\n" + debugBuffer + txt);
+			console.log(meta.name + "\n" + debugBuffer + txt);
 			debugBuffer = "";
 		}
 	}
