@@ -937,11 +937,10 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 j2setting("COPY_TOC", true, true, "re-lookup Disc ID (from cdtoc page)");
 if (j2sets.COPY_TOC && account && self.location.pathname.match(/^\/cdtoc\/[^/]+-$/)) {
 	debug("COPY_TOC");
-	var cdtoctrs = document.querySelectorAll("div#page > table > tbody table tr:not([id])");
-	var TOC = cdtoctrs[2].getElementsByTagName("td")[0].textContent + "%20" + cdtoctrs[cdtoctrs.length - 1].getElementsByTagName("td")[0].textContent + "%20" + cdtoctrs[cdtoctrs.length - 1].getElementsByTagName("td")[6].textContent;/*this should be 1%20totaltracks%20lastsector*/
-	for (var i = 2; i < cdtoctrs.length; i++) { TOC += "%20" + cdtoctrs[i].getElementsByTagName("td")[2].textContent; }
-	debug("TOC: " + TOC.replace(/%20/g, " "));
-	(document.querySelector("h1")||document.body).appendChild(createTag("fragment", {}, [" (", createTag("a", {a: {href: "/cdtoc/attach?toc=" + TOC}, s: {background: "yellow"}}, "re-lookup"), ")"]));
+	// Now MBS directly provides the full TOC: first track (1) <space> last track (n) <space> last track end sector, then, (n times) <space> nth track start sector
+	var fullTOC = document.querySelector("div#page > table > tbody > tr:not([id]) > td");
+	debug("Full TOC: " + fullTOC.textContent);
+	(document.querySelector("h1")||document.body).appendChild(createTag("fragment", {}, [" (", createTag("a", {a: {href: "/cdtoc/attach?toc=" + fullTOC.textContent.trim().replace(/\s+/g, "%20")}, s: {background: "yellow"}}, "re-lookup"), ")"]));
 }
 /*==================================================================== LINK+
 ## SERVER_SWITCH ##
