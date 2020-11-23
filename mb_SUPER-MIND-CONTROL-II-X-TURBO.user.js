@@ -4,7 +4,7 @@ var meta = {rawmdb: function() {
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
 // @version      2020.11.23
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
-// @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / RELEASE_EDITOR_PROTECTOR. prevent accidental cancel by better tab key navigation / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
+// @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
 // @compatible   opera(12.18.1872)+violentmonkey      my setup
@@ -1150,7 +1150,6 @@ function delayMsg(sec) {
 	return sec > 0 ? " in " + sec + " second" + (sec != 1 ? "s" : "") : "…";
 }
 /* --- ENTITY BONUS --- */
-j2setting("RELEASE_EDITOR_PROTECTOR", true, true, "prevents from cancelling the release editor by mistake. repairs the keyboard tab navigation to save button (MBS-3112) (for the new release editor, the tab order might not be perfectly chosen yet but submit comes first and cancel last)");
 j2setting("MARK_PENDING_EDIT_MEDIUMS", true, true, "puts a border around mediums with pending edits");
 j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
@@ -1159,34 +1158,6 @@ j2setting("RELEASE_EVENT_COLUMN", true, true, "Displays release dates in label r
 var enttype = self.location.href.match(new RegExp("^" + MBS + "/(area|artist|collection|event|label|place|recording|release|release-group|series|work)/.*$"));
 if (enttype) {
 	enttype = enttype[1];
-	/*======================================================== KEYBOARD+ MOUSE+
-	## RELEASE_EDITOR_PROTECTOR ##
-	=========================================================================*/
-	if (j2sets.RELEASE_EDITOR_PROTECTOR && enttype == "release" && self.location.href.match(new RegExp("^" + MBS + "/release/(add.*|" + stre_GUID + "/edit)$"))) {
-		debug("RELEASE_EDITOR_PROTECTOR");
-		var editnote = document.querySelector("div#release-editor textarea#edit-note-text");
-		var cancelbutt = document.querySelector("div#release-editor button[data-click='cancelPage']");
-		var previousbutt = document.querySelector("div#release-editor button[data-click='previousTab']");
-		var nextbutt = document.querySelector("div#release-editor button[data-click='nextTab']");
-		var savebutt = document.querySelector("div#release-editor button[data-click='submitEdits']");
-		if (cancelbutt) {
-			if (typeof window.onbeforeunload == "undefined") {
-				// it seems that only Opera presto needed this
-				cancelbutt.addEventListener("click", function(event) {
-					if (!confirm("RELEASE EDITOR PROTECTOR\n\nDo you really want to cancel this release " + self.location.href.match(/add|edit/) + "?")) {
-						return stop(event);
-					}
-				}, false);
-			}
-			if (editnote && cancelbutt && previousbutt && nextbutt && savebutt) {
-				editnote.setAttribute("tabindex", "1");
-				savebutt.setAttribute("tabindex", "1");
-				previousbutt.setAttribute("tabindex", "2");
-				nextbutt.setAttribute("tabindex", "2");
-				cancelbutt.setAttribute("tabindex", "3");
-			}
-		}
-	}
 	/*================================================================= DISPLAY+
 	## MARK_PENDING_EDIT_MEDIUMS ##
 	==========================================================================*/

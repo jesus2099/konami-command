@@ -28,7 +28,6 @@ Content
   1. [RELEASE_CLONER](#release_cloner)
   1. [RADIO_DOUBLE_CLICK_SUBMIT](#radio_double_click_submit) ← <del>[RADIO DOUBLE‐CLICK SUBMIT][135557]</del>
   1. [CONTROL_ENTER_SUBMIT](#control_enter_submit)
-  1. [RELEASE_EDITOR_PROTECTOR](#release_editor_protector) ← <del>[release editor tab index fix submit / cancel protector][111023]</del>
   1. [TRACKLIST_TOOLS](#tracklist_tools) ← <del>ex‐TRACK_LENGTH_PARSER + fixed [search→replace][8580947]</del>
   1. [LAST_SEEN_EDIT](#last_seen_edit)
   1. [COOL_SEARCH_LINKS](#cool_search_links)
@@ -79,27 +78,6 @@ This leaves vote buttons out to [POWER VOTE][57765] script.
 ### CONTROL_ENTER_SUBMIT
 
 Submits forms when you hit CTRL+ENTER in a text area.
-
-### RELEASE_EDITOR_PROTECTOR
-
-**Before** :thumbsdown: (using <kbd>TAB</kbd> key):
-
-    Edit note
-      ↓
-    Cancel → Previous → Enter edit
-
-**After** :thumbsup: (using <kbd>TAB</kbd> key):
-
-                        Edit note
-                            ↓
-    Cancel ← Previous ← Enter edit
-
-Avoid release edits accidental cancellations in RE’s last tab 
-“review/edit note” ([MBS-3112]): 
-* Tab‐indexes fix. Next button after TAB from edit note becomes “Enter edit” 
-  instead of cancel. 
-* cancel button becomes confirm protected. 
-* set focus/cursor/select in edit note.
 
 ### TRACKLIST_TOOLS
 
@@ -241,7 +219,6 @@ hack that enabled Firefox+Greasemonkey, Chromium+Tampermonkey and the likes.
 [tampermonkey]: http://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo
 
 [MBS-1197]: http://tickets.musicbrainz.org/browse/MBS-1197 "Date field on RE should be magic"
-[MBS-3112]: http://tickets.musicbrainz.org/browse/MBS-3112 "TAB from “Edit note” doesn’t go to “Enter edit” in “Release editor”"
 [MBS-3229]: http://tickets.musicbrainz.org/browse/MBS-3229 "Double‐click on radio button to select entry"
 [MBS-3629]: http://tickets.musicbrainz.org/browse/MBS-3629 "Mass unsubscribe checkbox"
 [MBS-6549]: http://tickets.musicbrainz.org/browse/MBS-6549 "Release Editor Seeding : events.n.country = “JP” doesn’t work"
@@ -251,7 +228,6 @@ hack that enabled Firefox+Greasemonkey, Chromium+Tampermonkey and the likes.
 [85790]: http://userscripts-mirror.org/scripts/show/85790 "“remember last "Relate to …" options + autofocus + autoselect”→“POWER_RELATE_TO”in“mb. SUPER MIND CONTROL II X TURBO”"
 [103422]: http://userscripts-mirror.org/scripts/show/103422
 [104480]: http://userscripts-mirror.org/scripts/show/104480
-[111023]: http://userscripts-mirror.org/scripts/show/111023
 [118008]: http://userscripts-mirror.org/scripts/show/118008
 [121217]: http://userscripts-mirror.org/scripts/show/121217
 [122083]: http://userscripts-mirror.org/scripts/show/122083
