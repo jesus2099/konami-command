@@ -1404,6 +1404,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 				}
 			/* :::: TRACK LENGTH PARSER :::: */
 			} else if (event.target.classList.contains(userjs + "track-length-parser")) {
+				var durationParser = "(?:(?:(\\b\\d\\b)[°h])?(\\b\\d{1,3}\\b)[′’'m])?(\\b\\d{2}\\b)[″”\"s]|(?:(?:(\\b\\d\\b):)?(\\b\\d{1,3}\\b):)?(\\b\\d{2}\\b)";
 				var erase = event.target.textContent.match(/erase/i) || event.ctrlKey;
 				var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']:not(.disabled-hint)", event.target, event);
 				var distitle = document.querySelector("td.length > input.track-length[type='text'].disabled-hint");
@@ -1413,13 +1414,17 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 					event.target.setAttribute("disabled", "disabled");
 					event.target.setAttribute("title", distitle);
 					alert(distitle);
-				} else if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(/\b\d{1,3}[:′’']\d\d\b[″”"]?/g))) {
+				} else if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(new RegExp(durationParser, "g")))) {
 					if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are " + times.length + " lengths detected in your text, butt\nthere are " + inputs.length + " tracks in the tracklist.\nAre you sure to go on?")) {
 						for (var t = 0, i = 0; (erase || t < times.length) && i < inputs.length; t++, i++) {
 							var time = "";
 							if (!erase) {
-								time = times[t].match(/(\d+)\D+(\d+)/);
-								time = time[1] + ":" + time[2];
+								var date = new Date();
+								time = times[t].match(new RegExp(durationParser));
+								date.setHours(time[1] || time[4] || 0);
+								date.setMinutes(time[2] || time[5] || 0);
+								date.setSeconds(time[3] || time[6]);
+								time = (date.getHours() * 60 + date.getMinutes()) + ":" + (date.getSeconds() < 10 ? "0" : "") + date.getSeconds();
 							}
 							inputs[i].style.removeProperty("background-color");
 							if (inputs[i].value != time) {
