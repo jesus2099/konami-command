@@ -1356,10 +1356,23 @@ if (enttype) {
 														releaseEvent.setAttribute("title", releaseEvents[releaseID][e].area.name);
 													}
 													if (releaseEvents[releaseID][e].area["iso-3166-1-codes"] && releaseEvents[releaseID][e].area["iso-3166-1-codes"].length > 0) {
-														releaseEvent.className = "flag flag-" + releaseEvents[releaseID][e].area["iso-3166-1-codes"][0];
+														releaseEvent.classList.add("flag");
+														releaseEvent.classList.add("flag-" + releaseEvents[releaseID][e].area["iso-3166-1-codes"][0]);
+														releaseEvent.setAttribute("title", releaseEvent.getAttribute("title") + " (" + releaseEvents[releaseID][e].area["iso-3166-1-codes"][0] + ")");
 													}
 												}
 												newCell.appendChild(releaseEvent);
+												if (releaseEvents[releaseID].length > 4) {
+													if (e > 1 && e != releaseEvents[releaseID].length - 1) {
+														releaseEvent.classList.add(userjs + "hiddenEvent");
+														releaseEvent.style.setProperty("display", "none");
+													}
+													if (e == 1) {
+														newCell.appendChild(createTag("div", {s: {padding: "8px"}}, ["(", createTag("a", {e: {click: tooManyEventsToggle}}, "show " + (releaseEvents[releaseID].length - 3) + " more"), ")"]));
+													} else if (e == releaseEvents[releaseID].length - 1) {
+														newCell.appendChild(createTag("div", {a: {class: userjs + "hiddenEvent"}, s: {display: "none", padding: "8px"}}, ["(", createTag("a", {e: {click: tooManyEventsToggle}}, "show less"), ")"]));
+													}
+												}
 											}
 										}
 									}
@@ -1373,6 +1386,19 @@ if (enttype) {
 			}
 		}
 	}
+}
+function tooManyEventsToggle(event) {
+	var hideEvents = event.target.parentNode.classList.contains(userjs + "hiddenEvent");
+	var otherToggle = event.target.parentNode.parentNode.querySelector("div" + (hideEvents ? ":not(." + userjs + "hiddenEvent)" : "." + userjs + "hiddenEvent") + " > a").parentNode;
+	event.target.parentNode.style.setProperty("display", "none");
+	if (hideEvents) {
+		otherToggle.style.setProperty("display", "block");
+	}
+	var hiddenEvents = event.target.parentNode.parentNode.querySelectorAll("div." + userjs + "hiddenEvent");
+	for (var h = 0; h < hiddenEvents.length; h++) {
+		hiddenEvents[h].style.setProperty("display", hideEvents ? "none" : "block");
+	}
+	otherToggle.scrollIntoView();
 }
 /* --- ENTITY BONUS functions --- */
 var TRACKLIST_TOOLS_calmDOMto;
