@@ -1037,22 +1037,40 @@ function updateTags(event) {
 	var tagZone = document.querySelector("div.sidebar-tags");
 	if (tagZone) {
 		if (!event) {
-			tagZone.querySelector("h2").appendChild(createTag("span", {s: {color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]));
+			tagZone.parentNode.insertBefore(createTag("div", {s: {position: "relative", bottom: "-1rem", color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]), tagZone);
 			tagZone.addEventListener("DOMNodeInserted", updateTags);
+			tagZone.addEventListener("DOMAttrModified", updateTags);
 			var mytags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > span.tag-upvoted");
 			for (var t = 0; t < mytags.length; t++) {
 				ownifyTag(mytags[t].previousSibling);
 			}
 		} else if (event.target && event.target.nodeType === Node.ELEMENT_NODE) {
-			var newTag = event.target.querySelector("span.tag-upvoted") && event.target.querySelector("a[href^='/tag/']");
-			if (newTag) {
-				ownifyTag(newTag);
+			var tagLink;
+			var revert = false;
+			if (event.type == "DOMNodeInserted") {
+				//  new tag
+				if (event.target.querySelector("span.tag-upvoted")) {
+					tagLink = event.target.querySelector("a[href^='/tag/']");
+				}
+			} else if (event.type == "DOMAttrModified") {
+				// up/down-voted tag
+				if (event.target.tagName == "SPAN" && event.target.classList.contains("tag-vote-buttons")) {
+					tagLink = event.target.previousSibling;
+					revert = !event.target.classList.contains("tag-upvoted");
+				}
+			}
+			if (tagLink) {
+				ownifyTag(tagLink, revert);
 			}
 		}
 	}
 }
-function ownifyTag(tag) {
-	tag.setAttribute("href", account.pathname + tag.getAttribute("href"));
+function ownifyTag(tag, revert) {
+	if (!tag.getAttribute(userjs + "tag")) {
+		tag.setAttribute(userjs + "tag", tag.getAttribute("href"));
+		tag.setAttribute(userjs + "ownTag", account.pathname + tag.getAttribute("href"));
+	}
+	tag.setAttribute("href", tag.getAttribute(userjs + (revert ? "tag" : "ownTag")));
 }
 function tagswitch(cont, urltxt) {
 	var switcht = h1.appendChild(createTag("span", {s: {color: "grey", textShadow: "1px 1px 2px silver"}}, " (see "));
