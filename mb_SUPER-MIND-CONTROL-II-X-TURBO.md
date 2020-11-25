@@ -5,19 +5,23 @@ Some [musicbrainz.org](http://musicbrainz.org) power‐ups (mbsandbox.org too).
 
 :gem: updated [**TAG_TOOLS**](#tag_tools) suppert !
 
-* **Install** from [Greasy Fork], 
-  from [OpenUserJS] or 
-  from [GitHub]
-* [changelogs]
+- **Install** from [GitHub]
+- [changelogs]
 
 Requirements
 ------------
 
-This user script requires one of those to install and run:
+This user script requires one of these browsers:
 
-* [Opera][] (runs faster with [Violent monkey][])
-* [Firefox] + [Greasemonkey]
-* [Chromium][] (or [Chrome][]) + [Tampermonkey]
+- [Firefox] on Linux and Windows as well as Android (FF version 68) (**my choice**)
+- [Vivaldi] (**my other choice**)
+- [Chromium] or [Chrome]
+
+In which you need one of these add-ons/extensions, to install and run:
+
+- [Greasemonkey] (**the pioneer**)
+- [Tampermonkey]
+- [Violentmonkey] (**my choice**)
 
 Content
 -------
@@ -198,8 +202,6 @@ An independent jury of worldwide famous celebrities discerned this script the
 this script was sent to a dedicated NAZA hacker team which added a patented 3D 
 hack that enabled Firefox+Greasemonkey, Chromium+Tampermonkey and the likes.
 
-[Greasy Fork]: https://greasyfork.org/fr/scripts/2322
-[OpenUserJS]: https://openuserjs.org/scripts/jesus2099/mb._SUPER_MIND_CONTROL_Ⅱ_X_TURBO
 [GitHub]: https://github.com/jesus2099/konami-command/raw/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 [changelogs]: https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 
@@ -211,12 +213,12 @@ hack that enabled Firefox+Greasemonkey, Chromium+Tampermonkey and the likes.
 [oOeRl7I]: http://i.imgur.com/oOeRl7I.png
 
 [opera]: http://opera.com/download/guide/?ver=12.17
-[violent monkey]: http://addons.opera.com/extensions/details/violent-monkey
+[violentmonkey]: https://github.com/violentmonkey/violentmonkey
 [firefox]: http://mozilla.org/firefox
-[greasemonkey]: http://addons.mozilla.org/firefox/addon/greasemonkey
+[greasemonkey]: https://www.greasespot.net
 [chromium]: http://download-chromium.appspot.com
 [chrome]: http://google.com/chrome
-[tampermonkey]: http://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo
+[tampermonkey]: https://github.com/Tampermonkey/tampermonkey
 
 [MBS-1197]: http://tickets.musicbrainz.org/browse/MBS-1197 "Date field on RE should be magic"
 [MBS-3229]: http://tickets.musicbrainz.org/browse/MBS-3229 "Double‐click on radio button to select entry"

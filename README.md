@@ -1,4 +1,5 @@
-﻿# ↑↑↓↓←→←→BA（コナミコマンド） #
+﻿↑↑↓↓←→←→BA（コナミコマンド）
+=====================
 
 **ARE YOU RAYDEE TO AUGMENT YOUR BORWSING ?** (with userjs, user javascript, 
 greasemonkey, **userscripts**, etc.)
@@ -9,33 +10,37 @@ Here are my small **Multi‐browser** user scripts.
 Mostly for [musicbrainz.org](//musicbrainz.org).
 
 
-## HOW TO INSTALL ##
+HOW TO INSTALL
+--------------
 
-You can install those scripts by clicking the **Raw** button 
-when you are seeing the source code page of it.
+Please install all your scripts from this GitHub page 
+as versions you can find on 
+[GF](//greasyfork.org/users/2206-jesus2099?sort=updated#user-script-list) 
+and on 
+[OUJS](//openuserjs.org/users/jesus2099/scripts?orderBy=updated&orderDir=desc) 
+might be out of date.
 
-You can start by installing an installer script that will add direct download/install
-buttons/icons in front of each userscripts in github, gitlab and bitbucket file listings:
-[INSTALL-USER-SCRIPT](//github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js)
+You can click the scripts to see their code 
+then the **Raw** button to install them.
 
-<ins>I will progressively stop using mirrors and 
-all my scripts will exclusively be found here in this github repo.</ins>
+[INSTALL-USER-SCRIPT](//github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js) 
+adds a direct download/install icon button in front of each userscripts 
+in github, gitlab and bitbucket file listings.
 
-<del>Alternatively, some of my scripts are mirrored at 
-[Greasy Fork](//greasyfork.org/users/2206-jesus2099?sort=updated#user-script-list) and 
-[OpenUserJS](//openuserjs.org/users/jesus2099/scripts?orderBy=updated&orderDir=desc).</del>
+COMPATIBILITY
+-------------
 
----
+Here are setups that I use:
 
-Compatibility:
+- [Firefox](//mozilla.org/firefox) on Android (FF v68), Linux and Windows + [Violentmonkey](//addons.mozilla.org/firefox/addon/violentmonkey)
+- [Vivaldi](//vivaldi.com) on Windows + [Violentmonkey](//chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)
 
-- [Vivaldi](//vivaldi.com) on Windows + [Violentmonkey](//chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag) (**my setup**)
-- [Firefox](//mozilla.org/firefox) + [Greasemonkey](//addons.mozilla.org/firefox/addon/greasemonkey) (tested sometimes; many users have this)
+As Vivaldi is based on Chromium, it also works in Chrome.
+I have been told it also works in Safari.
+Please report bugs if it does not work in your setup (see next section).
 
-As Vivaldi is based on Chrome, I guess other Chrome based browsers should work.
-Some users have Safari and told me it works for most scripts (please report a bug if not).
-
-## ISSUES ##
+ISSUES
+------
 
 If you encounter a problem, you can see if it is an [already known issue](//github.com/jesus2099/konami-command/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc) 
 and you can also upvote issues by clicking the :+1: thumb up icon on the issue description.
@@ -47,8 +52,8 @@ Please eventually add an issue to report any bug.
 [GF](//greasyfork.org/scripts?set=9&sort=ratings) and [OUJS](//openuserjs.org/group/musicbrainz?orderBy=rating&orderDir=desc).
 
 ※ Those scripts used to be hosted at 
-[userscripts.org (now read-only)](http://userscripts-mirror.org/users/31010/scripts) 
-since 18/7/2007 and **before the may 2014 break down**.
+[jesus2099’s scripts - Userscripts.org (archived)](https://web.archive.org/web/20131108065418/userscripts.org/users/31010/scripts) 
+since 18.7.2007 and until the May 2014 break down.
 
 Here is a list of scripts that have not yet been stored here in “**KONAMI COMMAND**”:
 
