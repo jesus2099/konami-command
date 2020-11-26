@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2019.7.8.1357
+// @version      2020.11.26
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -120,7 +120,8 @@ if (emails) {
 			"div[data-test-id='pencil-ad']",
 			"img[src*='//beap.adss.yahoo.com/']",
 			"td.sky-ad",
-			"tr.layoutfixer td.c3"
+			"tr.layoutfixer td.c3",
+			"div#video-player.M_A"
 		].join(", ") + "{ display: none; }", 0);
 		try {
 			getParent(document.querySelector("table.tbl tr > td.spnsr"), "tr").style.setProperty("display", "none");
