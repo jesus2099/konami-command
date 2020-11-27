@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2020.11.6.3
+// @version      2020.11.27
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -44,12 +44,6 @@ var lastTick = new Date().getTime();
 var MBSminimumDelay = 1000;
 var retryDelay = 2000;
 var currentButt;
-var KBD = {
-	ENTER: 13,
-	M:     77,
-	O:     79,
-	S:     83
-};
 var MMRid = "MMR2099userjs120382"; // linked to mb_INLINE-STUFF
 var MBS = self.location.protocol + "//" + self.location.host;
 var sidebar = document.getElementById("sidebar");
@@ -101,7 +95,7 @@ if (ltitle) {
 	if (document.getElementsByClassName("account").length > 0) {
 		sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 		document.body.addEventListener("keydown", function(event) {
-			if (!event.altKey && event.ctrlKey && event.shiftKey && event.keyCode == KBD.M) {
+			if (!event.altKey && event.ctrlKey && event.shiftKey && event.key == "M") {
 				prepareLocalRelease();
 				return stop(event);
 			}
@@ -386,13 +380,13 @@ function updateMatchModeDisplay() {
 function massMergeGUI() {
 	var MMRdiv = createTag("div", {a: {id: MMRid}, e: {
 		keydown: function(event) {
-			if (event.keyCode == KBD.ENTER && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
+			if (event.key == "Enter" && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
 				queueAll.click();
 			} else if (event.target == editNote && !event.altKey && event.ctrlKey && !event.shiftKey) {
-				switch (event.keyCode) {
-					case KBD.S:
+				switch (event.key) {
+					case "s":
 						return saveEditNote(event);
-					case KBD.O:
+					case "o":
 						return loadEditNote(event);
 				}
 			}
@@ -479,7 +473,7 @@ function massMergeGUI() {
 		}
 	}}}));
 	if (navigator.userAgent.match(/firefox/i)) startpos.addEventListener("keyup", function(event) {
-		if (event.keyCode != KBD.ENTER) {
+		if (event.key != "Enter") {
 			this.blur();
 			this.focus();
 		}

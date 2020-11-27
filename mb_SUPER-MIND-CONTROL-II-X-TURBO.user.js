@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2020.11.23.2
+// @version      2020.11.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -59,19 +59,6 @@ if (pageType) {
 debug("Page type: " + pageType);
 var chrome = "Please run “" + meta.name + "” with Tampermonkey instead of plain Chrome.";
 var userjs = "jesus2099userjs85790"/*have to keep this for legacy saved settings*/;
-var KEYCODES = {
-	ENTER:           0x0D,
-	C:               0x43,
-	D:               0x44,
-	M:               0x4D,
-	O:               0x4F,
-	S:               0x53,
-	"NUMPAD-ZERO":   0x60,
-	"NUMPAD-NINE":   0x69,
-	"NUMPAD-MINUS":  0x6D,
-	"NUMPAD-DOT":    0x6E,
-	"NUMPAD-DIVIDE": 0x6F,
-};
 var MBS = self.location.protocol + "//" + self.location.host;
 var lang = document.querySelector("html[lang]");
 lang = lang && lang.getAttribute("lang") || "en-GB";
@@ -219,7 +206,7 @@ function j2settinput(set) {
 			inp.setAttribute("type", "text");
 			inp.setAttribute("value", val);
 			inp.style.setProperty("margin-left", "4px");
-			inp.addEventListener("keypress", function(event) { if(event.keyCode == KEYCODES.ENTER) { this.blur(); removeNode(getParent(this, "div")) } }, false);
+			inp.addEventListener("keypress", function(event) { if(event.key == "Enter") { this.blur(); removeNode(getParent(this, "div")) } }, false);
 			break;
 	}
 	return lbl;
@@ -602,7 +589,7 @@ function EASY_DATE_init() {
 	}
 }
 function EASY_DATE_cloneDateHotkey(event) {
-	if (!event.ctrlKey && !event.shiftKey && event.keyCode == KEYCODES.C) {
+	if (!event.ctrlKey && !event.shiftKey && event.key == "c") {
 		stop(event);
 		EASY_DATE_cloneDate(this, true);
 	}
@@ -621,7 +608,7 @@ function EASY_DATE_cloneDate(current, hotkey) {
 }
 function EASY_DATE_deleteDatesHotkey(event) {
 	//TODO: would better be attached at form itself instead of on each inputs
-	if (!event.ctrlKey && !event.shiftKey && event.keyCode == KEYCODES.D) {
+	if (!event.ctrlKey && !event.shiftKey && event.key == "d") {
 		stop(event);
 		EASY_DATE_deleteDates(this);
 	}
@@ -642,14 +629,14 @@ function EASY_DATE_deleteDates(current) {
 }
 function EASY_DATE_nextField(event) {
 	if (!event.ctrlKey && !event.shiftKey) {
-		var separatorMode = event.keyCode == KEYCODES["NUMPAD-MINUS"] || event.keyCode == KEYCODES["NUMPAD-DIVIDE"] || event.keyCode == KEYCODES["NUMPAD-DOT"];
-		var fullDigitMode = this.selectionStart == this.selectionEnd && this.value.length == this.getAttribute("placeholder").length && event.keyCode >= KEYCODES["NUMPAD-ZERO"] && event.keyCode <= KEYCODES["NUMPAD-NINE"];
+		var separatorMode = event.key == "-" || event.key == "/" || event.key == ".";
+		var fullDigitMode = this.selectionStart == this.selectionEnd && this.value.length == this.getAttribute("placeholder").length && event.key.match(/[0-9]/);
 		if (separatorMode || fullDigitMode) {
 			var nextField = this.parentNode.querySelector("input[placeholder='" + (this.getAttribute("placeholder") == "MM" ? "DD" : "MM") + "']");
 			nextField.focus();
 			nextField.select();
 			if (fullDigitMode) {
-				nextField.value = String.fromCharCode(event.keyCode - 48);
+				nextField.value = event.key;
 			}
 			return stop(event);
 		}
@@ -824,7 +811,7 @@ if (j2sets.DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdst
 j2setting("CONTROL_ENTER_SUBMIT", true, true, "hit CTRL+ENTER keys when you’re in a text area to submit the current form");
 if (j2sets.CONTROL_ENTER_SUBMIT) {
 	document.body.addEventListener("keydown", function(event) {
-		if (event.target.tagName && event.target.tagName == "TEXTAREA" && event.ctrlKey && event.keyCode == KEYCODES.ENTER) {
+		if (event.target.tagName && event.target.tagName == "TEXTAREA" && event.ctrlKey && event.key == "Enter") {
 			debug("CONTROL_ENTER_SUBMIT");
 			parentFormSubmit(event.target, event);
 		}

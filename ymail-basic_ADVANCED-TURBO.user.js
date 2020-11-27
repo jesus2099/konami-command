@@ -26,19 +26,19 @@ var userjs = {key: 177655, name: "ymail-basic. ADVANCED TURBO"};
 var DEBUG = localStorage.getItem("jesus2099debug");
 var selectAllSelector = "div#selectAllButton > button[name='action'][type='submit'][value='selectAll']";
 var shortcuts = {
-	"27": {key: "ESC", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a:not([href*='/messages/'])"},
-	"37": {key: "←", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a[href*='/messages/']:first-child, #content table > tbody table > tbody div[data-test-id='pagination'] > a[href*='offset=']:nth-child(2)"},
-	"39": {key: "→", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a[href*='/messages/']:nth-child(2), #content table > tbody table > tbody div[data-test-id='pagination'] > a[href*='offset=']:nth-child(4)"},
-	"46": {key: "DEL", button: "#content table > tbody table > tbody button[name='action'][value='moveToFolder']"},
-	"CTRL+65": {noreload: true, key: "A", button: selectAllSelector},
-	"65": {key: "A", button: "#content table > tbody table > tbody button[name='action'][value='replyAll']"},
-	"70": {key: "F", button: "#content table > tbody table > tbody button[name='action'][value='forward']"},
-	"73": {key: "I", button: "#content > table > tbody div[data-test-id='blocked-images'] > a[href$='unblockNow=true']"},
-	"77": {key: "M", button: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[top]'] > option[value='flag']"},
-	"78": {key: "N", button: "#app table > tbody table > tbody a[data-test-id='compose-button']"},
-	"82": {key: "R", button: "#content table > tbody table > tbody button[name='action'][value='reply']"},
-	"83": {key: "S", button: "#content table > tbody table > tbody button[name='action'][value='markAsSpam'], #content table > tbody table > tbody button[name='action'][value='markAsNotSpam']"},
-	"85": {key: "U", button: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[top]'] > option[value='markAsUnread']"},
+	"Escape": {key: "ESC", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a:not([href*='/messages/'])"},
+	"ArrowLeft": {key: "←", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a[href*='/messages/']:first-child, #content table > tbody table > tbody div[data-test-id='pagination'] > a[href*='offset=']:nth-child(2)"},
+	"ArrowRight": {key: "→", button: "#content > table > tbody table[data-test-id='message-toolbar'] > tbody td > a[href*='/messages/']:nth-child(2), #content table > tbody table > tbody div[data-test-id='pagination'] > a[href*='offset=']:nth-child(4)"},
+	"Delete": {key: "DEL", button: "#content table > tbody table > tbody button[name='action'][value='moveToFolder']"},
+	"ctrl+a": {noreload: true, button: selectAllSelector},
+	"a": {button: "#content table > tbody table > tbody button[name='action'][value='replyAll']"},
+	"f": {button: "#content table > tbody table > tbody button[name='action'][value='forward']"},
+	"i": {button: "#content > table > tbody div[data-test-id='blocked-images'] > a[href$='unblockNow=true']"},
+	"m": {button: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[top]'] > option[value='flag']"},
+	"n": {button: "#app table > tbody table > tbody a[data-test-id='compose-button']"},
+	"r": {button: "#content table > tbody table > tbody button[name='action'][value='reply']"},
+	"s": {button: "#content table > tbody table > tbody button[name='action'][value='markAsSpam'], #content table > tbody table > tbody button[name='action'][value='markAsNotSpam']"},
+	"u": {button: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[top]'] > option[value='markAsUnread']"},
 };
 var emails = document.querySelectorAll("table#datatable > tbody > tr > td > h2 > a.mlink");
 if (emails) {
@@ -100,7 +100,7 @@ if (emails) {
 		document.addEventListener("keydown", interceptKeys, false);
 		document.addEventListener("keyup", interceptKeys, false);
 		for (var sc in shortcuts) { if (shortcuts.hasOwnProperty(sc)) {
-			try { hackit(shortcuts[sc].button, "", "[" + sc.replace(/\d+$/, shortcuts[sc].key) + "]"); } catch(error) {}
+			try { hackit(shortcuts[sc].button, "", "[" + (shortcuts[sc].key || sc.toUpperCase()) + "]"); } catch(error) {}
 		} }
 	}
 	/*remove crap*/
@@ -157,9 +157,9 @@ function findNode(argh) {
 	}
 }
 function interceptKeys(event) {
-	var key = (event.ctrlKey ? "CTRL+" : "") + event.keyCode;
+	var key = (event.ctrlKey ? "ctrl+" : "") + event.key;
 	try {
-		if (DEBUG) console.log(userjs.name + " key " + key + (shortcuts[key] ? " on " + event.target + ".\n(" + shortcuts[key].key + ") → " + shortcuts[key].button : ""));
+		if (DEBUG) console.log(userjs.name + " key " + key + (shortcuts[key] ? " on " + event.target + ".\n" + key + " (custom key: " + shortcuts[key].key + ") → " + shortcuts[key].button : ""));
 		if (!event.target || !event.target.tagName || !event.target.tagName.match(/input|select|textarea/i) || event.target.tagName.match(/input/i) && event.target.getAttribute("type") && !event.target.getAttribute("type").match(/password|text/i)) {
 			if (event.type == "keydown") {
 				doThis(shortcuts[key].button, shortcuts[key].noreload);

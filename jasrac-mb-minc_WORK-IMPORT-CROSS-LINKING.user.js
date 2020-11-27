@@ -2,7 +2,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2020.6.26.3
+// @version      2020.11.27
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -1089,7 +1089,7 @@ function aliasTable(add, clear) {
 		}}}, [createTag("option", {}, " "), createTag("option", {a: {value: "1"}}, "work name"), createTag("option", {a: {value: "2"}}, "search hint")]) : (aliases[a].type ? aliases[a].type.toLowerCase() : ""))).querySelector("select");
 		td = tr.appendChild(createTag("td", {}, add ? createTag("input", {a: {name: "edit-alias.locale", value: (aliases[a].locale ? aliases[a].locale : "")}, s: {width: "3em"}, e: {keyup: function(event) {
 			var lang = this.value.match(/^$|^en$/);
-			if (lang && event.keyCode != 9) {
+			if (lang && event.key != "Tab") {
 				var titles = this.parentNode.parentNode.querySelectorAll("input[name^='edit-alias.'][name$='name']");
 				for (var t = 0; t < titles.length; t++) {
 					titles[t].value = lang == "en" ? toCamelCase(titles[t].value) : titles[t].value.toUpperCase();
