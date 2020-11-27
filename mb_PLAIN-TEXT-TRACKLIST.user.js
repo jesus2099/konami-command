@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2019.12.12.3
+// @version      2020.11.27
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @compatible   vivaldi(2.9.1705.41)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -107,8 +107,8 @@ if (tracks.length > 0) {
 			});
 			var thisisit = coolstuff("textarea", "55", 80);
 			thisisit.style.setProperty("font-family", "sans-serif");
-			thisisit.addEventListener("keypress", function(event) {
-				if (event.keyCode == 27) { this.previousSibling.click(); }
+			thisisit.addEventListener("keydown", function(event) {
+				if (event.key == "Escape") { this.previousSibling.click(); }
 			});
 			thisisit.appendChild(document.createTextNode(textTracklist(tracks, this.getAttribute("rel"))));
 			thisisit.setAttribute("title", "press ESC to close");

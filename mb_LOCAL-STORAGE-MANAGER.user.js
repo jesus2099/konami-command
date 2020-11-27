@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2016.6.15.2
+// @version      2020.11.27
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @homepage     http://userscripts-mirror.org/scripts/show/126475
@@ -154,8 +154,8 @@ function loadLS() {
 				loadLS();
 			}, false);
 			bidule = coolstuff("textarea", "55", 80);
-			bidule.addEventListener("keypress", function(event) {
-				if (event.keyCode == 27) { this.previousSibling.click(); }
+			bidule.addEventListener("keydown", function(event) {
+				if (event.key == "Escape") { this.previousSibling.click(); }
 			}, false);
 			bidule.appendChild(document.createTextNode(localStorage.getItem(this.getAttribute("title").match(/^edit (.+)$/)[1])));
 			bidule.setAttribute("title", "press ESC to close");
