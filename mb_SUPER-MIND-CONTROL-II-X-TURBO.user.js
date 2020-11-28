@@ -1026,7 +1026,7 @@ function updateTags(event) {
 		if (!event) {
 			tagZone.parentNode.insertBefore(createTag("div", {s: {position: "relative", bottom: "-1rem", color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]), tagZone.previousSibling);
 			tagZone.addEventListener("DOMNodeInserted", updateTags);
-			tagZone.addEventListener("DOMAttrModified", updateTags);
+			tagZone.addEventListener("DOMSubtreeModified", updateTags);
 			var mytags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > span.tag-upvoted");
 			for (var t = 0; t < mytags.length; t++) {
 				ownifyTag(mytags[t].previousSibling);
@@ -1039,9 +1039,14 @@ function updateTags(event) {
 				if (event.target.querySelector("span.tag-upvoted")) {
 					tagLink = event.target.querySelector("a[href^='/tag/']");
 				}
-			} else if (event.type == "DOMAttrModified") {
+			} else if (event.type == "DOMSubtreeModified") {
 				// up/down-voted tag
-				if (event.target.tagName == "SPAN" && event.target.classList.contains("tag-vote-buttons")) {
+				if (event.target.tagName == "BUTTON" && event.target.classList.contains("tag-upvote")) {
+					// Vivaldi
+					tagLink = event.target.parentNode.previousSibling;
+					revert = event.target.getAttribute("disabled") === null;
+				} else if (event.target.tagName == "SPAN" && event.target.classList.contains("tag-vote-buttons")) {
+					// Firefox
 					tagLink = event.target.previousSibling;
 					revert = !event.target.classList.contains("tag-upvoted");
 				}
