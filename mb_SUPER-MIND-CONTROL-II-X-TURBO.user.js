@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2020.11.29
+// @version      2020.11.29.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1414,7 +1414,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 				}
 			/* :::: TRACK LENGTH PARSER :::: */
 			} else if (event.target.classList.contains(userjs + "track-length-parser")) {
-				var durationParser = "(?:(?:(\\b\\d\\b)[°h])?(\\b\\d{1,3}\\b)[′’'m])?(\\b\\d{2}\\b)[″”\"s]|(?:(?:(\\b\\d\\b):)?(\\b\\d{1,3}\\b):)?(\\b\\d{2}\\b)";
+				var durationParser = "(?:(?:(\\b\\d\\b)[°h])?(\\b\\d{1,3}\\b)[′’'m])?(\\b\\d{2}\\b)[″”\"s]|(?:(?:(\\b\\d\\b):)?(\\b\\d{1,3}\\b):)(\\b\\d{2}\\b)";
 				var erase = event.target.textContent.match(/erase/i) || event.ctrlKey;
 				var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']:not(.disabled-hint)", event.target, event);
 				var distitle = document.querySelector("td.length > input.track-length[type='text'].disabled-hint");
