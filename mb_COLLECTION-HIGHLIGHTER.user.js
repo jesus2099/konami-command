@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2020.10.18.3
+// @version      2020.11.29
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -56,7 +56,7 @@ if (cat) {
 	var MBWSRate = 999;
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var prefix = "collectionHighlighter";
-	var DEBUG = false;
+	var DEBUG = localStorage.getItem("jesus2099debug");
 	var dialogprefix = "..:: " + meta.nameAndVersion.replace(/ /g, " :: ") + " ::..\n\n";
 	var maxRetry = 20;
 	var retryPause = 5000;
@@ -210,43 +210,53 @@ if (cat) {
 // ############################################################################
 // #                                    COLLECT LINKS TO HIGHLIGHT / DECORATE #
 // ############################################################################
-		stuff = {};
-		// Annotation link trim spaces and protocol + "//" + host
-		for (var annotationLinks = document.querySelectorAll("div#content div.annotation a"), l = 0; l < annotationLinks.length; l++) {
-			annotationLinks[l].setAttribute("href", annotationLinks[l].getAttribute("href").trim().replace(/^((https?:)?\/\/(\w+\.)?musicbrainz\.org)\//, "/"));
-		}
-		for (var stu = 0; stu < collectedStuff.length; stu++) {
-			var cstuff = collectedStuff[stu];
-			stuff[cstuff] = {};
-			var uphill = "";
-			var downhill = cat == "release" && cstuff == "label" ? "" : "[count(ancestor::xhtml:div[contains(@id, 'sidebar')])=0]";
-			if (!highlightInEditNotes && (cat == "edit" || cat == "edits")) {
-				downhill += "[count(ancestor::xhtml:div[contains(@class, 'edit-notes')])=0]";
+		var deferScript = setInterval(function() {
+			debug("Interval " + deferScript);
+			// Make sure no more React funny stuff will redraw content (on /recording/merge for the moment)
+			if (!document.querySelector("p.loading-message")) {
+				clearInterval(deferScript);
+				findOwnedStuff();
 			}
-			var root = cat == "track" /* acoustid.org */ ? "//musicbrainz.org/" : "/";
-			var path = uphill + "//xhtml:a[starts-with(@href, '" + root + cstuff + "/')]" + downhill;
-			var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-			for (var i = 0; i < xp.snapshotLength; i++) {
-				var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
-				if (mbid) {
-					mbid = mbid[1];
-					if (!stuff[cstuff].loaded) {
-						stuff[cstuff].rawids = GM_getValue(cstuff + "s");
-						if (stuff[cstuff].rawids) {
-							stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
-							debug(" \n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\nMatching: " + path, true);
-						} else { debug(" \nNo " + cstuff.toUpperCase() + "S in highlighter (" + cstuff + "s)", true); }
-						stuff[cstuff].loaded = true;
-					}
-					if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
-						debug(mbid + " ● “" + xp.snapshotItem(i).textContent + "”", true);
-						decorate(xp.snapshotItem(i));
-					}
+		}, 500);
+	}
+}
+function findOwnedStuff() {
+	stuff = {};
+	// Annotation link trim spaces and protocol + "//" + host
+	for (var annotationLinks = document.querySelectorAll("div#content div.annotation a"), l = 0; l < annotationLinks.length; l++) {
+		annotationLinks[l].setAttribute("href", annotationLinks[l].getAttribute("href").trim().replace(/^((https?:)?\/\/(\w+\.)?musicbrainz\.org)\//, "/"));
+	}
+	for (var stu = 0; stu < collectedStuff.length; stu++) {
+		var cstuff = collectedStuff[stu];
+		stuff[cstuff] = {};
+		var uphill = "";
+		var downhill = cat == "release" && cstuff == "label" ? "" : "[count(ancestor::xhtml:div[contains(@id, 'sidebar')])=0]";
+		if (!highlightInEditNotes && (cat == "edit" || cat == "edits")) {
+			downhill += "[count(ancestor::xhtml:div[contains(@class, 'edit-notes')])=0]";
+		}
+		var root = cat == "track" /* acoustid.org */ ? "//musicbrainz.org/" : "/";
+		var path = uphill + "//xhtml:a[starts-with(@href, '" + root + cstuff + "/')]" + downhill;
+		var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+		for (var i = 0; i < xp.snapshotLength; i++) {
+			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
+			if (mbid) {
+				mbid = mbid[1];
+				if (!stuff[cstuff].loaded) {
+					stuff[cstuff].rawids = GM_getValue(cstuff + "s");
+					if (stuff[cstuff].rawids) {
+						stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
+						debug(" \n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\nMatching: " + path, true);
+					} else { debug(" \nNo " + cstuff.toUpperCase() + "S in highlighter (" + cstuff + "s)", true); }
+					stuff[cstuff].loaded = true;
+				}
+				if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
+					debug(mbid + " ● “" + xp.snapshotItem(i).textContent + "”", true);
+					decorate(xp.snapshotItem(i));
 				}
 			}
 		}
-		debug("");
 	}
+	debug("");
 }
 // ############################################################################
 // #                                                                          #
