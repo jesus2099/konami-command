@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2020.11.29
+// @version      2020.11.29.2
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -118,7 +118,7 @@ if (cat) {
 		for (var tbl_idx = 0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
 			xp1.snapshotItem(tbl_idx).parentNode.parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, meta.nameAndVersion));
 			var tbl = getParent(xp1.snapshotItem(tbl_idx).parentNode, "table");
-			xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+			var xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			for (var i = 0; i < xp.snapshotLength; i++) {
 				var coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
 				var collid = coll.getAttribute("href").match(new RegExp(strMBID));
