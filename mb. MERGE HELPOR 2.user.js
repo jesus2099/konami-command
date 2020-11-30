@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2020.11.29
+// @version      2020.11.29.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @homepage     http://userscripts-mirror.org/scripts/show/124579
@@ -31,6 +31,9 @@ var lastTick = new Date().getTime();
 var WSrate = 1000;
 if (mergeType) {
 	/* main merge tool */
+	var mergeForm = document.querySelector("div#content > form[action*='/merge']");
+	var tbl = mergeForm.querySelector("table.tbl");
+	var entities = {};
 	var deferScript = setInterval(function() {
 		// Make sure no more React funny stuff will redraw content (on /recording/merge for the moment)
 		if (!document.querySelector("p.loading-message")) {
@@ -41,10 +44,8 @@ if (mergeType) {
 	function findUsefulMergeInfo() {
 		mergeType = mergeType[1].replace(/_/, "-");
 		var showEntityInfo = true;
-		var entities = {};
 		var minrowid;
 		var lastCB;
-		var mergeForm = document.querySelector("div#content > form[action*='/merge']");
 		if (mergeForm) {
 			/*	entity merge pages progressively abandon ul layout in favour of table.tbl
 				* area			ul (but only for admins)
@@ -65,7 +66,7 @@ if (mergeType) {
 					if (editNote && editNote.value && editNote.value.match(/\w{4,}/g) && editNote.value.match(/\w{4,}/g).length > 3) {
 						editNote.style.removeProperty("background-color");
 						editNote.value = editNote.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");//linked in mb_ELEPHANT-EDITOR.user.js
-						var mergeTargets = mergeForm.querySelectorAll("form > table.tbl > tbody input[type='radio'][name='merge.target'], form > ul > li input[type='radio'][name='merge.target']");
+						var mergeTargets = mergeForm.querySelectorAll("form table.tbl > tbody input[type='radio'][name='merge.target'], form > ul > li input[type='radio'][name='merge.target']");
 						var mergeTarget;
 						var sortedTargets = [];
 						for (var t = 0; t < mergeTargets.length; t++) {
@@ -100,7 +101,6 @@ if (mergeType) {
 					}
 				}
 			});
-			var tbl = mergeForm.querySelector("table.tbl");
 			var entityRows = mergeForm.getElementsByTagName("li");
 			if (tbl) {
 				entityRows = mergeForm.querySelectorAll("form table.tbl > tbody > tr");
@@ -188,12 +188,15 @@ if (mergeType) {
 				for (var releases = {}, mediums = document.querySelectorAll("input[id$='.release_id'][type='hidden']"), m = 0; m < mediums.length; m++) {
 					if (!releases[mediums[m].value]) {
 						releases[mediums[m].value] = {fragment: document.createDocumentFragment()};
-						var releaseCell = getSibling(document.querySelector("form > table.tbl > tbody input[type='radio'][name='merge.target'][value='" + mediums[m].value + "']").parentNode, "td");
+						var releaseCell = getSibling(document.querySelector("form table.tbl > tbody input[type='radio'][name='merge.target'][value='" + mediums[m].value + "']").parentNode, "td");
 						releases[mediums[m].value].format = releaseCell.parentNode.getElementsByTagName("td")[3].textContent.replace(/\s/g, "").replace(/"/g, "″");
 						for (var c = 0; c < releaseCell.childNodes.length; c++) {
 							releases[mediums[m].value].fragment.appendChild(releaseCell.childNodes[c].cloneNode(true));
 						}
-						removeNode(releases[mediums[m].value].fragment.querySelector("div.jesus2099userjs154481"));
+						var funkeyCAA = releases[mediums[m].value].fragment.querySelector("div.jesus2099userjs154481");
+						if (funkeyCAA) {
+							removeNode(funkeyCAA);
+						}
 						var a = releases[mediums[m].value].fragment.querySelector("a[href^='/release/']");
 						a.setAttribute("target", "_blank");
 						a.style.setProperty("color", self.getComputedStyle(releaseCell.getElementsByTagName("a")[0]).getPropertyValue("color"));
@@ -212,7 +215,7 @@ if (mergeType) {
 	}
 } else {
 	/* merge queue (clear before add) tool */
-	var mergeButton = document.querySelector("div#content > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit'], div#page > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit']");
+	var mergeButton = document.querySelector("div#content > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit'], div#page > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit'], div#content > form[action$='/merge_queue'] > div.recording-list ~ div.row > span.buttons > button[type='submit']");
 	if (mergeButton) {
 		var checkForm = mergeButton.parentNode.parentNode.parentNode;
 		setButtonTextFromSelectedToAll(mergeButton, true);
@@ -437,23 +440,25 @@ function removeFromMerge(event) {
 			href += "&remove=" + checkedRemoves[cb].value;
 			/* remove mediums */
 			var toBeDeletedMediumRows = [];
-			var allMediums = document.querySelector("#merge-strategy-1 table.tbl");
-			var bogusMediumStarts = allMediums.querySelectorAll("tbody input[id$='.release_id'][type='hidden'][value='" + checkedRemoves[cb].value + "']")
-			for (var s = 0; s < bogusMediumStarts.length; s++) {
-				var bogusMediumStart = bogusMediumStarts[s];
-				if (
-					bogusMediumStart
-					&& (bogusMediumStart = getParent(bogusMediumStart, "tr", "subh"))
-					&& (bogusMediumStart = bogusMediumStart.rowIndex) !== null
-				) {
-					for (var m = bogusMediumStart; m < allMediums.rows.length && (!allMediums.rows[m].classList.contains("subh") || m == bogusMediumStart); m++) {
-						toBeDeletedMediumRows.push(allMediums.rows[m]);
+			if (mergeType == "releases") {
+				var allMediums = document.querySelector("#merge-strategy-1 table.tbl");
+				var bogusMediumStarts = allMediums.querySelectorAll("tbody input[id$='.release_id'][type='hidden'][value='" + checkedRemoves[cb].value + "']")
+				for (var s = 0; s < bogusMediumStarts.length; s++) {
+					var bogusMediumStart = bogusMediumStarts[s];
+					if (
+						bogusMediumStart
+						&& (bogusMediumStart = getParent(bogusMediumStart, "tr", "subh"))
+						&& (bogusMediumStart = bogusMediumStart.rowIndex) !== null
+					) {
+						for (var m = bogusMediumStart; m < allMediums.rows.length && (!allMediums.rows[m].classList.contains("subh") || m == bogusMediumStart); m++) {
+							toBeDeletedMediumRows.push(allMediums.rows[m]);
+						}
 					}
 				}
-			}
-			for (var d = 0; d < toBeDeletedMediumRows.length; d++) {
-				console.log(toBeDeletedMediumRows[d].parentNode);
-				allMediums.querySelector("tbody").removeChild(toBeDeletedMediumRows[d]);
+				for (var d = 0; d < toBeDeletedMediumRows.length; d++) {
+					console.log(toBeDeletedMediumRows[d].parentNode);
+					allMediums.querySelector("tbody").removeChild(toBeDeletedMediumRows[d]);
+				}
 			}
 			delete entities[checkedRemoves[cb].value];
 			checkedRemoves[cb].parentNode.parentNode.parentNode.parentNode.removeChild(checkedRemoves[cb].parentNode.parentNode.parentNode);
