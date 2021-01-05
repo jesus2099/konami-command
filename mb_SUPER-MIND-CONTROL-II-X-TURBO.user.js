@@ -148,7 +148,7 @@ j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + meta.descri
 				var tr = table.appendChild(document.createElement("tr"));
 				tr.appendChild(createTag("th", {s: {backgroundColor: "#ccc", textAlign: "left", paddingLeft: alphakeys[a].match(/[a-z]/) ? "2em" : "inherit"}}, j2settinput(alphakeys[a])));
 				tr.appendChild(createTag("td", {s: {opacity: ".666", textAlign: "center"}}, typeof j2defs[alphakeys[a]] == "boolean" ? (j2defs[alphakeys[a]] ? "☑" : "☐") : j2defs[alphakeys[a]]));
-				tr.appendChild(createTag("td", {s: {marginBottom: ".4em"}}, j2docit(j2docs[alphakeys[a]]).concat([" — ", createTag("a", {a: {href: meta.homepage + "#" + alphakeys[a].toLowerCase(), target: "_blank"}}, "more help…")])));
+				tr.appendChild(createTag("td", {s: {marginBottom: ".4em"}}, j2docit(j2docs[alphakeys[a]]).concat([" — ", createTag("a", {a: {href: meta.homepage + "#" + alphakeys[a].toLowerCase(), target: "_blank"}}, "more help…")])));
 			}
 		}
 	}
@@ -165,7 +165,7 @@ function bug(error) {
 		alrt += "\n\n" + error.message;
 	}
 	if (error.report && title) {
-		if (confirm(alrt + "\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
+		if (confirm(alrt + "\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
 			self.open("https://github.com/jesus2099/konami-command/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent("Hello,\nI am using that awesome *" + meta.name + "* (**" + meta.version + "**).\nI got an error while I was on [" + (document.title ? document.title : "that page") + "](" + self.location.href + "):\n\n    " + error.message.replace(/\n/g, "\n    ")));
 		}
 	} else {
@@ -222,7 +222,7 @@ function j2docit(txt) {
 }
 /*==================================================================== LINK+
 ## RELEASE_CLONER ##
-todo : add debugged clone release-AR module
+todo : add debugged clone release-AR module
 ==========================================================================*/
 j2setting("RELEASE_CLONER", true, true, "one-click duplicate release(s)" + j2superturbo.menu.expl);
 j2setting("RELEASE_CLONER_release_event", false, true, "clones release event(s), package, catalogue number(s), etc. (not advised as those usually change for each edition)");
@@ -356,7 +356,7 @@ if (j2sets.RELEASE_CLONER && account) {
 									}
 									/* ws:url-rels */
 								}
-								ok &= reled.add("\n —\n" + MBS + "/release/" + crmbids[crr] + " cloned using " + meta.name + "’s '''RELEASE_CLONER''' (" + meta.version + ")", "edit_note");
+								ok &= reled.add("\n —\n" + MBS + "/release/" + crmbids[crr] + " cloned using " + meta.name + "’s '''RELEASE_CLONER''' (" + meta.version + ")", "edit_note");
 								/* fin */
 								if (ok) document.body.appendChild(reled.form).submit();
 								else sendEvent(this, "error");
@@ -896,12 +896,14 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			if (
 				self.location.href.indexOf(account.pathname) < 0 &&
 				(refine = document.querySelector("table.search-help td > a[href^='" + MBS + "/search/edits?'][href*='&conditions.']")) &&
-				(refine = refine.getAttribute("href").replace(/&?form_only=yes/, "")) &&
-				(myID = __MB_Catalyst_Context__.user.id || localStorage.getItem(userjs + "me-userid"))
+				(refine = refine.getAttribute("href").replace(/&?form_only=yes/, ""))
 			) {
 				if (self.location.pathname.match(/\/edits$/)) {
 					refines.appendChild(document.createTextNode(" | "));
 					refines.appendChild(createTag("a", {a: {href: refine + onlyEffective}}, ["Refine this search (", createTag("strong", null, "effective edits only"), ")"]));
+				}
+				if (typeof __MB__ !== "undefined") {
+					myID = __MB__.$c.user.id;
 				}
 				if (myID) {
 					if (myID != localStorage.getItem(userjs + "me-userid")) localStorage.setItem(userjs + "me-userid", myID);
@@ -946,7 +948,7 @@ if (j2sets.SERVER_SWITCH) {
 		} else {
 			servname = "MBS";
 		}
-		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [meta.icon.cloneNode(false), " ", createTag("code", {}, servname), " ▾"]), document.createElement("ul")]), langMenu);
+		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [meta.icon.cloneNode(false), " ", createTag("code", {}, servname), " ▾"]), document.createElement("ul")]), langMenu);
 		menu.addEventListener("click", function(event) {
 			if(getParent(event.target, "li", userjs + "serverSwitch")) {
 				event.stopPropagation();
@@ -996,7 +998,7 @@ function serverSwitch(server, separator) {
 /*==================================================================== LINK+
 ## TAG_TOOLS ##
 ==========================================================================*/
-j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global");
+j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global");
 if (j2sets.TAG_TOOLS && account) {
 	var tagscope = self.location.pathname.replace(new RegExp("^" + MBS + "|[?#].*$", "g"), "").match(/^(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 	if (tagscope) {
@@ -1161,8 +1163,8 @@ function delayMsg(sec) {
 }
 /* --- ENTITY BONUS --- */
 j2setting("MARK_PENDING_EDIT_MEDIUMS", true, true, "puts a border around mediums with pending edits");
-j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
-j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
+j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
+j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
 j2setting("RECORDING_LENGTH_COLUMN", true, true, "Displays recording lengths in work page (similar to Loujine’s script) as well as in artist relationships page");
 j2setting("RELEASE_EVENT_COLUMN", true, true, "Displays release dates in label relationships page");
 var enttype = self.location.href.match(new RegExp("^" + MBS + "/(area|artist|collection|event|label|place|recording|release|release-group|series|work)/.*$"));
@@ -1425,7 +1427,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 					event.target.setAttribute("title", distitle);
 					alert(distitle);
 				} else if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(new RegExp(durationParser, "g")))) {
-					if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are " + times.length + " lengths detected in your text, butt\nthere are " + inputs.length + " tracks in the tracklist.\nAre you sure to go on?")) {
+					if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are " + times.length + " lengths detected in your text, butt\nthere are " + inputs.length + " tracks in the tracklist.\nAre you sure to go on?")) {
 						for (var t = 0, i = 0; (erase || t < times.length) && i < inputs.length; t++, i++) {
 							var time = "";
 							if (!erase) {
