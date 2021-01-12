@@ -31,8 +31,9 @@ var smallpics = true; /*displays small pics for every releases and release group
 var colour = "yellow"; /*used for various mouse-over highlights*/
 /*---CONFIG-STOPR---*/
 
-var userjs = "jesus2099userjs154481";
-var types = ["release-group", "release"];
+let userjs = "jesus2099userjs154481";
+let types = ["release-group", "release"];
+let GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 
 var caaIcons = document.querySelectorAll("a[href$='/cover-art'] > span.caa-icon");
 if (caaIcons.length > 0) {
@@ -46,7 +47,7 @@ for (var t = 0; t < types.length; t++) {
 	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/'], div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']");
 	var istable, istablechecked, artistcol;
 	for (var a = 0; a < as.length; a++) {
-		var imgurl = as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$"));
+		var imgurl = as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/(" + GUID + ")$"));
 		if (imgurl) {
 			imgurl = "//coverartarchive.org/" + types[t] + "/" + imgurl[1] + "/front";
 			if (!istablechecked) {
@@ -54,6 +55,8 @@ for (var t = 0; t < types.length; t++) {
 				if (istable) { artistcol = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
 				istablechecked = true;
 			}
+// SMALL PICS
+// ----------
 			if (smallpics && types[t] == "release-group" && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
 				// https://tickets.metabrainz.org/browse/MBS-11059
 				// For the moment, release group CAA icons have to be added by userscript
@@ -81,7 +84,7 @@ for (var t = 0; t < types.length; t++) {
 					console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
 				});
 				CAALoader.releaseGroup = as[a];
-				CAALoader.open("GET", "https://coverartarchive.org" + as[a].getAttribute("href").match(/\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
+				CAALoader.open("GET", "https://coverartarchive.org" + as[a].getAttribute("href").match(new RegExp("/release-group/" + GUID)), true);
 				CAALoader.send(null);
 			}
 			var tr = getParent(as[a], "tr") || getParent(as[a], "li");
@@ -89,6 +92,8 @@ for (var t = 0; t < types.length; t++) {
 			tr.addEventListener("mouseout", updateBig, false);
 			// I don’t know if this box does still exist sometimes afer server update 2019-06-03 https://blog.musicbrainz.org/?p=7439 https://tickets.metabrainz.org/browse/MBS-9849
 			var box = getParent(as[a], "table") || getParent(as[a], "ul");
+// BIG PICS
+// --------
 			if (bigpics && imgurls.indexOf(imgurl) < 0 && (box = box.previousSibling && box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
 				var artisttd = artistcol && getSibling(getParent(as[a], "td"), "td");
 				box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\n" + artisttd.textContent.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
@@ -119,9 +124,9 @@ function updateA(event) {
 	}
 }
 function updateBig(event) {
-	var img = this.querySelector("img[_height]");
+	var img = this.querySelector("a[href^='/release']");
 	if (img) {
-		img = document.querySelector("div." + userjs + "bigbox > a > img[src='" + img.getAttribute("src") + "']");
+		img = document.querySelector("div." + userjs + "bigbox > a > img[src='//coverartarchive.org" + img.getAttribute("href") + "/front-250']");
 		if (img) {
 			if (event.type == "mouseover") {
 				img.parentNode.style.setProperty("border", "4px solid " + colour);
@@ -135,7 +140,8 @@ function updateBig(event) {
 }
 function loadCaaIcon(caaIcon) {
 	// Adding thumbnails to release CAA icons
-	var imgurl = "//coverartarchive.org/" + caaIcon.parentNode.getAttribute("href").match(/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/) + "/front-250";
+	var imgurl = caaIcon.parentNode.getAttribute("ref") || caaIcon.parentNode.getAttribute("href").replace(/\/cover-art/, "");
+	imgurl = "//coverartarchive.org" + imgurl + "/front-250";
 	createTag("img", {
 		a: { src: imgurl },
 		e: {
