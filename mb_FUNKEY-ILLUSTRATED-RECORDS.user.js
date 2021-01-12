@@ -2,16 +2,15 @@
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
 // @version      2021.1.12
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
-// @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
-// @compatible   firefox(77.0.1)+greasemonkey        my setup
-// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2012-12-19; http://userscripts-mirror.org/scripts/show/154481
+// @since        2012-12-19; https://web.archive.org/web/2013/userscripts.org/scripts/show/154481
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
+// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js
 // @grant        none
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/(artist|cdtoc|collection|label|recording|series|tag)\//
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release[-_]group\/.+$/
@@ -32,10 +31,7 @@ var smallpics = true; /*displays small pics for every releases and release group
 var colour = "yellow"; /*used for various mouse-over highlights*/
 /*---CONFIG-STOPR---*/
 
-var chrome = "Please run “mb. FUNKEY ILLUSTRATED RECORDS” with (Grease/Tamper/Violent)monkey instead of plain Chrome.";
 var userjs = "jesus2099userjs154481";
-var SMALL_SIZE = "42px";
-var BIG_SIZE = "125px";
 var types = ["release-group", "release"];
 
 var caaIcons = document.querySelectorAll("a[href$='/cover-art'] > span.caa-icon");
@@ -88,11 +84,6 @@ for (var t = 0; t < types.length; t++) {
 				CAALoader.open("GET", "https://coverartarchive.org" + as[a].getAttribute("href").match(/\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/), true);
 				CAALoader.send(null);
 			}
-			document.body.addEventListener("click", function(event) {
-				for (var imgs = document.querySelectorAll("img[_size='full']." + userjs), i = 0; i < imgs.length; i++) {
-					big(event, imgs[i], SMALL_SIZE);
-				}
-			});
 			var tr = getParent(as[a], "tr") || getParent(as[a], "li");
 			tr.addEventListener("mouseover", updateBig, false);
 			tr.addEventListener("mouseout", updateBig, false);
@@ -104,7 +95,7 @@ for (var t = 0; t < types.length; t++) {
 					"⌛",
 					createTag("img", {
 						a: {src: imgurl + "-250", alt: as[a].textContent},
-						s: {verticalAlign: "middle", display: "none", maxHeight: BIG_SIZE, boxShadow: "1px 1px 4px black"},
+						s: {verticalAlign: "middle", display: "none", maxHeight: "125px", boxShadow: "1px 1px 4px black"},
 						e: {
 							load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); },
 							error: function(event) { removeNode(this.parentNode); },
@@ -141,32 +132,6 @@ function updateBig(event) {
 			}
 		}
 	}
-}
-function big(event, img, smallSize) {
-	if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
-		if (event.target.classList.contains(userjs)) stop(event);
-		var enlarge = (img.getAttribute("_size") == "small");
-		var height = enlarge ? (img.getAttribute("_height") || "250px") : smallSize;
-		var margin = enlarge ? ("-" + (parseInt(img.getAttribute("_height"), 10) / 2) + "px -" + (parseInt(img.getAttribute("_width"), 10) / 2) + "px") : img.getAttribute("_margin");
-		if (enlarge) {
-			img.style.setProperty("z-index", "2");
-		}
-		img.setAttribute("_size", enlarge ? "full" : "small");
-		try {
-			jQuery(img).animate({height: height, margin: margin}, event.type == "load" ? 100 : 200, complete);
-		} catch(error) {
-			img.style.setProperty("height", height);
-			img.style.setProperty("margin", margin);
-			complete(img);
-			console.log(error.message + "!\n" + chrome);
-		}
-	}
-}
-function complete(fallback) {
-	var node = (this || fallback);
-	var enlarge = (node.getAttribute("_size") == "full");
-	node.setAttribute("title", node.getAttribute("title").replace(/\w+$/, enlarge ? "shrink" : "enlarge"));
-	node.style.setProperty("z-index", enlarge ? "2" : "1");
 }
 function loadCaaIcon(caaIcon) {
 	// Adding thumbnails to release CAA icons
