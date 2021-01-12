@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2020.9.24.1420
+// @version      2021.1.12
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -104,9 +104,9 @@ for (var t = 0; t < types.length; t++) {
 					"⌛",
 					createTag("img", {
 						a: {src: imgurl + "-250", alt: as[a].textContent},
-						s: {verticalAlign: "middle", display: "none", maxHeight: "20px", boxShadow: "1px 1px 4px black"},
+						s: {verticalAlign: "middle", display: "none", maxHeight: BIG_SIZE, boxShadow: "1px 1px 4px black"},
 						e: {
-							load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); try{jQuery(this).animate({"max-height": BIG_SIZE}, 200); } catch(error) { this.style.setProperty("max-height", BIG_SIZE); console.log(error.message + "!\n" + chrome); } },
+							load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); },
 							error: function(event) { removeNode(this.parentNode); },
 							mouseover: updateA,
 							mouseout: updateA
