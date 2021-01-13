@@ -57,35 +57,49 @@ for (var t = 0; t < types.length; t++) {
 			}
 // SMALL PICS
 // ----------
-			if (smallpics && types[t] == "release-group" && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
-				// https://tickets.metabrainz.org/browse/MBS-11059
-				// For the moment, release group CAA icons have to be added by userscript
-				var CAALoader = new XMLHttpRequest();
-				CAALoader.addEventListener("load", function(event) {
-					var RGCAAThumbnailFound = false;
-					if (this.status == 200) {
-						var RGCAA = JSON.parse(this.responseText);
-						if (RGCAA.images.length > 0) {
-							loadCaaIcon(this.releaseGroup.parentNode.insertBefore(
-								createTag("a", {a: {
-										href: RGCAA.release + "/cover-art",
-										ref: this.releaseGroup.getAttribute("href"),
-										title: RGCAA.images.length + " image" + (RGCAA.images.length != 1 ? "s" : "") + " found in this release"
-									}},
-									createTag("span", {a: {class: "caa-icon " + userjs}})
-								)
-							, this.releaseGroup).firstChild);
+			if (smallpics && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
+				if (types[t] == "release-group") {
+					// https://tickets.metabrainz.org/browse/MBS-11059
+					// For the moment, release group CAA icons have to be added by userscript
+					var CAALoader = new XMLHttpRequest();
+					CAALoader.addEventListener("load", function(event) {
+						var RGCAAThumbnailFound = false;
+						if (this.status == 200) {
+							var RGCAA = JSON.parse(this.responseText);
+							if (RGCAA.images.length > 0) {
+								loadCaaIcon(this.releaseGroup.parentNode.insertBefore(
+									createTag("a", {a: {
+											href: RGCAA.release + "/cover-art",
+											ref: this.releaseGroup.getAttribute("href"),
+											title: RGCAA.images.length + " image" + (RGCAA.images.length != 1 ? "s" : "") + " found in this release"
+										}},
+										createTag("span", {a: {class: "caa-icon " + userjs}})
+									)
+								, this.releaseGroup).firstChild);
+							}
+						} else {
+							console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
 						}
-					} else {
+					});
+					CAALoader.addEventListener("error", function(event) {
 						console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
-					}
-				});
-				CAALoader.addEventListener("error", function(event) {
-					console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
-				});
-				CAALoader.releaseGroup = as[a];
-				CAALoader.open("GET", "https://coverartarchive.org" + as[a].getAttribute("href").match(new RegExp("/release-group/" + GUID)), true);
-				CAALoader.send(null);
+					});
+					CAALoader.releaseGroup = as[a];
+					CAALoader.open("GET", "https://coverartarchive.org" + as[a].getAttribute("href").match(new RegExp("/release-group/" + GUID)), true);
+					CAALoader.send(null);
+				} else if (types[t] == "release" && location.pathname.match(/\/search/)) {
+					// https://tickets.metabrainz.org/browse/MBS-11327
+					// For the moment, release search CAA icons have to be added by userscript
+					as[a].parentNode.insertBefore(
+						createTag("a", {a: {
+								href: as[a].getAttribute("href") + "/cover-art",
+								class: userjs + "searchThumb"
+							}},
+							createTag("span", {a: {class: "caa-icon " + userjs}, s:{backgroundSize: "contain", backgroundImage: "url(//coverartarchive.org" + as[a].getAttribute("href") + "/front-250)"}})
+						),
+						as[a]
+					);
+				}
 			}
 			var tr = getParent(as[a], "tr") || getParent(as[a], "li");
 			tr.addEventListener("mouseover", updateBig, false);
@@ -103,7 +117,14 @@ for (var t = 0; t < types.length; t++) {
 						s: {verticalAlign: "middle", display: "none", maxHeight: "125px", boxShadow: "1px 1px 4px black"},
 						e: {
 							load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); },
-							error: function(event) { removeNode(this.parentNode); },
+							error: function(event) {
+								removeNode(this.parentNode);
+								// Remove useless matching release searchThumb (blank) SMALL PICS (MBS-11327)
+								var searchThumb = document.querySelector("a." + userjs + "searchThumb[href='" + this.getAttribute("src").match(new RegExp("/release/" + GUID)) + "/cover-art']");
+								if (searchThumb) {
+									removeNode(searchThumb);
+								}
+							},
 							mouseover: updateA,
 							mouseout: updateA
 						}
