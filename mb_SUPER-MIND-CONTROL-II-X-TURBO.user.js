@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2020.11.29.2
+// @version      2021.1.5
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -896,12 +896,14 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			if (
 				self.location.href.indexOf(account.pathname) < 0 &&
 				(refine = document.querySelector("table.search-help td > a[href^='" + MBS + "/search/edits?'][href*='&conditions.']")) &&
-				(refine = refine.getAttribute("href").replace(/&?form_only=yes/, "")) &&
-				(myID = __MB_Catalyst_Context__.user.id || localStorage.getItem(userjs + "me-userid"))
+				(refine = refine.getAttribute("href").replace(/&?form_only=yes/, ""))
 			) {
 				if (self.location.pathname.match(/\/edits$/)) {
 					refines.appendChild(document.createTextNode(" | "));
 					refines.appendChild(createTag("a", {a: {href: refine + onlyEffective}}, ["Refine this search (", createTag("strong", null, "effective edits only"), ")"]));
+				}
+				if (typeof __MB__ !== "undefined") {
+					myID = __MB__.$c.user.id;
 				}
 				if (myID) {
 					if (myID != localStorage.getItem(userjs + "me-userid")) localStorage.setItem(userjs + "me-userid", myID);
