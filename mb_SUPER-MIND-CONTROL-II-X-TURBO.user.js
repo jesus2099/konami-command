@@ -1,28 +1,19 @@
-"use strict";
-var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2021.1.5
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
+// @version      2021.1.13
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
+// @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
-// @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2010-09-09
+// @since        2010-09-09; https://web.archive.org/web/20131103163358/userscripts.org/scripts/show/85790 and others: https://web.archive.org/web/20131104205922/userscripts.org/topics/119639
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
-// @grant        none
-// @match         *://*.musicbrainz.org/*
+// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js
+// @grant        GM_info
+// @match        *://*.musicbrainz.org/*
 // @exclude      *://blog.musicbrainz.org/*
 // @exclude      *://bugs.musicbrainz.org/*
 // @exclude      *://chatlogs.musicbrainz.org/*
@@ -33,21 +24,12 @@ var meta = {rawmdb: function() {
 // @exclude      *://wiki.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
-}};
-if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
-	while ((kv = row.exec(meta.rawmdb)) !== null) {
-		if (meta[kv[1]]) {
-			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
-			meta[kv[1]].push(kv[2]);
-		} else meta[kv[1]] = kv[2];
-	}
-}
-meta.name = meta.name.substr(4).replace(/\s/g, "\u00a0");
-meta.icon = createTag("img", {a: {src: meta.icon}, s: {verticalAlign: "middle", margin: "-8px 0"}});
+"use strict";
+let userjs = {
+	id: "jesus2099userjs85790", // have to keep this for legacy saved settings
+	name: GM_info.script.name.substr(4).replace(/\s/g, "\u00a0"),
+	icon: createTag("img", {a: {src: GM_info.script.icon}, s: {verticalAlign: "middle", margin: "-8px 0"}})
+};
 var debugBuffer = "";
 var DEBUG = localStorage.getItem("jesus2099debug");
 var pageType = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
@@ -57,8 +39,6 @@ if (pageType) {
 	pageType = "other";
 }
 debug("Page type: " + pageType);
-var chrome = "Please run “" + meta.name + "” with Tampermonkey instead of plain Chrome.";
-var userjs = "jesus2099userjs85790"/*have to keep this for legacy saved settings*/;
 var MBS = self.location.protocol + "//" + self.location.host;
 var lang = document.querySelector("html[lang]");
 lang = lang && lang.getAttribute("lang") || "en-GB";
@@ -118,22 +98,22 @@ document.head.appendChild(j2superturbo.css);
 j2superturbo.css = j2superturbo.css.sheet;
 var j2sets = {}, j2docs = {}, j2defs = {}, j2setsclean = [];
 j2setting();
-j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + meta.description.replace(/^[^:]+: /, "").replace(/ \/ /g, "\n")}, e: {click: function(event) {
-	var j2setsdiv = document.getElementById(userjs + "j2sets");
+j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + GM_info.script.description.replace(/^[^:]+: /, "").replace(/ \/ /g, "\n")}, e: {click: function(event) {
+	var j2setsdiv = document.getElementById(userjs.id + "j2sets");
 	if (!j2setsdiv) {
 		j2setting();
 		if (j2sets) {
-			j2setsdiv = document.body.insertBefore(createTag("div", {a: {id: userjs + "j2sets"}, s: {backgroundColor: "silver", border: "2px outset white", padding: "1em"}}, [
+			j2setsdiv = document.body.insertBefore(createTag("div", {a: {id: userjs.id + "j2sets"}, s: {backgroundColor: "silver", border: "2px outset white", padding: "1em"}}, [
 				createTag("p", {s: {textAlign: "right", margin: "0px"}}, [
-					createTag("a", {a: {href: meta.homepage, target: "_blank"}}, "HELP"),
+					createTag("a", {a: {href: GM_info.script.homepage, target: "_blank"}}, "HELP"),
 					" | ",
-					createTag("a", {a: {href: meta.supportURL, target: "_blank"}}, "known issues"),
+					createTag("a", {a: {href: GM_info.script.supportURL, target: "_blank"}}, "known issues"),
 					" | ",
-					createTag("a", {e: {click: function(event) { if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")) { localStorage.removeItem(userjs + "settings"); self.location.reload(); } }}}, "RESET"),
+					createTag("a", {e: {click: function(event) { if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")) { localStorage.removeItem(userjs.id + "settings"); self.location.reload(); } }}}, "RESET"),
 					" | ",
-					createTag("a", {e: {click: function(event) { removeNode(document.getElementById(userjs + "j2sets")); }}}, "CLOSE"),
+					createTag("a", {e: {click: function(event) { removeNode(document.getElementById(userjs.id + "j2sets")); }}}, "CLOSE"),
 				]),
-				createTag("h4", {s: {textShadow: "0 0 8px white", fontSize: "1.5em", marginTop: "0px"}}, ["██ ", createTag("a", {a: {href: meta.namespace, target: "_blank"}}, meta.name), " (" + meta.version + ")"]), createTag("p", {}, ["All settings are instantly saved but require a ", createTag("a", {e: {click: function() { self.location.reload(); }}}, "PAGE RELOAD"), " to see the effect."])
+				createTag("h4", {s: {textShadow: "0 0 8px white", fontSize: "1.5em", marginTop: "0px"}}, ["██ ", createTag("a", {a: {href: GM_info.script.namespace, target: "_blank"}}, userjs.name), " (" + GM_info.script.version + ")"]), createTag("p", {}, ["All settings are instantly saved but require a ", createTag("a", {e: {click: function() { self.location.reload(); }}}, "PAGE RELOAD"), " to see the effect."])
 			]), document.getElementById("page"));
 			var alphakeys = [];
 			for (var s in j2sets) if (j2sets.hasOwnProperty(s)) {
@@ -148,14 +128,14 @@ j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + meta.descri
 				var tr = table.appendChild(document.createElement("tr"));
 				tr.appendChild(createTag("th", {s: {backgroundColor: "#ccc", textAlign: "left", paddingLeft: alphakeys[a].match(/[a-z]/) ? "2em" : "inherit"}}, j2settinput(alphakeys[a])));
 				tr.appendChild(createTag("td", {s: {opacity: ".666", textAlign: "center"}}, typeof j2defs[alphakeys[a]] == "boolean" ? (j2defs[alphakeys[a]] ? "☑" : "☐") : j2defs[alphakeys[a]]));
-				tr.appendChild(createTag("td", {s: {marginBottom: ".4em"}}, j2docit(j2docs[alphakeys[a]]).concat([" — ", createTag("a", {a: {href: meta.homepage + "#" + alphakeys[a].toLowerCase(), target: "_blank"}}, "more help…")])));
+				tr.appendChild(createTag("td", {s: {marginBottom: ".4em"}}, j2docit(j2docs[alphakeys[a]]).concat([" — ", createTag("a", {a: {href: GM_info.script.homepage + "#" + alphakeys[a].toLowerCase(), target: "_blank"}}, "more help…")])));
 			}
 		}
 	}
 	j2setsdiv.scrollIntoView();
-}}}, [meta.icon.cloneNode(false), " " + meta.name + " (" + meta.version + ")"]));
+}}}, [userjs.icon.cloneNode(false), " " + userjs.name + " (" + GM_info.script.version + ")"]));
 function bug(error) {
-	var title = "", alrt = meta.name + " (" + meta.version + ")" + " ERROR";
+	var title = "", alrt = userjs.name + " (" + GM_info.script.version + ")" + " ERROR";
 	if (error.module) {
 		title = " in “" + error.module + "” module";
 		alrt += title;
@@ -165,15 +145,15 @@ function bug(error) {
 		alrt += "\n\n" + error.message;
 	}
 	if (error.report && title) {
-		if (confirm(alrt + "\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
-			self.open("https://github.com/jesus2099/konami-command/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent("Hello,\nI am using that awesome *" + meta.name + "* (**" + meta.version + "**).\nI got an error while I was on [" + (document.title ? document.title : "that page") + "](" + self.location.href + "):\n\n    " + error.message.replace(/\n/g, "\n    ")));
+		if (confirm(alrt + "\n\nDo you want to report the bug?\n(requires github account)\n(will open in a NEW WINDOW)")) {
+			self.open("https://github.com/jesus2099/konami-command/issues/new?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent("Hello,\nI am using that awesome *" + userjs.name + "* (**" + GM_info.script.version + "**).\nI got an error while I was on [" + (document.title ? document.title : "that page") + "](" + self.location.href + "):\n\n    " + error.message.replace(/\n/g, "\n    ")));
 		}
 	} else {
 		alert(alrt);
 	}
 }
 function j2setting(set, val, def, doc) {
-	if (set == null) { j2sets = localStorage.getItem(userjs + "settings"); if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; } }
+	if (set == null) { j2sets = localStorage.getItem(userjs.id + "settings"); if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; } }
 	else {
 		if (doc) { j2docs[set] = doc; }
 		if (def) {
@@ -182,7 +162,7 @@ function j2setting(set, val, def, doc) {
 		}
 		if (val != null && (!def || j2sets[set] == null)) {
 			j2sets[set] = val;
-			localStorage.setItem(userjs + "settings", JSON.stringify(j2sets));
+			localStorage.setItem(userjs.id + "settings", JSON.stringify(j2sets));
 		} else if (set) {
 			return j2sets[set];
 		}
@@ -191,7 +171,7 @@ function j2setting(set, val, def, doc) {
 function j2settinput(set) {
 	var val = j2setting(set);
 	var rnd = (Math.random() + "").substring(2);
-	var lbl = createTag("label", {a: {"for": userjs + enttype + set + rnd}, s: {whiteSpace: "nowrap", textShadow: "1px 1px 2px #999"}}, createTag("input", {a: {type: "checkbox", id: userjs + enttype + set + rnd, class: set}, e: {change: function(event) {
+	var lbl = createTag("label", {a: {"for": userjs.id + enttype + set + rnd}, s: {whiteSpace: "nowrap", textShadow: "1px 1px 2px #999"}}, createTag("input", {a: {type: "checkbox", id: userjs.id + enttype + set + rnd, class: set}, e: {change: function(event) {
 		j2setting(this.className, this.getAttribute("type") == "checkbox" ? this.checked : this.value);
 	}}}));
 	var inp = lbl.querySelector("input");
@@ -222,7 +202,7 @@ function j2docit(txt) {
 }
 /*==================================================================== LINK+
 ## RELEASE_CLONER ##
-todo : add debugged clone release-AR module
+todo : add debugged clone release-AR module
 ==========================================================================*/
 j2setting("RELEASE_CLONER", true, true, "one-click duplicate release(s)" + j2superturbo.menu.expl);
 j2setting("RELEASE_CLONER_release_event", false, true, "clones release event(s), package, catalogue number(s), etc. (not advised as those usually change for each edition)");
@@ -236,7 +216,7 @@ if (j2sets.RELEASE_CLONER && account) {
 	) {
 		if (account) {
 			debug("RELEASE_CLONER");
-			j2superturbo.menu.addItem(createTag("a", {a: {title: meta.name + "\nshift+click to open new tab / ctrl+click for background tab" + (rcwhere != "release" ? "\nno need to select if there is only one release on this page" : "")}, e: {click: function(clickEvent) {
+			j2superturbo.menu.addItem(createTag("a", {a: {title: userjs.name + "\nshift+click to open new tab / ctrl+click for background tab" + (rcwhere != "release" ? "\nno need to select if there is only one release on this page" : "")}, e: {click: function(clickEvent) {
 				var crmbids = [];
 				if (rcwhere == "release") {
 					crmbids.push("" + self.location.pathname.match(re_GUID));
@@ -356,14 +336,14 @@ if (j2sets.RELEASE_CLONER && account) {
 									}
 									/* ws:url-rels */
 								}
-								ok &= reled.add("\n —\n" + MBS + "/release/" + crmbids[crr] + " cloned using " + meta.name + "’s '''RELEASE_CLONER''' (" + meta.version + ")", "edit_note");
+								ok &= reled.add("\n —\n" + MBS + "/release/" + crmbids[crr] + " cloned using " + userjs.name + "’s '''RELEASE_CLONER''' (" + GM_info.script.version + ")", "edit_note");
 								/* fin */
 								if (ok) document.body.appendChild(reled.form).submit();
 								else sendEvent(this, "error");
 							};
 							xhr.onerror = function(errorEvent) {
 								if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
-									self.open("https://github.com/jesus2099/konami-command/issues/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + meta.name + "* version **" + meta.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + self.location.href + ").\n"));
+									self.open("https://github.com/jesus2099/konami-command/issues/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + userjs.name + "* version **" + GM_info.script.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + self.location.href + ").\n"));
 								}
 							};
 							xhr.open("get", MBS + "/ws/2/release/" + crmbids[crr] + "?inc=artists+labels+recordings+release-groups+media+artist-credits+annotation+url-rels&fmt=json", false);
@@ -373,14 +353,14 @@ if (j2sets.RELEASE_CLONER && account) {
 				} else {
 					alert("Please select at least one release.");
 				}
-			}}}, [meta.icon.cloneNode(false), " Clone " + (rcwhere == "release" ? "release" : "selected releases") + " ", createTag("small", {s: {color: "grey"}}, "← RELEASE_CLONER™")]));
+			}}}, [userjs.icon.cloneNode(false), " Clone " + (rcwhere == "release" ? "release" : "selected releases") + " ", createTag("small", {s: {color: "grey"}}, "← RELEASE_CLONER™")]));
 		}
 	}
 }
 function formTarget(releaseIndex, event) {
 	var target = "_self";
 	if (event.ctrlKey || releaseIndex > 0) {
-		target = userjs + (new Date().getTime());
+		target = userjs.id + (new Date().getTime());
 		try {
 			self.open("", target).blur();
 		} catch(e) {}
@@ -518,7 +498,7 @@ function EASY_DATE_calmDOM() {
 }
 function EASY_DATE_init() {
 	debug("EASY_DATE_init");
-	for (var years = document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(." + userjs + "easydate)"), y = 0; y < years.length; y++) {
+	for (var years = document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(." + userjs.id + "easydate)"), y = 0; y < years.length; y++) {
 		addAfter(
 			createTag("input", {
 				a: {value: years[y].value, placeholder: "YYY+", size: "4", title: "EASY_DATE®\n" + j2docs.EASY_DATE},
@@ -574,7 +554,7 @@ function EASY_DATE_init() {
 					keydown: [EASY_DATE_cloneDateHotkey, EASY_DATE_nextField, EASY_DATE_deleteDatesHotkey]
 				}}
 			), years[y]);
-		years[y].classList.add(userjs + "easydate");
+		years[y].classList.add(userjs.id + "easydate");
 		years[y].style.setProperty("display", "none");
 		years[y].addEventListener("change", function(event) {
 			if (this.nextSibling.value != this.value) {
@@ -713,12 +693,12 @@ j2setting("ROW_HIGHLIGHTER_colour", "#fcf", true, "use any CSS colour code or na
 if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+)$/i)) {
 	var hldrule = {
 		selector: [
-			"tr." + userjs + "rowhld th",
-			"tr." + userjs + "rowhld td",
-			"div#release-editor > div#tracklist tr." + userjs + "rowhld td input",
-			"table.details td > span." + userjs + "rowhld",
-			"table.details td > span." + userjs + "rowhld a",
-			"table.details th." + userjs + "rowhld"
+			"tr." + userjs.id + "rowhld th",
+			"tr." + userjs.id + "rowhld td",
+			"div#release-editor > div#tracklist tr." + userjs.id + "rowhld td input",
+			"table.details td > span." + userjs.id + "rowhld",
+			"table.details td > span." + userjs.id + "rowhld a",
+			"table.details th." + userjs.id + "rowhld"
 		],
 		rule: [
 			"background-color:" + j2sets.ROW_HIGHLIGHTER_colour + "!important"
@@ -768,9 +748,9 @@ function ROW_HIGHLIGHTER_refresh(event) {
 		}
 		for (var r = 0; r < row.length; r++) if (row[r]) {
 			if (event.type == "mouseover") {
-				row[r].classList.add(userjs + "rowhld");
+				row[r].classList.add(userjs.id + "rowhld");
 			} else if (event.type == "mouseout") {
-				row[r].classList.remove(userjs + "rowhld");
+				row[r].classList.remove(userjs.id + "rowhld");
 			}
 		}
 	}
@@ -828,7 +808,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 		var open = typeof (what[3] || what[6]) != "undefined";
 		var which = what[2] || what[5];
 		what = what[1] || what[4];
-		var lastseenedits = localStorage.getItem(userjs + "lastseenedits-" + what);
+		var lastseenedits = localStorage.getItem(userjs.id + "lastseenedits-" + what);
 		var upd = false;
 		if (lastseenedits) { lastseenedits = JSON.parse(lastseenedits); } else { lastseenedits = {}; }
 		var now = new Date();
@@ -862,7 +842,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 			}
 		}
 		if (upd && !open) {
-			localStorage.setItem(userjs + "lastseenedits-" + what, JSON.stringify(lastseenedits));
+			localStorage.setItem(userjs.id + "lastseenedits-" + what, JSON.stringify(lastseenedits));
 		}
 	}
 }
@@ -906,7 +886,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 					myID = __MB__.$c.user.id;
 				}
 				if (myID) {
-					if (myID != localStorage.getItem(userjs + "me-userid")) localStorage.setItem(userjs + "me-userid", myID);
+					if (myID != localStorage.getItem(userjs.id + "me-userid")) localStorage.setItem(userjs.id + "me-userid", myID);
 					refines.appendChild(document.createTextNode(" | "));
 					refines.appendChild(createTag("a", {a: {href: refine + notme.replace(/%myID%/g, myID).replace(/%myName%/g, escape(account.name))}}, ["Refine this search (", createTag("strong", null, "+not me"), ")"]));
 					novote = notme + novote;
@@ -948,9 +928,9 @@ if (j2sets.SERVER_SWITCH) {
 		} else {
 			servname = "MBS";
 		}
-		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [meta.icon.cloneNode(false), " ", createTag("code", {}, servname), " ▾"]), document.createElement("ul")]), langMenu);
+		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs.id + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [userjs.icon.cloneNode(false), " ", createTag("code", {}, servname), " ▾"]), document.createElement("ul")]), langMenu);
 		menu.addEventListener("click", function(event) {
-			if(getParent(event.target, "li", userjs + "serverSwitch")) {
+			if(getParent(event.target, "li", userjs.id + "serverSwitch")) {
 				event.stopPropagation();
 				for (var openMenus = document.querySelectorAll(".header ul.menu li.fake-active"), m = 0; m < openMenus.length; m++) if (openMenus[m] != this) {
 					sendEvent(openMenus[m], "click");
@@ -998,7 +978,7 @@ function serverSwitch(server, separator) {
 /*==================================================================== LINK+
 ## TAG_TOOLS ##
 ==========================================================================*/
-j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global");
+j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global");
 if (j2sets.TAG_TOOLS && account) {
 	var tagscope = self.location.pathname.replace(new RegExp("^" + MBS + "|[?#].*$", "g"), "").match(/^(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 	if (tagscope) {
@@ -1060,11 +1040,11 @@ function updateTags(event) {
 	}
 }
 function ownifyTag(tag, revert) {
-	if (!tag.getAttribute(userjs + "tag")) {
-		tag.setAttribute(userjs + "tag", tag.getAttribute("href"));
-		tag.setAttribute(userjs + "ownTag", account.pathname + tag.getAttribute("href"));
+	if (!tag.getAttribute(userjs.id + "tag")) {
+		tag.setAttribute(userjs.id + "tag", tag.getAttribute("href"));
+		tag.setAttribute(userjs.id + "ownTag", account.pathname + tag.getAttribute("href"));
 	}
-	tag.setAttribute("href", tag.getAttribute(userjs + (revert ? "tag" : "ownTag")));
+	tag.setAttribute("href", tag.getAttribute(userjs.id + (revert ? "tag" : "ownTag")));
 }
 function tagswitch(cont, urltxt) {
 	var switcht = h1.appendChild(createTag("span", {s: {color: "grey", textShadow: "1px 1px 2px silver"}}, " (see "));
@@ -1163,8 +1143,8 @@ function delayMsg(sec) {
 }
 /* --- ENTITY BONUS --- */
 j2setting("MARK_PENDING_EDIT_MEDIUMS", true, true, "puts a border around mediums with pending edits");
-j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
-j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
+j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
+j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
 j2setting("RECORDING_LENGTH_COLUMN", true, true, "Displays recording lengths in work page (similar to Loujine’s script) as well as in artist relationships page");
 j2setting("RELEASE_EVENT_COLUMN", true, true, "Displays release dates in label relationships page");
 var enttype = self.location.href.match(new RegExp("^" + MBS + "/(area|artist|collection|event|label|place|recording|release|release-group|series|work)/.*$"));
@@ -1205,7 +1185,7 @@ if (enttype) {
 						}
 					}
 				}
-			}}}, [meta.icon.cloneNode(false), " Remove recording relationships ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
+			}}}, [userjs.icon.cloneNode(false), " Remove recording relationships ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 			/* :::: MASS SET WORKS’ RECORDING DATES :::: */
 			j2superturbo.menu.addItem(createTag("a", {e: {click: function(event) {
 				var checkedRelationships = {
@@ -1238,7 +1218,7 @@ if (enttype) {
 						} else { alert("Wrong date format"); }
 					}
 				}
-			}}}, [meta.icon.cloneNode(false), " Set selected works’ recording dates ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
+			}}}, [userjs.icon.cloneNode(false), " Set selected works’ recording dates ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 		}
 	}
 	/*================================================================ DISPLAY-
@@ -1271,7 +1251,7 @@ if (enttype) {
 		var relationshipTable = document.querySelector("div#content table.tbl");
 		if (relationshipTable) {
 			var fetchRecordingLength = j2sets.RECORDING_LENGTH_COLUMN && relationshipTable.getElementsByClassName("treleases").length == 0 && relationshipTable.querySelector("a[href*='/recording/']");
-			var fetchReleaseEvents = j2sets.RELEASE_EVENT_COLUMN && relationshipTable.getElementsByClassName(userjs + "releaseEvents").length == 0 && relationshipTable.querySelector("a[href*='/release/']");
+			var fetchReleaseEvents = j2sets.RELEASE_EVENT_COLUMN && relationshipTable.getElementsByClassName(userjs.id + "releaseEvents").length == 0 && relationshipTable.querySelector("a[href*='/release/']");
 			if (fetchRecordingLength || fetchReleaseEvents) {
 				var xhr = new XMLHttpRequest();
 				xhr.addEventListener("load", function(event) {
@@ -1294,10 +1274,10 @@ if (enttype) {
 					if (recordingLengthFound || releaseEventFound) {
 						// column headers
 						if (recordingLengthFound) {
-							relationshipTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: meta.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
+							relationshipTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: userjs.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
 						}
 						if (releaseEventFound) {
-							relationshipTable.querySelector("thead > tr").insertBefore(createTag("th", {a: {title: meta.name, class: userjs + "releaseEvents"}, s: {textShadow: "0 0 2px yellow"}}, "Release events"), relationshipTable.querySelector("thead > tr > th:nth-child(2)"));
+							relationshipTable.querySelector("thead > tr").insertBefore(createTag("th", {a: {title: userjs.name, class: userjs.id + "releaseEvents"}, s: {textShadow: "0 0 2px yellow"}}, "Release events"), relationshipTable.querySelector("thead > tr > th:nth-child(2)"));
 						}
 						var rows = relationshipTable.querySelectorAll("tbody > tr");
 						for (var r = 0; r < rows.length; r++) {
@@ -1347,13 +1327,13 @@ if (enttype) {
 												newCell.appendChild(releaseEvent);
 												if (releaseEvents[releaseID].length > 4) {
 													if (e > 1 && e != releaseEvents[releaseID].length - 1) {
-														releaseEvent.classList.add(userjs + "hiddenEvent");
+														releaseEvent.classList.add(userjs.id + "hiddenEvent");
 														releaseEvent.style.setProperty("display", "none");
 													}
 													if (e == 1) {
 														newCell.appendChild(createTag("div", {s: {padding: "8px"}}, ["(", createTag("a", {e: {click: tooManyEventsToggle}}, "show " + (releaseEvents[releaseID].length - 3) + " more"), ")"]));
 													} else if (e == releaseEvents[releaseID].length - 1) {
-														newCell.appendChild(createTag("div", {a: {class: userjs + "hiddenEvent"}, s: {display: "none", padding: "8px"}}, ["(", createTag("a", {e: {click: tooManyEventsToggle}}, "show less"), ")"]));
+														newCell.appendChild(createTag("div", {a: {class: userjs.id + "hiddenEvent"}, s: {display: "none", padding: "8px"}}, ["(", createTag("a", {e: {click: tooManyEventsToggle}}, "show less"), ")"]));
 													}
 												}
 											}
@@ -1371,13 +1351,13 @@ if (enttype) {
 	}
 }
 function tooManyEventsToggle(event) {
-	var hideEvents = event.target.parentNode.classList.contains(userjs + "hiddenEvent");
-	var otherToggle = event.target.parentNode.parentNode.querySelector("div" + (hideEvents ? ":not(." + userjs + "hiddenEvent)" : "." + userjs + "hiddenEvent") + " > a").parentNode;
+	var hideEvents = event.target.parentNode.classList.contains(userjs.id + "hiddenEvent");
+	var otherToggle = event.target.parentNode.parentNode.querySelector("div" + (hideEvents ? ":not(." + userjs.id + "hiddenEvent)" : "." + userjs.id + "hiddenEvent") + " > a").parentNode;
 	event.target.parentNode.style.setProperty("display", "none");
 	if (hideEvents) {
 		otherToggle.style.setProperty("display", "block");
 	}
-	var hiddenEvents = event.target.parentNode.parentNode.querySelectorAll("div." + userjs + "hiddenEvent");
+	var hiddenEvents = event.target.parentNode.parentNode.querySelectorAll("div." + userjs.id + "hiddenEvent");
 	for (var h = 0; h < hiddenEvents.length; h++) {
 		hiddenEvents[h].style.setProperty("display", hideEvents ? "none" : "block");
 	}
@@ -1392,11 +1372,11 @@ function TRACKLIST_TOOLS_calmDOM() {
 	TRACKLIST_TOOLS_calmDOMto = setTimeout(TRACKLIST_TOOLS_init, 100);
 }
 function TRACKLIST_TOOLS_buttonHandler(event) {
-	if (event.target.className.match(new RegExp("^" + userjs + "(search-replace|track-length-parser)$"))) {
+	if (event.target.className.match(new RegExp("^" + userjs.id + "(search-replace|track-length-parser)$"))) {
 		if (event.type == "click") {
 			/* :::: TRACK NAME SEARCH→REPLACE :::: */
-			if (event.target.classList.contains(userjs + "search-replace")) {
-				var searchrep = localStorage.getItem(userjs + "search-replace");
+			if (event.target.classList.contains(userjs.id + "search-replace")) {
+				var searchrep = localStorage.getItem(userjs.id + "search-replace");
 				searchrep = searchrep ? JSON.parse(searchrep) : ["", ""];
 				if (
 					(searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /\"([^\"]+)\"/g\n\nor normal (case sensitive and global): My String", searchrep[0]))
@@ -1412,10 +1392,10 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 							sendEvent(tracks[t], "change");
 						}
 					}
-					localStorage.setItem(userjs + "search-replace", JSON.stringify(searchrep));
+					localStorage.setItem(userjs.id + "search-replace", JSON.stringify(searchrep));
 				}
 			/* :::: TRACK LENGTH PARSER :::: */
-			} else if (event.target.classList.contains(userjs + "track-length-parser")) {
+			} else if (event.target.classList.contains(userjs.id + "track-length-parser")) {
 				var durationParser = "(?:(?:(\\b\\d\\b)[°h])?(\\b\\d{1,3}\\b)[′’'m])?(\\b\\d{2}\\b)[″”\"s]|(?:(?:(\\b\\d\\b):)?(\\b\\d{1,3}\\b):)(\\b\\d{2}\\b)";
 				var erase = event.target.textContent.match(/erase/i) || event.ctrlKey;
 				var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']:not(.disabled-hint)", event.target, event);
@@ -1427,7 +1407,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 					event.target.setAttribute("title", distitle);
 					alert(distitle);
 				} else if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(new RegExp(durationParser, "g")))) {
-					if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are " + times.length + " lengths detected in your text, butt\nthere are " + inputs.length + " tracks in the tracklist.\nAre you sure to go on?")) {
+					if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are " + times.length + " lengths detected in your text, butt\nthere are " + inputs.length + " tracks in the tracklist.\nAre you sure to go on?")) {
 						for (var t = 0, i = 0; (erase || t < times.length) && i < inputs.length; t++, i++) {
 							var time = "";
 							if (!erase) {
@@ -1483,11 +1463,11 @@ function TRACKLIST_TOOLS_init() {
 	re.addEventListener("DOMNodeInserted", function(event) {
 		var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
 		for (var tp = 0; tp < tps.length; tp++) {
-			if (!tps[tp].parentNode.querySelector("." + userjs + "track-length-parser")) {
-				addAfter(createTag("button", {a: {type: "button", "class": userjs + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Time Parser"), tps[tp]);
+			if (!tps[tp].parentNode.querySelector("." + userjs.id + "track-length-parser")) {
+				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Time Parser"), tps[tp]);
 			}
-			if (!tps[tp].parentNode.querySelector("." + userjs + "search-replace")) {
-				addAfter(createTag("button", {a: {type: "button", "class": userjs + "search-replace", title: "SHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Search→replace"), tps[tp]);
+			if (!tps[tp].parentNode.querySelector("." + userjs.id + "search-replace")) {
+				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "search-replace", title: "SHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Search→replace"), tps[tp]);
 			}
 		}
 	}, false);
@@ -1505,7 +1485,7 @@ function debug(txt, buffer) {
 		if (buffer) {
 			debugBuffer += txt + "\n";
 		} else {
-			console.log(meta.name + "\n" + debugBuffer + txt);
+			console.log(userjs.name + "\n" + debugBuffer + txt);
 			debugBuffer = "";
 		}
 	}
