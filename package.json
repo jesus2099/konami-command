@@ -1,0 +1,13 @@
+{
+	"name": "konami-command",
+	"version": "6.6.6",
+	"author": "jesus2099",
+	"private": true,
+	"scripts": {
+		"eslint": "eslint --",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"devDependencies": {
+		"eslint": "^7.18.0"
+	}
+}

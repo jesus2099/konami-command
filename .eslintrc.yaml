@@ -1,0 +1,74 @@
+env:
+ browser: true
+ es6: true
+ greasemonkey: true
+
+globals:
+# MBS
+ jQuery:          "readonly"
+ __MB__:          "readonly"
+ MB:              "readonly"
+# lib/SUPER.js
+ addAfter:        "readonly"
+ createTag:       "readonly"
+ getParent:       "readonly"
+ getSibling:      "readonly"
+ removeNode:      "readonly"
+ replaceChildren: "readonly"
+ sendEvent:       "readonly"
+
+extends: eslint:recommended
+
+ignorePatterns:
+- "*.md"
+
+rules:
+# https://eslint.org/docs/rules/indent
+
+# Possible errors - https://eslint.org/docs/rules/#possible-errors
+ no-empty:
+ - error
+ - allowEmptyCatch: true
+ no-unused-vars:
+ - error
+ - argsIgnorePattern: "^e(rrorE)?vent$"
+
+# Best practices - https://eslint.org/docs/rules/#best-practices
+# Strict mode - https://eslint.org/docs/rules/#strict-mode
+# strict:
+# - error
+# - global
+
+# Variables - https://eslint.org/docs/rules/#variables
+
+# Stylistic-issues - https://eslint.org/docs/rules/#stylistic-issues
+# brace-style:
+# - error
+# - 1tbs
+# func-style:
+# - error
+# - declaration
+# indent:
+# - error
+# - tab
+# key-spacing:
+# - error
+# - mode: "minimum"
+# linebreak-style:
+# - error
+# - unix
+# quotes:
+# - error
+# - double
+# semi:
+# - error
+# - always
+# semi-style:
+# - error
+# - last
+# space-in-parens:
+# - error
+# - never
+# spaced-comment:
+#- error
+#- always

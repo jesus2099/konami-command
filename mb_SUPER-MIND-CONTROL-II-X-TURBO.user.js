@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2021.1.13
+// @version      2021.1.17
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -116,7 +116,7 @@ j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + GM_info.scr
 				createTag("h4", {s: {textShadow: "0 0 8px white", fontSize: "1.5em", marginTop: "0px"}}, ["██ ", createTag("a", {a: {href: GM_info.script.namespace, target: "_blank"}}, userjs.name), " (" + GM_info.script.version + ")"]), createTag("p", {}, ["All settings are instantly saved but require a ", createTag("a", {e: {click: function() { self.location.reload(); }}}, "PAGE RELOAD"), " to see the effect."])
 			]), document.getElementById("page"));
 			var alphakeys = [];
-			for (var s in j2sets) if (j2sets.hasOwnProperty(s)) {
+			for (let s in j2sets) if (Object.prototype.hasOwnProperty.call(j2sets, s)) {
 				if (j2setsclean.indexOf(s) < 0) { delete j2sets[s]; }
 				else if (!s.match(/!/)) { alphakeys.push(s); }
 			}
@@ -124,7 +124,7 @@ j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + GM_info.scr
 			var table = j2setsdiv.appendChild(createTag("table", {a: {border: "2", cellpadding: "4", cellspacing: "1"}}));
 			table.appendChild(createTag("thead", {}, [createTag("th", {}, "setting"), createTag("th", {}, "default setting"), createTag("th", {}, "description")]));
 			table = table.appendChild(document.createElement("tbody"));
-			for (var a = 0; a < alphakeys.length; a++) {
+			for (let a = 0; a < alphakeys.length; a++) {
 				var tr = table.appendChild(document.createElement("tr"));
 				tr.appendChild(createTag("th", {s: {backgroundColor: "#ccc", textAlign: "left", paddingLeft: alphakeys[a].match(/[a-z]/) ? "2em" : "inherit"}}, j2settinput(alphakeys[a])));
 				tr.appendChild(createTag("td", {s: {opacity: ".666", textAlign: "center"}}, typeof j2defs[alphakeys[a]] == "boolean" ? (j2defs[alphakeys[a]] ? "☑" : "☐") : j2defs[alphakeys[a]]));
@@ -223,7 +223,7 @@ if (j2sets.RELEASE_CLONER && account) {
 				}
 				else {
 					var checkrels = document.querySelectorAll("table.tbl > tbody input[type='checkbox'][name='add-to-merge']");
-					for (var crmbid, cr = 0; cr < checkrels.length; cr++) {
+					for (let crmbid, cr = 0; cr < checkrels.length; cr++) {
 						if ((checkrels[cr].checked || checkrels.length == 1) && (crmbid = getParent(checkrels[cr], "tr")) && (crmbid = crmbid.querySelector("a[href*='/release/']").getAttribute("href").match(re_GUID))) {
 							crmbids.push("" + crmbid);
 						}
@@ -231,9 +231,9 @@ if (j2sets.RELEASE_CLONER && account) {
 				}
 				if (crmbids.length > 0) {
 					if (confirm("This will (you can change the settings):\n\n* " + (j2sets.RELEASE_CLONER_release_event ? "" : "NOT ") + "copy release events\n* " + (j2sets.RELEASE_CLONER_additional_information ? "" : "NOT ") + "copy additional information\n* " + (j2sets.RELEASE_CLONER_external_links ? "" : "NOT ") + "copy external links\n* " + (j2sets.RELEASE_CLONER_tracktimes ? "" : "NOT ") + "copy track times")) {
-						for (var crr = crmbids.length - 1; crr >= 0; crr--) {
+						for (let crr = crmbids.length - 1; crr >= 0; crr--) {
 							var xhr = new XMLHttpRequest();
-							xhr.onload = function(loadEvent) {
+							xhr.onload = function(event) {
 								var release = JSON.parse(this.responseText);
 								var reled = {
 									form: createTag("form", {a: {action: "/release/add", method: "post", target: formTarget(crr, clickEvent)}, s: {display: "none"}}),
@@ -257,13 +257,13 @@ if (j2sets.RELEASE_CLONER && account) {
 								if (j2sets.RELEASE_CLONER_release_event) {
 									ok &= reled.add(release.barcode, "barcode");
 									/* ws:release-event-list */
-									if (release["release-events"]) for (var resi = 0; resi < release["release-events"].length && ok; resi++) {
+									if (release["release-events"]) for (let resi = 0; resi < release["release-events"].length && ok; resi++) {
 										var date = release["release-events"][resi].date;
 										if (date) {
 											var datex;
-											if (datex = date.match(/^(\d{4})/)) ok &= reled.add(datex[1], "events." + resi + ".date.year");
-											if (datex = date.match(/^.{4}-(\d{2})/)) ok &= reled.add(datex[1], "events." + resi + ".date.month");
-											if (datex = date.match(/^.{4}-.{2}-(\d{2})$/)) ok &= reled.add(datex[1], "events." + resi + ".date.day");
+											if ((datex = date.match(/^(\d{4})/))) ok &= reled.add(datex[1], "events." + resi + ".date.year");
+											if ((datex = date.match(/^.{4}-(\d{2})/))) ok &= reled.add(datex[1], "events." + resi + ".date.month");
+											if ((datex = date.match(/^.{4}-.{2}-(\d{2})$/))) ok &= reled.add(datex[1], "events." + resi + ".date.day");
 											if (release["release-events"][resi].area && release["release-events"][resi].area["iso-3166-1-codes"] && release["release-events"][resi].area["iso-3166-1-codes"].length > 0) ok &= reled.add(release["release-events"][resi].area["iso-3166-1-codes"][0], "events." + resi + ".country");
 										}
 									}
@@ -271,7 +271,7 @@ if (j2sets.RELEASE_CLONER && account) {
 									ok &= reled.add(release.status, "status");
 									ok &= reled.add(release.packaging, "packaging");
 									/* ws:label-info-list */
-									for (var resi = 0; resi < release["label-info"].length && ok; resi++) {
+									for (let resi = 0; resi < release["label-info"].length && ok; resi++) {
 										if (release["label-info"][resi].label) ok &= reled.add(release["label-info"][resi].label.id, "labels." + resi + ".mbid");
 										ok &= reled.add(release["label-info"][resi]["catalog-number"], "labels." + resi + ".catalog_number");
 									}
@@ -280,22 +280,22 @@ if (j2sets.RELEASE_CLONER && account) {
 								ok &= reled.add(release["text-representation"].language, "language");
 								ok &= reled.add(release["text-representation"].script, "script");
 								/* ws:artist-credit */
-								for (var resi = 0; resi < release["artist-credit"].length && ok; resi++) {
+								for (let resi = 0; resi < release["artist-credit"].length && ok; resi++) {
 									ok &= reled.add(release["artist-credit"][resi].artist.id, "artist_credit.names." + resi + ".mbid");
 									ok &= reled.add(release["artist-credit"][resi].name, "artist_credit.names." + resi + ".name");
 									ok &= reled.add(release["artist-credit"][resi].joinphrase, "artist_credit.names." + resi + ".join_phrase");
 								}
 								/* ws:artist-credit */
 								/* ws:medium-list */
-								for (var resi = 0; resi < release.media.length && ok; resi++) {
+								for (let resi = 0; resi < release.media.length && ok; resi++) {
 									ok &= reled.add(release.media[resi].format, "mediums." + resi + ".format");
 									ok &= reled.add(release.media[resi].title, "mediums." + resi + ".name");
-									for (var tr = 0; tr < release.media[resi].tracks.length; tr++) {
+									for (let tr = 0; tr < release.media[resi].tracks.length; tr++) {
 										ok &= reled.add(release.media[resi].tracks[tr].title, "mediums." + resi + ".track." + tr + ".name");
 										ok &= reled.add(release.media[resi].tracks[tr].number, "mediums." + resi + ".track." + tr + ".number");
 										ok &= reled.add(release.media[resi].tracks[tr].recording.id, "mediums." + resi + ".track." + tr + ".recording");
 										/* ws:artist-credit */
-										for (var aci = 0; aci < release.media[resi].tracks[tr]["artist-credit"].length && ok; aci++) {
+										for (let aci = 0; aci < release.media[resi].tracks[tr]["artist-credit"].length && ok; aci++) {
 											ok &= reled.add(release.media[resi].tracks[tr]["artist-credit"][aci].artist.id, "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".mbid");
 											ok &= reled.add(release.media[resi].tracks[tr]["artist-credit"][aci].name, "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".name");
 											ok &= reled.add(release.media[resi].tracks[tr]["artist-credit"][aci].joinphrase, "mediums." + resi + ".track." + tr + ".artist_credit.names." + aci + ".join_phrase");
@@ -328,7 +328,7 @@ if (j2sets.RELEASE_CLONER && account) {
 										"90ff18ad-3e9d-4472-a3d1-71d4df7e8484": 755/*allmusic*/,
 										"63b84620-ba52-4630-9bfe-8ad3b5504dff": 850/*bookbrainz*/,
 									};
-									for (var resi = 0; resi < release.relations.length && ok; resi++) {
+									for (let resi = 0; resi < release.relations.length && ok; resi++) {
 										if (release.relations[resi].url) {
 											ok &= reled.add(linkTypes[release.relations[resi]["type-id"]], "urls." + resi + ".link_type");
 											ok &= reled.add(release.relations[resi].url.resource, "urls." + resi + ".url");
@@ -363,7 +363,7 @@ function formTarget(releaseIndex, event) {
 		target = userjs.id + (new Date().getTime());
 		try {
 			self.open("", target).blur();
-		} catch(e) {}
+		} catch(error) {}
 		self.focus();
 	} else if (event.shiftKey) {
 		target = "_blank";
@@ -386,16 +386,16 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 	if (stats.length == 3) {
 		debug("USER_STATS");
 		// Edits
-		var accepted = readStat(stats[0].rows[0].cells[1]);
-		var autoedits = readStat(stats[0].rows[1].cells[1]);
-		var voteddown = readStat(stats[0].rows[3].cells[1]);
-		var failed = readStat(stats[0].rows[4].cells[1]);
-		var cancelled = readStat(stats[0].rows[5].cells[1]);
-		var open = readStat(stats[0].rows[6].cells[1]);
-		var total = accepted + voteddown;
-		writeStat(stats[0].rows[0].cells[1], accepted, total);
+		var acceptedEdits = readStat(stats[0].rows[0].cells[1]);
+		// var autoEdits = readStat(stats[0].rows[1].cells[1]);
+		var voteddownEdits = readStat(stats[0].rows[3].cells[1]);
+		// var failedEdits = readStat(stats[0].rows[4].cells[1]);
+		// var cancelledEdits = readStat(stats[0].rows[5].cells[1]);
+		// var openEdits = readStat(stats[0].rows[6].cells[1]);
+		var total = acceptedEdits + voteddownEdits;
+		writeStat(stats[0].rows[0].cells[1], acceptedEdits, total);
 		stats[0].rows[0].cells[1].style.setProperty("font-weight", "bold");
-		writeStat(stats[0].rows[3].cells[1], voteddown, total);
+		writeStat(stats[0].rows[3].cells[1], voteddownEdits, total);
 		stats[0].rows[3].cells[1].style.setProperty("font-weight", "bold");
 		stats[0].rows[2].replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top editors"}, s: {cursor: "help"}}, stats[0].rows[2].cells[0].firstChild.textContent )), stats[0].rows[2].cells[0]);
 		// Votes
@@ -403,7 +403,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		var voteSearch = MBS + "/search/edits?conditions.0.field=voter&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.voter_id=%editorID%&conditions.0.args=%vote%";
 		voteSearch = voteSearch.replace(/%editorName%/, editorPathname);
 		voteSearch = voteSearch.replace(/%editorID%/, refined24hSearch.match(/conditions\.0\.args\.0=(\d+)/)[1]);
-		for (var i = 0; i < stats[1].rows.length; i++) {
+		for (let i = 0; i < stats[1].rows.length; i++) {
 			var vote = stats[1].rows[i].cells[2];
 			vote.replaceChild(createTag("a", {a: {href: voteSearch.replace(/%vote%/, {0: 1/*Yes*/, 1: 0/*No*/, 2: -1/*Abstain*/, 3: 2/*Approve*/}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
 		}
@@ -424,7 +424,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		);
 		// Added entities
 		var addedEntities = 0;
-		for (var i = 0; i < stats[2].rows.length; i++) {
+		for (let i = 0; i < stats[2].rows.length; i++) {
 			addedEntities += readStat(stats[2].rows[i].cells[1]);
 		}
 		stats[2].appendChild(
@@ -433,7 +433,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 				createTag("td", null, addedEntities.toLocaleString(lang))
 			])
 		);
-		for (var i = 0; i < stats[2].rows.length - 1; i++) {
+		for (let i = 0; i < stats[2].rows.length - 1; i++) {
 			writeStat(stats[2].rows[i].cells[1], readStat(stats[2].rows[i].cells[1]), addedEntities);
 		}
 	}
@@ -472,8 +472,8 @@ if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + 
 	var ths = document.querySelector("div#page > form > table.tbl > thead > tr > th");
 	if (ths && !ths.hasChildNodes() && cbs && cbs.length > 0) {
 		debug("CHECK_ALL_SUBSCRIPTIONS");
-		var cb = ths.appendChild(createTag("input", {a: {type: "checkbox"}, e: {click: function(event) {
-			for (var icb = 0; icb < cbs.length; icb++) {
+		ths.appendChild(createTag("input", {a: {type: "checkbox"}, e: {click: function(event) {
+			for (let icb = 0; icb < cbs.length; icb++) {
 				if (cbs[icb].checked != this.checked) {
 					cbs[icb].click();
 				}
@@ -498,7 +498,7 @@ function EASY_DATE_calmDOM() {
 }
 function EASY_DATE_init() {
 	debug("EASY_DATE_init");
-	for (var years = document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(." + userjs.id + "easydate)"), y = 0; y < years.length; y++) {
+	for (let years = document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(." + userjs.id + "easydate)"), y = 0; y < years.length; y++) {
 		addAfter(
 			createTag("input", {
 				a: {value: years[y].value, placeholder: "YYY+", size: "4", title: "EASY_DATE®\n" + j2docs.EASY_DATE},
@@ -515,6 +515,7 @@ function EASY_DATE_init() {
 									break;
 								case 6:
 									this.value = (parseInt(this.value, 10) > 19 ? "19" : "20") + this.value;
+									// fall through
 								case 8:
 									date = this.value.match(new RegExp("^" + re_date.YYYY + re_date.MM + re_date.DD + "$"));
 									break;
@@ -528,7 +529,7 @@ function EASY_DATE_init() {
 								MM: date[2]||date[5]||date[8]||date[11]||date[14]||date[17],
 								DD: date[3]||date[4]||date[9]||date[10]||date[15]||date[16]
 							};
-							for (var i in ymd) if (ymd.hasOwnProperty(i) && ymd[i]) {
+							for (let i in ymd) if (Object.prototype.hasOwnProperty.call(ymd, i) && ymd[i]) {
 								if (i == "YYYY" && ymd[i].length == 2) {
 									ymd[i] = (parseInt(ymd[i], 10) > 19 ? "19" : "20") + ymd[i];
 								}
@@ -576,7 +577,7 @@ function EASY_DATE_cloneDateHotkey(event) {
 }
 function EASY_DATE_cloneDate(current, hotkey) {
 	var ph = ["YYYY", "MM", "DD"];
-	for (var p = 0; p < ph.length; p++) {
+	for (let p = 0; p < ph.length; p++) {
 		var inps = current.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='" + ph[p] + "']");
 		var downwards = (current.parentNode == inps[0].parentNode);
 		if (!hotkey && !downwards) {
@@ -595,9 +596,9 @@ function EASY_DATE_deleteDatesHotkey(event) {
 }
 function EASY_DATE_deleteDates(current) {
 	var ph = ["YYYY", "MM", "DD"];
-	for (var p = 0; p < ph.length; p++) {
+	for (let p = 0; p < ph.length; p++) {
 		var inps = current.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='" + ph[p] + "']");
-	for (var i = 0; i < inps.length; i++) {
+	for (let i = 0; i < inps.length; i++) {
 		inps[i].value = "";
 		sendEvent(inps[i], "change");
 	}
@@ -677,7 +678,7 @@ if (j2sets.RATINGS_ON_TOP && sidebar && !j2sets.HIDE_RATINGS) {
 		var where;
 		if (j2sets.RATINGS_ON_TOP_below_image) where = sidebar.querySelector("div.cover-art + *, div.picture + *");
 		if (!where) where = sidebar.firstChild;
-		if (ratings[1] && where) for (var r = 0; r < ratings.length; r++) {
+		if (ratings[1] && where) for (let r = 0; r < ratings.length; r++) {
 			debug("RATINGS_ON_TOP");
 			sidebar.insertBefore(sidebar.removeChild(ratings[r]), where);
 		}
@@ -719,7 +720,7 @@ function ROW_HIGHLIGHTER_init() {
 	debug("ROW_HIGHLIGHTER_init");
 	ROW_HIGHLIGHTER_calmDOMto = null;
 	var tds = document.querySelectorAll("table:not(#batch-tools):not(.advanced-format):not(.artist-credit):not(.details) > tbody > tr:not(.track-artist-credit) > *, table.details td > span");
-	for (var td = 0; td < tds.length; td++) {
+	for (let td = 0; td < tds.length; td++) {
 		tds[td].removeEventListener("mouseover", ROW_HIGHLIGHTER_refresh);
 		tds[td].removeEventListener("mouseout", ROW_HIGHLIGHTER_refresh);
 		/*sorry for the remove/add hack but it seems MBS still uses some
@@ -746,7 +747,7 @@ function ROW_HIGHLIGHTER_refresh(event) {
 				getSibling(this.parentNode, "th", null, true)
 			];
 		}
-		for (var r = 0; r < row.length; r++) if (row[r]) {
+		for (let r = 0; r < row.length; r++) if (row[r]) {
 			if (event.type == "mouseover") {
 				row[r].classList.add(userjs.id + "rowhld");
 			} else if (event.type == "mouseout") {
@@ -778,7 +779,7 @@ j2setting("DOUBLE_CLICK_SUBMIT", true, true, "makes the “radio buttons” and 
 if (j2sets.DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdstub\/|edit\/|release\/(add(\?release-group=)?|[^/]+\/edit-cover-art\/)|release-group\/[^/]+\/edit|search|.+\/merge)/)) {
 	debug("DOUBLE_CLICK_SUBMIT");
 	var objs = document.querySelectorAll("div#page form > *:not(.edit-list) input[type='radio'], select[multiple]");
-	for (var o = 0; o < objs.length; o++) {
+	for (let o = 0; o < objs.length; o++) {
 		var obj = getParent(objs[o], "label") || objs[o];
 		if (obj.tagName == "LABEL") obj.addEventListener("mousedown", function(event) { event.preventDefault(); });
 		obj.addEventListener("dblclick", function(event) { parentFormSubmit(this, event); });
@@ -805,7 +806,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 	debug("LAST_SEEN_EDIT");
 	var what = (self.location.pathname).match(new RegExp("^/(?:(user)/([^/]+)/edits(?:/(open))?|([^/]+)/(" + stre_GUID + ")/(?:(open)_)?edits)"));
 	if (what) {
-		var open = typeof (what[3] || what[6]) != "undefined";
+		var isOpenEdits = typeof (what[3] || what[6]) != "undefined";
 		var which = what[2] || what[5];
 		what = what[1] || what[4];
 		var lastseenedits = localStorage.getItem(userjs.id + "lastseenedits-" + what);
@@ -819,13 +820,13 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 				upd = true;
 			}
 		} else {
-			lastseenedits[which] = [0, now.getTime(), 0];/*[0:edit,1:when,2:next]*/
+			lastseenedits[which] = [0, now.getTime(), 0]; // [0:edit,1:when,2:next]
 		}
 		var edits = document.querySelectorAll("div.edit-header > h2 > a[href*='/edit/']");
-		for (var ed = 0; ed < edits.length; ed++) {
+		for (let ed = 0; ed < edits.length; ed++) {
 			var editn = parseInt(edits[ed].getAttribute("href").match(/\d+$/), 10);
 			var editlist = getParent(edits[ed], "div", "edit-list");
-			if (!open && ed == 0 && editn > lastseenedits[which][0] && editn > lastseenedits[which][2]) {
+			if (!isOpenEdits && ed == 0 && editn > lastseenedits[which][0] && editn > lastseenedits[which][2]) {
 				lastseenedits[which][2] = editn;
 				upd = true;
 			}
@@ -841,7 +842,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 				editlist.setAttribute("title", "NEW EDIT");
 			}
 		}
-		if (upd && !open) {
+		if (upd && !isOpenEdits) {
 			localStorage.setItem(userjs.id + "lastseenedits-" + what, JSON.stringify(lastseenedits));
 		}
 	}
@@ -860,11 +861,11 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 		if (entityID && entityEdits && entityType && entityName) {
 			entityID = entityID.getAttribute("href").match(/\d+$/);
 			entityName = entityName.textContent;
-			var refine = "/search/edits?conditions.0.operator=%3D&conditions.0.field=" + entityType + "&conditions.0.name=" + encodeURIComponent(entityName) + "&conditions.0.args.0=" + entityID + "&order=desc&combinator=and&negation=0";
+			let refine = "/search/edits?conditions.0.operator=%3D&conditions.0.field=" + entityType + "&conditions.0.name=" + encodeURIComponent(entityName) + "&conditions.0.args.0=" + entityID + "&order=desc&combinator=and&negation=0";
 			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link", href: refine}, s: {background: "#ff6"}}, "refine"), ")"]), entityEdits);
 		}
 	} else {
-		var refine = self.location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
+		let refine = self.location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
 		var searchHelp = document.querySelector("table.search-help > tbody");
 		if (searchHelp && refine) {
 			var refines = document.createElement("td");
@@ -919,11 +920,11 @@ if (j2sets.SERVER_SWITCH) {
 	debug("SERVER_SWITCH");
 	var langMenu = document.querySelector("div.header ul.menu li.language-selector");
 	if (langMenu) {
-		for (var languageLinks = langMenu.querySelectorAll("a[href*='/set-language/']"), a = 0; a < languageLinks.length; a++) {
+		for (let languageLinks = langMenu.querySelectorAll("a[href*='/set-language/']"), a = 0; a < languageLinks.length; a++) {
 			languageLinks[a].classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//mb_PREFERRED-MBS
 		}
 		var servname;
-		if (servname = self.location.hostname.match(/^([^.]+)\.[^.]+\.[^.]+$/)) {
+		if ((servname = self.location.hostname.match(/^([^.]+)\.[^.]+\.[^.]+$/))) {
 			servname = servname[1];
 		} else {
 			servname = "MBS";
@@ -932,7 +933,7 @@ if (j2sets.SERVER_SWITCH) {
 		menu.addEventListener("click", function(event) {
 			if(getParent(event.target, "li", userjs.id + "serverSwitch")) {
 				event.stopPropagation();
-				for (var openMenus = document.querySelectorAll(".header ul.menu li.fake-active"), m = 0; m < openMenus.length; m++) if (openMenus[m] != this) {
+				for (let openMenus = document.querySelectorAll(".header ul.menu li.fake-active"), m = 0; m < openMenus.length; m++) if (openMenus[m] != this) {
 					sendEvent(openMenus[m], "click");
 				}
 				if (this.lastChild.style.getPropertyValue("left").match(/inherit|-\d{1,4}px/)) {
@@ -948,7 +949,7 @@ if (j2sets.SERVER_SWITCH) {
 		menu.lastChild.addEventListener("click", function(event) { event.stopPropagation(); });
 		menu = menu.firstChild.nextSibling;
 		var mbMains = ["", "beta.", "test."];
-		for (var mb = 0; mb < mbMains.length; mb++) {
+		for (let mb = 0; mb < mbMains.length; mb++) {
 			menu.appendChild(serverSwitch(mbMains[mb] + "musicbrainz.org"));
 		}
 	}
@@ -1010,7 +1011,7 @@ function updateTags(event) {
 			tagZone.addEventListener("DOMNodeInserted", updateTags);
 			tagZone.addEventListener("DOMSubtreeModified", updateTags);
 			var mytags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > span.tag-upvoted");
-			for (var t = 0; t < mytags.length; t++) {
+			for (let t = 0; t < mytags.length; t++) {
 				ownifyTag(mytags[t].previousSibling);
 			}
 		} else if (event.target && event.target.nodeType === Node.ELEMENT_NODE) {
@@ -1046,9 +1047,9 @@ function ownifyTag(tag, revert) {
 	}
 	tag.setAttribute("href", tag.getAttribute(userjs.id + (revert ? "tag" : "ownTag")));
 }
-function tagswitch(cont, urltxt) {
+function tagswitch(h1, urltxt) {
 	var switcht = h1.appendChild(createTag("span", {s: {color: "grey", textShadow: "1px 1px 2px silver"}}, " (see "));
-	for (var i = 0; i < urltxt.length; i++) {
+	for (let i = 0; i < urltxt.length; i++) {
 		if (i > 0) { switcht.appendChild(document.createTextNode(" or ")); }
 		switcht.appendChild(createTag("a", {a: {href: urltxt[i][0]}}, urltxt[i][1]));
 	}
@@ -1155,7 +1156,7 @@ if (enttype) {
 	==========================================================================*/
 	if (j2sets.MARK_PENDING_EDIT_MEDIUMS && enttype == "release") {
 		debug("MARK_PENDING_EDIT_MEDIUMS");
-		for (var pendingEditMediums = document.querySelectorAll("div#content > table.tbl.medium > thead > tr.mp"), m = 0; m < pendingEditMediums.length; m++) {
+		for (let pendingEditMediums = document.querySelectorAll("div#content > table.tbl.medium > thead > tr.mp"), m = 0; m < pendingEditMediums.length; m++) {
 			getParent(pendingEditMediums[m], "table").style.setProperty("border", "4px solid #fd9");
 		}
 	}
@@ -1163,17 +1164,17 @@ if (enttype) {
 	## TRACKLIST_TOOLS ## ex-TRACK_LENGTH_PARSER+search→replace(bookmarklet)+set-selected-works-date
 	=========================================================================*/
 	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && self.location.pathname.match(new RegExp("/release/(add.*|" + stre_GUID + "/edit)$"))) {
-		var re = document.querySelector("div#release-editor");
-		if (re) {
-			re.addEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
-			re.addEventListener("mouseover", TRACKLIST_TOOLS_buttonHandler);
-			re.addEventListener("mouseout", TRACKLIST_TOOLS_buttonHandler);
-			re.addEventListener("click", TRACKLIST_TOOLS_buttonHandler);
+		var releaseEditor = document.querySelector("div#release-editor");
+		if (releaseEditor) {
+			releaseEditor.addEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
+			releaseEditor.addEventListener("mouseover", TRACKLIST_TOOLS_buttonHandler);
+			releaseEditor.addEventListener("mouseout", TRACKLIST_TOOLS_buttonHandler);
+			releaseEditor.addEventListener("click", TRACKLIST_TOOLS_buttonHandler);
 		}
 	}
 	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && self.location.pathname.match(new RegExp("/release/" + stre_GUID + "/edit-relationships$"))) {
-		var tabs, re = document.querySelector("div.rel-editor");
-		if (re && (tabs = re.querySelector("ul.tabs"))) {
+		var relationshipEditor = document.querySelector("div.rel-editor");
+		if (relationshipEditor && relationshipEditor.querySelector("ul.tabs")) {
 			/* :::: MASS REMOVE RECORDING RELATIONSHIPS :::: */
 			j2superturbo.menu.addItem(createTag("a", {e: {click: function(event) {
 				var text = prompt("This will remove the recording relationships that match the following text (ex.: “arrange”, “john”, “guitar”):");
@@ -1191,7 +1192,7 @@ if (enttype) {
 				var checkedRelationships = {
 					checkBoxes: document.querySelectorAll("#tracklist tr.track td.works div.ar input[type='checkbox']:checked")
 				};
-				for (var cb = 0; cb < checkedRelationships.checkBoxes.length; cb++) {
+				for (let cb = 0; cb < checkedRelationships.checkBoxes.length; cb++) {
 					var recordingGid = getParent(checkedRelationships.checkBoxes[cb], "tr", "track").querySelector("td.recording a[href^='/recording/']").getAttribute("href").match(re_GUID)[0];
 					var workGid = getParent(checkedRelationships.checkBoxes[cb], "div", "ar").querySelector("a[href^='/work/']").getAttribute("href").match(re_GUID)[0];
 					checkedRelationships[recordingGid + "-" + workGid] = true;
@@ -1199,7 +1200,7 @@ if (enttype) {
 				if (checkedRelationships.checkBoxes.length > 0) {
 					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
 					if (date) {
-						if (date = date.match(new RegExp(re_date.ISO + "(?:.+" + re_date.ISO + ")?"))) {
+						if ((date = date.match(new RegExp(re_date.ISO + "(?:.+" + re_date.ISO + ")?")))) {
 							MB.relationshipEditor.UI.checkedWorks().forEach(function(work) {
 								work.relationships().forEach(function(relationship) {
 									if (
@@ -1227,7 +1228,7 @@ if (enttype) {
 	if (j2sets.UNLINK_ENTITY_HEADER) {
 		var h1link = document.querySelector("div#page h1 a[href='" + self.location.pathname.match(new RegExp("/" + enttype + "/" + stre_GUID)) + "']");
 		if (h1link) {
-			var h1 = getParent(h1link, "h1");
+			let h1 = getParent(h1link, "h1");
 			if (h1.firstChild.nodeType != Node.TEXT_NODE) {
 				debug("UNLINK_ENTITY_HEADER");
 				var unlinkH1Link = function() {
@@ -1261,7 +1262,7 @@ if (enttype) {
 					var releaseEvents = {};
 					var releaseEventFound = false;
 					// collecting recording length and release events
-					for (var r = 0; r < relations.length; r++) {
+					for (let r = 0; r < relations.length; r++) {
 						if (fetchRecordingLength && relations[r].recording && relations[r].recording.id && relations[r].recording.length) {
 							recordingLengthFound = true;
 							recordingLengths[relations[r].recording.id] = relations[r].recording.length;
@@ -1280,7 +1281,7 @@ if (enttype) {
 							relationshipTable.querySelector("thead > tr").insertBefore(createTag("th", {a: {title: userjs.name, class: userjs.id + "releaseEvents"}, s: {textShadow: "0 0 2px yellow"}}, "Release events"), relationshipTable.querySelector("thead > tr > th:nth-child(2)"));
 						}
 						var rows = relationshipTable.querySelectorAll("tbody > tr");
-						for (var r = 0; r < rows.length; r++) {
+						for (let r = 0; r < rows.length; r++) {
 							if (rows[r].classList.contains("subh")) {
 								// sub title row
 								if (recordingLengthFound) {
@@ -1298,7 +1299,7 @@ if (enttype) {
 							} else {
 								// normal data row
 								if (recordingLengthFound) {
-									var newCell = createTag("td", {a: {class: "treleases"}, s: {textAlign: "right"}});
+									let newCell = createTag("td", {a: {class: "treleases"}, s: {textAlign: "right"}});
 									var recordingID = rows[r].querySelector("a[href*='/recording/']");
 									if (recordingID && (recordingID = recordingID.getAttribute("href").match(re_GUID)[0]) && recordingLengths[recordingID]) {
 										newCell.appendChild(document.createTextNode(time(recordingLengths[recordingID])));
@@ -1308,10 +1309,10 @@ if (enttype) {
 								if (releaseEventFound) {
 									var secondCell = rows[r].querySelector("tr:not(.subh) > td:nth-child(2)");
 									if (secondCell) {
-										var newCell = rows[r].insertBefore(document.createElement("td"), secondCell);
+										let newCell = rows[r].insertBefore(document.createElement("td"), secondCell);
 										var releaseID = secondCell.querySelector("a[href*='/release/']");
 										if (releaseID && (releaseID = releaseID.getAttribute("href").match(re_GUID)[0]) && releaseEvents[releaseID]) {
-											for (var e = 0; e < releaseEvents[releaseID].length; e++) {
+											for (let e = 0; e < releaseEvents[releaseID].length; e++) {
 												var releaseDate = releaseEvents[releaseID][e].date ? releaseEvents[releaseID][e].date : "\u00a0";
 												var releaseEvent = createTag("div", {}, releaseDate);
 												if (releaseEvents[releaseID][e].area) {
@@ -1358,7 +1359,7 @@ function tooManyEventsToggle(event) {
 		otherToggle.style.setProperty("display", "block");
 	}
 	var hiddenEvents = event.target.parentNode.parentNode.querySelectorAll("div." + userjs.id + "hiddenEvent");
-	for (var h = 0; h < hiddenEvents.length; h++) {
+	for (let h = 0; h < hiddenEvents.length; h++) {
 		hiddenEvents[h].style.setProperty("display", hideEvents ? "none" : "block");
 	}
 	otherToggle.scrollIntoView();
@@ -1382,7 +1383,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 					(searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /\"([^\"]+)\"/g\n\nor normal (case sensitive and global): My String", searchrep[0]))
 					&& (searchrep[1] = prompt("replace\n\nif it was a regex, you can use those $1 $2 $3 etc.: “$1”", searchrep[1])) != null
 				) {
-					for (var t = 0, tracks = TRACKLIST_TOOLS_getInputs("td.title > input.track-name[type='text']", event.target, event); t < tracks.length; t++) {
+					for (let t = 0, tracks = TRACKLIST_TOOLS_getInputs("td.title > input.track-name[type='text']", event.target, event); t < tracks.length; t++) {
 						var val = searchrep[0].match(/^\/.+\/[gi]*$/) ? tracks[t].value.replace(eval(searchrep[0]), searchrep[1]) : tracks[t].value.split(searchrep[0]).join(searchrep[1]);
 						tracks[t].style.removeProperty("background-color");
 						if (tracks[t].value != val) {
@@ -1408,7 +1409,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 					alert(distitle);
 				} else if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(new RegExp(durationParser, "g")))) {
 					if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are " + times.length + " lengths detected in your text, butt\nthere are " + inputs.length + " tracks in the tracklist.\nAre you sure to go on?")) {
-						for (var t = 0, i = 0; (erase || t < times.length) && i < inputs.length; t++, i++) {
+						for (let t = 0, i = 0; (erase || t < times.length) && i < inputs.length; t++, i++) {
 							var time = "";
 							if (!erase) {
 								var date = new Date();
@@ -1459,10 +1460,10 @@ function TRACKLIST_TOOLS_getInputs(inputCSS, obj, evt) {
 }
 function TRACKLIST_TOOLS_init() {
 	debug("TRACKLIST_TOOLS_init");
-	re.removeEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
-	re.addEventListener("DOMNodeInserted", function(event) {
+	releaseEditor.removeEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
+	releaseEditor.addEventListener("DOMNodeInserted", function(event) {
 		var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
-		for (var tp = 0; tp < tps.length; tp++) {
+		for (let tp = 0; tp < tps.length; tp++) {
 			if (!tps[tp].parentNode.querySelector("." + userjs.id + "track-length-parser")) {
 				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Time Parser"), tps[tp]);
 			}
