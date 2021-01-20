@@ -2,7 +2,7 @@
 var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2020.11.29.2
+// @version      2021.1.20
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -89,7 +89,7 @@ if (cat) {
 		releaseID = releaseID[0];
 		var mainReleasePage = self.location.pathname.match(new RegExp("^/release/" + strMBID + "$"));
 		var colls = document.querySelectorAll("div#sidebar a[href*='/collection_collaborator/add?release='], div#sidebar a[href*='/collection_collaborator/remove?release=']");
-		for (var coll = 0; coll < colls.length; coll++) {
+		for (let coll = 0; coll < colls.length; coll++) {
 			if (collectionsID.indexOf(colls[coll].getAttribute("href").match(new RegExp(strMBID))) > -1) {
 				if (mainReleasePage) {
 					collectionUpdater(colls[coll], colls[coll].getAttribute("href").match(/add|remove/).toString());
@@ -115,12 +115,12 @@ if (cat) {
 // #                                     DISPLAY COLLECTION PAGE LOADER TOOLS #
 // ############################################################################
 		var xp1 = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th/text()[contains(., 'Veröffentlichungen') or contains(., 'Väljalasked') or contains(., 'Releases') or contains(., 'Publicaciones') or contains(., 'Parutions') or contains(., 'Pubblicazioni') or contains(., 'Uitgaves') or contains(., 'Julkaisut') or contains(., 'Κυκλοφορίες') or contains(., 'リリース')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-		for (var tbl_idx = 0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
+		for (let tbl_idx = 0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
 			xp1.snapshotItem(tbl_idx).parentNode.parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, meta.nameAndVersion));
 			var tbl = getParent(xp1.snapshotItem(tbl_idx).parentNode, "table");
 			var xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-			for (var i = 0; i < xp.snapshotLength; i++) {
-				var coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
+			for (let i = 0; i < xp.snapshotLength; i++) {
+				let coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
 				var collid = coll.getAttribute("href").match(new RegExp(strMBID));
 				var loadButtons = [];
 				var loadButtonText = "Load";
@@ -133,7 +133,7 @@ if (cat) {
 					function(event) {
 						var opts = document.querySelectorAll("td." + prefix + " input[type='checkbox']:checked");
 						stuff = {};
-						for (var opt = 0; opt < opts.length; opt++) {
+						for (let opt = 0; opt < opts.length; opt++) {
 							stuff[opts[opt].getAttribute("name")] = {};
 						}
 						var pageCrawlMode = cantUseWS(this);
@@ -148,7 +148,7 @@ if (cat) {
 						var cmsg = "This will REPLACE your current loaded stuff.";
 						if (confirm(dialogprefix + cmsg)) {
 							// erase local stuff
-							for (var stu = 0; stu < collectedStuff.length; stu++) {
+							for (let stu = 0; stu < collectedStuff.length; stu++) {
 								GM_deleteValue(collectedStuff[stu] + "s");
 							}
 							// then append (previous button)
@@ -161,7 +161,7 @@ if (cat) {
 				if (i == 0) {
 					/* settings */
 					var settings = [];
-					for (var stu = 0; stu < collectedStuff.length; stu++) if (collectedStuff[stu] != "collection") {
+					for (let stu = 0; stu < collectedStuff.length; stu++) if (collectedStuff[stu] != "collection") {
 						var cstuff = collectedStuff[stu];
 						var lab = document.createElement("label");
 						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue("cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
@@ -192,7 +192,7 @@ if (cat) {
 							cfgcb.addEventListener("change", function(event) {
 								if (!this.checked) {
 									var artistwork = this.parentNode.parentNode.querySelectorAll("input[name='artist'], input[name='work']");
-									for (var aw = 0; aw < artistwork.length; aw++) {
+									for (let aw = 0; aw < artistwork.length; aw++) {
 										artistwork[aw].checked = false;
 										sendEvent(artistwork[aw], "change");
 									}
@@ -223,10 +223,10 @@ if (cat) {
 function findOwnedStuff() {
 	stuff = {};
 	// Annotation link trim spaces and protocol + "//" + host
-	for (var annotationLinks = document.querySelectorAll("div#content div.annotation a"), l = 0; l < annotationLinks.length; l++) {
+	for (let annotationLinks = document.querySelectorAll("div#content div.annotation a"), l = 0; l < annotationLinks.length; l++) {
 		annotationLinks[l].setAttribute("href", annotationLinks[l].getAttribute("href").trim().replace(/^((https?:)?\/\/(\w+\.)?musicbrainz\.org)\//, "/"));
 	}
-	for (var stu = 0; stu < collectedStuff.length; stu++) {
+	for (let stu = 0; stu < collectedStuff.length; stu++) {
 		var cstuff = collectedStuff[stu];
 		stuff[cstuff] = {};
 		var uphill = "";
@@ -237,7 +237,7 @@ function findOwnedStuff() {
 		var root = cat == "track" /* acoustid.org */ ? "//musicbrainz.org/" : "/";
 		var path = uphill + "//xhtml:a[starts-with(@href, '" + root + cstuff + "/')]" + downhill;
 		var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-		for (var i = 0; i < xp.snapshotLength; i++) {
+		for (let i = 0; i < xp.snapshotLength; i++) {
 			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
 			if (mbid) {
 				mbid = mbid[1];
@@ -333,7 +333,7 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page."]), 2);
 		modal(true, concat(["<hr>", "Fetching releases…"]), 2);
 		stuff["release-tmp"] = {ids: []};
-		for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
+		for (let stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
 			stuff[stu].rawids = GM_getValue(stu + "s") || "";
 			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
 		}
@@ -349,7 +349,7 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 				var re = WSMode ? '<release id="(' + strMBID + ')">' : '<td>(?:<span class="mp">)?<a href="/release/(' + strMBID + ')">(.+)</a>';
 				var rels = this.responseText.match(new RegExp(re, "g"));
 				if (rels) {
-					for (var rel = 0; rel < rels.length; rel++) {
+					for (let rel = 0; rel < rels.length; rel++) {
 						var release = rels[rel].match(new RegExp(re))[1];
 						if (stuff["release"].ids.indexOf(release) < 0) {
 							stuff["release"].ids.push(release);
@@ -359,7 +359,7 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 					}
 					modal(true, rels.length + " release" + (rels.length == 1 ? "" : "s") + " fetched.", 1);
 				}
-				var ps, lastPage, nextPage;
+				var lastPage, nextPage;
 				if (WSMode && (lastPage = this.responseText.match(/<release-list count="(\d+)">/))) {
 					lastPage = Math.ceil(parseInt(lastPage[1], 10) / limit);
 				} else if (!WSMode) {
@@ -441,10 +441,10 @@ function fetchReleasesStuff(pi) {
 					]), 0, [i + 1, stuff["release-tmp"].ids.length]);
 					var sep = "";
 					var totalAddedStuff = 0;
-					for (var stu in stuff) if (stu != "release" && stuff.hasOwnProperty(stu)) {
+					for (let stu in stuff) if (stu != "release" && Object.prototype.hasOwnProperty.call(stuff, stu)) {
 						var addedStuff = 0;
 						xp = res.evaluate("//mb:release[1]//mb:" + stu, res, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-						for (var ixp = 0; ixp < xp.snapshotLength; ixp++) {
+						for (let ixp = 0; ixp < xp.snapshotLength; ixp++) {
 							var rgid = xp.snapshotItem(ixp).getAttribute("id");
 							if (stu != "artist" || skipArtists.indexOf(rgid) < 0) {
 								var stupos = stuff[stu].ids.indexOf(rgid);
@@ -467,7 +467,7 @@ function fetchReleasesStuff(pi) {
 					} else {
 						modal(true, " ", 1);
 						delete(stuff["release-tmp"]);
-						for (var stu in stuff) if (stu != "release" && stuff.hasOwnProperty(stu)) {
+						for (let stu in stuff) if (stu != "release" && Object.prototype.hasOwnProperty.call(stuff, stu)) {
 							GM_setValue(stu + "s", stuff[stu].rawids);
 							stuff[stu].rawids = "";
 							modal(true, concat([createTag("b", {}, stuff[stu].ids.length + " " + stu + (stuff[stu].ids.length == 1 ? "" : "s")), " saved… "]));
@@ -503,7 +503,7 @@ function collectionUpdater(link, action) {
 			altered = this.getAttribute("href") != self.location.href;
 			modal(true, "Refreshing memory…", 1);
 			collectionsID = GM_getValue("collections") || "";
-			for (var stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
+			for (let stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
 				stuff[stu].rawids = GM_getValue(stu + "s");
 				stuff[stu].ids = stuff[stu].rawids != null ? (stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : []) : null;
 			}
@@ -518,7 +518,7 @@ function collectionUpdater(link, action) {
 							GM_setValue("releases", stuff["release"].rawids);
 							altered = true;
 						}
-						for (var c = 0; c < checks.length; c++) {
+						for (let c = 0; c < checks.length; c++) {
 							var match = checks[c].getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
 							if (match) {
 								var type = match[1], mbid = match[2];
@@ -592,10 +592,10 @@ function getStuffs(what, pwhere) {
 	function basicOnly(nodes, parr) {
 		var arr = parr ? parr : [];
 		var hrefs = [];
-		for (var a = 0; a < arr.length; a++) {
+		for (let a = 0; a < arr.length; a++) {
 			hrefs.push(pathname(arr[a].getAttribute("href")));
 		}
-		for (var n = 0; n < nodes.length; n++) {
+		for (let n = 0; n < nodes.length; n++) {
 			if (nodes[n].getAttribute) {
 				var href = pathname(nodes[n].getAttribute("href"));
 				if (href && href.match(new RegExp(strMBID + "$")) && hrefs.indexOf(href) == -1) {
@@ -642,7 +642,7 @@ function stuffRemover(checks, pp) {
 							var res = document.createElement("html"); res.innerHTML = this.responseText;
 							var nextPage = res.querySelector(css_nextPage);
 							var mates = getStuffs(checkAgainst, res);
-							for (var m = 0; m < mates.length; m++) {
+							for (let m = 0; m < mates.length; m++) {
 								if (stuff[checkAgainst].rawids.indexOf(mates[m].getAttribute("href").match(new RegExp(strMBID))) > -1) {
 									modal(true, createTag("span", {s: {color: "grey"}}, ["still used by ", createA(mates[m].textContent, mates[m].getAttribute("href"), checkAgainst), ": keeping."]), 1);
 									retry = 0;
@@ -774,7 +774,7 @@ function modal(show, txt, brs, gauge) {
 				setTitle(true, pc);
 				if (gauge[0] >= gauge[1]) {
 					gaugeto = setTimeout(function() {
-						if (obj = document.getElementById(prefix + "Modal")) {
+						if ((obj = document.getElementById(prefix + "Modal")) !== null) {
 							obj.firstChild.style.setProperty("display", "none");
 						}
 					}, 4000);
@@ -784,7 +784,7 @@ function modal(show, txt, brs, gauge) {
 		var br = 0;
 		if (brs && brs > 0) { br = brs; }
 		obj.appendChild(typeof txt == "string" ? document.createTextNode(txt) : txt);
-		for (var ibr = 0; ibr < br; ibr++) {
+		for (let ibr = 0; ibr < br; ibr++) {
 			obj.appendChild(document.createElement("br"));
 		}
 		if (obj.style.getPropertyValue("border-color") == "black") {
@@ -871,7 +871,7 @@ function concat(tstuff) {
 	if (typeof stuff != "object" || !stuff.length) {
 		stuff = [stuff];
 	}
-	for (var thisStuff = 0; thisStuff < stuff.length; thisStuff++) {
+	for (let thisStuff = 0; thisStuff < stuff.length; thisStuff++) {
 		var ccat = stuff[thisStuff];
 		if (typeof ccat == "string") {
 			var ccatr = ccat.match(/^<(.+)>$/);

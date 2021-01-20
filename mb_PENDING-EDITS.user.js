@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2020.11.5.3
+// @version      2021.1.19
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
@@ -128,7 +128,7 @@ function checkOpenEdits(obj) {
 	};
 	xhrPendingEdits[obj.base].xhr.addEventListener("load", function() {
 		var xhrpe;
-		for (var entityBasePath in xhrPendingEdits) if (xhrPendingEdits.hasOwnProperty(entityBasePath) && xhrPendingEdits[entityBasePath].xhr == this) {
+		for (var entityBasePath in xhrPendingEdits) if (Object.prototype.hasOwnProperty.call(xhrPendingEdits, entityBasePath) && xhrPendingEdits[entityBasePath].xhr == this) {
 			xhrpe = xhrPendingEdits[entityBasePath];
 			break;
 		}
@@ -214,7 +214,7 @@ function updateLink(obj, details) {
 			var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
 			var ul = createTag("ul", {a: {class: SCRIPT_KEY + "EditList"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
 			for (var e = 0; e < titarray.length; e++) {
-				var edit1type2editor3count = titarray[e].match(/^(?:- )?([^\(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
+				var edit1type2editor3count = titarray[e].match(/^(?:- )?([^(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
 				var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
 				if (edit1type2editor3count[2]) {
 					editLi.appendChild(document.createTextNode(" by "));
@@ -284,8 +284,8 @@ function a2obj(a) {
 function workMainArtists() {
 	var writers = document.querySelectorAll("div#content > table.details > tbody td a[href^='/artist/']");
 	var groupedWriters = {};
-	for (var w = 0; w < writers.length; w++) {
-		var href = writers[w].getAttribute("href");
+	for (let w = 0; w < writers.length; w++) {
+		let href = writers[w].getAttribute("href");
 		if (!groupedWriters[href]) {
 			groupedWriters[href] = [];
 		}
@@ -293,8 +293,8 @@ function workMainArtists() {
 	}
 	var performers = document.querySelectorAll("div#content > table.tbl > tbody td a[href^='/artist/']");
 	var groupedPerformers = {};
-	for (var p = 0; p < performers.length; p++) {
-		var href = performers[p].getAttribute("href");
+	for (let p = 0; p < performers.length; p++) {
+		let href = performers[p].getAttribute("href");
 		if (!groupedPerformers[href]) {
 			groupedPerformers[href] = [];
 		}
@@ -303,7 +303,7 @@ function workMainArtists() {
 	var mainArtists = [];
 	var max = 0;
 	// find most frequent performer(s)
-	for (var href in groupedPerformers) if (groupedPerformers.hasOwnProperty(href)) {
+	for (let href in groupedPerformers) if (Object.prototype.hasOwnProperty.call(groupedPerformers, href)) {
 		if (groupedPerformers[href].length > max) {
 			max = groupedPerformers[href].length;
 			mainArtists = [groupedPerformers[href][0]];
@@ -313,12 +313,12 @@ function workMainArtists() {
 		}
 	}
 	// take all singer/song‐writers; take all writers if no performers
-	for (var href in groupedWriters) if (groupedWriters.hasOwnProperty(href) && (groupedPerformers[href] || performers.length < 1)) {
+	for (let href in groupedWriters) if (Object.prototype.hasOwnProperty.call(groupedWriters, href) && (groupedPerformers[href] || performers.length < 1)) {
 		mainArtists.push(groupedWriters[href][0]);
 	}
 	// get artist main names whenever possible
-	for (var f = 0; f < mainArtists.length; f++) {
-		var noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + mainArtists[f].getAttribute("href") + "']");
+	for (let f = 0; f < mainArtists.length; f++) {
+		let noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + mainArtists[f].getAttribute("href") + "']");
 		mainArtists[f] = noNameVariationArtist || mainArtists[f];
 	}
 	return mainArtists;

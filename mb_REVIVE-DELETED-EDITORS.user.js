@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2020.11.3.2
+// @version      2021.1.19
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -10,7 +10,7 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_REVIVE-DELETED-EDITORS.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-11-16
@@ -129,7 +129,7 @@ if (you) {
 		css.insertRule("div#page a[href='" + MBS + "/user/" + you + "'], div#page a[href='/user/" + you + "'] { background-color: yellow; color: purple; }", 0);
 	}
 }
-for (var editor in editors) if (editors.hasOwnProperty(editor)) {
+for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, editor)) {
 	var deletedEditor = typeof editors[editor] != "string";
 	var editorName = deletedEditor ? "Deleted Editor #" + editor : editor;
 	var namewas = editors[editor][2] ? editors[editor][2] : "？";
@@ -249,7 +249,7 @@ function removeChildren(p) {
 }
 function getSibling(obj, tag, cls, prev) {
 	var cur = obj;
-	if (cur = prev ? cur.previousSibling : cur.nextSibling) {
+	if ((cur = prev ? cur.previousSibling : cur.nextSibling)) {
 		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 			return cur;
 		} else {

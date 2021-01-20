@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         cdj. TURBO DASH
-// @version      2020.11.17
+// @version      2021.1.19
 // @description  CDJournal.com: adds quick links to artists’ CD and ビデオ. removes adcrap
 // @compatible   vivaldi(3.4.2066.106)+violentmonkey  my setup
 // @compatible   firefox(82.0.3)+violentmonkey        my other setup
@@ -37,7 +37,7 @@ var cdjTURBODASHinterval = setInterval(function() {
 			artists[a].setAttribute("href", url);
 			artists[a].style.setProperty("background-color", "#ff9");
 			var quicklinks = artists[a].parentNode.appendChild(document.createElement("span"));
-			for (var p in pages) if (pages.hasOwnProperty(p)) {
+			for (var p in pages) if (Object.prototype.hasOwnProperty.call(pages, p)) {
 				quicklinks.appendChild(document.createTextNode(quicklinks.children.length > 0 ? "／" : "（"));
 				var anc = quicklinks.appendChild(document.createElement("a")).appendChild(document.createTextNode(p)).parentNode;
 				anc.setAttribute("href", url + "/" + pages[p] + "/");

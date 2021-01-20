@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2020.11.27
+// @version      2021.1.19
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @compatible   vivaldi(2.9.1705.41)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -65,7 +65,7 @@ function textTracklist(tracks, patt) {
 	for (var i = 0 ; i < tracks.length ; i++) {
 		var tracknumber = tracks[i].querySelector("td.pos").textContent.trim();
 		if (tracknumber == "1" && i != 0) { tracklist += nextDisc; }
-		var title = (tracks[i].querySelector("td:not(.pos):not(.video) a[href^='/recording/']").textContent);
+		// var title = (tracks[i].querySelector("td:not(.pos):not(.video) a[href^='/recording/']").textContent);
 		var artist = tracks[i].querySelector("td:not([class]) + td:not([class])");
 		if (artist) {
 			artist = artist.textContent.trim();
@@ -74,7 +74,7 @@ function textTracklist(tracks, patt) {
 			pattern = patterns[patt].withTrackArtists;
 			artist = JSON.parse(document.querySelector("script[type='application/ld+json']").textContent).creditedTo;
 		}
-		var length = tracks[i].querySelector("td.treleases").textContent.replace(/[^0-9:(?)]/g, "");
+		// var length = tracks[i].querySelector("td.treleases").textContent.replace(/[^0-9:(?)]/g, "");
 		var txt = pattern;
 		for (var j = 0; j < replaces.length; j++) {
 			txt = txt.replace(replaces[j][0], eval(replaces[j][1]));
@@ -84,8 +84,7 @@ function textTracklist(tracks, patt) {
 	return tracklist;
 }
 if (tracks.length > 0) {
-	for (var p in patterns) if (patterns.hasOwnProperty(p)) {
-		var fragment= document.createDocumentFragment();
+	for (var p in patterns) if (Object.prototype.hasOwnProperty.call(patterns, p)) {
 		var a = document.createElement("a");
 		a.style.setProperty("cursor", "pointer");
 		a.addEventListener("click", function(event) {

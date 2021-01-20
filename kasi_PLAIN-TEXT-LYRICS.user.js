@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2020.6.19
+// @version      2021.1.20
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -47,7 +47,7 @@ var kasimasin = {
 		"na": "J-Lyric.net",
 		"kabe_css": "#lyricBody",
 		"kabe_keep": true,
-		"direct_machine": function(e) {
+		"direct_machine": function() {
 			if (kabe) {
 				gogogo();
 			}
@@ -57,7 +57,7 @@ var kasimasin = {
 		"na": "JOYSOUND",
 		"kabe_css": ".songInfoWords",
 		"kabe_keep": true,
-		"direct_machine": function(e) {
+		"direct_machine": function() {
 			if (kabe) {
 				var div = document.getElementById("songwordsFlash");
 				if (div) {
@@ -78,7 +78,7 @@ var kasimasin = {
 				machine();
 			}
 		},
-		"direct_machine": function(e) {
+		"direct_machine": function() {
 			if (kabe) {
 				gogogo();
 			}
@@ -88,7 +88,7 @@ var kasimasin = {
 		"na": "歌詞ＧＥＴ",
 		"kabe_css": "div#lyric-trunk",
 		"kabe_keep": true,
-		"direct_machine": function(e) {
+		"direct_machine": function() {
 			if (kabe) {
 				gogogo();
 			}
@@ -102,7 +102,7 @@ var kasimasin = {
 		"uta_re": /\/ly\/([^/]+)\/?$/,
 		"kasi_url": "http://rio.yahooapis.jp/RioWebService/V2/getLyrics?appid=7vOgnk6xg64IDggn6YEl3IQxmbj1qqkQzTpAx5nGwl9HnfPX3tZksE.oYhEw3zA-&lyrics_id=%uta%&results=1&multi_htmlspecialchars_flag=1",
 		"kasi_url_fix": [/(\?|&)multi_htmlspecialchars_flag=[01]/, ""],
-		"direct_machine": function(e) {
+		"direct_machine": function() {
 			var iframe = document.createElement("iframe");
 			iframe.setAttribute("src", kasimasin.kasi_url);
 			iframe.style.setProperty("height", "600px");
@@ -113,14 +113,14 @@ var kasimasin = {
 	},
 	"rio.yahooapis": {
 		"na": "ギャオ歌詞API",
-		"direct_machine": function(e) {
+		"direct_machine": function() {
 			var alrt = "";
 			var tmp = document.querySelector("ResultSet > Result > Title"); if (tmp) { alrt += tmp.textContent+" / "; }
 			tmp = document.querySelector("ResultSet > Result > ArtistName"); if (tmp) { alrt += tmp.textContent+"\n\n"; }
 			tmp = document.querySelector("ResultSet > Result > WriterName"); if (tmp) { alrt += "作詞："+tmp.textContent+"\n"; }
 			tmp = document.querySelector("ResultSet > Result > ComposerName"); if (tmp) { alrt += "作曲："+tmp.textContent+"\n"; }
 			tmp = document.querySelector("ResultSet > Result > Lyrics"); if (tmp) { alrt += "\n"+tmp.textContent.replace(/<br>/gi, "\n"); }
-			document.addEventListener("click", function(e) { alert(alrt); }, false);
+			document.addEventListener("click", function(event) { alert(alrt); }, false);
 			alert(alrt);
 		},
 	},
@@ -129,7 +129,7 @@ var kasimasin = {
 		"init": function(start) {
 			if (start) {
 				var jsonurl = /\/sp\/lyric\/print_json\.php\?[^']+/;
-				document.querySelector("head").addEventListener("DOMNodeInserted", function(e) {
+				document.querySelector("head").addEventListener("DOMNodeInserted", function(event) {
 					var src;
 					if (this.lastChild.tagName == "SCRIPT" && (src = this.lastChild.getAttribute("src")) && src.match(jsonurl)) {
 						this.removeChild(this.lastChild);
@@ -149,7 +149,7 @@ var kasimasin = {
 		},
 		"kabe_css": "div#lyric_canvas",
 		"xhr_machine": function(xhr) {
-			var json = xhr.responseText.match(/draw\((\[\".+\"\])\);/);
+			var json = xhr.responseText.match(/draw\((\[".+"\])\);/);
 			if (json && (json = eval(json[1])) && typeof json == "object" && json != null && json.length > 0) {
 				var kasi = "";
 				for (var k=0; k < json.length; k++) {
@@ -163,7 +163,7 @@ var kasimasin = {
 		"na": "プチリリ",
 		"clean_url": "https://petitlyrics.com/lyrics/%uta%",
 		"uta_re": /\/lyrics\/(\d+)\/?$/,
-		"direct_machine": function(e) {
+		"direct_machine": function() {
 			if (kabe) {
 				gogogo(kabe.textContent);
 			}
@@ -218,7 +218,7 @@ var kasimasin = {
 var kabe, mati;
 var matches = [];
 for (var m = 0; m < meta.match.length; m++) {
-	var key = meta.match[m].replace(/^\*:\/\/[\.\*]{0,2}(www\.)?|\.(com|co\.jp|ne\.jp|jp|net)\/{1}.*$/g, "");
+	var key = meta.match[m].replace(/^\*:\/\/[.*]{0,2}(www\.)?|\.(com|co\.jp|ne\.jp|jp|net)\/{1}.*$/g, "");
 	if (matches.indexOf(key) == -1) matches.push(key);
 }
 db("matches:\n" + matches.join("\n"));
@@ -276,9 +276,9 @@ function machine() {
 				"selectstart"
 			];
 			blocks.forEach(function(event) {
-				document.body.addEventListener(event, function(e) {
-					e.cancelBubble = true;
-					if (e.stopPropagation) e.stopPropagation();
+				document.body.addEventListener(event, function(event) {
+					event.cancelBubble = true;
+					if (event.stopPropagation) event.stopPropagation();
 					return true;
 				}, true);
 			});
@@ -309,11 +309,11 @@ function machine() {
 		}
 		if (kasimasin.xhr_machine) {
 			var xhr = new XMLHttpRequest();
-			xhr.onload = function(e) {
+			xhr.onload = function(event) {
 				db(xhr.response);
-				if (this.status > 199 && this.status < 400) { kasimasin.xhr_machine(this); } else { this.onerror(e); }
+				if (this.status > 199 && this.status < 400) { kasimasin.xhr_machine(this); } else { this.onerror(event); }
 			};
-			xhr.onerror = function (e) {
+			xhr.onerror = function (event) {
 				gogogo(null, this.status);
 			};
 			xhr.open("get", url, true);
@@ -332,7 +332,7 @@ function gogogo(kasi, err) {
 	mati.querySelector("strong").replaceChild(document.createTextNode(err?"ERROR エラー （"+err+"）":"OK"), mati.querySelector("strong").firstChild);
 	if (DEBUG) {
 		mati.style.setProperty("cursor", "pointer");
-		mati.addEventListener("click", function(e) { iti = true; machine(); }, false);
+		mati.addEventListener("click", function(event) { iti = true; machine(); }, false);
 	}
 	if (err == null) {
 		var div;
@@ -370,7 +370,7 @@ function ab2str(ab, callback, from, to) {
 	var length = to?to-offset:null;
 	var b = new Blob([new Uint8Array(ab, offset, length)]);
 	var f = new FileReader();
-	f.onload = function(e) { callback(e.target.result); };
+	f.onload = function(event) { callback(event.target.result); };
 	f.readAsText(b);
 }
 function db(inf) {

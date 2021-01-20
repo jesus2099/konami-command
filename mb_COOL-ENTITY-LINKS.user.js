@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2018.3.12.2
+// @version      2021.1.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
@@ -13,7 +13,7 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_COOL-ENTITY-LINKS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_COOL-ENTITY-LINKS.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-04-24
@@ -58,11 +58,11 @@ j2css = j2css.sheet;
 j2css.insertRule("a." + userjs + " {text-shadow: 1px 1px 2px silver; white-space: nowrap;}", 0);
 j2css.insertRule("a." + userjs + "tool {font-variant: small-caps; vertical-align: super; font-size: xx-small}", 0);
 self.addEventListener("load", function(event){
-	for (var ent in entities) if (entities.hasOwnProperty(ent)) {
+	for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent)) {
 		localStorage.removeItem("jesus2099skip_linksdeco_" + ent);
 	}
 });
-for (var ent in entities) if (entities.hasOwnProperty(ent)) {
+for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent)) {
 	var u = (entities[ent].fullpath ? entities[ent].fullpath : "musicbrainz.org" + entities[ent].path.replace("?", "\\?"));
 	var c = userjs + ent;
 	if (entities[ent].icon) {

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2020.10.16.2
+// @version      2021.1.19
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
@@ -130,6 +130,7 @@ if (pagecat) {
 			break;
 		case "recordings":
 			document.querySelector("div#content table.tbl").classList.add(userjs + "-has-isrcs"); // for later duplicate spot
+			// fall through
 		case "edits":
 			var iedits = document.querySelectorAll("div#page table.add-isrcs, div#page table.merge-recordings, div#page table.remove-isrc, div#page table." + userjs + "-has-isrcs");
 			for (var ied = 0; ied < iedits.length; ied++) {
@@ -187,24 +188,24 @@ function isrcFish() {
 			var acoustidNet = [];
 			var tracks = res.evaluate("//mb:recording", res, nsr, XPathResult.ANY_TYPE, null);
 			var track;
-			for (var pos = 1; track = tracks.iterateNext(); pos++) {
+			for (var pos = 1; (track = tracks.iterateNext()) !== null; pos++) {
 				var trackMBID = track.getAttribute("id");
 				if (acoustidNet.indexOf(trackMBID) < 0) { acoustidNet.push(trackMBID); }
 				isrcNet[trackMBID] = [];
 				recnameNet[trackMBID] = {};
 				var isrcs = res.evaluate(".//mb:isrc", track, nsr, XPathResult.ANY_TYPE, null);
 				var isrc;
-				while (isrc = isrcs.iterateNext()) {
+				while ((isrc = isrcs.iterateNext()) !== null) {
 					isrcNet[trackMBID].push(isrc.getAttribute("id"));
 				}
 				var recnames = res.evaluate(".//mb:title/text()", track, nsr, XPathResult.ANY_TYPE, null);
 				var recname;
-				while (recname = recnames.iterateNext()) {
+				while ((recname = recnames.iterateNext()) !== null) {
 					recnameNet[trackMBID].name = recname.textContent;
 				}
 				var recdisambigs = res.evaluate(".//mb:disambiguation/text()", track, nsr, XPathResult.ANY_TYPE, null);
 				var recdisambig;
-				while (recdisambig = recdisambigs.iterateNext()) {
+				while ((recdisambig = recdisambigs.iterateNext()) !== null) {
 					recnameNet[trackMBID].comment = recdisambig.textContent;
 				}
 			}
@@ -394,8 +395,9 @@ function idCount(type, count) {
 					togstuffs[itog].style.setProperty("display", show ? "block" : "none");
 				}
 				this.replaceChild(document.createTextNode(show ? "hide" : "show"), this.firstChild);
-				if (e.shiftKey && bonusclicks.length == 0) {
-					if (showHideARSButt = document.querySelector("a." + (show ? "show" : "hide") + "-credits")) {
+				if (event.shiftKey && bonusclicks.length == 0) {
+					let showHideARSButt = document.querySelector("a." + (show ? "show" : "hide") + "-credits");
+					if (showHideARSButt) {
 						showHideARSButt[0].click();
 					} else {
 						var ars = document.querySelectorAll("div.ars");
@@ -403,7 +405,8 @@ function idCount(type, count) {
 							ars[iar].style.setProperty("display", show ? "block" : "none");
 						}
 					}
-					if ((showToolZones = document.querySelectorAll("div#sidebar div#" + userjs + "idcountzone input[type='checkbox']"))) {
+					let showToolZones = document.querySelectorAll("div#sidebar div#" + userjs + "idcountzone input[type='checkbox']");
+					if (showToolZones) {
 						for (var stz = 0; stz < showToolZones.length; stz++) {
 							if (showToolZones[stz].checked != show) showToolZones[stz].click();
 						}
@@ -437,7 +440,7 @@ function coolifyISRC(isrc) {
 		}
 		return ivt;
 	}
-	if (isrc.match(/[a-z]{2}\-?[a-z0-9]{3}\-?[0-9]{2}\-?[0-9]{5}/i)) {
+	if (isrc.match(/[a-z]{2}-?[a-z0-9]{3}-?[0-9]{2}-?[0-9]{5}/i)) {
 		var coolISRC = document.createElement("code");
 		coolISRC.appendChild(truc(isrc.substr(0, 2), true));
 		coolISRC.appendChild(truc("-" + isrc.substr(2, 3) + "-", false));
@@ -452,7 +455,7 @@ function coolifyISRC(isrc) {
 function acoustidFishBatch(recids) {
 	if (recids.length > 0) {
 		var xhr = new XMLHttpRequest();
-		xhr.onload = function(e) {
+		xhr.onload = function(event) {
 			var res = this.responseXML;
 			var wsstatus, mbids;
 			if (
@@ -489,7 +492,7 @@ function acoustidFishBatch(recids) {
 						&& acoustids[recmbid].length > 0
 						&& (trackTitleCell = tracksHtml[th].querySelector("td:not(.pos):not(.video)"))
 					) {
-						var aidtable = insertBeforeARS(trackTitleCell, createStuffFragment("AcoustID", acoustids[recmbid], shownacoustids, acoustidURL, null, recmbid));
+						insertBeforeARS(trackTitleCell, createStuffFragment("AcoustID", acoustids[recmbid], shownacoustids, acoustidURL, null, recmbid));
 					}
 				}
 			} else {
@@ -517,7 +520,7 @@ function acoustidFishBatch(recids) {
 
 function count(hash) {
 	var count = 0;
-	for (var key in hash) if (hash.hasOwnProperty(key)) {
+	for (var key in hash) if (Object.prototype.hasOwnProperty.call(hash, key)) {
 		count += 1;
 	}
 	return count;

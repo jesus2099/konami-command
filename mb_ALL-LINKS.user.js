@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2020.10.23.2054
+// @version      2021.1.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -12,7 +12,7 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ALL-LINKS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ALL-LINKS.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-08-02
@@ -213,7 +213,7 @@ var autolinks = {
 };
 var enabledDefaultAutolinks = {};
 var loadedSettings = JSON.parse(localStorage.getItem(userjs + "enabled-default-autolinks")) || {};
-for (var link in autolinks.default) if (autolinks.default.hasOwnProperty(link)) {
+for (let link in autolinks.default) if (Object.prototype.hasOwnProperty.call(autolinks.default, link)) {
 	enabledDefaultAutolinks[link] = typeof loadedSettings[link] != "undefined" ? loadedSettings[link] : true;
 }
 var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/61960dd9ebd5b77c6f1199815160e63b3383437e/lib/MusicBrainz/Server/Entity/URL/Sidebar.pm
@@ -313,7 +313,7 @@ j2css.insertRule("ul.external_links.configure > li.defaultAutolink > input[type=
 main();
 function main() {
 	if (sidebar) {
-		var entityMatch = self.location.href.match(/\/([a-z\-]*)\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
+		var entityMatch = self.location.href.match(/\/([a-z-]*)\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
 		var entityType = tokenValues["%entity-type%"] = entityMatch[1];
 		var entityMBID = tokenValues["%entity-mbid%"] = entityMatch[2];
 		tokenValues["%" + entityType + "-mbid%"] = entityMBID;
@@ -326,7 +326,7 @@ function main() {
 				var entityName = tokenValues["%entity-name%"] = entityNameNode.textContent.trim();
 				tokenValues["%" + entityType + "-name%"] = entityName;
 				if (entityType == "artist") {
-					var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
+					// var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
 					var artistname = entityName;
 					var artistsortname, artistsortnameSwapped = "";
 					artistsortname = tokenValues["%artist-sort-name%"] = entityNameNode.getAttribute("title");
@@ -335,7 +335,7 @@ function main() {
 						tokenValues["%artist-latin-script-name%"] = artistname;
 					} else {
 						var tmpsn = artistsortname.split(",");
-						for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
+						for (let isn = tmpsn.length - 1; isn >= 0; isn--) {
 							artistsortnameSwapped += tmpsn[isn].trim();
 							if (isn != 0) {
 								artistsortnameSwapped += " ";
@@ -355,9 +355,9 @@ function main() {
 				entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
 				addHiddenLinks();
 				// Autolinks
-				for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
+				for (let defaultOrUser in autolinks) if (Object.prototype.hasOwnProperty.call(autolinks, defaultOrUser)) {
 					var haslinks = false;
-					for (var link in autolinks[defaultOrUser]) if (autolinks[defaultOrUser].hasOwnProperty(link)) {
+					for (let link in autolinks[defaultOrUser]) if (Object.prototype.hasOwnProperty.call(autolinks[defaultOrUser], link)) {
 						var target = autolinks[defaultOrUser][link];
 						var sntarget = null;
 						if (target) {
@@ -370,7 +370,7 @@ function main() {
 							} else {
 								var latinScriptOnly = target.acceptCharset.match(/iso-8859/i);
 								var skippedToken = false;
-								for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
+								for (let param in target.parameters) if (Object.prototype.hasOwnProperty.call(target.parameters, param)) {
 									if (latinScriptOnly) {
 										target.parameters[param] = target.parameters[param].replace(/%artist-name%/, "%artist-latin-script-name%");
 									}
@@ -398,7 +398,7 @@ function main() {
 		if (rawLanguages && Array.isArray(rawLanguages) && rawLanguages.length > 0) {
 			var languages = parseLanguages(rawLanguages);
 			var wikidatas = sidebar.querySelectorAll("ul.external_links > li a[href*='wikidata.org/wiki/Q']");
-			for (var wd = 0; wd < wikidatas.length; wd++) {
+			for (let wd = 0; wd < wikidatas.length; wd++) {
 				var wikidataID = wikidatas[wd].getAttribute("href").match(/Q\d+$/);
 				if (wikidataID) {
 					if (!wikidatas[wd].parentNode.querySelector("a.edit-languages")) {
@@ -414,7 +414,7 @@ function main() {
 						removeNode(wikidataListItem.querySelector("img[src$='loading.gif']"));
 						var wikidata = JSON.parse(this.responseText);
 						if (wikidata && wikidata.entities && (wikidata = wikidata.entities[this.id])) {
-							for (var languageCode = 0; languageCode < languages.length; languageCode++) {
+							for (let languageCode = 0; languageCode < languages.length; languageCode++) {
 								var wikiEntry = wikidata.sitelinks[languages[languageCode] + "wiki"];
 								if (wikiEntry) {
 									var href = wikiEntry.url.replace(/^https?:/, "");
@@ -438,18 +438,18 @@ function main() {
 }
 function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, enabledDefaultAutolink*/) {
 	var newLink = true;
+	let li;
 	if (parameters.target) {
 		// This is a link
-		var li;
 		if (typeof parameters.target != "string") {
 			var form = createTag("form", {a: {action: parameters.target.action}});
 			if (parameters.target.title) {
 				form.style.setProperty("cursor", "help");
 			}
 			var info = "\n" + parameters.target.action;
-			for (var attr in parameters.target) if (parameters.target.hasOwnProperty(attr)) {
+			for (let attr in parameters.target) if (Object.prototype.hasOwnProperty.call(parameters.target, attr)) {
 				if (attr == "parameters") {
-					for (var param in parameters.target.parameters) if (parameters.target.parameters.hasOwnProperty(param)) {
+					for (let param in parameters.target.parameters) if (Object.prototype.hasOwnProperty.call(parameters.target.parameters, param)) {
 						info += "\n" + param + "=" + parameters.target.parameters[param];
 						form.appendChild(createTag("input", {a: {name: param, type: "hidden", value: parameters.target.parameters[param]}}));
 					}
@@ -550,7 +550,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		setFavicon(li, (typeof parameters.target == "string") ? parameters.target : parameters.target.action);
 	} else {
 		// This is a header
-		var li = createTag("li", {s: {fontWeight: "bold"}, a: {class: "separator"}}, createTag("span", {}, parameters.text));
+		li = createTag("li", {s: {fontWeight: "bold"}, a: {class: "separator"}}, createTag("span", {}, parameters.text));
 		if (parameters.text.indexOf(" ") === 0) {
 			// Level 1 header
 			li.style.setProperty("padding-top", "0px");
@@ -578,14 +578,14 @@ function addHiddenLinks() {
 				var res = this.responseXML;
 				var url, urls = res.evaluate("//mb:relation-list[@target-type='url']/mb:relation", res, nsr, XPathResult.ANY_TYPE, null);
 				var haslinks = false;
-				while (url = urls.iterateNext()) {
+				while ((url = urls.iterateNext()) !== null) {
 					var target = res.evaluate("./mb:target", url, nsr, XPathResult.ANY_TYPE, null);
 					target = target.iterateNext();
 					var begin, end;
-					if (begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+					if ((begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) !== null) {
 						begin = begin.textContent;
 					}
-					if (end = res.evaluate("./mb:end", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+					if ((end = res.evaluate("./mb:end", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) !== null) {
 						end = end.textContent;
 					} else if (res.evaluate("./mb:ended", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
 						end = "????";
@@ -611,9 +611,9 @@ function addHiddenLinks() {
 }
 function replaceAllTokens(string, encode) {
 	var stringTokens = string.match(/%[a-z]+(?:-[a-z]+)+%/g);
-	if (stringTokens) for (var t = 0; t < stringTokens.length; t++) {
+	if (stringTokens) for (let t = 0; t < stringTokens.length; t++) {
 		var token = stringTokens[t];
-		if (!tokenValues.hasOwnProperty(token)) return false;
+		if (!Object.prototype.hasOwnProperty.call(tokenValues, token)) return false;
 		string = string.replace(token, encode ? encodeURIComponent(tokenValues[token]) : tokenValues[token]);
 	}
 	return string;
@@ -623,7 +623,7 @@ function setFavicon(li, url) {
 	// MusicBrainz cached favicon CSS classes
 	var searchdomain = url.match(/site:([^+]*)\+/);
 	var urldomain = searchdomain ? searchdomain[1] : url.split("/")[2];
-	for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(classdomain)) {
+	for (let classdomain in faviconClasses) if (Object.prototype.hasOwnProperty.call(faviconClasses, classdomain)) {
 		if (urldomain.match(classdomain)) {
 			favclass = faviconClasses[classdomain];
 			break;
@@ -634,7 +634,7 @@ function setFavicon(li, url) {
 	} else {
 		// Static favicon URL dictionary
 		var favurlfound = false;
-		for (var part in favicons) if (favicons.hasOwnProperty(part)) {
+		for (let part in favicons) if (Object.prototype.hasOwnProperty.call(favicons, part)) {
 			if (url.indexOf(part) != -1) {
 				favurlfound = favicons[part];
 				break;
@@ -743,8 +743,8 @@ function guessNavigatorLanguages() {
 }
 function parseLanguages(inputLanguages) {
 	var detectedLanguages = [];
-	for (var il = 0; il < inputLanguages.length; il++) {
-		var nextLanguage = inputLanguages[il];
+	for (let il = 0; il < inputLanguages.length; il++) {
+		let nextLanguage = inputLanguages[il];
 		switch (nextLanguage) {
 			case "navigator":
 				detectedLanguages = detectedLanguages.concat(guessNavigatorLanguages());
@@ -757,8 +757,8 @@ function parseLanguages(inputLanguages) {
 		}
 	}
 	var outputLanguages = [];
-	for (var dl = 0; dl < detectedLanguages.length; dl++) {
-		var nextLanguage = detectedLanguages[dl];
+	for (let dl = 0; dl < detectedLanguages.length; dl++) {
+		let nextLanguage = detectedLanguages[dl];
 		if (outputLanguages.indexOf(nextLanguage) < 0) {
 			outputLanguages.push(nextLanguage);
 			if (nextLanguage.match("-")) {

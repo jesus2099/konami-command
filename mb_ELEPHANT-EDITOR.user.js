@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2018.4.4.3
+// @version      2021.1.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
@@ -13,7 +13,7 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-01-13
@@ -57,7 +57,7 @@ var setPrevNoteOnEditPageLoad = false; /* "true" can be troublesome if you just 
 var setPrevDateOnLoad = false; /* "true" can be troublesome when you don’t need date any more and you forget to clear it */
 /*funky colours*/
 var cOK = "greenyellow";
-var cNG = "pink";
+// var cNG = "pink";
 var cWARN = "gold";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs94629";
@@ -139,10 +139,10 @@ if (content) {
 		savecb.checked = save;
 		savecb.parentNode.appendChild(document.createTextNode(" remember  "));
 		for (var ni = 0; ni < textLabels.length; ni++) {
-			var butt = createButtor(textLabels[ni], "50px");
-			var buttid = notetextStorage+"0"+ni;
+			let butt = createButtor(textLabels[ni], "50px");
+			let buttid = notetextStorage + "0" + ni;
 			butt.setAttribute("id", buttid);
-			var lastnotetext = localStorage.getItem(buttid);
+			let lastnotetext = localStorage.getItem(buttid);
 			if (!lastnotetext) {
 				butt.setAttribute("disabled", "true");
 				butt.style.setProperty("opacity", ".5");
@@ -162,7 +162,7 @@ if (content) {
 		buttons.appendChild(createClearButtor("notetext"));
 		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
 		notetext.parentNode.insertBefore(buttons, notetext);
-		var lastnotetext = localStorage.getItem(notetextStorage + "00");
+		let lastnotetext = localStorage.getItem(notetextStorage + "00");
 		if (save && !editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
 			notetext.value = lastnotetext;
 			sendEvent(notetext, "change");
@@ -174,7 +174,7 @@ if (content) {
 				var lastdatey = localStorage.getItem(xdate[ixd][0] + "_y");
 				var lastdatem = localStorage.getItem(xdate[ixd][0] + "_m");
 				var lastdated = localStorage.getItem(xdate[ixd][0] + "_d");
-				var butt = createButtor(textLabels[0]);
+				let butt = createButtor(textLabels[0]);
 				butt.setAttribute("id", xdate[ixd][0]);
 				if (!lastdatey) {
 					butt.setAttribute("disabled", "true");
@@ -204,7 +204,7 @@ if (content) {
 			}
 			/*copy dates*/
 			for (var icd = 0; icd < 2; icd++) {
-				var buttcd = createButtor(copyDateLabels[icd]);
+				let buttcd = createButtor(copyDateLabels[icd]);
 				buttcd.setAttribute("title", copyDateLabels[2]);
 				buttcd.addEventListener("click", function(event) {
 					var src = copyDateLabels.indexOf(this.getAttribute("value"));
@@ -230,7 +230,7 @@ if (content) {
 function saveNote() {
 	if (notetext) {
 		if (textLabels.length > 0) {
-			var thisnotetext = notetext.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");
+			var thisnotetext = notetext.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\(['\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");
 			var ls00 = localStorage.getItem(notetextStorage + "00");
 			if (save && thisnotetext != ls00) {
 				if (ls00 != "") {
@@ -272,14 +272,15 @@ function saveNote() {
 	}
 }
 function createButtor(label, width) {
-	var butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
+	let butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
 	if (width) { butt.style.setProperty("width", width); }
 	return butt;
 }
 function createClearButtor(input) {
+	let butt;
 	switch (input) {
 		case "notetext":
-			var butt = createButtor(delLabel, "25px");
+			butt = createButtor(delLabel, "25px");
 			butt.addEventListener("click", function(event) {
 				notetext.value = "";
 				sendEvent(notetext, "change");
@@ -289,10 +290,10 @@ function createClearButtor(input) {
 			butt.style.setProperty("color", "red");
 			butt.style.setProperty("background-color", cWARN);
 			return butt;
-			break;
+			// break;
 		case "dates":
 			for (var i = 0; i < 2; i++) {
-				var butt = createButtor(delLabel, "25px");
+				butt = createButtor(delLabel, "25px");
 				butt.setAttribute("id", userjs + "deldate" + i);
 				butt.addEventListener("click", function(event) {
 					var id = this.getAttribute("id").charAt((userjs + "deldate").length);

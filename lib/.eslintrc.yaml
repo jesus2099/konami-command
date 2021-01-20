@@ -1,0 +1,4 @@
+rules:
+# libraries declare functions for other scripts
+ no-unused-vars:
+ - warn

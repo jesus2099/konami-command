@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE TRACK ARTIST
-// @version      2019.8.4.3
+// @version      2021.1.19
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-TRACK-ARTIST.user.js
 // @description  musicbrainz.org: highlights track title, length and artist differences in recording page
 // @homepage     http://userscripts-mirror.org/scripts/show/166877
@@ -12,7 +12,7 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-TRACK-ARTIST.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-TRACK-ARTIST.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @requester    culinko
@@ -85,7 +85,7 @@ if (mbid && tracks.length > 0) {
 									}
 								}
 								/* display recording/track length discrepency */
-								var trackLengthCell = tracks[t].querySelector("td:nth-child(" + lengthColumnIndex + ")");
+								trackLengthCell = tracks[t].querySelector("td:nth-child(" + lengthColumnIndex + ")");
 								if (trackLengthCell) {
 									var wsTrackLength = wsTracks[wst].querySelector("length");
 									if (wsTrackLength && (wsTrackLength = time(wsTrackLength.textContent))) {

@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2020.11.27
+// @version      2021.1.19
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @homepage     http://userscripts-mirror.org/scripts/show/126475
@@ -11,7 +11,7 @@ var meta = {rawmdb: function() {
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_LOCAL-STORAGE-MANAGER.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-02-22
@@ -200,9 +200,9 @@ function createTag(tag, gadgets, children) {
 	var t = (tag == "fragment" ? document.createDocumentFragment() : document.createElement(tag));
 	if(t.tagName) {
 		if (gadgets) {
-			for (var attri in gadgets.a) if (gadgets.a.hasOwnProperty(attri)) { t.setAttribute(attri, gadgets.a[attri]); }
-			for (var style in gadgets.s) if (gadgets.s.hasOwnProperty(style)) { t.style.setProperty(style.replace(/!/g, ""), gadgets.s[style].replace(/!/g, ""), style.match(/!/) || gadgets.s[style].match(/!/) ? "important" : ""); }
-			for (var event in gadgets.e) if (gadgets.e.hasOwnProperty(event)) { t.addEventListener(event, gadgets.e[event], false); }
+			for (var attri in gadgets.a) if (Object.prototype.hasOwnProperty.call(gadgets.a, attri)) { t.setAttribute(attri, gadgets.a[attri]); }
+			for (var style in gadgets.s) if (Object.prototype.hasOwnProperty.call(gadgets.s, style)) { t.style.setProperty(style.replace(/!/g, ""), gadgets.s[style].replace(/!/g, ""), style.match(/!/) || gadgets.s[style].match(/!/) ? "important" : ""); }
+			for (var event in gadgets.e) if (Object.prototype.hasOwnProperty.call(gadgets.e, event)) { t.addEventListener(event, gadgets.e[event], false); }
 		}
 		if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) t.style.setProperty("cursor", "pointer");
 	}

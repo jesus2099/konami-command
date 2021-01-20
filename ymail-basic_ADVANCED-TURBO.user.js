@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. ADVANCED TURBO
-// @version      2020.11.26
+// @version      2021.1.19
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -18,10 +18,10 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-/*---CONFIG---*/
-var KEYBOARD_SHORTCUTS = true; /*CTRL+A: select all, DEL: delete e-mail, LEFT ARROW: previous message, RIGHT ARROW: next message*/
-var REMOVE_CRAP = true; /*FULL SCREEN DISPLAY. removes various distracting craps (ads, etc.)*/
-/*---CONFIG---*/
+// ---CONFIG---
+var KEYBOARD_SHORTCUTS = true; // CTRL+A: select all, DEL: delete e-mail, LEFT ARROW: previous message, RIGHT ARROW: next message
+var REMOVE_CRAP = true; // FULL SCREEN DISPLAY. removes various distracting craps (ads, etc.)
+// ---CONFIG---
 var userjs = {key: 177655, name: "ymail-basic. ADVANCED TURBO"};
 var DEBUG = localStorage.getItem("jesus2099debug");
 var selectAllSelector = "div#selectAllButton > button[name='action'][type='submit'][value='selectAll']";
@@ -42,7 +42,7 @@ var shortcuts = {
 };
 var emails = document.querySelectorAll("table#datatable > tbody > tr > td > h2 > a.mlink");
 if (emails) {
-	/*select multiple e-mails with shift+click first last (range click)*/
+	// select multiple e-mails with shift+click first last (range click)
 	var lastemcb = -1;
 	var emcbs = document.querySelectorAll("table#messageListContainer > tbody > tr > td > input[type='checkbox'][name='mids[]']");
 	var selectall = document.querySelector(selectAllSelector);
@@ -76,7 +76,7 @@ if (emails) {
 			}
 		}, false);
 	}
-	/*auto apply actions (star/read/unread flags, move, etc.)*/
+	// auto apply actions (star/read/unread flags, move, etc.)
 	var autofire = [
 		{triggers: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[top]']", submit: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[top]'] + button[type='submit'][name='toolbar_action'][value='top']" },
 		{triggers: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[bottom]']", submit: "#content table > tbody table > tbody span[data-test-id='toolbar-dropdown'] > select[name='toolbar_option[bottom]'] + button[type='submit'][name='toolbar_action'][value='bottom']" },
@@ -95,15 +95,15 @@ if (emails) {
 			
 		}
 	}
-	/*keyboard shortcuts*/
+	// keyboard shortcuts
 	if (KEYBOARD_SHORTCUTS) {
 		document.addEventListener("keydown", interceptKeys, false);
 		document.addEventListener("keyup", interceptKeys, false);
-		for (var sc in shortcuts) { if (shortcuts.hasOwnProperty(sc)) {
+		for (var sc in shortcuts) { if (Object.prototype.hasOwnProperty.call(shortcuts, sc)) {
 			try { hackit(shortcuts[sc].button, "", "[" + (shortcuts[sc].key || sc.toUpperCase()) + "]"); } catch(error) {}
 		} }
 	}
-	/*remove crap*/
+	// remove crap
 	if (REMOVE_CRAP) {
 		var j2delcrapss = document.createElement("style");
 		j2delcrapss.setAttribute("type", "text/css");
@@ -150,7 +150,7 @@ function findNode(argh) {
 		return argh;
 	} else if (argh.length) {
 		for (var vrouf, paf = 0; paf < argh.length; paf++) {
-			if (vrouf = document.querySelector(argh[paf])) {
+			if ((vrouf = document.querySelector(argh[paf]))) {
 				return vrouf;
 			}
 		}

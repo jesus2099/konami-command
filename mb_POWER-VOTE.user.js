@@ -2,7 +2,7 @@
 var meta= { rawmdb: function() {
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2020.9.18.3
+// @version      2021.1.19
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @homepage     http://userscripts-mirror.org/scripts/show/57765
@@ -14,7 +14,7 @@ var meta= { rawmdb: function() {
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2009-09-14
@@ -78,7 +78,7 @@ if (editform) {
 		if (pendingXHRvote > 0) {
 			if (submitShift || confirm("GOING BACKGROUND (AJAX)? (or not)\n\n" + pendingXHRvote + " background vote" + (pendingXHRvote == 1 ? " is" : "s are") + " pending,\ndo you want to add more votes to this queue?\n\nSHIFT+CLICK on submit to bypass this confirmation next time.")) {
 				var pendingvotes = editform.querySelectorAll("div.voteopts input[type='radio']:not([value='-2']):not([disabled])");
-				for (var pv = 0; pv < pendingvotes.length; pv++) {
+				for (let pv = 0; pv < pendingvotes.length; pv++) {
 					if (pendingvotes[pv].checked) {
 						sendEvent(getParent(pendingvotes[pv], "label") || pendingvotes[pv], "dblclick");
 					}
@@ -88,10 +88,10 @@ if (editform) {
 			this.submit();
 		}
 	}, false);
-	if (inputs = document.querySelector("div#content div.overall-vote")) {
+	if ((inputs = document.querySelector("div#content div.overall-vote"))) {
 		removeNode(inputs);
 	}
-	for (var rac = editform.querySelectorAll("tr.rename-artist-credits > td"), r = 0; r < rac.length; r++) {
+	for (let rac = editform.querySelectorAll("tr.rename-artist-credits > td"), r = 0; r < rac.length; r++) {
 		if (rac[r].textContent.match(/jah?|yes|s[íì]|oui|voor|kyllä|ναι|はい/i)) {
 			rac[r].parentNode.classList.add(userjs + "yes");
 		}
@@ -100,7 +100,7 @@ if (editform) {
 	if (voteColours) {
 		editform.addEventListener("change", spreadBackgroundColour);
 	}
-	for (var i = 0; i < inputs.length; i++) {
+	for (let i = 0; i < inputs.length; i++) {
 		if (onlySubmitTabIndexed) { inputs[i].setAttribute("tabindex", "-1"); }
 		radios.push(inputs[i]);
 		if (voteColours && inputs[i].checked && inputs[i].value != -2) {
@@ -197,7 +197,7 @@ if (editform) {
 	}
 	if (collapseEdits) {
 		var edits = editform.querySelectorAll("div.edit-list");
-		for (var ed = 0; ed < edits.length; ed++) {
+		for (let ed = 0; ed < edits.length; ed++) {
 			if (edits[ed].querySelector("div.edit-description")) {
 				var eheader = edits[ed].querySelector("div.edit-header");
 				var collexp = document.createElement("div");
@@ -234,14 +234,14 @@ if (editform) {
 								editheadersel += "." + edittype[1];
 							}
 						} else if (event.ctrlKey) {
-							if (editor = editheader.querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/)) {
+							if ((editor = editheader.querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/))) {
 								editor = editor[1];
 							}
 						}
 					}
 					if (event.altKey || event.ctrlKey || event.shiftKey) {
 						var others = editform.querySelectorAll(editheadersel + " a." + userjs + (autoedit ? ".autoedit" : "") + "[rel='" + (expand ? "expand" : "collapse") + "']");
-						for (var other = 0; other < others.length; other++) {
+						for (let other = 0; other < others.length; other++) {
 							var ovote = getParent(others[other], "div", "edit-list").querySelector(voteCSS);
 							if (ovote) ovote = ovote.getAttribute("value");
 							if (
@@ -340,12 +340,12 @@ function shortcut(vote, txt) {
 }
 function doitdoit(event, vote, min, max) {
 	if (vote != "omgcancel") {
-		for (i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : radios.length); i++) {/*FF shift+click label NG*/
+		for (let i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : radios.length); i++) {/*FF shift+click label NG*/
 			if (radios[i].getAttribute("value") == vote && !radios[i].checked && !ninja(event, getParent(radios[i], "div", "edit-list")) && (event.shiftKey || isOkToVote(radios[i]))) {
 				sendEvent(radios[i], "click");
 			}
 		}
-	} else { for (i = 0; i < radiosafe.length; i++) { sendEvent(radiosafe[i], "click"); } }
+	} else { for (let i = 0; i < radiosafe.length; i++) { sendEvent(radiosafe[i], "click"); } }
 }
 function isOkToVote(radiox) {
 	return getParent(radiox, "div", "voteopts").querySelector("input[type='radio'][value='-2']").checked;
@@ -356,14 +356,14 @@ function findPos(obj) { /* http://www.quirksmode.org/js/findpos.html */
 		do {
 			curleft += obj.offsetLeft;
 			curtop += obj.offsetTop;
-		} while (obj = obj.offsetParent);
+		} while ((obj = obj.offsetParent));
 	}
 	return {"x": curleft, "y": curtop};
 }
 function disable(cont, dis) {
 	var inputs = cont.querySelectorAll("input, select, textarea, button");
 	if (inputs.length > 0) {
-		for (var i = 0; i < inputs.length; i++) {
+		for (let i = 0; i < inputs.length; i++) {
 			if (dis) { inputs[i].setAttribute("disabled", "disabled"); }
 			else { inputs[i].removeAttribute("disabled"); }
 		}
@@ -384,20 +384,20 @@ function ninja(event, o, n, spec) {
 		}
 		if (event.detail > 0 && !event.altKey && !event.ctrlKey && !event.shiftKey) {
 			if (n) {
-				try { jQwtf.hide(100); } catch(error) { for(var j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", "none"); }
+				try { jQwtf.hide(100); } catch(error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", "none"); }
 			} else {
 				try {
 					jQuery(o).removeClass(userjs + "ninja");
 					jQwtf.show(100);
 				} catch(error) {
-					for(var j = 0; j < jQwtf.length; j++) {
+					for (let j = 0; j < jQwtf.length; j++) {
 						jQwtf[j].classList.remove(userjs + "ninja");
 						jQwtf[j].style.setProperty("display", "block");
 					}
 				}
 			}
 		} else {
-			try { jQwtf.css("display", n ? "none" : ""); } catch(error) { for(var j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", n ? "none" : ""); }
+			try { jQwtf.css("display", n ? "none" : ""); } catch(error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", n ? "none" : ""); }
 			if (n) o.classList.add(userjs + cls);
 			else o.classList.remove(userjs + cls);
 		}

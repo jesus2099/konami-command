@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2018.4.4.3
+// @version      2021.1.19
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_HYPER-MOULINETTE.user.js
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HYPER-MOULINETTE
@@ -14,7 +14,7 @@ var meta = {rawmdb: function() {
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_HYPER-MOULINETTE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_HYPER-MOULINETTE.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2014-09-19
@@ -75,12 +75,12 @@ function mouli() {
 	client = meta.name.replace(/^mb\. /, "").replace(/ /g, ".").toLowerCase() + "-" + meta.version;
 	if (target && method.match(/^(put|delete)$/i) && source) {
 		localStorage.setItem(meta.key + "_" + method + "-source", source);
-		source = source.replace(/^(https?:\/\/[^\/]+)?(\/.+)/, "$2");
+		source = source.replace(/^(https?:\/\/[^/]+)?(\/.+)/, "$2");
 		modal(createTag("h3", {}, [createTag("a", {a: {href: meta.namespace, target: "_blank"}}, meta.name), " ", createTag("b", {}, meta.version), " (reload this page to abort)"]));
 		if (source.match(/^\/search\/edits/)) {
 			modal(createTag("p", {}, "(loading first page of an edit search is always long)"));
 		}
-		loadForExtract(source.replace(/([\?&])page=\d+&*/g, "$1") + (source.match(/\?/) ? "&" : "?") + "page=1");
+		loadForExtract(source.replace(/([?&])page=\d+&*/g, "$1") + (source.match(/\?/) ? "&" : "?") + "page=1");
 	} else {
 		alert("syntax error\ntarget: " + target + "\nmethod: " + method + " (should be either “put” or “delete”)\nsource: " + source);
 	}
@@ -98,7 +98,7 @@ function loadForExtract(page) {
 		var res = document.createElement("html");
 		res.innerHTML = this.responseText;
 		var releases;
-		for (var type in crawlType) if (crawlType.hasOwnProperty(type) && loaders[this.getID()].url.match(new RegExp(type))) {
+		for (var type in crawlType) if (Object.prototype.hasOwnProperty.call(crawlType, type) && loaders[this.getID()].url.match(new RegExp(type))) {
 			releases = res.querySelectorAll(crawlType[type]);
 			ploaded.appendChild(document.createTextNode(" (" + releases.length + " release" + (releases.length == 1 ? "" : "s") + "):"));
 			if (releases.length > 0) {
@@ -148,7 +148,7 @@ if (self.opera) { modal(createTag("p", {}, ["Will not perform ", createTag("a", 
 		xhr.addEventListener("error", function(event) {
 			if (--loaders[this.getID()].maxRetry > 0) {
 				modal(createTag("fragment", {}, ["Error performing ", createTag("a", {a: {title: loaders[this.getID()].method, href: loaders[this.getID()].url, target: "_blank"}}, "“" + loaders[this.getID()].method + "” method"), ", retrying…"]));
-				loadForAction(loaders[this.getID()].method, loaders[this.getID()].url);
+				requestForAction(loaders[this.getID()].method, loaders[this.getID()].url);
 			} else {
 				alert("XHR-" + this.getID() + " ERROR " + this.status + "\nStopped retrying.\n" + loaders[this.getID].url + "\n\n" + this.responseText);
 			}
@@ -183,7 +183,7 @@ function modal(txt) {
 		obj.parentNode.removeChild(obj.previousSibling);
 		obj.parentNode.removeChild(obj);
 	}
-	function coolstuff(t, z, x, y, b, o, a) {
+	function coolstuff(t, z, x, y, b, o) {
 		var truc = document.getElementsByTagName("body")[0].appendChild(document.createElement(t));
 		truc.style.position = "fixed";
 		truc.style.zIndex = z;
