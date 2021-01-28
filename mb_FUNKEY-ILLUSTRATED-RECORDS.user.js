@@ -63,7 +63,6 @@ for (var t = 0; t < types.length; t++) {
 					// For the moment, release group CAA icons have to be added by userscript
 					var CAALoader = new XMLHttpRequest();
 					CAALoader.addEventListener("load", function(event) {
-						var RGCAAThumbnailFound = false;
 						if (this.status == 200) {
 							var RGCAA = JSON.parse(this.responseText);
 							if (RGCAA.images.length > 0) {

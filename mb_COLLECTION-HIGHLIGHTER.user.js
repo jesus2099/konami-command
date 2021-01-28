@@ -796,7 +796,7 @@ function modal(show, txt, brs, gauge) {
 		obj.parentNode.removeChild(obj);
 	}
 	return obj;
-	function coolstuff(t, z, x, y, b, o, a) {
+	function coolstuff(t, z, x, y, b, o) {
 		var truc = document.body.appendChild(document.createElement(t));
 		truc.style.setProperty("position", "fixed");
 		truc.style.setProperty("z-index", z);

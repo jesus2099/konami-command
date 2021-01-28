@@ -89,7 +89,7 @@ if (
 function createLink(historyType, associatedArtist) {
 	var currentEntity = associatedArtist || pageEntity;
 	var linkLabel = (historyType == "edits" ? "editing\u00a0history" : "open\u00a0edits");
-	linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2, offset, string) { return g1.toUpperCase() + g2; });
+	linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2 /*, offset, string*/) { return g1.toUpperCase() + g2; });
 	var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel))); // “span.(""|"mp")” linked in mb_MASS-MERGE-RECORDINGS.user.js
 	if (associatedArtist) {
 		addAfter(newLink, pageEntity.li);

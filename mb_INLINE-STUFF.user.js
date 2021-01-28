@@ -37,8 +37,6 @@ var recAddToMergeLink = "+merge"; /* null or delete for no such tool */
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs81127";
 var MBS = self.location.protocol + "//" + self.location.host;
-var hasDupeISRCs = 0;
-var hasDupeAcoustIDs = 0;
 var shownisrcs = [];
 var shownacoustids = [];
 var shownworks = {count: 0};
@@ -141,7 +139,6 @@ if (pagecat) {
 					if (href) {
 						as[ia].replaceChild(coolifyISRC(as[ia].textContent), as[ia].firstChild);
 						if (shownisrcs[href[1]]) {
-							hasDupeISRCs++;
 							shownisrcs[href[1]].style.setProperty("background-color", dupeColour);
 							as[ia].style.setProperty("background-color", dupeColour);
 						} else {
