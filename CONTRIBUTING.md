@@ -1,38 +1,46 @@
+
 How to contribute
 =================
 
 Thank you very much for your interest in contributing to these userscripts.
 
-Testing
--------
 
-Usually https://test.musicbrainz.org is a great place for testing the 
-userscripts that do modify database.
+Testing your fixes on MusicBrainz sites
+---------------------------------------
 
-All changes there, are made in a test environment where you will not 
-do any damage to MusicBrainz.
+Usually https://test.musicbrainz.org is a great place for testing the
+userscripts that make edits, as it is a sandbox.
 
 For testing features that only display things without editing, 
-you should use the main https://musicbrainz.org site and make sure
+you should use the main https://musicbrainz.org site (MBS) and make sure
 your change does work properly over there.
 
-Before committing your change, make sure you followed the same code style,
+Take care not making test edits on MBS, except if really necessary.
+
+
+Code style
+----------
+
+Before committing your change, make sure you followed the code style,
 as much as possible:
 
-- Indent with tabs (one at a time)
+- Indent with tabs
 - Use English words
 
 
-ESLint
-------
+### ESLint ###
+
+I have set up an `.eslintrc.yaml` ESLint ruleset in this repo.
 
 ESLint is a code inspector: https://eslint.org
 
 If you make a big change or if you like, and if you know how to do, 
-there is an eslint config file here, so you can run eslint to check if
-your code is OK against it.
+you can run eslint to check if your code change is OK.
 
-# Install (nodejs, npm, eslint) on your PC
+I have documented how to do it. Mostly for myself.
+
+
+#### Install (nodejs, npm, eslint) on your PC ####
 
 You must first install some big heavy packages on your PC.
 Install the `npm` pakage, it should also install `nodejs`:
@@ -43,7 +51,8 @@ Install the `npm` pakage, it should also install `nodejs`:
 From here you can already run eslint, but it installs it everytime 
 before each run, which takes very much time.
 
-# Install eslint on your clone
+
+#### Install eslint on your clone ####
 
 Then go into your cloned repository (`/konami-command/` folder).
 Notice that there is a `package.json` file here, 
@@ -61,9 +70,10 @@ You may, like me, get some weirdo warning like:
 
 but worry not, it works nonetheless.
 
-# Run eslint on your modified file
+#### Run eslint on your modified file ####
 
-I think it would be possible to add a pre-commit script in .git/hooks
+I think it would be possible to add a pre-commit script in `.git/hooks`
+as well as PR checks in `.github/workflows/checks.yml`.
 But I will try that later.
 
 For the moment, you can run one of the following commands:
