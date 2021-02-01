@@ -176,8 +176,6 @@ function findUsefulMergeInfo() {
 			rowids.style.setProperty("text-align", "right");
 			rowids.appendChild(document.createTextNode("MBID age (row ID) "));
 			headers.appendChild(rowids);
-			let batchRemove = headers.appendChild(document.createElement("th")).appendChild(createA("Remove selected entities", null, "Remove selected " + mergeType + "s from merge"));
-			batchRemove.addEventListener("click", removeFromMerge);
 		}
 		for (let row = 0; row < entityRows.length; row++) {
 			let a = entityRows[row].querySelector("a[href^='/" + mergeType + "/']");
@@ -208,18 +206,6 @@ function findUsefulMergeInfo() {
 				entities[rad.value].rowidzone = addZone(tbl, entityRows[row], "rowID" + row);
 				entities[rad.value].rowidzone.style.setProperty("text-align", "right");
 				entities[rad.value].rowidzone.appendChild(rowIDLink(mergeType.replace(/-/, "_"), rad.value));
-				var removeZone = addZone(tbl, entityRows[row], "remove" + row);
-				let batchRemove = document.createElement("label");
-				var removeCB = batchRemove.appendChild(document.createElement("input"));
-				removeCB.setAttribute("type", "checkbox");
-				removeCB.setAttribute("ref", "remove");
-				removeCB.setAttribute("value", rad.value);
-				batchRemove.addEventListener("click", rangeClick);
-				batchRemove.appendChild(document.createTextNode("remove"));
-				removeZone.appendChild(batchRemove);
-				removeZone.appendChild(document.createTextNode(" ("));
-				removeZone.appendChild(createA("now", null, "remove this and all selected " + mergeType + "s from merge")).addEventListener("click", removeFromMerge);
-				removeZone.appendChild(document.createTextNode(")"));
 			}
 		}
 		if (minrowid) {
@@ -416,48 +402,6 @@ function rangeClick(event) {
 		} else {
 			lastCB = event.target.firstChild;
 		}
-	}
-}
-function removeFromMerge(event) {
-	var isCB = event.target.parentNode.getAttribute("id");
-	if (isCB && isCB.indexOf(userjs + "remove") == 0) {
-		var cb = event.target.parentNode.querySelector("input[type='checkbox'][ref='remove']:not(:checked)");
-		if (cb) cb.checked = true;
-	}
-	var checkedRemoves = mergeForm.querySelectorAll("[id^='" + userjs + "remove'] input[type='checkbox'][ref='remove']:checked");
-	if (checkedRemoves.length > 0) {
-		var href = "?submit=remove";
-		for (let cb = 0; cb < checkedRemoves.length; cb++) {
-			href += "&remove=" + checkedRemoves[cb].value;
-			/* remove mediums */
-			var toBeDeletedMediumRows = [];
-			if (mergeType == "releases") {
-				var allMediums = document.querySelector("#merge-strategy-1 table.tbl");
-				var bogusMediumStarts = allMediums.querySelectorAll("tbody input[id$='.release_id'][type='hidden'][value='" + checkedRemoves[cb].value + "']");
-				for (let s = 0; s < bogusMediumStarts.length; s++) {
-					var bogusMediumStart = bogusMediumStarts[s];
-					if (
-						bogusMediumStart
-						&& (bogusMediumStart = getParent(bogusMediumStart, "tr", "subh"))
-						&& (bogusMediumStart = bogusMediumStart.rowIndex) !== null
-					) {
-						for (let m = bogusMediumStart; m < allMediums.rows.length && (!allMediums.rows[m].classList.contains("subh") || m == bogusMediumStart); m++) {
-							toBeDeletedMediumRows.push(allMediums.rows[m]);
-						}
-					}
-				}
-				for (let d = 0; d < toBeDeletedMediumRows.length; d++) {
-					console.log(toBeDeletedMediumRows[d].parentNode);
-					allMediums.querySelector("tbody").removeChild(toBeDeletedMediumRows[d]);
-				}
-			}
-			delete entities[checkedRemoves[cb].value];
-			checkedRemoves[cb].parentNode.parentNode.parentNode.parentNode.removeChild(checkedRemoves[cb].parentNode.parentNode.parentNode);
-		}
-		oddEvenRowsRedraw();
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", href, true);
-		xhr.send(null);
 	}
 }
 function oddEvenRowsRedraw() {
