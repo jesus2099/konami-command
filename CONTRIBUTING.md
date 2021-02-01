@@ -34,7 +34,7 @@ I have set up an `.eslintrc.yaml` ESLint ruleset in this repo.
 
 ESLint is a code inspector: https://eslint.org
 
-If you make a big change or if you like, and if you know how to do, 
+If you make a big change or if you like, and if you know how to do,
 you can run eslint to check if your code change is OK.
 
 I have documented how to do it. Mostly for myself.
@@ -48,16 +48,16 @@ Install the `npm` pakage, it should also install `nodejs`:
 
     sudo apt install npm
 
-From here you can already run eslint, but it installs it everytime 
+From here you can already run eslint, but it installs it everytime
 before each run, which takes very much time.
 
 
 #### Install eslint on your clone ####
 
 Then go into your cloned repository (`/konami-command/` folder).
-Notice that there is a `package.json` file here, 
-which is some sort of `nodejs` (or `npm`? no idea) project file. 
-Useful or useless, I do not know but 
+Notice that there is a `package.json` file here,
+which is some sort of `nodejs` (or `npm`? no idea) project file.
+Useful or useless, I do not know but
 I think you do not need to edit it.
 
 Now to install eslint locally in this cloned repository, run:
