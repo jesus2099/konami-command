@@ -60,9 +60,9 @@ which is some sort of `nodejs` (or `npm`? no idea) project file.
 Useful or useless, I do not know but
 I think you do not need to edit it.
 
-Now to install eslint locally in this cloned repository, run:
+Now to install eslint and other stuff, locally in this cloned repository, run:
 
-    npm install --save-dev eslint
+    npm install --save-dev
 
 You may, like me, get some weirdo warning like:
 
@@ -84,4 +84,3 @@ For the moment, you can run one of the following commands:
 I have added the following to my Geany (an editor) build command (F8):
 
     npx eslint --format compact "%f"
-
