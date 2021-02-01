@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2021.2.2
+// @version      2021.2.2.38
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -382,27 +382,6 @@ function sortBy(what) {
 		}
 	}
 	oddEvenRowsRedraw();
-}
-let lastCB;
-function rangeClick(event) {
-	if (event.target.tagName == "LABEL") {
-		if (event.shiftKey && lastCB && event.target.firstChild != lastCB && event.target.firstChild.checked != lastCB.checked) {
-			var CBs = event.target.parentNode.parentNode.parentNode.querySelectorAll("[id^='" + userjs + "remove']  > label > input[type='checkbox'][ref='remove']");
-			var found;
-			for (let cb = 0; cb < CBs.length; cb++) {
-				if (found) {
-					if (CBs[cb] != lastCB && CBs[cb] != event.target.firstChild) {
-						CBs[cb].checked = lastCB.checked;
-					} else break;
-				} else if (CBs[cb] == lastCB || CBs[cb] == event.target.firstChild) {
-					found = true;
-				}
-			}
-			lastCB = null;
-		} else {
-			lastCB = event.target.firstChild;
-		}
-	}
 }
 function oddEvenRowsRedraw() {
 	var rows = mergeForm.querySelectorAll("form > table > tbody > tr");
