@@ -1,0 +1,21 @@
+/* ==UserStyle==
+@name         metabrainz-discourse. EXPAND ABBREVIATIONS
+@namespace    https://github.com/jesus2099/konami-command
+@version      2021.2.1
+@description  Shows abbreviation/acronym definitions by touch on mobile (or mouse hover if you use it on PC)
+@author       jesus2099
+@since        2020-02-17; https://community.metabrainz.org/t/community-meb-org-modification-userstyles/14371/3
+==/UserStyle== */
+
+@-moz-document domain("community.metabrainz.org") {
+
+	abbr[title]:hover {
+		border: 2px solid white;
+		color: #333;
+		background: #FF6;
+	}
+	abbr[title]:hover:after {
+		content: " (" attr(title) ")";
+	}
+
+}
