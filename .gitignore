@@ -1,2 +1,6 @@
 *.bak
 Thumbs.db
+
+# nodejs usine à gaz stuff for eslint
+node_modules/
+package-lock.json

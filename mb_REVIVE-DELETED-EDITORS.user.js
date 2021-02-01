@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2020.11.3.2
+// @version      2021.1.19.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -10,7 +10,7 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_REVIVE-DELETED-EDITORS.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-11-16
@@ -110,7 +110,7 @@ var editors = {
 	"jesus2099": "GOLD MASTER KING",
 	    "%you%": "PROPHET PRINCE CHAMPION",
 };
-var standout /*from the crowd*/ = true;
+var standout /* from the crowd */ = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var MBS = self.location.protocol + "//" + self.location.host;
 var you = document.querySelector("div.header ul.menu li.account a[href^='/user/']");
@@ -129,7 +129,7 @@ if (you) {
 		css.insertRule("div#page a[href='" + MBS + "/user/" + you + "'], div#page a[href='/user/" + you + "'] { background-color: yellow; color: purple; }", 0);
 	}
 }
-for (var editor in editors) if (editors.hasOwnProperty(editor)) {
+for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, editor)) {
 	var deletedEditor = typeof editors[editor] != "string";
 	var editorName = deletedEditor ? "Deleted Editor #" + editor : editor;
 	var namewas = editors[editor][2] ? editors[editor][2] : "？";
@@ -196,9 +196,6 @@ for (var editor in editors) if (editors.hasOwnProperty(editor)) {
 				inputs[i].setAttribute("title", editors[editor].title);
 				inputs[i].style.setProperty("color", "darkred");
 				inputs[i].setAttribute("_blur-value", inputs[i].value);
-				var swapValues = function(e) {
-					this.value = this.getAttribute("_" + e.type + "-value");
-				};
 				inputs[i].addEventListener("focus", swapValues);
 				inputs[i].addEventListener("blur", swapValues);
 				document.querySelector("form#edit-search").addEventListener("submit", function() {
@@ -244,12 +241,15 @@ function profileEntry(content, header) {
 	dd.style.setProperty("text-shadow", "0 0 4px gold");
 	return entry;
 }
+function swapValues(event) {
+	this.value = this.getAttribute("_" + event.type + "-value");
+}
 function removeChildren(p) {
 	while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
 }
 function getSibling(obj, tag, cls, prev) {
 	var cur = obj;
-	if (cur = prev ? cur.previousSibling : cur.nextSibling) {
+	if ((cur = prev ? cur.previousSibling : cur.nextSibling)) {
 		if (cur.tagName == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
 			return cur;
 		} else {
@@ -261,7 +261,10 @@ function getSibling(obj, tag, cls, prev) {
 }
 function addAfter(n, e) {
 	if (n && e && e.parentNode) {
-		if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
-		else { return e.parentNode.appendChild(n); }
+		if (e.nextSibling) {
+			return e.parentNode.insertBefore(n, e.nextSibling);
+		} else {
+			return e.parentNode.appendChild(n);
+		}
 	} else { return null; }
 }

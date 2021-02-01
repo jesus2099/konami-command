@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2020.6.27
+// @version      2020.6.27.2099
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user css/js auto‐update, even if the script author has not set @downloadURL and @updateURL.
 // @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -27,7 +27,7 @@ var meta = {rawmdb: function() {
 // ==/OpenUserJS==
 }};
 if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+	var kv /* key,val */, row = /\/\/\s+@(\S+)\s+(.+)/g;
 	while ((kv = row.exec(meta.rawmdb)) !== null) {
 		if (meta[kv[1]]) {
 			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
@@ -50,8 +50,8 @@ var host = {
 	"github.com": {
 		css: {
 			files: ".js-details-container .js-navigation-item div:nth-child(2) a.js-navigation-open[title$='%fileType%']",
-      icon: ".js-navigation-item div:nth-child(1) svg.octicon.octicon-file",
-			/*//TODO: find why a.octicon.octicon-cloud-download does not show icon any more // newIcon: "octicon octicon-cloud-download", /* https://octicons.github.com */
+			icon: ".js-navigation-item div:nth-child(1) svg.octicon.octicon-file",
+			/* // TODO: find why a.octicon.octicon-cloud-download does not show icon any more // newIcon: "octicon octicon-cloud-download", /* https://octicons.github.com */
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
 		iconParentLevel: 3,
@@ -83,7 +83,7 @@ function changeStuff() {
 		host.files[f].classList.add("j2installUserScript");
 		var icon = host.files[f];
 		if (host.iconParentLevel) for (var p = 0; p < host.iconParentLevel; p++) {
-			icon = icon.parentNode; 
+			icon = icon.parentNode;
 		}
 		icon = icon.querySelector(host.css.icon);
 		if (icon) {

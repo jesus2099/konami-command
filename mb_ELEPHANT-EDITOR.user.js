@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2018.4.4.3
+// @version      2021.1.20.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @homepage     http://userscripts-mirror.org/scripts/show/94629
@@ -13,7 +13,7 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-01-13
@@ -55,9 +55,9 @@ var copyDateLabels = ["↓", "↑", "copy date"];
 var setPrevNoteOnLoad = true; /* "true" will restore last edit note on load (user can choose text with buttons in either case) */
 var setPrevNoteOnEditPageLoad = false; /* "true" can be troublesome if you just want to vote, believe me */
 var setPrevDateOnLoad = false; /* "true" can be troublesome when you don’t need date any more and you forget to clear it */
-/*funky colours*/
+/* funky colours */
 var cOK = "greenyellow";
-var cNG = "pink";
+// var cNG = "pink";
 var cWARN = "gold";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs94629";
@@ -124,7 +124,7 @@ if (content) {
 					if (fs) {
 						fs.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
 					}
-				} 
+				}
 			}
 			notetext.style.setProperty("width", "98%");
 			var removeLabels = ["label-id-ar.edit_note", "label-id-edit_note", "label-id-edit-artist.edit_note", "label-id-edit-label.edit_note", "label-id-edit-recording.edit_note", "label-id-edit-release-group.edit_note", "label-id-edit-url.edit_note", "label-id-edit-work.edit_note"];
@@ -134,15 +134,15 @@ if (content) {
 			}
 		}
 		var buttons = createTag("div", {a: {class: "buttons"}});
-		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if(event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
+		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
 		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
 		savecb.checked = save;
 		savecb.parentNode.appendChild(document.createTextNode(" remember  "));
 		for (var ni = 0; ni < textLabels.length; ni++) {
-			var butt = createButtor(textLabels[ni], "50px");
-			var buttid = notetextStorage+"0"+ni;
+			let butt = createButtor(textLabels[ni], "50px");
+			let buttid = notetextStorage + "0" + ni;
 			butt.setAttribute("id", buttid);
-			var lastnotetext = localStorage.getItem(buttid);
+			let lastnotetext = localStorage.getItem(buttid);
 			if (!lastnotetext) {
 				butt.setAttribute("disabled", "true");
 				butt.style.setProperty("opacity", ".5");
@@ -154,7 +154,7 @@ if (content) {
 					sendEvent(notetext, "change");
 					notetext.focus();
 					if (event.shiftKey) { sendEvent(submitbtn, "click"); }
-				}, false);/*onclick*/
+				}, false); // onclick
 			}
 			buttons.appendChild(butt);
 			buttons.appendChild(document.createTextNode(" "));
@@ -162,25 +162,25 @@ if (content) {
 		buttons.appendChild(createClearButtor("notetext"));
 		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
 		notetext.parentNode.insertBefore(buttons, notetext);
-		var lastnotetext = localStorage.getItem(notetextStorage + "00");
+		let lastnotetext = localStorage.getItem(notetextStorage + "00");
 		if (save && !editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
 			notetext.value = lastnotetext;
 			sendEvent(notetext, "change");
 		}
 		if (reldates.length == 2) {
 			createClearButtor("dates");
-			/*date memories*/
+			/* date memories */
 			for (var ixd = 0; ixd < xdate.length; ixd++) {
 				var lastdatey = localStorage.getItem(xdate[ixd][0] + "_y");
 				var lastdatem = localStorage.getItem(xdate[ixd][0] + "_m");
 				var lastdated = localStorage.getItem(xdate[ixd][0] + "_d");
-				var butt = createButtor(textLabels[0]);
+				let butt = createButtor(textLabels[0]);
 				butt.setAttribute("id", xdate[ixd][0]);
 				if (!lastdatey) {
 					butt.setAttribute("disabled", "true");
 					butt.style.setProperty("opacity", ".5");
 				} else {
-					butt.setAttribute("title", lastdatey+"-"+lastdatem+"-"+lastdated);
+					butt.setAttribute("title", lastdatey + "-" + lastdatem + "-" + lastdated);
 					butt.setAttribute("value", butt.getAttribute("title").replace(/-null/g, ""));
 					butt.addEventListener("click", function(event) {
 						var xdymd = this.getAttribute("title").match(/^(.*)-(.*)-(.*)$/);
@@ -193,7 +193,7 @@ if (content) {
 						if (event.shiftKey) {
 							sendEvent(this.parentNode.getElementsByTagName("input")[3], "click");
 						}
-					}, false);/*onclick*/
+					}, false); // onclick
 				}
 				xdate[ixd][1].parentNode.setAttribute("title", "shift+click to change both dates at once");
 				addAfter(butt, xdate[ixd][3]);
@@ -202,9 +202,9 @@ if (content) {
 					sendEvent(document.getElementById(xdate[ixd][0]), "click");
 				}
 			}
-			/*copy dates*/
+			/* copy dates */
 			for (var icd = 0; icd < 2; icd++) {
-				var buttcd = createButtor(copyDateLabels[icd]);
+				let buttcd = createButtor(copyDateLabels[icd]);
 				buttcd.setAttribute("title", copyDateLabels[2]);
 				buttcd.addEventListener("click", function(event) {
 					var src = copyDateLabels.indexOf(this.getAttribute("value"));
@@ -213,7 +213,7 @@ if (content) {
 						sendEvent(xdate[src == 1 ? 0 : 1][icdymd], "change");
 					}
 					focusYYYY(xdate[src][1]);
-				}, false);/*onclick*/
+				}, false); // onclick
 				addAfter(buttcd, xdate[icd][3]);
 				addAfter(document.createTextNode(" "), xdate[icd][3]);
 			}
@@ -230,11 +230,11 @@ if (content) {
 function saveNote() {
 	if (notetext) {
 		if (textLabels.length > 0) {
-			var thisnotetext = notetext.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");
+			var thisnotetext = notetext.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\(['\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");
 			var ls00 = localStorage.getItem(notetextStorage + "00");
 			if (save && thisnotetext != ls00) {
 				if (ls00 != "") {
-					for (var isav = textLabels.length - 1; isav > 0 ; isav--) {
+					for (var isav = textLabels.length - 1; isav > 0; isav--) {
 						var prev = localStorage.getItem(notetextStorage + "0" + (isav - 1));
 						if (prev) {
 							localStorage.setItem(notetextStorage + "0" + isav, localStorage.getItem(notetextStorage + "0" + (isav - 1)));
@@ -263,8 +263,7 @@ function saveNote() {
 						localStorage.removeItem(xdate[ixd][0] + "_m");
 						localStorage.removeItem(xdate[ixd][0] + "_d");
 					}
-				}
-				else if (ndy.trim() == "") {
+				} else if (ndy.trim() == "") {
 					localStorage.setItem(xdate[ixd][0], "0");
 				}
 			}
@@ -272,27 +271,28 @@ function saveNote() {
 	}
 }
 function createButtor(label, width) {
-	var butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
+	let butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
 	if (width) { butt.style.setProperty("width", width); }
 	return butt;
 }
 function createClearButtor(input) {
+	let butt;
 	switch (input) {
 		case "notetext":
-			var butt = createButtor(delLabel, "25px");
+			butt = createButtor(delLabel, "25px");
 			butt.addEventListener("click", function(event) {
 				notetext.value = "";
 				sendEvent(notetext, "change");
 				notetext.focus();
 				if (event.shiftKey) { sendEvent(submitbtn, "click"); }
-			}, false);/*onclick*/
+			}, false); // onclick
 			butt.style.setProperty("color", "red");
 			butt.style.setProperty("background-color", cWARN);
 			return butt;
-			break;
+			// break;
 		case "dates":
 			for (var i = 0; i < 2; i++) {
-				var butt = createButtor(delLabel, "25px");
+				butt = createButtor(delLabel, "25px");
 				butt.setAttribute("id", userjs + "deldate" + i);
 				butt.addEventListener("click", function(event) {
 					var id = this.getAttribute("id").charAt((userjs + "deldate").length);
@@ -304,7 +304,7 @@ function createClearButtor(input) {
 					focusYYYY(xdate[id][1]);
 					event.cancelBubble = true;
 					if (event.stopPropagation) event.stopPropagation();
-				}, false);/*onclick*/
+				}, false); // onclick
 				addAfter(butt, xdate[i][3]);
 				addAfter(document.createTextNode(" "), xdate[i][3]);
 			}
@@ -312,7 +312,7 @@ function createClearButtor(input) {
 	}
 }
 function focusYYYY(input) {
-	if(input.style.getPropertyValue("display") == "none" && input.nextSibling.getAttribute("placeholder") == "YYY+")/*EASY_DATE*/
+	if (input.style.getPropertyValue("display") == "none" && input.nextSibling.getAttribute("placeholder") == "YYY+") // link to EASY_DATE
 		input.nextSibling.focus();
 	else
 		input.focus();

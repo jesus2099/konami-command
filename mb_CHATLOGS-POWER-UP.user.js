@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2018.3.4
+// @version      2018.3.4.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CHATLOGS-POWER-UP.user.js
 // @description  chatlogs.metabrainz.org/brainzbot. swicth between #musicbrainz, #metabrainz and #musicbrainz-ja channels; previous/next date log page (it was once a better script)
 // @homepage     http://userscripts-mirror.org/scripts/show/127580
@@ -42,7 +42,7 @@ if (cat) {
 				css.insertRule("header#Log-Header { padding: 0px; }", 0);
 				css.insertRule("header#Log-Header { top: 0px; }", 0);
 				// remove sidebar which does some funky endless reloading with Opera 12
-				css.insertRule(".timeline-navigation { display: none; }", 0)
+				css.insertRule(".timeline-navigation { display: none; }", 0);
 				css.insertRule("#Log-Container { margin-top: 0px; }", 0);
 				css.insertRule("#Log-Container article { margin-right: 0px; }", 0);
 			}

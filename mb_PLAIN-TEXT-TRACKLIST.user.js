@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2020.11.27
+// @version      2021.1.19.2099
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @compatible   vivaldi(2.9.1705.41)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -17,9 +17,10 @@
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\/disc\/\d+#[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?/
 // @run-at       document-end
 // ==/UserScript==
-/* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - 
-patterns	: tweak the result tracklist using \n for new lines
-nextDisc	: used to show when going next medium/tracklist in multi-discs releases */
+"use strict";
+/* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- -
+patterns: tweak the result tracklist using \n for new lines
+nextDisc: used to show when going next medium/tracklist in multi-discs releases */
 var patterns = {
 	"Track\u00A0parser": {
 		withoutTrackArtists: "%tracknumber%. %title% (%length%)\n",
@@ -43,7 +44,7 @@ var userjs = "jesus2099plainTextTracklist";
 var tracks = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]");
 /* ## PLAIN TEXT TRACKLIST ## */
 function textTracklist(tracks, patt) {
-	//link to mb_INLINE-STUFF (start)
+	// link to mb_INLINE-STUFF (start)
 	var inlineStuffedRecordingNames = document.querySelectorAll("a[jesus2099userjs81127recname]");
 	for (var n = 0; n < inlineStuffedRecordingNames.length; n++) {
 		replaceChildren(createTag("bdi", {}, inlineStuffedRecordingNames[n].getAttribute("jesus2099userjs81127recname")), inlineStuffedRecordingNames[n]);
@@ -53,7 +54,7 @@ function textTracklist(tracks, patt) {
 	for (var c = 0; c < inlineStuffedRecordingComments.length; c++) {
 		removeNode(inlineStuffedRecordingComments[c]);
 	}
-	//link to mb_INLINE-STUFF (end)
+	// link to mb_INLINE-STUFF (end)
 	var pattern = patterns[patt].withoutTrackArtists;
 	var replaces = [
 		[/%artist%/g, "artist"],
@@ -62,9 +63,10 @@ function textTracklist(tracks, patt) {
 		[/%tracknumber%/g, "tracknumber"],
 	];
 	var tracklist = "";
-	for (var i = 0 ; i < tracks.length ; i++) {
+	for (var i = 0; i < tracks.length; i++) {
 		var tracknumber = tracks[i].querySelector("td.pos").textContent.trim();
 		if (tracknumber == "1" && i != 0) { tracklist += nextDisc; }
+		// eslint-disable-next-line no-unused-vars -- title sera utilisée par un eval(), plus loin
 		var title = (tracks[i].querySelector("td:not(.pos):not(.video) a[href^='/recording/']").textContent);
 		var artist = tracks[i].querySelector("td:not([class]) + td:not([class])");
 		if (artist) {
@@ -74,6 +76,7 @@ function textTracklist(tracks, patt) {
 			pattern = patterns[patt].withTrackArtists;
 			artist = JSON.parse(document.querySelector("script[type='application/ld+json']").textContent).creditedTo;
 		}
+		// eslint-disable-next-line no-unused-vars -- length sera utilisée par un eval(), plus loin
 		var length = tracks[i].querySelector("td.treleases").textContent.replace(/[^0-9:(?)]/g, "");
 		var txt = pattern;
 		for (var j = 0; j < replaces.length; j++) {
@@ -84,8 +87,7 @@ function textTracklist(tracks, patt) {
 	return tracklist;
 }
 if (tracks.length > 0) {
-	for (var p in patterns) if (patterns.hasOwnProperty(p)) {
-		var fragment= document.createDocumentFragment();
+	for (var p in patterns) if (Object.prototype.hasOwnProperty.call(patterns, p)) {
 		var a = document.createElement("a");
 		a.style.setProperty("cursor", "pointer");
 		a.addEventListener("click", function(event) {
@@ -94,7 +96,7 @@ if (tracks.length > 0) {
 				truc.style.setProperty("position", "fixed");
 				truc.style.setProperty("z-index", zIndex);
 				truc.style.setProperty("top", (100 - size) / 2 + "%");
-				truc.style.setProperty("left", (100 - size) / 2+"%");
+				truc.style.setProperty("left", (100 - size) / 2 + "%");
 				truc.style.setProperty("width", size + "%");
 				truc.style.setProperty("height", size + "%");
 				if (background) { truc.style.setProperty("background", background); }

@@ -1,8 +1,9 @@
 "use strict";
+// eslint-disable-next-line func-style -- je vais te migrer ça vers GM_info
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2020.11.27
+// @version      2021.1.20.2099
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -55,7 +56,7 @@ var xhrJobs = {
 		info: "PLEASE WAIT (get current work info)",
 		async: true,
 		method: "get",
-		init: function(xhr) {
+		init: function() {
 			xhrJobs["workinfo-get"].url = MBS + "/ws/2/work/" + xhrWork.mbid + "?fmt=json&inc=annotation+aliases";
 		},
 		onload: function() {
@@ -67,7 +68,7 @@ var xhrJobs = {
 					xhrWork.annotation = res.annotation ? res.annotation : "";
 					var code = xhrWork.annotation.match(new RegExp(reAnnotCode, "i"));
 					if (code) {
-						insertBefore(createTag("div", {a: {class: "row"}}, [createTag("label", {}, "JASRAC作品コード:"), createTag("b", {s: {backgroundColor: background}}, createA(code[1], workLookupURL("jasrac", "code", code[1]), "JASRAC work code from annotation", "_blank"))]), /*xhrForm.name*/iname.parentNode);
+						insertBefore(createTag("div", {a: {class: "row"}}, [createTag("label", {}, "JASRAC作品コード:"), createTag("b", {s: {backgroundColor: background}}, createA(code[1], workLookupURL("jasrac", "code", code[1]), "JASRAC work code from annotation", "_blank"))]), /* xhrForm.name */ iname.parentNode);
 					}
 					aliasTable();
 				}
@@ -75,15 +76,15 @@ var xhrJobs = {
 			}
 		},
 	},
-	"work-create/edit":{
+	"work-create/edit": {
 		method: "post",
 		async: true,
-		init: function(xhr) {
+		init: function() {
 			xhrJobs["work-create/edit"].info = (self.location.pathname.match(/^\/work\/create/) ? "create" : "edit") + " work";
 			xhrJobs["work-create/edit"].url = xhrForm.form.getAttribute("action");
 			var inps = xhrForm.form.querySelectorAll("form > div > fieldset:not(." + userjs + ") input[name]:not([name='']):not([type='button']), form > div > fieldset:not(." + userjs + ") textarea[name], form > div > fieldset:not(." + userjs + ") select[name]");
 			xhrJobs["work-create/edit"].params = "";
-			for (var inp = 0; inp < inps.length; inp++) {
+			for (let inp = 0; inp < inps.length; inp++) {
 				xhrJobs["work-create/edit"].params += (inp > 0 ? "&" : "") + inps[inp].getAttribute("name") + "=" + encodeURIComponent(inps[inp].value);
 			}
 		},
@@ -111,11 +112,11 @@ var xhrJobs = {
 		method: "post",
 		async: false,
 		url: "/relationship-editor",
-		init: function(xhr) {
+		init: function() {
 			var inps = xhrForm.form.querySelectorAll("div#" + userjs + "wcs input.name.lookup-performed, form > div > fieldset:not(." + userjs + ") textarea.edit-note");
 			xhrJobs["batch-relationship-create"].params = "rel-editor.as_auto_editor=" + (isAutoEdit() ? "1" : "0");
 			var reli = 0;
-			for (var inp = 0; inp < inps.length; inp++) {
+			for (let inp = 0; inp < inps.length; inp++) {
 				var input = inps[inp];
 				if (input.classList.contains("lookup-performed")) {
 					var row = getParent(input, "div", "row");
@@ -131,7 +132,7 @@ var xhrJobs = {
 					if (row.querySelector("input[name='ar.attrs.additional']")) {
 						xhrJobs["batch-relationship-create"].params += rel + "attrs.additional=1";
 					}
-					if (row.querySelector("input[name='ar.attrs.translated']")) {//TODO: obsolete, cf. da6c5d8a-ce13-474d-9375-61feb29039a5
+					if (row.querySelector("input[name='ar.attrs.translated']")) { // TODO: obsolete, cf. da6c5d8a-ce13-474d-9375-61feb29039a5
 						xhrJobs["batch-relationship-create"].params += rel + "attrs.translated=1";
 					}
 				} else if (input.tagName == "TEXTAREA") {
@@ -140,11 +141,11 @@ var xhrJobs = {
 			}
 		},
 	},
-	"annotation-get":{
+	"annotation-get": {
 		async: true,
 		info: "get current work annotation",
 		method: "get",
-		init: function(xhr) {
+		init: function() {
 			xhrJobs["annotation-get"].url = MBS + "/ws/2/work/" + xhrWork.mbid + "?inc=annotation";
 		},
 		onload: function() {
@@ -159,20 +160,20 @@ var xhrJobs = {
 			xhrMachine();
 		},
 	},
-	"annotation-add":{
+	"annotation-add": {
 		async: false,
 		info: "JASRAC work code annotation",
 		method: "post",
-		init: function(xhr) {
+		init: function() {
 			xhrJobs["annotation-add"].url = MBS + "/work/" + xhrWork.mbid + "/edit_annotation";
 			var curl = workLookupURL("jasrac", "code", xhrWork.code);
 			xhrJobs["annotation-add"].params = "edit-annotation.text=" + encodeURIComponent("JASRAC: '''" + xhrWork.code + "''' ([http://tickets.musicbrainz.org/browse/MBS-7359|MBS-7359])" + (xhrWork.annotation ? "\n" + xhrWork.annotation : "")) + "&edit-annotation.changelog=" + encodeURIComponent("JASRAC: " + xhrWork.code + " (MBS-7359)") + "&edit-annotation.edit_note=" + encodeURIComponent("JASRAC: '''" + xhrWork.code + "''' (" + curl + ") ← requires JASRACへの直リンク ('''jasrac_DIRECT-LINK''')\nStill needed for JASRAC auto‐linking (until http://tickets.musicbrainz.org/browse/MBS-7359).\n\n" + MBlinks());
 		},
 	},
-	"alias-add":{
+	"alias-add": {
 		async: false,
 		method: "post",
-		init: function(xhr) {
+		init: function() {
 			xhrJobs["alias-add"].url = MBS + "/work/" + xhrWork.mbid + "/add-alias";
 			xhrJobs["alias-add"].params = "edit-alias.as_auto_editor=" + (isAutoEdit() ? "1" : "0");
 			var newAlias = xhrWork.newAliases.shift();
@@ -181,7 +182,7 @@ var xhrJobs = {
 				if (newAlias["edit-alias.sort_name"].length > 0 && newAlias["edit-alias.sort_name"] != newAlias["edit-alias.name"]) {
 					xhrJobs["alias-add"].info += "（" + newAlias["edit-alias.sort_name"] + "）";
 				}
-				for (var p in newAlias) if (newAlias.hasOwnProperty(p)) {
+				for (let p in newAlias) if (Object.prototype.hasOwnProperty.call(newAlias, p)) {
 					xhrJobs["alias-add"].params += "&" + p + "=" + encodeURIComponent(newAlias[p]);
 				}
 				xhrJobs["alias-add"].params += "&edit-alias.period.ended=&edit-alias.edit_note=" + encodeURIComponent(teditnote.value.replace(/'''CREDITS'''[^※] + '''MAIN TITLE'''/, "'''MAIN TITLE'''") + "\n" + MBlinks());
@@ -191,8 +192,8 @@ var xhrJobs = {
 };
 if (pagecat && !document.title.match(/slow down!/i)) {
 	pagecat = pagecat[1].replace(new RegExp(RE_GUID + "/"), "");
-	var background = "#FF6";/*favourite game*/
-	var cOK = "#CFC";/*bad for ozone layer*/
+	var background = "#FF6"; // favourite game
+	var cOK = "#CFC"; // bad for ozone layer
 	var cWARN = "gold";
 	var cERR = "pink";
 	var hasLyrics = "詞";
@@ -200,238 +201,240 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 	var vocal = "vocal";
 	var instrumental = "instrumental";
 	if (DEBUG) console.log(userjs + " pagecat : " + pagecat);
+	let sakuhinCode, sakuhin;
 	switch (pagecat) {
-		case "jasrac":setTimeout(function(){ // quick and dirty patch
-			var workName;
-			var sakuhinCode;
-			var iswc;
-			var summary = "";
-			var createWork = "https://musicbrainz.org/work/create?edit-work.name=";
-			var isVocal = false;
-			var tables = document.getElementsByTagName("table");
-			if (tables) {
-				var work = tables[1];
-				if (true || work) { // quick and dirty patch
-					workName = document.querySelector(".baseinfo--name").textContent.trim();
-					sakuhinCode = document.querySelector(".baseinfo--code strong").textContent;
-					document.title = workName + "　" + sakuhinCode + "　" + document.title;
-					createWork += encodeURIComponent(fullwidthToHalfwidth(workName)).replace(/%20/g, "+");
-					summary += workName + " (work code '''" + sakuhinCode + "'''/" + sakuhinCode.replace(/-/g, "");
-					iswc = document.querySelector(".baseinfo--iswc strong");
-					if (iswc) {
-						iswc = {node: iswc, value: iswc.textContent};
-						summary += " — ISWC '''" + iswc.value + "'''/" + iswc.value.replace(/[-\.]/g, "");
-					}
-					summary += ")\n";
-					/*var srccred = tables[3];
-					if (srccred) {
-						var tmpcred = "";
-						var credtr = srccred.getElementsByTagName("tr");
-						if (credtr) {
-							for (var icred = 2; icred < credtr.length; icred++) {
-								var credtd = credtr[icred].getElementsByTagName("td");
-								if (credtd) {
-									var credit = {role: credtd[2].textContent.trim(), who: credtd[1].textContent.trim()};
-									credit["trust"] = credtd[4].textContent.trim();
-									if (credit.trust != "") {
-										credit.trust = "\u00a0（信託状況：" + credit.trust; // + (!credit.trust.match(/全信託/) ? "sic" : "")
-									}
-									credit["manager"] = credtd[5].textContent.trim();
-									if (credit.manager != "") {
-										credit.trust += (credit.trust!="" ? "／" : "（") + credit.manager;
-									}
-									if (credit.trust != "") {
-										credit.trust += "）";
-									}
-									if (!isVocal && credit.role.indexOf(hasLyrics) > -1) {
-										isVocal = true;
-									}
-									credit["line"] = credit.role + "：" + credit.who + credit.trust + "\n";
-									if (credit.who != "UNKNOWN PUBLISHER" && tmpcred.indexOf(credit.line) < 0) {
-										tmpcred += credit.line;
+		case "jasrac":
+			setTimeout(function() { // quick and dirty patch
+				var workName;
+				var iswc;
+				var summary = "";
+				var createWork = "https://musicbrainz.org/work/create?edit-work.name=";
+				var isVocal = false;
+				var tables = document.getElementsByTagName("table");
+				if (tables) {
+					var work = tables[1];
+					if (true || work) { // quick and dirty patch
+						workName = document.querySelector(".baseinfo--name").textContent.trim();
+						sakuhinCode = document.querySelector(".baseinfo--code strong").textContent;
+						document.title = workName + "　" + sakuhinCode + "　" + document.title;
+						createWork += encodeURIComponent(fullwidthToHalfwidth(workName)).replace(/%20/g, "+");
+						summary += workName + " (work code '''" + sakuhinCode + "'''/" + sakuhinCode.replace(/-/g, "");
+						iswc = document.querySelector(".baseinfo--iswc strong");
+						if (iswc) {
+							iswc = {node: iswc, value: iswc.textContent};
+							summary += " — ISWC '''" + iswc.value + "'''/" + iswc.value.replace(/[-.]/g, "");
+						}
+						summary += ")\n";
+						/* var srccred = tables[3];
+						if (srccred) {
+							var tmpcred = "";
+							var credtr = srccred.getElementsByTagName("tr");
+							if (credtr) {
+								for (let icred = 2; icred < credtr.length; icred++) {
+									var credtd = credtr[icred].getElementsByTagName("td");
+									if (credtd) {
+										var credit = {role: credtd[2].textContent.trim(), who: credtd[1].textContent.trim()};
+										credit["trust"] = credtd[4].textContent.trim();
+										if (credit.trust != "") {
+											credit.trust = "\u00a0（信託状況：" + credit.trust; // + (!credit.trust.match(/全信託/) ? "sic" : "")
+										}
+										credit["manager"] = credtd[5].textContent.trim();
+										if (credit.manager != "") {
+											credit.trust += (credit.trust!="" ? "／" : "（") + credit.manager;
+										}
+										if (credit.trust != "") {
+											credit.trust += "）";
+										}
+										if (!isVocal && credit.role.indexOf(hasLyrics) > -1) {
+											isVocal = true;
+										}
+										credit["line"] = credit.role + "：" + credit.who + credit.trust + "\n";
+										if (credit.who != "UNKNOWN PUBLISHER" && tmpcred.indexOf(credit.line) < 0) {
+											tmpcred += credit.line;
+										}
 									}
 								}
 							}
-						}
-						if (tmpcred != "") {
-							summary += "\n'''CREDITS'''\n" + tmpcred;
-						}
-					}
-					var perf = tables[6];
-					if (perf) {
-						var perfs = perf.getElementsByTagName("tr");
-						var max = Math.min(perfs.length, 13);
-						var tmpperf = "\n'''PERFORMERS'''" + (perfs.length > max ? " (" + (perfs.length - 3) + ")" : "") + "\n";
-						var isperf = true;
-						for (var iperf = 3; iperf < max; iperf++) {
-							var artist = perfs[iperf].getElementsByTagName("td")[1].textContent.trim();
-							if (artist == "") {
-								isperf = false;
-								break;
+							if (tmpcred != "") {
+								summary += "\n'''CREDITS'''\n" + tmpcred;
 							}
-							tmpperf += (iperf > 3 ? "\n" : "") + fullwidthToHalfwidth(artist);
 						}
-						if (perfs.length > max) tmpperf += "\n…";
-						if (isperf) {
-							summary += tmpperf + "\n";
-						}
-					}
-					var alias = tables[5];
-					if (alias) {
-						var transtypes = ["'''genuine'''", "''yomikata''", "latin"];
-						var aliases = alias.getElementsByTagName("tr");
-						var tmptran = "\n'''MAIN TITLE'''";
-						var hastran = false;
-						var tmpali = "\n'''ALIASES/SUBTITLES/SEARCHES/TRANSLATIONS'''";
-						var hasali = false;
-						for (var iali = 2; iali < aliases.length; iali++) {
-							var type = aliases[iali].getElementsByTagName("td")[0].textContent.match(/(正題|タイトルの続き)/);
-							if (type) {
-								type = type[1];
-							} else {
-								type = "";
+						var perf = tables[6];
+						if (perf) {
+							var perfs = perf.getElementsByTagName("tr");
+							var max = Math.min(perfs.length, 13);
+							var tmpperf = "\n'''PERFORMERS'''" + (perfs.length > max ? " (" + (perfs.length - 3) + ")" : "") + "\n";
+							var isperf = true;
+							for (let iperf = 3; iperf < max; iperf++) {
+								var artist = perfs[iperf].getElementsByTagName("td")[1].textContent.trim();
+								if (artist == "") {
+									isperf = false;
+									break;
+								}
+								tmpperf += (iperf > 3 ? "\n" : "") + fullwidthToHalfwidth(artist);
 							}
-							var alis = aliases[iali].getElementsByTagName("div");
-							for (var itran = 0; itran < 3; itran++) {
-								var ali = alis[itran].textContent.trim();
-								if(type == "正題") {
-									if (!hastran) {
-										hastran = true;
-									}
-									tmptran += "\n" + ali + " (" + transtypes[itran] + ")";
+							if (perfs.length > max) tmpperf += "\n…";
+							if (isperf) {
+								summary += tmpperf + "\n";
+							}
+						}
+						var alias = tables[5];
+						if (alias) {
+							var transtypes = ["'''genuine'''", "''yomikata''", "latin"];
+							var aliases = alias.getElementsByTagName("tr");
+							var tmptran = "\n'''MAIN TITLE'''";
+							var hastran = false;
+							var tmpali = "\n'''ALIASES/SUBTITLES/SEARCHES/TRANSLATIONS'''";
+							var hasali = false;
+							for (let iali = 2; iali < aliases.length; iali++) {
+								var type = aliases[iali].getElementsByTagName("td")[0].textContent.match(/(正題|タイトルの続き)/);
+								if (type) {
+									type = type[1];
 								} else {
-									if (type == "タイトルの続き") {
-										if (!ali.match(/^[－-]$/)) {
-											var prevalias = tmpali.substring(tmpali.lastIndexOf("\n")).split("◇");
-											prevalias[itran] += ali;
-											tmpali = tmpali.substring(0, tmpali.lastIndexOf("\n")) + prevalias.join("◇");
+									type = "";
+								}
+								var alis = aliases[iali].getElementsByTagName("div");
+								for (let itran = 0; itran < 3; itran++) {
+									var ali = alis[itran].textContent.trim();
+									if(type == "正題") {
+										if (!hastran) {
+											hastran = true;
 										}
+										tmptran += "\n" + ali + " (" + transtypes[itran] + ")";
 									} else {
-										if (!hasali) {
-											hasali = true;
+										if (type == "タイトルの続き") {
+											if (!ali.match(/^[－-]$/)) {
+												var prevalias = tmpali.substring(tmpali.lastIndexOf("\n")).split("◇");
+												prevalias[itran] += ali;
+												tmpali = tmpali.substring(0, tmpali.lastIndexOf("\n")) + prevalias.join("◇");
+											}
+										} else {
+											if (!hasali) {
+												hasali = true;
+											}
+											tmpali += (itran>0 ? "◇" : "\n") + ali;
 										}
-										tmpali += (itran>0 ? "◇" : "\n") + ali;
 									}
 								}
 							}
+							if (hastran) {
+								summary += tmptran + "\n";
+							}
+							if (hasali) {
+								summary += tmpali + "\n";
+							}
+							summary += "\n";
+						} */
+				/* -- vv ------ copiable full summary ------ vv -- */
+						var tr = document.createElement("tr");
+						var td = document.createElement("td");
+						td.setAttribute("colspan", "3");
+						td.style.setProperty("text-align", "center");
+						td.style.setProperty("background-image", "/eJwid/img/kokoronelogo_A-2out.jpg");
+						summary += "※ '''JASRAC work importer''' (" + meta.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account\n" + workLookupURL("nextone", "code", sakuhinCode) + " ← another mirror";
+						td.appendChild(document.createTextNode("click to select → "));
+						var ta = createTag("textarea", {a: {name: "tsummary"}}, summary);
+						ta.setAttribute("id", ta.getAttribute("name"));
+						ta.style.setProperty("width", "40%");
+						ta.setAttribute("rows", "1");
+						ta.style.setProperty("color", "black");
+						ta.style.setProperty("background", background);
+						ta.addEventListener("focus", function(event) {
+							this.setAttribute("rows", "20");
+							this.select();
+						}, false);
+						ta.addEventListener("mousemove", function(event) {
+							this.blur();
+							this.focus();
+						}, false);
+						ta.addEventListener("mouseout", function(event) {
+							this.setAttribute("rows", "1");
+						}, false);
+						td.appendChild(ta);
+						td.appendChild(document.createTextNode(" ← CONTROL key + mouse over to expand + select"));
+						tr.appendChild(td);
+						work.appendChild(tr);
+				/* -- vv ------ Add to MB ------ vv -- */
+						var form = createTag("form", {a: {action: createWork.split("?")[0], method: "post", "accept-charset": "utf-8", title: "PLEASE REVIEW before final submission!"}, s: {display: "inline", background: background}});
+						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.attributes.0.type_id", value: "3"}}));
+						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.attributes.0.value", value: sakuhinCode}}));
+						createWork += "&edit-work.attributes.0.type_id=3&edit-work.attributes.0.value=" + sakuhinCode;
+						if (iswc) {
+							form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.iswcs.0", value: iswc.value}}));
+							createWork += "&edit-work.iswcs.0=" + iswc.value;
 						}
-						if (hastran) {
-							summary += tmptran + "\n";
+						if (isVocal) {
+							form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.type_id", value: "17"}}));
+							createWork += "&edit-work.type_id=17";
+						} else {
+							form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.language_id", value: "486"}}));
+							createWork += "&edit-work.language_id=486";
 						}
-						if (hasali) {
-							summary += tmpali + "\n";
+						/* https://musicbrainz.org/relationships */
+						createWork += getWorkCredits({
+							/* artist-work */
+							"作詞": { nomatch: /^権利者　/, type: "3e48faba-ec01-47fd-8e89-30e81161661c" },
+							"訳詞": { nomatch: /^権利者　/, type: "da6c5d8a-ce13-474d-9375-61feb29039a5" },
+							"補詞": { nomatch: /^権利者　/, type: "3e48faba-ec01-47fd-8e89-30e81161661c", additional: "1" },
+							"作曲": { nomatch: /^権利者　/, type: "d59d99ea-23d4-4a80-b066-edca32ee158f" },
+							"作曲作詞": { type: "a255bca1-b157-4518-9108-7b147dc3fc68" },
+							"不明": { type: "a255bca1-b157-4518-9108-7b147dc3fc68" }
+						}, summary, createWork);
+						createWork += getWorkCredits({
+							/* label-work */
+							"作詞": { match: /^権利者　(.+)$/, type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
+							"訳詞": { match: /^権利者　(.+)$/, type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
+							"補詞": { match: /^権利者　(.+)$/, type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
+							"作曲": { match: /^権利者　㈱?(.+)$/, type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
+							"出版者": { type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
+							"サブ出版": { type: "05ee6f18-4517-342d-afdf-5897f64276e3" }
+						}, summary, createWork);
+						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.edit_note", value: summary}}));
+						createWork += "&edit-work.edit_note=" + encodeURIComponent(summary).replace(/%20/g, "+");
+							/* form.appendChild(createTag("a", {a: {title: MBS7313 + "\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "underline", color: "blue"}, e: {click: function(event) {
+							this.parentNode.setAttribute("target", event.shiftKey || event.ctrlKey ? "_blank" : "_self");
+							this.parentNode.submit();
+							return stop(event);
+						}}}, "Add to MB")) */
+						form.appendChild(createTag("a", {a: {href: createWork, title: MBS7313 + "\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "blink line-through", color: "blue"}}, "BROKEN")); // textDecoration: "underline" Add to MusicBrainz
+						var sakuhin = document.querySelector(".baseinfo--name").firstChild; // quick and dirty patch
+						sakuhin.parentNode.appendChild(document.createTextNode(" （"));
+						sakuhin.parentNode.appendChild(form);
+						sakuhin.parentNode.appendChild(document.createTextNode("）"));
+				/* -- vv ------ sakuhin links ------ vv -- */
+						addAfter(document.createElement("sup"), sakuhin).appendChild(createA("MB", workLookupURL("mb", "name", workName), "Search this work name in MusicBrainz"));
+						addAfter(document.createElement("sup"), sakuhin).appendChild(createA("NT", workLookupURL("nextone", "name", workName), "Search this work name in NexTone"));
+						addAfter(document.createTextNode(" "), sakuhin);
+				/* -- vv ------ sakuhin code links ------ vv -- */
+						var span = document.createElement("span");
+						span.appendChild(document.createTextNode(sakuhinCode));
+						span.appendChild(document.createTextNode(" "));
+						var suppo = span.appendChild(document.createElement("sup"));
+						suppo.appendChild(createA("MF", workLookupURL("minc", "code", sakuhinCode), "This work in 音楽の森 music FOREST"));
+						suppo.appendChild(createA("NT", workLookupURL("nextone", "code", sakuhinCode), "This work in NexTone"));
+						suppo.appendChild(createA("MB", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"));
+						span.appendChild(document.createTextNode(" "));
+						span.appendChild(document.createTextNode(workName));
+						sakuhin = replaceElement(span, sakuhin); // TODO replaceChild returns sakuhin already (removed element), no ?
+				/* -- vv ------ iswc links ------ vv -- */
+						if (iswc) {
+							addAfter(createTag("sup", {}, createA("MB", workLookupURL("mb", "iswc", iswc.value), "Search this ISWC in MusicBrainz")), iswc.node);
+							addAfter(document.createTextNode(" "), iswc.node);
 						}
-						summary += "\n";
-					}*/
-			/* -- vv ------ copiable full summary ------ vv -- */
-					var tr = document.createElement("tr");
-					var td = document.createElement("td");
-					td.setAttribute("colspan", "3");
-					td.style.setProperty("text-align", "center");
-					td.style.setProperty("background-image", "/eJwid/img/kokoronelogo_A-2out.jpg");
-					summary += "※ '''JASRAC work importer''' (" + meta.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account\n" + workLookupURL("nextone", "code", sakuhinCode) + " ← another mirror";
-					td.appendChild(document.createTextNode("click to select → "));
-					var ta = createTag("textarea", {a: {name: "tsummary"}}, summary);
-					ta.setAttribute("id", ta.getAttribute("name"));
-					ta.style.setProperty("width", "40%");
-					ta.setAttribute("rows", "1");
-					ta.style.setProperty("color", "black");
-					ta.style.setProperty("background", background);
-					ta.addEventListener("focus", function(e) {
-						this.setAttribute("rows", "20");
-						this.select();
-					}, false);
-					ta.addEventListener("mousemove", function(e) {
-						this.blur();
-						this.focus();
-					}, false);
-					ta.addEventListener("mouseout", function(e) {
-						this.setAttribute("rows", "1");
-					}, false);
-					td.appendChild(ta);
-					td.appendChild(document.createTextNode(" ← CONTROL key + mouse over to expand + select"));
-					tr.appendChild(td);
-					work.appendChild(tr);
-			/* -- vv ------ Add to MB ------ vv -- */
-					var form = createTag("form", {a: {action: createWork.split("?")[0], method: "post", "accept-charset": "utf-8", title: "PLEASE REVIEW before final submission!"}, s: {display: "inline", background: background}});
-					form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.attributes.0.type_id", value: "3"}}));
-					form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.attributes.0.value", value: sakuhinCode}}));
-					createWork += "&edit-work.attributes.0.type_id=3&edit-work.attributes.0.value=" + sakuhinCode;
-					if (iswc) {
-						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.iswcs.0", value: iswc.value}}));
-						createWork += "&edit-work.iswcs.0=" + iswc.value;
-					}
-					if (isVocal) {
-						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.type_id", value: "17"}}));
-						createWork += "&edit-work.type_id=17";
-					} else {
-						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.language_id", value: "486"}}));
-						createWork += "&edit-work.language_id=486";
-					}
-					/* https://musicbrainz.org/relationships */
-					createWork += getWorkCredits({
-						/*artist-work*/
-						"作詞": { nomatch: /^権利者　/, type: "3e48faba-ec01-47fd-8e89-30e81161661c" },
-						"訳詞": { nomatch: /^権利者　/, type: "da6c5d8a-ce13-474d-9375-61feb29039a5" },
-						"補詞": { nomatch: /^権利者　/, type: "3e48faba-ec01-47fd-8e89-30e81161661c", additional: "1" },
-						"作曲": { nomatch: /^権利者　/, type: "d59d99ea-23d4-4a80-b066-edca32ee158f" },
-						"作曲作詞": { type: "a255bca1-b157-4518-9108-7b147dc3fc68" },
-						"不明": { type: "a255bca1-b157-4518-9108-7b147dc3fc68" }
-					}, summary, createWork);
-					createWork += getWorkCredits({
-						/*label-work*/
-						"作詞": { match: /^権利者　(.+)$/, type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
-						"訳詞": { match: /^権利者　(.+)$/, type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
-						"補詞": { match: /^権利者　(.+)$/, type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
-						"作曲": { match: /^権利者　㈱?(.+)$/, type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
-						"出版者": { type: "05ee6f18-4517-342d-afdf-5897f64276e3" },
-						"サブ出版": { type: "05ee6f18-4517-342d-afdf-5897f64276e3" }
-					}, summary, createWork);
-					form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.edit_note", value: summary}}));
-					createWork += "&edit-work.edit_note=" + encodeURIComponent(summary).replace(/%20/g, "+");
-/*						form.appendChild(createTag("a", {a: {title: MBS7313 + "\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "underline", color: "blue"}, e: {click: function(event) {
-						this.parentNode.setAttribute("target", event.shiftKey || event.ctrlKey ? "_blank" : "_self");
-						this.parentNode.submit();
-						return stop(event);
-					}}}, "Add to MB"));*/
-					form.appendChild(createTag("a", {a: {href: createWork, title : MBS7313 + "\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "blink line-through", color: "blue"}}, "BROKEN")) // textDecoration: "underline" Add to MusicBrainz
-					var sakuhin = document.querySelector(".baseinfo--name").firstChild; // quick and dirty patch
-					sakuhin.parentNode.appendChild(document.createTextNode(" （"));
-					sakuhin.parentNode.appendChild(form);
-					sakuhin.parentNode.appendChild(document.createTextNode("）"));
-			/* -- vv ------ sakuhin links ------ vv -- */
-					addAfter(document.createElement("sup"), sakuhin).appendChild(createA("MB", workLookupURL("mb", "name", workName), "Search this work name in MusicBrainz"));
-					addAfter(document.createElement("sup"), sakuhin).appendChild(createA("NT", workLookupURL("nextone", "name", workName), "Search this work name in NexTone"));
-					addAfter(document.createTextNode(" "), sakuhin);
-			/* -- vv ------ sakuhin code links ------ vv -- */
-					var span = document.createElement("span");
-					span.appendChild(document.createTextNode(sakuhinCode));
-					span.appendChild(document.createTextNode(" "));
-					var suppo = span.appendChild(document.createElement("sup"));
-					suppo.appendChild(createA("MF", workLookupURL("minc", "code", sakuhinCode), "This work in 音楽の森 music FOREST"));
-					suppo.appendChild(createA("NT", workLookupURL("nextone", "code", sakuhinCode), "This work in NexTone"));
-					suppo.appendChild(createA("MB", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"));
-					span.appendChild(document.createTextNode(" "));
-					span.appendChild(document.createTextNode(workName));
-					sakuhin = replaceElement(span, sakuhin); /*TODO replaceChild returns sakuhin already (removed element), no ?*/
-			/* -- vv ------ iswc links ------ vv -- */
-					if (iswc) {
-						addAfter(createTag("sup", {}, createA("MB", workLookupURL("mb", "iswc", iswc.value), "Search this ISWC in MusicBrainz")), iswc.node);
-						addAfter(document.createTextNode(" "), iswc.node);
 					}
 				}
-			}}, 4000); // quick and dirty patch
+			}, 4000); // quick and dirty patch
 			break;
 		case "minc":
 			var sakuhinmei = document.querySelector("span[id$='_lbl_jas_nt_sakuhinnm']");
-			var sakuhincode = document.querySelector("span[id$='_jas_sakucd']");
+			sakuhinCode = document.querySelector("span[id$='_jas_sakucd']");
 			var iswccode = document.querySelector("span[id$='_lbl_jas_nt_iswc']");
-			var nextonecode = document.querySelector("span[id$='_nt_sakucd']");
-			if (sakuhinmei && sakuhincode && iswccode) {
+			// var nextonecode = document.querySelector("span[id$='_nt_sakucd']");
+			if (sakuhinmei && sakuhinCode && iswccode) {
 				sakuhinmei = getParent(sakuhinmei, "td");
 				var sakuhinmei_v = sakuhinmei.textContent;
-				sakuhincode = getParent(sakuhincode, "td");
-				var sakuhincode_v = sakuhincode.textContent.match(new RegExp(reCode)) + "";
+				sakuhinCode = getParent(sakuhinCode, "td");
+				var sakuhinCode_v = sakuhinCode.textContent.match(new RegExp(reCode)) + "";
 				iswccode = getParent(iswccode, "td");
 				var iswccode_v = iswccode.textContent.match(new RegExp(reISWC));
 				var jwForm = jasracSearch("title", sakuhinmei_v);
@@ -440,38 +443,40 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				jwSubmit.setAttribute("title", "Search this work name in JASRAC");
 				jwSubmit.style.setProperty("text-decoration", "underline");
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(jwForm);
-				//insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("NT", workLookupURL("nextone", "name", sakuhinmei_v), "Search this work name in NexTone"));
+				// insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("NT", workLookupURL("nextone", "name", sakuhinmei_v), "Search this work name in NexTone"));
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("MB", workLookupURL("mb", "name", sakuhinmei_v), "Search this work name in MusicBrainz"));
-				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("JW", workLookupURL("jasrac", "code", sakuhincode_v), "Go to this work in JASRAC"));
-				//insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("NT", workLookupURL("nextone", "code", sakuhincode_v), "Go to this work in NexTone"));
-				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhincode.firstChild).appendChild(createA("MB", workLookupURL("mb", "code", sakuhincode_v), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"));
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinCode.firstChild).appendChild(createA("JW", workLookupURL("jasrac", "code", sakuhinCode_v), "Go to this work in JASRAC"));
+				// insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinCode.firstChild).appendChild(createA("NT", workLookupURL("nextone", "code", sakuhinCode_v), "Go to this work in NexTone"));
+				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinCode.firstChild).appendChild(createA("MB", workLookupURL("mb", "code", sakuhinCode_v), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"));
 				if (iswccode_v) {
 					iswccode_v += "";
 					insertBefore(createTag("sup", {s: {float: "right"}}), iswccode.firstChild).appendChild(createA("JW", workLookupURL("jasrac", "iswc", iswccode_v), "Search this ISWC in JASRAC"));
 					insertBefore(createTag("sup", {s: {float: "right"}}), iswccode.firstChild).appendChild(createA("MB", workLookupURL("mb", "iswc", iswccode_v.replace(/T- /, "T-")), "Search this ISWC in MusicBrainz"));
 				}
 			} else {
-				var sakuhincodet = document.querySelectorAll("a[href^='SakCdInfo.aspx?SAKUHINCD='], a[href^='SakCDInfo.aspx?SAKUHINCD='], div#ctl00_ctl00_phMain_phDBMain_PanelDetail table.tbl > tbody > tr > td:nth-child(8)");
-				for (var st = 0; st < sakuhincodet.length; st++) {
-					var sakuhincode = "", prec = sakuhincodet[st];
-					if (sakuhincodet[st].tagName == "A") {
-						sakuhincode += sakuhincodet[st].getAttribute("href").match(/.{8}$/);
+				var sakuhinCodeT = document.querySelectorAll("a[href^='SakCdInfo.aspx?SAKUHINCD='], a[href^='SakCDInfo.aspx?SAKUHINCD='], div#ctl00_ctl00_phMain_phDBMain_PanelDetail table.tbl > tbody > tr > td:nth-child(8)");
+				for (let st = 0; st < sakuhinCodeT.length; st++) {
+					sakuhinCode = "";
+					let prec = sakuhinCodeT[st];
+					if (sakuhinCodeT[st].tagName == "A") {
+						sakuhinCode += sakuhinCodeT[st].getAttribute("href").match(/.{8}$/);
 					} else {
-						sakuhincode += sakuhincodet[st].textContent.trim().replace(/-/, "");
+						sakuhinCode += sakuhinCodeT[st].textContent.trim().replace(/-/, "");
 						prec = prec.lastChild;
 					}
-					addAfter(createA("MB", workLookupURL("mb", "code", sakuhincode), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"), prec);
-					addAfter(createA("JW", workLookupURL("jasrac", "code", sakuhincode), "Go to this work in JASRAC"), prec);
-					addAfter(createA("NT", workLookupURL("nextone", "code", sakuhincode), "Go to this work in NexTone"), prec);
+					addAfter(createA("MB", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"), prec);
+					addAfter(createA("JW", workLookupURL("jasrac", "code", sakuhinCode), "Go to this work in JASRAC"), prec);
+					addAfter(createA("NT", workLookupURL("nextone", "code", sakuhinCode), "Go to this work in NexTone"), prec);
 				}
 			}
 			break;
 		case "work":
 			if (getExtLinks()) {
 				/* -- vv ------ JASRAC + ongakunomori sakuhin code link ------ vv -- */
-				var sakuhincode, codes = new RegExp(reAnnotCode, "ig"), donecodes = [];
+				// var codes = new RegExp(reAnnotCode, "ig")
+				let donecodes = [];
 				var jasracIDs = document.querySelectorAll("div#sidebar > dl.properties > dd.work-attribute-jasrac-id");
-				for (i = 0; i < jasracIDs.length; i++) {
+				for (let i = 0; i < jasracIDs.length; i++) {
 					var ddcode = jasracIDs[i].textContent.trim();
 					replaceElement(createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, ddcode), jasracIDs[i].firstChild);
 					if (donecodes.indexOf(ddcode) < 0) {
@@ -487,7 +492,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				}
 				/* -- vv ------ JASRAC ISWC link ------ vv -- */
 				var iswcs = document.querySelectorAll("div#sidebar > dl.properties > dd.iswc > a[href*='/iswc/'] code");
-				for (var iswc = 0; iswc < iswcs.length; iswc++) {
+				for (let iswc = 0; iswc < iswcs.length; iswc++) {
 					var iswct = iswcs[iswc].textContent;
 					getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, createA("JASRAC — " + iswct, workLookupURL("jasrac", "iswc", iswct.replace(/T-/, "T-+")), "Search this ISWC in JASRAC")));
 				}
@@ -498,7 +503,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				getExtLinks().appendChild(createTag("li", {a: {class: userjs + "nextone no-favicon"}}, createTag("a", {a: {href: workLookupURL("nextone", "name", title)}, s: {background: background}}, "NexTone — " + title)));
 				/* -- vv ------ NexTone work ID permalink ------ vv -- */
 				var NexToneIDs = document.querySelectorAll("div#sidebar > dl.properties > dd.work-attribute-nex-tone-id");
-				for (var i = 0; i < NexToneIDs.length; i++) {
+				for (let i = 0; i < NexToneIDs.length; i++) {
 					ddcode = NexToneIDs[i].textContent.trim();
 					replaceElement(createTag("a", {a: {href: workLookupURL("nextone", "code", ddcode)}, s: {background: background}}, ddcode), NexToneIDs[i].firstChild);
 				}
@@ -508,15 +513,16 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			xhrWork.edit = true;
 			xhrWork.mbid = self.location.pathname.match(new RegExp(RE_GUID));
 			xhrMachine(xhrJobs["workinfo-get"]);
+			// fall through
 		case "work/create":
 			h1 = document.querySelector("h1");
-			var iname = document.getElementById("id-edit-work.name");
+			iname = document.getElementById("id-edit-work.name");
 			xhrForm.form = getParent(iname, "form");
 			insertBefore(createTag("p", {s: {color: "purple", border: "1px dashed #fcc", backgroundColor: "#ffc"}}, [createTag("h3", {}, meta.name), MBS7313, " ☞ ", createA("Read more…", "https://github.com/jesus2099/konami-command/issues/14", null, "_blank")]), xhrForm.form);
-/*				xhrForm.form.addEventListener("submit", function(event) {
+				/* xhrForm.form.addEventListener("submit", function(event) {
 				var inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
 				var changed = !(xhrWork.edit) || (xhrForm.originalInputs.inputs.length != inputs.length);
-				for (var i = 0; !changed && i < xhrForm.originalInputs.inputs.length; i++) {
+				for (let i = 0; !changed && i < xhrForm.originalInputs.inputs.length; i++) {
 					if (xhrForm.originalInputs.inputs[i].value != xhrForm.originalInputs.values[i]) {
 						changed = true;
 					}
@@ -539,7 +545,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				}
 				var aliases = xhrForm.form.querySelectorAll("table#" + userjs + "alta > tfoot > tr > td > input." + userjs + "addit[type='checkbox']");
 				xhrWork.newAliases = [];
-				for (var a = 0; a < aliases.length; a++) {
+				for (let a = 0; a < aliases.length; a++) {
 					if (aliases[a].checked) {
 						var tr = getParent(aliases[a], "tr");
 						var n = tr.querySelector("input[name='edit-alias.name']");
@@ -571,32 +577,32 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					disable(this, true);
 					xhrMachine();
 				}
-			}, false);*/
+			}, false); */
 			xhrForm.submit = xhrForm.form.querySelector("div.row button.submit.positive[type='submit']");
 			insertBefore(createTag("input", {a: {type: "reset", value: "Reset", title: "reset form values", tabindex: "-1", class: "styled-button"}, s: {float: "left", fontSize: ".77em", height: "16px", width: "32px", margin: "0 8px", border: "1px solid #ccc"}}), xhrForm.submit);
 			xhrForm.originalInputs = {inputs: [], values: [], css: "form > div > fieldset:not(." + userjs + ") input:not([type='button']), form > div > fieldset:not(." + userjs + ") select"};
 			xhrForm.originalInputs.inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
-			for (var i = 0; i < xhrForm.originalInputs.inputs.length; i++) {
+			for (let i = 0; i < xhrForm.originalInputs.inputs.length; i++) {
 				xhrForm.originalInputs.values.push(xhrForm.originalInputs.inputs[i].value);
 			}
 			var icomment = document.getElementById("id-edit-work.comment");
 			var stypeid = document.getElementById("id-edit-work.type_id");
-//TODO: restore language button feature (search slangid) https://github.com/jesus2099/konami-command/issues/321
+// TODO: restore language button feature (search slangid) https://github.com/jesus2099/konami-command/issues/321
 			var slangid = document.querySelector("select[name='edit-work.languages.0']");
 			var teditnote = document.getElementById("id-edit-work.edit_note");
-			if (document.referrer.match(/jasrac\.or\.jp/) && (sakuhin = teditnote.value.match(new RegExp("^(.+) \\(work code '''(" + reCode + ")'''")))) {
+			if (document.referrer.match(/jasrac\.or\.jp/) && (sakuhin = teditnote.value.match(new RegExp("^(.+) \\(work code '''(" + reCode + ")'''"))) !== null) {
 				xhrWork.code = sakuhin[2];
-//				workSortName(teditnote.value);
-//				workCredits(teditnote.value);
+				// workSortName(teditnote.value);
+				// workCredits(teditnote.value);
 			}
 			iname.addEventListener("focus", function(event){ this.style.setProperty("background", ""); }, false);
 			icomment.addEventListener("focus", function(event){ this.style.setProperty("background", ""); }, false);
 			stypeid.addEventListener("focus", function(event){ this.style.setProperty("background", ""); }, false);
 			stypeid.style.setProperty("width", "260px");
-			var buttons = stypeid.parentNode.appendChild(createTag("span", {a: {class: "buttons"}}, [createButtor(vocal), createButtor(instrumental)]));
+			var buttons = stypeid.parentNode.appendChild(createTag("span", {a: {class: "buttons"}}, [createTypeButton(vocal), createTypeButton(instrumental)]));
 			stypeid.style.setProperty("width", (parseInt(self.getComputedStyle(stypeid).getPropertyValue("width"), 10) - parseInt(self.getComputedStyle(buttons).getPropertyValue("width"), 10)) + "px");
-//			buttons = slangid.parentNode.appendChild(createTag("span", {a: {class: "buttons"}}, [createButtol("日", 198), createButtol("EN", 120)]));
-//			slangid.style.setProperty("width", (parseInt(self.getComputedStyle(slangid).getPropertyValue("width"), 10) - parseInt(self.getComputedStyle(buttons).getPropertyValue("width"), 10)) + "px");
+			// buttons = slangid.parentNode.appendChild(createTag("span", {a: {class: "buttons"}}, [createLangButton("日", 198), createLangButton("EN", 120)]));
+			// slangid.style.setProperty("width", (parseInt(self.getComputedStyle(slangid).getPropertyValue("width"), 10) - parseInt(self.getComputedStyle(buttons).getPropertyValue("width"), 10)) + "px");
 			teditnote.parentNode.appendChild(document.createElement("br"));
 			var tjasrac = document.querySelector("div.workheader p.subheader") || document.querySelector("h1");
 			tjasrac = tjasrac.appendChild(createTag("textarea", {a: {placeholder: "Paste JASRAC summary here"}}));
@@ -622,7 +628,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				}
 			}, false);
 			tjasrac.addEventListener("keyup", function(event) {
-				var sakuhinCode = this.value.match(new RegExp("work code '''(" + reCode + ")'''"));
+				sakuhinCode = this.value.match(new RegExp("work code '''(" + reCode + ")'''"));
 				if (sakuhinCode && this.value.indexOf(hasCredits) != -1) {
 					sakuhinCode = sakuhinCode[1];
 					xhrWork.code = sakuhinCode;
@@ -638,7 +644,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					var workattrTypeCSS = "select";
 					var workattrValueCSS = "input[type='text'][name$='.value']";
 					var workattr = xhrForm.form.querySelectorAll(workattrCSS + " > tbody > tr");
-					for (var wa = 0; wa < workattr.length - 1; wa++) {
+					for (let wa = 0; wa < workattr.length - 1; wa++) {
 						var type = workattr[wa].querySelector(workattrTypeCSS);
 						var value = workattr[wa].querySelector(workattrValueCSS);
 						if (type && value && type.value == "3" && value.value == xhrWork.code) {
@@ -663,13 +669,13 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						jasracidnew.querySelector(workattrValueCSS).style.setProperty("background", cWARN);
 						jasracidnew.querySelector(workattrValueCSS).value = xhrWork.code;
 					}
-					var iswc = this.value.match(/— ISWC '''(T-[0-9]{3}\.[0-9]{3}.[0-9]{3}-[0-9])'''/);/*reISWC when MBS-4727 fixed*/
+					var iswc = this.value.match(/— ISWC '''(T-[0-9]{3}\.[0-9]{3}.[0-9]{3}-[0-9])'''/); // reISWC when MBS-4727 fixed
 					var insel = "form.edit-work div.form-row-text-list div.text-list-row input.value[name^='edit-work.iswcs.']";
 					var iiswcs = document.querySelectorAll(insel);
-					if (iiswcs.length > 0 && iswc) { /*MBS-4727*/
+					if (iiswcs.length > 0 && iswc) { // MBS-4727
 						iswc = iswc[1];
 						var iiswcm;
-						for (var im = 0; im < iiswcs.length; im++) {
+						for (let im = 0; im < iiswcs.length; im++) {
 							if (iiswcs[im].value == iswc) {
 								iiswcm = iiswcs[im];
 								break;
@@ -688,8 +694,8 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						}
 					}
 					setType(this.value.indexOf(hasLyrics) != -1 ? vocal : instrumental);
-//					workSortName(this.value);
-//					workCredits(this.value);
+					// workSortName(this.value);
+					// workCredits(this.value);
 					teditnote.value = this.value;
 					this.style.setProperty("background", cOK);
 					this.value = xhrWork.code + " " + sakuhin;
@@ -724,18 +730,18 @@ function workSortName(txt) {
 		aldone.push(searchint);
 	}
 	var aliases = txt.substring(txt.indexOf("ALIASES/SUBTITLES/SEARCHES/TRANSLATIONS")).split("\n");
-	for (var al = 1; al < aliases.length && aliases[al].match(/^.*◇.*◇.*$/); al++) {
+	for (let al = 1; al < aliases.length && aliases[al].match(/^.*◇.*◇.*$/); al++) {
 		var alias = fixSTR(aliases[al]).split("◇");
 		if (alias[0].length > 0 && !alias[1].match(/^[－-]?$/)) {
 			alrows.push({name: alias[0], "sort-name": alias[1], type: "1", locale: "ja"});
 			if (alias[2].length > 0) {
-				var swapped = swapTHE(alias[2], true);
+				let swapped = swapTHE(alias[2], true);
 				alrows.push({name: swapped, "sort-name": swapped, type: "2"});
 				aldone.push(swapped);
 			}
 		} else {
-			for (var a = 0; a < 3; a++) {
-				var swapped = swapTHE(alias[a], true);
+			for (let a = 0; a < 3; a++) {
+				let swapped = swapTHE(alias[a], true);
 				if (!alias[a].match(/^[－-]?$/) && aldone.indexOf(swapped) == -1) {
 					alrows.push({name: swapped, "sort-name": swapTHE(alias[a], false)});
 					aldone.push(swapped);
@@ -759,7 +765,7 @@ function workCredits(txt) {
 	}
 	workCredit("artist", {
 		"作詞": {nomatch: /^権利者　/, english: "lyrics", "ar.link_type_id": "165"},
-		"訳詞": {nomatch: /^権利者　/, english: "translate lyrics", "ar.link_type_id": "165", "ar.attrs.translated": "1"},//TODO: obsolete, cf. da6c5d8a-ce13-474d-9375-61feb29039a5
+		"訳詞": {nomatch: /^権利者　/, english: "translate lyrics", "ar.link_type_id": "165", "ar.attrs.translated": "1"}, // TODO: obsolete, cf. da6c5d8a-ce13-474d-9375-61feb29039a5
 		"補詞": {nomatch: /^権利者　/, english: "additional lyrics", "ar.link_type_id": "165", "ar.attrs.additional": "1"},
 		"作曲": {nomatch: /^権利者　/, english: "compose", "ar.link_type_id": "168"},
 		"作曲作詞": [{english: "generic write", "ar.link_type_id": "167"}, {english: "compose", "ar.link_type_id": "168"}, {english: "lyrics", "ar.link_type_id": "165"}],
@@ -776,13 +782,13 @@ function workCredits(txt) {
 }
 function workCredit(enttype, credtypes, source, pTarget) {
 	var i = pTarget.querySelectorAll("a[title^='reset'][ref]");
-	i = i.length > 0 ? parseInt(i[i.length - 1].getAttribute("ref"),10) + 1 : 0;
-	for (var credtype in credtypes) if (credtypes.hasOwnProperty(credtype)) {
+	i = i.length > 0 ? parseInt(i[i.length - 1].getAttribute("ref"), 10) + 1 : 0;
+	for (let credtype in credtypes) if (Object.prototype.hasOwnProperty.call(credtypes, credtype)) {
 		var ctype = credtypes[credtype].english ? [credtypes[credtype]] : credtypes[credtype];
 		var cont = pTarget;
-		for (var c = 0; c < ctype.length; c++) {
+		for (let c = 0; c < ctype.length; c++) {
 			var credit, credits = new RegExp("^" + credtype + "：([^\u00a0]+)(?:\u00a0（.+）)?$", "igm");
-			while (credit = credits.exec(source)) {
+			while ((credit = credits.exec(source)) !== null) {
 				if (cont.tagName != "FIELDSET" && ctype.length > 1) {
 					cont = cont.appendChild(createTag("fieldset", {a: {class: userjs}}, [createTag("legend", {}, "choose either")]));
 				}
@@ -791,10 +797,10 @@ function workCredit(enttype, credtypes, source, pTarget) {
 					continue;
 				}
 				if (credtypes[credtype].match) {
-					if (credit = credit.match(credtypes[credtype].match)) {
+					if ((credit = credit.match(credtypes[credtype].match)) !== null) {
 						credit = credit[1];
-						} else {
-							continue;
+					} else {
+						continue;
 					}
 				}
 				var ilookupid = userjs + "ilookup" + i;
@@ -833,7 +839,7 @@ function workCredit(enttype, credtypes, source, pTarget) {
 						var name = this.querySelector("input.name");
 						var gidv = this.querySelector("input.gid").value;
 						var others = document.querySelectorAll("div#" + userjs + "wcs span.autocomplete");
-						for (var ot = 0; ot < others.length; ot++) {
+						for (let ot = 0; ot < others.length; ot++) {
 							if (
 								!others[ot].classList.contains(userjs + "manu")
 								&& others[ot].querySelector("input.name").getAttribute("ref") == name.getAttribute("ref")
@@ -851,10 +857,10 @@ function workCredit(enttype, credtypes, source, pTarget) {
 						removeElement(this.nextSibling);
 					}
 				});
-				for (var wap in ctype[c]) if (wap != "english" && ctype[c].hasOwnProperty(wap)) {
+				for (let wap in ctype[c]) if (wap != "english" && Object.prototype.hasOwnProperty.call(ctype[c], wap)) {
 					target.appendChild(createTag("input", {a: {type: "hidden", name: wap, value: ctype[c][wap]}}));
 				}
-				target.appendChild(document.createTextNode(" "+credtype));
+				target.appendChild(document.createTextNode(" " + credtype));
 				target.appendChild(document.createElement("br"));
 				i++;
 			}
@@ -871,24 +877,24 @@ function getWorkCredits(credtypes, source, url) {
 	if (r) {
 		r = parseInt(r[1], 10) + 1;
 	}
-	for (var credtype in credtypes) if (credtypes.hasOwnProperty(credtype)) {
+	for (let credtype in credtypes) if (Object.prototype.hasOwnProperty.call(credtypes, credtype)) {
 		var ctype = credtypes[credtype].type ? [credtypes[credtype]] : credtypes[credtype];
-		for (var c = 0; c < ctype.length; c++) {
+		for (let c = 0; c < ctype.length; c++) {
 			var credit, credits = new RegExp("^" + credtype + "：([^\u00a0]+)(?:\u00a0（.+）)?$", "igm");
-			while (credit = credits.exec(source)) {
+			while ((credit = credits.exec(source)) !== null) {
 				credit = credit[1].trim();
 				if (credtypes[credtype].nomatch && credit.match(credtypes[credtype].nomatch)) {
 					continue;
 				}
 				if (credtypes[credtype].match) {
-					if (credit = credit.match(credtypes[credtype].match)) {
+					if ((credit = credit.match(credtypes[credtype].match)) !== null) {
 						credit = credit[1];
 					} else {
 						continue;
 					}
 				}
 				newParams += "&rels." + r + ".target=" + encodeURIComponent(fullwidthToHalfwidth(credit)) + "&rels." + r + ".direction=backward";
-				for (var wap in ctype[c]) if (!wap.match(/match$/) && ctype[c].hasOwnProperty(wap)) {
+				for (let wap in ctype[c]) if (!wap.match(/match$/) && Object.prototype.hasOwnProperty.call(ctype[c], wap)) {
 					newParams += "&rels." + r + "." + wap + "=" + ctype[c][wap];
 				}
 				r++;
@@ -901,7 +907,7 @@ function disable(w, dis) {
 	var inputs = w.querySelectorAll("input, select, textarea, button");
 	var len = inputs.length;
 	if ((len) && len > 0) {
-		for (var i = 0; i < len; i++) {
+		for (let i = 0; i < len; i++) {
 			if (dis) {
 				inputs[i].setAttribute("disabled", "disabled");
 			} else {
@@ -914,15 +920,15 @@ function disable(w, dis) {
 	}
 }
 function getExtLinks() {
-	var el = document.querySelector("div#sidebar > ul.external_links");
-	var sb, lu, lis;
+	let el = document.querySelector("div#sidebar > ul.external_links");
+	let sb, lu, lis;
 	if (el) {
-		var lis = el.getElementsByTagName("li");
+		lis = el.getElementsByTagName("li");
 		if (lis.length == 1 && lis[0].textContent.match(/has no url relationships/i)) {
 			removeElement(lis[0]);
 		}
 	} else if (!el && (sb = document.querySelector("div#sidebar"))) {
-		var lu = sb.querySelector("div#sidebar > p.lastupdate");
+		lu = sb.querySelector("div#sidebar > p.lastupdate");
 		if (lu) {
 			lu = lu.previousSibling;
 		} else {
@@ -933,8 +939,8 @@ function getExtLinks() {
 	}
 	return el;
 }
-/*bug I reported DSK-376978, opera adds a "; charset=accept-charset" to the POST Content-Type header: "Content-Type: application/x-www-form-urlencoded; charset=shift_jis"
-workaround here, using multipart/form-data accepted by JASRAC (unlike GET)*/
+// bug I reported DSK-376978, opera adds a "; charset=accept-charset" to the POST Content-Type header: "Content-Type: application/x-www-form-urlencoded; charset=shift_jis"
+// workaround here, using multipart/form-data accepted by JASRAC (unlike GET)
 function jasracSearch(type, query) {
 	var formJASRAC = createTag("form", {a: {action: "http://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3", method: "post", "accept-charset": "Shift_JIS", enctype: "multipart/form-data"}, s: {display: "inline", background: background}});
 	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_WORKS_KOUHO_MAX", value: "100"}}));
@@ -946,8 +952,8 @@ function jasracSearch(type, query) {
 			}
 			query = removeAccents(query);
 			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_NAME1", value: query}}));
-			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_CONDITION", value: "1"}}));//or
-			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_NAME2", value: halfwidthToFullwidth(query)}}));//full width name
+			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_CONDITION", value: "1"}})); // or
+			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_NAME2", value: halfwidthToFullwidth(query)}})); // full width name
 			break;
 	}
 	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_SEARCH_WORKS_NAIGAI", value: "0"}}));
@@ -955,7 +961,7 @@ function jasracSearch(type, query) {
 	formJASRAC.appendChild(createCoolSubmit("JASRAC — " + query));
 	return formJASRAC;
 }
-/*workaround here, using GET accepted by MINC (unlike multipart)*//*TOTO since minc is now utf-8, see what can be dumped here*/
+// workaround here, using GET accepted by MINC (unlike multipart)*//*TOTO since minc is now utf-8, see what can be dumped here
 function mincSearch(type, query) {
 	var formMINC = createTag("form", {a: {action: "https://www.minc.gr.jp/db/SakCdInfo.aspx", method: "get", "accept-charset": "utf-8"}, s: {display: "inline", background: background}});
 	formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "DATATYPE", value: "2"}}));
@@ -973,13 +979,12 @@ function mincSearch(type, query) {
 	formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "SRCHTYPE", value: "2"}}));
 	formMINC.appendChild(createCoolSubmit("音楽の森 — " + query));
 	return formMINC;
-	
 }
 function removeLeadingArticle(title) {
 	return title.replace(/^((?:LA|LE|LES|UN|UNE|DES|A|AN|THE) |L\W)/i, "");
 }
 function removeAccents(title) {
-	return title.replace(/[đ]/g, "d").replace(/[ñ]/g, "n").replace(/[áàảãạăắằẳẵặâấầẩẫậ]/g, "a").replace(/[ïîíìỉĩị]/g, "i").replace(/[úùủũụưứừửữựû]/g, "u").replace(/[éèẻẽẹêếềểễệ]/g, "e").replace(/[óòỏõọơớờởỡợôốồổỗộ]/g, "o").replace(/[ýỳỷỹỵ]/g, "y")
+	return title.replace(/[đ]/g, "d").replace(/[ñ]/g, "n").replace(/[áàảãạăắằẳẵặâấầẩẫậ]/g, "a").replace(/[ïîíìỉĩị]/g, "i").replace(/[úùủũụưứừửữựû]/g, "u").replace(/[éèẻẽẹêếềểễệ]/g, "e").replace(/[óòỏõọơớờởỡợôốồổỗộ]/g, "o").replace(/[ýỳỷỹỵ]/g, "y");
 }
 function swapTHE(n, swap) {
 	return fullwidthToHalfwidth(n.replace(/^(.+)\s{2}(A|THE|UN|UNE|L)$/i, swap ? "$2 $1" : "$1, $2")).replace(/\w\(/g, " (").replace(/\)\w/g, ") ").trim();
@@ -1022,30 +1027,37 @@ function setType(type) {
 }
 function workLookupURL(db, type, q) {
 	switch (db) {
-		case "mb": switch (type) {
-			case "name": return "https://musicbrainz.org/search?type=work&limit=100&query=" + encodeURIComponent(q);
-			case "code": return "https://musicbrainz.org/search?type=annotation&limit=100&method=advanced&query=type%3Awork+AND+text%3A" + q;
-			case "iswc": return "https://musicbrainz.org/iswc/" + q;
-		}
-		case "jasrac": switch (type) {
-			case "name": return "http://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_WORKS_TITLE_NAME1=" + q + "&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1";
-			case "code": return "http://www2.jasrac.or.jp/eJwid/main?trxID=F20101&WORKS_CD=" + q.replace(/-/g, "") + "&subSessionID=001&subSession=start";
-			case "iswc": return "http://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_ISWC=" + q.replace(/ /, "+") + "&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1";
-		}
-		case "minc": switch (type) {
-			case "code": return "https://www.minc.gr.jp/db/SakCdInfo.aspx?SAKUHINCD=" + q.replace(/-/g, "");
-		}
-		case "nextone": switch (type) {
-			case "name": return "https://search.nex-tone.co.jp/result?freeWord=" + q;
-			case "code": return "https://search.nex-tone.co.jp/result?pieceCd=" + q;
-		}
+		case "mb":
+			switch (type) {
+				case "name": return "https://musicbrainz.org/search?type=work&limit=100&query=" + encodeURIComponent(q);
+				case "code": return "https://musicbrainz.org/search?type=annotation&limit=100&method=advanced&query=type%3Awork+AND+text%3A" + q;
+				case "iswc": return "https://musicbrainz.org/iswc/" + q;
+			}
+			break;
+		case "jasrac":
+			switch (type) {
+				case "name": return "http://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_WORKS_TITLE_NAME1=" + q + "&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1";
+				case "code": return "http://www2.jasrac.or.jp/eJwid/main?trxID=F20101&WORKS_CD=" + q.replace(/-/g, "") + "&subSessionID=001&subSession=start";
+				case "iswc": return "http://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_ISWC=" + q.replace(/ /, "+") + "&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1";
+			}
+			break;
+		case "minc":
+			switch (type) {
+				case "code": return "https://www.minc.gr.jp/db/SakCdInfo.aspx?SAKUHINCD=" + q.replace(/-/g, "");
+			}
+			break;
+		case "nextone":
+			switch (type) {
+				case "name": return "https://search.nex-tone.co.jp/result?freeWord=" + q;
+				case "code": return "https://search.nex-tone.co.jp/result?pieceCd=" + q;
+			}
 	}
 }
 function aliasTable(add, clear) {
 	var alta = document.getElementById(userjs + "alta");
 	if (!alta) {
 		alta = addAfter(createTag("fieldset", {a: {class: userjs}}, [createTag("legend", {}, "Aliases"), createTag("p", {}, "You can add some aliases including (but not limited to) the default work sort-name and a latin search-hint. The JASRAC readings are almost always already cool. Sometimes you may fix few ツ→ッ but it’s rare. You can visually check the existing aliases."), createTag("table", {a: {id: userjs + "alta"}}, [
-			createTag("thead", {}, createTag("tr", {}, [createTag("th", {}, "Name"), createTag("th", {}, "Sort name"), createTag("th", {}, "Type"), createTag("th", {}, "Locale"), createTag("th", {}, "Add?")])), 
+			createTag("thead", {}, createTag("tr", {}, [createTag("th", {}, "Name"), createTag("th", {}, "Sort name"), createTag("th", {}, "Type"), createTag("th", {}, "Locale"), createTag("th", {}, "Add?")])),
 			document.createElement("tfoot"), document.createElement("tbody")
 		])]), xhrForm.form.querySelector("form > div > fieldset")).querySelector("table#" + userjs + "alta");
 	}
@@ -1065,9 +1077,9 @@ function aliasTable(add, clear) {
 			cont.appendChild(headr).firstChild.appendChild(createA((aliases.length > 0 ? aliases.length : "no") + " existing aliase" + (aliases.length != 1 ? "s" : ""), "/work/" + xhrWork.mbid + "/aliases", "Work aliases page", "_blank"));
 		}
 	}
-	for (var a = 0; a < aliases.length; a++) {
+	for (let a = 0; a < aliases.length; a++) {
 		var tr = cont.appendChild(document.createElement("tr"));
-		if (!add && a%2 == 0) {
+		if (!add && a % 2 == 0) {
 			tr.style.setProperty("background-color", "#f2f2f2");
 		}
 		var td = tr.appendChild(createTag("td", {}, add ? createTag("input", {a: {name: "edit-alias.name", value: aliases[a].name, title: aliases[a].name}, s: {width: "10em"}}) : aliases[a].name));
@@ -1078,7 +1090,7 @@ function aliasTable(add, clear) {
 		}
 		var se = tr.appendChild(createTag("td", {}, add ? createTag("select", {a: {name: "edit-alias.type_id"}, s: {width: "8em"}, e: {change: function(event) {
 			var inps = this.parentNode.parentNode.querySelectorAll("input:not(." + userjs + "addit)");
-			for (var i = 0; i < inps.length; i++) {
+			for (let i = 0; i < inps.length; i++) {
 				if (i < 2) {
 					inps[i].value = (this.value == "1" && inps[2].value == "en" ? toCamelCase(inps[i].value) : inps[i].value.toUpperCase());
 				}
@@ -1091,7 +1103,7 @@ function aliasTable(add, clear) {
 			var lang = this.value.match(/^$|^en$/);
 			if (lang && event.key != "Tab") {
 				var titles = this.parentNode.parentNode.querySelectorAll("input[name^='edit-alias.'][name$='name']");
-				for (var t = 0; t < titles.length; t++) {
+				for (let t = 0; t < titles.length; t++) {
 					titles[t].value = lang == "en" ? toCamelCase(titles[t].value) : titles[t].value.toUpperCase();
 				}
 			}
@@ -1099,19 +1111,19 @@ function aliasTable(add, clear) {
 		if (add) {
 			var cb = td.appendChild(createTag("input", {a: {name: "edit-alias.primary_for_locale", value: "1", type: "checkbox", title: "primary"}}));
 			if (aliases[a].primary) {
-				cb.checked = true;/*for display*/
-				cb.setAttribute("checked", "checked");/*for reset*/
+				cb.checked = true; // for display
+				cb.setAttribute("checked", "checked"); // for reset
 			}
 		} else if (aliases[a].primary) {
 			replaceElement(document.createTextNode("primary " + td.textContent), td.firstChild);
 			td.setAttribute("title", "primary");
 		}
 		tr.appendChild(createTag("td", {}, add ? createTag("input", {a: {type: "checkbox", title: "add this work alias?", class: userjs + "addit"}}) : ""));
-		if (se) {/*se is the work type <select>*/
+		if (se) { // se is the work type <select>
 			if (aliases[a].type) {
 				se.value = aliases[a].type;
 				sendEvent(se, "change");
-				se.querySelector("option[value='" + aliases[a].type + "']").setAttribute("selected", "selected");/*for reset*/
+				se.querySelector("option[value='" + aliases[a].type + "']").setAttribute("selected", "selected"); // for reset
 			}
 			se.addEventListener("change", function(event) {
 				var addit = this.parentNode.parentNode.querySelector("input." + userjs + "addit");
@@ -1124,7 +1136,7 @@ function aliasTable(add, clear) {
 			}, false);
 			xhrForm.form.addEventListener("reset", function(event) {
 				var ops = document.querySelectorAll("#" + userjs + "alta select option[selected]");
-				for (var o = 0; o < ops.length; o++) {
+				for (let o = 0; o < ops.length; o++) {
 					ops[o].parentNode.value = ops[o].value;
 					sendEvent(ops[o].parentNode, "change");
 				}
@@ -1134,7 +1146,7 @@ function aliasTable(add, clear) {
 			}
 			var wname = tr.querySelector("input[name='edit-alias.name']");
 			var wsname = tr.querySelector("input[name='edit-alias.sort_name']");
-			var wnameaddit = tr.querySelector("input."+userjs+"addit[type='checkbox']");
+			var wnameaddit = tr.querySelector("input." + userjs + "addit[type='checkbox']");
 			if (clear && a == 0 && aliases[a].type == "1") {
 				if (wname) {
 					iname.addEventListener("keyup", function(event) {
@@ -1169,11 +1181,11 @@ function aliasTable(add, clear) {
 					this.setAttribute("ref", this.value);
 				}, false);
 				if (wsname.value.length > 0) {
-					wsname.setAttribute("title", wsname.value + (wsname.value==wname.value ? "\n(=name)" : ""));
+					wsname.setAttribute("title", wsname.value + (wsname.value == wname.value ? "\n(=name)" : ""));
 				}
 			}
 			if (aliases.length == 1 && aliases[a].name == "" && !wnameaddit.checked) {
-				/*OMG I’M LOST*/
+				// OMG I’M LOST
 				wnameaddit.click();
 			}
 		}
@@ -1200,7 +1212,7 @@ function createA(text, link, title, tgt) {
 function createCoolSubmit(txt) {
 	var a = createA(txt, function(event) {
 		if (event.button == 0) {
-			/*lame browsers;)*/
+			// lame browsers ;)
 			if (typeof opera == "undefined") {
 				if (event.shiftKey) {
 					this.parentNode.setAttribute("target", "_blank");
@@ -1224,16 +1236,16 @@ function weirdobg() {
 	var weirdo = userjs + (new Date().getTime());
 	try {
 		self.open("", weirdo).blur();
-	} catch(e) {}
+	} catch (error) {}
 	self.focus();
 	return weirdo;
 }
-function createButtor(type) {
+function createTypeButton(type) {
 	return createTag("input", {a: {type: "button", value: type.charAt(0).toUpperCase(), title: type, tabindex: "-1", class: "styled-button"}, s: {width: "10px", padding: "1px 8px"}, e: {click: function(event) {
 		setType(this.getAttribute("title"));
 	}}});
 }
-function createButtol(txt, val) {
+function createLangButton(txt, val) {
 	return createTag("input", {a: {type: "button", value: txt, title: val, tabindex: "-1", class: "styled-button"}, s: {width: "10px", padding: "1px 8px", float: "none"}, e: {click: function(event) {
 		var slang;
 		var title = this.getAttribute("title");
@@ -1287,7 +1299,7 @@ function xhrMachine(_job) {
 		}
 	}
 	var xhr = new XMLHttpRequest();
-	var async = (typeof job.async=="boolean" ? job.async : true);
+	var async = (typeof job.async == "boolean" ? job.async : true);
 	if (job.onreadystatechange) {
 		xhr.onreadystatechange = job.onreadystatechange;
 	}

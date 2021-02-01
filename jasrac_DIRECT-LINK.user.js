@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
-// @version      2020.4.16
+// @version      2021.1.20.2099
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
@@ -37,7 +37,7 @@ for (var c = 0; c < cells.length; c++) if (!cells[c].textContent.match(/\d[A-Z\d
 		textNode = textNode.firstChild;
 	}
 	if (textNode) {
-		var text = formatText(textNode.textContent);
+		text = formatText(textNode.textContent);
 		if (text != textNode.textContent) {
 			textNode.parentNode.replaceChild(document.createTextNode(text), textNode);
 		}
@@ -54,7 +54,7 @@ if (self == top && document.body.textContent.match(/システムエラーが発�
 		setTimeout(function() { self.location.reload(true); }, 1);
 	}}));
 } else if (self == top && self.location.pathname != "/eJwid/" && document.getElementsByTagName("frameset").length == 0) {
-/*	try {
+	/* try {
 		if (!document.referer && self.opener && self.opener == self.opener.top && self.opener.location.host == self.location.host) {
 			self.opener.close();
 			if(self.opener) {
@@ -62,7 +62,7 @@ if (self == top && document.body.textContent.match(/システムエラーが発�
 				if (ajs.length == 1) {
 					self.opener.location.href = ajs[0].getAttribute("href");
 					self.close();
-//					self.opener.history.back(); // better?
+					// self.opener.history.back(); // better?
 				}
 			}
 		}
@@ -85,7 +85,7 @@ function hasHome(action) {
 		if (self.opener != null && self.opener.innerWidth > 0 && self.opener.top.location.href == home) {
 			has = true;
 		}
-	} catch(error) {}
+	} catch (error) {}
 	if (action && has) {
 		self.opener.top.focus();
 		self.close();
@@ -101,7 +101,7 @@ function rowHighlight(event) {
 		row = event.target.parentNode.parentNode;
 	}
 	if (row) {
-		row.style.setProperty("background-color", event.type == "mouseover" ? "#ff9" : "inherit")
+		row.style.setProperty("background-color", event.type == "mouseover" ? "#ff9" : "inherit");
 	}
 }
 function formatText(string) {
@@ -114,9 +114,9 @@ function removeChildren(p) {
 }
 function createTag(tag, attribs, styles, events, child) {
 	var t = document.createElement(tag);
-	for (var attr in attribs) { if (attribs.hasOwnProperty(attr)) { t.setAttribute(attr, attribs[attr]); } }
-	for (var styl in styles) { if (styles.hasOwnProperty(styl)) { t.style.setProperty(styl, styles[styl]); } }
-	for (var evt in events) { if (events.hasOwnProperty(evt)) { t.addEventListener(evt, events[evt], false); } }
+	for (var attr in attribs) { if (Object.prototype.hasOwnProperty.call(attribs, attr)) { t.setAttribute(attr, attribs[attr]); } }
+	for (var styl in styles) { if (Object.prototype.hasOwnProperty.call(styles, styl)) { t.style.setProperty(styl, styles[styl]); } }
+	for (var evt in events) { if (Object.prototype.hasOwnProperty.call(events, evt)) { t.addEventListener(evt, events[evt], false); } }
 	if (child) { t.appendChild(child); }
 	return t;
 }

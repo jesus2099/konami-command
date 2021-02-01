@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2020.5.24.2
-// @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
+// @version      2021.1.17.2099
+// @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -58,7 +58,7 @@ if (emailSubjects) {
 			if (!edits[editid]) {
 				edits[editid] = emailSubject;
 			}
-			var xhr = new XMLHttpRequest();
+			let xhr = new XMLHttpRequest();
 			xhr.emailSubject = emailSubject;
 			xhr.emailRow = getParent(emailSubject, "tr");
 			xhr.addEventListener("load", function(event) {
@@ -69,8 +69,8 @@ if (emailSubjects) {
 						editNote = editNote[1];
 						var div = document.createElement("div");
 						div.innerHTML = editNote.replace(/<a/g, '<a style="color: blue; text-decoration: underline;"');
-						div.style.setProperty("background-color", "#eee")
-						div.style.setProperty("padding", "4px")
+						div.style.setProperty("background-color", "#eee");
+						div.style.setProperty("padding", "4px");
 						this.emailSubject.parentNode.insertBefore(div, this.emailSubject);
 					}
 				}
@@ -80,7 +80,7 @@ if (emailSubjects) {
 		} else if (emailSubject.getAttribute("title").match(/^Edits for your subscriptions$/)) { // A subscription email
 			getParent(emailSubject, "tr").style.setProperty("background-color", colourloading);
 			emailSubject.insertBefore(loading(), emailSubject.firstChild);
-			var xhr = new XMLHttpRequest();
+			let xhr = new XMLHttpRequest();
 			xhr.emailSubject = emailSubject;
 			xhr.emailRow = getParent(emailSubject, "tr");
 			xhr.addEventListener("load", function(event) {
@@ -93,7 +93,7 @@ if (emailSubjects) {
 					if (deletedOrMergedEntities) {
 						for (var i = 0; i < deletedOrMergedEntities.length; i++) {
 							var modid = deletedOrMergedEntities[i].match(/by edit #([0-9]+)/)[1];
-							var type = deletedOrMergedEntities[i].match(/(deleted|merged) by edit #([0-9]+)/)[1];
+							let type = deletedOrMergedEntities[i].match(/(deleted|merged) by edit #([0-9]+)/)[1];
 							editlink(this.emailSubject, modid, edits[modid], edittypes[type] + modid).setAttribute("title", type);
 							if (!edits[modid]) {
 								edits[modid] = this.emailSubject;
@@ -113,7 +113,7 @@ if (emailSubjects) {
 						a.style.setProperty("background-color", colourclicked);
 						var im = a.appendChild(document.createElement("img"));
 						var openedits = "/open_edits";
-						var type = allparts[4].match(/artist|collection|label|series/);
+						let type = allparts[4].match(/artist|collection|label|series/);
 						if (type) {
 							im.setAttribute("src", "//musicbrainz.org/static/images/entity/%type%.svg".replace(/%type%/, type).replace(/collection/, "release_group"));
 							im.setAttribute("height", "16px");
@@ -143,7 +143,7 @@ if (emailSubjects) {
 		if (emailSubject.getAttribute("title").match(/^Someone has voted against your edit(?: #[0-9]+)?$/)) { // An own no‐voted edit
 			emailSender.style.setProperty("background-color", colourloading);
 			emailSender.replaceChild(loading(), emailSender.firstChild);
-			var xhr = new XMLHttpRequest();
+			let xhr = new XMLHttpRequest();
 			xhr.emailSubject = emailSubject;
 			xhr.emailSender = emailSender;
 			xhr.emailRow = getParent(emailSubject, "tr");

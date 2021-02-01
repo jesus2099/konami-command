@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         confluence. PAGE HISTORY LAST CHANGE
-// @version      2016.4.8
+// @version      2016.4.8.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
 // @description  Atlassian Confluence wiki: pre-selects last change for one click comparison
 // @supportURL   https://github.com/jesus2099/konami-command/labels/confluence_PAGE-HISTORY-LAST-CHANGE

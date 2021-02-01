@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2020.11.5.3
+// @version      2021.1.19.2099
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
@@ -45,7 +45,7 @@ if (
 // OPEN EDITS
 	pageEntity.openedits = document.querySelector("div#sidebar a[href$='" + pageEntity.base + "/open_edits']");
 	if (pageEntity.openedits) {
-//		pageEntity.openedits.removeAttribute("title"); // removes bogus tooltip (artist disambiguation or swapped sort name) that is masking our useful tooltip
+		// pageEntity.openedits.removeAttribute("title"); // removes bogus tooltip (artist disambiguation or swapped sort name) that is masking our useful tooltip
 		if (pageEntity.openedits.parentNode.tagName == "LI") { // fixes MBS-2298 (“Open edits” link should share same styling as pending edit items)
 			var pendingEditsMarkedLink = createTag("span", {a: {class: "mp"}});
 			pageEntity.openedits.parentNode.replaceChild(pendingEditsMarkedLink.appendChild(pageEntity.openedits.cloneNode(true)).parentNode, pageEntity.openedits);
@@ -89,7 +89,7 @@ if (
 function createLink(historyType, associatedArtist) {
 	var currentEntity = associatedArtist || pageEntity;
 	var linkLabel = (historyType == "edits" ? "editing\u00a0history" : "open\u00a0edits");
-	linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2, offset, string) { return g1.toUpperCase() + g2; });
+	linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2 /* , offset, string */) { return g1.toUpperCase() + g2; });
 	var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel))); // “span.(""|"mp")” linked in mb_MASS-MERGE-RECORDINGS.user.js
 	if (associatedArtist) {
 		addAfter(newLink, pageEntity.li);
@@ -106,7 +106,7 @@ function appendRefineSearchFormLink(baseEditLink) {
 	if (pageEntity.id) {
 		pageEntity.id = pageEntity.id.getAttribute("href").match(/=(\d+)/);
 		if (pageEntity.id) {
-			var row = getParent(baseEditLink, "li")
+			var row = getParent(baseEditLink, "li");
 			pageEntity.id = pageEntity.id[1];
 			row.appendChild(document.createTextNode(" ("));
 			row.appendChild(createTag("a", {s: {backgroundColor: "#FF6"}, a: {title: "Exclude failed edits\n(this link is added by mb. PENDING EDITS)", href: "/search/edits?order=desc&negation=0&combinator=and&conditions.0.field=" + pageEntity.type + "&conditions.0.operator=%3D&conditions.0.name=" + encodeURIComponent(pageEntity.name) + "&conditions.0.args.0=" + pageEntity.id + "&conditions.1.field=status&conditions.1.operator=%3D&conditions.1.args=1&conditions.1.args=2"}}, "effective"));
@@ -128,7 +128,7 @@ function checkOpenEdits(obj) {
 	};
 	xhrPendingEdits[obj.base].xhr.addEventListener("load", function() {
 		var xhrpe;
-		for (var entityBasePath in xhrPendingEdits) if (xhrPendingEdits.hasOwnProperty(entityBasePath) && xhrPendingEdits[entityBasePath].xhr == this) {
+		for (var entityBasePath in xhrPendingEdits) if (Object.prototype.hasOwnProperty.call(xhrPendingEdits, entityBasePath) && xhrPendingEdits[entityBasePath].xhr == this) {
 			xhrpe = xhrPendingEdits[entityBasePath];
 			break;
 		}
@@ -175,14 +175,14 @@ function checkOpenEdits(obj) {
 }
 function updateLink(obj, details) {
 	var countText;
-//	var tooltip;
+	// var tooltip;
 	var li = getParent(obj.openedits, "li");
 	var count = li.querySelector("span." + SCRIPT_KEY + "Count");
 	if (typeof details == "object") {
 		countText = details.editCount;
 		if (details.editCount == 0) {
 			mp(obj.openedits, false);
-//			tooltip = "no pending edits";
+			// tooltip = "no pending edits";
 		} else if (details.editCount > 0) {
 			mp(obj.openedits, true);
 			if (details.atLeast) countText += "+";
@@ -208,13 +208,13 @@ function updateLink(obj, details) {
 				}
 				dupreset = false;
 			}
-//				tooltip = titarray.join("\n");
+			// tooltip = titarray.join("\n");
 			var expanded = "▼";
 			var collapsed = "◀";
 			var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
 			var ul = createTag("ul", {a: {class: SCRIPT_KEY + "EditList"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
 			for (var e = 0; e < titarray.length; e++) {
-				var edit1type2editor3count = titarray[e].match(/^(?:- )?([^\(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
+				var edit1type2editor3count = titarray[e].match(/^(?:- )?([^(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
 				var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
 				if (edit1type2editor3count[2]) {
 					editLi.appendChild(document.createTextNode(" by "));
@@ -223,16 +223,16 @@ function updateLink(obj, details) {
 					editLi.style.setProperty("font-weight", "bold");
 				}
 			}
-//				if (titarray.length < 2 && pecount <= EDITS_PER_PAGE) {
-//					tooltip = tooltip.replace(/^- /, "");
-//				}
+				/* if (titarray.length < 2 && pecount <= EDITS_PER_PAGE) {
+					tooltip = tooltip.replace(/^- /, "");
+				} */
 			if (details.paginated) {
-//					tooltip += "\n- …";
+				// tooltip += "\n- …";
 				ul.appendChild(createTag("li", {}, ["And ", createTag("span", {a: {class: "mp"}}, (details.editCount - details.types.length) + " older edit" + (details.editCount == (details.types.length + 1) ? "" : "s")), "…"]));
 			}
 			var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
 			if (titarray.length > 1) {
-//					tooltip += "\n \n(oldest edit on bottom)";
+				// tooltip += "\n \n(oldest edit on bottom)";
 				help.appendChild(document.createElement("br"));
 				help.appendChild(document.createTextNode(" newest edit on top"));
 			}
@@ -253,10 +253,10 @@ function updateLink(obj, details) {
 		count.style.setProperty("background-color", "pink"); // “pink” linked in mb_MASS-MERGE-RECORDINGS.user.js
 		countText = details;
 	}
-	count.replaceChild(document.createTextNode(countText), count.firstChild);//“countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
-//	if (tooltip) {
-//		obj.openedits.setAttribute("title", tooltip); // linked in mb_MASS-MERGE-RECORDINGS.user.js
-//	}
+	count.replaceChild(document.createTextNode(countText), count.firstChild); // “countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
+	/* if (tooltip) {
+		obj.openedits.setAttribute("title", tooltip); // linked in mb_MASS-MERGE-RECORDINGS.user.js
+	} */
 }
 function mp(o, set) {
 	var li = getParent(o, "li");
@@ -284,8 +284,8 @@ function a2obj(a) {
 function workMainArtists() {
 	var writers = document.querySelectorAll("div#content > table.details > tbody td a[href^='/artist/']");
 	var groupedWriters = {};
-	for (var w = 0; w < writers.length; w++) {
-		var href = writers[w].getAttribute("href");
+	for (let w = 0; w < writers.length; w++) {
+		let href = writers[w].getAttribute("href");
 		if (!groupedWriters[href]) {
 			groupedWriters[href] = [];
 		}
@@ -293,8 +293,8 @@ function workMainArtists() {
 	}
 	var performers = document.querySelectorAll("div#content > table.tbl > tbody td a[href^='/artist/']");
 	var groupedPerformers = {};
-	for (var p = 0; p < performers.length; p++) {
-		var href = performers[p].getAttribute("href");
+	for (let p = 0; p < performers.length; p++) {
+		let href = performers[p].getAttribute("href");
 		if (!groupedPerformers[href]) {
 			groupedPerformers[href] = [];
 		}
@@ -303,7 +303,7 @@ function workMainArtists() {
 	var mainArtists = [];
 	var max = 0;
 	// find most frequent performer(s)
-	for (var href in groupedPerformers) if (groupedPerformers.hasOwnProperty(href)) {
+	for (let href in groupedPerformers) if (Object.prototype.hasOwnProperty.call(groupedPerformers, href)) {
 		if (groupedPerformers[href].length > max) {
 			max = groupedPerformers[href].length;
 			mainArtists = [groupedPerformers[href][0]];
@@ -313,12 +313,12 @@ function workMainArtists() {
 		}
 	}
 	// take all singer/song‐writers; take all writers if no performers
-	for (var href in groupedWriters) if (groupedWriters.hasOwnProperty(href) && (groupedPerformers[href] || performers.length < 1)) {
+	for (let href in groupedWriters) if (Object.prototype.hasOwnProperty.call(groupedWriters, href) && (groupedPerformers[href] || performers.length < 1)) {
 		mainArtists.push(groupedWriters[href][0]);
 	}
 	// get artist main names whenever possible
-	for (var f = 0; f < mainArtists.length; f++) {
-		var noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + mainArtists[f].getAttribute("href") + "']");
+	for (let f = 0; f < mainArtists.length; f++) {
+		let noNameVariationArtist = document.querySelector(":not(.name-variation) > a[href='" + mainArtists[f].getAttribute("href") + "']");
 		mainArtists[f] = noNameVariationArtist || mainArtists[f];
 	}
 	return mainArtists;

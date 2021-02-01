@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2019.8.8.1707
+// @version      2019.8.8.2099
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @homepage     http://userscripts-mirror.org/scripts/show/106156
 // @namespace    https://github.com/jesus2099/konami-command
@@ -17,7 +17,7 @@
 var onlyWhenNoReferrer = true; // for browser defined URL searches and duckduckgo MB !bangs like !mb !mbr !mblabel etc. only, for instance
 var redirOnUniqueMatch = true; // redirect when one result
 var redirOnUniqueExactMatch = true; // case insensitive, redirect when unique 100% scored result (both name and aliases) in several results
-var backgroundMarking = ["#ffc", "#ff6"]; //odd rows, even rows
+var backgroundMarking = ["#ffc", "#ff6"]; // odd rows, even rows
 var textShadowMarking = "1px 2px 2px #cc6";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 if (document.getElementById("headerid-query")) {

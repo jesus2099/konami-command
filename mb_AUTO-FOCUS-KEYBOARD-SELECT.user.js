@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2020.11.27
+// @version      2021.1.20.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_AUTO-FOCUS-KEYBOARD-SELECT.user.js
 // @description  musicbrainz.org: MOUSE-LESS EDITING ! Cleverly focuses fields in various musicbrainz edit pages and allows keyboard selection of relationship types as well as some release editor keyboard navigation performance features
 // @homepage     http://userscripts-mirror.org/scripts/show/135547
@@ -9,7 +9,7 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_AUTO-FOCUS-KEYBOARD-SELECT.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_AUTO-FOCUS-KEYBOARD-SELECT.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-06-08
@@ -55,7 +55,7 @@ var selectText = false; /* selects the focused field’s text */
 var moreURLmatch = true; /* more URL patterns matching in add/edit links (blog, etc.) */
 var tracklistEditorEnhancer = true; /* press UP↓/↑DOWN keys to navigate through track positions, names and lengths, auto clean‐up and format track length */
 /* ---------- configuration above ---------- */
-/*work in progress, don't refrain from requesting more pages and/or fields*/
+// work in progress, don't refrain from requesting more pages and/or fields
 function mostCleverInputToFocus() {
 	var i;
 	switch (self.location.pathname.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/, "*").replace(/[0-9]+/, "*")) {
@@ -89,16 +89,16 @@ function mostCleverInputToFocus() {
 		case "/edit/relationship/create_url":
 			i = document.querySelector("input[id='id-ar.url']");
 			if (moreURLmatch) {
-//TODO: see if those selectors are not included in MBS now
-//TODO: convert this code for entity edit case instead of now defunct /edit/relationship/*
+// TODO: see if those selectors are not included in MBS now
+// TODO: convert this code for entity edit case instead of now defunct /edit/relationship/*
 				var type = document.querySelector("select[id='id-ar.link_type_id']");
 				if (type) {
 					i.addEventListener("keyup", function(event) {
 						var urlmatch = {
-							199: /6109\.jp|ameblo|blog|cocolog|instagram\.com|jugem\.jp|plaza.rakuten\.co\.jp|tumblr\.com/i, //blog
-							288: /sonymusic\.co\.jp|\/disco/i, //discography
+							199: /6109\.jp|ameblo|blog|cocolog|instagram\.com|jugem\.jp|plaza.rakuten\.co\.jp|tumblr\.com/i, // blog
+							288: /sonymusic\.co\.jp|\/disco/i, // discography
 						};
-						for (var utype in urlmatch) if (urlmatch.hasOwnProperty(utype)) {
+						for (var utype in urlmatch) if (Object.prototype.hasOwnProperty.call(urlmatch, utype)) {
 							var option = type.querySelector("option[value='" + utype + "']");
 							if (option && i.value.match(urlmatch[utype])) {
 								type.value = utype;

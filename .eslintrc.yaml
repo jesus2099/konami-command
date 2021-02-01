@@ -1,0 +1,125 @@
+env:
+ browser: true
+ es6: true
+ greasemonkey: true
+ jquery: true
+
+extends: eslint:recommended
+
+globals:
+# MBS
+ __MB__:          readonly
+ MB:              readonly
+# lib/COOL-BUBBLES.js
+ coolBubble:      readonly
+# lib/SUPER.js
+ addAfter:        readonly
+ createTag:       readonly
+ disableInputs:   readonly
+ enableInputs:    readonly
+ getParent:       readonly
+ getSibling:      readonly
+ removeChildren:  readonly
+ removeNode:      readonly
+ replaceChildren: readonly
+ sendEvent:       readonly
+
+ignorePatterns:
+- "*.md"
+
+parserOptions:
+ ecmaFeatures:
+  globalReturn: true
+
+root: true
+
+rules:
+# https://eslint.org/docs/rules/indent
+
+# Possible errors - https://eslint.org/docs/rules/#possible-errors
+ no-control-regex:
+ - warn
+ no-empty:
+ - error
+ - allowEmptyCatch: true
+ no-irregular-whitespace:
+ - warn
+ - skipComments: true
+   skipRegExps: true
+
+# Best practices - https://eslint.org/docs/rules/#best-practices
+# Strict mode - https://eslint.org/docs/rules/#strict-mode
+ strict:
+ - error
+ - global
+
+# Variables - https://eslint.org/docs/rules/#variables
+ no-unused-vars:
+ - error
+ - argsIgnorePattern: "^event$"
+
+# Stylistic-issues - https://eslint.org/docs/rules/#stylistic-issues
+ brace-style:
+ - error
+ - 1tbs
+ - allowSingleLine: true
+ comma-dangle:
+ - error
+ - only-multiline
+ comma-spacing:
+ - error
+ - after: true
+   before: false
+ comma-style:
+ - error
+ - last
+ func-style:
+ - error
+ - declaration
+ indent:
+ - error
+ - tab
+ - ignoreComments: true
+   SwitchCase: 1
+ key-spacing:
+ - error
+ - beforeColon: false
+   afterColon: true
+   mode: minimum
+ keyword-spacing:
+ - error
+ linebreak-style:
+ - error
+ - unix
+ no-mixed-spaces-and-tabs:
+ - error
+ - smart-tabs
+ no-tabs:
+ - warn
+ - allowIndentationTabs: true
+ no-trailing-spaces:
+ - error
+ quotes:
+ - error
+ - double
+ - avoidEscape: true
+ semi:
+ - error
+ - always
+ semi-spacing:
+ - error
+ - after: true
+   before: false
+ semi-style:
+ - error
+ - last
+ space-in-parens:
+ - error
+ - never
+ space-infix-ops:
+ - error
+ spaced-comment:
+ - error
+ - always
+ - block:
+    balanced: true

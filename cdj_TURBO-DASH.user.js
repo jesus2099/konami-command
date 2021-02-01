@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         cdj. TURBO DASH
-// @version      2020.11.17
+// @version      2021.1.19.2099
 // @description  CDJournal.com: adds quick links to artists’ CD and ビデオ. removes adcrap
 // @compatible   vivaldi(3.4.2066.106)+violentmonkey  my setup
 // @compatible   firefox(82.0.3)+violentmonkey        my other setup
@@ -20,13 +20,13 @@
 var cdjTURBODASHinterval = setInterval(function() {
 	if (document.querySelector("form[name='page'] /* for search */, div#data_request /* for artist and disc pages */")) {
 		clearInterval(cdjTURBODASHinterval);
-		/*remove crap*/
+		/* remove crap */
 		var css = document.createElement("style");
 		css.setAttribute("type", "text/css");
 		document.head.appendChild(css);
 		css = css.sheet;
 		css.insertRule("div#aun_banner, div#banner_one, div#banner_two, div.banner, iframe, div#right_body a:not([href*='.cdjournal.com/']) { display: none; }", 0);
-		/*add quick links*/
+		/* add quick links */
 		var artists = document.querySelectorAll("a:not(.border)[href^='https://artist.cdjournal.com/artist.php?ano='], h1 > a[href^='https://artist.cdjournal.com/a/']");
 		var pages = {
 			レコード: "cd",
@@ -37,7 +37,7 @@ var cdjTURBODASHinterval = setInterval(function() {
 			artists[a].setAttribute("href", url);
 			artists[a].style.setProperty("background-color", "#ff9");
 			var quicklinks = artists[a].parentNode.appendChild(document.createElement("span"));
-			for (var p in pages) if (pages.hasOwnProperty(p)) {
+			for (var p in pages) if (Object.prototype.hasOwnProperty.call(pages, p)) {
 				quicklinks.appendChild(document.createTextNode(quicklinks.children.length > 0 ? "／" : "（"));
 				var anc = quicklinks.appendChild(document.createElement("a")).appendChild(document.createTextNode(p)).parentNode;
 				anc.setAttribute("href", url + "/" + pages[p] + "/");

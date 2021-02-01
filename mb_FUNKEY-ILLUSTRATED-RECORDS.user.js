@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2021.1.12
+// @version      2021.1.12.2099
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -25,11 +25,11 @@
 // ==/UserScript==
 "use strict";
 
-/*---CONFIG-START---*/
-var bigpics = true; /*displays big pics illustrated discography in main artist page*/
-var smallpics = true; /*displays small pics for every releases and release groups, everywhere*/
-var colour = "yellow"; /*used for various mouse-over highlights*/
-/*---CONFIG-STOPR---*/
+/* ---CONFIG-START--- */
+var bigpics = true; // displays big pics illustrated discography in main artist page
+var smallpics = true; // displays small pics for every releases and release groups, everywhere
+var colour = "yellow"; // used for various mouse-over highlights
+/* ---CONFIG-STOPR--- */
 
 let userjs = "jesus2099userjs154481";
 let types = ["release-group", "release"];
@@ -63,19 +63,20 @@ for (var t = 0; t < types.length; t++) {
 					// For the moment, release group CAA icons have to be added by userscript
 					var CAALoader = new XMLHttpRequest();
 					CAALoader.addEventListener("load", function(event) {
-						var RGCAAThumbnailFound = false;
 						if (this.status == 200) {
 							var RGCAA = JSON.parse(this.responseText);
 							if (RGCAA.images.length > 0) {
 								loadCaaIcon(this.releaseGroup.parentNode.insertBefore(
-									createTag("a", {a: {
+									createTag("a",
+										{a: {
 											href: RGCAA.release + "/cover-art",
 											ref: this.releaseGroup.getAttribute("href"),
 											title: RGCAA.images.length + " image" + (RGCAA.images.length != 1 ? "s" : "") + " found in this release"
 										}},
 										createTag("span", {a: {class: "caa-icon " + userjs}})
-									)
-								, this.releaseGroup).firstChild);
+									),
+									this.releaseGroup).firstChild
+								);
 							}
 						} else {
 							console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
@@ -91,11 +92,15 @@ for (var t = 0; t < types.length; t++) {
 					// https://tickets.metabrainz.org/browse/MBS-11327
 					// For the moment, release search CAA icons have to be added by userscript
 					as[a].parentNode.insertBefore(
-						createTag("a", {a: {
+						createTag("a",
+							{a: {
 								href: as[a].getAttribute("href") + "/cover-art",
 								class: userjs + "searchThumb"
 							}},
-							createTag("span", {a: {class: "caa-icon " + userjs}, s:{backgroundSize: "contain", backgroundImage: "url(//coverartarchive.org" + as[a].getAttribute("href") + "/front-250)"}})
+							createTag("span", {
+								a: {class: "caa-icon " + userjs},
+								s: {backgroundSize: "contain", backgroundImage: "url(//coverartarchive.org" + as[a].getAttribute("href") + "/front-250)"}
+							})
 						),
 						as[a]
 					);
@@ -140,8 +145,11 @@ function updateA(event) {
 	var ah = this.parentNode.getAttribute("href");
 	var rels = document.querySelectorAll("tr > td a[href='" + ah + "'], div#page.fullwidth ul > li a[href='" + ah + "']");
 	for (var r = 0; r < rels.length; r++) {
-		if (event.type == "mouseover") { rels[r].style.setProperty("background-color", colour); }
-		else { rels[r].style.removeProperty("background-color"); }
+		if (event.type == "mouseover") {
+			rels[r].style.setProperty("background-color", colour);
+		} else {
+			rels[r].style.removeProperty("background-color");
+		}
 	}
 }
 function updateBig(event) {

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         MB. artist credit entity links
-// @version      2018.4.4.3
+// @version      2021.1.19.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/MB.%20artist%20credit%20entity%20links.user.js
 // @description  Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases page’s artist credits section. Additionally spots duplicate aliases.
 // @homepage     http://userscripts-mirror.org/scripts/show/131649
@@ -13,7 +13,7 @@
 // @namespace    http://userscripts.org/scripts/show/131649
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/MB.%20artist%20credit%20entity%20links.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/MB.%20artist%20credit%20entity%20links.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-04-23
@@ -55,7 +55,7 @@ for (var tab = 0; tab < tables.length; tab++) {
 			artistCreditMachine.values.artistCreditID = trs[i].querySelector("td:nth-last-of-type(1) > a").getAttribute("href").match(/credit\/([0-9]+)\/edit$/)[1];
 			var entd = trs[i].insertBefore(document.createElement("td"), trs[i].querySelector("td:nth-last-of-type(1)"));
 			var list = document.createElement("ul");
-			for (var entity in artistCreditMachine.overrides) if (artistCreditMachine.overrides.hasOwnProperty(entity)) {
+			for (var entity in artistCreditMachine.overrides) if (Object.prototype.hasOwnProperty.call(artistCreditMachine.overrides, entity)) {
 				var item = list.appendChild(document.createElement("li"));
 				item.appendChild(createTag("b", {}, entity.replace(/_/, "\u00a0")));
 				item.appendChild(document.createTextNode(":\u00a0"));
@@ -74,7 +74,7 @@ for (var tab = 0; tab < tables.length; tab++) {
 }
 function expandTokens(url) {
 	var expandedUrl = url;
-	for (var value in artistCreditMachine.values) if (artistCreditMachine.values.hasOwnProperty(value)) {
+	for (var value in artistCreditMachine.values) if (Object.prototype.hasOwnProperty.call(artistCreditMachine.values, value)) {
 		expandedUrl = expandedUrl.replace(new RegExp("%" + value + "%", "g"), encodeURIComponent(artistCreditMachine.values[value]));
 	}
 	return expandedUrl;

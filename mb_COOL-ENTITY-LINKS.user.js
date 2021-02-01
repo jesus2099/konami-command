@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2018.3.12.2
+// @version      2021.1.20.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_COOL-ENTITY-LINKS.user.js
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @homepage     http://userscripts-mirror.org/scripts/show/131731
@@ -13,7 +13,7 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_COOL-ENTITY-LINKS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_COOL-ENTITY-LINKS.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-04-24
@@ -26,10 +26,10 @@
 // ==/UserScript==
 "use strict";
 /* -------- CONFIGURATION START (don't edit above) -------- */
-var contractMBIDs = true; /* more compact MBIDs but brwoser can still inline search/find full MBID (this is magic from mb_INLINE-STUFF) */
-var editLink = true;/*add direct link to edit page*/
-var editsLink = true;/*add direct link to edit history and open edit pages*/
-var confirmIfMoreThan = 2000;/*-1 to never confirm*/
+var contractMBIDs = true; // more compact MBIDs but brwoser can still inline search/find full MBID (this is magic from mb_INLINE-STUFF)
+var editLink = true; // add direct link to edit page
+var editsLink = true; // add direct link to edit history and open edit pages
+var confirmIfMoreThan = 2000; // -1 to never confirm
 /* -------- CONFIGURATION  END  (don't edit below) -------- */
 var userjs = "jesus2099userjs131731";
 var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -58,11 +58,11 @@ j2css = j2css.sheet;
 j2css.insertRule("a." + userjs + " {text-shadow: 1px 1px 2px silver; white-space: nowrap;}", 0);
 j2css.insertRule("a." + userjs + "tool {font-variant: small-caps; vertical-align: super; font-size: xx-small}", 0);
 self.addEventListener("load", function(event){
-	for (var ent in entities) if (entities.hasOwnProperty(ent)) {
+	for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent)) {
 		localStorage.removeItem("jesus2099skip_linksdeco_" + ent);
 	}
 });
-for (var ent in entities) if (entities.hasOwnProperty(ent)) {
+for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent)) {
 	var u = (entities[ent].fullpath ? entities[ent].fullpath : "musicbrainz.org" + entities[ent].path.replace("?", "\\?"));
 	var c = userjs + ent;
 	if (entities[ent].icon) {
@@ -100,8 +100,8 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 		cssas += "a[href*='//classic." + u + "'][href$='.html']";
 	}
 	as = document.querySelectorAll(cssas);
-	var skip = localStorage.getItem("jesus2099skip_linksdeco_" + ent);/*skip deco shared with COLLECTION HIGHLIGHTER asks only once per page*/
-	if (confirmIfMoreThan < 0 || (as.length <= confirmIfMoreThan || skip && skip == "0" || !(skip && skip == "1") && as.length > confirmIfMoreThan && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are "+as.length+" "+ent.toUpperCase()+"S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
+	var skip = localStorage.getItem("jesus2099skip_linksdeco_" + ent); // skip deco shared with COLLECTION HIGHLIGHTER asks only once per page
+	if (confirmIfMoreThan < 0 || (as.length <= confirmIfMoreThan || skip && skip == "0" || !(skip && skip == "1") && as.length > confirmIfMoreThan && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are " + as.length + " " + ent.toUpperCase() + "S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
 		skip = "0";
 		for (var a = 0; a < as.length; a++) {
 			var href, id;
@@ -112,7 +112,7 @@ for (var ent in entities) if (entities.hasOwnProperty(ent)) {
 			) {
 				var newA = as[a].cloneNode(true);
 				newA.classList.add(c);
-				if (as[a].textContent == href || /*forums*/as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /*edit-notes*/as[a].textContent == href.substr(0, 48) + "…") {
+				if (as[a].textContent == href || /* forums */ as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /* edit-notes */ as[a].textContent == href.substr(0, 48) + "…") {
 					newA.classList.add(userjs);
 					var text = unescape(id[1]);
 					if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);

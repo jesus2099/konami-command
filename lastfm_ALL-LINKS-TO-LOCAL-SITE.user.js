@@ -1,8 +1,9 @@
 "use strict";
+// eslint-disable-next-line func-style -- je vais te migrer ça vers GM_info
 var metadata = function() {
 // ==UserScript==
 // @name         last.fm. ALL LINKS TO LOCAL SITE
-// @version      2019.9.13
+// @version      2019.9.13.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @description  Replaces any lastfm link by the desired language, like "www.lastfm.xx" or else
 // @homepage     http://userscripts-mirror.org/scripts/show/29156

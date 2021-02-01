@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2020.10.23.2054
+// @version      2021.1.20.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @homepage     http://userscripts-mirror.org/scripts/show/108889
@@ -12,7 +12,7 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ALL-LINKS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ALL-LINKS.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-08-02
@@ -153,7 +153,7 @@ var autolinks = {
 			action: "http://www.utamap.com/searchkasi.php",
 			parameters: {
 				"searchname": "sakyoku",
-				"word":"%artist-name%"
+				"word": "%artist-name%"
 			}
 		},
 		"J-Lyric（歌手）": "http://j-lyric.net/index.php?ka=%artist-name%",
@@ -178,122 +178,122 @@ var autolinks = {
 				"KEYWORD": "%artist-name%"
 			}
 		},
-		"Yunisan": "//duckduckgo.com/?q=site:www22.big.or.jp+%22%2F%7Eyunisan%2Fvi%2F%22+%artist-name%",
-		"VKDB": "//duckduckgo.com/?q=site:vkdb.jp+%artist-name%",
-		"Vietnamese stuff": null,
-		"vi.Wikipedia": "//vi.wikipedia.org/w/index.php?search=%artist-name%",
-		"nhạc số": "http://nhacso.net/tim-kiem-nghe-si.html?keyName=%artist-name%",
-		"Korean stuff": null,
-		"maniadb": "http://www.maniadb.com/search/%artist-name%/?sr=P",
-		"Other databases": null,
-		"AllMusic": "http://www.allmusic.com/search/artist/%artist-name%",
-		"Discogs": "http://www.discogs.com/search?q=%artist-name%&type=artist",
-		"IMDb": "//www.imdb.com/find?q=%artist-name%&s=nm",
-		"ISNI": "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
-		"Rate Your Music": "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%", 
-		"Second hand songs": "http://secondhandsongs.com/search?search_text=%artist-name%",
-		"VIAF": "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
-		"WhoSampled": "//www.whosampled.com/search/artists/?h=1&q=%artist-name%",
+		"Yunisan":            "//duckduckgo.com/?q=site:www22.big.or.jp+%22%2F%7Eyunisan%2Fvi%2F%22+%artist-name%",
+		"VKDB":               "//duckduckgo.com/?q=site:vkdb.jp+%artist-name%",
+		"Vietnamese stuff":   null,
+		"vi.Wikipedia":       "//vi.wikipedia.org/w/index.php?search=%artist-name%",
+		"nhạc số":            "http://nhacso.net/tim-kiem-nghe-si.html?keyName=%artist-name%",
+		"Korean stuff":       null,
+		"maniadb":            "http://www.maniadb.com/search/%artist-name%/?sr=P",
+		"Other databases":    null,
+		"AllMusic":           "http://www.allmusic.com/search/artist/%artist-name%",
+		"Discogs":            "http://www.discogs.com/search?q=%artist-name%&type=artist",
+		"IMDb":               "//www.imdb.com/find?q=%artist-name%&s=nm",
+		"ISNI":               "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
+		"Rate Your Music":    "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%",
+		"Second hand songs":  "http://secondhandsongs.com/search?search_text=%artist-name%",
+		"VIAF":               "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
+		"WhoSampled":         "//www.whosampled.com/search/artists/?h=1&q=%artist-name%",
 		"Stores & streaming": null,
-		"Bandcamp": "https://bandcamp.com/search?q=%artist-name%",
-		"Deezer": "https://www.deezer.com/search/%artist-name%",
-		"Spotify": "https://open.spotify.com/search/%artist-name%",
-		"SoundCloud": "https://soundcloud.com/search/people?q=%artist-name%",
-		"Social media": null,
-		"Facebook": "https://www.facebook.com/search/pages/?q=%artist-name%",
-		"Twitter": "https://twitter.com/search?f=users&q=%artist-name%",
-		"YouTube": "https://www.youtube.com/results?search_query=%artist-name%&sp=EgIQAg%253D%253D",
-		"Other stuff": null,
-		"en.Wikipedia": "//en.wikipedia.org/w/index.php?search=%artist-name%",
-		"*.Wikipedia": "//duckduckgo.com/?q=site:wikipedia.org+%22%artist-name%%22",
-		"Lastfm (mbid)": "http://last.fm/mbid/%artist-id%",
-		"Lastfm (name)": "http://last.fm/music/%artist-name%",
-		"BBC Music": "http://www.bbc.co.uk/music/artists/%artist-id%",
+		"Bandcamp":           "//bandcamp.com/search?q=%artist-name%",
+		"Deezer":             "//www.deezer.com/search/%artist-name%",
+		"Spotify":            "//open.spotify.com/search/%artist-name%",
+		"SoundCloud":         "//soundcloud.com/search/people?q=%artist-name%",
+		"Social media":       null,
+		"Facebook":           "//www.facebook.com/search/pages/?q=%artist-name%",
+		"Twitter":            "//twitter.com/search?f=users&q=%artist-name%",
+		"YouTube":            "//www.youtube.com/results?search_query=%artist-name%&sp=EgIQAg%253D%253D",
+		"Other stuff":        null,
+		"en.Wikipedia":       "//en.wikipedia.org/w/index.php?search=%artist-name%",
+		"*.Wikipedia":        "//duckduckgo.com/?q=site:wikipedia.org+%22%artist-name%%22",
+		"Lastfm (mbid)":      "http://last.fm/mbid/%artist-id%",
+		"Lastfm (name)":      "http://last.fm/music/%artist-name%",
+		"BBC Music":          "http://www.bbc.co.uk/music/artists/%artist-id%",
 	}
 };
 var enabledDefaultAutolinks = {};
 var loadedSettings = JSON.parse(localStorage.getItem(userjs + "enabled-default-autolinks")) || {};
-for (var link in autolinks.default) if (autolinks.default.hasOwnProperty(link)) {
+for (let link in autolinks.default) if (Object.prototype.hasOwnProperty.call(autolinks.default, link)) {
 	enabledDefaultAutolinks[link] = typeof loadedSettings[link] != "undefined" ? loadedSettings[link] : true;
 }
 var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/61960dd9ebd5b77c6f1199815160e63b3383437e/lib/MusicBrainz/Server/Entity/URL/Sidebar.pm
-	"amazon"                    : "amazon",
-	"allmusic.com"              : "allmusic",
-	"animenewsnetwork.com"      : "animenewsnetwork",
-	"wikipedia.org"             : "wikipedia",
-	"facebook.com"              : "facebook",
-	"generasia.com"             : "generasia",
-	"last.fm"                   : "lastfm",
-	"myspace.com"               : "myspace",
-	"twitter.com"               : "twitter",
-	"youtube.com"               : "youtube",
-	"discogs.com"               : "discogs",
-	"secondhandsongs.com"       : "secondhandsongs",
-	"songfacts.com"             : "songfacts",
-	"soundcloud.com"            : "soundcloud",
-	"ibdb.com"                  : "ibdb",
-	"imdb.com"                  : "imdb",
-	"imslp.org"                 : "imslp",
-	"instagram.com"             : "instagram",
-	"ester.ee"                  : "ester",
-	"worldcat.org"              : "worldcat",
-	"45cat.com"                 : "fortyfivecat",
-	"rateyourmusic.com"         : "rateyourmusic",
-	"rolldabeats.com"           : "rolldabeats",
-	"psydb.net"                 : "psydb",
-	"metal-archives.com"        : "metalarchives",
-	"spirit-of-metal.com"       : "spiritofmetal",
-	"theatricalia.com"          : "theatricalia",
-	"whosampled.com"            : "whosampled",
-	"ocremix.org"               : "ocremix",
-	"musik-sammler.de"          : "musiksammler",
-	"encyclopedisque.fr"        : "encyclopedisque",
-	"nla.gov.au"                : "trove",
-	"rockensdanmarkskort.dk"    : "rockensdanmarkskort",
-	"rockinchina.com"           : "ric",
-	"rockipedia.no"             : "rockipedia",
-	"vgmdb.net"                 : "vgmdb",
-	"viaf.org"                  : "viaf",
-	"vk.com"                    : "vk",
-	"vkdb.jp"                   : "vkdb",
-	"dhhu.dk"                   : "dhhu",
-	"thesession.org"            : "thesession",
-	"plus.google.com"           : "googleplus",
-	"openlibrary.org"           : "openlibrary",
-	"bandcamp.com"              : "bandcamp",
-	"play.google.com"           : "googleplay",
-	"itunes.apple.com"          : "itunes",
-	"spotify.com"               : "spotify",
-	"soundtrackcollector.com"   : "stcollector",
-	"wikidata.org"              : "wikidata",
-	"lieder.net"                : "lieder",
-	"loudr.fm"                  : "loudr",
-	"genius.com"                : "genius",
-	"imvdb.com"                 : "imvdb",
-	"residentadvisor.net"       : "residentadvisor",
-	"d-nb.info"                 : "dnb",
-	"iss.ndl.go.jp"             : "ndl",
-	"ci.nii.ac.jp"              : "cinii",
-	"finnmusic.net"             : "finnmusic",
-	"fono.fi"                   : "fonofi",
-	"stage48.net"               : "stage48",
-	"tedcrane.com/dancedb"      : "dancedb",
-	"finna.fi"                  : "finna",
-	"mainlynorfolk.info"        : "mainlynorfolk",
-	"bibliotekapiosenki.pl"     : "piosenki",
-	"qim.com"                   : "quebecinfomusique",
-	"thedancegypsy.com"         : "thedancegypsy",
-	"videogam.in"               : "videogamin",
-	"spirit-of-rock.com"        : "spiritofrock",
-	"tunearch.org"              : "tunearch",
-	"castalbums.org"            : "castalbums",
-	"smdb.kb.se"                : "smdb",
-	"triplejunearthed.com"      : "triplejunearthed",
-	"cdbaby.com"                : "cdbaby",
+	"45cat.com":                  "fortyfivecat",
+	"allmusic.com":               "allmusic",
+	"amazon":                     "amazon",
+	"animenewsnetwork.com":       "animenewsnetwork",
+	"bandcamp.com":               "bandcamp",
+	"bibliotekapiosenki.pl":      "piosenki",
+	"castalbums.org":             "castalbums",
+	"cdbaby.com":                 "cdbaby",
+	"ci.nii.ac.jp":               "cinii",
+	"dhhu.dk":                    "dhhu",
+	"discogs.com":                "discogs",
+	"d-nb.info":                  "dnb",
+	"encyclopedisque.fr":         "encyclopedisque",
+	"ester.ee":                   "ester",
+	"facebook.com":               "facebook",
+	"finna.fi":                   "finna",
+	"finnmusic.net":              "finnmusic",
+	"fono.fi":                    "fonofi",
+	"generasia.com":              "generasia",
+	"genius.com":                 "genius",
+	"ibdb.com":                   "ibdb",
+	"imdb.com":                   "imdb",
+	"imslp.org":                  "imslp",
+	"imvdb.com":                  "imvdb",
+	"instagram.com":              "instagram",
+	"iss.ndl.go.jp":              "ndl",
+	"itunes.apple.com":           "itunes",
+	"last.fm":                    "lastfm",
+	"lieder.net":                 "lieder",
+	"loudr.fm":                   "loudr",
+	"mainlynorfolk.info":         "mainlynorfolk",
+	"metal-archives.com":         "metalarchives",
+	"musik-sammler.de":           "musiksammler",
+	"myspace.com":                "myspace",
+	"nla.gov.au":                 "trove",
+	"ocremix.org":                "ocremix",
+	"openlibrary.org":            "openlibrary",
+	"play.google.com":            "googleplay",
+	"plus.google.com":            "googleplus",
+	"psydb.net":                  "psydb",
+	"qim.com":                    "quebecinfomusique",
+	"rateyourmusic.com":          "rateyourmusic",
+	"residentadvisor.net":        "residentadvisor",
+	"rockensdanmarkskort.dk":     "rockensdanmarkskort",
+	"rockinchina.com":            "ric",
+	"rockipedia.no":              "rockipedia",
+	"rolldabeats.com":            "rolldabeats",
+	"secondhandsongs.com":        "secondhandsongs",
+	"smdb.kb.se":                 "smdb",
+	"songfacts.com":              "songfacts",
+	"soundcloud.com":             "soundcloud",
+	"soundtrackcollector.com":    "stcollector",
+	"spirit-of-metal.com":        "spiritofmetal",
+	"spirit-of-rock.com":         "spiritofrock",
+	"spotify.com":                "spotify",
+	"stage48.net":                "stage48",
+	"tedcrane.com/dancedb":       "dancedb",
+	"theatricalia.com":           "theatricalia",
+	"thedancegypsy.com":          "thedancegypsy",
+	"thesession.org":             "thesession",
+	"triplejunearthed.com":       "triplejunearthed",
+	"tunearch.org":               "tunearch",
+	"twitter.com":                "twitter",
+	"vgmdb.net":                  "vgmdb",
+	"viaf.org":                   "viaf",
+	"videogam.in":                "videogamin",
+	"vk.com":                     "vk",
+	"vkdb.jp":                    "vkdb",
+	"whosampled.com":             "whosampled",
+	"wikidata.org":               "wikidata",
+	"wikipedia.org":              "wikipedia",
+	"worldcat.org":               "worldcat",
+	"youtube.com":                "youtube",
 };
 var favicons = {
-	"deezer.com": "https://e-cdns-files.dzcdn.net/cache/images/common/favicon/favicon-16x16.526cde4edf20647be4ee32cdf35c1c13.png",
-	"lastfm.": "//musicbrainz.org/static/images/favicons/lastfm-16.png",
+	"deezer.com":    "//e-cdns-files.dzcdn.net/cache/images/common/favicon/favicon-16x16.526cde4edf20647be4ee32cdf35c1c13.png",
+	"lastfm.":       "//musicbrainz.org/static/images/favicons/lastfm-16.png",
 	"rakuten.co.jp": "//plaza.rakuten.co.jp/favicon.ico",
 };
 var favicontry = [];
@@ -313,7 +313,7 @@ j2css.insertRule("ul.external_links.configure > li.defaultAutolink > input[type=
 main();
 function main() {
 	if (sidebar) {
-		var entityMatch = self.location.href.match(/\/([a-z\-]*)\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
+		var entityMatch = self.location.href.match(/\/([a-z-]*)\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*/i);
 		var entityType = tokenValues["%entity-type%"] = entityMatch[1];
 		var entityMBID = tokenValues["%entity-mbid%"] = entityMatch[2];
 		tokenValues["%" + entityType + "-mbid%"] = entityMBID;
@@ -326,7 +326,7 @@ function main() {
 				var entityName = tokenValues["%entity-name%"] = entityNameNode.textContent.trim();
 				tokenValues["%" + entityType + "-name%"] = entityName;
 				if (entityType == "artist") {
-					var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
+					// var artistid = tokenValues["%artist-id"] = entityMBID; /* for user links backward compatibility */
 					var artistname = entityName;
 					var artistsortname, artistsortnameSwapped = "";
 					artistsortname = tokenValues["%artist-sort-name%"] = entityNameNode.getAttribute("title");
@@ -335,7 +335,7 @@ function main() {
 						tokenValues["%artist-latin-script-name%"] = artistname;
 					} else {
 						var tmpsn = artistsortname.split(",");
-						for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
+						for (let isn = tmpsn.length - 1; isn >= 0; isn--) {
 							artistsortnameSwapped += tmpsn[isn].trim();
 							if (isn != 0) {
 								artistsortnameSwapped += " ";
@@ -350,55 +350,55 @@ function main() {
 			if (!extlinks) {
 				sidebar.appendChild(createTag("h2", {a: {class: "external-links"}}, "External links"));
 				extlinks = sidebar.appendChild(createTag("ul", {a: {class: "external_links"}}, createTag("li", {}, "No white‐listed links yet.")));
-			} 
-				// Hidden links
-				entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
-				addHiddenLinks();
-				// Autolinks
-				for (var defaultOrUser in autolinks) if (autolinks.hasOwnProperty(defaultOrUser)) {
-					var haslinks = false;
-					for (var link in autolinks[defaultOrUser]) if (autolinks[defaultOrUser].hasOwnProperty(link)) {
-						var target = autolinks[defaultOrUser][link];
-						var sntarget = null;
-						if (target) {
-							if (typeof target == "string") {
-								if (target.match(/%artist-name%/) && artistname != artistsortnameSwapped && artistname.match(nonLatinName)) {
-									sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
-								}
-								target = replaceAllTokens(target, true);
-								if (!target) continue;
-							} else {
-								var latinScriptOnly = target.acceptCharset.match(/iso-8859/i);
-								var skippedToken = false;
-								for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
-									if (latinScriptOnly) {
-										target.parameters[param] = target.parameters[param].replace(/%artist-name%/, "%artist-latin-script-name%");
-									}
-									target.parameters[param] = replaceAllTokens(target.parameters[param]);
-									if (!target.parameters[param]) {
-										skippedToken = true;
-										break;
-									}
-								}
-								if (skippedToken) continue;
+			}
+			// Hidden links
+			entityUrlRelsWS = entityUrlRelsWS.replace(/%entity-type%/, entityType).replace(/%entity-mbid%/, entityMBID);
+			addHiddenLinks();
+			// Autolinks
+			for (let defaultOrUser in autolinks) if (Object.prototype.hasOwnProperty.call(autolinks, defaultOrUser)) {
+				var haslinks = false;
+				for (let link in autolinks[defaultOrUser]) if (Object.prototype.hasOwnProperty.call(autolinks[defaultOrUser], link)) {
+					var target = autolinks[defaultOrUser][link];
+					var sntarget = null;
+					if (target) {
+						if (typeof target == "string") {
+							if (target.match(/%artist-name%/) && artistname != artistsortnameSwapped && artistname.match(nonLatinName)) {
+								sntarget = target.replace(/%artist-name%/, encodeURIComponent(artistsortnameSwapped));
 							}
+							target = replaceAllTokens(target, true);
+							if (!target) continue;
+						} else {
+							var latinScriptOnly = target.acceptCharset.match(/iso-8859/i);
+							var skippedToken = false;
+							for (let param in target.parameters) if (Object.prototype.hasOwnProperty.call(target.parameters, param)) {
+								if (latinScriptOnly) {
+									target.parameters[param] = target.parameters[param].replace(/%artist-name%/, "%artist-latin-script-name%");
+								}
+								target.parameters[param] = replaceAllTokens(target.parameters[param]);
+								if (!target.parameters[param]) {
+									skippedToken = true;
+									break;
+								}
+							}
+							if (skippedToken) continue;
 						}
-						if (addExternalLink({text: link, target: target, sntarget: sntarget, enabledDefaultAutolink: enabledDefaultAutolinks[link]})) {
-							if (!haslinks) {
-								haslinks = true;
-								addExternalLink({text: " " + defaultOrUser.substr(0, 1).toUpperCase() + defaultOrUser.substr(1).toLowerCase() + " autolinks"});
-								extlinks.lastChild.previousSibling.appendChild(document.createTextNode(" "));
-								extlinks.lastChild.previousSibling.appendChild(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)"}}, createTag("a", {a: {title: "configure " + defaultOrUser + " autolinks"}, s: {color: "transparent"}, e: {click: configureModule}}, "configure")));
-							}
+					}
+					if (addExternalLink({text: link, target: target, sntarget: sntarget, enabledDefaultAutolink: enabledDefaultAutolinks[link]})) {
+						if (!haslinks) {
+							haslinks = true;
+							addExternalLink({text: " " + defaultOrUser.substr(0, 1).toUpperCase() + defaultOrUser.substr(1).toLowerCase() + " autolinks"});
+							extlinks.lastChild.previousSibling.appendChild(document.createTextNode(" "));
+							extlinks.lastChild.previousSibling.appendChild(createTag("div", {a: {class: "icon img"}, s: {backgroundImage: "url(/static/images/icons/cog.png)"}}, createTag("a", {a: {title: "configure " + defaultOrUser + " autolinks"}, s: {color: "transparent"}, e: {click: configureModule}}, "configure")));
 						}
 					}
 				}
+			}
 		}
 		/* Wikidata to Wikipedia */
 		if (rawLanguages && Array.isArray(rawLanguages) && rawLanguages.length > 0) {
 			var languages = parseLanguages(rawLanguages);
 			var wikidatas = sidebar.querySelectorAll("ul.external_links > li a[href*='wikidata.org/wiki/Q']");
-			for (var wd = 0; wd < wikidatas.length; wd++) {
+			for (let wd = 0; wd < wikidatas.length; wd++) {
 				var wikidataID = wikidatas[wd].getAttribute("href").match(/Q\d+$/);
 				if (wikidataID) {
 					if (!wikidatas[wd].parentNode.querySelector("a.edit-languages")) {
@@ -414,7 +414,7 @@ function main() {
 						removeNode(wikidataListItem.querySelector("img[src$='loading.gif']"));
 						var wikidata = JSON.parse(this.responseText);
 						if (wikidata && wikidata.entities && (wikidata = wikidata.entities[this.id])) {
-							for (var languageCode = 0; languageCode < languages.length; languageCode++) {
+							for (let languageCode = 0; languageCode < languages.length; languageCode++) {
 								var wikiEntry = wikidata.sitelinks[languages[languageCode] + "wiki"];
 								if (wikiEntry) {
 									var href = wikiEntry.url.replace(/^https?:/, "");
@@ -436,20 +436,20 @@ function main() {
 		}
 	}
 }
-function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, enabledDefaultAutolink*/) {
+function addExternalLink(parameters /* text, target, begin, end, sntarget, mbid, enabledDefaultAutolink */) {
 	var newLink = true;
+	let li;
 	if (parameters.target) {
 		// This is a link
-		var li;
 		if (typeof parameters.target != "string") {
 			var form = createTag("form", {a: {action: parameters.target.action}});
 			if (parameters.target.title) {
 				form.style.setProperty("cursor", "help");
 			}
 			var info = "\n" + parameters.target.action;
-			for (var attr in parameters.target) if (parameters.target.hasOwnProperty(attr)) {
+			for (let attr in parameters.target) if (Object.prototype.hasOwnProperty.call(parameters.target, attr)) {
 				if (attr == "parameters") {
-					for (var param in parameters.target.parameters) if (parameters.target.parameters.hasOwnProperty(param)) {
+					for (let param in parameters.target.parameters) if (Object.prototype.hasOwnProperty.call(parameters.target.parameters, param)) {
 						info += "\n" + param + "=" + parameters.target.parameters[param];
 						form.appendChild(createTag("input", {a: {name: param, type: "hidden", value: parameters.target.parameters[param]}}));
 					}
@@ -485,7 +485,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 			form.appendChild(document.createTextNode("*"));
 			li = createTag("li", {a: {ref: parameters.text}}, form);
 		} else {
-			var existingLink = 
+			var existingLink =
 				sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "']")
 				// MBS adds a trailing code to ASIN URL https://github.com/metabrainz/musicbrainz-server/blob/7b16dfae25fef7ef570bbc96e2d7cb71f123139e/lib/DBDefs/Default.pm#L318-L328
 				|| parameters.target.match(/\bamazon\.ca\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music0b72-20']")
@@ -497,8 +497,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 				|| parameters.target.match(/\bamazon\.it\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music084d-21']")
 				|| parameters.target.match(/\bamazon\.es\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music02e-21']")
 				// MBS adds a trailing slash to viaf URL https://github.com/jesus2099/konami-command/issues/293#issuecomment-376875307
-				|| parameters.target.match(/\bviaf\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "/']")
-			;
+				|| parameters.target.match(/\bviaf\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "/']");
 			if (existingLink) {
 				newLink = false;
 				li = getParent(existingLink, "li");
@@ -550,7 +549,7 @@ function addExternalLink(parameters/*text, target, begin, end, sntarget, mbid, e
 		setFavicon(li, (typeof parameters.target == "string") ? parameters.target : parameters.target.action);
 	} else {
 		// This is a header
-		var li = createTag("li", {s: {fontWeight: "bold"}, a: {class: "separator"}}, createTag("span", {}, parameters.text));
+		li = createTag("li", {s: {fontWeight: "bold"}, a: {class: "separator"}}, createTag("span", {}, parameters.text));
 		if (parameters.text.indexOf(" ") === 0) {
 			// Level 1 header
 			li.style.setProperty("padding-top", "0px");
@@ -578,14 +577,14 @@ function addHiddenLinks() {
 				var res = this.responseXML;
 				var url, urls = res.evaluate("//mb:relation-list[@target-type='url']/mb:relation", res, nsr, XPathResult.ANY_TYPE, null);
 				var haslinks = false;
-				while (url = urls.iterateNext()) {
+				while ((url = urls.iterateNext()) !== null) {
 					var target = res.evaluate("./mb:target", url, nsr, XPathResult.ANY_TYPE, null);
 					target = target.iterateNext();
 					var begin, end;
-					if (begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+					if ((begin = res.evaluate("./mb:begin", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) !== null) {
 						begin = begin.textContent;
 					}
-					if (end = res.evaluate("./mb:end", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
+					if ((end = res.evaluate("./mb:end", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) !== null) {
 						end = end.textContent;
 					} else if (res.evaluate("./mb:ended", url, nsr, XPathResult.ANY_TYPE, null).iterateNext()) {
 						end = "????";
@@ -611,9 +610,9 @@ function addHiddenLinks() {
 }
 function replaceAllTokens(string, encode) {
 	var stringTokens = string.match(/%[a-z]+(?:-[a-z]+)+%/g);
-	if (stringTokens) for (var t = 0; t < stringTokens.length; t++) {
+	if (stringTokens) for (let t = 0; t < stringTokens.length; t++) {
 		var token = stringTokens[t];
-		if (!tokenValues.hasOwnProperty(token)) return false;
+		if (!Object.prototype.hasOwnProperty.call(tokenValues, token)) return false;
 		string = string.replace(token, encode ? encodeURIComponent(tokenValues[token]) : tokenValues[token]);
 	}
 	return string;
@@ -623,7 +622,7 @@ function setFavicon(li, url) {
 	// MusicBrainz cached favicon CSS classes
 	var searchdomain = url.match(/site:([^+]*)\+/);
 	var urldomain = searchdomain ? searchdomain[1] : url.split("/")[2];
-	for (var classdomain in faviconClasses) if (faviconClasses.hasOwnProperty(classdomain)) {
+	for (let classdomain in faviconClasses) if (Object.prototype.hasOwnProperty.call(faviconClasses, classdomain)) {
 		if (urldomain.match(classdomain)) {
 			favclass = faviconClasses[classdomain];
 			break;
@@ -634,7 +633,7 @@ function setFavicon(li, url) {
 	} else {
 		// Static favicon URL dictionary
 		var favurlfound = false;
-		for (var part in favicons) if (favicons.hasOwnProperty(part)) {
+		for (let part in favicons) if (Object.prototype.hasOwnProperty.call(favicons, part)) {
 			if (url.indexOf(part) != -1) {
 				favurlfound = favicons[part];
 				break;
@@ -669,7 +668,7 @@ function setFavicon(li, url) {
 }
 function weirdobg() {
 	var weirdo = userjs + (new Date().getTime());
-	try { open("", weirdo).blur(); } catch(error) {}
+	try { open("", weirdo).blur(); } catch (error) {}
 	self.focus();
 	return weirdo;
 }
@@ -743,8 +742,8 @@ function guessNavigatorLanguages() {
 }
 function parseLanguages(inputLanguages) {
 	var detectedLanguages = [];
-	for (var il = 0; il < inputLanguages.length; il++) {
-		var nextLanguage = inputLanguages[il];
+	for (let il = 0; il < inputLanguages.length; il++) {
+		let nextLanguage = inputLanguages[il];
 		switch (nextLanguage) {
 			case "navigator":
 				detectedLanguages = detectedLanguages.concat(guessNavigatorLanguages());
@@ -757,8 +756,8 @@ function parseLanguages(inputLanguages) {
 		}
 	}
 	var outputLanguages = [];
-	for (var dl = 0; dl < detectedLanguages.length; dl++) {
-		var nextLanguage = detectedLanguages[dl];
+	for (let dl = 0; dl < detectedLanguages.length; dl++) {
+		let nextLanguage = detectedLanguages[dl];
 		if (outputLanguages.indexOf(nextLanguage) < 0) {
 			outputLanguages.push(nextLanguage);
 			if (nextLanguage.match("-")) {
@@ -774,7 +773,7 @@ function parseLanguages(inputLanguages) {
 function configureModule(event) {
 	switch (event.target.getAttribute("title")) {
 		case "configure user autolinks":
-			//TODO: provide a real editor
+			// TODO: provide a real editor
 			var loadedUserAutolinks = localStorage.getItem(userjs + "user-autolinks") || {};
 			var newUserAutolinks = prompt("Edit your user autolinks\nCopy/paste in a real editor\nSorry for such an awful prompt\n\nAvailable variables:\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\n\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%entity-name%+reviews\",\n\"Search for fans\": \"//duckduckgo.com/?q=%artist-name%+fans\",\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
 			if (newUserAutolinks && newUserAutolinks != loadedUserAutolinks && JSON.stringify(newUserAutolinks)) {
@@ -782,7 +781,7 @@ function configureModule(event) {
 			}
 			break;
 		case "configure default autolinks":
-			//TODO: refresh default autolink statuses
+			// TODO: refresh default autolink statuses
 			extlinks.classList.toggle("configure");
 			break;
 		case "choose languages":
