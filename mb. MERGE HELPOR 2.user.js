@@ -1,22 +1,14 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2021.1.20.2099
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb.%20MERGE%20HELPOR%202.user.js
+// @version      2021.2.2
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
-// @homepage     http://userscripts-mirror.org/scripts/show/124579
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb.%20MERGE%20HELPOR%202.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2012-01-31
+// @since        2012-01-31; https://web.archive.org/web/20131103163402/userscripts.org/scripts/show/124579
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none
@@ -43,7 +35,7 @@ if (mergeType) {
 	}, 500);
 } else {
 	/* merge queue (clear before add) tool */
-	var mergeButton = document.querySelector("div#content > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit'], div#page > form[action$='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit'], div#content > form[action$='/merge_queue'] > div.recording-list ~ div.row > span.buttons > button[type='submit']");
+	var mergeButton = document.querySelector("div#content > form[action*='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit'], div#page > form[action*='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit'], div#content > form[action*='/merge_queue'] > div.recording-list ~ div.row > span.buttons > button[type='submit']");
 	if (mergeButton) {
 		var checkForm = mergeButton.parentNode.parentNode.parentNode;
 		setButtonTextFromSelectedToAll(mergeButton, true);
@@ -89,7 +81,7 @@ if (mergeType) {
 		addAfter(reMergeButton, mergeButton);
 	}
 	/* Make “Remove selected entites” and “Cancel” buttons faster */
-	var currentMergeForm = document.querySelector("div#current-editing > form[action$='/merge']");
+	var currentMergeForm = document.querySelector("div#current-editing > form[action*='/merge']");
 	if (currentMergeForm) {
 		currentMergeForm.querySelector("button[type='submit'][value='remove']").addEventListener("click", function(event) {
 			var href = currentMergeForm.getAttribute("action") + "?submit=remove";
