@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2019.9.12
+// @version      2019.9.12.2099
 // @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. cleverly focus first empty field.
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)

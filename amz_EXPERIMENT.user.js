@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         AMZ. shrink product links and direct link to full size pictures
-// @version      2021.1.19
+// @version      2021.1.19.2099
 // @description  Amazon. Shows links to full size images. Shrinks product and search URLs. Prevents from opening new windows in amazn.jp searches.
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099

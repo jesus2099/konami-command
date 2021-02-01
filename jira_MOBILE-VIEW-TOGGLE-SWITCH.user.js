@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         jira. MOBILE VIEW TOGGLE SWITCH
-// @version      2021.1.20
+// @version      2021.1.20.2099
 // @description  Provides a convenient "Switch to mobile version" big header toggle link in all JIRA sites, in addition to the existing reverse "Switch to desktop version"
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099

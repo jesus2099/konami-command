@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
-// @version      2021.1.20
+// @version      2021.1.20.2099
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes

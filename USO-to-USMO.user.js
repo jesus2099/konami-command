@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         USO to USMO
-// @version      2019.9.13.3
+// @version      2019.9.13.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/USO-to-USMO.user.js
 // @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long — bypass this script by holding CTRL+ALT+SHIFT
 // @inspiration  http://userscripts-mirror.org/scripts/show/487275

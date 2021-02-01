@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2019.8.8.1707
+// @version      2019.8.8.2099
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @homepage     http://userscripts-mirror.org/scripts/show/106156
 // @namespace    https://github.com/jesus2099/konami-command

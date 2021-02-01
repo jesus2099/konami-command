@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         greasyfork. APPLIES TO LINKS SEARCH BY SITES
-// @version      2016.6.15
+// @version      2016.6.15.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/greasyfork_APPLIES-TO-LINKS-SEARCH-BY-SITES.user.js
 // @description  greasyfork.org. makes applies to “All site” link to the “*” by site search (JasonBarnabe/greasyfork#146)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/greasyfork_APPLIES-TO-LINKS-SEARCH-BY-SITES

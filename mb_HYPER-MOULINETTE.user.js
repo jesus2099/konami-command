@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2021.1.19
+// @version      2021.1.19.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_HYPER-MOULINETTE.user.js
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HYPER-MOULINETTE

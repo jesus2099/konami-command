@@ -2,7 +2,7 @@
 var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2021.1.19
+// @version      2021.1.19.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @homepage     http://userscripts-mirror.org/scripts/show/126475

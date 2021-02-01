@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE TRACK ARTIST
-// @version      2021.1.19
+// @version      2021.1.19.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-TRACK-ARTIST.user.js
 // @description  musicbrainz.org: highlights track title, length and artist differences in recording page
 // @homepage     http://userscripts-mirror.org/scripts/show/166877

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         cdj. TURBO DASH
-// @version      2021.1.19
+// @version      2021.1.19.2099
 // @description  CDJournal.com: adds quick links to artists’ CD and ビデオ. removes adcrap
 // @compatible   vivaldi(3.4.2066.106)+violentmonkey  my setup
 // @compatible   firefox(82.0.3)+violentmonkey        my other setup

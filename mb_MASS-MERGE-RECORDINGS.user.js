@@ -3,7 +3,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2021.1.19
+// @version      2021.1.19.2099
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)

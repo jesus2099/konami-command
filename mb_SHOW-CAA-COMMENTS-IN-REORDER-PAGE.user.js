@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SHOW CAA COMMENTS IN REORDER PAGE
-// @version      2020.11.17
+// @version      2020.11.17.2099
 // @description  Show cover art comments to ease reordering, especially when thumbnails have not been generated yet.
 // @compatible   vivaldi(3.4.2066.106)+violentmonkey  my setup
 // @compatible   firefox(82.0.3)+violentmonkey        my other setup

@@ -3,7 +3,7 @@
 var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2021.1.20
+// @version      2021.1.20.2099
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         gh. NEW SUB-ISSUE
-// @version      2020.11.7
+// @version      2020.11.7.2099
 // @description  github.com: A yellow button to create a sub-issue that links to its parent. You still have to manually create the sub-issue list in the parent issue.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/gh_NEW-SUB-ISSUE

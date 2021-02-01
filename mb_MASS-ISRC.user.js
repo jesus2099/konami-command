@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
-// @version      2021.1.19
+// @version      2021.1.19.2099
 // @description  kepstin’s magicisrc. Paste a bunch of ISRC instead of one by one
 // @compatible   vivaldi(2.9.1705.41)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
