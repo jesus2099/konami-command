@@ -1,9 +1,6 @@
-"use strict";
-// eslint-disable-next-line func-style -- je vais te migrer ça vers GM_info
-var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2021.1.19.2099
+// @version      2021.2.1
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -16,21 +13,16 @@ var meta = function() {
 // @since        2011-12-13; http://userscripts-mirror.org/scripts/show/120382
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
-// @grant        none
+// @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/(disc\/\d+)?)?(#.*)?$/
 // @run-at       document-end
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
+"use strict";
+let userjs = {
+	id: "MMR2099userjs120382", // linked to mb_INLINE-STUFF
+	name: GM_info.script.name.substr(4).replace(/\s/g, "\u00a0"),
+	version: GM_info.script.version
 };
-if (meta && meta.toString && (meta = meta.toString())) {
-	meta = {
-		n: meta.match(/@name\s+(.+)/)[1],
-		v: meta.match(/@version\s+(.+)/)[1],
-		ns: meta.match(/@namespace\s+(.+)/)[1]
-	};
-}
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 /* COLOURS */
 var cOK = "greenyellow";
@@ -40,12 +32,10 @@ var cWarning = "yellow";
 var cMerge = "#fcc";
 var cCancel = "#cfc";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
-meta.n = meta.n.substr(4);
 var lastTick = new Date().getTime();
 var MBSminimumDelay = 1000;
 var retryDelay = 2000;
 var currentButt;
-var MMRid = "MMR2099userjs120382"; // linked to mb_INLINE-STUFF
 var MBS = self.location.protocol + "//" + self.location.host;
 var sidebar = document.getElementById("sidebar");
 var recid2trackIndex = {remote: {}, local: {}}; // recid:tracks index
@@ -65,17 +55,17 @@ var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
 css = css.sheet;
-css.insertRule("body." + MMRid + " div#" + MMRid + " > .main-shortcut { display: none; }", 0);
-css.insertRule("body." + MMRid + " div#content table.tbl > * > tr > .rating { display: none; }", 0);
-css.insertRule("body." + MMRid + " div#content table.tbl > tbody > tr > td > div.ars { display: none; }", 0);
-css.insertRule("body." + MMRid + " div#content table.tbl > tbody > tr > td > a[href^='http://acousticbrainz.org/'][style='float: right;'] { display: none; }", 0); // link to mb_ACOUSTICBRAINZ-LINKS https://gist.github.com/jesus2099/8e223f09d64d831a9514
-css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " { margin-top: 12px; cursor: pointer; }", 0);
-css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " > :not(h2):not(.main-shortcut) { display: none; }", 0);
-css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " input[name='mergeStatus'] { font-size: 9px!important; background-color: #fcf; }", 0);
-css.insertRule("div#" + MMRid + " { background-color: #fcf; text-shadow: 1px 1px 2px #663; padding: 4px; margin: 0px -6px 12px; border: 2px dotted white; }", 0);
-css.insertRule("div#" + MMRid + " > .main-shortcut { margin: 0px; }", 0);
-css.insertRule("div#" + MMRid + " h2 { color: maroon; text-shadow: 2px 2px 4px #996; margin: 0px; }", 0);
-css.insertRule("div#" + MMRid + " kbd { background-color: silver; border: 2px grey outset; padding: 0px 4px; font-size: .8em; }", 0);
+css.insertRule("body." + userjs.id + " div#" + userjs.id + " > .main-shortcut { display: none; }", 0);
+css.insertRule("body." + userjs.id + " div#content table.tbl > * > tr > .rating { display: none; }", 0);
+css.insertRule("body." + userjs.id + " div#content table.tbl > tbody > tr > td > div.ars { display: none; }", 0);
+css.insertRule("body." + userjs.id + " div#content table.tbl > tbody > tr > td > a[href^='http://acousticbrainz.org/'][style='float: right;'] { display: none; }", 0); // link to mb_ACOUSTICBRAINZ-LINKS https://gist.github.com/jesus2099/8e223f09d64d831a9514
+css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " { margin-top: 12px; cursor: pointer; }", 0);
+css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " > :not(h2):not(.main-shortcut) { display: none; }", 0);
+css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " input[name='mergeStatus'] { font-size: 9px!important; background-color: #fcf; }", 0);
+css.insertRule("div#" + userjs.id + " { background-color: #fcf; text-shadow: 1px 1px 2px #663; padding: 4px; margin: 0px -6px 12px; border: 2px dotted white; }", 0);
+css.insertRule("div#" + userjs.id + " > .main-shortcut { margin: 0px; }", 0);
+css.insertRule("div#" + userjs.id + " h2 { color: maroon; text-shadow: 2px 2px 4px #996; margin: 0px; }", 0);
+css.insertRule("div#" + userjs.id + " kbd { background-color: silver; border: 2px grey outset; padding: 0px 4px; font-size: .8em; }", 0);
 css.insertRule(".remoteRecordingLength.largeSpread { color: yellow; background-color: red; text-shadow: 2px 2px 4px black; }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
@@ -102,7 +92,7 @@ if (ltitle) {
 			}
 		});
 	}
-	// sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
+	// sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, userjs.name)]), sidebar.querySelector("h2.editing + ul.links li"));
 } else {
 	console.error("Local title (/^" + sregex_title + "$/) not found in document.title (" + document.title + ").");
 }
@@ -110,7 +100,7 @@ function mergeRecsStep(_step) {
 	if (editNote.value && editNote.value.match(/\w{4,}/g) && editNote.value.match(/\w{4,}/g).length > 3) {
 		editNote.style.removeProperty("background-color");
 		var step = _step || 0;
-		var MMR = document.getElementById(MMRid);
+		var MMR = document.getElementById(userjs.id);
 		var statuses = ["adding recs. to merge", "applying merge edit"];
 		var buttStatuses = ["Stacking…", "Merging…"];
 		var urls = ["/recording/merge_queue", "/recording/merge"];
@@ -120,7 +110,7 @@ function mergeRecsStep(_step) {
 		];
 		disableInputs([matchMode.sequential, matchMode.title, matchMode.titleAndAC, startpos, mergeStatus]);
 		if (step == 1) {
-			disableInputs([editNote, currentButt, currentButt.parentNode.querySelector("input." + MMRid + "dirbutt")]);
+			disableInputs([editNote, currentButt, currentButt.parentNode.querySelector("input." + userjs.id + "dirbutt")]);
 			params[step] += "&merge.edit_note=";
 			var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
 			if (paramsup != "") paramsup += "\n —\n";
@@ -150,7 +140,7 @@ function mergeRecsStep(_step) {
 			else if (localRelease.looseTitle == remoteRelease.looseTitle) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
 			// else if (leven(localRelease.looseTitle, remoteRelease.looseTitle)) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
 			if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' (" + MBS + "/release-group/" + localRelease["release-group"] + ")\n";
-			paramsup += " —\n" + meta.n + " (" + meta.v + ") in “" + matchMode.current.value.replace(/^Match unordered /i, "") + "” match mode";
+			paramsup += " —\n" + userjs.name + " (" + userjs.version + ") in “" + matchMode.current.value.replace(/^Match unordered /i, "") + "” match mode";
 			if (retry.count > 0) {
 				paramsup += " — '''retry'''" + (retry.count > 1 ? " #" + retry.count : "") + " (" + protectEditNoteText(retry.message) + ")";
 			}
@@ -295,7 +285,7 @@ function queueTrack() {
 	document.title = (mergeQueue.length + 1) + "⌛ " + dtitle;
 }
 function cleanTrack(track, editID, retryCount) {
-	var rmForm = track.tr.querySelector("td:not(.pos):not(.video) form." + MMRid);
+	var rmForm = track.tr.querySelector("td:not(.pos):not(.video) form." + userjs.id);
 	if (rmForm) {
 		if (editID) {
 			mp(track.tr.querySelector(css_track), true);
@@ -382,7 +372,7 @@ function updateMatchModeDisplay() {
 	enableInputs(startpos, matchMode.sequential == matchMode.current);
 }
 function massMergeGUI() {
-	var MMRdiv = createTag("div", {a: {id: MMRid}, e: {
+	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
 			if (event.key == "Enter" && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
 				queueAll.click();
@@ -397,12 +387,12 @@ function massMergeGUI() {
 		},
 		click: prepareLocalRelease
 	}}, [
-		createTag("h2", {}, meta.n),
-		createTag("p", {}, "version " + meta.v),
+		createTag("h2", {}, userjs.name),
+		createTag("p", {}, "version " + userjs.version),
 		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", createTag("kbd", {}, "CTRL"), " + ", createTag("kbd", {}, "SHIFT"), "+", createTag("kbd", {}, "M")]),
 		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release", createTag("span", {a: {"class": "remote-release-link"}}), ":"]),
 	]);
-	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", meta.n + " remote release URL"));
+	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", userjs.name + " remote release URL"));
 	mergeStatus.style.setProperty("width", "100%");
 	mergeStatus.addEventListener("input", function(event) {
 		matchMode.current = matchMode.sequential;
@@ -484,13 +474,13 @@ function massMergeGUI() {
 	});
 	MMRdiv.appendChild(createTag("p", {}, [
 		"☞ ",
-		createTag("kbd", {a: {class: MMRid + "arrowButton"}, s: {cursor: "pointer"}}, "↑"),
+		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "↑"),
 		" / ",
-		createTag("kbd", {a: {class: MMRid + "arrowButton"}, s: {cursor: "pointer"}}, "→"),
+		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "→"),
 		" / ",
-		createTag("kbd", {a: {class: MMRid + "arrowButton"}, s: {cursor: "pointer"}}, "↓"),
+		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "↓"),
 		" / ",
-		createTag("kbd", {a: {class: MMRid + "arrowButton"}, s: {cursor: "pointer"}}, "←"),
+		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "←"),
 		": shift up/down",
 		document.createElement("br"),
 		"☞ ",
@@ -498,7 +488,7 @@ function massMergeGUI() {
 		": queue all"
 	]));
 	MMRdiv.addEventListener("click", function(event) {
-		if (matchMode.current == matchMode.sequential && event.target.classList.contains(MMRid + "arrowButton")) {
+		if (matchMode.current == matchMode.sequential && event.target.classList.contains(userjs.id + "arrowButton")) {
 			startpos.focus();
 			if (event.target.textContent.match(/[↑←]/) && startpos.selectedIndex > 0) {
 				startpos.selectedIndex -= 1;
@@ -522,7 +512,7 @@ function massMergeGUI() {
 	MMRdiv.appendChild(createTag("p", {}, [matchMode.sequential, matchMode.title, matchMode.titleAndAC]));
 	MMRdiv.appendChild(createTag("p", {s: {marginBottom: "0px"}}, "Merge edit notes:"));
 	editNote = MMRdiv.appendChild(createInput("textarea", "merge.edit_note"));
-	var lastEditNote = (localStorage && localStorage.getItem(MMRid));
+	var lastEditNote = (localStorage && localStorage.getItem(userjs.id));
 	if (lastEditNote) {
 		editNote.appendChild(document.createTextNode(lastEditNote));
 		editNote.style.setProperty("background-color", cOK);
@@ -550,7 +540,7 @@ function massMergeGUI() {
 	var changeAllDirButt = createInput("button", "", "Change all merge targets to " + (swap.value == "no" ? "remote" : "local"));
 	changeAllDirButt.style.setProperty("background-color", cOK);
 	changeAllDirButt.addEventListener("click", function(event) {
-		var allbutts = document.querySelectorAll("input." + MMRid + "dirbutt:not([disabled])");
+		var allbutts = document.querySelectorAll("input." + userjs.id + "dirbutt:not([disabled])");
 		var direction = this.value.match(/local/) ? rem2loc : loc2rem;
 		for (let iab = 0; iab < allbutts.length; iab++) if (allbutts[iab].value != direction) allbutts[iab].click();
 		swap.value = direction == rem2loc ? "no" : "yes";
@@ -559,7 +549,7 @@ function massMergeGUI() {
 	});
 	var resetAllDirButt = createInput("button", "", "Reset all merge directions to oldest");
 	resetAllDirButt.addEventListener("click", function(event) {
-		var allbutts = document.querySelectorAll("input." + MMRid + "dirbutt:not([disabled])");
+		var allbutts = document.querySelectorAll("input." + userjs.id + "dirbutt:not([disabled])");
 		for (let iab = 0; iab < allbutts.length; iab++) {
 			var remoteRowID = parseInt(allbutts[iab].parentNode.querySelector("input[name='merge.merging.1']").value, 10);
 			var localRowID = parseInt(allbutts[iab].parentNode.querySelector("input[name='merge.merging.0']").value, 10);
@@ -574,7 +564,7 @@ function massMergeGUI() {
 	queueAll.setAttribute("ref", queueAll.value);
 	queueAll.style.setProperty("background-color", cMerge);
 	queueAll.addEventListener("click", function(event) {
-		var allbutts = document.getElementsByClassName(MMRid + "mergebutt");
+		var allbutts = document.getElementsByClassName(userjs.id + "mergebutt");
 		for (let iab = 0; iab < allbutts.length; iab++) {
 			if (allbutts[iab].value == "Merge") allbutts[iab].click();
 		}
@@ -601,7 +591,7 @@ function loadReleasePage() {
 		// TODO: should probably remove some in spreadTracks() etc.
 		cleanTrack(localRelease.tracks[ltrack]);
 	}
-	var mbidInfo = document.getElementById(MMRid).querySelector(".remote-release-link");
+	var mbidInfo = document.getElementById(userjs.id).querySelector(".remote-release-link");
 	removeChildren(mbidInfo);
 	mbidInfo.setAttribute("title", remoteRelease.id + remoteRelease.disc);
 	mbidInfo.appendChild(document.createTextNode(" "));
@@ -723,7 +713,7 @@ function spreadTracks(event) {
 			rtrack++;
 		}
 	}
-	var mergebutts = document.getElementsByClassName(MMRid + "mergebutt").length;
+	var mergebutts = document.getElementsByClassName(userjs.id + "mergebutt").length;
 	var outOfView = Math.max(0, parseInt(startpos.value, 10) + remoteRelease.tracks.length - localRelease.tracks.length);
 	if (startpos.value < 0) outOfView -= startpos.value;
 	infoMerge("☞ " + mergebutts + " recording" + (mergebutts == 1 ? "" : "s") + " ready to merge" + (outOfView > 0 ? " (" + outOfView + " out of view)" : ""), mergebutts > 0);
@@ -738,7 +728,7 @@ function buildMergeForm(loc, rem) {
 	rmForm.setAttribute("method", "post");
 	// rmForm.setAttribute("title", "AC: " + ac2str(remTrack.artistCredit) + "\nremote recording #" + remTrack.recording.rowid);
 	rmForm.setAttribute("title", "remote recording #" + format(remTrack.recording.rowid) + "\n" + remTrack.looseName + "\n" + remTrack.looseAC);
-	rmForm.setAttribute("class", MMRid);
+	rmForm.setAttribute("class", userjs.id);
 	rmForm.style.setProperty("display", "inline");
 	rmForm.appendChild(createInput("hidden", "merge.merging.0", locTrack.recid)).setAttribute("ref", locTrack.a.getAttribute("href").match(regex_MBID)[0]);
 	rmForm.appendChild(createInput("hidden", "merge.target", locTrack.recid));
@@ -747,7 +737,7 @@ function buildMergeForm(loc, rem) {
 	if (remTrack.recording.rowid != locTrack.recid) {
 		rmForm.style.setProperty("background-color", cWarning);
 		var dirButt = rmForm.appendChild(createInput("button", "direction", swap.value == "no" ? rem2loc : loc2rem));
-		dirButt.setAttribute("class", MMRid + "dirbutt");
+		dirButt.setAttribute("class", userjs.id + "dirbutt");
 		dirButt.style.setProperty("background-color", swap.value == "no" ? cOK : cInfo);
 		dirButt.style.setProperty("padding", "0 1em .5em 1em");
 		dirButt.style.setProperty("margin", "0 4px");
@@ -803,11 +793,11 @@ function buildMergeForm(loc, rem) {
 		}
 		rmForm.appendChild(AC);
 		var mergeButt = rmForm.appendChild(createInput("button", "", "Merge"));
-		mergeButt.setAttribute("class", MMRid + "mergebutt");
+		mergeButt.setAttribute("class", userjs.id + "mergebutt");
 		mergeButt.style.setProperty("background-color", cMerge);
 		mergeButt.style.setProperty("float", "right");
 		mergeButt.addEventListener("click", function(event) {
-			var swapbutt = this.parentNode.querySelector("input." + MMRid + "dirbutt");
+			var swapbutt = this.parentNode.querySelector("input." + userjs.id + "dirbutt");
 			this.style.setProperty("background-color", cInfo);
 			var queuedItem;
 			if (from.value == "") {
@@ -862,7 +852,7 @@ function buildMergeForm(loc, rem) {
 	if (remTrack.recording.rowid != locTrack.recid) {
 		var remoteRowID = parseInt(remTrack.recording.rowid, 10);
 		var localRowID = parseInt(locTrack.recid, 10);
-		var dirbutt = rmForm.querySelector("input[type='button']." + MMRid + "dirbutt");
+		var dirbutt = rmForm.querySelector("input[type='button']." + userjs.id + "dirbutt");
 		if (remoteRowID > localRowID && dirbutt.value == loc2rem || remoteRowID < localRowID && dirbutt.value == rem2loc) {
 			dirbutt.click();
 		}
@@ -899,9 +889,9 @@ function loadingAllMediums() {
 	}
 }
 function showGUI() {
-	if (!document.body.classList.contains(MMRid)) {
-		document.body.classList.add(MMRid);
-		var MMRdiv = document.getElementById(MMRid);
+	if (!document.body.classList.contains(userjs.id)) {
+		document.body.classList.add(userjs.id);
+		var MMRdiv = document.getElementById(userjs.id);
 		var tracklistTop = document.querySelector("h2.tracklist");
 		if (tracklistTop && tracklistTop.offsetTop) {
 			var margin = tracklistTop.offsetTop - startpos.offsetTop + MMRdiv.offsetTop;
@@ -923,7 +913,7 @@ function showGUI() {
 }
 function saveEditNote(event) {
 	if (localStorage) {
-		localStorage.setItem(MMRid, editNote.value);
+		localStorage.setItem(userjs.id, editNote.value);
 		editNote.style.setProperty("background-color", cOK);
 		editNote.setAttribute("title", "Saved to local storage");
 	} else {
@@ -934,7 +924,7 @@ function saveEditNote(event) {
 }
 function loadEditNote(event) {
 	if (localStorage) {
-		var savedEditNote = localStorage.getItem(MMRid);
+		var savedEditNote = localStorage.getItem(userjs.id);
 		if (savedEditNote) {
 			editNote.value = savedEditNote;
 			editNote.style.setProperty("background-color", cOK);

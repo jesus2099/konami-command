@@ -1,9 +1,6 @@
-"use strict";
-// eslint-disable-next-line func-style -- je vais te migrer ça vers GM_info
-var metadata = function() {
 // ==UserScript==
 // @name         last.fm. ALL LINKS TO LOCAL SITE
-// @version      2019.9.13.2099
+// @version      2021.2.1
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @description  Replaces any lastfm link by the desired language, like "www.lastfm.xx" or else
 // @homepage     http://userscripts-mirror.org/scripts/show/29156
@@ -20,7 +17,7 @@ var metadata = function() {
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2008-06-26
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @grant        none
+// @grant        GM_info
 // @match        *://*/*
 // @exclude      *://cn.last.fm/*
 // @exclude      *://www.last.fm/*
@@ -29,10 +26,7 @@ var metadata = function() {
 // @inject-into  auto
 // "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
-};
+"use strict";
 var preferred_lastfm = "last.fm";
 /* In above setting, choose your favourite host :
 "last.fm" for minimalistic auto-lang despatch links (often english)
@@ -48,9 +42,6 @@ var preferred_lastfm = "last.fm";
 "www.lastfm.pl" → for polski
 "www.lastfm.ru" → for руccкий
 "www.lastfm.se" → for svenska */
-var meta = metadata && metadata.toString && metadata.toString();
-meta = meta.match(/@name\s+(.+)/i);
-meta = meta ? "” (" + meta[1] + ")" : "”";
 var as = document.querySelectorAll("a[href*='.lastfm.'], a[href*='last.fm/']");
 for (var i = 0; i < as.length; i++) {
 	var newhref, href = as[i].getAttribute("href");
@@ -61,6 +52,6 @@ for (var i = 0; i < as.length; i++) {
 	) {
 		as[i].setAttribute("href", newhref);
 		var title = as[i].getAttribute("title");
-		as[i].setAttribute("title", (title ? title + "\n" : "") + "was “" + href + meta);
+		as[i].setAttribute("title", (title ? title + "\n" : "") + "was “" + href + GM_info.script.name);
 	}
 }

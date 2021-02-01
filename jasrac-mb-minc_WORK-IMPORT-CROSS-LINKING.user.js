@@ -1,9 +1,6 @@
-"use strict";
-// eslint-disable-next-line func-style -- je vais te migrer ça vers GM_info
-var meta = function() {
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2021.1.20.2099
+// @version      2021.2.1
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -15,22 +12,18 @@ var meta = function() {
 // @since        2011-01-14; http://userscripts-mirror.org/scripts/show/94676
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
-// @grant        none
+// @grant        GM_info
 // @match        *://*.musicbrainz.org/work/*
 // @match        *://www.minc.gr.jp/db/*
 // @match        *://www2.jasrac.or.jp/eJwid/main?trxID=*WORKS_CD=*
 // @exclude      *.org/work/*/*edits*
 // @run-at       document-end
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
-};
-meta = meta.toString();
-meta = {
-	name: meta.match(/@name\s+(.+)/)[1],
-	version: meta.match(/@version\s+(.+)/)[1],
-	namespace: meta.match(/@namespace\s+(.+)/)[1]
+"use strict";
+let userjs = {
+	id: "jesus2099userjs94676",
+	name: GM_info.script.name.substr(4).replace(/\s/g, "\u00a0"),
+	version: GM_info.script.version
 };
 /*
 	https://github.com/jesus2099/konami-command/issues/14
@@ -38,9 +31,8 @@ meta = {
 	GET JASRAC ID (work attributes) NG http://tickets.musicbrainz.org/browse/MBS-8341
 */
 var MBS7313 = "This script has been partially fixed now but is back to VERY EXPERIMENTAL status!\n(ノ ゜Д゜)ノ 彡┻━┻ Work credits are back on import (not on edit yet). Aliases are still disabled (maybe forever?).";
-var chrome = "Please run “" + meta.name + "” with Tampermonkey instead of plain Chrome.";
+var chrome = "Please run “" + userjs.name + "” with Tampermonkey instead of plain Chrome.";
 var DEBUG = localStorage.getItem("jesus2099debug");
-var userjs = "jesus2099userjs94676";
 var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var reISWC = "T- ?\\d{3}\\.\\d{3}.\\d{3}-\\d";
 var reCode = "\\d[A-Z\\d]\\d-\\d{4}-\\d";
@@ -82,7 +74,7 @@ var xhrJobs = {
 		init: function() {
 			xhrJobs["work-create/edit"].info = (self.location.pathname.match(/^\/work\/create/) ? "create" : "edit") + " work";
 			xhrJobs["work-create/edit"].url = xhrForm.form.getAttribute("action");
-			var inps = xhrForm.form.querySelectorAll("form > div > fieldset:not(." + userjs + ") input[name]:not([name='']):not([type='button']), form > div > fieldset:not(." + userjs + ") textarea[name], form > div > fieldset:not(." + userjs + ") select[name]");
+			var inps = xhrForm.form.querySelectorAll("form > div > fieldset:not(." + userjs.id + ") input[name]:not([name='']):not([type='button']), form > div > fieldset:not(." + userjs.id + ") textarea[name], form > div > fieldset:not(." + userjs.id + ") select[name]");
 			xhrJobs["work-create/edit"].params = "";
 			for (let inp = 0; inp < inps.length; inp++) {
 				xhrJobs["work-create/edit"].params += (inp > 0 ? "&" : "") + inps[inp].getAttribute("name") + "=" + encodeURIComponent(inps[inp].value);
@@ -113,7 +105,7 @@ var xhrJobs = {
 		async: false,
 		url: "/relationship-editor",
 		init: function() {
-			var inps = xhrForm.form.querySelectorAll("div#" + userjs + "wcs input.name.lookup-performed, form > div > fieldset:not(." + userjs + ") textarea.edit-note");
+			var inps = xhrForm.form.querySelectorAll("div#" + userjs.id + "wcs input.name.lookup-performed, form > div > fieldset:not(." + userjs.id + ") textarea.edit-note");
 			xhrJobs["batch-relationship-create"].params = "rel-editor.as_auto_editor=" + (isAutoEdit() ? "1" : "0");
 			var reli = 0;
 			for (let inp = 0; inp < inps.length; inp++) {
@@ -200,7 +192,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 	var hasCredits = "作曲";
 	var vocal = "vocal";
 	var instrumental = "instrumental";
-	if (DEBUG) console.log(userjs + " pagecat : " + pagecat);
+	if (DEBUG) console.log(userjs.id + " pagecat : " + pagecat);
 	let sakuhinCode, sakuhin;
 	switch (pagecat) {
 		case "jasrac":
@@ -331,7 +323,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						td.setAttribute("colspan", "3");
 						td.style.setProperty("text-align", "center");
 						td.style.setProperty("background-image", "/eJwid/img/kokoronelogo_A-2out.jpg");
-						summary += "※ '''JASRAC work importer''' (" + meta.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account\n" + workLookupURL("nextone", "code", sakuhinCode) + " ← another mirror";
+						summary += "※ '''JASRAC work importer''' (" + userjs.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account\n" + workLookupURL("nextone", "code", sakuhinCode) + " ← another mirror";
 						td.appendChild(document.createTextNode("click to select → "));
 						var ta = createTag("textarea", {a: {name: "tsummary"}}, summary);
 						ta.setAttribute("id", ta.getAttribute("name"));
@@ -481,9 +473,9 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					replaceElement(createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, ddcode), jasracIDs[i].firstChild);
 					if (donecodes.indexOf(ddcode) < 0) {
 						donecodes.push(ddcode);
-						getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, "JASRAC — " + ddcode)));
-						getExtLinks().appendChild(createTag("li", {a: {class: userjs + "minc no-favicon"}}, createTag("a", {a: {href: workLookupURL("minc", "code", ddcode)}, s: {background: background}}, "音楽の森 — " + ddcode)));
-						getExtLinks().appendChild(createTag("li", {a: {class: userjs + "nextone no-favicon"}}, createTag("a", {a: {href: workLookupURL("nextone", "code", ddcode)}, s: {background: background}}, "NexTone — " + ddcode)));
+						getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "jasrac no-favicon"}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, "JASRAC — " + ddcode)));
+						getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "minc no-favicon"}}, createTag("a", {a: {href: workLookupURL("minc", "code", ddcode)}, s: {background: background}}, "音楽の森 — " + ddcode)));
+						getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "nextone no-favicon"}}, createTag("a", {a: {href: workLookupURL("nextone", "code", ddcode)}, s: {background: background}}, "NexTone — " + ddcode)));
 					} else {
 						if (confirm("Duplicate JASRAC ID detected in work attributes.\nDo you want to edit?")) {
 							self.location.href = self.location.pathname + "/edit";
@@ -494,13 +486,13 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				var iswcs = document.querySelectorAll("div#sidebar > dl.properties > dd.iswc > a[href*='/iswc/'] code");
 				for (let iswc = 0; iswc < iswcs.length; iswc++) {
 					var iswct = iswcs[iswc].textContent;
-					getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, createA("JASRAC — " + iswct, workLookupURL("jasrac", "iswc", iswct.replace(/T-/, "T-+")), "Search this ISWC in JASRAC")));
+					getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "jasrac no-favicon"}}, createA("JASRAC — " + iswct, workLookupURL("jasrac", "iswc", iswct.replace(/T-/, "T-+")), "Search this ISWC in JASRAC")));
 				}
 				/* -- vv ------ JASRAC name search link ------ vv -- */
 				var title = document.querySelector("h1 a").textContent.trim();
-				getExtLinks().appendChild(createTag("li", {a: {class: userjs + "jasrac no-favicon"}}, jasracSearch("title", title)));
-				getExtLinks().appendChild(createTag("li", {a: {class: userjs + "minc no-favicon"}}, mincSearch("title", title)));
-				getExtLinks().appendChild(createTag("li", {a: {class: userjs + "nextone no-favicon"}}, createTag("a", {a: {href: workLookupURL("nextone", "name", title)}, s: {background: background}}, "NexTone — " + title)));
+				getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "jasrac no-favicon"}}, jasracSearch("title", title)));
+				getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "minc no-favicon"}}, mincSearch("title", title)));
+				getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "nextone no-favicon"}}, createTag("a", {a: {href: workLookupURL("nextone", "name", title)}, s: {background: background}}, "NexTone — " + title)));
 				/* -- vv ------ NexTone work ID permalink ------ vv -- */
 				var NexToneIDs = document.querySelectorAll("div#sidebar > dl.properties > dd.work-attribute-nex-tone-id");
 				for (let i = 0; i < NexToneIDs.length; i++) {
@@ -518,7 +510,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			h1 = document.querySelector("h1");
 			iname = document.getElementById("id-edit-work.name");
 			xhrForm.form = getParent(iname, "form");
-			insertBefore(createTag("p", {s: {color: "purple", border: "1px dashed #fcc", backgroundColor: "#ffc"}}, [createTag("h3", {}, meta.name), MBS7313, " ☞ ", createA("Read more…", "https://github.com/jesus2099/konami-command/issues/14", null, "_blank")]), xhrForm.form);
+			insertBefore(createTag("p", {s: {color: "purple", border: "1px dashed #fcc", backgroundColor: "#ffc"}}, [createTag("h3", {}, userjs.name), MBS7313, " ☞ ", createA("Read more…", "https://github.com/jesus2099/konami-command/issues/14", null, "_blank")]), xhrForm.form);
 				/* xhrForm.form.addEventListener("submit", function(event) {
 				var inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
 				var changed = !(xhrWork.edit) || (xhrForm.originalInputs.inputs.length != inputs.length);
@@ -530,7 +522,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				if (changed) {
 					joblist.push("work-create/edit");
 				}
-				var rels = this.querySelectorAll("div#" + userjs + "wcs input.name.lookup-performed").length;
+				var rels = this.querySelectorAll("div#" + userjs.id + "wcs input.name.lookup-performed").length;
 				if (rels > 0) {
 					xhrJobs["batch-relationship-create"].info = rels + " relationship" + (rels > 1 ? "s" : "");
 					joblist.push("batch-relationship-create");
@@ -543,7 +535,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						joblist.push("annotation-add");
 					}
 				}
-				var aliases = xhrForm.form.querySelectorAll("table#" + userjs + "alta > tfoot > tr > td > input." + userjs + "addit[type='checkbox']");
+				var aliases = xhrForm.form.querySelectorAll("table#" + userjs.id + "alta > tfoot > tr > td > input." + userjs.id + "addit[type='checkbox']");
 				xhrWork.newAliases = [];
 				for (let a = 0; a < aliases.length; a++) {
 					if (aliases[a].checked) {
@@ -580,7 +572,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			}, false); */
 			xhrForm.submit = xhrForm.form.querySelector("div.row button.submit.positive[type='submit']");
 			insertBefore(createTag("input", {a: {type: "reset", value: "Reset", title: "reset form values", tabindex: "-1", class: "styled-button"}, s: {float: "left", fontSize: ".77em", height: "16px", width: "32px", margin: "0 8px", border: "1px solid #ccc"}}), xhrForm.submit);
-			xhrForm.originalInputs = {inputs: [], values: [], css: "form > div > fieldset:not(." + userjs + ") input:not([type='button']), form > div > fieldset:not(." + userjs + ") select"};
+			xhrForm.originalInputs = {inputs: [], values: [], css: "form > div > fieldset:not(." + userjs.id + ") input:not([type='button']), form > div > fieldset:not(." + userjs.id + ") select"};
 			xhrForm.originalInputs.inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
 			for (let i = 0; i < xhrForm.originalInputs.inputs.length; i++) {
 				xhrForm.originalInputs.values.push(xhrForm.originalInputs.inputs[i].value);
@@ -754,9 +746,9 @@ function workSortName(txt) {
 	}
 }
 function workCredits(txt) {
-	var wcs = document.getElementById(userjs + "wcs");
+	var wcs = document.getElementById(userjs.id + "wcs");
 	if (!wcs) {
-		wcs = addAfter(createTag("fieldset", {a: {class: userjs}}, [createTag("legend", {}, "Relationships"), createTag("p", {}, [createTag("b", {}, "JASRAC sometimes has wrong credits"), " so, please double-check with your booklet then only lookup for the correct relationship(s) you want to create.", document.createElement("br"), "If you change your mind and want to un-lookup one of them, just select and clear the text field.", document.createElement("br"), "Only green fields will queue relationship edits."]), createTag("div", {a: {id: userjs + "wcs"}})]), xhrForm.form.querySelector("form > div > fieldset")).querySelector("div#" + userjs + "wcs");
+		wcs = addAfter(createTag("fieldset", {a: {class: userjs.id}}, [createTag("legend", {}, "Relationships"), createTag("p", {}, [createTag("b", {}, "JASRAC sometimes has wrong credits"), " so, please double-check with your booklet then only lookup for the correct relationship(s) you want to create.", document.createElement("br"), "If you change your mind and want to un-lookup one of them, just select and clear the text field.", document.createElement("br"), "Only green fields will queue relationship edits."]), createTag("div", {a: {id: userjs.id + "wcs"}})]), xhrForm.form.querySelector("form > div > fieldset")).querySelector("div#" + userjs.id + "wcs");
 	}
 	removeChildren(wcs);
 	try { jQuery; } catch (error) {
@@ -790,7 +782,7 @@ function workCredit(enttype, credtypes, source, pTarget) {
 			var credit, credits = new RegExp("^" + credtype + "：([^\u00a0]+)(?:\u00a0（.+）)?$", "igm");
 			while ((credit = credits.exec(source)) !== null) {
 				if (cont.tagName != "FIELDSET" && ctype.length > 1) {
-					cont = cont.appendChild(createTag("fieldset", {a: {class: userjs}}, [createTag("legend", {}, "choose either")]));
+					cont = cont.appendChild(createTag("fieldset", {a: {class: userjs.id}}, [createTag("legend", {}, "choose either")]));
 				}
 				credit = credit[1].trim();
 				if (credtypes[credtype].nomatch && credit.match(credtypes[credtype].nomatch)) {
@@ -803,13 +795,13 @@ function workCredit(enttype, credtypes, source, pTarget) {
 						continue;
 					}
 				}
-				var ilookupid = userjs + "ilookup" + i;
+				var ilookupid = userjs.id + "ilookup" + i;
 				var target = cont.appendChild(createTag("div", {a: {class: "row", title: credit}}));
 				target.appendChild(createTag("label", {a: {for: ilookupid}}, ctype[c].english + ":"));
 				target.appendChild(createTag("a", {a: {title: "reset\n" + credit, ref: i}, s: {cursor: "pointer"}, e: {click: function(event) {
 					MBlookups[this.getAttribute("ref")].clear(true);
 				}}}, "× "));
-				var jQac = jQuery(target.appendChild(createTag("span", {a: {class: enttype + " autocomplete" + (ctype.length == 1 || c > 0 ? "" : " " + userjs + "manu"), ref: enttype}}, [
+				var jQac = jQuery(target.appendChild(createTag("span", {a: {class: enttype + " autocomplete" + (ctype.length == 1 || c > 0 ? "" : " " + userjs.id + "manu"), ref: enttype}}, [
 					createTag("img", {a: {src: "/static/images/icons/search.png", class: "search", alt: "search"}}),
 					createTag("input", {a: {type: "text", class: "name", id: ilookupid, ref: credit}, s: {width: "150px"}}),
 					createTag("input", {a: {type: "hidden", class: "id"}}),
@@ -838,10 +830,10 @@ function workCredit(enttype, credtypes, source, pTarget) {
 					jQac.bind("lookup-performed", function(event) {
 						var name = this.querySelector("input.name");
 						var gidv = this.querySelector("input.gid").value;
-						var others = document.querySelectorAll("div#" + userjs + "wcs span.autocomplete");
+						var others = document.querySelectorAll("div#" + userjs.id + "wcs span.autocomplete");
 						for (let ot = 0; ot < others.length; ot++) {
 							if (
-								!others[ot].classList.contains(userjs + "manu")
+								!others[ot].classList.contains(userjs.id + "manu")
 								&& others[ot].querySelector("input.name").getAttribute("ref") == name.getAttribute("ref")
 								&& !others[ot].querySelector("input.name").classList.contains("lookup-performed")
 							) {
@@ -1054,12 +1046,12 @@ function workLookupURL(db, type, q) {
 	}
 }
 function aliasTable(add, clear) {
-	var alta = document.getElementById(userjs + "alta");
+	var alta = document.getElementById(userjs.id + "alta");
 	if (!alta) {
-		alta = addAfter(createTag("fieldset", {a: {class: userjs}}, [createTag("legend", {}, "Aliases"), createTag("p", {}, "You can add some aliases including (but not limited to) the default work sort-name and a latin search-hint. The JASRAC readings are almost always already cool. Sometimes you may fix few ツ→ッ but it’s rare. You can visually check the existing aliases."), createTag("table", {a: {id: userjs + "alta"}}, [
+		alta = addAfter(createTag("fieldset", {a: {class: userjs.id}}, [createTag("legend", {}, "Aliases"), createTag("p", {}, "You can add some aliases including (but not limited to) the default work sort-name and a latin search-hint. The JASRAC readings are almost always already cool. Sometimes you may fix few ツ→ッ but it’s rare. You can visually check the existing aliases."), createTag("table", {a: {id: userjs.id + "alta"}}, [
 			createTag("thead", {}, createTag("tr", {}, [createTag("th", {}, "Name"), createTag("th", {}, "Sort name"), createTag("th", {}, "Type"), createTag("th", {}, "Locale"), createTag("th", {}, "Add?")])),
 			document.createElement("tfoot"), document.createElement("tbody")
-		])]), xhrForm.form.querySelector("form > div > fieldset")).querySelector("table#" + userjs + "alta");
+		])]), xhrForm.form.querySelector("form > div > fieldset")).querySelector("table#" + userjs.id + "alta");
 	}
 	var aliases = add ? add : xhrWork.aliases;
 	var cont = alta.getElementsByTagName(add ? "tfoot" : "tbody")[0];
@@ -1089,7 +1081,7 @@ function aliasTable(add, clear) {
 			td.setAttribute("colspan", "2");
 		}
 		var se = tr.appendChild(createTag("td", {}, add ? createTag("select", {a: {name: "edit-alias.type_id"}, s: {width: "8em"}, e: {change: function(event) {
-			var inps = this.parentNode.parentNode.querySelectorAll("input:not(." + userjs + "addit)");
+			var inps = this.parentNode.parentNode.querySelectorAll("input:not(." + userjs.id + "addit)");
 			for (let i = 0; i < inps.length; i++) {
 				if (i < 2) {
 					inps[i].value = (this.value == "1" && inps[2].value == "en" ? toCamelCase(inps[i].value) : inps[i].value.toUpperCase());
@@ -1118,7 +1110,7 @@ function aliasTable(add, clear) {
 			replaceElement(document.createTextNode("primary " + td.textContent), td.firstChild);
 			td.setAttribute("title", "primary");
 		}
-		tr.appendChild(createTag("td", {}, add ? createTag("input", {a: {type: "checkbox", title: "add this work alias?", class: userjs + "addit"}}) : ""));
+		tr.appendChild(createTag("td", {}, add ? createTag("input", {a: {type: "checkbox", title: "add this work alias?", class: userjs.id + "addit"}}) : ""));
 		if (se) { // se is the work type <select>
 			if (aliases[a].type) {
 				se.value = aliases[a].type;
@@ -1126,7 +1118,7 @@ function aliasTable(add, clear) {
 				se.querySelector("option[value='" + aliases[a].type + "']").setAttribute("selected", "selected"); // for reset
 			}
 			se.addEventListener("change", function(event) {
-				var addit = this.parentNode.parentNode.querySelector("input." + userjs + "addit");
+				var addit = this.parentNode.parentNode.querySelector("input." + userjs.id + "addit");
 				if (!addit.checked) {
 					addit.click();
 				}
@@ -1135,23 +1127,23 @@ function aliasTable(add, clear) {
 				}
 			}, false);
 			xhrForm.form.addEventListener("reset", function(event) {
-				var ops = document.querySelectorAll("#" + userjs + "alta select option[selected]");
+				var ops = document.querySelectorAll("#" + userjs.id + "alta select option[selected]");
 				for (let o = 0; o < ops.length; o++) {
 					ops[o].parentNode.value = ops[o].value;
 					sendEvent(ops[o].parentNode, "change");
 				}
 			}, false);
 			if (!xhrWork.edit && a < 2 && !(aliases[a].type == "2" && aliases[a].name == iname.value)) {
-				getParent(se, "tr").querySelector("input." + userjs + "addit[type='checkbox']").click();
+				getParent(se, "tr").querySelector("input." + userjs.id + "addit[type='checkbox']").click();
 			}
 			var wname = tr.querySelector("input[name='edit-alias.name']");
 			var wsname = tr.querySelector("input[name='edit-alias.sort_name']");
-			var wnameaddit = tr.querySelector("input." + userjs + "addit[type='checkbox']");
+			var wnameaddit = tr.querySelector("input." + userjs.id + "addit[type='checkbox']");
 			if (clear && a == 0 && aliases[a].type == "1") {
 				if (wname) {
 					iname.addEventListener("keyup", function(event) {
-						var wname = document.querySelector("table#" + userjs + "alta > tfoot > tr > td > input[name='edit-alias.name']");
-						var wnameaddit = document.querySelector("table#" + userjs + "alta > tfoot > tr > td > input." + userjs + "addit[type='checkbox']");
+						var wname = document.querySelector("table#" + userjs.id + "alta > tfoot > tr > td > input[name='edit-alias.name']");
+						var wnameaddit = document.querySelector("table#" + userjs.id + "alta > tfoot > tr > td > input." + userjs.id + "addit[type='checkbox']");
 						if (wname) {
 							if (this.value != wname.value && wnameaddit && wnameaddit.checked) {
 								wnameaddit.click();
@@ -1233,7 +1225,7 @@ function createCoolSubmit(txt) {
 	return a;
 }
 function weirdobg() {
-	var weirdo = userjs + (new Date().getTime());
+	var weirdo = userjs.id + (new Date().getTime());
 	try {
 		self.open("", weirdo).blur();
 	} catch (error) {}
