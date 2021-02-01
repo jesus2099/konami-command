@@ -1,4 +1,5 @@
 "use strict";
+// eslint-disable-next-line func-style -- je vais te migrer ça vers GM_info
 var metadata = function() {
 // ==UserScript==
 // @name         last.fm. ALL LINKS TO LOCAL SITE

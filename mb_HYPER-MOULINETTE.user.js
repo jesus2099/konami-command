@@ -29,7 +29,7 @@ var meta = {rawmdb: function() {
 // ==/OpenUserJS==
 }};
 if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+	var kv /* key,val */, row = /\/\/\s+@(\S+)\s+(.+)/g;
 	while ((kv = row.exec(meta.rawmdb)) !== null) {
 		if (meta[kv[1]]) {
 			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
@@ -49,12 +49,12 @@ var crawlType = {
 	"^/search/edits": "div.edit-details a[href*='/release/']",
 };
 var genuineTitle = document.title;
-/*==========================================================================
-## MENU ITEM ##
-find this script in front of release collections
-==========================================================================*/
+// ==========================================================================
+// ## MENU ITEM ##
+// find this script in front of release collections
+// ==========================================================================
 if (self.location.href.match(/\/collections/) && document.querySelector("h1").textContent == account.querySelector("span.menu-header").textContent.match(/(\w+)\s.$/)[1]) {
-	var collectionHeaders = document.querySelectorAll("table.tbl > thead > tr")
+	var collectionHeaders = document.querySelectorAll("table.tbl > thead > tr");
 	for (var th = 0; th < collectionHeaders.length; th++) {
 		if (collectionHeaders[th].textContent.match(/Veröffentlichungen|Väljalasked|Releases|Publicaciones|Parutions|Pubblicazioni|Uitgaves|Julkaisut|Κυκλοφορίες|リリース/i)) {
 			collectionHeaders[th].appendChild(createTag("th", {a: {class: "hypermouli-header"}}, [meta.name.replace(/.+\. /, "") + (self.opera ? " (does not work in Opera!)" : ""), createTag("br"), meta.description.replace(/.+:/, "")]));
@@ -65,9 +65,9 @@ if (self.location.href.match(/\/collections/) && document.querySelector("h1").te
 		}
 	}
 }
-/*==========================================================================
-## THE BIG ONE ## goes here
-==========================================================================*/
+// ==========================================================================
+// ## THE BIG ONE ## goes here
+// ==========================================================================
 function mouli() {
 	target = this.parentNode.parentNode.querySelector("a[href*='/collection/']").getAttribute("href").match(re_GUID);
 	method = this.textContent.toLowerCase();
@@ -117,7 +117,7 @@ function loadForExtract(page) {
 			loadForExtract(page.replace(/(page=)\d+$/, "$1" + (iPage + 1)));
 		} else {
 			document.title = genuineTitle;
-			modal(createTag("h3", {}, ["Last page processed (", createTag("a", {e: {click: function() { self.location.reload() }}}, "RELOAD"), " page to quit this crap)."]));
+			modal(createTag("h3", {}, ["Last page processed (", createTag("a", {e: {click: function() { self.location.reload(); }}}, "RELOAD"), " page to quit this crap)."]));
 		}
 	});
 	xhr.addEventListener("error", function(event) {
@@ -132,8 +132,9 @@ function loadForExtract(page) {
 	xhr.sendDebug(null);
 }
 function requestForAction(method, url) {
-if (self.opera) { modal(createTag("p", {}, ["Will not perform ", createTag("a", {a: {href: url, target: "_blank"}}, method), " (auth-digest does not work in Opera)."])); }
-	else {
+	if (self.opera) {
+		modal(createTag("p", {}, ["Will not perform ", createTag("a", {a: {href: url, target: "_blank"}}, method), " (auth-digest does not work in Opera)."]));
+	} else {
 		var xhr = new XMLHttpRequest();
 		loaders[xhr.getID()] = {method: method, url: url, maxRetry: 5};
 		xhr.addEventListener("load", function(event) {
@@ -158,9 +159,9 @@ if (self.opera) { modal(createTag("p", {}, ["Will not perform ", createTag("a", 
 		xhr.sendDebug(null);
 	}
 }
-/*======================================
-## hacked from COLLECTION HIGHLIGHTER ##
-======================================*/
+// =====================================
+// ## hacked from COLLECTION HIGHLIGHTER
+// =====================================
 function modal(txt) {
 	var obj = document.getElementById(meta.key + "modal");
 	if (txt && !obj) {
@@ -202,9 +203,9 @@ function modal(txt) {
 		return truc;
 	}
 }
-/*================================================================================
-## adaptation of JULIEN COUVREUR inspired code at http://oreilly.com/pub/h/4133 ##
-================================================================================*/
+// ===============================================================================
+// ## adaptation of JULIEN COUVREUR inspired code at http://oreilly.com/pub/h/4133
+// ===============================================================================
 XMLHttpRequest.prototype.getID = function() {
 	if (!this.id) {
 		this.id = Math.floor(Math.random() * 1000);

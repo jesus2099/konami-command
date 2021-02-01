@@ -12,6 +12,7 @@
 // @exclude      *iframeproxy*
 // @run-at       document-end
 // ==/UserScript==
+"use strict";
 // ------------CONFIG-START------------
 var shrink = true; // https://amazon.jp/dp/B00005LLFD (shortest) on links and https://www.amazon.co.jp/dp/B00005LLFD in adress bar instead of crazy stufff like https://www.amazon.co.jp/AJICO-SHOW/dp/B00005LLFD/ref=ntt_mus_dp_dpt_2
 var shortestShrinkOnHeader = true; // show the shortest link on header of product page
@@ -31,8 +32,7 @@ function shrinkASINurl(url, extreme) {
 		ret = "https://www.amazon." + split[1] + "/dp/" + split[2];
 	}
 	if (ret && extreme) { ret = extremeShrinkUrl(ret); }
-	if (ret && ret != url) { return ret; }
-	else { return false; }
+	if (ret && ret != url) { return ret; } else { return false; }
 }
 function shrinkSearchUrl(url, extreme) {
 	let ret = false;
@@ -104,8 +104,11 @@ if (fullSizePicLinks) {
 }
 function addAfter(n, e) {
 	if (n && e && e.parentNode) {
-		if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
-		else { return e.parentNode.appendChild(n); }
+		if (e.nextSibling) {
+			return e.parentNode.insertBefore(n, e.nextSibling);
+		} else {
+			return e.parentNode.appendChild(n);
+		}
 	} else { return null; }
 }
 function getParent(obj, tag, cls) {

@@ -110,7 +110,7 @@ var editors = {
 	"jesus2099": "GOLD MASTER KING",
 	    "%you%": "PROPHET PRINCE CHAMPION",
 };
-var standout /*from the crowd*/ = true;
+var standout /* from the crowd */ = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var MBS = self.location.protocol + "//" + self.location.host;
 var you = document.querySelector("div.header ul.menu li.account a[href^='/user/']");
@@ -196,9 +196,6 @@ for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, ed
 				inputs[i].setAttribute("title", editors[editor].title);
 				inputs[i].style.setProperty("color", "darkred");
 				inputs[i].setAttribute("_blur-value", inputs[i].value);
-				var swapValues = function(e) {
-					this.value = this.getAttribute("_" + e.type + "-value");
-				};
 				inputs[i].addEventListener("focus", swapValues);
 				inputs[i].addEventListener("blur", swapValues);
 				document.querySelector("form#edit-search").addEventListener("submit", function() {
@@ -244,6 +241,9 @@ function profileEntry(content, header) {
 	dd.style.setProperty("text-shadow", "0 0 4px gold");
 	return entry;
 }
+function swapValues(event) {
+	this.value = this.getAttribute("_" + event.type + "-value");
+}
 function removeChildren(p) {
 	while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
 }
@@ -261,7 +261,10 @@ function getSibling(obj, tag, cls, prev) {
 }
 function addAfter(n, e) {
 	if (n && e && e.parentNode) {
-		if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
-		else { return e.parentNode.appendChild(n); }
+		if (e.nextSibling) {
+			return e.parentNode.insertBefore(n, e.nextSibling);
+		} else {
+			return e.parentNode.appendChild(n);
+		}
 	} else { return null; }
 }

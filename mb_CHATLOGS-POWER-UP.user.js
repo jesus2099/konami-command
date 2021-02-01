@@ -42,7 +42,7 @@ if (cat) {
 				css.insertRule("header#Log-Header { padding: 0px; }", 0);
 				css.insertRule("header#Log-Header { top: 0px; }", 0);
 				// remove sidebar which does some funky endless reloading with Opera 12
-				css.insertRule(".timeline-navigation { display: none; }", 0)
+				css.insertRule(".timeline-navigation { display: none; }", 0);
 				css.insertRule("#Log-Container { margin-top: 0px; }", 0);
 				css.insertRule("#Log-Container article { margin-right: 0px; }", 0);
 			}

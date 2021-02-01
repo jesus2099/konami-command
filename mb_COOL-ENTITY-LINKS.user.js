@@ -26,10 +26,10 @@
 // ==/UserScript==
 "use strict";
 /* -------- CONFIGURATION START (don't edit above) -------- */
-var contractMBIDs = true; /* more compact MBIDs but brwoser can still inline search/find full MBID (this is magic from mb_INLINE-STUFF) */
-var editLink = true;/*add direct link to edit page*/
-var editsLink = true;/*add direct link to edit history and open edit pages*/
-var confirmIfMoreThan = 2000;/*-1 to never confirm*/
+var contractMBIDs = true; // more compact MBIDs but brwoser can still inline search/find full MBID (this is magic from mb_INLINE-STUFF)
+var editLink = true; // add direct link to edit page
+var editsLink = true; // add direct link to edit history and open edit pages
+var confirmIfMoreThan = 2000; // -1 to never confirm
 /* -------- CONFIGURATION  END  (don't edit below) -------- */
 var userjs = "jesus2099userjs131731";
 var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -100,8 +100,8 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 		cssas += "a[href*='//classic." + u + "'][href$='.html']";
 	}
 	as = document.querySelectorAll(cssas);
-	var skip = localStorage.getItem("jesus2099skip_linksdeco_" + ent);/*skip deco shared with COLLECTION HIGHLIGHTER asks only once per page*/
-	if (confirmIfMoreThan < 0 || (as.length <= confirmIfMoreThan || skip && skip == "0" || !(skip && skip == "1") && as.length > confirmIfMoreThan && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are "+as.length+" "+ent.toUpperCase()+"S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
+	var skip = localStorage.getItem("jesus2099skip_linksdeco_" + ent); // skip deco shared with COLLECTION HIGHLIGHTER asks only once per page
+	if (confirmIfMoreThan < 0 || (as.length <= confirmIfMoreThan || skip && skip == "0" || !(skip && skip == "1") && as.length > confirmIfMoreThan && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are " + as.length + " " + ent.toUpperCase() + "S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
 		skip = "0";
 		for (var a = 0; a < as.length; a++) {
 			var href, id;
@@ -112,7 +112,7 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 			) {
 				var newA = as[a].cloneNode(true);
 				newA.classList.add(c);
-				if (as[a].textContent == href || /*forums*/as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /*edit-notes*/as[a].textContent == href.substr(0, 48) + "…") {
+				if (as[a].textContent == href || /* forums */ as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /* edit-notes */ as[a].textContent == href.substr(0, 48) + "…") {
 					newA.classList.add(userjs);
 					var text = unescape(id[1]);
 					if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);

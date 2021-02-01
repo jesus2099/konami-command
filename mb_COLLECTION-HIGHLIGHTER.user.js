@@ -52,7 +52,7 @@ if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
 	var highlightColour = "purple";
 	var highlightInEditNotes = false;
-	var skipArtists = "89ad4ac3-39f7-470e-963a-56509c546377"; /*put artist GUID separated by space that you want to skip, example here it’s VA*/
+	var skipArtists = "89ad4ac3-39f7-470e-963a-56509c546377"; // put artist GUID separated by space that you want to skip, example here it’s VA
 	var MBWSRate = 999;
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var prefix = "collectionHighlighter";
@@ -166,10 +166,10 @@ if (cat) {
 						var lab = document.createElement("label");
 						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue("cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
 						var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
-						if (cstuff.match(/artist|recording|release(-group)?|work/)) {/*defaults*/
+						if (cstuff.match(/artist|recording|release(-group)?|work/)) { // defaults
 							cfgcb.setAttribute("checked", "checked");
 						}
-						if (cstuff.match(/release(-group)?/)) {/*forced*/
+						if (cstuff.match(/release(-group)?/)) { // forced
 							lab.style.setProperty("opacity", ".5");
 							cfgcb.setAttribute("disabled", "disabled");
 						} else {/* read previous settings */
@@ -180,7 +180,7 @@ if (cat) {
 								cfgcb.removeAttribute("checked");
 							}
 						}
-						if (cstuff.match(/artist|work/)) {/*artist and work tracking requires recording tracking*/
+						if (cstuff.match(/artist|work/)) { // artist and work tracking requires recording tracking
 							cfgcb.addEventListener("change", function(event) {
 								if (this.checked) {
 									var recording = this.parentNode.parentNode.querySelector("input[name='recording']");
@@ -564,12 +564,12 @@ function collectionUpdater(link, action) {
 function getStuffs(what, pwhere) {
 	var cont = pwhere ? pwhere : document;
 	var selector = {
-		"release": "div#content table.tbl > tbody > tr > td a[href^='/release/']", /*pwhere(lab,rec,rgr)*/
-		"release-group": "div.releaseheader a[href^='/release-group/']", /*rel*/
-		"recording": (pwhere ? "div#content [href^='/recording/']" : "table.medium > tbody > tr > td:not(.pos):not(.video) > a[href^='/recording/'], table.medium > tbody > tr > td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']"), /*pwhere(art,wrk)/rel*/
-		"artist": "div.releaseheader a[href^='/artist/'], div#content table.tbl > tbody > tr > td > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > span > a[href^='/artist/']", /*rel*/
-		"work": "div#content div.ars > dl.ars > dd > a[href^='/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='/work/']", /*rel*/
-		"label": "div#sidebar > ul.links > li a[href^='/label/']", /*rel*/
+		"release": "div#content table.tbl > tbody > tr > td a[href^='/release/']", // pwhere(lab,rec,rgr)
+		"release-group": "div.releaseheader a[href^='/release-group/']", // rel
+		"recording": (pwhere ? "div#content [href^='/recording/']" : "table.medium > tbody > tr > td:not(.pos):not(.video) > a[href^='/recording/'], table.medium > tbody > tr > td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']"), // pwhere(art,wrk)/rel
+		"artist": "div.releaseheader a[href^='/artist/'], div#content table.tbl > tbody > tr > td > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > span > a[href^='/artist/']", // rel
+		"work": "div#content div.ars > dl.ars > dd > a[href^='/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='/work/']", // rel
+		"label": "div#sidebar > ul.links > li a[href^='/label/']", // rel
 	};
 	if (what) {
 		return cont.querySelectorAll(selector[what]);
@@ -671,7 +671,7 @@ function stuffRemover(checks, pp) {
 								end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " while checking stuff to remove).");
 							}
 						}
-					}/*4*/
+					} // 4
 				};
 				debug(MBS + url);
 				chrono();
@@ -875,8 +875,11 @@ function concat(tstuff) {
 		var ccat = stuff[thisStuff];
 		if (typeof ccat == "string") {
 			var ccatr = ccat.match(/^<(.+)>$/);
-			if (ccatr) { ccat = document.createElement(ccatr[1]); }
-			else { ccat = document.createTextNode(ccat); }
+			if (ccatr) {
+				ccat = document.createElement(ccatr[1]);
+			} else {
+				ccat = document.createTextNode(ccat);
+			}
 		}
 		concats.appendChild(ccat);
 	}
@@ -899,7 +902,7 @@ function sInt2msStr(seconds) {
 	var h = Math.floor(s / (60 * 60));
 	var m = Math.floor(div / 60);
 	    s = Math.ceil(div % 60);
-	return ( (h > 0 ? h + ":" : "") + (m > 9 ? m : "0" + m) + ":" + (s > 9 ? s : "0" + s) );
+	return ((h > 0 ? h + ":" : "") + (m > 9 ? m : "0" + m) + ":" + (s > 9 ? s : "0" + s));
 }
 function debug(txt, buffer) {
 	if (DEBUG) {

@@ -20,13 +20,13 @@
 var cdjTURBODASHinterval = setInterval(function() {
 	if (document.querySelector("form[name='page'] /* for search */, div#data_request /* for artist and disc pages */")) {
 		clearInterval(cdjTURBODASHinterval);
-		/*remove crap*/
+		/* remove crap */
 		var css = document.createElement("style");
 		css.setAttribute("type", "text/css");
 		document.head.appendChild(css);
 		css = css.sheet;
 		css.insertRule("div#aun_banner, div#banner_one, div#banner_two, div.banner, iframe, div#right_body a:not([href*='.cdjournal.com/']) { display: none; }", 0);
-		/*add quick links*/
+		/* add quick links */
 		var artists = document.querySelectorAll("a:not(.border)[href^='https://artist.cdjournal.com/artist.php?ano='], h1 > a[href^='https://artist.cdjournal.com/a/']");
 		var pages = {
 			レコード: "cd",

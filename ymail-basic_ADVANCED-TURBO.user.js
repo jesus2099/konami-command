@@ -67,11 +67,12 @@ if (emails) {
 					i = Math.min(lastemcb, i);
 				}
 				for (; i < max; i++) {
-					if (emcbs[i].checked != this.checked) { emcbs[i].checked = this.checked; }
+					if (emcbs[i].checked != this.checked) {
+						emcbs[i].checked = this.checked;
+					}
 				}
 				lastemcb = -1;
-			}
-			else {
+			} else {
 				lastemcb = indexOf(this, emcbs);
 			}
 		}, false);
@@ -89,19 +90,22 @@ if (emails) {
 				hackit(triggers[tr], "(Action will trigger immediately uppon select)");
 				triggers[tr].setAttribute("afsbmt", autofire[af].submit);
 				triggers[tr].addEventListener("change", function(event) {
-					try { doThis(document.querySelector(this.getAttribute("afsbmt"))); } catch(error) {}
+					try {
+						doThis(document.querySelector(this.getAttribute("afsbmt")));
+					} catch (error) {}
 				}, false);
 			}
-			
 		}
 	}
 	// keyboard shortcuts
 	if (KEYBOARD_SHORTCUTS) {
 		document.addEventListener("keydown", interceptKeys, false);
 		document.addEventListener("keyup", interceptKeys, false);
-		for (var sc in shortcuts) { if (Object.prototype.hasOwnProperty.call(shortcuts, sc)) {
-			try { hackit(shortcuts[sc].button, "", "[" + (shortcuts[sc].key || sc.toUpperCase()) + "]"); } catch(error) {}
-		} }
+		for (var sc in shortcuts) if (Object.prototype.hasOwnProperty.call(shortcuts, sc)) {
+			try {
+				hackit(shortcuts[sc].button, "", "[" + (shortcuts[sc].key || sc.toUpperCase()) + "]");
+			} catch (error) {}
+		}
 	}
 	// remove crap
 	if (REMOVE_CRAP) {
@@ -125,7 +129,7 @@ if (emails) {
 		].join(", ") + "{ display: none; }", 0);
 		try {
 			getParent(document.querySelector("table.tbl tr > td.spnsr"), "tr").style.setProperty("display", "none");
-		} catch(error) {}
+		} catch (error) {}
 	}
 }
 function hackit(_obj, title, text) {
@@ -166,7 +170,7 @@ function interceptKeys(event) {
 			}
 			return stop(event);
 		}
-	} catch(error) {}
+	} catch (error) {}
 }
 function doThis(butt, noreload) {
 	var button = findNode(butt);

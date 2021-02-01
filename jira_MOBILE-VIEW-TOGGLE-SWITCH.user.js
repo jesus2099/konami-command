@@ -38,7 +38,7 @@ if (
 			var mobileSwitch = document.createElement("a");
 			mobileSwitch.setAttribute("id", "switch-to-desktop-header");
 			mobileSwitch.appendChild(document.createTextNode("Switch to mobile version"));
-			mobileSwitch.setAttribute("href", "/plugins/servlet/mobile#issue/" + issue)
+			mobileSwitch.setAttribute("href", "/plugins/servlet/mobile#issue/" + issue);
 			document.body.insertBefore(mobileSwitch, document.body.firstChild);
 		} else {
 			// Discrete link on desktop

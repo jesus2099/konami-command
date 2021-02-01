@@ -55,7 +55,7 @@ var selectText = false; /* selects the focused field’s text */
 var moreURLmatch = true; /* more URL patterns matching in add/edit links (blog, etc.) */
 var tracklistEditorEnhancer = true; /* press UP↓/↑DOWN keys to navigate through track positions, names and lengths, auto clean‐up and format track length */
 /* ---------- configuration above ---------- */
-/*work in progress, don't refrain from requesting more pages and/or fields*/
+// work in progress, don't refrain from requesting more pages and/or fields
 function mostCleverInputToFocus() {
 	var i;
 	switch (self.location.pathname.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/, "*").replace(/[0-9]+/, "*")) {
@@ -89,14 +89,14 @@ function mostCleverInputToFocus() {
 		case "/edit/relationship/create_url":
 			i = document.querySelector("input[id='id-ar.url']");
 			if (moreURLmatch) {
-//TODO: see if those selectors are not included in MBS now
-//TODO: convert this code for entity edit case instead of now defunct /edit/relationship/*
+// TODO: see if those selectors are not included in MBS now
+// TODO: convert this code for entity edit case instead of now defunct /edit/relationship/*
 				var type = document.querySelector("select[id='id-ar.link_type_id']");
 				if (type) {
 					i.addEventListener("keyup", function(event) {
 						var urlmatch = {
-							199: /6109\.jp|ameblo|blog|cocolog|instagram\.com|jugem\.jp|plaza.rakuten\.co\.jp|tumblr\.com/i, //blog
-							288: /sonymusic\.co\.jp|\/disco/i, //discography
+							199: /6109\.jp|ameblo|blog|cocolog|instagram\.com|jugem\.jp|plaza.rakuten\.co\.jp|tumblr\.com/i, // blog
+							288: /sonymusic\.co\.jp|\/disco/i, // discography
 						};
 						for (var utype in urlmatch) if (Object.prototype.hasOwnProperty.call(urlmatch, utype)) {
 							var option = type.querySelector("option[value='" + utype + "']");

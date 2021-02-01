@@ -36,17 +36,17 @@ function setCookie(name, value, days) {
 		var expires = "; expires=" + date.toGMTString();
 	}
 	else var expires = "";
-	document.cookie = 	name + "=" + escape(value) +
-						expires +
-						"; path=/";
+	document.cookie = name + "=" + escape(value) +
+	                  expires +
+	                  "; path=/";
 }
 dead code */
 
 function deleteCookie(name) {
-	if( getCookie(name) ) {
-		document.cookie = 	name + "=" +
-							";path=/" + 
-							"; expires=Thu, 24-Jun-77 00:00:01 GMT";
+	if (getCookie(name)) {
+		document.cookie = name + "=" +
+		                  ";path=/" +
+		                  "; expires=Thu, 24-Jun-77 00:00:01 GMT";
 	}
 }
 

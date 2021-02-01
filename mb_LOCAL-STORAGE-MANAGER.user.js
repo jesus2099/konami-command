@@ -25,7 +25,7 @@ var meta = {rawmdb: function() {
 // ==/OpenUserJS==
 }};
 if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+	var kv /* key,val */, row = /\/\/\s+@(\S+)\s+(.+)/g;
 	while ((kv = row.exec(meta.rawmdb)) !== null) {
 		if (meta[kv[1]]) {
 			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
@@ -42,13 +42,13 @@ if (!j2set && (j2set = document.querySelector("div.header ul.menu li.about > ul"
 }
 if (j2set) {
 	addAfter(createTag("li", {a: {class: "jesus2099"}},
-	createTag("a", {a: {title: meta.description.replace(/^[^:]+: /, "")}, e: {click: function(event) {
+		createTag("a", {a: {title: meta.description.replace(/^[^:]+: /, "")}, e: {click: function(event) {
 			this.parentNode.parentNode.style.removeProperty("left");
 			if (lsm) { unloadLS(); } else {
 				lskeys = [];
 				lsm = document.body.insertBefore(createTag("div", {a: {id: userjs + "lsm"}}, createTag("h2", {}, [
 					meta.name + " (",
-					createTag("a", {a: {title: "Add a new key"}, e:{click: function(event) {
+					createTag("a", {a: {title: "Add a new key"}, e: {click: function(event) {
 						loadLS();
 						var key = prompt("Type new key name");
 						if (key) {
@@ -70,7 +70,7 @@ if (j2set) {
 						if (confirm("Are you sure you want to clear all those keys\nfrom your local storage memory\nfor this website?\nYOU CANNOT UNDO THIS ACTION.")) {
 							localStorage.clear();
 							loadLS();
-						} 
+						}
 					}}}, "clear"),
 					"/",
 					createTag("a", {a: {title: "Close local storage manager"}, e: {click: function(event){unloadLS();}}}, "close"),
@@ -79,7 +79,7 @@ if (j2set) {
 				if (self.opera) lsm.appendChild(createTag("p", {}, "☞ Opera 12 has its own local storage editor: CTRL+SHIFT+I (Dragon fly) > Storage > Local Storage."));
 				else if (navigator.userAgent.match(/firefox/i)) lsm.appendChild(createTag("p", {}, "☞ Firefox’s Firebug has its own local storage editor: DOM > localStorage."));
 				else if (navigator.userAgent.match(/chrom(ium|e)/i)) lsm.appendChild(createTag("p", {}, "☞ Chromium has its own local storage editor: F12 > Resources > Local Storage."));
-				document.addEventListener("storage", function(event) { loadLS(); }, false);/*does never trigger btw*/
+				document.addEventListener("storage", function(event) { loadLS(); }, false); // does never trigger btw
 				loadLS();
 				lsm.scrollIntoView();
 			}
@@ -105,7 +105,7 @@ function loadLS() {
 		var content = localStorage.getItem(key);
 		size += content.length;
 		var tr = addRow(keylist, [
-			(k+1) + ".\u00a0",
+			(k + 1) + ".\u00a0",
 			createTag("code", {}, key),
 			content.length > 64 || content.match(/(\n|\r)/) ? content.substr(0, 64) + (content.length > 64 ? "…" : "") : content,
 			concat([
@@ -123,16 +123,16 @@ function loadLS() {
 					"remove " + key
 				),
 			]),
-			content.length+""
+			content.length + ""
 		]);
 		tr.setAttribute("title", "edit " + key);
 		tr.addEventListener("click", function(event){
-			function coolstuff(t,z,s,b,o) {
+			function coolstuff(t, z, s, b, o) {
 				var truc = document.getElementsByTagName("body")[0].appendChild(document.createElement(t));
 				truc.style.setProperty("position", "fixed");
 				truc.style.setProperty("z-index", z);
 				truc.style.setProperty("top", (100 - s) / 2 + "%");
-				truc.style.setProperty("left", (100 - s ) / 2 + "%");
+				truc.style.setProperty("left", (100 - s) / 2 + "%");
 				truc.style.setProperty("width", s + "%");
 				truc.style.setProperty("height", s + "%");
 				if (b) { truc.style.setProperty("background-color", b); }
@@ -165,8 +165,11 @@ function loadLS() {
 	addRow(keylist, ["\u00a0", "\u00a0", "\u00a0", "\u00a0", size + ""]);
 	var lsm = document.getElementById(userjs + "lsm");
 	var lsmkeys = lsm.querySelector("table");
-	if (lsmkeys) { lsm.replaceChild(keylist, lsmkeys); }
-	else { lsm.appendChild(keylist); }
+	if (lsmkeys) {
+		lsm.replaceChild(keylist, lsmkeys);
+	} else {
+		lsm.appendChild(keylist);
+	}
 }
 function decorate(event, tr, over) {
 	tr.style.setProperty("text-shadow", over ? "1px 2px 2px #999" : "none");
@@ -198,7 +201,7 @@ function concat(tstuff) {
 }
 function createTag(tag, gadgets, children) {
 	var t = (tag == "fragment" ? document.createDocumentFragment() : document.createElement(tag));
-	if(t.tagName) {
+	if (t.tagName) {
 		if (gadgets) {
 			for (var attri in gadgets.a) if (Object.prototype.hasOwnProperty.call(gadgets.a, attri)) { t.setAttribute(attri, gadgets.a[attri]); }
 			for (var style in gadgets.s) if (Object.prototype.hasOwnProperty.call(gadgets.s, style)) { t.style.setProperty(style.replace(/!/g, ""), gadgets.s[style].replace(/!/g, ""), style.match(/!/) || gadgets.s[style].match(/!/) ? "important" : ""); }
@@ -206,15 +209,14 @@ function createTag(tag, gadgets, children) {
 		}
 		if (t.tagName == "A" && !t.getAttribute("href") && !t.style.getPropertyValue("cursor")) t.style.setProperty("cursor", "pointer");
 	}
-	if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.tagName) { chldrn = [chldrn]; } for(var child = 0; child < chldrn.length; child++) { t.appendChild(typeof chldrn[child] == "string" ? document.createTextNode(chldrn[child]) : chldrn[child]); } t.normalize(); }
+	if (children) { var chldrn = children; if (typeof chldrn == "string" || chldrn.tagName) { chldrn = [chldrn]; } for (var child = 0; child < chldrn.length; child++) { t.appendChild(typeof chldrn[child] == "string" ? document.createTextNode(chldrn[child]) : chldrn[child]); } t.normalize(); }
 	return t;
 }
 function createA(text, link, title) {
 	var a = document.createElement("a");
 	if (link && typeof link == "string") {
 		a.setAttribute("href", link);
-	}
-	else {
+	} else {
 		if (link && typeof link == "function") {
 			a.addEventListener("click", link, false);
 		}
@@ -226,8 +228,11 @@ function createA(text, link, title) {
 }
 function addAfter(n, e) {
 	if (n && e && e.parentNode) {
-		if (e.nextSibling) { return e.parentNode.insertBefore(n, e.nextSibling); }
-		else { return e.parentNode.appendChild(n); }
+		if (e.nextSibling) {
+			return e.parentNode.insertBefore(n, e.nextSibling);
+		} else {
+			return e.parentNode.appendChild(n);
+		}
 	} else { return null; }
 }
 function stop(e) {

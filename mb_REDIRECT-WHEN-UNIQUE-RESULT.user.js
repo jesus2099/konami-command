@@ -17,7 +17,7 @@
 var onlyWhenNoReferrer = true; // for browser defined URL searches and duckduckgo MB !bangs like !mb !mbr !mblabel etc. only, for instance
 var redirOnUniqueMatch = true; // redirect when one result
 var redirOnUniqueExactMatch = true; // case insensitive, redirect when unique 100% scored result (both name and aliases) in several results
-var backgroundMarking = ["#ffc", "#ff6"]; //odd rows, even rows
+var backgroundMarking = ["#ffc", "#ff6"]; // odd rows, even rows
 var textShadowMarking = "1px 2px 2px #cc6";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 if (document.getElementById("headerid-query")) {

@@ -1,5 +1,5 @@
 "use strict";
-var meta= { rawmdb: function() {
+var meta = { rawmdb: function() {
 // ==UserScript==
 // @name         mb. POWER VOTE
 // @version      2021.1.19
@@ -29,7 +29,7 @@ var meta= { rawmdb: function() {
 // ==/OpenUserJS==
 }};
 if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+	var kv /* key,val */, row = /\/\/\s+@(\S+)\s+(.+)/g;
 	while ((kv = row.exec(meta.rawmdb)) !== null) {
 		if (meta[kv[1]]) {
 			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
@@ -40,21 +40,21 @@ if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString()
 var chrome = "Please run “" + meta.name + "” with Tampermonkey instead of plain Chrome.";
 var editform = document.querySelector("div#edits > form");
 if (editform) {
-	/* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
+	// - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- -
 	var showtop = true;
 	var showbottom = true;
-	var border = "thin dashed red"; /*leave "" for defaults*/
+	var border = "thin dashed red"; // leave "" for defaults
 	var submitButtonOnTopToo = true;
-	var onlySubmitTabIndexed = true; /*hit tab after typed text or voted directly goes to a submit button*/
+	var onlySubmitTabIndexed = true; // hit tab after typed text or voted directly goes to a submit button
 	var text = " // Check all unvoted edits (shift+click to force all votes) → ";
 	var canceltext = "Reset votes";
-	var scrollToEdits = false; /*will never get in the way if you have scrolled down yourself*/
-	var rangeclick = true; /*multiple votes by clicking first vote then shift-clicking last radio in a range*/
+	var scrollToEdits = false; // will never get in the way if you have scrolled down yourself
+	var rangeclick = true; // multiple votes by clicking first vote then shift-clicking last radio in a range
 	var collapseEdits = true;
 	var voteColours = true;
-	/* - --- - --- - --- - END  OF  CONFIGURATION - --- - --- - --- - */
+	// - --- - --- - --- - END  OF  CONFIGURATION - --- - --- - --- -
 	var userjs = "jesus2099userjs57765";
-	var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);/*FF has bugs*/
+	var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent); // FF has bugs
 	if (FF) { FF = {"1": "#b1ebb0", "0": "#ebb1ba", "-1": "#f2f0a5"}; }
 	var j2css = document.createElement("style");
 	j2css.setAttribute("type", "text/css");
@@ -185,8 +185,8 @@ if (editform) {
 		if (inputs[i].checked) { radiosafe.push(inputs[i]); }
 	}
 	if (radios.length > 4) {
-		if (showtop) { showtop = editform.insertBefore( shortcutsRow(), editform.firstChild ); }
-		if (showbottom) { showbottom = editform.insertBefore( shortcutsRow(), editform.lastChild.previousSibling ); }
+		if (showtop) { showtop = editform.insertBefore(shortcutsRow(), editform.firstChild); }
+		if (showbottom) { showbottom = editform.insertBefore(shortcutsRow(), editform.lastChild.previousSibling); }
 	}
 	submitButton = editform.querySelector("div.row > span.buttons > button");
 	submitButton.addEventListener("click", submitShiftKey, false);
@@ -340,7 +340,7 @@ function shortcut(vote, txt) {
 }
 function doitdoit(event, vote, min, max) {
 	if (vote != "omgcancel") {
-		for (let i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : radios.length); i++) {/*FF shift+click label NG*/
+		for (let i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : radios.length); i++) { // FF shift+click label NG
 			if (radios[i].getAttribute("value") == vote && !radios[i].checked && !ninja(event, getParent(radios[i], "div", "edit-list")) && (event.shiftKey || isOkToVote(radios[i]))) {
 				sendEvent(radios[i], "click");
 			}
@@ -364,8 +364,11 @@ function disable(cont, dis) {
 	var inputs = cont.querySelectorAll("input, select, textarea, button");
 	if (inputs.length > 0) {
 		for (let i = 0; i < inputs.length; i++) {
-			if (dis) { inputs[i].setAttribute("disabled", "disabled"); }
-			else { inputs[i].removeAttribute("disabled"); }
+			if (dis) {
+				inputs[i].setAttribute("disabled", "disabled");
+			} else {
+				inputs[i].removeAttribute("disabled");
+			}
 		}
 		return true;
 	} else { return false; }
@@ -378,18 +381,18 @@ function ninja(event, o, n, spec) {
 		var allbutheader = "div.edit-actions, div.edit-notes, div.edit-details";
 		try {
 			jQwtf = spec ? jQuery(o) : jQuery(o).children(allbutheader);
-		} catch(error) {
+		} catch (error) {
 			jQwtf = spec ? [o] : o.querySelectorAll(allbutheader);
 			console.log(error.message + "!\n" + chrome);
 		}
 		if (event.detail > 0 && !event.altKey && !event.ctrlKey && !event.shiftKey) {
 			if (n) {
-				try { jQwtf.hide(100); } catch(error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", "none"); }
+				try { jQwtf.hide(100); } catch (error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", "none"); }
 			} else {
 				try {
 					jQuery(o).removeClass(userjs + "ninja");
 					jQwtf.show(100);
-				} catch(error) {
+				} catch (error) {
 					for (let j = 0; j < jQwtf.length; j++) {
 						jQwtf[j].classList.remove(userjs + "ninja");
 						jQwtf[j].style.setProperty("display", "block");
@@ -397,7 +400,7 @@ function ninja(event, o, n, spec) {
 				}
 			}
 		} else {
-			try { jQwtf.css("display", n ? "none" : ""); } catch(error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", n ? "none" : ""); }
+			try { jQwtf.css("display", n ? "none" : ""); } catch (error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", n ? "none" : ""); }
 			if (n) o.classList.add(userjs + cls);
 			else o.classList.remove(userjs + cls);
 		}

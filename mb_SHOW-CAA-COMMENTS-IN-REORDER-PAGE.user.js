@@ -16,7 +16,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var imageLoaders = document.querySelectorAll("div.thumb-position > a > span.cover-art-image[data-title]")
+var imageLoaders = document.querySelectorAll("div.thumb-position > a > span.cover-art-image[data-title]");
 for (var i = 0; i < imageLoaders.length; i++) {
 	var subtitle = document.createElement("div");
 	var splitText = imageLoaders[i].getAttribute("data-title").match(/^([^(]+)?(?: \(([\w\W]+)\))?$/);

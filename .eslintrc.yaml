@@ -49,46 +49,77 @@ rules:
 
 # Best practices - https://eslint.org/docs/rules/#best-practices
 # Strict mode - https://eslint.org/docs/rules/#strict-mode
-# strict:
-# - error
-# - global
+ strict:
+ - error
+ - global
 
 # Variables - https://eslint.org/docs/rules/#variables
  no-unused-vars:
  - error
- - argsIgnorePattern: "^(error|e(rrorE)?vent)$"
+ - argsIgnorePattern: "^event$"
 
 # Stylistic-issues - https://eslint.org/docs/rules/#stylistic-issues
-# brace-style:
-# - error
-# - 1tbs
-# func-style:
-# - error
-# - declaration
-# indent:
-# - error
-# - tab
-# key-spacing:
-# - error
-# - mode: "minimum"
-# linebreak-style:
-# - error
-# - unix
+ brace-style:
+ - error
+ - 1tbs
+ - allowSingleLine: true
+ comma-dangle:
+ - error
+ - only-multiline
+ comma-spacing:
+ - error
+ - after: true
+   before: false
+ comma-style:
+ - error
+ - last
+ func-style:
+ - error
+ - declaration
+ indent:
+ - error
+ - tab
+ - ignoreComments: true
+   SwitchCase: 1
+ key-spacing:
+ - error
+ - beforeColon: false
+   afterColon: true
+   mode: minimum
+ keyword-spacing:
+ - error
+ linebreak-style:
+ - error
+ - unix
  no-mixed-spaces-and-tabs:
  - error
  - smart-tabs
-# quotes:
-# - error
-# - double
-# semi:
-# - error
-# - always
-# semi-style:
-# - error
-# - last
-# space-in-parens:
-# - error
-# - never
-# spaced-comment:
-#- error
-#- always
+ no-tabs:
+ - warn
+ - allowIndentationTabs: true
+ no-trailing-spaces:
+ - error
+ quotes:
+ - error
+ - double
+ - avoidEscape: true
+ semi:
+ - error
+ - always
+ semi-spacing:
+ - error
+ - after: true
+   before: false
+ semi-style:
+ - error
+ - last
+ space-in-parens:
+ - error
+ - never
+ space-infix-ops:
+ - error
+ spaced-comment:
+ - error
+ - always
+ - block:
+    balanced: true

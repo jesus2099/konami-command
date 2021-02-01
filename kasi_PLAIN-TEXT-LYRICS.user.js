@@ -33,7 +33,7 @@ var meta = {rawmdb: function() {
 // ==/OpenUserJS==
 }};
 if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
+	var kv /* key,val */, row = /\/\/\s+@(\S+)\s+(.+)/g;
 	while ((kv = row.exec(meta.rawmdb)) !== null) {
 		if (meta[kv[1]]) {
 			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
@@ -43,7 +43,7 @@ if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString()
 }
 var DEBUG = false;
 var kasimasin = {
-	"j-lyric": {/*allow contextmenu*/
+	"j-lyric": { // allow contextmenu
 		"na": "J-Lyric.net",
 		"kabe_css": "#lyricBody",
 		"kabe_keep": true,
@@ -53,7 +53,7 @@ var kasimasin = {
 			}
 		},
 	},
-	"joysound": {/*allow copy*/
+	"joysound": { // allow copy
 		"na": "JOYSOUND",
 		"kabe_css": ".songInfoWords",
 		"kabe_keep": true,
@@ -115,11 +115,11 @@ var kasimasin = {
 		"na": "ギャオ歌詞API",
 		"direct_machine": function() {
 			var alrt = "";
-			var tmp = document.querySelector("ResultSet > Result > Title"); if (tmp) { alrt += tmp.textContent+" / "; }
-			tmp = document.querySelector("ResultSet > Result > ArtistName"); if (tmp) { alrt += tmp.textContent+"\n\n"; }
-			tmp = document.querySelector("ResultSet > Result > WriterName"); if (tmp) { alrt += "作詞："+tmp.textContent+"\n"; }
-			tmp = document.querySelector("ResultSet > Result > ComposerName"); if (tmp) { alrt += "作曲："+tmp.textContent+"\n"; }
-			tmp = document.querySelector("ResultSet > Result > Lyrics"); if (tmp) { alrt += "\n"+tmp.textContent.replace(/<br>/gi, "\n"); }
+			var tmp = document.querySelector("ResultSet > Result > Title"); if (tmp) { alrt += tmp.textContent + " / "; }
+			tmp = document.querySelector("ResultSet > Result > ArtistName"); if (tmp) { alrt += tmp.textContent + "\n\n"; }
+			tmp = document.querySelector("ResultSet > Result > WriterName"); if (tmp) { alrt += "作詞：" + tmp.textContent + "\n"; }
+			tmp = document.querySelector("ResultSet > Result > ComposerName"); if (tmp) { alrt += "作曲：" + tmp.textContent + "\n"; }
+			tmp = document.querySelector("ResultSet > Result > Lyrics"); if (tmp) { alrt += "\n" + tmp.textContent.replace(/<br>/gi, "\n"); }
 			document.addEventListener("click", function(event) { alert(alrt); }, false);
 			alert(alrt);
 		},
@@ -137,10 +137,10 @@ var kasimasin = {
 					}
 				}, false);
 				var scripts = document.querySelectorAll("div#main script[type='text/javascript']:not([src])");
-				for (var s=0; s<scripts.length; s++) {
+				for (var s = 0; s < scripts.length; s++) {
 					var url = scripts[s].innerText.match(jsonurl);
 					if (url) {
-						kasimasin.kasi_url = ""+url;
+						kasimasin.kasi_url = "" + url;
 						break;
 					}
 				}
@@ -152,7 +152,7 @@ var kasimasin = {
 			var json = xhr.responseText.match(/draw\((\[".+"\])\);/);
 			if (json && (json = eval(json[1])) && typeof json == "object" && json != null && json.length > 0) {
 				var kasi = "";
-				for (var k=0; k < json.length; k++) {
+				for (var k = 0; k < json.length; k++) {
 					kasi += json[k];
 				}
 				gogogo(kasi);
@@ -196,11 +196,11 @@ var kasimasin = {
 		"xhr_responseType": "arraybuffer",
 		"xhr_machine": function(xhr) {
 			var kara = abHexSearch(xhr.response, "FF0000");
-			var made = abHexSearch(xhr.response, "00", kara+12);
-			if (kara>-1 && made>-1) {
-				ab2str(xhr.response, gogogo, kara+12, made);
+			var made = abHexSearch(xhr.response, "00", kara + 12);
+			if (kara > -1 && made > -1) {
+				ab2str(xhr.response, gogogo, kara + 12, made);
 			} else {
-				gogogo(null, kara+"〜"+made);
+				gogogo(null, kara + "〜" + made);
 			}
 		},
 	},
@@ -243,8 +243,7 @@ if (doko) {
 	if (kasimasin.clean_url && (url = kasimasin.clean_url.replace(/%uta%/g, kasimasin.uta)) && url != self.location.href) {
 		self.location.href = url;
 	} else {
-		if (kasimasin.init) { kasimasin.init(true); }
-		else { machine(); }
+		if (kasimasin.init) { kasimasin.init(true); } else { machine(); }
 	}
 }
 function machine() {
@@ -252,9 +251,9 @@ function machine() {
 		if (kasimasin.kabe_css) { kabe = document.querySelector(kasimasin.kabe_css); }
 		if (kasimasin.init) { kasimasin.init(false); }
 		if (kabe) {
-			/*var kb = kabe.cloneNode(true);
+			/* var kb = kabe.cloneNode(true);
 			kabe.parentNode.replaceChild(kb, kabe);
-			kabe = kb;*/
+			kabe = kb; */
 			kabe.style.setProperty("-moz-user-select", "text", "important");
 			kabe.style.setProperty("-webkit-user-select", "text", "important");
 			kabe.style.setProperty("cursor", "text", "important");
@@ -283,7 +282,7 @@ function machine() {
 				}, true);
 			});
 			mati = document.createElement("div");
-			mati.appendChild(document.createTextNode(meta.name+" "));
+			mati.appendChild(document.createTextNode(meta.name + " "));
 			mati.appendChild(document.createElement("strong")).appendChild(document.createTextNode("PLEASE WAIT"));
 			mati.style.setProperty("margin", "16px 0 0 0");
 			kabe.parentNode.insertBefore(mati, kabe);
@@ -299,9 +298,8 @@ function machine() {
 				url = url.getAttribute(kasimasin.kasi_css[1]);
 				iti = false;
 			}
-			if (url) { iti = false; }
-			else { return; }
-			if (kasimasin.kasi_url_suffix) { url += kasimasin.kasi_url_suffix.replace(/%random%/, (""+Math.random()).substr(2)); }
+			if (url) { iti = false; } else { return; }
+			if (kasimasin.kasi_url_suffix) { url += kasimasin.kasi_url_suffix.replace(/%random%/, ("" + Math.random()).substr(2)); }
 			if (kasimasin.kasi_url_fix && kasimasin.kasi_url_fix.length == 2) { url = url.replace(kasimasin.kasi_url_fix[0], kasimasin.kasi_url_fix[1]); }
 			if (url) {
 				kasimasin.kasi_url = url;
@@ -320,16 +318,16 @@ function machine() {
 			if (kasimasin.xhr_responseType) { xhr.responseType = kasimasin.xhr_responseType; }
 			if (kasimasin.xhr_overrideMimeType) { xhr.overrideMimeType(kasimasin.xhr_overrideMimeType); }
 			xhr.send(null);
-			db(kasimasin.na+"\n"+url);
+			db(kasimasin.na + "\n" + url);
 		} else if (kasimasin.direct_machine) {
 			kasimasin.direct_machine();
 		}
 	}
 }
 function gogogo(kasi, err) {
-	var ka = typeof kasi=="string"?document.createElement("pre").appendChild(document.createTextNode(kasi)).parentNode:kasi;
-	mati.style.setProperty("color", err?"red":"green");
-	mati.querySelector("strong").replaceChild(document.createTextNode(err?"ERROR エラー （"+err+"）":"OK"), mati.querySelector("strong").firstChild);
+	var ka = typeof kasi == "string" ? document.createElement("pre").appendChild(document.createTextNode(kasi)).parentNode : kasi;
+	mati.style.setProperty("color", err ? "red" : "green");
+	mati.querySelector("strong").replaceChild(document.createTextNode(err ? "ERROR エラー （" + err + " ）" : "OK"), mati.querySelector("strong").firstChild);
 	if (DEBUG) {
 		mati.style.setProperty("cursor", "pointer");
 		mati.addEventListener("click", function(event) { iti = true; machine(); }, false);
@@ -349,25 +347,25 @@ function gogogo(kasi, err) {
 		kabe.style.setProperty("display", "none");
 	}
 }
-/*BINARY MACHINE*/
-function d2h(d) { return d.toString(16).toUpperCase(); }
+/* BINARY MACHINE */
+// function d2h(d) { return d.toString(16).toUpperCase(); }
 function h2d(h) { return parseInt(h, 16); }
 function abHexSearch(pAb, hq, pFrom, pTo) {
 	var ab = new Uint8Array(pAb);
-	var hqlen = hq.length/2;
-	var from = (pFrom && pFrom > 0 && pFrom + hqlen < ab.byteLength)? pFrom : 0;
-	var to = (pTo && pTo >= from && pTo <= ab.byteLength)? pTo : ab.byteLength;
-	for (var i=from; i<to; i++) {
-		for (var j=0; j<hqlen; j=j+2) {
-			if (ab[i+j] != h2d(hq.substr(j,2))) { break; }
+	var hqlen = hq.length / 2;
+	var from = (pFrom && pFrom > 0 && pFrom + hqlen < ab.byteLength) ? pFrom : 0;
+	var to = (pTo && pTo >= from && pTo <= ab.byteLength) ? pTo : ab.byteLength;
+	for (var i = from; i < to; i++) {
+		for (var j = 0; j < hqlen; j = j + 2) {
+			if (ab[i + j] != h2d(hq.substr(j, 2))) { break; }
 			if (j == hqlen - 1) { return i; }
 		}
 	}
 	return -1;
 }
 function ab2str(ab, callback, from, to) {
-	var offset = from?from:0;
-	var length = to?to-offset:null;
+	var offset = from ? from : 0;
+	var length = to ? to - offset : null;
 	var b = new Blob([new Uint8Array(ab, offset, length)]);
 	var f = new FileReader();
 	f.onload = function(event) { callback(event.target.result); };

@@ -33,7 +33,7 @@ if (mbid && tracks.length > 0) {
 	var lengthColumnIndex;
 	var trackTitleColumnIndex;
 	/* locate length, track title and release artist columns */
-	for (var columnIndex = 0; columnIndex < releaseArtistColumnHeader.length ; columnIndex++) {
+	for (var columnIndex = 0; columnIndex < releaseArtistColumnHeader.length; columnIndex++) {
 		if (releaseArtistColumnHeader[columnIndex].textContent.match(/^tit\w+$/i)) {
 			trackTitleColumnIndex = columnIndex + 1;
 		}

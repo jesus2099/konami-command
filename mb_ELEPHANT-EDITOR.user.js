@@ -55,7 +55,7 @@ var copyDateLabels = ["↓", "↑", "copy date"];
 var setPrevNoteOnLoad = true; /* "true" will restore last edit note on load (user can choose text with buttons in either case) */
 var setPrevNoteOnEditPageLoad = false; /* "true" can be troublesome if you just want to vote, believe me */
 var setPrevDateOnLoad = false; /* "true" can be troublesome when you don’t need date any more and you forget to clear it */
-/*funky colours*/
+/* funky colours */
 var cOK = "greenyellow";
 // var cNG = "pink";
 var cWARN = "gold";
@@ -124,7 +124,7 @@ if (content) {
 					if (fs) {
 						fs.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
 					}
-				} 
+				}
 			}
 			notetext.style.setProperty("width", "98%");
 			var removeLabels = ["label-id-ar.edit_note", "label-id-edit_note", "label-id-edit-artist.edit_note", "label-id-edit-label.edit_note", "label-id-edit-recording.edit_note", "label-id-edit-release-group.edit_note", "label-id-edit-url.edit_note", "label-id-edit-work.edit_note"];
@@ -134,7 +134,7 @@ if (content) {
 			}
 		}
 		var buttons = createTag("div", {a: {class: "buttons"}});
-		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if(event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
+		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
 		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
 		savecb.checked = save;
 		savecb.parentNode.appendChild(document.createTextNode(" remember  "));
@@ -154,7 +154,7 @@ if (content) {
 					sendEvent(notetext, "change");
 					notetext.focus();
 					if (event.shiftKey) { sendEvent(submitbtn, "click"); }
-				}, false);/*onclick*/
+				}, false); // onclick
 			}
 			buttons.appendChild(butt);
 			buttons.appendChild(document.createTextNode(" "));
@@ -169,7 +169,7 @@ if (content) {
 		}
 		if (reldates.length == 2) {
 			createClearButtor("dates");
-			/*date memories*/
+			/* date memories */
 			for (var ixd = 0; ixd < xdate.length; ixd++) {
 				var lastdatey = localStorage.getItem(xdate[ixd][0] + "_y");
 				var lastdatem = localStorage.getItem(xdate[ixd][0] + "_m");
@@ -180,7 +180,7 @@ if (content) {
 					butt.setAttribute("disabled", "true");
 					butt.style.setProperty("opacity", ".5");
 				} else {
-					butt.setAttribute("title", lastdatey+"-"+lastdatem+"-"+lastdated);
+					butt.setAttribute("title", lastdatey + "-" + lastdatem + "-" + lastdated);
 					butt.setAttribute("value", butt.getAttribute("title").replace(/-null/g, ""));
 					butt.addEventListener("click", function(event) {
 						var xdymd = this.getAttribute("title").match(/^(.*)-(.*)-(.*)$/);
@@ -193,7 +193,7 @@ if (content) {
 						if (event.shiftKey) {
 							sendEvent(this.parentNode.getElementsByTagName("input")[3], "click");
 						}
-					}, false);/*onclick*/
+					}, false); // onclick
 				}
 				xdate[ixd][1].parentNode.setAttribute("title", "shift+click to change both dates at once");
 				addAfter(butt, xdate[ixd][3]);
@@ -202,7 +202,7 @@ if (content) {
 					sendEvent(document.getElementById(xdate[ixd][0]), "click");
 				}
 			}
-			/*copy dates*/
+			/* copy dates */
 			for (var icd = 0; icd < 2; icd++) {
 				let buttcd = createButtor(copyDateLabels[icd]);
 				buttcd.setAttribute("title", copyDateLabels[2]);
@@ -213,7 +213,7 @@ if (content) {
 						sendEvent(xdate[src == 1 ? 0 : 1][icdymd], "change");
 					}
 					focusYYYY(xdate[src][1]);
-				}, false);/*onclick*/
+				}, false); // onclick
 				addAfter(buttcd, xdate[icd][3]);
 				addAfter(document.createTextNode(" "), xdate[icd][3]);
 			}
@@ -234,7 +234,7 @@ function saveNote() {
 			var ls00 = localStorage.getItem(notetextStorage + "00");
 			if (save && thisnotetext != ls00) {
 				if (ls00 != "") {
-					for (var isav = textLabels.length - 1; isav > 0 ; isav--) {
+					for (var isav = textLabels.length - 1; isav > 0; isav--) {
 						var prev = localStorage.getItem(notetextStorage + "0" + (isav - 1));
 						if (prev) {
 							localStorage.setItem(notetextStorage + "0" + isav, localStorage.getItem(notetextStorage + "0" + (isav - 1)));
@@ -263,8 +263,7 @@ function saveNote() {
 						localStorage.removeItem(xdate[ixd][0] + "_m");
 						localStorage.removeItem(xdate[ixd][0] + "_d");
 					}
-				}
-				else if (ndy.trim() == "") {
+				} else if (ndy.trim() == "") {
 					localStorage.setItem(xdate[ixd][0], "0");
 				}
 			}
@@ -286,7 +285,7 @@ function createClearButtor(input) {
 				sendEvent(notetext, "change");
 				notetext.focus();
 				if (event.shiftKey) { sendEvent(submitbtn, "click"); }
-			}, false);/*onclick*/
+			}, false); // onclick
 			butt.style.setProperty("color", "red");
 			butt.style.setProperty("background-color", cWARN);
 			return butt;
@@ -305,7 +304,7 @@ function createClearButtor(input) {
 					focusYYYY(xdate[id][1]);
 					event.cancelBubble = true;
 					if (event.stopPropagation) event.stopPropagation();
-				}, false);/*onclick*/
+				}, false); // onclick
 				addAfter(butt, xdate[i][3]);
 				addAfter(document.createTextNode(" "), xdate[i][3]);
 			}
@@ -313,7 +312,7 @@ function createClearButtor(input) {
 	}
 }
 function focusYYYY(input) {
-	if(input.style.getPropertyValue("display") == "none" && input.nextSibling.getAttribute("placeholder") == "YYY+")/*EASY_DATE*/
+	if (input.style.getPropertyValue("display") == "none" && input.nextSibling.getAttribute("placeholder") == "YYY+") // link to EASY_DATE
 		input.nextSibling.focus();
 	else
 		input.focus();

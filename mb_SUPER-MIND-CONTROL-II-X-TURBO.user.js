@@ -58,16 +58,16 @@ var account = document.querySelector("div.header ul.menu li.account");
 if (account) {
 	var a = account.querySelector("a[href^='/user/']");
 	account = {
-		item: account,
-		name: unescape(a.getAttribute("href").match(/[^/]+$/)),
+		item:     account,
+		name:     unescape(a.getAttribute("href").match(/[^/]+$/)),
 		pathname: a.getAttribute("href"),
-		menu: account.querySelector("ul")
+		menu:     account.querySelector("ul")
 	};
 }
-/*==========================================================================
-## CONFIGURATORZ ##
-find this script settings in MB "About" menu
-==========================================================================*/
+// ==========================================================================
+// ## CONFIGURATORZ ##
+// find this script settings in MB "About" menu
+// ==========================================================================
 var j2superturbo = {
 	menu: {
 		expl: " (you can find this in “%editing%” menu)",
@@ -109,16 +109,30 @@ j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + GM_info.scr
 					" | ",
 					createTag("a", {a: {href: GM_info.script.supportURL, target: "_blank"}}, "known issues"),
 					" | ",
-					createTag("a", {e: {click: function(event) { if(confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")) { localStorage.removeItem(userjs.id + "settings"); self.location.reload(); } }}}, "RESET"),
+					createTag("a", {e: {click: function(event) { if (confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")) { localStorage.removeItem(userjs.id + "settings"); self.location.reload(); } }}}, "RESET"),
 					" | ",
 					createTag("a", {e: {click: function(event) { removeNode(document.getElementById(userjs.id + "j2sets")); }}}, "CLOSE"),
 				]),
-				createTag("h4", {s: {textShadow: "0 0 8px white", fontSize: "1.5em", marginTop: "0px"}}, ["██ ", createTag("a", {a: {href: GM_info.script.namespace, target: "_blank"}}, userjs.name), " (" + GM_info.script.version + ")"]), createTag("p", {}, ["All settings are instantly saved but require a ", createTag("a", {e: {click: function() { self.location.reload(); }}}, "PAGE RELOAD"), " to see the effect."])
+				createTag("h4", {s: {textShadow: "0 0 8px white", fontSize: "1.5em", marginTop: "0px"}}, [
+					"██ ",
+					createTag("a", {a: {href: GM_info.script.namespace, target: "_blank"}}, userjs.name),
+					" (" + GM_info.script.version + ")"
+				]),
+				createTag("p", {}, [
+					"All settings are instantly saved but require a ",
+					createTag("a", {e: {click: function() {
+						self.location.reload();
+					}}}, "PAGE RELOAD"),
+					" to see the effect."
+				])
 			]), document.getElementById("page"));
 			var alphakeys = [];
 			for (let s in j2sets) if (Object.prototype.hasOwnProperty.call(j2sets, s)) {
-				if (j2setsclean.indexOf(s) < 0) { delete j2sets[s]; }
-				else if (!s.match(/!/)) { alphakeys.push(s); }
+				if (j2setsclean.indexOf(s) < 0) {
+					delete j2sets[s];
+				} else if (!s.match(/!/)) {
+					alphakeys.push(s);
+				}
 			}
 			alphakeys.sort();
 			var table = j2setsdiv.appendChild(createTag("table", {a: {border: "2", cellpadding: "4", cellspacing: "1"}}));
@@ -152,41 +166,45 @@ function bug(error) {
 		alert(alrt);
 	}
 }
-function j2setting(set, val, def, doc) {
-	if (set == null) { j2sets = localStorage.getItem(userjs.id + "settings"); if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; } }
-	else {
-		if (doc) { j2docs[set] = doc; }
-		if (def) {
-			j2defs[set] = val;
-			j2setsclean.push(set);
+function j2setting(setting, val, def, doc) {
+	if (setting == null) {
+		j2sets = localStorage.getItem(userjs.id + "settings");
+		if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; }
+	} else {
+		if (doc) {
+			j2docs[setting] = doc;
 		}
-		if (val != null && (!def || j2sets[set] == null)) {
-			j2sets[set] = val;
+		if (def) {
+			j2defs[setting] = val;
+			j2setsclean.push(setting);
+		}
+		if (val != null && (!def || j2sets[setting] == null)) {
+			j2sets[setting] = val;
 			localStorage.setItem(userjs.id + "settings", JSON.stringify(j2sets));
-		} else if (set) {
-			return j2sets[set];
+		} else if (setting) {
+			return j2sets[setting];
 		}
 	}
 }
-function j2settinput(set) {
-	var val = j2setting(set);
+function j2settinput(setting) {
+	var val = j2setting(setting);
 	var rnd = (Math.random() + "").substring(2);
-	var lbl = createTag("label", {a: {"for": userjs.id + enttype + set + rnd}, s: {whiteSpace: "nowrap", textShadow: "1px 1px 2px #999"}}, createTag("input", {a: {type: "checkbox", id: userjs.id + enttype + set + rnd, class: set}, e: {change: function(event) {
+	var lbl = createTag("label", {a: {"for": userjs.id + enttype + setting + rnd}, s: {whiteSpace: "nowrap", textShadow: "1px 1px 2px #999"}}, createTag("input", {a: {type: "checkbox", id: userjs.id + enttype + setting + rnd, class: setting}, e: {change: function(event) {
 		j2setting(this.className, this.getAttribute("type") == "checkbox" ? this.checked : this.value);
 	}}}));
 	var inp = lbl.querySelector("input");
 	switch (typeof val) {
 		case "boolean":
-			addAfter(document.createTextNode(set), inp);
+			addAfter(document.createTextNode(setting), inp);
 			inp.setAttribute("type", "checkbox");
 			inp.checked = val;
 			break;
 		default:
-			lbl.insertBefore(document.createTextNode("\u00a0_\u00a0 " + set), inp);
+			lbl.insertBefore(document.createTextNode("\u00a0_\u00a0 " + setting), inp);
 			inp.setAttribute("type", "text");
 			inp.setAttribute("value", val);
 			inp.style.setProperty("margin-left", "4px");
-			inp.addEventListener("keypress", function(event) { if(event.key == "Enter") { this.blur(); removeNode(getParent(this, "div")) } }, false);
+			inp.addEventListener("keypress", function(event) { if (event.key == "Enter") { this.blur(); removeNode(getParent(this, "div")); } }, false);
 			break;
 	}
 	return lbl;
@@ -197,13 +215,12 @@ function j2docit(txt) {
 		var arr = txt.split(jira[1]);
 		arr.splice(1, 0, createTag("a", {a: {href: "http://tickets.musicbrainz.org/browse/" + jira[1].toUpperCase(), target: "_blank", title: "opens in new window"}}, jira[1]));
 		return arr;
-	}
-	else return [txt];
+	} else return [txt];
 }
-/*==================================================================== LINK+
-## RELEASE_CLONER ##
-todo : add debugged clone release-AR module
-==========================================================================*/
+// ==================================================================== LINK+
+// ## RELEASE_CLONER ##
+// todo : add debugged clone release-AR module
+// ==========================================================================
 j2setting("RELEASE_CLONER", true, true, "one-click duplicate release(s)" + j2superturbo.menu.expl);
 j2setting("RELEASE_CLONER_release_event", false, true, "clones release event(s), package, catalogue number(s), etc. (not advised as those usually change for each edition)");
 j2setting("RELEASE_CLONER_additional_information", false, true, "clones annotation and disambiguation (usually change for each edition)");
@@ -220,8 +237,7 @@ if (j2sets.RELEASE_CLONER && account) {
 				var crmbids = [];
 				if (rcwhere == "release") {
 					crmbids.push("" + self.location.pathname.match(re_GUID));
-				}
-				else {
+				} else {
 					var checkrels = document.querySelectorAll("table.tbl > tbody input[type='checkbox'][name='add-to-merge']");
 					for (let crmbid, cr = 0; cr < checkrels.length; cr++) {
 						if ((checkrels[cr].checked || checkrels.length == 1) && (crmbid = getParent(checkrels[cr], "tr")) && (crmbid = crmbid.querySelector("a[href*='/release/']").getAttribute("href").match(re_GUID))) {
@@ -239,7 +255,7 @@ if (j2sets.RELEASE_CLONER && account) {
 									form: createTag("form", {a: {action: "/release/add", method: "post", target: formTarget(crr, clickEvent)}, s: {display: "none"}}),
 									add: function(data, requestParameter, required) {
 										if (data) {
-											/*console.log(requestParameter + " = " + data);*/
+											// console.log(requestParameter + " = " + data);
 											reled.form.appendChild(createTag("textarea", {a: {name: requestParameter}}, data));
 										} else if (required) {
 											return false;
@@ -306,27 +322,27 @@ if (j2sets.RELEASE_CLONER && account) {
 								}
 								/* ws:medium-list */
 								if (j2sets.RELEASE_CLONER_external_links) {
-									/* ws:url-rels*/
+									/* ws:url-rels */
 									var linkTypes = {
-										"unknown29unknown29unknown29unknown29":  29/*notes*/,
-										"unknown72unknown72unknown72unknown72":  72/*production*/,
-										"unknown73unknown73unknown73unknown73":  73/*get*/,
-										"98e08c20-8402-4163-8970-53504bb6a1e4":  74/*buy download*/,
-										"9896ecd0-6d29-482d-a21e-bd5d1b5e3425":  75/*download*/,
-										"4a78823c-1c53-4176-a5f3-58026c76f2bc":  76/*discogs*/,
-										"4f2e710d-166c-480c-a293-2e2c8d658d87":  77/*ASIN*/,
-										"2476be45-3090-43b3-a948-a8f972b4065c":  78/*cover art*/,
-										"3ee51e05-a06a-415e-b40c-b3f740dedfd7":  79/*buy mail*/,
-										"c74dee45-3c85-41e9-a804-92ab1c654446":  82/*other db*/,
-										"7387c5a2-9abe-4515-b667-9eb5ed4dd4ce":  83/*IMDb*/,
-										"08445ccf-7b99-4438-9f9a-fb9ac18099ee":  85/*stream*/,
-										"6af0134a-df6a-425a-96e2-895f9cd342ba":  86/*VGMdb*/,
-										"823656dd-0309-4247-b282-b92d287d59c5": 288/*discography*/,
-										"004bd0c3-8a45-4309-ba52-fa99f3aa3d50": 301/*licence*/,
-										"0e555925-1b7d-475c-9b25-b9c349dcc3f3": 308/*2ndhandsong*/,
-										"2d24d075-9943-4c4d-a659-8ce52e6e6b57": 729/*notes*/,
-										"90ff18ad-3e9d-4472-a3d1-71d4df7e8484": 755/*allmusic*/,
-										"63b84620-ba52-4630-9bfe-8ad3b5504dff": 850/*bookbrainz*/,
+										"unknown29unknown29unknown29unknown29":  29, // notes
+										"unknown72unknown72unknown72unknown72":  72, // production
+										"unknown73unknown73unknown73unknown73":  73, // get
+										"98e08c20-8402-4163-8970-53504bb6a1e4":  74, // buy download
+										"9896ecd0-6d29-482d-a21e-bd5d1b5e3425":  75, // download
+										"4a78823c-1c53-4176-a5f3-58026c76f2bc":  76, // discogs
+										"4f2e710d-166c-480c-a293-2e2c8d658d87":  77, // ASIN
+										"2476be45-3090-43b3-a948-a8f972b4065c":  78, // cover art
+										"3ee51e05-a06a-415e-b40c-b3f740dedfd7":  79, // buy mail
+										"c74dee45-3c85-41e9-a804-92ab1c654446":  82, // other db
+										"7387c5a2-9abe-4515-b667-9eb5ed4dd4ce":  83, // IMDb
+										"08445ccf-7b99-4438-9f9a-fb9ac18099ee":  85, // stream
+										"6af0134a-df6a-425a-96e2-895f9cd342ba":  86, // VGMdb
+										"823656dd-0309-4247-b282-b92d287d59c5": 288, // discography
+										"004bd0c3-8a45-4309-ba52-fa99f3aa3d50": 301, // licence
+										"0e555925-1b7d-475c-9b25-b9c349dcc3f3": 308, // 2ndhandsong
+										"2d24d075-9943-4c4d-a659-8ce52e6e6b57": 729, // notes
+										"90ff18ad-3e9d-4472-a3d1-71d4df7e8484": 755, // allmusic
+										"63b84620-ba52-4630-9bfe-8ad3b5504dff": 850, // bookbrainz
 									};
 									for (let resi = 0; resi < release.relations.length && ok; resi++) {
 										if (release.relations[resi].url) {
@@ -341,7 +357,7 @@ if (j2sets.RELEASE_CLONER && account) {
 								if (ok) document.body.appendChild(reled.form).submit();
 								else sendEvent(this, "error");
 							};
-							xhr.onerror = function(errorEvent) {
+							xhr.onerror = function(event) {
 								if (confirm("RELEASE_CLONER ERROR MY GOD\nDo you want to report this error? (in a new window)")) {
 									self.open("https://github.com/jesus2099/konami-command/issues/new?title=RELEASE_CLONER+xhr+error&body=" + encodeURIComponent("Hello,\nI am using *" + userjs.name + "* version **" + GM_info.script.version + "**.\nI got an error while cloning [this release](" + MBS + "/release/) on [that page](" + self.location.href + ").\n"));
 								}
@@ -363,16 +379,16 @@ function formTarget(releaseIndex, event) {
 		target = userjs.id + (new Date().getTime());
 		try {
 			self.open("", target).blur();
-		} catch(error) {}
+		} catch (error) {}
 		self.focus();
 	} else if (event.shiftKey) {
 		target = "_blank";
 	}
 	return target;
 }
-/*================================================================= DISPLAY+
-## USER_STATS ##
-==========================================================================*/
+// ================================================================= DISPLAY+
+// ## USER_STATS ##
+// ==========================================================================
 j2setting("USER_STATS", true, true, "adds convenient edit stats to user page (percentage of yes/no voted edits)");
 if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 	var stats = document.querySelectorAll("table.statistics > tbody");
@@ -397,7 +413,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		stats[0].rows[0].cells[1].style.setProperty("font-weight", "bold");
 		writeStat(stats[0].rows[3].cells[1], voteddownEdits, total);
 		stats[0].rows[3].cells[1].style.setProperty("font-weight", "bold");
-		stats[0].rows[2].replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top editors"}, s: {cursor: "help"}}, stats[0].rows[2].cells[0].firstChild.textContent )), stats[0].rows[2].cells[0]);
+		stats[0].rows[2].replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top editors"}, s: {cursor: "help"}}, stats[0].rows[2].cells[0].firstChild.textContent)), stats[0].rows[2].cells[0]);
 		// Votes
 		var refined24hSearch = stats[0].rows[7].cells[1].getElementsByTagName("a")[0].getAttribute("href");
 		var voteSearch = MBS + "/search/edits?conditions.0.field=voter&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.voter_id=%editorID%&conditions.0.args=%vote%";
@@ -405,7 +421,7 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		voteSearch = voteSearch.replace(/%editorID%/, refined24hSearch.match(/conditions\.0\.args\.0=(\d+)/)[1]);
 		for (let i = 0; i < stats[1].rows.length; i++) {
 			var vote = stats[1].rows[i].cells[2];
-			vote.replaceChild(createTag("a", {a: {href: voteSearch.replace(/%vote%/, {0: 1/*Yes*/, 1: 0/*No*/, 2: -1/*Abstain*/, 3: 2/*Approve*/}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
+			vote.replaceChild(createTag("a", {a: {href: voteSearch.replace(/%vote%/, {0: 1 /* Yes */, 1: 0 /* No */, 2: -1 /* Abstain */, 3: 2 /* Approve */}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
 		}
 		var yes = readStat(stats[1].rows[0].cells[2]);
 		var no = readStat(stats[1].rows[1].cells[2]);
@@ -445,7 +461,7 @@ function isEncoded(string) {
 	try {
 		result = decodeURIComponent(string);
 	} catch (error) {
-		result =  unescape(string);                                       
+		result = unescape(string);
 	}
 	return result != string;
 }
@@ -455,7 +471,7 @@ function readStat(statsCell) {
 function writeStat(statsCell, stat, total) {
 	var a = statsCell.getElementsByTagName("a")[0];
 	a.replaceChild(document.createTextNode(percentage(stat, total)), a.firstChild);
-	if(parseInt(a.firstChild.textContent, 10) >= 30) {
+	if (parseInt(a.firstChild.textContent, 10) >= 30) {
 		a.style.setProperty("background-color", "#ff6");
 		getParent(statsCell, "tr").querySelector("th").style.setProperty("background-color", "#ff6");
 	}
@@ -463,9 +479,9 @@ function writeStat(statsCell, stat, total) {
 function percentage(p, c) {
 	return (c == 0 ? 0 : Math.round(10000 * p / c / 100)) + "%";
 }
-/*=================================================================== MOUSE+
-## CHECK_ALL_SUBSCRIPTIONS ##
-==========================================================================*/
+// =================================================================== MOUSE+
+// ## CHECK_ALL_SUBSCRIPTIONS ##
+// ==========================================================================
 j2setting("CHECK_ALL_SUBSCRIPTIONS", true, true, "adds a “check all” checkbox on subscriptions pages (MBS-3629)");
 if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + MBS + "/user/[^/]+/subscriptions/.+$"))) {
 	var cbs = document.querySelectorAll("div#page > form > table.tbl > tbody > tr > td > input[type='checkbox']");
@@ -481,9 +497,9 @@ if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + 
 		}}}));
 	}
 }
-/*=============================================================== KEYBOARD+
-## EASY_DATE ## basic paste-a-date!-like (https://userscripts.org/121217)
-=========================================================================*/
+// =============================================================== KEYBOARD+
+// ## EASY_DATE ## basic paste-a-date!-like (https://userscripts.org/121217)
+// =========================================================================
 j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it\nascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197)\n\nPress “C” to copy current date into the other (begin→end or end→begin)\nPress “D” to delete dates");
 if (j2sets.EASY_DATE && !location.pathname.match(/^\/account\/edit/)) {
 	EASY_DATE_init();
@@ -506,7 +522,9 @@ function EASY_DATE_init() {
 				e: {
 					input: function(event) {
 						this.style.setProperty("background-color", "#ff9");
-						this.value = this.value.trim().replace(/[０-９]/g, function(d) { return String.fromCharCode(d.charCodeAt(0) - "０".charCodeAt(0) + "0".charCodeAt(0)); }).replace(/^\D+|\D+$/, "");
+						this.value = this.value.trim().replace(/[０-９]/g, function(d) {
+							return String.fromCharCode(d.charCodeAt(0) - "０".charCodeAt(0) + "0".charCodeAt(0));
+						}).replace(/^\D+|\D+$/, "");
 						var date;
 						if (!this.value.match(/\D/)) {
 							switch (this.value.length) {
@@ -525,15 +543,14 @@ function EASY_DATE_init() {
 						}
 						if (date) {
 							var ymd = {
-								YYYY: date[1]||date[6]||date[7]||date[12]||date[13]||date[18],
-								MM: date[2]||date[5]||date[8]||date[11]||date[14]||date[17],
-								DD: date[3]||date[4]||date[9]||date[10]||date[15]||date[16]
+								YYYY: date[1] || date[6] || date[7] || date[12] || date[13] || date[18],
+								MM:   date[2] || date[5] || date[8] || date[11] || date[14] || date[17],
+								DD:   date[3] || date[4] || date[9] || date[10] || date[15] || date[16]
 							};
 							for (let i in ymd) if (Object.prototype.hasOwnProperty.call(ymd, i) && ymd[i]) {
 								if (i == "YYYY" && ymd[i].length == 2) {
 									ymd[i] = (parseInt(ymd[i], 10) > 19 ? "19" : "20") + ymd[i];
-								}
-								else if (ymd[i].length == 1) {
+								} else if (ymd[i].length == 1) {
 									ymd[i] = "0" + ymd[i];
 								}
 								var input = this.parentNode.querySelector("input[placeholder='" + i + "']");
@@ -588,7 +605,7 @@ function EASY_DATE_cloneDate(current, hotkey) {
 	}
 }
 function EASY_DATE_deleteDatesHotkey(event) {
-	//TODO: would better be attached at form itself instead of on each inputs
+	// TODO: would better be attached at form itself instead of on each inputs
 	if (!event.ctrlKey && !event.shiftKey && event.key == "d") {
 		stop(event);
 		EASY_DATE_deleteDates(this);
@@ -598,14 +615,14 @@ function EASY_DATE_deleteDates(current) {
 	var ph = ["YYYY", "MM", "DD"];
 	for (let p = 0; p < ph.length; p++) {
 		var inps = current.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='" + ph[p] + "']");
-	for (let i = 0; i < inps.length; i++) {
-		inps[i].value = "";
-		sendEvent(inps[i], "change");
-	}
-	var endedCheckbox = getParent(current, "tbody").querySelector("input[type='checkbox'][data-bind^='checked: relationship().ended']");
-	if (endedCheckbox.checked == true) {
-		endedCheckbox.click();
-	}
+		for (let i = 0; i < inps.length; i++) {
+			inps[i].value = "";
+			sendEvent(inps[i], "change");
+		}
+		var endedCheckbox = getParent(current, "tbody").querySelector("input[type='checkbox'][data-bind^='checked: relationship().ended']");
+		if (endedCheckbox.checked == true) {
+			endedCheckbox.click();
+		}
 	}
 }
 function EASY_DATE_nextField(event) {
@@ -623,52 +640,52 @@ function EASY_DATE_nextField(event) {
 		}
 	}
 }
-/*================================================================= DISPLAY+
-## SPOT_AC ##
-==========================================================================*/
+// ================================================================= DISPLAY+
+// ## SPOT_AC ##
+// ==========================================================================
 j2setting("SPOT_AC", true, true, "name variations (Artist Credit, track name ≠ recording name, etc.) stand out");
 j2setting("SPOT_AC_css", "border-bottom: 2px dashed maroon;", true, "CSS syntax (on “span.name-variation”)");
 if (j2sets.SPOT_AC) {
 	j2superturbo.addCSSRule("span.name-variation { " + j2sets.SPOT_AC_css + " }");
 }
-/*================================================================= DISPLAY+
-## SPOT_CAA ##
-==========================================================================*/
+// ================================================================= DISPLAY+
+// ## SPOT_CAA ##
+// ==========================================================================
 j2setting("SPOT_CAA", true, true, "cover art archive’s images stand out from other images. Allows spotting incorrectly padded CAA uploads and looks cool altogether");
 j2setting("SPOT_CAA_css", "box-shadow: 0 0 8px black;", true, "CSS syntax (on “a.artwork-image > img”)");
 if (j2sets.SPOT_CAA) {
 	j2superturbo.addCSSRule("img[src*='//coverartarchive.org/'], img.uploader-preview-image { " + j2sets.SPOT_CAA_css + " }");
 }
-/*================================================================= DISPLAY+
-## WARN_NEW_WINDOW ##
-==========================================================================*/
+// ================================================================= DISPLAY+
+// ## WARN_NEW_WINDOW ##
+// ==========================================================================
 j2setting("WARN_NEW_WINDOW", true, true, "links that open in a new window will be marked with an icon");
 if (j2sets.WARN_NEW_WINDOW) {
 	j2superturbo.addCSSRule("a[target='_blank']::after { margin: 0 2px 0 4px; content: url(data:image/gif;base64,R0lGODlhCwAKAPcAAOAaGv///////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAIALAAAAAALAAoAAAgpAAUIFACgoEEAAwkeLJgQYUODBBMqZOhwIEOBFTFWXAhRYkOJGTlmDAgAOw==); }");
 }
-/*================================================================= DISPLAY+
-## CENTER_FLAGS ##
-==========================================================================*/
+// ================================================================= DISPLAY+
+// ## CENTER_FLAGS ##
+// ==========================================================================
 j2setting("CENTER_FLAGS", true, true, "vertically center flags");
 if (j2sets.CENTER_FLAGS) {
 	j2superturbo.addCSSRule(".flag { background-origin: padding-box; background-position: 0% 84%; }");
 }
-/*================================================================= DISPLAY-
-## HIDE_RATINGS ##
-==========================================================================*/
+// ================================================================= DISPLAY-
+// ## HIDE_RATINGS ##
+// ==========================================================================
 j2setting("HIDE_RATINGS", false, true, "hide those cute little stars and everything related to ratings in MB");
 if (j2sets.HIDE_RATINGS) {
 	j2superturbo.addCSSRule("div#content table.tbl > * > tr > th.rating, div#content table.tbl > tbody > tr > td.rating, div#sidebar > h2.rating, div#sidebar > h2.rating + p, div#page > div.tabs > ul.tabs > li:not(.sel) > a[href$='/ratings'], div.header ul.menu li.data a[href$='/ratings'] { display: none; }");
-	/*work around for missing rating classes (artist, collection)*/
+	// work around for missing rating classes (artist, collection)
 	var ratingIndex = document.querySelector("div#content table.tbl > tbody > tr > td:not(.rating) > span.inline-rating");
 	if (ratingIndex) {
 		debug("HIDE_RATINGS");
 		j2superturbo.addCSSRule("div#content table.tbl > * > tr > *:nth-child(" + (ratingIndex.parentNode.cellIndex + 1) + ") { display: none; }");
 	}
 }
-/*================================================================= DISPLAY+
-## RATINGS_ON_TOP ##
-==========================================================================*/
+// ================================================================= DISPLAY+
+// ## RATINGS_ON_TOP ##
+// ==========================================================================
 j2setting("RATINGS_ON_TOP", false, true, "show (5 stars) ratings at the top of the sidebar");
 j2setting("RATINGS_ON_TOP_below_image", true, true, "place the ratings just below the entity image (instead of topmost)");
 if (j2sets.RATINGS_ON_TOP && sidebar && !j2sets.HIDE_RATINGS) {
@@ -684,11 +701,11 @@ if (j2sets.RATINGS_ON_TOP && sidebar && !j2sets.HIDE_RATINGS) {
 		}
 	}
 }
-/*================================================================= DISPLAY+
-## ROW_HIGHLIGHTER ##
-evolution of brianfreud’s original idea
-MusicBrainz row highlighter https://userscripts.org/118008
-==========================================================================*/
+// ================================================================= DISPLAY+
+// ## ROW_HIGHLIGHTER ##
+// evolution of brianfreud’s original idea
+// MusicBrainz row highlighter https://userscripts.org/118008
+// ==========================================================================
 j2setting("ROW_HIGHLIGHTER", true, true, "highlights rows in various MB tables");
 j2setting("ROW_HIGHLIGHTER_colour", "#fcf", true, "use any CSS colour code or name");
 if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+)$/i)) {
@@ -723,8 +740,8 @@ function ROW_HIGHLIGHTER_init() {
 	for (let td = 0; td < tds.length; td++) {
 		tds[td].removeEventListener("mouseover", ROW_HIGHLIGHTER_refresh);
 		tds[td].removeEventListener("mouseout", ROW_HIGHLIGHTER_refresh);
-		/*sorry for the remove/add hack but it seems MBS still uses some
-		innerHTML="<bla></bla>" which breaks event listeners, parentality, etc.*/
+		/* sorry for the remove/add hack but it seems MBS still uses some
+		innerHTML="<bla></bla>" which breaks event listeners, parentality, etc. */
 		tds[td].addEventListener("mouseover", ROW_HIGHLIGHTER_refresh);
 		tds[td].addEventListener("mouseout", ROW_HIGHLIGHTER_refresh);
 	}
@@ -732,15 +749,17 @@ function ROW_HIGHLIGHTER_init() {
 function ROW_HIGHLIGHTER_refresh(event) {
 	var row = [this.parentNode];
 	if (row[0]) {
-		if (self.location.pathname.match(new RegExp("^/release/(add|" + stre_GUID + "/edit)$"))) {/*release-editor hacks*/
-			if (getParent(this, "div", null, "recordings")/*Recordings*/ && this.tagName == "TD") {
+		if (self.location.pathname.match(new RegExp("^/release/(add|" + stre_GUID + "/edit)$"))) {
+			// release-editor hacks
+			if (getParent(this, "div", null, "recordings") /* Recordings */ && this.tagName == "TD") {
 				if (!row[0].classList.contains("track")) {
 					row[0] = getSibling(row[0], "tr", "track", true);
 				}
 				row.push(getSibling(row[0], "tr", "artist"));
 				row.push(getSibling(row[1], "tr", null, false, 4));
 			}
-		} else if (this.tagName == "SPAN") {/*AR list hacks*/
+		} else if (this.tagName == "SPAN") {
+			// AR list hacks
 			row = [
 				this,
 				this.style.getPropertyValue("float") == "right" ? getSibling(this, "span", false, true) : getSibling(this, "span", false),
@@ -756,9 +775,9 @@ function ROW_HIGHLIGHTER_refresh(event) {
 		}
 	}
 }
-/*=================================================================== MOUSE+
-## Common form submission function ##
-==========================================================================*/
+// =================================================================== MOUSE+
+// ## Common form submission function ##
+// ==========================================================================
 function parentFormSubmit(input, event) {
 	var form = getParent(input, "form") || document.querySelector("div#release-editor");
 	if (form) {
@@ -772,9 +791,9 @@ function parentFormSubmit(input, event) {
 		}
 	}
 }
-/*=================================================================== MOUSE+
-## DOUBLE_CLICK_SUBMIT ##
-==========================================================================*/
+// =================================================================== MOUSE+
+// ## DOUBLE_CLICK_SUBMIT ##
+// ==========================================================================
 j2setting("DOUBLE_CLICK_SUBMIT", true, true, "makes the “radio buttons” and “multi-selects” submit forms on double-click (MBS-3229)");
 if (j2sets.DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdstub\/|edit\/|release\/(add(\?release-group=)?|[^/]+\/edit-cover-art\/)|release-group\/[^/]+\/edit|search|.+\/merge)/)) {
 	debug("DOUBLE_CLICK_SUBMIT");
@@ -786,9 +805,9 @@ if (j2sets.DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdst
 		obj.setAttribute("title", "double-click here to submit the form");
 	}
 }
-/*================================================================ KEYBOARD+
-## CONTROL_ENTER_SUBMIT ##
-==========================================================================*/
+// ================================================================ KEYBOARD+
+// ## CONTROL_ENTER_SUBMIT ##
+// ==========================================================================
 j2setting("CONTROL_ENTER_SUBMIT", true, true, "hit CTRL+ENTER keys when you’re in a text area to submit the current form");
 if (j2sets.CONTROL_ENTER_SUBMIT) {
 	document.body.addEventListener("keydown", function(event) {
@@ -798,9 +817,9 @@ if (j2sets.CONTROL_ENTER_SUBMIT) {
 		}
 	});
 }
-/*================================================================ REMEMBER+
-## LAST_SEEN_EDIT ##
-==========================================================================*/
+// ================================================================ REMEMBER+
+// ## LAST_SEEN_EDIT ##
+// ==========================================================================
 j2setting("LAST_SEEN_EDIT", false, true, "it shows you what edits you have already seen (reviewed) on entities edit histories, yeah man. only saves states when looking at all edits (not only open) of entity");
 if (j2sets.LAST_SEEN_EDIT && account) {
 	debug("LAST_SEEN_EDIT");
@@ -814,7 +833,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 		if (lastseenedits) { lastseenedits = JSON.parse(lastseenedits); } else { lastseenedits = {}; }
 		var now = new Date();
 		if (lastseenedits[which]) {
-			if (lastseenedits[which][2] > lastseenedits[which][0] && new Date(lastseenedits[which][1]) < new Date(now - 1000 * 60 * 30/*30minutes*/)) {
+			if (lastseenedits[which][2] > lastseenedits[which][0] && new Date(lastseenedits[which][1]) < new Date(now - 1000 * 60 * 30 /* 30minutes */)) {
 				lastseenedits[which][0] = lastseenedits[which][2];
 				lastseenedits[which][1] = now.getTime();
 				upd = true;
@@ -836,8 +855,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 					editlist.parentNode.insertBefore(createTag("hr", {a: {title: "edits below are already seen"}, s: {height: "0px", border: "none", "border-top": "4px dashed red"}}), editlist);
 					if (ed > 0) { getSibling(editlist, "div", "edit-list", true).scrollIntoView(); }
 				}
-			}
-			else {
+			} else {
 				editlist.style.setProperty("background-color", "#ffc");
 				editlist.setAttribute("title", "NEW EDIT");
 			}
@@ -847,9 +865,9 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 		}
 	}
 }
-/*==================================================================== LINK+
-## COOL_SEARCH_LINKS ##
-==========================================================================*/
+// ==================================================================== LINK+
+// ## COOL_SEARCH_LINKS ##
+// ==========================================================================
 j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” links excluding own and/or unvoted and/or cancelled/failed edits as well as quick switch between all edits / open_edits");
 if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/search\/edits/)) {
 	debug("COOL_SEARCH_LINKS");
@@ -873,7 +891,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			var notme = "&conditions.2099.field=editor&conditions.2099.operator=%21%3D&conditions.2099.name=%myName%&conditions.2099.args.0=%myID%";
 			var novote = "&conditions.2098.field=voter&conditions.2098.operator=%3D&conditions.2098.name=%myName%&conditions.2098.voter_id=%myID%&conditions.2098.args=no";
 			var onlyEffective = "&conditions.2097.field=status&conditions.2097.operator=%3D&conditions.2097.args=1&conditions.2097.args=2";
-			refines.appendChild(createTag("a", {a: {href: self.location.pathname.replace(/edits\/open|(open_)?edits/, refine[1]||refine[2] ? "edits" : (self.location.pathname.match(re_GUID) ? "open_edits" : "edits/open")) + self.location.search + self.location.hash}}, (refine[1]||refine[2] ? "All " : "Open ") + "edits"));
+			refines.appendChild(createTag("a", {a: {href: self.location.pathname.replace(/edits\/open|(open_)?edits/, refine[1] || refine[2] ? "edits" : (self.location.pathname.match(re_GUID) ? "open_edits" : "edits/open")) + self.location.search + self.location.hash}}, (refine[1] || refine[2] ? "All " : "Open ") + "edits"));
 			if (
 				self.location.href.indexOf(account.pathname) < 0 &&
 				(refine = document.querySelector("table.search-help td > a[href^='" + MBS + "/search/edits?'][href*='&conditions.']")) &&
@@ -901,27 +919,27 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 		}
 	}
 }
-/*==================================================================== LINK+
-## COPY_TOC ##
-==========================================================================*/
+// ==================================================================== LINK+
+// ## COPY_TOC ##
+// ==========================================================================
 j2setting("COPY_TOC", true, true, "re-lookup Disc ID (from cdtoc page)");
 if (j2sets.COPY_TOC && account && self.location.pathname.match(/^\/cdtoc\/[^/]+-$/)) {
 	debug("COPY_TOC");
 	// Now MBS directly provides the full TOC: first track (1) <space> last track (n) <space> last track end sector, then, (n times) <space> nth track start sector
 	var fullTOC = document.querySelector("div#page > table > tbody > tr:not([id]) > td");
 	debug("Full TOC: " + fullTOC.textContent);
-	(document.querySelector("h1")||document.body).appendChild(createTag("fragment", {}, [" (", createTag("a", {a: {href: "/cdtoc/attach?toc=" + fullTOC.textContent.trim().replace(/\s+/g, "%20")}, s: {background: "yellow"}}, "re-lookup"), ")"]));
+	(document.querySelector("h1") || document.body).appendChild(createTag("fragment", {}, [" (", createTag("a", {a: {href: "/cdtoc/attach?toc=" + fullTOC.textContent.trim().replace(/\s+/g, "%20")}, s: {background: "yellow"}}, "re-lookup"), ")"]));
 }
-/*==================================================================== LINK+
-## SERVER_SWITCH ##
-==========================================================================*/
+// ==================================================================== LINK+
+// ## SERVER_SWITCH ##
+// ==========================================================================
 j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta and test. look for the new top-right MBS menu");
 if (j2sets.SERVER_SWITCH) {
 	debug("SERVER_SWITCH");
 	var langMenu = document.querySelector("div.header ul.menu li.language-selector");
 	if (langMenu) {
 		for (let languageLinks = langMenu.querySelectorAll("a[href*='/set-language/']"), a = 0; a < languageLinks.length; a++) {
-			languageLinks[a].classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//mb_PREFERRED-MBS
+			languageLinks[a].classList.add("jesus2099-bypass-mb_PREFERRED-MBS"); // mb_PREFERRED-MBS
 		}
 		var servname;
 		if ((servname = self.location.hostname.match(/^([^.]+)\.[^.]+\.[^.]+$/))) {
@@ -931,7 +949,7 @@ if (j2sets.SERVER_SWITCH) {
 		}
 		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs.id + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [userjs.icon.cloneNode(false), " ", createTag("code", {}, servname), " ▾"]), document.createElement("ul")]), langMenu);
 		menu.addEventListener("click", function(event) {
-			if(getParent(event.target, "li", userjs.id + "serverSwitch")) {
+			if (getParent(event.target, "li", userjs.id + "serverSwitch")) {
 				event.stopPropagation();
 				for (let openMenus = document.querySelectorAll(".header ul.menu li.fake-active"), m = 0; m < openMenus.length; m++) if (openMenus[m] != this) {
 					sendEvent(openMenus[m], "click");
@@ -972,13 +990,13 @@ function serverSwitch(server, separator) {
 			hrefHost = "//" + server;
 		}
 		a.setAttribute("href", hrefHost + self.location.pathname + self.location.search + self.location.hash);
-		a.classList.add("jesus2099-bypass-mb_PREFERRED-MBS");//mb_PREFERRED-MBS
+		a.classList.add("jesus2099-bypass-mb_PREFERRED-MBS"); // mb_PREFERRED-MBS
 	}
 	return li;
 }
-/*==================================================================== LINK+
-## TAG_TOOLS ##
-==========================================================================*/
+// ==================================================================== LINK+
+// ## TAG_TOOLS ##
+// ==========================================================================
 j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global");
 if (j2sets.TAG_TOOLS && account) {
 	var tagscope = self.location.pathname.replace(new RegExp("^" + MBS + "|[?#].*$", "g"), "").match(/^(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
@@ -1055,16 +1073,16 @@ function tagswitch(h1, urltxt) {
 	}
 	switcht.appendChild(document.createTextNode(")"));
 }
-/*=================================================================== MOUSE+
-## STATIC_MENU ##
-==========================================================================*/
+// =================================================================== MOUSE+
+// ## STATIC_MENU ##
+// ==========================================================================
 j2setting("STATIC_MENU", true, true, "makes the main MB menu always there when you need it (wihout scrolling top)");
 var mmenu = document.querySelector("div.header");
 var etais;
 if (j2sets.STATIC_MENU && mmenu) {
 	debug("STATIC_MENU");
 	etais = mmenu.parentNode.insertBefore(document.createElement("div"), mmenu);
-	//TODO: is this even supposed to work with // @run-at document-end?
+	// TODO: is this even supposed to work with // @run-at document-end?
 	self.addEventListener("load", smenu, false);
 	self.addEventListener("resize", smenu, false);
 	self.addEventListener("scroll", smenu, false);
@@ -1102,9 +1120,9 @@ function smenu(event) {
 		} catch (error) {}
 	}
 }
-/*==========================================================================
-## SLOW_DOWN_RETRY ##
-==========================================================================*/
+// ==========================================================================
+// ## SLOW_DOWN_RETRY ##
+// ==========================================================================
 j2setting("SLOW_DOWN_RETRY", false, true, "gently auto‐retries requests when MB overloading so you don’t have to do it yourself. also retries “read timeout” searches and “502 Bad Gateway”.");
 if (j2sets.SLOW_DOWN_RETRY) {
 	var errortype = document.title.match(/^(502 Bad Gateway|504 Gateway Time-out|internal server error|search error|slow down!)/i);
@@ -1135,8 +1153,7 @@ if (j2sets.SLOW_DOWN_RETRY) {
 	}
 }
 function checkError(css, content) {
-	try { if (document.querySelector(css).textContent.match(content)) return true; }
-	catch(error) {}
+	try { if (document.querySelector(css).textContent.match(content)) return true; } catch (error) {}
 	return false;
 }
 function delayMsg(sec) {
@@ -1151,18 +1168,18 @@ j2setting("RELEASE_EVENT_COLUMN", true, true, "Displays release dates in label r
 var enttype = self.location.href.match(new RegExp("^" + MBS + "/(area|artist|collection|event|label|place|recording|release|release-group|series|work)/.*$"));
 if (enttype) {
 	enttype = enttype[1];
-	/*================================================================= DISPLAY+
-	## MARK_PENDING_EDIT_MEDIUMS ##
-	==========================================================================*/
+	// ================================================================= DISPLAY+
+	// ## MARK_PENDING_EDIT_MEDIUMS ##
+	// ==========================================================================
 	if (j2sets.MARK_PENDING_EDIT_MEDIUMS && enttype == "release") {
 		debug("MARK_PENDING_EDIT_MEDIUMS");
 		for (let pendingEditMediums = document.querySelectorAll("div#content > table.tbl.medium > thead > tr.mp"), m = 0; m < pendingEditMediums.length; m++) {
 			getParent(pendingEditMediums[m], "table").style.setProperty("border", "4px solid #fd9");
 		}
 	}
-	/*================================================================== MOUSE+
-	## TRACKLIST_TOOLS ## ex-TRACK_LENGTH_PARSER+search→replace(bookmarklet)+set-selected-works-date
-	=========================================================================*/
+	// ================================================================== MOUSE+
+	// ## TRACKLIST_TOOLS ## ex-TRACK_LENGTH_PARSER+search→replace(bookmarklet)+set-selected-works-date
+	// =========================================================================
 	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && self.location.pathname.match(new RegExp("/release/(add.*|" + stre_GUID + "/edit)$"))) {
 		var releaseEditor = document.querySelector("div#release-editor");
 		if (releaseEditor) {
@@ -1180,7 +1197,7 @@ if (enttype) {
 				var text = prompt("This will remove the recording relationships that match the following text (ex.: “arrange”, “john”, “guitar”):");
 				if (text && (text = text.trim()) && text != "") {
 					var ars = document.querySelectorAll("td.recording > div.ars > div.ar > span[class*='remove-button']");
-					for(var ar = 0; ar < ars.length; ar++) {
+					for (var ar = 0; ar < ars.length; ar++) {
 						if (!ars[ar].parentNode.querySelector("span.rel-remove") && ars[ar].parentNode.textContent.match(new RegExp(text, "i"))) {
 							ars[ar].click();
 						}
@@ -1222,27 +1239,24 @@ if (enttype) {
 			}}}, [userjs.icon.cloneNode(false), " Set selected works’ recording dates ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 		}
 	}
-	/*================================================================ DISPLAY-
-	## UNLINK_ENTITY_HEADER ## (default off) Freso special request (https://gist.github.com/jesus2099/4111760)
-	=========================================================================*/
+	// ================================================================ DISPLAY-
+	// ## UNLINK_ENTITY_HEADER ## (default off) Freso special request (https://gist.github.com/jesus2099/4111760)
+	// =========================================================================
 	if (j2sets.UNLINK_ENTITY_HEADER) {
 		var h1link = document.querySelector("div#page h1 a[href='" + self.location.pathname.match(new RegExp("/" + enttype + "/" + stre_GUID)) + "']");
 		if (h1link) {
 			let h1 = getParent(h1link, "h1");
 			if (h1.firstChild.nodeType != Node.TEXT_NODE) {
 				debug("UNLINK_ENTITY_HEADER");
-				var unlinkH1Link = function() {
-					h1.removeEventListener("mouseover", unlinkH1Link);
-					h1link.removeAttribute("href");
-				};
+				h1link.classList.add(userjs.id);
 				h1.addEventListener("mouseover", unlinkH1Link);
 			}
 		}
 	}
-	/*================================================================ DISPLAY+
-	## RECORDING_LENGTH_COLUMN ## inspired by loujine’s https://bitbucket.org/loujine/musicbrainz-scripts/src/default/mbz-showperformancedurations.user.js for work page
-	## RELEASE_EVENT_COLUMN ## requested by Lotheric https://github.com/jesus2099/konami-command/issues/132
-	=========================================================================*/
+	// ================================================================ DISPLAY+
+	// ## RECORDING_LENGTH_COLUMN ## inspired by loujine’s https://bitbucket.org/loujine/musicbrainz-scripts/src/default/mbz-showperformancedurations.user.js for work page
+	// ## RELEASE_EVENT_COLUMN ## requested by Lotheric https://github.com/jesus2099/konami-command/issues/132
+	// =========================================================================
 	if (
 		j2sets.RECORDING_LENGTH_COLUMN && (enttype == "work" && self.location.pathname.match(new RegExp("^/work/" + stre_GUID + "$")) || enttype == "artist" && self.location.pathname.match(new RegExp("^/artist/" + stre_GUID + "/relationships$")) || enttype == "place" && self.location.pathname.match(new RegExp("^/place/" + stre_GUID + "/performances$")))
 		||
@@ -1472,6 +1486,12 @@ function TRACKLIST_TOOLS_init() {
 			}
 		}
 	}, false);
+}
+function unlinkH1Link(event) {
+	event.currentTarget.removeEventListener("mouseover", unlinkH1Link);
+	let h1link = event.currentTarget.querySelector("a." + userjs.id);
+	h1link.classList.remove(userjs.id);
+	h1link.removeAttribute("href");
 }
 function time(_ms) {/* adapted from mb_INLINE-TRACK-ARTIST */
 	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;

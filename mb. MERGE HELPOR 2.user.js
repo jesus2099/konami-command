@@ -116,25 +116,25 @@ function findUsefulMergeInfo() {
 	var showEntityInfo = true;
 	var minrowid;
 	if (mergeForm) {
-		/*	entity merge pages progressively abandon ul layout in favour of table.tbl
-			* area			ul (but only for admins)
-			* artist		ul
-			* event			table.tbl
-			* label			table.tbl
-			* place			table.tbl
-			* recording		table.tbl
-			* release		table.tbl
-			* release group	table.tbl
-			* series		table.tbl
-			* work			table.tbl
-			* what else ?	*/
+		/* entity merge pages progressively abandon ul layout in favour of table.tbl
+		* area          ul (but only for admins)
+		* artist        ul
+		* event         table.tbl
+		* label         table.tbl
+		* place         table.tbl
+		* recording     table.tbl
+		* release       table.tbl
+		* release group table.tbl
+		* series        table.tbl
+		* work          table.tbl
+		* what else     ? */
 		mergeForm.addEventListener("submit", function(event) {
 			var editNote = this.querySelector("textarea[name='merge.edit_note']");
 			if (event.submitter && event.submitter.classList.contains("positive")) {
 				// Script only triggered by Submit (button.positive), not Cancel (button.negative)
 				if (editNote && editNote.value && editNote.value.match(/\w{4,}/g) && editNote.value.match(/\w{4,}/g).length > 3) {
 					editNote.style.removeProperty("background-color");
-					editNote.value = editNote.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\(['\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");//linked in mb_ELEPHANT-EDITOR.user.js
+					editNote.value = editNote.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\(['\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, ""); // linked in mb_ELEPHANT-EDITOR.user.js
 					var mergeTargets = mergeForm.querySelectorAll("form table.tbl > tbody input[type='radio'][name='merge.target'], form > ul > li input[type='radio'][name='merge.target']");
 					var mergeTarget;
 					var sortedTargets = [];
@@ -213,7 +213,7 @@ function findUsefulMergeInfo() {
 						rad.click();
 					}
 				}
-				entities[rad.value].rowidzone = addZone(tbl, entityRows[row], "rowID"+row);
+				entities[rad.value].rowidzone = addZone(tbl, entityRows[row], "rowID" + row);
 				entities[rad.value].rowidzone.style.setProperty("text-align", "right");
 				entities[rad.value].rowidzone.appendChild(rowIDLink(mergeType.replace(/-/, "_"), rad.value));
 				var removeZone = addZone(tbl, entityRows[row], "remove" + row);
@@ -441,7 +441,7 @@ function removeFromMerge(event) {
 			var toBeDeletedMediumRows = [];
 			if (mergeType == "releases") {
 				var allMediums = document.querySelector("#merge-strategy-1 table.tbl");
-				var bogusMediumStarts = allMediums.querySelectorAll("tbody input[id$='.release_id'][type='hidden'][value='" + checkedRemoves[cb].value + "']")
+				var bogusMediumStarts = allMediums.querySelectorAll("tbody input[id$='.release_id'][type='hidden'][value='" + checkedRemoves[cb].value + "']");
 				for (let s = 0; s < bogusMediumStarts.length; s++) {
 					var bogusMediumStart = bogusMediumStarts[s];
 					if (
@@ -497,7 +497,7 @@ function stackInfo(zone, info) {
 }
 function fill(par, beg, stu, sep) {
 	par.appendChild(document.createTextNode(par.hasChildNodes() ? sep : beg));
-	par.appendChild(typeof stu=="string" ? document.createTextNode(stu) : stu);
+	par.appendChild(typeof stu == "string" ? document.createTextNode(stu) : stu);
 }
 function createA(text, link, title) {
 	var a = document.createElement("a");

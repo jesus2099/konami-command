@@ -69,8 +69,8 @@ if (emailSubjects) {
 						editNote = editNote[1];
 						var div = document.createElement("div");
 						div.innerHTML = editNote.replace(/<a/g, '<a style="color: blue; text-decoration: underline;"');
-						div.style.setProperty("background-color", "#eee")
-						div.style.setProperty("padding", "4px")
+						div.style.setProperty("background-color", "#eee");
+						div.style.setProperty("padding", "4px");
 						this.emailSubject.parentNode.insertBefore(div, this.emailSubject);
 					}
 				}

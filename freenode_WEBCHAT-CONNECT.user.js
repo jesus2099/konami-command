@@ -16,26 +16,26 @@
 // @include      https://webchat.freenode.net/
 // @run-at       document-end
 // ==/UserScript==
+"use strict";
 setTimeout(function() {
-	"use strict";
 	var userjs = {name: "freenode. WEBCHAT CONNECT", key: "j2fwc"};
 	var defaultChannels = "#github,#last.fm,##musicbrainz-lol,#musicbrainz";
 	var kiwiInputs = document.querySelectorAll("div.u-input-text-inputs > input");
 	var nicknameField = kiwiInputs[0];
 	var channelsField = kiwiInputs[kiwiInputs.length - 1];
+/*
+	var css = document.createElement("style");
+	css.setAttribute("type", "text/css");
+	document.head.appendChild(css);
+	css = css.sheet;
+	css.insertRule(".qwebirc-qui.topic { font-size: .8em; }", 0);
 
-//	var css = document.createElement("style");
-//	css.setAttribute("type", "text/css");
-//	document.head.appendChild(css);
-//	css = css.sheet;
-//	css.insertRule(".qwebirc-qui.topic { font-size: .8em; }", 0);
-
-//	if (document.body.textContent.trim().match(/^412 - Precondition Failed$/) || !document.body.textContent.match(/connect.+nickname.+channels/i)) {
-//		self.location.reload(); // je sais plus pourquoi il y avait ça
-//	} else 
-
+	if (document.body.textContent.trim().match(/^412 - Precondition Failed$/) || !document.body.textContent.match(/connect.+nickname.+channels/i)) {
+		self.location.reload(); // je sais plus pourquoi il y avait ça
+	} else
+*/
 	if (nicknameField && channelsField) {
-//		self.addEventListener("focus", focusFirstEmptyField); // je sais plus pourquoi il y avait ça
+		// self.addEventListener("focus", focusFirstEmptyField); // je sais plus pourquoi il y avait ça
 		storify(nicknameField, "nickname");
 		storify(channelsField, "channels");
 		focusFirstEmptyField();

@@ -57,10 +57,10 @@ for (var tables = document.querySelectorAll("div#content table > tbody"), it = 0
 }
 function dupetxt(txt) {
 	return createTag("span", {
-			a: {class: userjs + txt.replace(/[#/]/g, "-")},
-			s: {backgroundColor: "yellow", color: "red", padding: "0 4px"},
-			e: {mouseover: dupeHighlight, mouseout: dupeHighlight}
-		}, "duplicate " + txt);
+		a: {class: userjs + txt.replace(/[#/]/g, "-")},
+		s: {backgroundColor: "yellow", color: "red", padding: "0 4px"},
+		e: {mouseover: dupeHighlight, mouseout: dupeHighlight}
+	}, "duplicate " + txt);
 }
 function dupeHighlight(e) {
 	for (var dupes = getParent(this, "tbody").getElementsByClassName(this.className), d = 0; d < dupes.length; d++) {

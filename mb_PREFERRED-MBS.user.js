@@ -25,12 +25,12 @@
 // "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
 "use strict";
-/*-----------------------------------------------*/
+/* ----------------------------------------------- */
 /* preferredMBS can be either (there is no more HTTP)
  * https://musicbrainz.org or https://beta.musicbrainz.org
  * it is not intended to work with any other values */
 var preferredMBS = "https://musicbrainz.org";
-/*-----------------------------------------------*/
+/* ----------------------------------------------- */
 /* Simple Discourse click tracker problem work-around ------------- */
 var discourseURL = self.location.href.match(/^https?:\/\/community\.metabrainz\.org\/clicks\/track\?url=([^?&]+)/);
 if (discourseURL) {
@@ -66,12 +66,12 @@ document.addEventListener("mousedown", function(event) {
 		if (element.tagName != "A") {
 			element = getParent(element, "a");
 		}
-		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) {//mb_SUPER-MIND-CONTROL-II-X-TURBO
+		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) { // mb_SUPER-MIND-CONTROL-II-X-TURBO
 			process(element);
 		}
 	}
 });
-/* for Snap Links extension v1.9.5 by Ayush and Mpkstroff http://addons.opera.com/extensions/details/snap-links */
+// for Snap Links extension v1.9.5 by Ayush and Mpkstroff http://addons.opera.com/extensions/details/snap-links
 document.addEventListener("mousedown", function(event) {
 	document.addEventListener("DOMAttrModified", snapLinksDOMAttrModified);
 });
@@ -81,7 +81,7 @@ document.addEventListener("mouseup", function(event) {
 function snapLinksDOMAttrModified(event) {
 	var element = event.target || event.srcElement;
 	if (element && element.tagName == "A" && event.attrName == "style" && event.attrChange == 2 && event.newValue.match(/outline.+!important/)) {
-		/*attrChange: 1 MODIFICATION, 2 ADDITION, 3 REMOVAL*/
+		// attrChange: 1 MODIFICATION, 2 ADDITION, 3 REMOVAL
 		process(element);
 	}
 }

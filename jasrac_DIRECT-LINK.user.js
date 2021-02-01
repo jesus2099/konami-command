@@ -54,7 +54,7 @@ if (self == top && document.body.textContent.match(/システムエラーが発�
 		setTimeout(function() { self.location.reload(true); }, 1);
 	}}));
 } else if (self == top && self.location.pathname != "/eJwid/" && document.getElementsByTagName("frameset").length == 0) {
-/*	try {
+	/* try {
 		if (!document.referer && self.opener && self.opener == self.opener.top && self.opener.location.host == self.location.host) {
 			self.opener.close();
 			if(self.opener) {
@@ -62,7 +62,7 @@ if (self == top && document.body.textContent.match(/システムエラーが発�
 				if (ajs.length == 1) {
 					self.opener.location.href = ajs[0].getAttribute("href");
 					self.close();
-//					self.opener.history.back(); // better?
+					// self.opener.history.back(); // better?
 				}
 			}
 		}
@@ -85,7 +85,7 @@ function hasHome(action) {
 		if (self.opener != null && self.opener.innerWidth > 0 && self.opener.top.location.href == home) {
 			has = true;
 		}
-	} catch(error) {}
+	} catch (error) {}
 	if (action && has) {
 		self.opener.top.focus();
 		self.close();
@@ -101,7 +101,7 @@ function rowHighlight(event) {
 		row = event.target.parentNode.parentNode;
 	}
 	if (row) {
-		row.style.setProperty("background-color", event.type == "mouseover" ? "#ff9" : "inherit")
+		row.style.setProperty("background-color", event.type == "mouseover" ? "#ff9" : "inherit");
 	}
 }
 function formatText(string) {
