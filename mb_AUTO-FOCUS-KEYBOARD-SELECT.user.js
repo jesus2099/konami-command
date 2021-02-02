@@ -3,7 +3,6 @@
 // @version      2021.1.20.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_AUTO-FOCUS-KEYBOARD-SELECT.user.js
 // @description  musicbrainz.org: MOUSE-LESS EDITING ! Cleverly focuses fields in various musicbrainz edit pages and allows keyboard selection of relationship types as well as some release editor keyboard navigation performance features
-// @homepage     http://userscripts-mirror.org/scripts/show/135547
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_AUTO-FOCUS-KEYBOARD-SELECT
 // @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @namespace    https://github.com/jesus2099/konami-command
@@ -12,7 +11,7 @@
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2012-06-08
+// @since        2012-06-08; https://web.archive.org/web/20131103163357/userscripts.org/scripts/show/135547 / https://web.archive.org/web/20141011084007/userscripts-mirror.org/scripts/show/135547
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @match        *://*.musicbrainz.org/*/*/add-alias

@@ -3,7 +3,6 @@
 // @version      2021.1.20.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
-// @homepage     http://userscripts-mirror.org/scripts/show/94629
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
 // @compatible   opera(12.18.1872)+violentmonkey      my setup
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
@@ -16,7 +15,7 @@
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2011-01-13
+// @since        2011-01-13; https://web.archive.org/web/20131103163403/userscripts.org/scripts/show/94629 / https://web.archive.org/web/20141011084017/userscripts-mirror.org/scripts/show/94629
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none

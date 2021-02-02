@@ -3,7 +3,6 @@
 // @version      2019.9.13.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/USO-to-USMO.user.js
 // @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long — bypass this script by holding CTRL+ALT+SHIFT
-// @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/labels/USO-to-USMO
 // @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -12,10 +11,10 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/USO-to-USMO.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/USO-to-USMO.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2015-07-30
+// @since        2015-07-30; inspiration by https://web.archive.org/web/20140712013355/userscripts-mirror.org/scripts/show/487275
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none

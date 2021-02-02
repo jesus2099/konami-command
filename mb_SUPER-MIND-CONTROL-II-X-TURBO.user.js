@@ -9,7 +9,7 @@
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2010-09-09; https://web.archive.org/web/20131103163358/userscripts.org/scripts/show/85790 and others: https://web.archive.org/web/20131104205922/userscripts.org/topics/119639
+// @since        2010-09-09; https://web.archive.org/web/20140328200933/userscripts.org/scripts/show/85790 / https://web.archive.org/web/20141011084019/userscripts-mirror.org/scripts/show/85790 / see topic GÓ GÓ AMÍGO
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@3519239d93ee66a3808c6f6bd54e818da4c334f1/lib/SUPER.js
 // @grant        GM_info

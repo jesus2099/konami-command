@@ -8,11 +8,11 @@
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
 // @compatible   firefox(68.0.1)+violentmonkey       tested sometimes
 // @compatible   chrome+violentmonkey                should be same as vivaldi
-// @namespace    jesus2099/shamo
+// @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ALL-RELEASE-GROUPS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ALL-RELEASE-GROUPS.user.js
 // @author       jesus2099
-// @contributor  Naja Melan’s “Always show all releases on Musicbrainz v1.0” http://userscripts-mirror.org/scripts/show/9456
+// @contributor  Naja Melan’s “Always show all releases on Musicbrainz v1.0” https://web.archive.org/web/20131104205707/userscripts.org/scripts/show/9456
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2019-01-03

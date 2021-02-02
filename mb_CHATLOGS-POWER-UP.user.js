@@ -3,7 +3,6 @@
 // @version      2018.3.4.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CHATLOGS-POWER-UP.user.js
 // @description  chatlogs.metabrainz.org/brainzbot. swicth between #musicbrainz, #metabrainz and #musicbrainz-ja channels; previous/next date log page (it was once a better script)
-// @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
 // @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
@@ -12,10 +11,10 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_CHATLOGS-POWER-UP.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_CHATLOGS-POWER-UP.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2012-03-05
+// @since        2012-03-05; https://web.archive.org/web/20131103163408/userscripts.org/scripts/show/127580 / https://web.archive.org/web/20141011084021/userscripts-mirror.org/scripts/show/127580
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @match        *://chatlogs.metabrainz.org/brainzbot/*

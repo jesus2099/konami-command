@@ -6,7 +6,7 @@
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2012; https://web.archive.org/web/20131107081211/userscripts.org/scripts/show/139394
+// @since        2012; https://web.archive.org/web/20131107081211/userscripts.org/scripts/show/139394 / https://web.archive.org/web/20141011084020/userscripts-mirror.org/scripts/show/139394
 // @grant        none
 // @include      /^https?:\/\/[^.]+\.amazon\.[^/]+/
 // @exclude      *iframeproxy*

@@ -8,10 +8,10 @@
 // @compatible   firefox(45.0.1)+greasemonkey        quickly tested
 // @compatible   chromium(37.0.2030.0)+tampermonkey  quickly tested
 // @compatible   chrome+tampermonkey                 should be same as chromium
-// @namespace    jesus2099/shamo
+// @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2016-04-08

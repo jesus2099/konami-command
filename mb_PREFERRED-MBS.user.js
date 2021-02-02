@@ -3,19 +3,18 @@
 // @version      2021.1.19.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
-// @inspiration  http://userscripts-mirror.org/scripts/show/487275
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
 // @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
 // @compatible   firefox(68.0.1)+violentmonkey       tested sometimes
 // @compatible   chrome+violentmonkey                should be same as vivaldi
-// @namespace    jesus2099/shamo
+// @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2016-01-12
+// @since        2016-01-12; inspiration by https://web.archive.org/web/20140712013355/userscripts-mirror.org/scripts/show/487275
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none

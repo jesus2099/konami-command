@@ -3,7 +3,6 @@
 // @version      2021.2.1
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @description  Replaces any lastfm link by the desired language, like "www.lastfm.xx" or else
-// @homepage     http://userscripts-mirror.org/scripts/show/29156
 // @supportURL   https://github.com/jesus2099/konami-command/labels/lastfm_ALL-LINKS-TO-LOCAL-SITE
 // @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -12,10 +11,10 @@
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
-// @author       PATATE12
+// @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2008-06-26
+// @since        2008-06-26; https://web.archive.org/web/20140328151006/userscripts.org/scripts/show/29156 / https://web.archive.org/web/20141011084010/userscripts-mirror.org/scripts/show/29156
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        GM_info
 // @match        *://*/*

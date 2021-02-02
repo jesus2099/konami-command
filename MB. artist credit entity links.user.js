@@ -3,20 +3,19 @@
 // @version      2021.1.19.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/MB.%20artist%20credit%20entity%20links.user.js
 // @description  Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases page’s artist credits section. Additionally spots duplicate aliases.
-// @homepage     http://userscripts-mirror.org/scripts/show/131649
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ARTIST-CREDIT-ENTITY-LINKS
 // @compatible   opera(12.18.1872)+violentmonkey      my setup
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
 // @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
 // @compatible   firefox(47.0)+greasemonkey           tested sometimes
 // @compatible   chrome+violentmonkey                 should be same as vivaldi
-// @namespace    http://userscripts.org/scripts/show/131649
+// @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/MB.%20artist%20credit%20entity%20links.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/MB.%20artist%20credit%20entity%20links.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2012-04-23
+// @since        2012-04-23; https://web.archive.org/web/20131104205646/userscripts.org/scripts/show/131649 / https://web.archive.org/web/20141011084021/userscripts-mirror.org/scripts/show/131649
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none
 // @match        *://*.musicbrainz.org/artist/*/aliases

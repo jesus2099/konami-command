@@ -5,7 +5,6 @@ var meta = { rawmdb: function() {
 // @version      2021.1.19.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
-// @homepage     http://userscripts-mirror.org/scripts/show/57765
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey   my setup (of.)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
@@ -17,7 +16,7 @@ var meta = { rawmdb: function() {
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2009-09-14
+// @since        2009-09-14; https://web.archive.org/web/20131103163355/userscripts.org/scripts/show/57765 / https://web.archive.org/web/20141011084007/userscripts-mirror.org/scripts/show/57765
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none

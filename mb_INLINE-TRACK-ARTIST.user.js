@@ -3,7 +3,6 @@
 // @version      2021.1.19.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_INLINE-TRACK-ARTIST.user.js
 // @description  musicbrainz.org: highlights track title, length and artist differences in recording page
-// @homepage     http://userscripts-mirror.org/scripts/show/166877
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-TRACK-ARTIST
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey   my setup (of.)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
@@ -16,7 +15,7 @@
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @requester    culinko
-// @since        2013-05-07
+// @since        2013-05-07; https://web.archive.org/web/20131104205636/userscripts.org/scripts/show/166877 / https://web.archive.org/web/20141011084010/userscripts-mirror.org/scripts/show/166877
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@ab3d205ab8a9897ac3ef23075fda26bed07ca342/lib/COOL-BUBBLES.js?v=2016.6.1.1310
 // @grant        none
