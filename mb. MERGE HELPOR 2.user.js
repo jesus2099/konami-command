@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2021.2.2.38
+// @version      2021.2.2.1852
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -74,7 +74,7 @@ if (mergeType) {
 					reMergeButton.style.setProperty("background-color", "#fcc");
 				}
 			});
-			xhr.open("GET", mergeButton.parentNode.parentNode.parentNode.getAttribute("action").replace(/_queue$/, "?submit=cancel"), true);
+			xhr.open("GET", mergeButton.parentNode.parentNode.parentNode.getAttribute("action").replace(/(\/merge)_queue.*$/, "$1?submit=cancel"), true);
 			xhr.send(null);
 			return stop(event);
 		});
@@ -84,7 +84,7 @@ if (mergeType) {
 	var currentMergeForm = document.querySelector("div#current-editing > form[action*='/merge']");
 	if (currentMergeForm) {
 		currentMergeForm.querySelector("button[type='submit'][value='remove']").addEventListener("click", function(event) {
-			var href = currentMergeForm.getAttribute("action") + "?submit=remove";
+			var href = currentMergeForm.getAttribute("action").replace(/(\/merge).*$/, "$1?submit=remove");
 			for (let checked = currentMergeForm.querySelectorAll("li > input[type='checkbox'][id^='remove.'][value]:checked"), c = 0; c < checked.length; c++) {
 				href += "&remove=" + checked[c].value;
 				removeNode(checked[c].parentNode);
@@ -97,7 +97,7 @@ if (mergeType) {
 		currentMergeForm.querySelector("button[type='submit'][value='cancel']").addEventListener("click", function(event) {
 			removeNode(currentMergeForm.parentNode);
 			var xhr = new XMLHttpRequest();
-			xhr.open("GET", currentMergeForm.getAttribute("action") + "?submit=cancel", true);
+			xhr.open("GET", currentMergeForm.getAttribute("action").replace(/(\/merge).*$/, "$1?submit=cancel"), true);
 			xhr.send(null);
 			return stop(event);
 		});
