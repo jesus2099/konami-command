@@ -1,8 +1,6 @@
-"use strict";
-var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2021.1.19.2099
+// @version      2021.2.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_LOCAL-STORAGE-MANAGER
@@ -15,23 +13,11 @@ var meta = {rawmdb: function() {
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-02-22; https://web.archive.org/web/20131103163410/userscripts.org/scripts/show/126475 / https://web.archive.org/web/20141011084022/userscripts-mirror.org/scripts/show/126475
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @grant        none
+// @grant        GM_info
 // @match        *://*.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
-}};
-if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv /* key,val */, row = /\/\/\s+@(\S+)\s+(.+)/g;
-	while ((kv = row.exec(meta.rawmdb)) !== null) {
-		if (meta[kv[1]]) {
-			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
-			meta[kv[1]].push(kv[2]);
-		} else meta[kv[1]] = kv[2];
-	}
-}
+"use strict";
 var userjs = "jesus2099userjs126475";
 var lsm, lskeys;
 var j2set = document.querySelector("div.header ul.menu li.about > ul > li.jesus2099");
@@ -41,12 +27,12 @@ if (!j2set && (j2set = document.querySelector("div.header ul.menu li.about > ul"
 }
 if (j2set) {
 	addAfter(createTag("li", {a: {class: "jesus2099"}},
-		createTag("a", {a: {title: meta.description.replace(/^[^:]+: /, "")}, e: {click: function(event) {
+		createTag("a", {a: {title: GM_info.script.description.replace(/^[^:]+: /, "")}, e: {click: function(event) {
 			this.parentNode.parentNode.style.removeProperty("left");
 			if (lsm) { unloadLS(); } else {
 				lskeys = [];
 				lsm = document.body.insertBefore(createTag("div", {a: {id: userjs + "lsm"}}, createTag("h2", {}, [
-					meta.name + " (",
+					GM_info.script.name + " (",
 					createTag("a", {a: {title: "Add a new key"}, e: {click: function(event) {
 						loadLS();
 						var key = prompt("Type new key name");
@@ -82,7 +68,7 @@ if (j2set) {
 				loadLS();
 				lsm.scrollIntoView();
 			}
-		}}}, meta.name)
+		}}}, GM_info.script.name)
 	), j2set);
 }
 function unloadLS() {

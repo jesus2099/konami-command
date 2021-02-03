@@ -1,8 +1,6 @@
-"use strict";
-var meta = { rawmdb: function() {
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2021.1.19.2099
+// @version      2021.2.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -19,24 +17,12 @@ var meta = { rawmdb: function() {
 // @since        2009-09-14; https://web.archive.org/web/20131103163355/userscripts.org/scripts/show/57765 / https://web.archive.org/web/20141011084007/userscripts-mirror.org/scripts/show/57765
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
-// @grant        none
+// @grant        GM_info
 // @match        *://*.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
-}};
-if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv /* key,val */, row = /\/\/\s+@(\S+)\s+(.+)/g;
-	while ((kv = row.exec(meta.rawmdb)) !== null) {
-		if (meta[kv[1]]) {
-			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
-			meta[kv[1]].push(kv[2]);
-		} else meta[kv[1]] = kv[2];
-	}
-}
-var chrome = "Please run “" + meta.name + "” with Tampermonkey instead of plain Chrome.";
+"use strict";
+var chrome = "Please run “" + GM_info.script.name + "” with Tampermonkey instead of plain Chrome.";
 var editform = document.querySelector("div#edits > form");
 if (editform) {
 	// - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- -

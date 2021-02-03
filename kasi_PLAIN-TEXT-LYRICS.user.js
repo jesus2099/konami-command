@@ -1,8 +1,6 @@
-"use strict";
-var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2021.1.20.2099
+// @version      2021.2.2
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
 // @compatible   firefox(77.0.1)+greasemonkey        my setup
@@ -13,7 +11,7 @@ var meta = {rawmdb: function() {
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2010-12-05; https://web.archive.org/web/20131119110024/userscripts.org/scripts/show/91968 / https://web.archive.org/web/20141011084011/http://userscripts-mirror.org/scripts/show/91968
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @grant        none
+// @grant        GM_info
 // @match        *://*.utamap.com/*.php?surl=*
 // @match        *://*.uta-net.com/movie/*/
 // @match        *://*.uta-net.com/song/*/
@@ -28,19 +26,7 @@ var meta = {rawmdb: function() {
 // @match        *://www.kget.jp/lyric/*
 // @run-at       document-end
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
-}};
-if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv /* key,val */, row = /\/\/\s+@(\S+)\s+(.+)/g;
-	while ((kv = row.exec(meta.rawmdb)) !== null) {
-		if (meta[kv[1]]) {
-			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
-			meta[kv[1]].push(kv[2]);
-		} else meta[kv[1]] = kv[2];
-	}
-}
+"use strict";
 var DEBUG = false;
 var kasimasin = {
 	"j-lyric": { // allow contextmenu
@@ -217,8 +203,8 @@ var kasimasin = {
 };
 var kabe, mati;
 var matches = [];
-for (var m = 0; m < meta.match.length; m++) {
-	var key = meta.match[m].replace(/^\*:\/\/[.*]{0,2}(www\.)?|\.(com|co\.jp|ne\.jp|jp|net)\/{1}.*$/g, "");
+for (var m = 0; m < GM_info.script.matches.length; m++) {
+	var key = GM_info.script.matches[m].replace(/^\*:\/\/[.*]{0,2}(www\.)?|\.(com|co\.jp|ne\.jp|jp|net)\/{1}.*$/g, "");
 	if (matches.indexOf(key) == -1) matches.push(key);
 }
 db("matches:\n" + matches.join("\n"));
@@ -234,8 +220,8 @@ if (document.head) {
 if (doko) {
 	doko = doko[1];
 	kasimasin = kasimasin[doko];
-	if (kasimasin.na) { meta.name = kasimasin.na + " " + meta.name; }
-	db(meta.name + "\n" + self.location.href);
+	if (kasimasin.na) { GM_info.script.name = kasimasin.na + " " + GM_info.script.name; }
+	db(GM_info.script.name + "\n" + self.location.href);
 	var url;
 	if (kasimasin.uta_re && (url = self.location.href.match(kasimasin.uta_re))) {
 		kasimasin.uta = url[1];
@@ -282,7 +268,7 @@ function machine() {
 				}, true);
 			});
 			mati = document.createElement("div");
-			mati.appendChild(document.createTextNode(meta.name + " "));
+			mati.appendChild(document.createTextNode(GM_info.script.name + " "));
 			mati.appendChild(document.createElement("strong")).appendChild(document.createTextNode("PLEASE WAIT"));
 			mati.style.setProperty("margin", "16px 0 0 0");
 			kabe.parentNode.insertBefore(mati, kabe);

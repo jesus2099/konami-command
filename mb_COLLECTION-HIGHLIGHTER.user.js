@@ -1,8 +1,6 @@
-"use strict";
-var meta = {raw: function() {
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2021.1.20.2099
+// @version      2021.2.2
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -18,29 +16,14 @@ var meta = {raw: function() {
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\//
 // @include      /^https?:\/\/acoustid\.org\/track\//
 // @exclude      *.org/collection/*/own_collection/*
 // @run-at       document-end
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
-}};
-if (meta.raw && meta.raw.toString && (meta.raw = meta.raw.toString())) {
-	var item, row = /\/\/\s+@(\S+)\s+(.+)/g;
-	while ((item = row.exec(meta.raw)) !== null) {
-		if (meta[item[1]]) {
-			if (typeof meta[item[1]] == "string") {
-				meta[item[1]] = [meta[item[1]]];
-			}
-			meta[item[1]].push(item[2]);
-		} else {
-			meta[item[1]] = item[2];
-		}
-	}
-}
-meta.nameAndVersion = meta.name.substr("4") + " " + meta.version;
+"use strict";
+let scriptNameAndVersion = GM_info.script.name.substr("4") + " " + GM_info.script.version;
 // ############################################################################
 // #                                                                          #
 // #                           MAIN RUN                                       #
@@ -57,7 +40,7 @@ if (cat) {
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var prefix = "collectionHighlighter";
 	var DEBUG = localStorage.getItem("jesus2099debug");
-	var dialogprefix = "..:: " + meta.nameAndVersion.replace(/ /g, " :: ") + " ::..\n\n";
+	var dialogprefix = "..:: " + scriptNameAndVersion.replace(/ /g, " :: ") + " ::..\n\n";
 	var maxRetry = 20;
 	var retryPause = 5000;
 	var slowDownStepAfterRetry = 0;
@@ -116,7 +99,7 @@ if (cat) {
 // ############################################################################
 		var xp1 = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th/text()[contains(., 'Veröffentlichungen') or contains(., 'Väljalasked') or contains(., 'Releases') or contains(., 'Publicaciones') or contains(., 'Parutions') or contains(., 'Pubblicazioni') or contains(., 'Uitgaves') or contains(., 'Julkaisut') or contains(., 'Κυκλοφορίες') or contains(., 'リリース')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		for (let tbl_idx = 0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
-			xp1.snapshotItem(tbl_idx).parentNode.parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, meta.nameAndVersion));
+			xp1.snapshotItem(tbl_idx).parentNode.parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, scriptNameAndVersion));
 			var tbl = getParent(xp1.snapshotItem(tbl_idx).parentNode, "table");
 			var xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			for (let i = 0; i < xp.snapshotLength; i++) {
@@ -715,7 +698,7 @@ function end(ok, msg) {
 	} else {
 		modal(true, msg, 1).style.setProperty("background-color", "pink");
 		alert(dialogprefix + msg);
-		modal(true, concat(["You may ", createA("have a look at known issues and/or create a new bug report", meta.namespace + "/issues/new?labels=" + meta.name.replace(". ", "_").replace(" ", "-")), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
+		modal(true, concat(["You may ", createA("have a look at known issues and/or create a new bug report", GM_info.script.namespace + "/issues/new?labels=" + GM_info.script.name.replace(". ", "_").replace(" ", "-")), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
 	}
 	closeButt();
 }

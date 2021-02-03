@@ -1,8 +1,6 @@
-"use strict";
-var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2020.6.27.2099
+// @version      2021.2.2
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user css/js auto‐update, even if the script author has not set @downloadURL and @updateURL.
 // @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -14,7 +12,7 @@ var meta = {rawmdb: function() {
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2014-11-14
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @grant        none
+// @grant        GM_info
 // @include      https://bitbucket.org/*
 // @include      https://github.com/*
 // @include      https://gitlab.com/*
@@ -22,19 +20,7 @@ var meta = {rawmdb: function() {
 // @inject-into  auto
 // "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
-}};
-if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv /* key,val */, row = /\/\/\s+@(\S+)\s+(.+)/g;
-	while ((kv = row.exec(meta.rawmdb)) !== null) {
-		if (meta[kv[1]]) {
-			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
-			meta[kv[1]].push(kv[2]);
-		} else meta[kv[1]] = kv[2];
-	}
-}
+"use strict";
 var supportedFileTypes = [".user.js", ".uc.js", ".uc.xul", ".user.css"];
 var host = {
 	"bitbucket.org": {
@@ -117,7 +103,7 @@ function changeStuff() {
 	}
 }
 function getInstallIcon(fileExtension) {
-	var iconURL = fileExtension == ".user.js" ? "https://github.com/violentmonkey/violentmonkey/raw/1d911bffd7d4c37f82b5bcdada16f0b79fe0a70a/src/public/images/icon16.png" : fileExtension == ".user.css" ? "https://github.com/openstyles/stylus/raw/c2e83fb3c4dc4d980e07c5ce92e9250af3eb5609/images/icon/16.png" : meta.icon;
+	var iconURL = fileExtension == ".user.js" ? "https://github.com/violentmonkey/violentmonkey/raw/1d911bffd7d4c37f82b5bcdada16f0b79fe0a70a/src/public/images/icon16.png" : fileExtension == ".user.css" ? "https://github.com/openstyles/stylus/raw/c2e83fb3c4dc4d980e07c5ce92e9250af3eb5609/images/icon/16.png" : GM_info.script.icon;
 	if (!installIcons[fileExtension]) {
 		installIcons[fileExtension] = document.createElement("img");
 		installIcons[fileExtension].setAttribute("src", iconURL);
