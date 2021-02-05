@@ -1,17 +1,10 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2021.2.4
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
+// @version      2021.2.5
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
-// @compatible   opera(12.18.1872)+violentmonkey      my setup
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
@@ -118,12 +111,6 @@ if (content) {
 			if (carcan) {
 				if (re) carcan.style.setProperty("width", "inherit");
 				else notetext.parentNode.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
-				if (xdate[0]) {
-					var fs = getParent(xdate[0][1], "fieldset");
-					if (fs) {
-						fs.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
-					}
-				}
 			}
 			notetext.style.setProperty("width", "98%");
 			var removeLabels = ["label-id-ar.edit_note", "label-id-edit_note", "label-id-edit-artist.edit_note", "label-id-edit-label.edit_note", "label-id-edit-recording.edit_note", "label-id-edit-release-group.edit_note", "label-id-edit-url.edit_note", "label-id-edit-work.edit_note"];
