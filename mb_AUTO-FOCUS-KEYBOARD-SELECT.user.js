@@ -210,7 +210,7 @@ if (autoFocus) {
 		highlight(input);
 	}
 	// re‐focus input field after related tool click http://tickets.musicbrainz.org/browse/MBS-7321
-	var tools = document.querySelectorAll("input.with-guesscase ~ button:not(.guesscase-options)");
+	var tools = document.querySelectorAll("input[class*='with-guesscase'] ~ button:not(.guesscase-options)");
 	for (var t = 0; t < tools.length; t++) {
 		tools[t].addEventListener("click", function(event) {
 			var relatedInput = this.parentNode.querySelector("input");
