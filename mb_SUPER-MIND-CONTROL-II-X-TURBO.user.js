@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2021.2.4
+// @version      2021.2.5
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -796,14 +796,22 @@ function parentFormSubmit(input, event) {
 // ==========================================================================
 j2setting("DOUBLE_CLICK_SUBMIT", true, true, "makes the “radio buttons” and “multi-selects” submit forms on double-click (MBS-3229)");
 if (j2sets.DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdstub\/|edit\/|release\/(add(\?release-group=)?|[^/]+\/edit-cover-art\/)|release-group\/[^/]+\/edit|search|.+\/merge)/)) {
-	debug("DOUBLE_CLICK_SUBMIT");
-	var objs = document.querySelectorAll("div#page form > *:not(.edit-list) input[type='radio'], select[multiple]");
-	for (let o = 0; o < objs.length; o++) {
-		var obj = getParent(objs[o], "label") || objs[o];
-		if (obj.tagName == "LABEL") obj.addEventListener("mousedown", function(event) { event.preventDefault(); });
-		obj.addEventListener("dblclick", function(event) { parentFormSubmit(this, event); });
-		obj.setAttribute("title", "double-click here to submit the form");
-	}
+	document.body.addEventListener("dblclick", function(event) {
+		if (
+			event.target.tagName
+			&& !getParent(event.target, "div", "edit-list")
+			&& (
+				event.target.tagName == "INPUT"
+				&& event.target.getAttribute("type") == "radio"
+				||
+				event.target.tagName == "SELECT"
+				&& event.target.getAttribute("multiple") != null
+			)
+		) {
+			debug("DOUBLE_CLICK_SUBMIT");
+			parentFormSubmit(event.target, event);
+		}
+	});
 }
 // ================================================================ KEYBOARD+
 // ## CONTROL_ENTER_SUBMIT ##
