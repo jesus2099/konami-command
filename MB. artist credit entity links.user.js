@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         MB. artist credit entity links
-// @version      2021.1.19.2099
+// @version      2021.2.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/MB.%20artist%20credit%20entity%20links.user.js
-// @description  Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases page’s artist credits section. Additionally spots duplicate aliases.
+// @description  ☠ OBSOLETE ☠ Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases page’s artist credits section. Additionally spots duplicate aliases.
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ARTIST-CREDIT-ENTITY-LINKS
 // @compatible   opera(12.18.1872)+violentmonkey      my setup
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
@@ -22,6 +22,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+alert("My “MB. artist credit entity links” userscript is now obsolete\n\nMusicBrainz now integrates this feature (Click “see uses” in Artist Aliases tab).\nPlease uninstall this script.\n\nThank you for having using it.\njesus2099");
 var artistCreditMachine = {
 	defaults: {
 		filter: "/artist/%artistID%/%entityType%s?filter.artist_credit_id=%artistCreditID%",
