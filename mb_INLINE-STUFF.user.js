@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
 // @version      2021.2.9
-// @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
+// @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
 // @compatible   chrome+violentmonkey                 should be same as vivaldi
@@ -11,7 +11,8 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2010-07-09; https://web.archive.org/web/20131103163358/userscripts.org/scripts/show/81127 / https://web.archive.org/web/20141011084022/userscripts-mirror.org/scripts/show/81127
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128868
+// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@ab3d205ab8a9897ac3ef23075fda26bed07ca342/lib/COOL-BUBBLES.js?v=2016.6.1.1310
+// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/recordings/
@@ -53,6 +54,7 @@ var tracksHtml = null;
 var pagecat = self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
 if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
 if (pagecat != "edits" && self.location.pathname.match(/^\/recording\//i)) { pagecat = "recording"; }
+const pageMbid = self.location.pathname.match(re_GUID);
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
@@ -73,8 +75,7 @@ if (pagecat) {
 			if (contractFingerPrints) {
 				css.insertRule("div.ars[class^='ars AcoustID'] code { display: inline-block; overflow-x: hidden; vertical-align: bottom; width: 6ch}", 0);
 			}
-			var relMBID = self.location.href.match(re_GUID);
-			if (relMBID && (tracksHtml = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]:not(.subh)")).length > 0) {
+			if (pageMbid && (tracksHtml = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]:not(.subh)")).length > 0) {
 				if (recUseInRelationshipLink || recAddToMergeLink) {
 					for (var ith = 0; ith < tracksHtml.length; ith++) {
 						var toolzone = tracksHtml[ith].querySelector("td.treleases");
@@ -122,7 +123,7 @@ if (pagecat) {
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = isrcFish;
 				coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow release…");
-				xhr.open("GET", MBS + releasewsURL.replace(/%s/, relMBID), true);
+				xhr.open("GET", MBS + releasewsURL.replace(/%s/, pageMbid), true);
 				xhr.overrideMimeType("text/xml");
 				xhr.send(null);
 			}
@@ -151,9 +152,94 @@ if (pagecat) {
 			}
 			break;
 		case "recording":
+			// format sidebar ISRCs
 			var sideBarISRCs = document.querySelectorAll("div#sidebar dd.isrc a[href^='/isrc']");
 			for (var i = 0; i < sideBarISRCs.length; i++) {
 				sideBarISRCs[i].replaceChild(coolifyISRC(sideBarISRCs[i].textContent), sideBarISRCs[i].firstChild);
+			}
+			// from mb_INLINE-TRACK-ARTIST
+			var tracks = document.querySelectorAll("div#content table.tbl > tbody > tr");
+			if (pageMbid && tracks.length > 0) {
+				var releaseArtistColumnHeader = getParent(tracks[0], "table").querySelectorAll("thead > tr > th");
+				var lengthColumnIndex;
+				var trackTitleColumnIndex;
+				/* locate length, track title and release artist columns */
+				for (var columnIndex = 0; columnIndex < releaseArtistColumnHeader.length; columnIndex++) {
+					if (releaseArtistColumnHeader[columnIndex].textContent.match(/^tit\w+$/i)) {
+						trackTitleColumnIndex = columnIndex + 1;
+					} else if (releaseArtistColumnHeader[columnIndex].classList.contains("treleases")) {
+						lengthColumnIndex = columnIndex + 1;
+					}
+				}
+				if (trackTitleColumnIndex && lengthColumnIndex) {
+					var xhr = new XMLHttpRequest();
+					xhr.addEventListener("load", function(event) {
+						var wsRecording = this.responseXML;
+						if (
+							this.status == 200
+							&& (wsRecording = wsRecording.documentElement)
+						) {
+							var wsRecordingLength = wsRecording.querySelector("recording > length");
+							wsRecordingLength = time(wsRecordingLength ? wsRecordingLength.textContent : 0);
+							var trackLengthCell = document.querySelector("div#sidebar dl.properties dd.length");
+							if (trackLengthCell) { trackLengthCell.replaceChild(document.createTextNode(wsRecordingLength), trackLengthCell.firstChild); }
+							var wsTracks = wsRecording.querySelectorAll("recording[id='" + pageMbid + "'] > release-list > release > medium-list > medium > track-list > track");
+							for (var wst = 0; wst < wsTracks.length; wst++) {
+								var wsRelease = getParent(wsTracks[wst], "release");
+								var wsReleaseMBID;
+								var wsPosition = wsTracks[wst].parentNode.parentNode.querySelector("position");
+								var wsTrackPosition = wsTracks[wst].querySelector("position");
+								if (
+									wsRelease
+									&& (wsReleaseMBID = wsRelease.getAttribute("id"))
+									&& wsPosition && (wsPosition = wsPosition.textContent)
+									&& wsTrackPosition && (wsTrackPosition = wsTrackPosition.textContent)
+								) {
+									for (var t = 0; t < tracks.length; t++) {
+										if (tracks[t].querySelector("a[href*='/release/']") && tracks[t].querySelector("a[href*='/release/']").getAttribute("href").indexOf(wsReleaseMBID) > 0 && tracks[t].querySelector("td:first-of-type").textContent.trim() == wsPosition + "." + wsTrackPosition) {
+											/* display recording/track title discrepency */
+											var trackTitleCell = tracks[t].querySelector("td:nth-child(" + trackTitleColumnIndex + ")");
+											if (trackTitleCell) {
+												var trackTitle = document.querySelector("h1 a");
+												var wsTrackTitle = wsTracks[wst].querySelector("title");
+												if (trackTitle && wsTrackTitle && trackTitle.textContent != wsTrackTitle.textContent) {
+													trackTitleCell.firstChild.setAttribute("title", "≠ " + trackTitle.textContent);
+													trackTitleCell.firstChild.classList.add("name-variation");
+												}
+											}
+											/* display recording/track length discrepency */
+											trackLengthCell = tracks[t].querySelector("td:nth-child(" + lengthColumnIndex + ")");
+											if (trackLengthCell) {
+												var wsTrackLength = wsTracks[wst].querySelector("length");
+												if (wsTrackLength && (wsTrackLength = time(wsTrackLength.textContent))) {
+													if (wsTrackLength != wsRecordingLength) {
+														trackLengthCell.replaceChild(
+															createTag(
+																"span", {a: { class: "name-variation", title: "≠ " + wsRecordingLength,}},
+																document.createTextNode(wsTrackLength)
+															),
+															trackLengthCell.firstChild
+														);
+													}
+												}
+											}
+											break;
+										}
+									}
+								}
+							}
+						} else {
+							coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching inline track stuff.");
+						}
+					});
+					xhr.addEventListener("error", function(event) {
+						coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching inline track stuff.");
+					});
+					coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow recording…");
+					xhr.open("get", self.location.protocol + "//" + self.location.host + "/ws/2/recording/" + pageMbid + "?inc=releases+artist-credits+mediums", true);
+					xhr.overrideMimeType("text/xml");
+					xhr.send(null);
+				}
 			}
 	}
 }
@@ -453,7 +539,7 @@ function coolifyISRC(isrc) {
 	}
 }
 
-// http://tiffanybbrown.com/presentations/2011/xhr2/
+// https://web.archive.org/web/20130130164824/tiffanybbrown.com/presentations/2011/xhr2/
 function acoustidFishBatch(recids) {
 	if (recids.length > 0) {
 		var xhr = new XMLHttpRequest();
@@ -529,4 +615,12 @@ function count(hash) {
 		count += 1;
 	}
 	return count;
+}
+function time(_ms) {
+	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
+	if (ms > 0) {
+		var d = new Date(ms);
+		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2) + (d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() / 1000).toFixed(3).slice(2) : "");
+	}
+	return "?:??";
 }
