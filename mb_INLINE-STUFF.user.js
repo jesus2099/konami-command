@@ -11,8 +11,8 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2010-07-09; https://web.archive.org/web/20131103163358/userscripts.org/scripts/show/81127 / https://web.archive.org/web/20141011084022/userscripts-mirror.org/scripts/show/81127
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://greasyfork.org/scripts/20120-cool-bubbles/code/COOL-BUBBLES.js?version=128868
-// @grant        none
+// @grant        GM_info
+// @grant        GM_notification
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/recordings/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+/
@@ -121,7 +121,7 @@ if (pagecat) {
 				if (shownworks.count > 0) { idCount("Work", shownworks.count); }
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = isrcFish;
-				coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow release…");
+				console.debug("## " + GM_info.script.name + " ## Loading “" + document.querySelector("h1").textContent + "” shadow release…");
 				xhr.open("GET", MBS + releasewsURL.replace(/%s/, relMBID), true);
 				xhr.overrideMimeType("text/xml");
 				xhr.send(null);
@@ -182,7 +182,7 @@ function addAfter(newNode, existingNode) {
 function isrcFish() {
 	if (this.readyState == 4 && this.status == 200 && tracksHtml) {
 		if (document.body.classList.contains("MMR2099userjs120382")) { // linked to mb_MASS-MERGE-RECORDINGS
-			coolBubble.warn("INLINE STUFF abandoned in favour of MASS MERGE session.");
+			console.warn("## " + GM_info.script.name + " ## INLINE STUFF abandoned in favour of MASS MERGE session.");
 		} else {
 			var res = this.responseXML;
 			var isrcNet = {};
@@ -251,7 +251,12 @@ function isrcFish() {
 			idCount("ISRC", shownisrcs);
 		}
 	} else if (this.readyState == 4 && this.status > 200) {
-		coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching MB inline stuff.");
+		console.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching MB inline stuff.");
+		GM_notification({
+			title: GM_info.script.name + " v" + GM_info.script.version,
+			image: GM_info.script.icon,
+			text: "Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching MB inline stuff.",
+		});
 	}
 }
 
@@ -502,16 +507,24 @@ function acoustidFishBatch(recids) {
 				}
 			} else {
 				shownacoustids = -21;
-				coolBubble.error("Error parsing AcoustIDs.");
+				GM_notification({
+					title: GM_info.script.name + " v" + GM_info.script.version,
+					image: GM_info.script.icon,
+					text: "Error parsing AcoustIDs.",
+				});
 			}
 			shownacoustids = count(shownacoustids);
 			idCount("AcoustID", shownacoustids);
 		};
 		xhr.onerror = function(event) {
 			idCount("AcoustID", -20);
-			coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching AcoustIDs.");
+			GM_notification({
+				title: GM_info.script.name + " v" + GM_info.script.version,
+				image: GM_info.script.icon,
+				text: "Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching AcoustIDs.",
+			});
 		};
-		coolBubble.info("Loading AcoustIDs…");
+		console.debug("## " + GM_info.script.name + " ## Loading AcoustIDs…");
 		xhr.open("post", "//api.acoustid.org/v2/track/list_by_mbid", true);
 		var params = "client=A6AsOfBc&format=xml&batch=1&disabled=1";
 		for (var m = 0; m < recids.length; m++) {

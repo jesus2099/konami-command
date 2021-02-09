@@ -17,8 +17,8 @@
 // @requester    culinko
 // @since        2013-05-07; https://web.archive.org/web/20131104205636/userscripts.org/scripts/show/166877 / https://web.archive.org/web/20141011084010/userscripts-mirror.org/scripts/show/166877
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
-// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@ab3d205ab8a9897ac3ef23075fda26bed07ca342/lib/COOL-BUBBLES.js?v=2016.6.1.1310
-// @grant        none
+// @grant        GM_info
+// @grant        GM_notification
 // @match        *://*.musicbrainz.org/recording/*
 // @exclude      *.org/recording/*/*
 // @run-at       document-end
@@ -135,13 +135,21 @@ if (mbid && tracks.length > 0) {
 					}
 				}
 			} else {
-				coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching inline track stuff.");
+				GM_notification({
+					title: GM_info.script.name + " v" + GM_info.script.version,
+					image: GM_info.script.icon,
+					text: "Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching inline track stuff.",
+				});
 			}
 		});
 		xhr.addEventListener("error", function(event) {
-			coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching inline track stuff.");
+			GM_notification({
+				title: GM_info.script.name + " v" + GM_info.script.version,
+				image: GM_info.script.icon,
+				text: "Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching inline track stuff.",
+			});
 		});
-		coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow recording…");
+		console.log("## " + GM_info.script.name + " ## Loading “" + document.querySelector("h1").textContent + "” shadow recording…");
 		xhr.open("get", self.location.protocol + "//" + self.location.host + "/ws/2/recording/" + mbid + "?inc=releases+artist-credits+mediums", true);
 		xhr.overrideMimeType("text/xml");
 		xhr.send(null);
