@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2021.1.19.2099
+// @version      2021.2.9
 // @description  musicbrainz.org release page: Inline recording names, comments, ISRC and AcoustID. Displays CAA count and add link if none. Highlights duplicates in releases and edits.
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
@@ -37,6 +37,7 @@ var recAddToMergeLink = "+merge"; /* null or delete for no such tool */
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs81127";
 var MBS = self.location.protocol + "//" + self.location.host;
+var hasDupes = { ISRC: 0, AcoustID: 0 };
 var shownisrcs = [];
 var shownacoustids = [];
 var shownworks = {count: 0};
@@ -139,6 +140,7 @@ if (pagecat) {
 					if (href) {
 						as[ia].replaceChild(coolifyISRC(as[ia].textContent), as[ia].firstChild);
 						if (shownisrcs[href[1]]) {
+							hasDupes.ISRC++;
 							shownisrcs[href[1]].style.setProperty("background-color", dupeColour);
 							as[ia].style.setProperty("background-color", dupeColour);
 						} else {
@@ -285,7 +287,7 @@ function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid
 				if (recid && shownstuffs[stuff]["recid"] == recid) {
 					bgColour = infoColour;
 				} else {
-					eval("hasDupe" + stufftype + "s++");
+					hasDupes[stufftype]++;
 				}
 				if (shownstuffs[stuff]["a"].style.getPropertyValue("background-color") != dupeColour) {
 					shownstuffs[stuff]["a"].style.setProperty("background-color", bgColour);
@@ -377,10 +379,8 @@ function idCount(type, count) {
 			cooldt.setAttribute("title", "Error " + count);
 			cooldt.style.setProperty("background-color", dupeColour);
 		} else if (count >= 0 && type != "Track" && type != "Work") {
-			var dupes = 0;
-			try { eval("dupes = hasDupe" + type + "s;"); } catch (error) {}
-			if (dupes > 0) {
-				cooldt.setAttribute("title", "There " + (dupes == 1 ? "is 1" : "are " + dupes) + " duplicate" + (dupes == 1 ? "" : "s"));
+			if (hasDupes[type] > 0) {
+				cooldt.setAttribute("title", "There " + (hasDupes[type] == 1 ? "is 1" : "are " + hasDupes[type]) + " duplicate" + (hasDupes[type] == 1 ? "" : "s"));
 				cooldt.style.setProperty("background-color", dupeColour);
 			}
 			cooldd.appendChild(document.createTextNode(" ("));
