@@ -188,12 +188,12 @@ if (pagecat) {
 								var wsRelease = getParent(wsTracks[wst], "release");
 								var wsReleaseMBID;
 								var wsPosition = wsTracks[wst].parentNode.parentNode.querySelector("position");
-								var wsTrackPosition = wsTracks[wst].querySelector("position");
+								var wsTrackPosition = wsTracks[wst].parentNode.getAttribute("offset");
 								if (
 									wsRelease
 									&& (wsReleaseMBID = wsRelease.getAttribute("id"))
 									&& wsPosition && (wsPosition = wsPosition.textContent)
-									&& wsTrackPosition && (wsTrackPosition = wsTrackPosition.textContent)
+									&& wsTrackPosition && (wsTrackPosition = parseInt(wsTrackPosition, 10) + 1)
 								) {
 									for (var t = 0; t < tracks.length; t++) {
 										if (tracks[t].querySelector("a[href*='/release/']") && tracks[t].querySelector("a[href*='/release/']").getAttribute("href").indexOf(wsReleaseMBID) > 0 && tracks[t].querySelector("td:first-of-type").textContent.trim() == wsPosition + "." + wsTrackPosition) {
@@ -233,7 +233,7 @@ if (pagecat) {
 						coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching inline track stuff.");
 					});
 					coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow recording…");
-					xhr.open("get", self.location.protocol + "//" + self.location.host + "/ws/2/recording/" + pageMbid + "?inc=releases+artist-credits+mediums", true);
+					xhr.open("get", self.location.protocol + "//" + self.location.host + "/ws/2/recording?query=rid:" + pageMbid, true);
 					xhr.overrideMimeType("text/xml");
 					xhr.send(null);
 				}
