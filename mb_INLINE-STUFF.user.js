@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2021.2.9
+// @version      2021.2.10
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
 // @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
@@ -212,14 +212,11 @@ if (pagecat) {
 											if (trackLengthCell) {
 												var wsTrackLength = wsTracks[wst].querySelector("length");
 												if (wsTrackLength && (wsTrackLength = time(wsTrackLength.textContent))) {
+													let trackLengthSpan = createTag("span", {}, document.createTextNode(wsTrackLength));
+													trackLengthCell.replaceChild(trackLengthSpan, trackLengthCell.firstChild);
 													if (wsTrackLength != wsRecordingLength) {
-														trackLengthCell.replaceChild(
-															createTag(
-																"span", {a: { class: "name-variation", title: "≠ " + wsRecordingLength,}},
-																document.createTextNode(wsTrackLength)
-															),
-															trackLengthCell.firstChild
-														);
+														trackLengthSpan.classList.add("name-variation");
+														trackLengthSpan.setAttribute("title", "≠ " + wsRecordingLength);
 													}
 												}
 											}
