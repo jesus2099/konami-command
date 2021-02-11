@@ -160,17 +160,9 @@ if (pagecat) {
 			// from mb_INLINE-TRACK-ARTIST
 			var tracks = document.querySelectorAll("div#content table.tbl > tbody > tr");
 			if (pageMbid && tracks.length > 0) {
-				var releaseArtistColumnHeader = getParent(tracks[0], "table").querySelectorAll("thead > tr > th");
-				var lengthColumnIndex;
-				var trackTitleColumnIndex;
 				/* locate length, track title and release artist columns */
-				for (var columnIndex = 0; columnIndex < releaseArtistColumnHeader.length; columnIndex++) {
-					if (releaseArtistColumnHeader[columnIndex].textContent.match(/^tit\w+$/i)) {
-						trackTitleColumnIndex = columnIndex + 1;
-					} else if (releaseArtistColumnHeader[columnIndex].classList.contains("treleases")) {
-						lengthColumnIndex = columnIndex + 1;
-					}
-				}
+				var lengthColumnIndex = getParent(tracks[0], "table").querySelector("thead > tr > th.treleases").cellIndex + 1;
+				var trackTitleColumnIndex = lengthColumnIndex - 1;
 				if (trackTitleColumnIndex && lengthColumnIndex) {
 					var xhr = new XMLHttpRequest();
 					xhr.addEventListener("load", function(event) {
