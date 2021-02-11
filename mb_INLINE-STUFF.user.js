@@ -18,6 +18,7 @@
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/recordings/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/subscribed/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/isrc\//
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/edit$)/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\?/
@@ -35,6 +36,7 @@ var contractFingerPrints = true; /* more compact AcoustIDs but brwoser can still
 var markTrackRecNameDiff = "%track-name%%br%%recording-name%";
 var recUseInRelationshipLink = "+relate"; /* null or delete for no such tool */
 var recAddToMergeLink = "+merge"; /* null or delete for no such tool */
+var formatISRC = true; // Turn USJT19900112 into coloured US-JT1-99-00112 (country-label-year-number)
 var trackLengthDiffInfo = 5000; // ms
 var trackLengthDiffWarn = 15000; // ms
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
@@ -56,6 +58,7 @@ var tracksHtml = null;
 var pagecat = self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
 if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
 if (pagecat != "edits" && self.location.pathname.match(/^\/recording\//i)) { pagecat = "recording"; }
+if (self.location.pathname.match(/^\/isrc\//)) { pagecat = "isrc"; }
 const pageMbid = self.location.pathname.match(re_GUID);
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
@@ -130,6 +133,12 @@ if (pagecat) {
 				xhr.send(null);
 			}
 			break;
+		case "isrc":
+			if (formatISRC) {
+				let ISRCcode = document.querySelector("h1 code");
+				ISRCcode.replaceChild(coolifyISRC(ISRCcode.textContent), ISRCcode.firstChild);
+			}
+			break;
 		case "recordings":
 			document.querySelector("div#content table.tbl").classList.add(userjs + "-has-isrcs"); // for later duplicate spot
 			// fall through
@@ -155,9 +164,11 @@ if (pagecat) {
 			break;
 		case "recording":
 			// format sidebar ISRCs
-			var sideBarISRCs = document.querySelectorAll("div#sidebar dd.isrc a[href^='/isrc']");
-			for (var i = 0; i < sideBarISRCs.length; i++) {
-				sideBarISRCs[i].replaceChild(coolifyISRC(sideBarISRCs[i].textContent), sideBarISRCs[i].firstChild);
+			if (formatISRC) {
+				var sideBarISRCs = document.querySelectorAll("div#sidebar dd.isrc a[href^='/isrc']");
+				for (var i = 0; i < sideBarISRCs.length; i++) {
+					sideBarISRCs[i].replaceChild(coolifyISRC(sideBarISRCs[i].textContent), sideBarISRCs[i].firstChild);
+				}
 			}
 			// from mb_INLINE-TRACK-ARTIST
 			var tracks = document.querySelectorAll("div#content table.tbl > tbody > tr");
@@ -349,7 +360,7 @@ function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid
 		a.setAttribute("href", url.replace(/%s/, stuff));
 		var code = document.createElement("code");
 		if (stufftype == "ISRC") {
-			code = coolifyISRC(stuff);
+			code = formatISRC ? coolifyISRC(stuff) : document.createTextNode(stuff);
 		} else {
 			// AcoustID
 			code.appendChild(document.createTextNode(stuff));
