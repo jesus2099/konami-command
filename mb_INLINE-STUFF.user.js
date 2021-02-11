@@ -35,6 +35,8 @@ var contractFingerPrints = true; /* more compact AcoustIDs but brwoser can still
 var markTrackRecNameDiff = "%track-name%%br%%recording-name%";
 var recUseInRelationshipLink = "+relate"; /* null or delete for no such tool */
 var recAddToMergeLink = "+merge"; /* null or delete for no such tool */
+var trackLengthDiffInfo = 5000; // ms
+var trackLengthDiffWarn = 15000; // ms
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs81127";
 var MBS = self.location.protocol + "//" + self.location.host;
@@ -172,9 +174,9 @@ if (pagecat) {
 							&& (wsRecording = wsRecording.documentElement)
 						) {
 							var wsRecordingLength = wsRecording.querySelector("recording > length");
-							wsRecordingLength = time(wsRecordingLength ? wsRecordingLength.textContent : 0);
+							wsRecordingLength = wsRecordingLength ? parseInt(wsRecordingLength.textContent, 10) : 0;
 							var trackLengthCell = document.querySelector("div#sidebar dl.properties dd.length");
-							if (trackLengthCell) { trackLengthCell.replaceChild(document.createTextNode(wsRecordingLength), trackLengthCell.firstChild); }
+							if (trackLengthCell) { trackLengthCell.replaceChild(document.createTextNode(time(wsRecordingLength)), trackLengthCell.firstChild); }
 							var wsTracks = wsRecording.querySelectorAll("recording[id='" + pageMbid + "'] > release-list > release > medium-list > medium > track-list > track");
 							for (var wst = 0; wst < wsTracks.length; wst++) {
 								var wsRelease = getParent(wsTracks[wst], "release");
@@ -203,12 +205,16 @@ if (pagecat) {
 											trackLengthCell = tracks[t].querySelector("td:nth-child(" + lengthColumnIndex + ")");
 											if (trackLengthCell) {
 												var wsTrackLength = wsTracks[wst].querySelector("length");
-												if (wsTrackLength && (wsTrackLength = time(wsTrackLength.textContent))) {
-													let trackLengthSpan = createTag("span", {}, document.createTextNode(wsTrackLength));
+												if (wsTrackLength && (wsTrackLength = parseInt(wsTrackLength.textContent, 10))) {
+													let trackLengthSpan = createTag("span", {}, document.createTextNode(time(wsTrackLength)));
 													trackLengthCell.replaceChild(trackLengthSpan, trackLengthCell.firstChild);
-													if (wsTrackLength != wsRecordingLength) {
+													if (wsTrackLength <= wsRecordingLength - trackLengthDiffInfo || wsTrackLength >= wsRecordingLength + trackLengthDiffInfo) {
 														trackLengthSpan.classList.add("name-variation");
-														trackLengthSpan.setAttribute("title", "≠ " + wsRecordingLength);
+														trackLengthSpan.setAttribute("title", "more than " + time(trackLengthDiffInfo) + " away from " + time(wsRecordingLength));
+														if (wsTrackLength <= wsRecordingLength - trackLengthDiffWarn || wsTrackLength >= wsRecordingLength + trackLengthDiffWarn) {
+															trackLengthSpan.classList.add("warn-lengths");
+															trackLengthSpan.setAttribute("title", "more than " + time(trackLengthDiffWarn) + " away from " + time(wsRecordingLength));
+														}
 													}
 												}
 											}
