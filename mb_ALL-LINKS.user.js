@@ -69,6 +69,7 @@ var rawLanguages = JSON.parse(localStorage.getItem(userjs + "languages")) || ["n
 // Available tokens:
 // - for all entity pages: %entity-type% %entity-mbid% %entity-name%
 // - for artist entity pages: %artist-sort-name% %artist-family-name-first% %artist-latin-script-name%
+// - for release entity pages: %release-barcode%
 // - for that type entity pages: %that-mbid% %that-name% where "that" is an entity type in the above @include list
 var autolinks = {
 	user: JSON.parse(localStorage.getItem(userjs + "user-autolinks")) || {},
@@ -187,6 +188,8 @@ var autolinks = {
 		"Other databases":    null,
 		"AllMusic":           "http://www.allmusic.com/search/artist/%artist-name%",
 		"Discogs":            "http://www.discogs.com/search?q=%artist-name%&type=artist",
+		"Discogs (barcode)":  "https://www.discogs.com/search/?q=%release-barcode%&type=release",
+		"IFPI (barcode)":"https://isrcsearch.ifpi.org/#!/search?upcCode=%release-barcode%&tab=lookup&showReleases&start=0&number=100",
 		"IMDb":               "//www.imdb.com/find?q=%artist-name%&s=nm",
 		"ISNI":               "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 		"Rate Your Music":    "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%",
@@ -194,9 +197,11 @@ var autolinks = {
 		"VIAF":               "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
 		"WhoSampled":         "//www.whosampled.com/search/artists/?h=1&q=%artist-name%",
 		"Stores & streaming": null,
+		"Amazon (barcode)":   "https://www.amazon.com/s?k=%release-barcode%",
 		"Bandcamp":           "//bandcamp.com/search?q=%artist-name%",
 		"Deezer":             "//www.deezer.com/search/%artist-name%",
 		"Spotify":            "//open.spotify.com/search/%artist-name%",
+		"Spotify (barcode)":  "//open.spotify.com/search/upc:%release-barcode%",
 		"SoundCloud":         "//soundcloud.com/search/people?q=%artist-name%",
 		"Social media":       null,
 		"Facebook":           "//www.facebook.com/search/pages/?q=%artist-name%",
@@ -343,6 +348,11 @@ function main() {
 						tokenValues["%artist-family-name-first%"] = artistname;
 						tokenValues["%artist-latin-script-name%"] = artistsortnameSwapped;
 					}
+				}
+			} else if (entityType === "release") {
+				let barcodeNode = document.querySelector("#sidebar .barcode");
+				if (barcodeNode) {
+					tokenValues["%release-barcode%"] = barcodeNode.textContent;
 				}
 			}
 			extlinks = sidebar.querySelector(".external_links");
