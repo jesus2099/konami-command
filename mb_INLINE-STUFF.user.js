@@ -1,15 +1,14 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2021.2.11
+// @version      2021.2.11.1823
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
-// @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
-// @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_INLINE-STUFF.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2010-07-09; https://web.archive.org/web/20131103163358/userscripts.org/scripts/show/81127 / https://web.archive.org/web/20141011084022/userscripts-mirror.org/scripts/show/81127
+// @since        2010-07-09; https://web.archive.org/web/20131103163358/userscripts.org/scripts/show/81127 / https://web.archive.org/web/20141011084022/userscripts-mirror.org/scripts/show/81127 / https://web.archive.org/web/20131104205636/userscripts.org/scripts/show/166877 / https://web.archive.org/web/20141011084010/userscripts-mirror.org/scripts/show/166877
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@ab3d205ab8a9897ac3ef23075fda26bed07ca342/lib/COOL-BUBBLES.js?v=2016.6.1.1310
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
@@ -125,7 +124,7 @@ if (pagecat) {
 				}
 				idCount("Track", tracksHtml.length);
 				if (shownworks.count > 0) { idCount("Work", shownworks.count); }
-				var xhr = new XMLHttpRequest();
+				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = isrcFish;
 				coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow release…");
 				xhr.open("GET", MBS + releasewsURL.replace(/%s/, pageMbid), true);
@@ -177,7 +176,7 @@ if (pagecat) {
 				var lengthColumnIndex = getParent(tracks[0], "table").querySelector("thead > tr > th.treleases").cellIndex + 1;
 				var trackTitleColumnIndex = lengthColumnIndex - 1;
 				if (trackTitleColumnIndex && lengthColumnIndex) {
-					var xhr = new XMLHttpRequest();
+					let xhr = new XMLHttpRequest();
 					xhr.addEventListener("load", function(event) {
 						var wsRecording = this.responseXML;
 						if (
@@ -548,7 +547,7 @@ function coolifyISRC(isrc) {
 // https://web.archive.org/web/20130130164824/tiffanybbrown.com/presentations/2011/xhr2/
 function acoustidFishBatch(recids) {
 	if (recids.length > 0) {
-		var xhr = new XMLHttpRequest();
+		let xhr = new XMLHttpRequest();
 		xhr.onload = function(event) {
 			var res = this.responseXML;
 			var wsstatus, mbids;
