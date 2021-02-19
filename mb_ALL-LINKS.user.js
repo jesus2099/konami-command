@@ -227,7 +227,8 @@ var whitelistSearchLinks = {
 			items: {
 				Bandcamp: "https://bandcamp.com/search?q=%artist-name%",
 				Deezer: "https://www.deezer.com/search/%artist-name%",
-				Spotify: "https://open.spotify.com/search/results/%artist-name%"
+				SoundCloud: "https://soundcloud.com/search/people?q=%artist-name%",
+				Spotify: "https://open.spotify.com/search/%artist-name%"
 			},
 		},
 		socialNetworks: {
@@ -236,7 +237,7 @@ var whitelistSearchLinks = {
 				en: "Social networks"
 			},
 			items: {
-				Facebook: "https://www.facebook.com/s.php?q=%artist-name%",
+				Facebook: "https://www.facebook.com/search/pages/?q=%artist-name%",
 				Twitter: "https://twitter.com/search?f=users&q=%artist-name%",
 				YouTube: "https://www.youtube.com/results?search_query=%artist-name%&sp=EgIQAg%253D%253D"
 			},
