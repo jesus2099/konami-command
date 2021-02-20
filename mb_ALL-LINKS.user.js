@@ -220,18 +220,18 @@ var whitelistSearchLinks = {
 				}
 			}
 		},
-		stores: {
+		shops: {
 			title: {
-				fr: "Musique téléchargeable",
-				en: "Digital releases"
+				fr: "Boutiques en ligne",
+				en: "Online shops",
 			},
 			items: {
 				"Amazon (barcode)": "https://www.amazon.com/s?k=%release-barcode%",
 				Bandcamp: "https://bandcamp.com/search?q=%artist-name%",
 				Deezer: "https://www.deezer.com/search/%artist-name%",
 				SoundCloud: "https://soundcloud.com/search/people?q=%artist-name%",
+				Spotify: "https://open.spotify.com/search/%artist-name%",
 				"Spotify (barcode)": "//open.spotify.com/search/upc:%release-barcode%",
-				Spotify: "https://open.spotify.com/search/%artist-name%"
 			},
 		},
 		socialNetworks: {
