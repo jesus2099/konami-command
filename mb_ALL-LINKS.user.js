@@ -65,6 +65,7 @@ var rawLanguages = JSON.parse(localStorage.getItem(userjs + "_languages")) || ["
 // - for all entity pages: %entity-type% %entity-mbid% %entity-name%
 // - for "that" type entity pages: %that-mbid% %that-name% where "that" is an entity type in the above @include list
 // - for artist entity pages: %artist-sort-name% %artist-family-name-first% %artist-latin-script-name%
+// - for release entity pages: %release-barcode%
 // - for url entity pages: %url-target% (while %entity-name% and %url-name% are deliberately ignored)
 const hiddenLinks = {
 	en: "Hidden links",
@@ -225,9 +226,11 @@ var whitelistSearchLinks = {
 				en: "Digital releases"
 			},
 			items: {
+				"Amazon (barcode)": "https://www.amazon.com/s?k=%release-barcode%",
 				Bandcamp: "https://bandcamp.com/search?q=%artist-name%",
 				Deezer: "https://www.deezer.com/search/%artist-name%",
 				SoundCloud: "https://soundcloud.com/search/people?q=%artist-name%",
+				"Spotify (barcode)": "//open.spotify.com/search/upc:%release-barcode%",
 				Spotify: "https://open.spotify.com/search/%artist-name%"
 			},
 		},
@@ -266,6 +269,7 @@ var whitelistSearchLinks = {
 					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-group-name%&type=master"},
 					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%label-name%&type=label"}
 				],
+				"Discogs (barcode)":  "https://www.discogs.com/search/?q=%release-barcode%&type=release",
 				GeoNames: [
 					{en: "http://www.geonames.org/search.html?q=%area-name%"},
 					{en: "http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"}
@@ -362,6 +366,12 @@ var additionalSearchLinks = {
 						"音楽の森（著作者）": "//www.minc.gr.jp/db/KenriSrch.aspx?KENRISYANM=%artist-family-name-first%"
 					}
 				}
+			}
+		},
+		isrcDBs: {
+			title: "ISRC",
+			items: {
+				IFPI: "https://isrcsearch.ifpi.org/#!/search?upcCode=%release-barcode%&tab=lookup&showReleases&start=0&number=100",
 			}
 		}
 	}
@@ -515,6 +525,11 @@ function main() {
 						}
 						tokenValues["%artist-family-name-first%"] = artistname;
 						tokenValues["%artist-latin-script-name%"] = artistsortnameSwapped;
+					}
+				} else if (entityType === "release") {
+					let barcodeNode = document.querySelector("#sidebar .barcode");
+					if (barcodeNode) {
+						tokenValues["%release-barcode%"] = barcodeNode.textContent;
 					}
 				} else if (entityType == "url") {
 					delete tokenValues["%entity-name%"];
