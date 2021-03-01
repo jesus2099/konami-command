@@ -1,4 +1,4 @@
-name: check-PR
+name: check-pr
 
 # Controls when the action will run. 
 on:
@@ -14,8 +14,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
-  # https://dev.to/scienta/get-changed-files-in-github-actions-1p36
-  changed-files:
+  changed-files: # https://dev.to/scienta/get-changed-files-in-github-actions-1p36
     runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
@@ -24,7 +23,7 @@ jobs:
     steps:
       # Make sure we have some code to diff.
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v2
       - name: Get changed files
         id: changes
@@ -49,9 +48,7 @@ jobs:
       - name: Install /package.json dependencies
         run: npm install
       - name: Run /package.json linter (eslint)
-        run: npm run lint
-      - name: Run eslint on changed JavaScript files
-        run: npx eslint ${{needs.changed-files.outputs.js}}
+        run: npm run eslint ${{needs.changed-files.outputs.js}}
 
       # Runs a single command using the runners shell
       # - name: Run a one-line script
