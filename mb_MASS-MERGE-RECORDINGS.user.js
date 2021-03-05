@@ -311,7 +311,9 @@ function cleanTrack(track, editID, retryCount) {
 			}
 			removeChildren(rmForm);
 			if (typeof editID == "number" || typeof retryCount == "number" && retryCount > 0) {
-				var infoSpan = addAfter(createTag("span", {s: {opacity: ".5"}}, [" (", createTag("span"), ")"]), rmForm).querySelector("span > span");
+				let infoSpan = createTag("span", {s: {opacity: ".5"}}, [" (", createTag("span"), ")"]);
+				rmForm.after(infoSpan);
+				infoSpan = infoSpan.querySelector("span > span");
 				if (typeof editID == "number") {
 					infoSpan.appendChild(createTag("span", {a: {class: "mp"}}, createA("edit:" + editID, "/edit/" + editID)));
 				}
@@ -848,7 +850,7 @@ function buildMergeForm(loc, rem) {
 	bestPos = bestPos ? bestPos : locTrack.a;
 	var recdis = tracktd.querySelector("span.userjs81127recdis");
 	if (recdis) { bestPos = recdis; }
-	addAfter(rmForm, bestPos);
+	bestPos.after(rmForm);
 	if (remTrack.recording.rowid != locTrack.recid) {
 		var remoteRowID = parseInt(remTrack.recording.rowid, 10);
 		var localRowID = parseInt(locTrack.recid, 10);
@@ -906,7 +908,7 @@ function showGUI() {
 			firstElements.unshift(sidebar.childNodes[child]);
 		}
 		for (let elem = 0; elem < firstElements.length; elem++) {
-			addAfter(sidebar.removeChild(firstElements[elem]), MMRdiv);
+			MMRdiv.after(sidebar.removeChild(firstElements[elem]));
 		}
 	}
 	mergeStatus.focus();

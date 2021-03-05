@@ -20,13 +20,13 @@
 "use strict";
 var userjs = "jesus2099userjs126475";
 var lsm, lskeys;
-var j2set = document.querySelector("div.header ul.menu li.about > ul > li.jesus2099");
+var j2set = document.querySelector("div.header ul.menu li.about > ul > li." + userjs);
 if (!j2set && (j2set = document.querySelector("div.header ul.menu li.about > ul"))) {
 	j2set.parentNode.querySelector("span.menu-header").style.setProperty("text-shadow", "0 0 8px purple");
-	j2set = j2set.appendChild(createTag("li", {a: {class: "jesus2099 separator"}}));
+	j2set = j2set.appendChild(createTag("li", {a: {class: userjs + " separator"}}));
 }
 if (j2set) {
-	addAfter(createTag("li", {a: {class: "jesus2099"}},
+	j2set.after(createTag("li", {a: {class: userjs}},
 		createTag("a", {a: {title: GM_info.script.description.replace(/^[^:]+: /, "")}, e: {click: function(event) {
 			this.parentNode.parentNode.style.removeProperty("left");
 			if (lsm) { unloadLS(); } else {
@@ -69,7 +69,7 @@ if (j2set) {
 				lsm.scrollIntoView();
 			}
 		}}}, GM_info.script.name)
-	), j2set);
+	));
 }
 function unloadLS() {
 	lsm.parentNode.removeChild(lsm);
@@ -210,15 +210,6 @@ function createA(text, link, title) {
 	if (title){ a.setAttribute("title", title); }
 	a.appendChild(document.createTextNode(text));
 	return a;
-}
-function addAfter(n, e) {
-	if (n && e && e.parentNode) {
-		if (e.nextSibling) {
-			return e.parentNode.insertBefore(n, e.nextSibling);
-		} else {
-			return e.parentNode.appendChild(n);
-		}
-	} else { return null; }
 }
 function stop(e) {
 	e.cancelBubble = true;

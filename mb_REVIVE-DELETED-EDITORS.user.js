@@ -184,7 +184,7 @@ for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, ed
 						}
 						moreInfo.appendChild(document.createTextNode(editors[editor].duration + " " + editors[editor].shortend + ")"));
 						moreInfo.normalize();
-						addAfter(moreInfo, as[a]);
+						as[a].after(moreInfo);
 						break;
 					}
 				}
@@ -222,9 +222,9 @@ for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, ed
 			} else if (entryHeader[h].textContent.match(/member since/i)) {
 				if (deletedEditor) {
 					document.title = document.title.replace(new RegExp("(“" + editors[editor].namewas + "”)"), "$1 (" + editors[editor].shortend + ")");
-					entryHeader[h].parentNode.parentNode.insertBefore(profileEntry("Membership", editors[editor].duration + " (" + editors[editor].fullspan + ")"), entryHeader[h].parentNode);
+					entryHeader[h].parentNode.before(profileEntry("Membership", editors[editor].duration + " (" + editors[editor].fullspan + ")"));
 					if (editors[editor].comment) {
-						entryHeader[h].parentNode.parentNode.insertBefore(profileEntry("Comment", editors[editor].comment), entryHeader[h].parentNode);
+						entryHeader[h].parentNode.before(profileEntry("Comment", editors[editor].comment));
 					}
 				}
 				break;
@@ -258,13 +258,4 @@ function getSibling(obj, tag, cls, prev) {
 	} else {
 		return null;
 	}
-}
-function addAfter(n, e) {
-	if (n && e && e.parentNode) {
-		if (e.nextSibling) {
-			return e.parentNode.insertBefore(n, e.nextSibling);
-		} else {
-			return e.parentNode.appendChild(n);
-		}
-	} else { return null; }
 }

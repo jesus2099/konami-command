@@ -13,7 +13,6 @@ globals:
 # lib/COOL-BUBBLES.js
  coolBubble:      readonly
 # lib/SUPER.js
- addAfter:        readonly
  createTag:       readonly
  disableInputs:   readonly
  enableInputs:    readonly

@@ -92,7 +92,7 @@ function createLink(historyType, associatedArtist) {
 	linkLabel = associatedArtist ? currentEntity.name + " " + linkLabel : linkLabel.replace(/(.)(.*)/, function(match, g1, g2 /* , offset, string */) { return g1.toUpperCase() + g2; });
 	var newLink = createTag("li", null, createTag("span", null, createTag("a", {a: {href: currentEntity.base + "/" + historyType}}, linkLabel))); // “span.(""|"mp")” linked in mb_MASS-MERGE-RECORDINGS.user.js
 	if (associatedArtist) {
-		addAfter(newLink, pageEntity.li);
+		pageEntity.li.after(newLink);
 	} else if (!associatedArtist && historyType == "edits") {
 		newLink.classList.add("separator");
 		pageEntity.ul.appendChild(newLink);

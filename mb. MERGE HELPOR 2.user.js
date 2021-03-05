@@ -78,7 +78,7 @@ if (mergeType) {
 			xhr.send(null);
 			return stop(event);
 		});
-		addAfter(reMergeButton, mergeButton);
+		mergeButton.after(reMergeButton);
 	}
 	/* Make “Remove selected entites” and “Cancel” buttons faster */
 	var currentMergeForm = document.querySelector("div#current-editing > form[action*='/merge']");

@@ -73,7 +73,9 @@ var j2superturbo = {
 		expl: " (you can find this in “%editing%” menu)",
 		addItem: function(item) {
 			item.addEventListener("click", function(event) { this.parentNode.parentNode.style.removeProperty("left"); });
-			j2superturbo.menu.lastItem = addAfter(createTag("li", {a: {class: "jesus2099"}, s: {textShadow: "0 0 8px purple"}}, item), j2superturbo.menu.getLastItem());
+			let menuItem = createTag("li", {s: {textShadow: "0 0 8px purple"}}, item);
+			j2superturbo.menu.getLastItem().after(menuItem);
+			j2superturbo.menu.lastItem = menuItem;
 		},
 		getLastItem: function() {
 			if (j2superturbo.menu.lastItem) return j2superturbo.menu.lastItem;
@@ -81,7 +83,7 @@ var j2superturbo = {
 				var head, MBmenu = document.querySelector("div.header ul.menu li.editing > ul") || document.querySelector("div.header ul.menu li.about > ul");
 				if (MBmenu && (head = MBmenu.parentNode.querySelector("span.menu-header"))) {
 					j2superturbo.menu.expl = j2superturbo.menu.expl.replace(/%editing%/, head.textContent);
-					j2superturbo.menu.lastItem = MBmenu.appendChild(createTag("li", {a: {class: "jesus2099 separator"}}));
+					j2superturbo.menu.lastItem = MBmenu.appendChild(createTag("li", {a: {class: "separator"}}));
 					head.style.setProperty("text-shadow", "0 0 8px purple");
 					return j2superturbo.menu.lastItem;
 				} else if (document.querySelector("div.header ul.menu")) bug({message: "Can’t add menu", report: true});
@@ -195,12 +197,12 @@ function j2settinput(setting) {
 	var inp = lbl.querySelector("input");
 	switch (typeof val) {
 		case "boolean":
-			addAfter(document.createTextNode(setting), inp);
+			inp.after(document.createTextNode(setting));
 			inp.setAttribute("type", "checkbox");
 			inp.checked = val;
 			break;
 		default:
-			lbl.insertBefore(document.createTextNode("\u00a0_\u00a0 " + setting), inp);
+			inp.before(document.createTextNode("\u00a0_\u00a0 " + setting));
 			inp.setAttribute("type", "text");
 			inp.setAttribute("value", val);
 			inp.style.setProperty("margin-left", "4px");
@@ -429,14 +431,13 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		var approve = stats[1].rows.length > 3 ? readStat(stats[1].rows[3].cells[2]) : 0;
 		if (approve > 0) {
 			// Move Approve before Yes votes to include it in effective votes and leave Abstain last
-			stats[1].insertBefore(stats[1].removeChild(stats[1].rows[3]), stats[1].rows[0]);
+			stats[1].rows[0].before(stats[1].removeChild(stats[1].rows[3]));
 		}
-		stats[1].insertBefore(
+		stats[1].rows[stats[1].rows.length > 3 ? 3 : 2].before(
 			createTag("tr", null, [
 				createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top voters"}, s: {cursor: "help"}}, "Total effective votes")),
 				createTag("th", {a: {colspan: "2"}}, (0 + yes + no + approve).toLocaleString(lang) + " (" + percentage(yes + no + approve, yes + no + abstain + approve) + ")")
-			]),
-			stats[1].rows[stats[1].rows.length > 3 ? 3 : 2]
+			])
 		);
 		// Added entities
 		var addedEntities = 0;
@@ -515,7 +516,7 @@ function EASY_DATE_calmDOM() {
 function EASY_DATE_init() {
 	debug("EASY_DATE_init");
 	for (let years = document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(." + userjs.id + "easydate)"), y = 0; y < years.length; y++) {
-		addAfter(
+		years[y].after(
 			createTag("input", {
 				a: {value: years[y].value, placeholder: "YYY+", size: "4", title: "EASY_DATE®\n" + j2docs.EASY_DATE},
 				s: {backgroundColor: "#ff9"},
@@ -570,8 +571,9 @@ function EASY_DATE_init() {
 					},
 					focus: function(event) { this.select(); },
 					keydown: [EASY_DATE_cloneDateHotkey, EASY_DATE_nextField, EASY_DATE_deleteDatesHotkey]
-				}}
-			), years[y]);
+				}
+			})
+		);
 		years[y].classList.add(userjs.id + "easydate");
 		years[y].style.setProperty("display", "none");
 		years[y].addEventListener("change", function(event) {
@@ -697,7 +699,7 @@ if (j2sets.RATINGS_ON_TOP && sidebar && !j2sets.HIDE_RATINGS) {
 		if (!where) where = sidebar.firstChild;
 		if (ratings[1] && where) for (let r = 0; r < ratings.length; r++) {
 			debug("RATINGS_ON_TOP");
-			sidebar.insertBefore(sidebar.removeChild(ratings[r]), where);
+			where.before(sidebar.removeChild(ratings[r]));
 		}
 	}
 }
@@ -860,7 +862,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 			if (editn <= lastseenedits[which][0]) {
 				editlist.setAttribute("title", "SEEN EDIT");
 				if (editn == lastseenedits[which][0]) {
-					editlist.parentNode.insertBefore(createTag("hr", {a: {title: "edits below are already seen"}, s: {height: "0px", border: "none", "border-top": "4px dashed red"}}), editlist);
+					editlist.before(createTag("hr", {a: {title: "edits below are already seen"}, s: {height: "0px", border: "none", "border-top": "4px dashed red"}}));
 					if (ed > 0) { getSibling(editlist, "div", "edit-list", true).scrollIntoView(); }
 				}
 			} else {
@@ -888,7 +890,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			entityID = entityID.getAttribute("href").match(/\d+$/);
 			entityName = entityName.textContent;
 			let refine = "/search/edits?conditions.0.operator=%3D&conditions.0.field=" + entityType + "&conditions.0.name=" + encodeURIComponent(entityName) + "&conditions.0.args.0=" + entityID + "&order=desc&combinator=and&negation=0";
-			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link", href: refine}, s: {background: "#ff6"}}, "refine"), ")"]), entityEdits);
+			entityEdits.after(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link", href: refine}, s: {background: "#ff6"}}, "refine"), ")"]));
 		}
 	} else {
 		let refine = self.location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
@@ -922,7 +924,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 				}
 			}
 			if (refines.childElementCount > 0) {
-				searchHelp.insertBefore(createTag("tr", {s: {"text-shadow": "0 0 8px purple"}}, [createTag("th", {}, "Cool link" + (refines.childElementCount > 1 ? "s" : "") + ": "), refines]), searchHelp.firstChild);
+				searchHelp.prepend(createTag("tr", {s: {"text-shadow": "0 0 8px purple"}}, [createTag("th", {}, "Cool link" + (refines.childElementCount > 1 ? "s" : "") + ": "), refines]));
 			}
 		}
 	}
@@ -1033,7 +1035,7 @@ function updateTags(event) {
 	var tagZone = document.querySelector("div.sidebar-tags");
 	if (tagZone) {
 		if (!event) {
-			tagZone.parentNode.insertBefore(createTag("div", {s: {position: "relative", bottom: "-1rem", color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]), tagZone.previousSibling);
+			tagZone.previousSibling.before(createTag("div", {s: {position: "relative", bottom: "-1rem", color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]));
 			tagZone.addEventListener("DOMNodeInserted", updateTags);
 			tagZone.addEventListener("DOMSubtreeModified", updateTags);
 			var mytags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > span.tag-upvoted");
@@ -1315,7 +1317,7 @@ if (enttype) {
 								if (releaseEventFound) {
 									var secondHeader = rows[r].querySelector("tr.subh > th:nth-child(2)");
 									if (secondHeader) {
-										rows[r].insertBefore(document.createElement("th"), secondHeader);
+										secondHeader.before(document.createElement("th"));
 									}
 								}
 							} else {
@@ -1487,10 +1489,10 @@ function TRACKLIST_TOOLS_init() {
 		var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
 		for (let tp = 0; tp < tps.length; tp++) {
 			if (!tps[tp].parentNode.querySelector("." + userjs.id + "track-length-parser")) {
-				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Time Parser"), tps[tp]);
+				tps[tp].after(createTag("button", {a: {type: "button", "class": userjs.id + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Time Parser"));
 			}
 			if (!tps[tp].parentNode.querySelector("." + userjs.id + "search-replace")) {
-				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "search-replace", title: "SHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Search→replace"), tps[tp]);
+				tps[tp].after(createTag("button", {a: {type: "button", "class": userjs.id + "search-replace", title: "SHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Search→replace"));
 			}
 		}
 	}, false);
