@@ -35,7 +35,7 @@ if (form) {
 		"a",
 		{
 			a: {title: GM_info.script.name + " version " + GM_info.script.version},
-		 	s: {background: "#FF6"},
+			s: {background: "#FF6"},
 			e: {click: preparePage}
 		},
 		"Load all pages for print"
@@ -58,11 +58,21 @@ function preparePage(event) {
 	// ---------------------
 	css.print.insertRule("body > div:not(#page) { display: none; }", 0); // hide all except #page (#content, #sidebar)
 	css.print.insertRule("div#sidebar { display: none; }", 0); // hide #sidebar from #page
-	css.print.insertRule("div#content h2 + form[method='post'] > *:not(table) { display: none; }", 0); // keep only the table from #content
-	css.print.insertRule("." + userjs.id + "toolbar { display: none; }", 0); // don't print this script toolbar
+	css.print.insertRule("div#content > :not(form):not(.collectionheader) { display: none; }", 0); // hide tabs and sub headers from #content
+	css.print.insertRule("div#content h2 ~ form[method='post'] > :not(table) { display: none; }", 0); // hide merge button from form
+	css.print.insertRule("." + userjs.id + "toolbar { display: none; }", 0); // hide this script toolbar
 	// hide stuff from both screen and print
 	// -------------------------------------
+	// hide irrelevant pagination buttons
 	css.all.insertRule("div#content > form > nav > ul { display: none; }");
+	// columns:
+	// TODO: Add checkboxes in <thead> to let user say what columns to hide from print
+	// hide checkboxes
+	css.all.insertRule("thead th:nth-child(1), tbody td:nth-child(1) { display: none; }");
+	// hide ratings
+	css.all.insertRule("thead th:nth-child(10), tbody td:nth-child(10) { display: none; }");
+	// hide label comments (including mod pending, thus the :nth-child)
+	css.all.insertRule("tbody td:nth-child(7) span.comment { display: none; }");
 	// hide mb_FUNKEY-ILLUSTRATED-RECORDS bigpics
 	let bigpics = document.querySelector("div.jesus2099userjs154481bigbox");
 	if (bigpics) {
@@ -89,7 +99,7 @@ function appendPage(page) {
 		document.querySelector("div#content > h2").after(loading);
 	}
 	loading.lastChild.replaceChildren(document.createTextNode("Loading page " + page + "…"));
-	// WORK IN PROGRESS
+	// WORK IN PROGRESS //
 	if (page < 5) {
 		setTimeout(function() { appendPage(page + 1)}, 1100);
 	} else {
