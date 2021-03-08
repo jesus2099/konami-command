@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         mb. PRINT ALL PAGES
-// @version      2021.3.2
-// @description  musicbrainz.org: (VERY BASIC AT THE MOMENT) Print your complete collections to make your shopping lists or check lists. It will work on more than just collections.
+// @version      2021.3.9
+// @description  musicbrainz.org: Print your complete collections to make your shopping lists or check lists. Maybe it will work on more than just collections, in the future.
 // @namespace    https://github.com/jesus2099/konami-command
 // @compatible   firefox(86.0)+violentmonkey(2.12.7)
 // @compatible   vivaldi(3.6.2165.40)+violentmonkey(2.12.9)
 // @compatible   chromium(88.0.4324.186)+violentmonkey(2.12.9) Vivaldi’s engine
+// @compatible   opera(12.18.1872)+violentmonkey               my oldest setup
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PRINT-ALL-PAGES
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PRINT-ALL-PAGES.user.js
 // @author       jesus2099
@@ -19,25 +20,25 @@
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
-const userjs = {
+var userjs = {
 	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-"),
-}
+};
 // TODO: find last page as soon as it is known
-let lastPage;
+var lastPage;
 
 var collectionBaseURL = self.location.protocol + "//" + self.location.host + self.location.pathname.match(/\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
 
 // locate the pagination toolbar or create it if none
-let form = document.querySelector("div#content h2 + form[method='post']");
+var form = document.querySelector("div#content h2 + form[method='post']");
 if (form) {
-	let pagination = form.querySelector("nav ul.pagination");
+	var pagination = form.querySelector("nav ul.pagination");
 	if (!pagination) {
 		lastPage = 1;
 		pagination = form.insertBefore(document.createElement("nav"), form.firstChild).appendChild(createTag("ul", {a: {class: "pagination"}}));
 		pagination.appendChild(document.createElement("li"));
 	}
 	// put the little button instead of the first page disabled Previous button
-	pagination.firstChild.replaceChildren(createTag("li", {}, createTag(
+	replaceChildren(createTag("li", {}, createTag(
 		"a",
 		{
 			a: {title: GM_info.script.name + " version " + GM_info.script.version},
@@ -45,11 +46,11 @@ if (form) {
 			e: {click: preparePage}
 		},
 		"Load all pages for print"
-	)));
+	)), pagination.firstChild);
 }
 
 function preparePage(event) {
-	let css = {
+	var css = {
 		all: document.createElement("style"),
 		print: document.createElement("style")
 	};
@@ -71,26 +72,26 @@ function preparePage(event) {
 	// hide columns from print:
 	// TODO: Add checkboxes in <thead> to let user say what columns to hide from print
 	// hide checkboxes
-	css.all.insertRule("thead th:nth-child(1), tbody td:nth-child(1) { display: none; }");
+	css.all.insertRule("thead th:nth-child(1), tbody td:nth-child(1) { display: none; }", 0);
 	// hide ratings
-	css.all.insertRule("thead th:nth-child(10), tbody td:nth-child(10) { display: none; }");
+	css.all.insertRule("thead th:nth-child(10), tbody td:nth-child(10) { display: none; }", 0);
 	// hide label comments (including mod pending, thus the :nth-child)
-	css.all.insertRule("tbody td:nth-child(7) span.comment { display: none; }");
+	css.all.insertRule("tbody td:nth-child(7) span.comment { display: none; }", 0);
 	// hide stuff from both screen and print
 	// -------------------------------------
 	// hide caa icons (only )
 	css.all.insertRule("a[href$='/cover-art'] { display: none; }", 0);
 	// hide irrelevant pagination buttons
-	css.all.insertRule("div#content > form > nav > ul { display: none; }");
+	css.all.insertRule("div#content > form > nav > ul { display: none; }", 0);
 	// hide mb_FUNKEY-ILLUSTRATED-RECORDS bigpics
-	let bigpics = document.querySelector("div.jesus2099userjs154481bigbox");
+	var bigpics = document.querySelector("div.jesus2099userjs154481bigbox");
 	if (bigpics) {
 		// remove bigpics to skip further image loadings
 		removeNode(bigpics);
 	}
 	// disable collection highlighter
-	let collectionHighlights = document.querySelectorAll("[class*='collectionHighlighter']");
-	for (let i = 0; i < collectionHighlights.length; i++) {
+	var collectionHighlights = document.querySelectorAll("[class*='collectionHighlighter']");
+	for (var i = 0; i < collectionHighlights.length; i++) {
 		collectionHighlights[i].className = collectionHighlights[i].className.replace(/\bcollectionHighlighter(Box|Item|Row)\b/g);
 	}
 	if (lastPage !== 1) {
@@ -98,17 +99,17 @@ function preparePage(event) {
 	}
 }
 function appendPage(page, last) {
-	let loading = document.getElementById(userjs.id + "loading");
+	var loading = document.getElementById(userjs.id + "loading");
 	if (!loading) {
 		loading = createTag("div", {a: {id: userjs.id + "loading"}, s: {textAlign: "center"}}, [
-			createTag("img", {a: {alt: "loading", src: "/static/images/icons/loading.gif"}}),
+			createTag("img", {a: {alt: "loading", src: "/static/images/icons/loading.gif"}, s: {verticalAlign: "text-bottom"}}),
 			" ",
 			document.createElement("span")
 		]);
-		document.querySelector("div#content > h2").after(loading);
+		addAfter(loading, document.querySelector("div#content > h2"));
 	}
-	loading.lastChild.replaceChildren(document.createTextNode("Loading page " + page + (last ? "/" + last : "") + "…"));
-	// WORK IN PROGRESS // adapted from mb_COLLECTION-HIGHLIGHTER
+	replaceChildren(document.createTextNode("Loading page " + page + (last ? "/" + last : "") + "…"), loading.lastChild);
+
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function() {
 		if (this.status === 200) {
