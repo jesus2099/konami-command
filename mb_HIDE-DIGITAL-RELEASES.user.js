@@ -10,9 +10,10 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2021-02-25; https://community.metabrainz.org/t/digital-releases/361875/125?u=jesus2099
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @grant        none
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
+// @grant        GM_info
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/releases/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/edit$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
@@ -36,26 +37,18 @@ if (!MBGlossary) {
 }
 var lang = document.getElementsByTagName("html")[0].getAttribute("lang");
 switch (location.pathname.match(/\/[^/]+\//)[0]) {
+	case "/artist/": // /artist/*/releases
+		// fall through
 	case "/release-group/":
+		// download release styling (hide)
 		var css = document.createElement("style");
 		css.setAttribute("type", "text/css");
 		document.head.appendChild(css);
 		css = css.sheet;
 		css.insertRule("." + userjs.id + "fullDownload { opacity: .1; }", 0);
-		css.insertRule("." + userjs.id + "fullDownload:hover { opacity: inherit; }", 0);
-		var releases = document.querySelectorAll("table.tbl > tbody > tr:not(.subh)");
-		if (releases.length > 0) {
-			for (var r = 0; r < releases.length; r++) {
-				if (
-					// don’t match half physical releases
-					!releases[r].cells[2].textContent.match(/\+/)
-					// match fully digital releases
-					&& releases[r].cells[2].textContent.match(new RegExp("([0-9]+×)?" + MBGlossary["disc-format"][12][lang], "iu"))
-				) {
-					releases[r].classList.add(userjs.id + "fullDownload");
-				}
-			}
-		}
+		css.insertRule("." + userjs.id + "fullDownload:hover { opacity: revert; }", 0);
+		// find download releases and apply style class
+		markDownloadReleases(document.querySelectorAll("table.tbl > tbody > tr:not(.subh)"), location.pathname.match(/\/releases$/) ? 3 : 2);
 		break;
 	case "/release/": // release editor (see @include)
 		// ARTIFICIAL INTELLIGENCE: Learn new localised digital media names
@@ -68,4 +61,18 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 			}
 		}
 		break;
+}
+function markDownloadReleases(releaseRows, formatRowIndex) {
+	if (releaseRows.length > 0) {
+		for (var r = 0; r < releaseRows.length; r++) {
+			if (
+				// don’t match half physical releases
+				!releaseRows[r].cells[formatRowIndex].textContent.match(/\+/)
+				// match fully digital releases
+				&& releaseRows[r].cells[formatRowIndex].textContent.match(new RegExp("([0-9]+×)?" + MBGlossary["disc-format"][12][lang], "iu"))
+			) {
+				releaseRows[r].classList.add(userjs.id + "fullDownload");
+			}
+		}
+	}
 }
