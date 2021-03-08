@@ -16,6 +16,9 @@
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
+var userjs = {
+	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-"),
+};
 var MBGlossary = JSON.parse(localStorage.getItem("MBGlossary"));
 if (!MBGlossary) {
 	MBGlossary = {
@@ -34,7 +37,13 @@ if (!MBGlossary) {
 var lang = document.getElementsByTagName("html")[0].getAttribute("lang");
 switch (location.pathname.match(/\/[^/]+\//)[0]) {
 	case "/release-group/":
-		var releases = document.querySelectorAll("tbody > tr:not(.subh)");
+		var css = document.createElement("style");
+		css.setAttribute("type", "text/css");
+		document.head.appendChild(css);
+		css = css.sheet;
+		css.insertRule("." + userjs.id + "fullDownload { opacity: .1; }", 0);
+		css.insertRule("." + userjs.id + "fullDownload:hover { opacity: inherit; }", 0);
+		var releases = document.querySelectorAll("table.tbl > tbody > tr:not(.subh)");
 		if (releases.length > 0) {
 			for (var r = 0; r < releases.length; r++) {
 				if (
@@ -43,10 +52,9 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 					// match fully digital releases
 					&& releases[r].cells[2].textContent.match(new RegExp("([0-9]+×)?" + MBGlossary["disc-format"][12][lang], "iu"))
 				) {
-					releases[r].style.setProperty("display", "none");
+					releases[r].classList.add(userjs.id + "fullDownload");
 				}
 			}
-			// TODO: recompute odd/even rows
 		}
 		break;
 	case "/release/": // release editor (see @include)
