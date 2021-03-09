@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PRINT ALL PAGES
-// @version      2021.3.9.1446
+// @version      2021.3.9.1559
 // @description  musicbrainz.org: Print your complete collections to make your shopping lists or check lists. Maybe it will work on more than just collections, in the future.
 // @namespace    https://github.com/jesus2099/konami-command
 // @compatible   firefox(86.0)+violentmonkey(2.12.7)
@@ -25,8 +25,8 @@ var userjs = {
 };
 var form = document.querySelector("div#content h2 + form[method='post']");
 if (form) {
-	var lastPage;
-	// locate the pagination toolbar or create it if none
+var lastPage;
+// locate the pagination toolbar or create it if none
 	var pagination = form.querySelector("nav ul.pagination");
 	if (!pagination) {
 		lastPage = 1;
@@ -36,7 +36,7 @@ if (form) {
 		lastPage = pagination.querySelector("ul.pagination > li:nth-last-child(3) > a");
 		if (lastPage) {
 			lastPage = parseInt(lastPage.getAttribute("href").match(/\d+$/)[0], 10);
-		}
+	}
 	}
 	// put the little button instead of the first page disabled Previous button
 	replaceChildren(createTag("li", {}, createTag(
@@ -47,7 +47,7 @@ if (form) {
 			e: {click: preparePage}
 		}, [
 			createTag("img", {a: {alt: "loading", src: GM_info.script.icon}, s: {verticalAlign: "text-bottom"}}),
-			" Load all pages for print"
+		"Load all pages for print"
 		]
 	)), pagination.firstChild);
 }
@@ -70,8 +70,12 @@ function preparePage(event) {
 	css.print.insertRule("body > div:not(#page) { display: none; }", 0); // hide all except #page (#content, #sidebar)
 	css.print.insertRule("div#sidebar { display: none; }", 0); // hide #sidebar from #page
 	css.print.insertRule("div#content > :not(form):not(.collectionheader) { display: none; }", 0); // hide tabs and sub headers from #content
+	css.print.insertRule(".subheader > .small { display: none; }", 0); // hide "See all your collections" link
 	css.print.insertRule("div#content h2 ~ form[method='post'] > :not(table) { display: none; }", 0); // hide merge button from form
+	css.print.insertRule("th > a > span { display: none !important; }", 0); // hide inactive sort icons inside table column headers
 	css.print.insertRule("." + userjs.id + "toolbar { display: none; }", 0); // hide this script toolbar
+	css.print.insertRule("td > span.mp { background-color: initial !important; }", 0); // disable highlighting for pending edits
+	css.print.insertRule("a, a:visited { color: initial; }", 0); // display entity links without the usual blue highlighting
 	// hide columns from print:
 	// TODO: Add checkboxes in <thead> to let user say what columns to hide from print
 	// hide checkboxes
@@ -116,7 +120,7 @@ function appendPage(page, last) {
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function() {
 		if (this.status === 200) {
-			var responseDOM = document.createElement("html");
+			var responseDOM = document.createElement("html"); 
 			responseDOM.innerHTML = this.responseText;
 			// append each page releases to expanding release table of page 1
 			var releaseTable = document.querySelector("div#content table.tbl > tbody");
