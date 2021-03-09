@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PRINT ALL PAGES
-// @version      2021.3.9.1559
+// @version      2021.3.9.1855
 // @description  musicbrainz.org: Print your complete collections to make your shopping lists or check lists. Maybe it will work on more than just collections, in the future.
 // @namespace    https://github.com/jesus2099/konami-command
 // @compatible   firefox(86.0)+violentmonkey(2.12.7)
@@ -25,8 +25,8 @@ var userjs = {
 };
 var form = document.querySelector("div#content h2 + form[method='post']");
 if (form) {
-var lastPage;
-// locate the pagination toolbar or create it if none
+	var lastPage;
+	// locate the pagination toolbar or create it if none
 	var pagination = form.querySelector("nav ul.pagination");
 	if (!pagination) {
 		lastPage = 1;
@@ -36,7 +36,7 @@ var lastPage;
 		lastPage = pagination.querySelector("ul.pagination > li:nth-last-child(3) > a");
 		if (lastPage) {
 			lastPage = parseInt(lastPage.getAttribute("href").match(/\d+$/)[0], 10);
-	}
+		}
 	}
 	// put the little button instead of the first page disabled Previous button
 	replaceChildren(createTag("li", {}, createTag(
@@ -47,7 +47,7 @@ var lastPage;
 			e: {click: preparePage}
 		}, [
 			createTag("img", {a: {alt: "loading", src: GM_info.script.icon}, s: {verticalAlign: "text-bottom"}}),
-		"Load all pages for print"
+			" Load all pages for print"
 		]
 	)), pagination.firstChild);
 }
@@ -120,7 +120,7 @@ function appendPage(page, last) {
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function() {
 		if (this.status === 200) {
-			var responseDOM = document.createElement("html"); 
+			var responseDOM = document.createElement("html");
 			responseDOM.innerHTML = this.responseText;
 			// append each page releases to expanding release table of page 1
 			var releaseTable = document.querySelector("div#content table.tbl > tbody");
