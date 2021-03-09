@@ -69,23 +69,36 @@ function preparePage(event) {
 	css.print.insertRule("div#page, div#content { padding: 0; }", 0); // full width
 	css.print.insertRule("body > div:not(#page) { display: none; }", 0); // hide all except #page (#content, #sidebar)
 	css.print.insertRule("div#sidebar { display: none; }", 0); // hide #sidebar from #page
-	css.print.insertRule("div#content > :not(form):not(.collectionheader) { display: none; }", 0); // hide tabs and sub headers from #content
+	css.print.insertRule("div#content > :not(div.description):not(form):not(div.collectionheader) { display: none; }", 0); // hide tabs and sub headers from #content
 	css.print.insertRule(".subheader > .small { display: none; }", 0); // hide "See all your collections" link
 	css.print.insertRule("div#content h2 ~ form[method='post'] > :not(table) { display: none; }", 0); // hide merge button from form
 	css.print.insertRule("th > a > span { display: none !important; }", 0); // hide inactive sort icons inside table column headers
 	css.print.insertRule("." + userjs.id + "toolbar { display: none; }", 0); // hide this script toolbar
 	css.print.insertRule("td > span.mp { background-color: initial !important; }", 0); // disable highlighting for pending edits
 	css.print.insertRule("a, a:visited { color: initial; }", 0); // display entity links without the usual blue highlighting
+	// hide stuff from both screen and print
+	// -------------------------------------
 	// hide columns from print:
 	// TODO: Add checkboxes in <thead> to let user say what columns to hide from print
 	// hide checkboxes
-	css.all.insertRule("thead th:nth-child(1), tbody td:nth-child(1) { display: none; }", 0);
+	var checkboxColumnIndex = form.querySelector("table.tbl > thead > tr > th.checkbox-cell");
+	if (checkboxColumnIndex) {
+		checkboxColumnIndex = checkboxColumnIndex.cellIndex + 1;
+		console.debug(checkboxColumnIndex);
+		css.all.insertRule("thead th:nth-child(" + checkboxColumnIndex + "), tbody td:nth-child(" + checkboxColumnIndex + ") { display: none; }", 0);
+	}
 	// hide ratings
-	css.all.insertRule("thead th:nth-child(10), tbody td:nth-child(10) { display: none; }", 0);
+	var ratingColumnIndex = form.querySelector("table.tbl > thead > tr > th.rating");
+	if (ratingColumnIndex) {
+		ratingColumnIndex = ratingColumnIndex.cellIndex + 1;
+		css.all.insertRule("thead th:nth-child(" + ratingColumnIndex + "), tbody td:nth-child(" + ratingColumnIndex + ") { display: none; }", 0);
+	}
 	// hide label comments (including mod pending, thus the :nth-child)
-	css.all.insertRule("tbody td:nth-child(7) span.comment { display: none; }", 0);
-	// hide stuff from both screen and print
-	// -------------------------------------
+	var labelColumnIndex = form.querySelector("table.tbl > thead > tr > th a[href*='order='][href$='label']");
+	if (labelColumnIndex) {
+		labelColumnIndex = getParent(labelColumnIndex, "th").cellIndex + 1;
+		css.all.insertRule("tbody td:nth-child(" + labelColumnIndex + ") span.comment { display: none; }", 0);
+	}
 	// hide caa icons (only)
 	css.all.insertRule("a[href$='/cover-art'] { display: none; }", 0);
 	// hide irrelevant pagination buttons
