@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PRINT ALL PAGES
-// @version      2021.3.9.107
+// @version      2021.3.9.1446
 // @description  musicbrainz.org: Print your complete collections to make your shopping lists or check lists. Maybe it will work on more than just collections, in the future.
 // @namespace    https://github.com/jesus2099/konami-command
 // @compatible   firefox(86.0)+violentmonkey(2.12.7)
@@ -23,17 +23,20 @@
 var userjs = {
 	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-"),
 };
-// TODO: find last page as soon as it is known
-var lastPage;
-
-// locate the pagination toolbar or create it if none
 var form = document.querySelector("div#content h2 + form[method='post']");
 if (form) {
+	var lastPage;
+	// locate the pagination toolbar or create it if none
 	var pagination = form.querySelector("nav ul.pagination");
 	if (!pagination) {
 		lastPage = 1;
 		pagination = form.insertBefore(document.createElement("nav"), form.firstChild).appendChild(createTag("ul", {a: {class: "pagination"}}));
 		pagination.appendChild(document.createElement("li"));
+	} else {
+		lastPage = pagination.querySelector("ul.pagination > li:nth-last-child(3) > a");
+		if (lastPage) {
+			lastPage = parseInt(lastPage.getAttribute("href").match(/\d+$/)[0], 10);
+		}
 	}
 	// put the little button instead of the first page disabled Previous button
 	replaceChildren(createTag("li", {}, createTag(
@@ -106,12 +109,12 @@ function appendPage(page, last) {
 		]);
 		addAfter(loading, document.querySelector("div#content > h2"));
 	}
-	replaceChildren(document.createTextNode("Loading page " + page + (last ? "/" + last : "") + "…"), loading.lastChild);
+	replaceChildren(document.createTextNode("Loading page " + page + "/" + last + "…"), loading.lastChild);
 
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function() {
 		if (this.status === 200) {
-			var responseDOM = document.createElement("html"); 
+			var responseDOM = document.createElement("html");
 			responseDOM.innerHTML = this.responseText;
 			// append each page releases to expanding release table of page 1
 			var releaseTable = document.querySelector("div#content table.tbl > tbody");
@@ -121,12 +124,11 @@ function appendPage(page, last) {
 			}
 			// determine next page and last page
 			var nextPage = responseDOM.querySelector("ul.pagination > li:last-of-type > a");
-			// TODO: find last page as soon as it is known
-			var lastPage = last;
 			if (
 				nextPage
 				&& (nextPage = parseInt(nextPage.getAttribute("href").match(/\d+$/)[0], 10))
 				&& nextPage > page
+				&& nextPage <= last
 			) {
 				appendPage(nextPage, last);
 			} else {
