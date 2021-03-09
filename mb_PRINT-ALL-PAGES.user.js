@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PRINT ALL PAGES
-// @version      2021.3.9
+// @version      2021.3.9.107
 // @description  musicbrainz.org: Print your complete collections to make your shopping lists or check lists. Maybe it will work on more than just collections, in the future.
 // @namespace    https://github.com/jesus2099/konami-command
 // @compatible   firefox(86.0)+violentmonkey(2.12.7)
@@ -16,7 +16,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/fb2225a2146d1586b7f113ad13df476adf314ac7/lib/SUPER.js?v=2021.2.4
 // @grant        GM_info
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\?page=1)?$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\?order=.*)?$/
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
@@ -25,8 +25,6 @@ var userjs = {
 };
 // TODO: find last page as soon as it is known
 var lastPage;
-
-var collectionBaseURL = self.location.protocol + "//" + self.location.host + self.location.pathname.match(/\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
 
 // locate the pagination toolbar or create it if none
 var form = document.querySelector("div#content h2 + form[method='post']");
@@ -139,6 +137,6 @@ function appendPage(page, last) {
 			alert("Error " + this.status + "(" + this.statusText + ") while loading page " + page + ".");
 		}
 	});
-	xhr.open("GET", collectionBaseURL + "?page=" + page, true);
+	xhr.open("GET", self.location.href + (self.location.href.indexOf("?") > 1 ? "&" : "?") + "page=" + page, true);
 	xhr.send(null);
 }
