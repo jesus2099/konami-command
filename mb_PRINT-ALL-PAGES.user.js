@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PRINT ALL PAGES
-// @version      2021.3.9.1855
+// @version      2021.3.9.2317
 // @description  musicbrainz.org: Print your complete collections to make your shopping lists or check lists. Maybe it will work on more than just collections, in the future.
 // @namespace    https://github.com/jesus2099/konami-command
 // @compatible   firefox(86.0)+violentmonkey(2.12.7)
@@ -86,10 +86,12 @@ function preparePage(event) {
 	css.all.insertRule("tbody td:nth-child(7) span.comment { display: none; }", 0);
 	// hide stuff from both screen and print
 	// -------------------------------------
-	// hide caa icons (only )
+	// hide caa icons (only)
 	css.all.insertRule("a[href$='/cover-art'] { display: none; }", 0);
 	// hide irrelevant pagination buttons
 	css.all.insertRule("div#content > form > nav > ul { display: none; }", 0);
+	// hide SPOT_AC
+	css.all.insertRule(".name-variation { background: unset; border: unset; }", 0);
 	// hide mb_FUNKEY-ILLUSTRATED-RECORDS bigpics
 	var bigpics = document.querySelector("div.jesus2099userjs154481bigbox");
 	if (bigpics) {
@@ -103,6 +105,8 @@ function preparePage(event) {
 	}
 	if (lastPage !== 1) {
 		appendPage(2, lastPage);
+	} else {
+		finalTouch();
 	}
 }
 function appendPage(page, last) {
@@ -140,6 +144,7 @@ function appendPage(page, last) {
 			} else {
 				// last page loaded
 				removeNode(loading);
+				finalTouch();
 			}
 		} else {
 			alert("Error " + this.status + "(" + this.statusText + ") while loading page " + page + ".");
@@ -147,4 +152,11 @@ function appendPage(page, last) {
 	});
 	xhr.open("GET", self.location.href + (self.location.href.indexOf("?") > 1 ? "&" : "?") + "page=" + page, true);
 	xhr.send(null);
+}
+function finalTouch() {
+	// reveal main artist name
+	var nameVariations = form.querySelectorAll("table.tbl > tbody > tr > td span.name-variation a");
+	for (var n = 0; n < nameVariations.length; n++) {
+		addAfter(createTag("span", {a: {class: "comment"}}, [" (", nameVariations[n].getAttribute("title").match(/(.+) – /)[1], ")"]), nameVariations[n]);
+	}
 }
