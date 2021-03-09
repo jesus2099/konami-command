@@ -23,17 +23,20 @@
 var userjs = {
 	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-"),
 };
-// TODO: find last page as soon as it is known
-var lastPage;
-
-// locate the pagination toolbar or create it if none
 var form = document.querySelector("div#content h2 + form[method='post']");
 if (form) {
+	var lastPage;
+	// locate the pagination toolbar or create it if none
 	var pagination = form.querySelector("nav ul.pagination");
 	if (!pagination) {
 		lastPage = 1;
 		pagination = form.insertBefore(document.createElement("nav"), form.firstChild).appendChild(createTag("ul", {a: {class: "pagination"}}));
 		pagination.appendChild(document.createElement("li"));
+	} else {
+		lastPage = pagination.querySelector("ul.pagination > li:nth-last-child(3) > a");
+		if (lastPage) {
+			lastPage = parseInt(lastPage.getAttribute("href").match(/\d+$/)[0], 10);
+		}
 	}
 	// put the little button instead of the first page disabled Previous button
 	replaceChildren(createTag("li", {}, createTag(
@@ -42,8 +45,10 @@ if (form) {
 			a: {title: GM_info.script.name + " version " + GM_info.script.version},
 			s: {background: "#FF6"},
 			e: {click: preparePage}
-		},
-		"Load all pages for print"
+		}, [
+			createTag("img", {a: {alt: "loading", src: GM_info.script.icon}, s: {verticalAlign: "text-bottom"}}),
+			" Load all pages for print"
+		]
 	)), pagination.firstChild);
 }
 
@@ -110,12 +115,12 @@ function appendPage(page, last) {
 		]);
 		addAfter(loading, document.querySelector("div#content > h2"));
 	}
-	replaceChildren(document.createTextNode("Loading page " + page + (last ? "/" + last : "") + "…"), loading.lastChild);
+	replaceChildren(document.createTextNode("Loading page " + page + "/" + last + "…"), loading.lastChild);
 
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function() {
 		if (this.status === 200) {
-			var responseDOM = document.createElement("html"); 
+			var responseDOM = document.createElement("html");
 			responseDOM.innerHTML = this.responseText;
 			// append each page releases to expanding release table of page 1
 			var releaseTable = document.querySelector("div#content table.tbl > tbody");
@@ -125,12 +130,11 @@ function appendPage(page, last) {
 			}
 			// determine next page and last page
 			var nextPage = responseDOM.querySelector("ul.pagination > li:last-of-type > a");
-			// TODO: find last page as soon as it is known
-			var lastPage = last;
 			if (
 				nextPage
 				&& (nextPage = parseInt(nextPage.getAttribute("href").match(/\d+$/)[0], 10))
 				&& nextPage > page
+				&& nextPage <= last
 			) {
 				appendPage(nextPage, last);
 			} else {
