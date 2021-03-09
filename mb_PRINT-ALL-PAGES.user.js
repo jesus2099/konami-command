@@ -45,8 +45,10 @@ if (form) {
 			a: {title: GM_info.script.name + " version " + GM_info.script.version},
 			s: {background: "#FF6"},
 			e: {click: preparePage}
-		},
-		"Load all pages for print"
+		}, [
+			createTag("img", {a: {alt: "loading", src: GM_info.script.icon}, s: {verticalAlign: "text-bottom"}}),
+			" Load all pages for print"
+		]
 	)), pagination.firstChild);
 }
 
