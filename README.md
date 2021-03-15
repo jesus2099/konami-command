@@ -6,34 +6,40 @@ greasemonkey, **userscripts**, etc.)
 
 **YES ?**
 
-Here are my small **Multi‐browser** user scripts.
-Mostly for [musicbrainz.org](//musicbrainz.org).
+Here are my small **multi‐browser** user scripts.
+Mostly for [MusicBrainz](https://musicbrainz.org).
 
 
 HOW TO INSTALL
 --------------
 
-Please install all your scripts from this GitHub page 
-as versions you can find on 
-[GF](//greasyfork.org/users/2206-jesus2099?sort=updated#user-script-list) 
-and on 
-[OUJS](//openuserjs.org/users/jesus2099/scripts?orderBy=updated&orderDir=desc) 
-might be out of date.
+Please install all your scripts from this GitHub page.
 
-You can click the scripts to see their code 
-then the **Raw** button to install them.
+Click on a script to review its description and code, then 
+Click on **Raw** button to install.
 
-[INSTALL-USER-SCRIPT](//github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js) 
-adds a direct download/install icon button in front of each userscripts 
+You can start by installing [INSTALL-USER-SCRIPT](https://github.com/jesus2099/konami-command/blob/master/INSTALL-USER-SCRIPT.user.js) 
+which adds a direct download/install ![monkey](https://github.com/violentmonkey/violentmonkey/raw/1d911bffd7d4c37f82b5bcdada16f0b79fe0a70a/src/public/images/icon16.png) **monkey** icon button in front of each userscripts 
 in github, gitlab and bitbucket file listings.
+
 
 COMPATIBILITY
 -------------
 
-Here are setups that I use:
+There are 3 userscript engines that I know:
 
-- [Firefox](//mozilla.org/firefox) on Android (FF v68), Linux and Windows + [Violentmonkey](//addons.mozilla.org/firefox/addon/violentmonkey)
-- [Vivaldi](//vivaldi.com) on Windows + [Violentmonkey](//chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)
+- Greasemonkey: Open source pioneer
+- [Violentmonkey](https://violentmonkey.github.io): Open source multi-browser
+- Tampermonkey: Closed source
+
+I advise Violentmonkey as it works in every browsers consistently and is open source.
+Unfortunately, Greasemonkey has had several outstanding issues since version 4+ and only works in Firefox.
+
+For information, here are setups that I use most (as of 2021-03-15):
+
+- [Firefox](https://mozilla.org/firefox) on Linux, Android (FF v68) and Windows + [Violentmonkey][vm-ff]
+- [Vivaldi](https://vivaldi.com) on Windows + [Violentmonkey][vm-ch]
+- Chromium on Raspberry Pi 3B+ OS Raspbian + [Violentmonkey][vm-ch]
 
 As Vivaldi is based on Chromium, it also works in Chrome.
 I have been told it also works in Safari.
@@ -42,20 +48,19 @@ Please report bugs if it does not work in your setup (see next section).
 ISSUES
 ------
 
-If you encounter a problem, you can see if it is an [already known issue](//github.com/jesus2099/konami-command/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc) 
+If you encounter a problem, you can see if it is an [already known issue](https://github.com/jesus2099/konami-command/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc) 
 and you can also upvote issues by clicking the :+1: thumb up icon on the issue description.
 Please eventually add an issue to report any bug.
 
 ---
 
-※ Find more MusicBrainz scripts in [Github](//github.com/search?q=topic%3Amusicbrainz+topic%3Auserscripts), 
+※ Find more MusicBrainz scripts in [Github](https://github.com/search?q=topic%3Amusicbrainz+topic%3Auserscripts), 
 [GF](//greasyfork.org/scripts?set=9&sort=ratings) and [OUJS](//openuserjs.org/group/musicbrainz?orderBy=rating&orderDir=desc).
 
 ※ Those scripts used to be hosted at 
 [jesus2099’s scripts - Userscripts.org (archived)](https://web.archive.org/web/20131108065418/userscripts.org/users/31010/scripts) 
 since 18.7.2007 and until the May 2014 break down.
 
-Here is a list of scripts that have not yet been stored here in “**KONAMI COMMAND**”:
 
-- [mb. ACOUSTICBRAINZ LINKS (for STalKer-X)](https://gist.github.com/jesus2099/8e223f09d64d831a9514)
-  — displays AB links for each track in release pages
+[vm-ff]: https://addons.mozilla.org/firefox/addon/violentmonkey
+[vm-ch]: https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag
