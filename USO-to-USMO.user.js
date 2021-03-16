@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         USO to USMO
-// @version      2019.9.13.2099
+// @version      2021.3.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/USO-to-USMO.user.js
-// @description  and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long — bypass this script by holding CTRL+ALT+SHIFT
+// @description  ☠ OBSOLETE ☠ and userscripts.org links lead to userscripts-mirror.org — all kinds: http/https, www/no-www, short/long — bypass this script by holding CTRL+ALT+SHIFT
 // @supportURL   https://github.com/jesus2099/konami-command/labels/USO-to-USMO
 // @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -25,6 +25,7 @@
 // "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
 "use strict";
+alert("Please uninstall my “USO to USMO” userscript and use web.archive.org instead. userscripts-mirror.org is not safe to use.\n\nThank you for having using my script.\njesus2099");
 document.addEventListener("mousedown", function(event) {
 	if (!event.altKey || !event.ctrlKey || !event.shiftKey) {
 		var element = event.target || event.srcElement;
