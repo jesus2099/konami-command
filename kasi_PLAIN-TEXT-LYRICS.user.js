@@ -9,7 +9,7 @@
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since        2010-12-05; https://web.archive.org/web/20131119110024/userscripts.org/scripts/show/91968 / https://web.archive.org/web/20141011084011/http://userscripts-mirror.org/scripts/show/91968
+// @since        2010-12-05; https://web.archive.org/web/20131119110024/userscripts.org/scripts/show/91968 / https://web.archive.org/web/20141011084011/userscripts-mirror.org/scripts/show/91968
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        GM_info
 // @match        *://*.utamap.com/*.php?surl=*

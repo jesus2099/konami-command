@@ -498,7 +498,7 @@ if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + 
 	}
 }
 // =============================================================== KEYBOARD+
-// ## EASY_DATE ## basic paste-a-date!-like (https://userscripts.org/121217)
+// ## EASY_DATE ## basic paste-a-date!-like (https://web.archive.org/web/20131112023543/userscripts.org/scripts/show/121217)
 // =========================================================================
 j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it\nascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197)\n\nPress “C” to copy current date into the other (begin→end or end→begin)\nPress “D” to delete dates");
 if (j2sets.EASY_DATE && !location.pathname.match(/^\/account\/edit/)) {
@@ -704,7 +704,7 @@ if (j2sets.RATINGS_ON_TOP && sidebar && !j2sets.HIDE_RATINGS) {
 // ================================================================= DISPLAY+
 // ## ROW_HIGHLIGHTER ##
 // evolution of brianfreud’s original idea
-// MusicBrainz row highlighter https://userscripts.org/118008
+// MusicBrainz row highlighter https://web.archive.org/web/20131104205654/userscripts.org/scripts/show/118008
 // ==========================================================================
 j2setting("ROW_HIGHLIGHTER", true, true, "highlights rows in various MB tables");
 j2setting("ROW_HIGHLIGHTER_colour", "#fcf", true, "use any CSS colour code or name");
