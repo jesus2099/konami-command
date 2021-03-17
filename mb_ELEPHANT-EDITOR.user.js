@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2021.2.5
+// @version      2021.3.17
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -62,9 +62,17 @@ var re = (mb && document.querySelector("div#release-editor"));
 var save = !localStorage.getItem(userjs + "forget") && (editpage || !editsearchpage);
 var content = document.querySelector(mb ? "#page" : "div.content");
 var savedHeight = localStorage.getItem(userjs + "_savedHeight");
+var notetext;
+var reldates = [];
+var xdate = [];
+var submitbtn;
+// React hydrate imposes delay
 if (content) {
-	var notetext = content.querySelectorAll("textarea" + (acoustid ? "" : ".edit-note, textarea#edit-note-text"));
-	var reldates = [];
+	var reactHydratePage = location.pathname.match(/\/(add-alias|alias\/\d+\/edit)$/);
+	setTimeout(init, reactHydratePage ? 1000 : 10);
+}
+function init() {
+	notetext = content.querySelectorAll("textarea" + (acoustid ? "" : ".edit-note, textarea#edit-note-text"));
 	if (notetext.length == 1) {
 		notetext = notetext[0];
 		if (acoustid) {
@@ -86,8 +94,7 @@ if (content) {
 			}
 		});
 	} else { notetext = false; }
-	var xdate = [];
-	var submitbtn = content.querySelector(mb ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
+	submitbtn = content.querySelector(mb ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
 	if (re) submitbtn = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
 	if (reldates.length == 2) {
 		xdate = [

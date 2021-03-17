@@ -31,7 +31,7 @@ let userjs = {
 	icon: createTag("img", {a: {src: GM_info.script.icon}, s: {verticalAlign: "middle", margin: "-8px 0"}})
 };
 var debugBuffer = "";
-var DEBUG = localStorage.getItem("jesus2099debug");
+var DEBUG = false;
 var pageType = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (pageType) {
 	pageType = pageType[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
@@ -502,7 +502,11 @@ if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + 
 // =========================================================================
 j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it\nascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197)\n\nPress “C” to copy current date into the other (begin→end or end→begin)\nPress “D” to delete dates");
 if (j2sets.EASY_DATE && !location.pathname.match(/^\/account\/edit/)) {
-	EASY_DATE_init();
+	// React hydrate imposes delay
+	var reactHydratePage = location.pathname.match(/\/(add-alias|alias\/\d+\/edit)$/);
+	if (!reactHydratePage) {
+		EASY_DATE_init();
+	}
 	document.body.addEventListener("DOMNodeInserted", EASY_DATE_calmDOM, false);
 }
 var EASY_DATE_calmDOMto;
@@ -510,7 +514,7 @@ function EASY_DATE_calmDOM() {
 	if (EASY_DATE_calmDOMto) {
 		clearTimeout(EASY_DATE_calmDOMto);
 	}
-	EASY_DATE_calmDOMto = setTimeout(EASY_DATE_init, 100);
+	EASY_DATE_calmDOMto = setTimeout(EASY_DATE_init, reactHydratePage ? 1000 : 100);
 }
 function EASY_DATE_init() {
 	debug("EASY_DATE_init");
