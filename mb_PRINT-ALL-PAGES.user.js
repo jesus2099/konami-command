@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PRINT ALL PAGES
-// @version      2021.3.9.2317
+// @version      2021.3.20
 // @description  musicbrainz.org: Print your complete collections to make your shopping lists or check lists. Maybe it will work on more than just collections, in the future.
 // @namespace    https://github.com/jesus2099/konami-command
 // @compatible   firefox(86.0)+violentmonkey(2.12.7)
@@ -69,7 +69,7 @@ function preparePage(event) {
 	css.print.insertRule("div#page, div#content { padding: 0; }", 0); // full width
 	css.print.insertRule("body > div:not(#page) { display: none; }", 0); // hide all except #page (#content, #sidebar)
 	css.print.insertRule("div#sidebar { display: none; }", 0); // hide #sidebar from #page
-	css.print.insertRule("div#content > :not(div.description):not(form):not(div.collectionheader) { display: none; }", 0); // hide tabs and sub headers from #content
+	css.print.insertRule("div#content > :not(.description):not(form):not(.collectionheader) { display: none; }", 0); // hide tabs and sub headers from #content
 	css.print.insertRule(".subheader > .small { display: none; }", 0); // hide "See all your collections" link
 	css.print.insertRule("div#content h2 ~ form[method='post'] > :not(table) { display: none; }", 0); // hide merge button from form
 	css.print.insertRule("th > a > span { display: none !important; }", 0); // hide inactive sort icons inside table column headers
