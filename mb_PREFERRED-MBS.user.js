@@ -20,8 +20,6 @@
 // @grant        none
 // @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\//
 // @run-at       document-start
-// @inject-into  auto
-// "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
 "use strict";
 /* ----------------------------------------------- */

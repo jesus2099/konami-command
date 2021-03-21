@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         last.fm. ALL LINKS TO LOCAL SITE
-// @version      2021.2.1
+// @version      2021.3.21
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
 // @description  Replaces any lastfm link by the desired language, like "www.lastfm.xx" or else
 // @supportURL   https://github.com/jesus2099/konami-command/labels/lastfm_ALL-LINKS-TO-LOCAL-SITE
@@ -22,8 +22,6 @@
 // @exclude      *://www.last.fm/*
 // @exclude      *://www.lastfm.*
 // @run-at       document-end
-// @inject-into  auto
-// "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
 // ==/UserScript==
 "use strict";
 var preferred_lastfm = "last.fm";
