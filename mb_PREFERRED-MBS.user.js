@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2021.1.19.2099
+// @version      2021.3.21
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
@@ -18,7 +18,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none
-// @match        *://*/*
+// @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\//
 // @run-at       document-start
 // @inject-into  auto
 // "inject-into  auto" is specific to Firefox + Violentmonkey + GitHub https://github.com/violentmonkey/violentmonkey/issues/597
@@ -106,12 +106,6 @@ function prefer(URL) {
 	var urlMatch = URL.trim().match(/^(https?:)?(\/\/)?((?:beta\.)?musicbrainz\.org(?::\d+)?)(\/.*)?(\?.*)?(#.*)?$/);
 	if (urlMatch) {
 		newUrl += (urlMatch[4] ? urlMatch[4] : "") + (urlMatch[5] ? urlMatch[5] : "") + (urlMatch[6] ? urlMatch[6] : "");
-	} else if (
-		self.location.href.match(/^https?:\/\/(beta\.)?musicbrainz\.org/)
-		&& URL.match(/^\/([^/]|$)/)
-		&& preferredMBS.match(/^(https?:)?\/\//)
-	) {
-		newUrl += URL;
 	}
 	return (newUrl && newUrl != preferredMBS && newUrl != leftTrim(URL) ? newUrl : null);
 }
