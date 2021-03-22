@@ -1,16 +1,10 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2021.2.4
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_POWER-VOTE.user.js
+// @version      2021.3.22
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
-// @compatible   vivaldi(2.4.1488.38)+violentmonkey   my setup (of.)
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
@@ -22,7 +16,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var chrome = "Please run “" + GM_info.script.name + "” with Tampermonkey instead of plain Chrome.";
+var chrome = "Please run “" + GM_info.script.name + "” with Violentmonkey instead of plain Chrome.";
 var editform = document.querySelector("div#edits > form");
 if (editform) {
 	// - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- -

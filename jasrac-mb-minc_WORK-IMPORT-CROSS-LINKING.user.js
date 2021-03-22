@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2021.2.1
+// @version      2021.3.22
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
-// @compatible   vivaldi(3.1.1929.34)+violentmonkey  my setup
-// @compatible   firefox(77.0.1)+greasemonkey        my setup
-// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
@@ -31,7 +30,7 @@ let userjs = {
 	GET JASRAC ID (work attributes) NG http://tickets.musicbrainz.org/browse/MBS-8341
 */
 var MBS7313 = "This script has been partially fixed now but is back to VERY EXPERIMENTAL status!\n(ノ ゜Д゜)ノ 彡┻━┻ Work credits are back on import (not on edit yet). Aliases are still disabled (maybe forever?).";
-var chrome = "Please run “" + userjs.name + "” with Tampermonkey instead of plain Chrome.";
+var chrome = "Please run “" + userjs.name + "” with Violentmonkey instead of plain Chrome.";
 var DEBUG = localStorage.getItem("jesus2099debug");
 var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var reISWC = "T- ?\\d{3}\\.\\d{3}.\\d{3}-\\d";
