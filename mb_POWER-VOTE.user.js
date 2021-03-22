@@ -12,12 +12,20 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@58be27d33c01f1081291751bbcfcbddc3be2c4ea/lib/SUPER.js?v=2021.2.4
 // @grant        GM_info
-// @match        *://*.musicbrainz.org/*
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits\b/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+\b/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/subscribed(_editors)?\b/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\b/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/user\/[^/]+\/edits(\/open)?\b/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
 var chrome = "Please run “" + GM_info.script.name + "” with Violentmonkey instead of plain Chrome.";
 var editform = document.querySelector("div#edits > form");
+var j2css = document.createElement("style");
+j2css.setAttribute("type", "text/css");
+document.head.appendChild(j2css);
+j2css = j2css.sheet;
 if (editform) {
 	// - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- -
 	var showtop = true;
@@ -35,10 +43,6 @@ if (editform) {
 	var userjs = "jesus2099userjs57765";
 	var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent); // FF has bugs
 	if (FF) { FF = {"1": "#b1ebb0", "0": "#ebb1ba", "-1": "#f2f0a5"}; }
-	var j2css = document.createElement("style");
-	j2css.setAttribute("type", "text/css");
-	document.head.appendChild(j2css);
-	j2css = j2css.sheet;
 	j2css.insertRule("div.edit-list." + userjs + "force, div.edit-list." + userjs + "ninja > div.edit-actions, div.edit-list." + userjs + "ninja > div.edit-details, div.edit-list." + userjs + "ninja > div.edit-notes { overflow: hidden !important; height: 0 !important; !important; padding: 0 !important; margin: 0 !important; }", 0);
 	j2css.insertRule("div#" + userjs + "xhrstat { position: fixed; top: 0; left: 0; border: 2px solid black; border-width: 0 2px 2px 0; background-color: #ff6; }", 0);
 	j2css.insertRule("tr.rename-artist-credits." + userjs + "yes > th { vertical-align: middle; }", 0);
@@ -276,6 +280,37 @@ if (editform) {
 			artistlnk.style.setProperty("color", "black");
 		}
 		self.scrollTo(0, findPos(document.getElementById("edits")).y - self.getComputedStyle(document.getElementById("header-menu")).getPropertyValue("height").match(/\d+/));
+	}
+}
+// From mb_NGS-MILESTONE
+// Show if edits are pre-NGS (NGS was released on 2011-05-16, last pre-NGS Edit #14459455, first NGS Edit #14459456)
+var firstNGSEdit = 14459456;
+j2css.insertRule("div.edit-header.pre-ngs { background-image: url(data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP/MAP///////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQJBQAAACwAAAAAEAAQAAACIQyOF8uW2NpTcU1Q7czu8fttGTiK1YWdZISWprTCL9NGBQAh+QQJBQAAACwAAAAAEAAQAAACIIQdqXm9285TEc1QwcV1Zz19lxhmo1l2aXSqD7lKrXMWACH5BAkFAAAALAAAAAAQABAAAAIhRI4Hy5bY2lNxzVDtzO7x+20ZOIrVhZ1khJamtMIv00YFACH5BAkFAAAALAAAAAAQABAAAAIgjA2peb3bzlMRTVDDxXVnPX2XGGajWXZpdKoPuUqtcxYAOw==); }", 0);
+if (location.pathname.match(/\/edit\/\d+/)) {
+	var edit = document.querySelector("div#content > div.edit-header > h1");
+	if (parseInt(edit.textContent.match(/\d+/), 10) < firstNGSEdit) {
+		edit.nextSibling.appendChild(document.createTextNode(" (pre-NGS)"));
+		edit.parentNode.classList.add("pre-ngs");
+	}
+} else {
+	var edits = document.querySelectorAll("div.edit-header > h2 > a[href*='/edit/']");
+	for (var e = 0, previousEdit = firstNGSEdit; e < edits.length; e++) {
+		var edit = parseInt(edits[e].getAttribute("href").match(/\d+$/), 10);
+		if (edit < firstNGSEdit) {
+			edits[e].parentNode.nextSibling.appendChild(document.createTextNode(" (pre-NGS)"));
+			edits[e].parentNode.parentNode.classList.add("pre-ngs");
+			if (previousEdit >= firstNGSEdit) {
+				var editListItem = edits[e].parentNode.parentNode.parentNode;
+				var NGSMilestone = document.createElement("div");
+				NGSMilestone.classList.add("edit-list");
+				NGSMilestone.appendChild(document.createElement("pre")).appendChild(document.createTextNode("First NGS Edit #14459456\nNGS was released on 2011-05-16\nLast pre-NGS Edit #14459455"));
+				NGSMilestone.style.setProperty("background-image", "url(data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP/MAP///////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQJBQAAACwAAAAAEAAQAAACIQyOF8uW2NpTcU1Q7czu8fttGTiK1YWdZISWprTCL9NGBQAh+QQJBQAAACwAAAAAEAAQAAACIIQdqXm9285TEc1QwcV1Zz19lxhmo1l2aXSqD7lKrXMWACH5BAkFAAAALAAAAAAQABAAAAIhRI4Hy5bY2lNxzVDtzO7x+20ZOIrVhZ1khJamtMIv00YFACH5BAkFAAAALAAAAAAQABAAAAIgjA2peb3bzlMRTVDDxXVnPX2XGGajWXZpdKoPuUqtcxYAOw==)");
+				NGSMilestone.style.setProperty("padding", "1em 2em");
+				NGSMilestone.firstChild.style.setProperty("font-weight", "bold");
+				editListItem.parentNode.insertBefore(NGSMilestone, editListItem);
+			}
+		}
+		previousEdit = edit;
 	}
 }
 function shortcutsRow() {
