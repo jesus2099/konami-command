@@ -1421,7 +1421,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 					(searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /\"([^\"]+)\"/g\n\nor normal (case sensitive and global): My String", searchrep[0]))
 					&& (searchrep[1] = prompt("replace\n\nif it was a regex, you can use those $1 $2 $3 etc.: “$1”", searchrep[1])) != null
 				) {
-					for (let t = 0, tracks = TRACKLIST_TOOLS_getInputs("td.title > input.track-name[type='text']", event.target, event); t < tracks.length; t++) {
+					for (let t = 0, tracks = TRACKLIST_TOOLS_getInputs("td.format > input[id^='disc-title-'][type='text'], td.title > input.track-name[type='text']", event.target, event); t < tracks.length; t++) {
 						var val = searchrep[0].match(/^\/.+\/[gi]*$/) ? tracks[t].value.replace(eval(searchrep[0]), searchrep[1]) : tracks[t].value.split(searchrep[0]).join(searchrep[1]);
 						tracks[t].style.removeProperty("background-color");
 						if (tracks[t].value != val) {
