@@ -39,7 +39,7 @@ if (cat) {
 	var MBWSRate = 999;
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var prefix = "collectionHighlighter";
-	var DEBUG = localStorage.getItem("jesus2099debug");
+	var DEBUG = false;
 	var dialogprefix = "..:: " + scriptNameAndVersion.replace(/ /g, " :: ") + " ::..\n\n";
 	var maxRetry = 20;
 	var retryPause = 5000;
@@ -183,7 +183,7 @@ if (cat) {
 							}, false);
 						}
 						settings.push(lab);
-						settings.push(" ");
+						settings.push(document.createElement("br"));
 					}
 					xp.snapshotItem(i).appendChild(createTag("td", {a: {class: prefix, rowspan: xp.snapshotLength}}, concat(settings)));
 				}
