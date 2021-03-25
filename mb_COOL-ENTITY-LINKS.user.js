@@ -37,7 +37,7 @@ var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var entities = {
 	acoustid: {fullpath: "//acoustid.org/track/"},
 	artist: {path: "/artist/", icon: "artist.png"},
-	bug: {fullpath: "//bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%", HTTPonly: true},
+	bug: {fullpath: "//bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%"},
 	cdtoc: {path: "/cdtoc/", icon: "release.png", id: "[A-Za-z0-9_\\.]+-"},
 	"classic.edit": {path: "/show/edit/?editid=", id: "[0-9]+", label: "edit\u00a0#%id%"},
 	"classic.user": {path: "/show/user/?username=", id: ".+"},
@@ -47,7 +47,8 @@ var entities = {
 	recording: {path: "/recording/", icon: "recording.png"},
 	release: {path: "/release/", icon: "release.png"},
 	"release-group": {path: "/release-group/", icon: "release_group.svg"},
-	ticket: {fullpath: "//tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", HTTPonly: true},
+	ticket: {fullpath: "//tickets.metabrainz.org/browse/", id: "[A-Za-z]+-[0-9]+"},
+	"ticket-old": {fullpath: "//tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", replace: [/#action_(\d+)/, "#comment-$1"]},
 	track: {path: "/track/", icon: "recording.png", noTools: true},
 	user: {path: "/user/", id: ".+", openEdits: "/edits/open", noEdit: true},
 	work: {path: "/work/", icon: "work.svg"},
@@ -112,6 +113,9 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 				&& !as[a].querySelector("img:not(.rendericon)")
 			) {
 				var newA = as[a].cloneNode(true);
+				if (entities[ent].replace) {
+					newA.setAttribute("href", newA.getAttribute("href").replace(entities[ent].replace[0], entities[ent].replace[1]));
+				}
 				newA.classList.add(c);
 				if (as[a].textContent == href || /* forums */ as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /* edit-notes */ as[a].textContent == href.substr(0, 48) + "…") {
 					newA.classList.add(userjs);
