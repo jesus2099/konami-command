@@ -803,10 +803,13 @@ if (j2sets.DOUBLE_CLICK_SUBMIT && self.location.pathname.match(/^\/(cdtoc\/|cdst
 	document.body.addEventListener("dblclick", function(event) {
 		if (
 			event.target.tagName
-			&& !getParent(event.target, "div", "edit-list")
+			&& !getParent(event.target, "div", "edit-list") // mb_POWER-VOTE has its own DOUBLE_CLICK_SUBMIT
 			&& (
 				event.target.tagName == "INPUT"
 				&& event.target.getAttribute("type") == "radio"
+				||
+				event.target.tagName == "LABEL"
+				&& event.target.querySelector("input[type='radio']")
 				||
 				event.target.tagName == "OPTION"
 				&& event.target.parentNode.tagName == "SELECT"
