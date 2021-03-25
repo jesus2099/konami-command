@@ -19,6 +19,8 @@
 // @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\//
 // @include      /^https?:\/\/acoustid\.org\/track\//
+// @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/account\//
+// @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/admin\//
 // @exclude      *.org/collection/*/own_collection/*
 // @run-at       document-end
 // ==/UserScript==

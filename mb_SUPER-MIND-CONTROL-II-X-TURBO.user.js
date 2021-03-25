@@ -89,12 +89,20 @@ var j2superturbo = {
 		}
 	},
 	addCSSRule: function(CSSRule) {
-		j2superturbo.css.insertRule(CSSRule, j2superturbo.css.cssRules.length);
+		if (j2superturbo.css !== null) {
+			j2superturbo.css.insertRule(CSSRule, j2superturbo.css.cssRules.length);
+		} else {
+			debug("Style is ignored because of CSP restricted page (" + location.pathname + "):\n" + CSSRule);
+		}
 	}
 };
 j2superturbo.css = document.createElement("style");
 j2superturbo.css.setAttribute("type", "text/css");
+// Pages like /account/* and /admin/* prohibit inline css:
+// Content-Security-Policy: style-src 'self' staticbrainz.org;
+// Missing 'unsafe-inline'
 document.head.appendChild(j2superturbo.css);
+// sheet is null if <style> was (appended but) not applied
 j2superturbo.css = j2superturbo.css.sheet;
 var j2sets = {}, j2docs = {}, j2defs = {}, j2setsclean = [];
 j2setting();
@@ -1522,7 +1530,7 @@ function debug(txt, buffer) {
 		if (buffer) {
 			debugBuffer += txt + "\n";
 		} else {
-			console.log(userjs.name + "\n" + debugBuffer + txt);
+			console.debug("[" + userjs.name + "] " + "\n" + debugBuffer + txt);
 			debugBuffer = "";
 		}
 	}

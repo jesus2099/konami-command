@@ -21,6 +21,8 @@
 // @grant        none
 // @match        *://*.mbsandbox.org/*
 // @match        *://*.musicbrainz.org/*
+// @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/account\//
+// @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/admin\//
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
