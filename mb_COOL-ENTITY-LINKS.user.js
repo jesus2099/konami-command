@@ -59,11 +59,6 @@ document.head.appendChild(j2css);
 j2css = j2css.sheet;
 j2css.insertRule("a." + userjs + " {text-shadow: 1px 1px 2px silver; white-space: nowrap;}", 0);
 j2css.insertRule("a." + userjs + "tool {font-variant: small-caps; vertical-align: super; font-size: xx-small}", 0);
-self.addEventListener("load", function(event){
-	for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent)) {
-		localStorage.removeItem("jesus2099skip_linksdeco_" + ent);
-	}
-});
 for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent)) {
 	var u = (entities[ent].fullpath ? entities[ent].fullpath : "musicbrainz.org" + entities[ent].path.replace("?", "\\?"));
 	var c = userjs + ent;
@@ -102,57 +97,52 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 		cssas += "a[href*='//classic." + u + "'][href$='.html']";
 	}
 	as = document.querySelectorAll(cssas);
-	var skip = localStorage.getItem("jesus2099skip_linksdeco_" + ent); // skip deco shared with COLLECTION HIGHLIGHTER asks only once per page
-	if (confirmIfMoreThan < 0 || (as.length <= confirmIfMoreThan || skip && skip == "0" || !(skip && skip == "1") && as.length > confirmIfMoreThan && confirm("jesus2099 links decorator (MB entities / collection)\n\nThere are " + as.length + " " + ent.toUpperCase() + "S to parse on this page.\nThis can take a great while to check/decorate all these links.\n\nPress OK if you still want to proceed anyway or\npress CANCEL if you want to skip it this time."))) {
-		skip = "0";
-		for (var a = 0; a < as.length; a++) {
-			var href, id;
-			if (
-				(href = as[a].getAttribute("href"))
-				&& (id = href.match(new RegExp(u + "(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
-				&& !as[a].querySelector("img:not(.rendericon)")
-			) {
-				var newA = as[a].cloneNode(true);
-				if (entities[ent].replace) {
-					newA.setAttribute("href", newA.getAttribute("href").replace(entities[ent].replace[0], entities[ent].replace[1]));
-				}
-				newA.classList.add(c);
-				if (as[a].textContent == href || /* forums */ as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /* edit-notes */ as[a].textContent == href.substr(0, 48) + "…") {
-					newA.classList.add(userjs);
-					var text = unescape(id[1]);
-					if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);
-					if (text) {
-						newA.replaceChild(entities[ent].id ? document.createTextNode(text) : createTag("code", {}, text), newA.firstChild);
-					}
-					if (id[2] || id[3]) {
-						newA.appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? "…" : ""))).parentNode.style.setProperty("opacity", ".5");
-					}
-					var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.musicbrainz\.org)/);
-					if (altserv) {
-						newA.appendChild(document.createTextNode(" (" + altserv[1] + ")"));
-					}
-					var code = newA.querySelector("code");
-					if (contractMBIDs && code) {
-						var width = parseInt(self.getComputedStyle(code).getPropertyValue("width").match(/^\d+/) + "", 10);
-						code.style.setProperty("width", width / code.textContent.length * 8 + "px");
-					}
-					newA.insertBefore(createTag("b", {}, ent + "\u00A0"), newA.firstChild);
-					if (entities[ent].noTools !== true) {
-						if (u.match(/musicbrainz\.org/) && (ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
-							var fragment = document.createDocumentFragment();
-							fragment.appendChild(newA);
-							addAfter(document.createTextNode(">"), newA);
-							if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), newA); }
-							if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "H"), newA); }
-							if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), newA); }
-							addAfter(document.createTextNode(" <"), newA);
-							newA = fragment;
-						}
-					}
-				}
-				as[a].parentNode.replaceChild(newA, as[a]);
+	for (var a = 0; a < as.length; a++) {
+		var href, id;
+		if (
+			(href = as[a].getAttribute("href"))
+			&& (id = href.match(new RegExp(u + "(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
+			&& !as[a].querySelector("img:not(.rendericon)")
+		) {
+			var newA = as[a].cloneNode(true);
+			if (entities[ent].replace) {
+				newA.setAttribute("href", newA.getAttribute("href").replace(entities[ent].replace[0], entities[ent].replace[1]));
 			}
+			newA.classList.add(c);
+			if (as[a].textContent == href || /* forums */ as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /* edit-notes */ as[a].textContent == href.substr(0, 48) + "…") {
+				newA.classList.add(userjs);
+				var text = unescape(id[1]);
+				if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);
+				if (text) {
+					newA.replaceChild(entities[ent].id ? document.createTextNode(text) : createTag("code", {}, text), newA.firstChild);
+				}
+				if (id[2] || id[3]) {
+					newA.appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? "…" : ""))).parentNode.style.setProperty("opacity", ".5");
+				}
+				var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.musicbrainz\.org)/);
+				if (altserv) {
+					newA.appendChild(document.createTextNode(" (" + altserv[1] + ")"));
+				}
+				var code = newA.querySelector("code");
+				if (contractMBIDs && code) {
+					var width = parseInt(self.getComputedStyle(code).getPropertyValue("width").match(/^\d+/) + "", 10);
+					code.style.setProperty("width", width / code.textContent.length * 8 + "px");
+				}
+				newA.insertBefore(createTag("b", {}, ent + "\u00A0"), newA.firstChild);
+				if (entities[ent].noTools !== true) {
+					if (u.match(/musicbrainz\.org/) && (ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
+						var fragment = document.createDocumentFragment();
+						fragment.appendChild(newA);
+						addAfter(document.createTextNode(">"), newA);
+						if (editLink && entities[ent].noEdit !== true) { addAfter(createTag("a", {a: {href: href + "/edit", title: "edit this entity"}}, "E"), newA); }
+						if (editsLink) { addAfter(createTag("a", {a: {href: href + "/edits", title: "see entity edit history"}}, "H"), newA); }
+						if (editsLink) { addAfter(createTag("a", {a: {href: href + (entities[ent].openEdits ? entities[ent].openEdits : "/open_edits"), title: "see entity open edits"}}, "O"), newA); }
+						addAfter(document.createTextNode(" <"), newA);
+						newA = fragment;
+					}
+				}
+			}
+			as[a].parentNode.replaceChild(newA, as[a]);
 		}
-	} else { skip = "1"; }
-	localStorage.setItem("jesus2099skip_linksdeco_" + ent, skip);
+	}
 }
