@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
-// @version      2021.1.20.2099
+// @version      2021.3.26
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
-// @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
-// @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac_DIRECT-LINK
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/jasrac_DIRECT-LINK.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
