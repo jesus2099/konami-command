@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2021.3.22
+// @version      2021.3.31
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -284,34 +284,25 @@ if (editform) {
 }
 // From mb_NGS-MILESTONE
 // Show if edits are pre-NGS (NGS was released on 2011-05-16, last pre-NGS Edit #14459455, first NGS Edit #14459456)
-var firstNGSEdit = 14459456;
+var firstNGSEdit = 14459456; // nikki work edit
 j2css.insertRule("div.edit-header.pre-ngs { background-image: url(data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP/MAP///////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQJBQAAACwAAAAAEAAQAAACIQyOF8uW2NpTcU1Q7czu8fttGTiK1YWdZISWprTCL9NGBQAh+QQJBQAAACwAAAAAEAAQAAACIIQdqXm9285TEc1QwcV1Zz19lxhmo1l2aXSqD7lKrXMWACH5BAkFAAAALAAAAAAQABAAAAIhRI4Hy5bY2lNxzVDtzO7x+20ZOIrVhZ1khJamtMIv00YFACH5BAkFAAAALAAAAAAQABAAAAIgjA2peb3bzlMRTVDDxXVnPX2XGGajWXZpdKoPuUqtcxYAOw==); }", 0);
 if (location.pathname.match(/\/edit\/\d+/)) {
 	var edit = document.querySelector("div#content > div.edit-header > h1");
 	if (parseInt(edit.textContent.match(/\d+/), 10) < firstNGSEdit) {
-		edit.nextSibling.appendChild(document.createTextNode(" (pre-NGS)"));
-		edit.parentNode.classList.add("pre-ngs");
+		preNGS(edit);
 	}
 } else {
 	var edits = document.querySelectorAll("div.edit-header > h2 > a[href*='/edit/']");
-	for (var e = 0, previousEdit = firstNGSEdit; e < edits.length; e++) {
+	for (var e = 0; e < edits.length; e++) {
 		var edit = parseInt(edits[e].getAttribute("href").match(/\d+$/), 10);
 		if (edit < firstNGSEdit) {
-			edits[e].parentNode.nextSibling.appendChild(document.createTextNode(" (pre-NGS)"));
-			edits[e].parentNode.parentNode.classList.add("pre-ngs");
-			if (previousEdit >= firstNGSEdit) {
-				var editListItem = edits[e].parentNode.parentNode.parentNode;
-				var NGSMilestone = document.createElement("div");
-				NGSMilestone.classList.add("edit-list");
-				NGSMilestone.appendChild(document.createElement("pre")).appendChild(document.createTextNode("First NGS Edit #14459456\nNGS was released on 2011-05-16\nLast pre-NGS Edit #14459455"));
-				NGSMilestone.style.setProperty("background-image", "url(data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP/MAP///////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQJBQAAACwAAAAAEAAQAAACIQyOF8uW2NpTcU1Q7czu8fttGTiK1YWdZISWprTCL9NGBQAh+QQJBQAAACwAAAAAEAAQAAACIIQdqXm9285TEc1QwcV1Zz19lxhmo1l2aXSqD7lKrXMWACH5BAkFAAAALAAAAAAQABAAAAIhRI4Hy5bY2lNxzVDtzO7x+20ZOIrVhZ1khJamtMIv00YFACH5BAkFAAAALAAAAAAQABAAAAIgjA2peb3bzlMRTVDDxXVnPX2XGGajWXZpdKoPuUqtcxYAOw==)");
-				NGSMilestone.style.setProperty("padding", "1em 2em");
-				NGSMilestone.firstChild.style.setProperty("font-weight", "bold");
-				editListItem.parentNode.insertBefore(NGSMilestone, editListItem);
-			}
+			preNGS(edits[e].parentNode);
 		}
-		previousEdit = edit;
 	}
+}
+function preNGS(editHeader) {
+	editHeader.appendChild(document.createTextNode(" (pre‐NGS)"));
+	editHeader.parentNode.classList.add("pre-ngs");
 }
 function shortcutsRow() {
 	var editlist, editactions, voteopts, editdetails;
