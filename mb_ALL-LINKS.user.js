@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2021.2.12
+// @version      2021.4.2
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
-// @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
+// @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and Genius searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
 // @compatible   opera(12.18.1872)+violentmonkey  my setup
 // @compatible   firefox(39)+greasemonkey         tested sometimes
@@ -119,7 +119,6 @@ var autolinks = {
 		"Lyrics": null,
 		"decoda": "http://decoda.com/search?q=%artist-name%",
 		"Genius": "//genius.com/search?q=%artist-name%",
-		"LyricWiki": "//lyrics.wikia.com/%artist-name%",
 		"うたまっぷ（アーティスト）": {
 			acceptCharset: "euc-jp",
 			action: "http://www.utamap.com/searchkasi.php",
