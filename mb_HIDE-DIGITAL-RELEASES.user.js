@@ -12,7 +12,6 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/releases/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/edit$/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
 // @run-at       document-ready
 // ==/UserScript==
@@ -20,21 +19,22 @@
 var userjs = {
 	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-"),
 };
-var MBGlossary = JSON.parse(localStorage.getItem("MBGlossary"));
-if (!MBGlossary) {
-	MBGlossary = {
-		"medium-format": {
-			12: {
-				de: "Digitales Medium",
-				en: "Digital Media",
-				fr: "Support numérique",
-				it: "Supporto digitale",
-				nl: "digitale media",
-			}
+var MBGlossary = {
+	"medium-format": {
+		12: {
+			"de": "Digitales Medium",
+			"el-gr": "Ψηφιακό μέσο",
+			"en": "Digital Media",
+			"es-es": "Digital",
+			"et": "audiofailid",
+			"fi": "Digitaalinen media",
+			"fr": "Support numérique",
+			"it": "Supporto digitale",
+			"ja": "デジタルメディア",
+			"nl": "digitale media",
 		}
-	};
-	localStorage.setItem("MBGlossary", JSON.stringify(MBGlossary));
-}
+	}
+};
 var lang = document.getElementsByTagName("html")[0].getAttribute("lang");
 switch (location.pathname.match(/\/[^/]+\//)[0]) {
 	case "/artist/": // /artist/*/releases
@@ -49,17 +49,6 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 		css.insertRule("." + userjs.id + "fullDownload:hover { opacity: revert; }", 0);
 		// find download releases and apply style class
 		markDownloadReleases(document.querySelectorAll("table.tbl > tbody > tr:not(.subh)"), location.pathname.match(/\/releases$/) ? 3 : 2);
-		break;
-	case "/release/": // release editor (see @include)
-		// ARTIFICIAL INTELLIGENCE: Learn new localised digital media names
-		var digitalMediaFormat = document.querySelector("#release-editor select[id^='medium-format'] option[value='12']");
-		if (digitalMediaFormat) {
-			digitalMediaFormat = digitalMediaFormat.textContent;
-			if (MBGlossary["medium-format"][12][lang] !== digitalMediaFormat) {
-				MBGlossary["medium-format"][12][lang] = digitalMediaFormat;
-				localStorage.setItem("MBGlossary", JSON.stringify(MBGlossary));
-			}
-		}
 		break;
 }
 function markDownloadReleases(releaseRows, formatRowIndex) {
