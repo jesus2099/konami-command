@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2021.3.26
+// @version      2021.4.6
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1421,7 +1421,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 					(searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /\"([^\"]+)\"/g\n\nor normal (case sensitive and global): My String", searchrep[0]))
 					&& (searchrep[1] = prompt("replace\n\nif it was a regex, you can use those $1 $2 $3 etc.: “$1”", searchrep[1])) != null
 				) {
-					for (let t = 0, tracks = TRACKLIST_TOOLS_getInputs("td.format > input[id^='disc-title-'][type='text'], td.title > input.track-name[type='text']", event.target, event); t < tracks.length; t++) {
+					for (let t = 0, tracks = TRACKLIST_TOOLS_getInputs("td.format > input[id^='medium-title-'][type='text'], td.title > input.track-name[type='text']", event.target, event); t < tracks.length; t++) {
 						var val = searchrep[0].match(/^\/.+\/[gi]*$/) ? tracks[t].value.replace(eval(searchrep[0]), searchrep[1]) : tracks[t].value.split(searchrep[0]).join(searchrep[1]);
 						tracks[t].style.removeProperty("background-color");
 						if (tracks[t].value != val) {
@@ -1492,9 +1492,9 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 	}
 }
 function TRACKLIST_TOOLS_getInputs(inputCSS, obj, evt) {
-	var inputs = getParent(obj, "fieldset", "advanced-disc");
+	var inputs = getParent(obj, "fieldset", "advanced-medium");
 	if (obj.value.match(/\(all\)/i) || evt.shiftKey) { inputs = inputs.parentNode; }
-	return inputs.querySelectorAll("fieldset.advanced-disc " + inputCSS);
+	return inputs.querySelectorAll("fieldset.advanced-medium " + inputCSS);
 }
 function TRACKLIST_TOOLS_init() {
 	debug("TRACKLIST_TOOLS_init");

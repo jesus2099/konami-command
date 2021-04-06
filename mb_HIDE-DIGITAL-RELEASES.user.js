@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2021.3.8
+// @version      2021.4.6
 // @description  musicbrainz.org: (VERY BASIC AT THE MOMENT) Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
@@ -23,7 +23,7 @@ var userjs = {
 var MBGlossary = JSON.parse(localStorage.getItem("MBGlossary"));
 if (!MBGlossary) {
 	MBGlossary = {
-		"disc-format": {
+		"medium-format": {
 			12: {
 				de: "Digitales Medium",
 				en: "Digital Media",
@@ -52,11 +52,11 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 		break;
 	case "/release/": // release editor (see @include)
 		// ARTIFICIAL INTELLIGENCE: Learn new localised digital media names
-		var digitalMediaFormat = document.querySelector("#release-editor select[id^='disc-format'] option[value='12']");
+		var digitalMediaFormat = document.querySelector("#release-editor select[id^='medium-format'] option[value='12']");
 		if (digitalMediaFormat) {
 			digitalMediaFormat = digitalMediaFormat.textContent;
-			if (MBGlossary["disc-format"][12][lang] !== digitalMediaFormat) {
-				MBGlossary["disc-format"][12][lang] = digitalMediaFormat;
+			if (MBGlossary["medium-format"][12][lang] !== digitalMediaFormat) {
+				MBGlossary["medium-format"][12][lang] = digitalMediaFormat;
 				localStorage.setItem("MBGlossary", JSON.stringify(MBGlossary));
 			}
 		}
@@ -69,7 +69,7 @@ function markDownloadReleases(releaseRows, formatRowIndex) {
 				// don’t match half physical releases
 				!releaseRows[r].cells[formatRowIndex].textContent.match(/\+/)
 				// match fully digital releases
-				&& releaseRows[r].cells[formatRowIndex].textContent.match(new RegExp("([0-9]+×)?" + MBGlossary["disc-format"][12][lang], "iu"))
+				&& releaseRows[r].cells[formatRowIndex].textContent.match(new RegExp("([0-9]+×)?" + MBGlossary["medium-format"][12][lang], "iu"))
 			) {
 				releaseRows[r].classList.add(userjs.id + "fullDownload");
 			}
