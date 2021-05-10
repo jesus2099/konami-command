@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2020.10.23.2054
+// @version      2021.5.10
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @compatible   vivaldi(2.11.1811.33)+violentmonkey my setup
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -624,7 +624,12 @@ function addExternalLink(parameters/* text, target, begin, end, sntarget, mbid, 
 				newLink = false;
 				li = getParent(existingLink, "li");
 			} else {
-				li = createTag("li", {a: {ref: parameters.text}}, createTag("a", {a: {href: parameters.target}}, parameters.text));
+				li = createTag("li", {a: {ref: parameters.text}});
+				if (parameters.end) {
+					li.appendChild(createTag("span", {a: {class: "deleted", title: parameters.target}}, parameters.text));
+				} else {
+					li.appendChild(createTag("a", {a: {href: parameters.target}}, parameters.text));
+				}
 			}
 			if (parameters.sntarget && newLink) {
 				li.appendChild(document.createTextNode(" ("));
