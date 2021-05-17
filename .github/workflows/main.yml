@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     # Map a step output to a job output
     outputs:
-      all: ${{ steps.changes.outputs.all}}
+      all: ${{ steps.changes.outputs.all }}
       js: ${{ steps.changes.outputs.js }}
     steps:
       # Make sure we have some code to diff.
@@ -30,7 +30,9 @@ jobs:
         # Set outputs using the command.
         run: |
           echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
-          echo "::set-output name=js::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep --extended-regex '\.js(on)?$' | xargs)"
+          echo "::set-output name=js::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep --extended-regexp '\.js(on)?$' | xargs)"
+          echo "::debug::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
+          echo "::debug::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep --extended-regexp '\.js(on)?$' | xargs)"
 
   eslint:
     # The type of runner that the job will run on
@@ -38,17 +40,17 @@ jobs:
     # require the first job to have ran
     needs: changed-files
     # only run there are changed files
-    if: ${{needs.changed-files.outputs.js}}
+    if: ${{ needs.changed-files.outputs.js }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: echo changed files
-        run: echo ${{needs.changed-files.outputs.js}}
+        run: echo ${{ needs.changed-files.outputs.js }}
       - name: Setup Node.js environment
         uses: actions/setup-node@v2
       - name: Install /package.json dependencies
         run: npm install
       - name: Run /package.json linter (eslint)
-        run: npm run eslint ${{needs.changed-files.outputs.js}}
+        run: npm run eslint ${{ needs.changed-files.outputs.js }}
 
       # Runs a single command using the runners shell
       # - name: Run a one-line script
