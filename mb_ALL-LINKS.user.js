@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2021.4.2
+// @version      2021.5.20
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ALL-LINKS.user.js
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and Genius searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -176,7 +176,7 @@ var autolinks = {
 		"AllMusic":           "http://www.allmusic.com/search/artist/%artist-name%",
 		"Discogs":            "http://www.discogs.com/search?q=%artist-name%&type=artist",
 		"Discogs (barcode)":  "https://www.discogs.com/search/?q=%release-barcode%&type=release",
-		"IFPI (barcode)":"https://isrcsearch.ifpi.org/#!/search?upcCode=%release-barcode%&tab=lookup&showReleases&start=0&number=100",
+		"IFPI (barcode)":     "https://isrcsearch.ifpi.org/#!/search?upcCode=%release-barcode%&tab=lookup&showReleases&start=0&number=100",
 		"IMDb":               "//www.imdb.com/find?q=%artist-name%&s=nm",
 		"ISNI":               "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 		"Rate Your Music":    "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%",

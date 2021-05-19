@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2021.5.19
+// @version      2021.5.20
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user css/js auto‐update, even if the script author has not set @downloadURL and @updateURL.
 // @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -99,17 +99,25 @@ function changeStuff() {
 	}
 }
 function getInstallIcon(fileExtension) {
-	var iconURL = 
-		fileExtension == ".user.js"
-		? GM_info.scriptHandler == "Violentmonkey"
-			? "https://github.com/violentmonkey/violentmonkey/raw/1d911bffd7d4c37f82b5bcdada16f0b79fe0a70a/src/public/images/icon16.png"
-			: GM_info.scriptHandler == "Tampermonkey" 
-				? "https://github.com/Tampermonkey/tampermonkey/raw/07f668cd1cabb2939220045839dec4d95d2db0c8/images/licon.png" 
-				: "https://github.com/greasemonkey/greasemonkey/raw/bdf1a51cc4ad2ad2482d11efb9e80d3439d66731/skin/icon.svg?sanitize=true"
-		: fileExtension == ".user.css"
-			? "https://github.com/openstyles/stylus/raw/c2e83fb3c4dc4d980e07c5ce92e9250af3eb5609/images/icon/16.png"
-			: GM_info.script.icon;
-
+	var iconURL = GM_info.script.icon;
+	switch (fileExtension) {
+		case ".user.js":
+			switch (GM_info.scriptHandler) {
+				case "Greasemonkey":
+					iconURL = "https://github.com/greasemonkey/greasemonkey/raw/bdf1a51cc4ad2ad2482d11efb9e80d3439d66731/skin/icon.svg?sanitize=true";
+					break;
+				case "Violentmonkey":
+					iconURL = "https://github.com/violentmonkey/violentmonkey/raw/8a319d0312004ef827efbf34c56e0f66602726cf/src/resources/icon.svg?sanitize=true";
+					break;
+				case "Tampermonkey":
+					iconURL = "https://github.com/Tampermonkey/tampermonkey/raw/07f668cd1cabb2939220045839dec4d95d2db0c8/images/licon.png";
+					break;
+			}
+			break;
+		case ".user.css":
+			iconURL = "https://github.com/openstyles/stylus/raw/c2e83fb3c4dc4d980e07c5ce92e9250af3eb5609/images/icon/16.png";
+			break;
+	}
 	if (!installIcons[fileExtension]) {
 		installIcons[fileExtension] = document.createElement("img");
 		installIcons[fileExtension].setAttribute("src", iconURL);

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2021.4.23
+// @version      2021.5.20
 // @description  Various quality of life enhancements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -32,5 +32,5 @@ setTimeout(function() {
 		applications[a].parentNode.parentNode.addEventListener("dblclick", function(event) {
 			event.currentTarget.querySelector("img.j2viewTree").click();
 		});
-	}	
+	}
 }, 1000);

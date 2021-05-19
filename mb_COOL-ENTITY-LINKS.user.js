@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2021.3.26
+// @version      2021.5.20
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COOL-ENTITY-LINKS
@@ -22,7 +22,6 @@
 var contractMBIDs = true; // more compact MBIDs but brwoser can still inline search/find full MBID (this is magic from mb_INLINE-STUFF)
 var editLink = true; // add direct link to edit page
 var editsLink = true; // add direct link to edit history and open edit pages
-var confirmIfMoreThan = 2000; // -1 to never confirm
 /* -------- CONFIGURATION  END  (don't edit below) -------- */
 var userjs = "jesus2099userjs131731";
 var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
