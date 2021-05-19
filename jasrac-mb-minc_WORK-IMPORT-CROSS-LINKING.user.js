@@ -991,15 +991,15 @@ function setType(type) {
 				stypeid.style.setProperty("background", cWARN);
 				stypeid.value = 17;
 			}
-			if (slangid.value != 486) {
+			if (slangid.selectedIndex !== 0 && slangid.value != 486) {
 				slangid.style.setProperty("background", cOK);
 			} else {
 				slangid.style.setProperty("background", cWARN);
-				slangid.selectedIndex = 0;
+				slangid.value = 198;
 			}
 			break;
 		case instrumental.toLowerCase():
-			if (stypeid.selectedIndex == 0) {
+			if (stypeid.selectedIndex === 0) {
 				stypeid.style.setProperty("background", cOK);
 			} else {
 				stypeid.style.setProperty("background", cWARN);
