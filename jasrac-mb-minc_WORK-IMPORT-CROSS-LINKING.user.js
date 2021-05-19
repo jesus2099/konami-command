@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2021.3.22
+// @version      2021.5.19
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -395,6 +395,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				/* -- vv ------ sakuhin links ------ vv -- */
 						addAfter(document.createElement("sup"), sakuhin).appendChild(createA("MB", workLookupURL("mb", "name", workName), "Search this work name in MusicBrainz"));
 						addAfter(document.createElement("sup"), sakuhin).appendChild(createA("NT", workLookupURL("nextone", "name", workName), "Search this work name in NexTone"));
+						addAfter(document.createElement("sup"), sakuhin).appendChild(mincSearch("title", workName, "MF")).style.setProperty("text-decoration", "underline");
 						addAfter(document.createTextNode(" "), sakuhin);
 				/* -- vv ------ sakuhin code links ------ vv -- */
 						var span = document.createElement("span");
@@ -952,23 +953,21 @@ function jasracSearch(type, query) {
 	formJASRAC.appendChild(createCoolSubmit("JASRAC — " + query));
 	return formJASRAC;
 }
-// workaround here, using GET accepted by MINC (unlike multipart)*//*TOTO since minc is now utf-8, see what can be dumped here
-function mincSearch(type, query) {
-	var formMINC = createTag("form", {a: {action: "https://www.minc.gr.jp/db/SakCdInfo.aspx", method: "get", "accept-charset": "utf-8"}, s: {display: "inline", background: background}});
-	formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "DATATYPE", value: "2"}}));
+// form charset trick to allow query from MS932 JASRAC site (and any other sites) to utf-8 MINC site
+function mincSearch(type, query, label) {
+	var formMINC = createTag("form", {a: {action: "https://search.minc.or.jp/music/list/", method: "get", "accept-charset": "utf-8"}, s: {display: "inline", background: background}});
 	switch (type) {
 		case "title":
 			if (!maybeJapanese(query)) {
 				query = removeLeadingArticle(query);
 			}
 			query = halfwidthToFullwidth(query.toUpperCase());
-			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "GTITLE", value: query}}));
-			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "SAKUSINM", value: ""}}));
-			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "ARTNAME", value: ""}}));
+			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "tr", value: query}}));
+			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "type", value: "search-form-title"}}));
+			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "match", value: "1"}}));
 			break;
 	}
-	formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "SRCHTYPE", value: "2"}}));
-	formMINC.appendChild(createCoolSubmit("音楽の森 — " + query));
+	formMINC.appendChild(createCoolSubmit(label ? label : "音楽の森 — " + query));
 	return formMINC;
 }
 function removeLeadingArticle(title) {
@@ -1034,7 +1033,7 @@ function workLookupURL(db, type, q) {
 			break;
 		case "minc":
 			switch (type) {
-				case "code": return "https://www.minc.gr.jp/db/SakCdInfo.aspx?SAKUHINCD=" + q.replace(/-/g, "");
+				case "code": return "https://search.minc.or.jp/music/list/?tr=%q%&type=search-form-sakuhin&match=1".replace(/%q%/, q);
 			}
 			break;
 		case "nextone":
