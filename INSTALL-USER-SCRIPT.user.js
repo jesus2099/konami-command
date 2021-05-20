@@ -101,17 +101,16 @@ function changeStuff() {
 	}
 }
 function getInstallIcon(fileExtension) {
-	var iconURL = 
+	var iconURL =
 		fileExtension == ".user.js"
-		? GM_info.scriptHandler == "Violentmonkey"
-			? "https://github.com/violentmonkey/violentmonkey/raw/1d911bffd7d4c37f82b5bcdada16f0b79fe0a70a/src/public/images/icon16.png"
-			: GM_info.scriptHandler == "Tampermonkey" 
-				? "https://github.com/Tampermonkey/tampermonkey/raw/539ef0920d57118c151ea4cff711e5474f7633bc/images/icon.png" 
-				: "https://github.com/greasemonkey/greasemonkey/raw/bdf1a51cc4ad2ad2482d11efb9e80d3439d66731/skin/icon.svg?sanitize=true"
-		: fileExtension == ".user.css"
-			? "https://github.com/openstyles/stylus/raw/c2e83fb3c4dc4d980e07c5ce92e9250af3eb5609/images/icon/16.png"
-			: GM_info.script.icon;
-
+			? GM_info.scriptHandler == "Violentmonkey"
+				? "https://github.com/violentmonkey/violentmonkey/raw/8a319d0312004ef827efbf34c56e0f66602726cf/src/resources/icon.svg?sanitize=true"
+				: GM_info.scriptHandler == "Tampermonkey"
+					? "https://github.com/Tampermonkey/tampermonkey/raw/07f668cd1cabb2939220045839dec4d95d2db0c8/images/licon.png"
+					: "https://github.com/greasemonkey/greasemonkey/raw/bdf1a51cc4ad2ad2482d11efb9e80d3439d66731/skin/icon.svg?sanitize=true"
+			: fileExtension == ".user.css"
+				? "https://github.com/openstyles/stylus/raw/c2e83fb3c4dc4d980e07c5ce92e9250af3eb5609/images/icon/16.png"
+				: GM_info.script.icon;
 	if (!installIcons[fileExtension]) {
 		installIcons[fileExtension] = document.createElement("img");
 		installIcons[fileExtension].setAttribute("src", iconURL);
