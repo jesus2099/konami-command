@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2021.5.10
-// @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and LyricWiki searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
+// @version      2021.5.21
+// @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @compatible   vivaldi(2.11.1811.33)+violentmonkey my setup
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
 // @compatible   chrome+violentmonkey                should be same as vivaldi
@@ -125,21 +125,14 @@ var whitelistSearchLinks = {
 					"//genius.com/search?q=%recording-name%",
 					"//genius.com/search?q=%work-name%",
 				],
-				Decoda: [
-					{en: "//www.decoda.com/search?q=%artist-name%"},
-					{en: "//www.decoda.com/search?q=%work-name%"}
+				"J-Lyric（歌手名）": "//search2.j-lyric.net/index.php?ka=%artist-name%",
+				"J-Lyric（曲名）": [
+					"//search2.j-lyric.net/index.php?kt=%recording-name%",
+					"//search2.j-lyric.net/index.php?kt=%work-name%",
 				],
-				"J-Lyric（歌手）": "http://j-lyric.net/index.php?ka=%artist-name%",
-				"歌詞タイム": "//duckduckgo.com/?q=site%3Akasi-time.com+subcat+intitle:%artist-name%",
 				Directlyrics: [
 					"//directlyrics.com/search?q=%artist-name%+inurl%3A-artist.html",
 					"//directlyrics.com/search?q=%work-name%+inurl%3A-lyrics.html"
-				],
-				LyricWiki: [
-					"//lyrics.fandom.com/wiki/%artist-name%",
-					"//lyrics.fandom.com/wiki/Special:Search?search=%release-group-name%",
-					"//lyrics.fandom.com/wiki/Special:Search?search=%release-name%",
-					"//lyrics.fandom.com/wiki/Special:Search?search=%work-name%"
 				],
 				WikiParoles: [
 					"//lyrics.fandom.com/fr/wiki/%artist-name%",
