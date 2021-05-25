@@ -121,7 +121,7 @@ var whitelistSearchLinks = {
 			},
 			items: {
 				Genius: [
-					"//genius.com/search?q=%artist-name%",
+					"//genius.com/search?q=%artist-latin-script-name%",
 					"//genius.com/search?q=%recording-name%",
 					"//genius.com/search?q=%work-name%",
 				],
