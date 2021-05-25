@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2021.5.21
+// @version      2021.5.26
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @compatible   vivaldi(2.11.1811.33)+violentmonkey my setup
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -133,12 +133,6 @@ var whitelistSearchLinks = {
 				Directlyrics: [
 					"//directlyrics.com/search?q=%artist-name%+inurl%3A-artist.html",
 					"//directlyrics.com/search?q=%work-name%+inurl%3A-lyrics.html"
-				],
-				WikiParoles: [
-					"//lyrics.fandom.com/fr/wiki/%artist-name%",
-					"//lyrics.fandom.com/fr/wiki/Spécial:Recherche?search=%release-group-name%",
-					"//lyrics.fandom.com/fr/wiki/Spécial:Recherche?search=%release-name%",
-					"//lyrics.fandom.com/fr/wiki/Spécial:Recherche?search=%work-name%"
 				]
 			}
 		},
