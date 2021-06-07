@@ -1,51 +1,23 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2016.6.15
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_ELEPHANT-EDITOR.user.js
+// @version      2021.3.17
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
-// @homepage     http://userscripts-mirror.org/scripts/show/94629
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
-// @compatible   opera(12.18.1872)+violentmonkey     my setup
-// @compatible   firefox(39)+greasemonkey            tested sometimes
-// @compatible   chromium(46)+tampermonkey           tested sometimes
-// @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
-// @author       PATATE12
-// @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2011-01-13
+// @author       jesus2099
+// @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+// @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @since        2011-01-13; https://web.archive.org/web/20131103163403/userscripts.org/scripts/show/94629 / https://web.archive.org/web/20141011084017/userscripts-mirror.org/scripts/show/94629
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
+// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@58be27d33c01f1081291751bbcfcbddc3be2c4ea/lib/SUPER.js?v=2021.2.4
 // @grant        none
-// @match        *://*.mbsandbox.org/*/add-alias
-// @match        *://*.mbsandbox.org/*/change-quality
-// @match        *://*.mbsandbox.org/*/create*
-// @match        *://*.mbsandbox.org/*/delete
-// @match        *://*.mbsandbox.org/*/edit
-// @match        *://*.mbsandbox.org/*/edit_annotation
-// @match        *://*.mbsandbox.org/*/merge
-// @match        *://*.mbsandbox.org/*/merge?*
-// @match        *://*.mbsandbox.org/*/move?dest=*
-// @match        *://*.mbsandbox.org/*/remove*
-// @match        *://*.mbsandbox.org/*edits*
-// @match        *://*.mbsandbox.org/artist/*/split
-// @match        *://*.mbsandbox.org/cdtoc/*
-// @match        *://*.mbsandbox.org/edit/*
-// @match        *://*.mbsandbox.org/edit/artist/add.html?*
-// @match        *://*.mbsandbox.org/edit/subscribed*
-// @match        *://*.mbsandbox.org/isrc/delete*
-// @match        *://*.mbsandbox.org/mod/*
-// @match        *://*.mbsandbox.org/recording/*/add-isrc
-// @match        *://*.mbsandbox.org/release*/*/*-cover-art*
-// @match        *://*.mbsandbox.org/release/*/edit*
-// @match        *://*.mbsandbox.org/release/add*
-// @match        *://*.mbsandbox.org/work/*/add-iswc
 // @match        *://*.musicbrainz.org/*/add-alias
 // @match        *://*.musicbrainz.org/*/change-quality
 // @match        *://*.musicbrainz.org/*/create*
 // @match        *://*.musicbrainz.org/*/delete
 // @match        *://*.musicbrainz.org/*/edit
+// @match        *://*.musicbrainz.org/*/edit/?*
 // @match        *://*.musicbrainz.org/*/edit_annotation
 // @match        *://*.musicbrainz.org/*/merge
 // @match        *://*.musicbrainz.org/*/merge?*
@@ -75,24 +47,32 @@ var copyDateLabels = ["↓", "↑", "copy date"];
 var setPrevNoteOnLoad = true; /* "true" will restore last edit note on load (user can choose text with buttons in either case) */
 var setPrevNoteOnEditPageLoad = false; /* "true" can be troublesome if you just want to vote, believe me */
 var setPrevDateOnLoad = false; /* "true" can be troublesome when you don’t need date any more and you forget to clear it */
-/*funky colours*/
+/* funky colours */
 var cOK = "greenyellow";
-var cNG = "pink";
+// var cNG = "pink";
 var cWARN = "gold";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs94629";
 var notetextStorage = "jesus2099userjs::last_editnotetext";
 var acoustid = self.location.href.match(/acoustid\.org\/edit\//);
 var mb = !acoustid;
-var editpage = (mb && self.location.href.match(/(\.mbsandbox|musicbrainz)\.org\/edit\/\d+($|[?#&])/));
-var editsearchpage = (mb && self.location.href.match(/(\.mbsandbox|musicbrainz)\.org\/.+(?:edits|subscribed)/));
+var editpage = (mb && self.location.href.match(/musicbrainz\.org\/edit\/\d+($|[?#&])/));
+var editsearchpage = (mb && self.location.href.match(/musicbrainz\.org\/.+(?:edits|subscribed)/));
 var re = (mb && document.querySelector("div#release-editor"));
 var save = !localStorage.getItem(userjs + "forget") && (editpage || !editsearchpage);
-var content = document.getElementById(mb ? "page" : "content");
+var content = document.querySelector(mb ? "#page" : "div.content");
 var savedHeight = localStorage.getItem(userjs + "_savedHeight");
+var notetext;
+var reldates = [];
+var xdate = [];
+var submitbtn;
+// React hydrate imposes delay
 if (content) {
-	var notetext = content.querySelectorAll("textarea" + (acoustid ? "" : ".edit-note, textarea#edit-note-text"));
-	var reldates = [];
+	var reactHydratePage = location.pathname.match(/\/(add-alias|alias\/\d+\/edit)$/);
+	setTimeout(init, reactHydratePage ? 1000 : 10);
+}
+function init() {
+	notetext = content.querySelectorAll("textarea" + (acoustid ? "" : ".edit-note, textarea#edit-note-text"));
 	if (notetext.length == 1) {
 		notetext = notetext[0];
 		if (acoustid) {
@@ -114,8 +94,7 @@ if (content) {
 			}
 		});
 	} else { notetext = false; }
-	var xdate = [];
-	var submitbtn = content.querySelector(mb ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
+	submitbtn = content.querySelector(mb ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
 	if (re) submitbtn = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
 	if (reldates.length == 2) {
 		xdate = [
@@ -139,12 +118,6 @@ if (content) {
 			if (carcan) {
 				if (re) carcan.style.setProperty("width", "inherit");
 				else notetext.parentNode.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
-				if (xdate[0]) {
-					var fs = getParent(xdate[0][1], "fieldset");
-					if (fs) {
-						fs.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
-					}
-				} 
 			}
 			notetext.style.setProperty("width", "98%");
 			var removeLabels = ["label-id-ar.edit_note", "label-id-edit_note", "label-id-edit-artist.edit_note", "label-id-edit-label.edit_note", "label-id-edit-recording.edit_note", "label-id-edit-release-group.edit_note", "label-id-edit-url.edit_note", "label-id-edit-work.edit_note"];
@@ -154,15 +127,15 @@ if (content) {
 			}
 		}
 		var buttons = createTag("div", {a: {class: "buttons"}});
-		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if(event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
+		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
 		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
 		savecb.checked = save;
 		savecb.parentNode.appendChild(document.createTextNode(" remember  "));
 		for (var ni = 0; ni < textLabels.length; ni++) {
-			var butt = createButtor(textLabels[ni], "50px");
-			var buttid = notetextStorage+"0"+ni;
+			let butt = createButtor(textLabels[ni], "50px");
+			let buttid = notetextStorage + "0" + ni;
 			butt.setAttribute("id", buttid);
-			var lastnotetext = localStorage.getItem(buttid);
+			let lastnotetext = localStorage.getItem(buttid);
 			if (!lastnotetext) {
 				butt.setAttribute("disabled", "true");
 				butt.style.setProperty("opacity", ".5");
@@ -174,7 +147,7 @@ if (content) {
 					sendEvent(notetext, "change");
 					notetext.focus();
 					if (event.shiftKey) { sendEvent(submitbtn, "click"); }
-				}, false);/*onclick*/
+				}, false); // onclick
 			}
 			buttons.appendChild(butt);
 			buttons.appendChild(document.createTextNode(" "));
@@ -182,25 +155,25 @@ if (content) {
 		buttons.appendChild(createClearButtor("notetext"));
 		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
 		notetext.parentNode.insertBefore(buttons, notetext);
-		var lastnotetext = localStorage.getItem(notetextStorage + "00");
+		let lastnotetext = localStorage.getItem(notetextStorage + "00");
 		if (save && !editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
 			notetext.value = lastnotetext;
 			sendEvent(notetext, "change");
 		}
 		if (reldates.length == 2) {
 			createClearButtor("dates");
-			/*date memories*/
+			/* date memories */
 			for (var ixd = 0; ixd < xdate.length; ixd++) {
 				var lastdatey = localStorage.getItem(xdate[ixd][0] + "_y");
 				var lastdatem = localStorage.getItem(xdate[ixd][0] + "_m");
 				var lastdated = localStorage.getItem(xdate[ixd][0] + "_d");
-				var butt = createButtor(textLabels[0]);
+				let butt = createButtor(textLabels[0]);
 				butt.setAttribute("id", xdate[ixd][0]);
 				if (!lastdatey) {
 					butt.setAttribute("disabled", "true");
 					butt.style.setProperty("opacity", ".5");
 				} else {
-					butt.setAttribute("title", lastdatey+"-"+lastdatem+"-"+lastdated);
+					butt.setAttribute("title", lastdatey + "-" + lastdatem + "-" + lastdated);
 					butt.setAttribute("value", butt.getAttribute("title").replace(/-null/g, ""));
 					butt.addEventListener("click", function(event) {
 						var xdymd = this.getAttribute("title").match(/^(.*)-(.*)-(.*)$/);
@@ -213,7 +186,7 @@ if (content) {
 						if (event.shiftKey) {
 							sendEvent(this.parentNode.getElementsByTagName("input")[3], "click");
 						}
-					}, false);/*onclick*/
+					}, false); // onclick
 				}
 				xdate[ixd][1].parentNode.setAttribute("title", "shift+click to change both dates at once");
 				addAfter(butt, xdate[ixd][3]);
@@ -222,9 +195,9 @@ if (content) {
 					sendEvent(document.getElementById(xdate[ixd][0]), "click");
 				}
 			}
-			/*copy dates*/
+			/* copy dates */
 			for (var icd = 0; icd < 2; icd++) {
-				var buttcd = createButtor(copyDateLabels[icd]);
+				let buttcd = createButtor(copyDateLabels[icd]);
 				buttcd.setAttribute("title", copyDateLabels[2]);
 				buttcd.addEventListener("click", function(event) {
 					var src = copyDateLabels.indexOf(this.getAttribute("value"));
@@ -233,7 +206,7 @@ if (content) {
 						sendEvent(xdate[src == 1 ? 0 : 1][icdymd], "change");
 					}
 					focusYYYY(xdate[src][1]);
-				}, false);/*onclick*/
+				}, false); // onclick
 				addAfter(buttcd, xdate[icd][3]);
 				addAfter(document.createTextNode(" "), xdate[icd][3]);
 			}
@@ -250,11 +223,11 @@ if (content) {
 function saveNote() {
 	if (notetext) {
 		if (textLabels.length > 0) {
-			var thisnotetext = notetext.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\([\'\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");
+			var thisnotetext = notetext.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\(['\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");
 			var ls00 = localStorage.getItem(notetextStorage + "00");
 			if (save && thisnotetext != ls00) {
 				if (ls00 != "") {
-					for (var isav = textLabels.length - 1; isav > 0 ; isav--) {
+					for (var isav = textLabels.length - 1; isav > 0; isav--) {
 						var prev = localStorage.getItem(notetextStorage + "0" + (isav - 1));
 						if (prev) {
 							localStorage.setItem(notetextStorage + "0" + isav, localStorage.getItem(notetextStorage + "0" + (isav - 1)));
@@ -283,8 +256,7 @@ function saveNote() {
 						localStorage.removeItem(xdate[ixd][0] + "_m");
 						localStorage.removeItem(xdate[ixd][0] + "_d");
 					}
-				}
-				else if (ndy.trim() == "") {
+				} else if (ndy.trim() == "") {
 					localStorage.setItem(xdate[ixd][0], "0");
 				}
 			}
@@ -292,27 +264,28 @@ function saveNote() {
 	}
 }
 function createButtor(label, width) {
-	var butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
+	let butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
 	if (width) { butt.style.setProperty("width", width); }
 	return butt;
 }
 function createClearButtor(input) {
+	let butt;
 	switch (input) {
 		case "notetext":
-			var butt = createButtor(delLabel, "25px");
+			butt = createButtor(delLabel, "25px");
 			butt.addEventListener("click", function(event) {
 				notetext.value = "";
 				sendEvent(notetext, "change");
 				notetext.focus();
 				if (event.shiftKey) { sendEvent(submitbtn, "click"); }
-			}, false);/*onclick*/
+			}, false); // onclick
 			butt.style.setProperty("color", "red");
 			butt.style.setProperty("background-color", cWARN);
 			return butt;
-			break;
+			// break;
 		case "dates":
 			for (var i = 0; i < 2; i++) {
-				var butt = createButtor(delLabel, "25px");
+				butt = createButtor(delLabel, "25px");
 				butt.setAttribute("id", userjs + "deldate" + i);
 				butt.addEventListener("click", function(event) {
 					var id = this.getAttribute("id").charAt((userjs + "deldate").length);
@@ -324,7 +297,7 @@ function createClearButtor(input) {
 					focusYYYY(xdate[id][1]);
 					event.cancelBubble = true;
 					if (event.stopPropagation) event.stopPropagation();
-				}, false);/*onclick*/
+				}, false); // onclick
 				addAfter(butt, xdate[i][3]);
 				addAfter(document.createTextNode(" "), xdate[i][3]);
 			}
@@ -332,7 +305,7 @@ function createClearButtor(input) {
 	}
 }
 function focusYYYY(input) {
-	if(input.style.getPropertyValue("display") == "none" && input.nextSibling.getAttribute("placeholder") == "YYY+")/*EASY_DATE*/
+	if (input.style.getPropertyValue("display") == "none" && input.nextSibling.getAttribute("placeholder") == "YYY+") // link to EASY_DATE
 		input.nextSibling.focus();
 	else
 		input.focus();

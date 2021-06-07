@@ -1,25 +1,24 @@
 // ==UserScript==
 // @name         mb. SPOT DUPLICATE RECORDINGS
-// @version      2016.6.15
+// @version      2018.4.4.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SPOT-DUPLICATE-RECORDINGS.user.js
 // @description  musicbrainz.org: Spot recordings that are linked multiple times to the same work
-// @homepage     http://userscripts-mirror.org/scripts/show/106145
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SPOT-DUPLICATE-RECORDINGS
-// @compatible   opera(12.18.1872)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey         quickly tested
-// @compatible   chromium(46)+tampermonkey        quickly tested
-// @compatible   chrome+tampermonkey              should be same as chromium
+// @compatible   opera(12.18.1872)+violentmonkey      my setup
+// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
+// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
+// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_SPOT-DUPLICATE-RECORDINGS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_SPOT-DUPLICATE-RECORDINGS.user.js
-// @author       PATATE12
-// @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2011-07-05
+// @author       jesus2099
+// @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+// @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @since        2011-07-05; https://web.archive.org/web/20131103163405/userscripts.org/scripts/show/106145 / https://web.archive.org/web/20141011084009/userscripts-mirror.org/scripts/show/106145
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
+// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none
-// @match        *://*.mbsandbox.org/recording/*
-// @match        *://*.mbsandbox.org/work/*
 // @match        *://*.musicbrainz.org/recording/*
 // @match        *://*.musicbrainz.org/work/*
 // @exclude      *.org/recording/*/*
@@ -57,10 +56,10 @@ for (var tables = document.querySelectorAll("div#content table > tbody"), it = 0
 }
 function dupetxt(txt) {
 	return createTag("span", {
-			a: {class: userjs + txt.replace(/[#/]/g, "-")},
-			s: {backgroundColor: "yellow", color: "red", padding: "0 4px"},
-			e: {mouseover: dupeHighlight, mouseout: dupeHighlight}
-		}, "duplicate " + txt);
+		a: {class: userjs + txt.replace(/[#/]/g, "-")},
+		s: {backgroundColor: "yellow", color: "red", padding: "0 4px"},
+		e: {mouseover: dupeHighlight, mouseout: dupeHighlight}
+	}, "duplicate " + txt);
 }
 function dupeHighlight(e) {
 	for (var dupes = getParent(this, "tbody").getElementsByClassName(this.className), d = 0; d < dupes.length; d++) {

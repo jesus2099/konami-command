@@ -1,160 +1,162 @@
-"use strict";
-var meta = {rawmdb: function() {
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2016.6.15
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
+// @version      2021.2.12
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
-// @homepage     http://userscripts-mirror.org/scripts/show/154481
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
-// @compatible   opera(12.18.1872)+violentmonkey  my setup
-// @compatible   firefox(39)+greasemonkey    quickly tested
-// @compatible   chromium(46)+tampermonkey   quickly tested
-// @compatible   chrome+tampermonkey         should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_FUNKEY-ILLUSTRATED-RECORDS.user.js
-// @author       PATATE12
-// @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2012-12-19
+// @author       jesus2099
+// @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+// @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @since        2012-12-19; https://web.archive.org/web/20131103163409/userscripts.org/scripts/show/154481 / https://web.archive.org/web/20141011084022/userscripts-mirror.org/scripts/show/154481
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
+// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js
 // @grant        none
-// @match        *://*.mbsandbox.org/
-// @match        *://*.mbsandbox.org/artist/*
-// @match        *://*.mbsandbox.org/cdtoc/*
-// @match        *://*.mbsandbox.org/collection/*
-// @match        *://*.mbsandbox.org/label/*
-// @match        *://*.mbsandbox.org/recording/*
-// @match        *://*.mbsandbox.org/release/*
-// @match        *://*.mbsandbox.org/release-group/*
-// @match        *://*.mbsandbox.org/search?*type=annotation*
-// @match        *://*.mbsandbox.org/search?*type=release*
-// @match        *://*.mbsandbox.org/series/*
-// @match        *://*.mbsandbox.org/tag/*
-// @match        *://*.mbsandbox.org/user/*/ratings*
-// @match        *://*.mbsandbox.org/user/*/tag/*
-// @match        *://*.musicbrainz.org/
-// @match        *://*.musicbrainz.org/artist/*
-// @match        *://*.musicbrainz.org/cdtoc/*
-// @match        *://*.musicbrainz.org/collection/*
-// @match        *://*.musicbrainz.org/label/*
-// @match        *://*.musicbrainz.org/recording/*
-// @match        *://*.musicbrainz.org/release/*
-// @match        *://*.musicbrainz.org/release-group/*
-// @match        *://*.musicbrainz.org/search?*type=annotation*
-// @match        *://*.musicbrainz.org/search?*type=release*
-// @match        *://*.musicbrainz.org/series/*
-// @match        *://*.musicbrainz.org/tag/*
-// @match        *://*.musicbrainz.org/user/*/ratings*
-// @match        *://*.musicbrainz.org/user/*/tag/*
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/(artist|cdtoc|collection|label|recording|series|tag)\//
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release[-_]group\/.+$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/merge(\?.*)?$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\?.+/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\?.*type=(annotation|release(_group)?).*$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/user\/[^/]+\/(ratings|tag\/)/
+// @exclude      *.org/*/*/edit
+// @exclude      *.org/*/*/edit?*
 // @exclude      *.org/cdtoc/remove*
-// @exclude      *.org/release/*/*edit*
-// @exclude      *.org/series/*/*edit*
 // @run-at       document-end
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
-}};
-if (meta.rawmdb && meta.rawmdb.toString && (meta.rawmdb = meta.rawmdb.toString())) {
-	var kv/*key,val*/, row = /\/\/\s+@(\S+)\s+(.+)/g;
-	while ((kv = row.exec(meta.rawmdb)) !== null) {
-		if (meta[kv[1]]) {
-			if (typeof meta[kv[1]] == "string") meta[kv[1]] = [meta[kv[1]]];
-			meta[kv[1]].push(kv[2]);
-		} else meta[kv[1]] = kv[2];
+"use strict";
+
+/* ---CONFIG-START--- */
+var bigpics = true; // displays big pics illustrated discography in main artist page
+var smallpics = true; // displays small pics for every releases and release groups, everywhere
+var colour = "yellow"; // used for various mouse-over highlights
+/* ---CONFIG-STOPR--- */
+
+let userjs = "jesus2099userjs154481";
+let types = ["release-group", "release"];
+let GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+
+var caaIcons = document.querySelectorAll("a[href$='/cover-art'] > span.caa-icon");
+if (caaIcons.length > 0) {
+	smallpics = false;
+	for (var ci = 0; ci < caaIcons.length; ci++) {
+		loadCaaIcon(caaIcons[ci]);
 	}
 }
-/*---CONFIG-START---*/
-var bigpics = true; /*displays big pics illustrated discography in main artist page*/
-var smallpics = true; /*displays small pics for every releases and release groups, everywhere*/
-var forceHTTP = true; /*as long as HTTP is being faster on CAA (less latency), you can force it for CAA images even if when you are using HTTPS for musicbrainz*/
-var colour = "yellow"; /*used for various mouse-over highlights*/
-/*---CONFIG-STOPR---*/
-var chrome = "Please run “" + meta.name + "” with Tampermonkey instead of plain Chrome.";
-var userjs = "jesus2099userjs154481";
-var CAA_URL = (forceHTTP ? "http:" : "") + "//coverartarchive.org/%type%/%mbid%/front";
-var SMALL_SIZE = "42px";
-var BIG_SIZE = "125px";
-var types = ["release-group", "release"];
-var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var imgurls = [];
-if (forceHTTP && self.location.protocol == "https:") {
-	var caa = document.querySelectorAll("img[src^='//coverartarchive.org/release']");
-	for (var c = 0; c < caa.length; c++) caa[c].setAttribute("src", "http:"+caa[c].getAttribute("src"));
-}
-if (!self.location.pathname.match(/^\/$|^\/release\//)) for (var t=0; t<types.length; t++) {
+for (var t = 0; t < types.length; t++) {
 	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/'], div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']");
 	var istable, istablechecked, artistcol;
-	for (var a = 0; a < as.length; a++) if (as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/" + RE_GUID + "$"))) {
-		if (!istablechecked) {
-			istable = getParent(as[0], "table");
-			if (istable) { artistcol = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
-			istablechecked = true;
-		}
-		var imgurl = CAA_URL.replace(/%type%/, types[t]).replace(/%mbid%/,as[a].getAttribute("href").match(new RegExp(RE_GUID)));
-		if (smallpics) {
-			var margin = "-12px 0px -14px 0px";
-			as[a].parentNode.insertBefore(
-				createTag("div", {s: {float: "right", marginRight: ".5em"}}, [
-					"⌛",
-					createTag("a", {a: {href: imgurl}, s: {display: "none"}}, [
-						createTag("img", {
-							a: {alt: as[a].textContent, class: userjs, title: "click to enlarge", src: imgurl + "-250", "_size": "_", "_margin": margin, "_istable": istable ? "1" : "0"},
-							s: {cursor: "pointer", boxShadow: "1px 1px 4px black", margin: margin, padding: "none", position: "relative", zIndex: "1"},
-							e: {
-								click: function(event) { big(event, this, SMALL_SIZE); },
-								load: function(event) { this.setAttribute("_height", this.height + "px"); this.setAttribute("_width", this.width+"px"); this.style.setProperty("height", "0"); removeNode(this.parentNode.parentNode.firstChild); this.parentNode.style.setProperty("display", "inline"); big(event, this, SMALL_SIZE) },
-								error: function(event) { removeNode(this.parentNode.parentNode); },
-								mouseover: function(event) { this.style.setProperty("z-index", "2"); this.parentNode.parentNode.nextSibling.style.setProperty("background-color", colour); },
-								mouseout: function(event) { if(this.getAttribute("_size") != "full") this.style.setProperty("z-index", "1"); this.parentNode.parentNode.nextSibling.style.removeProperty("background-color"); }
-							}
-						})
-					])
-				])
-			, as[a]);
-		}
-		document.body.addEventListener("click", function(event) {
-			for (var imgs = document.querySelectorAll("img[_size='full']." + userjs), i = 0; i < imgs.length; i++) {
-				big(event, imgs[i], SMALL_SIZE);
+	for (var a = 0; a < as.length; a++) {
+		var imgurl = as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/(" + GUID + ")$"));
+		if (imgurl) {
+			imgurl = "//coverartarchive.org/" + types[t] + "/" + imgurl[1] + "/front";
+			if (!istablechecked) {
+				istable = getParent(as[0], "table");
+				if (istable) { artistcol = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
+				istablechecked = true;
 			}
-		});
-		var tr = getParent(as[a], "tr") || getParent(as[a], "li");
-		tr.addEventListener("mouseover", updateBig, false);
-		tr.addEventListener("mouseout", updateBig, false);
-		var box = getParent(as[a], "table") || getParent(as[a], "ul");
-		if (bigpics && imgurls.indexOf(imgurl) < 0 && (box = box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
-			var artisttd = artistcol && getSibling(getParent(as[a], "td"), "td");
-			box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\r\n" + artisttd.textContent.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
-				"⌛",
-				createTag("img", {
-					a: {src: imgurl + "-250", alt: as[a].textContent},
-					s: {verticalAlign: "middle", display: "none", maxHeight: "20px", boxShadow: "1px 1px 4px black"},
-					e: {
-						load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); try{jQuery(this).animate({"max-height": BIG_SIZE}, 200); } catch(error) { this.style.setProperty("max-height", BIG_SIZE); console.log(error.message + "!\n" + chrome); } },
-						error: function(event) { removeNode(this.parentNode); },
-						mouseover: updateA,
-						mouseout: updateA
-					}
-				})
-			]));
+// SMALL PICS
+// ----------
+			if (smallpics && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
+				if (types[t] == "release-group") {
+					// https://tickets.metabrainz.org/browse/MBS-11059
+					// For the moment, release group CAA icons have to be added by userscript
+					var CAALoader = new XMLHttpRequest();
+					CAALoader.addEventListener("load", function(event) {
+						if (this.status == 200) {
+							var RGCAA = JSON.parse(this.responseText);
+							if (RGCAA.images.length > 0) {
+								loadCaaIcon(this.releaseGroup.parentNode.insertBefore(
+									createTag("a",
+										{a: {
+											href: RGCAA.release + "/cover-art",
+											ref: this.releaseGroup.getAttribute("href"),
+											title: RGCAA.images.length + " image" + (RGCAA.images.length != 1 ? "s" : "") + " found in this release"
+										}},
+										createTag("span", {a: {class: "caa-icon " + userjs}})
+									),
+									this.releaseGroup).firstChild
+								);
+							}
+						} else {
+							console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
+						}
+					});
+					CAALoader.addEventListener("error", function(event) {
+						console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
+					});
+					CAALoader.releaseGroup = as[a];
+					CAALoader.open("GET", "https://coverartarchive.org" + as[a].getAttribute("href").match(new RegExp("/release-group/" + GUID)), true);
+					CAALoader.send(null);
+				} else if (types[t] == "release" && location.pathname.match(/\/search/)) {
+					// https://tickets.metabrainz.org/browse/MBS-11327
+					// For the moment, release search CAA icons have to be added by userscript
+					as[a].parentNode.insertBefore(
+						createTag("a",
+							{a: {
+								href: as[a].getAttribute("href") + "/cover-art",
+								class: userjs + "searchThumb"
+							}},
+							createTag("span", {
+								a: {class: "caa-icon " + userjs},
+								s: {backgroundSize: "contain", backgroundImage: "url(//coverartarchive.org" + as[a].getAttribute("href") + "/front-250)"}
+							})
+						),
+						as[a]
+					);
+				}
+			}
+			var tr = getParent(as[a], "tr") || getParent(as[a], "li");
+			tr.addEventListener("mouseover", updateBig, false);
+			tr.addEventListener("mouseout", updateBig, false);
+			// I don’t know if this box does still exist sometimes afer server update 2019-06-03 https://blog.musicbrainz.org/?p=7439 https://tickets.metabrainz.org/browse/MBS-9849
+			var box = getParent(as[a], "table") || getParent(as[a], "ul");
+// BIG PICS
+// --------
+			if (bigpics && imgurls.indexOf(imgurl) < 0 && (box = box.previousSibling && box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
+				var artisttd = artistcol && getSibling(getParent(as[a], "td"), "td");
+				// textContent is faster but shows <script> content. artisttd contains React? <script> when pending AC edits. https://kellegous.com/j/2013/02/27/innertext-vs-textcontent/
+				box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\n" + artisttd.innerText.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
+					"⌛",
+					createTag("img", {
+						a: {src: imgurl + "-250", alt: as[a].textContent},
+						s: {verticalAlign: "middle", display: "none", maxHeight: "125px", boxShadow: "1px 1px 4px black"},
+						e: {
+							load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); },
+							error: function(event) {
+								removeNode(this.parentNode);
+								// Remove useless matching release searchThumb (blank) SMALL PICS (MBS-11327)
+								var searchThumb = document.querySelector("a." + userjs + "searchThumb[href='" + this.getAttribute("src").match(new RegExp("/release/" + GUID)) + "/cover-art']");
+								if (searchThumb) {
+									removeNode(searchThumb);
+								}
+							},
+							mouseover: updateA,
+							mouseout: updateA
+						}
+					})
+				]));
+			}
+			imgurls.push(imgurl);
 		}
-		imgurls.push(imgurl);
 	}
 }
+
 function updateA(event) {
 	var ah = this.parentNode.getAttribute("href");
 	var rels = document.querySelectorAll("tr > td a[href='" + ah + "'], div#page.fullwidth ul > li a[href='" + ah + "']");
 	for (var r = 0; r < rels.length; r++) {
-		if (event.type == "mouseover") { rels[r].style.setProperty("background-color", colour); }
-		else { rels[r].style.removeProperty("background-color"); }
+		if (event.type == "mouseover") {
+			rels[r].style.setProperty("background-color", colour);
+		} else {
+			rels[r].style.removeProperty("background-color");
+		}
 	}
 }
 function updateBig(event) {
-	var img = this.querySelector("img[_height]");
+	var img = this.querySelector("a[href^='/release']");
 	if (img) {
-		img = document.querySelector("div." + userjs + "bigbox > a > img[src='" + img.getAttribute("src") + "']");
+		img = document.querySelector("div." + userjs + "bigbox > a > img[src='//coverartarchive.org" + img.getAttribute("href") + "/front-250']");
 		if (img) {
 			if (event.type == "mouseover") {
 				img.parentNode.style.setProperty("border", "4px solid " + colour);
@@ -166,29 +168,17 @@ function updateBig(event) {
 		}
 	}
 }
-function big(event, img, smallSize) {
-	if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
-		if (event.target.classList.contains(userjs)) stop(event);
-		var enlarge = (img.getAttribute("_size") == "small");
-		var height = enlarge ? (img.getAttribute("_height") || "250px") : smallSize;
-		var margin = enlarge ? ("-" + (parseInt(img.getAttribute("_height"), 10) / 2) + "px -" + (parseInt(img.getAttribute("_width"), 10) / 2) + "px") : img.getAttribute("_margin");
-		if (enlarge) {
-			img.style.setProperty("z-index", "2");
+function loadCaaIcon(caaIcon) {
+	// Adding thumbnails to release CAA icons
+	var imgurl = caaIcon.parentNode.getAttribute("ref") || caaIcon.parentNode.getAttribute("href").replace(/\/cover-art/, "");
+	imgurl = "//coverartarchive.org" + imgurl + "/front-250";
+	createTag("img", {
+		a: { src: imgurl },
+		e: {
+			load: function(event) {
+				caaIcon.style.setProperty("background-size", "contain");
+				caaIcon.style.setProperty("background-image", "url(" + this.getAttribute("src") + ")");
+			}
 		}
-		img.setAttribute("_size", enlarge ? "full" : "small");
-		try {
-			jQuery(img).animate({height: height, margin: margin}, event.type == "load" ? 100 : 200, complete);
-		} catch(error) {
-			img.style.setProperty("height", height);
-			img.style.setProperty("margin", margin);
-			complete(img);
-			console.log(error.message + "!\n" + chrome);
-		}
-	}
-}
-function complete(fallback) {
-	var node = (this || fallback);
-	var enlarge = (node.getAttribute("_size") == "full");
-	node.setAttribute("title", node.getAttribute("title").replace(/\w+$/, enlarge ? "shrink" : "enlarge"));
-	node.style.setProperty("z-index", enlarge ? "2" : "1");
+	});
 }

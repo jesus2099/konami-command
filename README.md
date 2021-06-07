@@ -1,51 +1,66 @@
-﻿# ↑↑↓↓←→←→BA（コナミコマンド） #
+﻿↑↑↓↓←→←→BA（コナミコマンド）
+=====================
 
 **ARE YOU RAYDEE TO AUGMENT YOUR BORWSING ?** (with userjs, user javascript, 
-greasemonkey, etc.)
+greasemonkey, **userscripts**, etc.)
 
 **YES ?**
 
-Here are my small **Multi‐browser** user scripts
-(no GM_… commands, only pure javascript).
-Mostly for [musicbrainz.org](http://musicbrainz.org).
+Here are my small **multi‐browser** user scripts.
+Mostly for [MusicBrainz](https://musicbrainz.org).
 
 
-## HOW TO INSTALL ##
+HOW TO INSTALL
+--------------
 
-For the **easiest installation**, you may use one of 
-[Greasy Fork](https://greasyfork.org/users/2206-jesus2099) or 
-[OpenUserJS](https://openuserjs.org/users/jesus2099) that both are up to date 
-**OFFICIAL DISTRIBUTORS** and that both have some handy **INSTALL** buttons.
+Please install all your scripts from this GitHub page.
 
-You can alternatively 
-[install this installer script](https://github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js)
-that will allow you to install all scripts directly from 
-[github](https://github.com/jesus2099/konami-command) 
-(as well as gitlab and bitbucket).
+Click on a script to review its description and code, then 
+Click on **Raw** button to install.
+
+You can start by installing [INSTALL-USER-SCRIPT](https://github.com/jesus2099/konami-command/blob/master/INSTALL-USER-SCRIPT.user.js) 
+which adds a direct download/install ![monkey](https://github.com/violentmonkey/violentmonkey/raw/1d911bffd7d4c37f82b5bcdada16f0b79fe0a70a/src/public/images/icon16.png) **monkey** icon button in front of each userscripts 
+in github, gitlab and bitbucket file listings.
+
+
+COMPATIBILITY
+-------------
+
+There are 3 userscript engines that I know:
+
+- Greasemonkey: Open source pioneer
+- [Violentmonkey](https://violentmonkey.github.io): Open source multi-browser
+- Tampermonkey: Closed source
+
+I advise Violentmonkey as it works in every browsers consistently and is open source.
+Unfortunately, Greasemonkey has had several outstanding issues since version 4+ and only works in Firefox.
+
+For information, here are setups that I use most (as of 2021-03-15):
+
+- [Firefox](https://mozilla.org/firefox) on Linux, Android (FF v68) and Windows + [Violentmonkey][vm-ff]
+- [Vivaldi](https://vivaldi.com) on Windows + [Violentmonkey][vm-ch]
+- Chromium on Raspberry Pi 3B+ OS Raspbian + [Violentmonkey][vm-ch]
+
+As Vivaldi is based on Chromium, it also works in Chrome.
+I have been told it also works in Safari.
+Please report bugs if it does not work in your setup (see next section).
+
+ISSUES
+------
+
+If you encounter a problem, you can see if it is an [already known issue](https://github.com/jesus2099/konami-command/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc) 
+and you can also upvote issues by clicking the :+1: thumb up icon on the issue description.
+Please eventually add an issue to report any bug.
 
 ---
 
-Compatibility:
-
-* [Opera 12.18](http://opera.com/download/guide/?ver=12.18) (1872) + [Violentmonkey](https://addons.opera.com/extensions/details/violent-monkey) (**my setup**)
-* Firefox + Greasemonkey (tested sometimes; many users have this)
-* Chromium + Tampermonkey (tested sometimes; some users have this)
-* Chrome + Tampermonkey (never tested but should be same as Chromium; some users have this)
-* Safari + ??? (only tested some years ago; some users)
-
-※ Find more musicbrainz scripts at [GF](https://greasyfork.org/scripts/by-site/musicbrainz.org) and [OUJS](https://openuserjs.org/group/musicbrainz).
+※ Find more MusicBrainz scripts in [Github](https://github.com/search?q=topic%3Amusicbrainz+topic%3Auserscripts), 
+[GF](//greasyfork.org/scripts?set=9&sort=ratings) and [OUJS](//openuserjs.org/group/musicbrainz?orderBy=rating&orderDir=desc).
 
 ※ Those scripts used to be hosted at 
-[userscripts.org (now read-only)](http://userscripts-mirror.org/users/31010/scripts) 
-since 18/7/2007 and **before the may 2014 break down**.
+[jesus2099’s scripts - Userscripts.org (archived)](https://web.archive.org/web/20131108065418/userscripts.org/users/31010/scripts) 
+since 18.7.2007 and until the May 2014 break down.
 
-Here is a list of scripts that has not yet been stored here in “**KONAMI COMMAND**”:
 
-* [mb. ACOUSTICBRAINZ LINKS (for STalKer-X)](https://gist.github.com/jesus2099/8e223f09d64d831a9514)
-  — displays AB links for each track in release pages
-* [mb: Redirect when only 1 result and/or unique 100% scored result](http://userscripts-mirror.org/scripts/show/106156)
-  — In (test.)musicbrainz.org
-* [MB. artist credit entity links](http://userscripts-mirror.org/scripts/show/131649)
-  — Adds links to filtered and searched release groups, releases and recordings  for each artist credit in artist aliases page’s artist credits section. Additionally spots duplicate aliases.
-* [AMZ. shrink product links and direct link to full size pictures](http://userscripts-mirror.org/scripts/show/139394)
-  — Amazon. Shows links to full size images. Shrinks product and search URLs. Prevents from opening new windows in amazn.jp searches.
+[vm-ff]: https://addons.mozilla.org/firefox/addon/violentmonkey
+[vm-ch]: https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag

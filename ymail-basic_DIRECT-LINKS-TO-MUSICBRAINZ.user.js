@@ -1,23 +1,23 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2016.6.15
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
-// @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
-// @homepage     http://userscripts-mirror.org/scripts/show/80308
-// @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ
-// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @version      2021.1.17.2099
+// @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
+// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ.user.js
-// @author       PATATE12
-// @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2010-06-28
+// @author       jesus2099
+// @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+// @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @since        2010-06-28; https://web.archive.org/web/20131103163402/userscripts.org/scripts/show/80308 / https://web.archive.org/web/20141011084013/userscripts-mirror.org/scripts/show/80308
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none
-// @match        *://*.mail.yahoo.com/neo/b/*
-// @exclude      *mail.yahoo.com/mc/md.php*
+// @include      /^https?://mail.yahoo.com/b/.*/
 // @run-at       document-end
 // ==/UserScript==
+"use strict";
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 var colour = "yellow";
 var colourclicked = "pink";
@@ -28,121 +28,98 @@ var colourloading = "gold";
 var loadingtxt = "⌛ loading…";
 var edittypes = {deleted: "×", merged: "+"};
 var markReadEditsForDeletion = true;
-var preferredProtocol = "http:";/* "https:", "http:" (including “:”) or "" (empty string) if you prefer using the same current protocol as Yahoo! Mail*/
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs80308";
 var edits = [];
-var editTrigger = /^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/;
-var editNoteExtractor = /'[^']+' has added the following note to(?: your)? edit #\d+:<BR>-{72}<BR>(.+)<BR>-{72}<BR>If you would like to reply to this note, please add your note at:<BR>/;
-var jiraTrigger = /^\[jira\](?: \w+){1,3}: \(([A-Z][A-Z\d]*-\d+)\)/;
-var triggerno = /^Someone has voted against your edit(?: #[0-9]+)?$/;
-var triggernoextractorz = /<div class="plainMail">'(.+)' has voted against your edit #([0-9]+)/;
-var edittypeextractor = /(deleted|merged) by edit #([0-9]+)/;
-var idextractor = /by edit #([0-9]+)/;
-var triggerResponseURL = /<input type="hidden" name="mid" value="([^"]+)"/;
-var editurl = preferredProtocol + "//musicbrainz.org/edit/";
-var jiraurl = "http://tickets.musicbrainz.org/browse/";
-var emails = document.querySelectorAll("table#datatable > tbody > tr > td > h2 > a.mlink");
-var emailnovotes = [];
-var emailsubscrs = [];
-if (emails) {
-	for (var i = 0; i < emails.length; i++) {
-		var email = emails[i];
-		var emailtxt = email.getAttribute("title");
-		var editid = emailtxt.match(editTrigger);
-		var jiraid = emailtxt.match(jiraTrigger);
-		if (jiraid) { // An email about a JIRA ticket
-			jiraid = jiraid[1];
-			if (!edits[jiraid]) {
-				edits[jiraid] = email;
-				editlink(email, jiraurl + jiraid, false, jiraid);
-			} else {
-				edits[jiraid].style.setProperty("background-color", colourdupe);
-				email.style.setProperty("background-color", colourdupe);
-				editlink(email, jiraurl + jiraid, true, jiraid);
+var emailSubjects = document.querySelectorAll("table#messageListContainer > tbody td[data-test-id='subject'] > a");
+if (emailSubjects) {
+	for (var i = 0; i < emailSubjects.length; i++) {
+		var emailSubject = emailSubjects[i];
+		var emailtxt = emailSubject.getAttribute("title");
+		var emailHref = self.location.protocol + "//" + self.location.host + emailSubject.getAttribute("href");
+		var editid = emailtxt.match(/^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/);
+		var jiraIdTitle = emailtxt.match(/^\[MeB JIRA\] \(([A-Z][A-Z\d]*-\d+)\) (.+)$/);
+		emailSubject.parentNode.style.setProperty("line-height", "13px");
+		var emailSender = getParent(emailSubject, "tr").querySelector("td[data-test-id='sender'] > a");
+		if (jiraIdTitle) { // An email about a JIRA ticket
+			var jiraURL = "//tickets.musicbrainz.org/browse/" + jiraIdTitle[1];
+			editlink(emailSubject, jiraURL, edits[jiraURL], jiraIdTitle[1]);
+			if (!edits[jiraURL]) {
+				edits[jiraURL] = emailSubject;
 			}
-		} else if (editid) { // An email about an edit
-			editid = editid[editid.length-1];
-			email.replaceChild(document.createTextNode(emailtxt.substring(0, emailtxt.length - editid.length - 2)), email.firstChild);
-			var emailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
-			emailfrom.setAttribute("href", preferredProtocol + "//musicbrainz.org/user/" + encodeURIComponent(emailfrom.textContent.trim()));
-			emailfrom.setAttribute("target", "_blank");
-			emailfrom.style.setProperty("background-color", colour);
+			emailSubject.replaceChild(document.createTextNode(jiraIdTitle[2]), emailSubject.lastChild);
+		} else if (editid) { // An email about an edit (edit note or no vote)
+			editid = editid[editid.length - 1];
+			emailSubject.replaceChild(document.createTextNode(emailtxt.substring(0, emailtxt.length - editid.length - 2)), emailSubject.firstChild);
+			emailSender.setAttribute("href", "//musicbrainz.org/user/" + encodeURIComponent(emailSender.textContent.trim()));
+			emailSender.setAttribute("target", "_blank");
+			emailSender.style.setProperty("background-color", colour);
+			editlink(emailSubject, editid, edits[editid]);
 			if (!edits[editid]) {
-				edits[editid] = email;
-				editlink(email, editid);
-			} else {
-				edits[editid].style.setProperty("background-color", colourdupe);
-				email.style.setProperty("background-color", colourdupe);
-				editlink(email, editid, true);
+				edits[editid] = emailSubject;
 			}
-			var xhr = new XMLHttpRequest();
-			xhr.email = email;
-			xhr.emailRow = getParent(email, "tr");
+			let xhr = new XMLHttpRequest();
+			xhr.emailSubject = emailSubject;
+			xhr.emailRow = getParent(emailSubject, "tr");
 			xhr.addEventListener("load", function(event) {
 				if (this.status > 199 && this.status < 400) {
-					this.emailRow.className = "";
-					var editNote = this.responseText.match(editNoteExtractor);
+					this.emailRow.classList.remove("u_b"); // mark as read
+					var editNote = this.responseText.match(/'[^']+' has added the following note to(?: your)? edit #\d+:<BR><\/div><div dir='ltr'>-{72}<BR><\/div><div dir='ltr'>(.+)<BR><\/div><div dir='ltr'>-{72}<BR><\/div><div dir='ltr'>If you would like to reply to this note, please add your note at:<BR>/);
 					if (editNote) {
 						editNote = editNote[1];
 						var div = document.createElement("div");
 						div.innerHTML = editNote.replace(/<a/g, '<a style="color: blue; text-decoration: underline;"');
-						div.style.setProperty("background-color", "#eee")
-						div.style.setProperty("padding", "4px")
-						this.email.parentNode.insertBefore(div, this.email);
+						div.style.setProperty("background-color", "#eee");
+						div.style.setProperty("padding", "4px");
+						this.emailSubject.parentNode.insertBefore(div, this.emailSubject);
 					}
 				}
 			});
-			xhr.open("get", email.getAttribute("href"), true);
+			xhr.open("get", emailHref, true);
 			xhr.send(null);
-		} else if (email.getAttribute("title").match(/^Edits for your subscriptions$/)) { // A subscription email
-			getParent(email, "tr").style.setProperty("background-color", colourloading);
-			email.insertBefore(loading(), email.firstChild);
-			emailsubscrs[decodeURIComponent(email.getAttribute("href").match(/(?:&|\?)mid=([^&$]+)/)[1])] = email;
-			var xhr = new XMLHttpRequest();
+		} else if (emailSubject.getAttribute("title").match(/^Edits for your subscriptions$/)) { // A subscription email
+			getParent(emailSubject, "tr").style.setProperty("background-color", colourloading);
+			emailSubject.insertBefore(loading(), emailSubject.firstChild);
+			let xhr = new XMLHttpRequest();
+			xhr.emailSubject = emailSubject;
+			xhr.emailRow = getParent(emailSubject, "tr");
 			xhr.addEventListener("load", function(event) {
-				if (this.status == 200) {
+				if (this.status > 199 && this.status < 400) {
+					this.emailRow.classList.remove("u_b"); // mark as read
+					this.emailRow.style.setProperty("background-color", "");
 					var res = this.responseText;
-					var susu = res.match(/(deleted|merged) by edit #([0-9]+)/g);
-					var susuemail = emailsubscrs[this.responseText.match(triggerResponseURL)[1]];
-					var susuemailine = getParent(susuemail, "tr");
-					susuemailine.classList.remove("msgnew");
-					susuemailine.style.setProperty("background-color", "");
-					susuemail.removeChild(susuemail.firstChild);
-					if (susu) {
-						for (var i = 0; i < susu.length; i++) {
-							var modid = susu[i].match(idextractor)[1];
-							var type = susu[i].match(edittypeextractor)[1];
-							if (edits[modid]) {
-								edits[modid].style.setProperty("background-color", colourdupe);
-								if (susu.length <= 1) {
-									susuemail.style.setProperty("background-color", colourdupe);
-								}
-								editlink(susuemail, modid, true, edittypes[type] + modid).setAttribute("title", type);
-							} else {
-								edits[modid] = susuemail;
-								editlink(susuemail, modid, false, edittypes[type] + modid).setAttribute("title", type);
+					var deletedOrMergedEntities = res.match(/(deleted|merged) by edit #([0-9]+)/g);
+					this.emailSubject.removeChild(this.emailSubject.firstChild);
+					if (deletedOrMergedEntities) {
+						for (var i = 0; i < deletedOrMergedEntities.length; i++) {
+							var modid = deletedOrMergedEntities[i].match(/by edit #([0-9]+)/)[1];
+							let type = deletedOrMergedEntities[i].match(/(deleted|merged) by edit #([0-9]+)/)[1];
+							editlink(this.emailSubject, modid, edits[modid], edittypes[type] + modid).setAttribute("title", type);
+							if (!edits[modid]) {
+								edits[modid] = this.emailSubject;
 							}
 						}
 					} else {
-						susuemail.style.setProperty("background-color", colourclicked);
+						this.emailSubject.style.setProperty("background-color", colourclicked);
 					}
-					var entitiesEditorsExtractorz = "<BR>([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR>(?:Open edits: )?<a href=\"(https?://musicbrainz\\.org/(?:artist|collection|label|user)/[^/]+/edits)(?:/open)?\" target=_blank";
+					var entitiesEditorsExtractorz = "<BR>(?:</div><div dir='ltr'>)?([^>]+) \\((\\d+ open), (\\d+ applied)\\)<BR>(?:</div><div dir='ltr'>)?(?:Open edits: )?<a href=\"(https?://musicbrainz\\.org/(?:artist|collection|label|series|user)/[^/]+/edits)(?:/open)?\" target=_blank";
 					var alledits = res.match(new RegExp(entitiesEditorsExtractorz, "g"));
 					for (var ee = 0; ee < alledits.length; ee++) {
 						var allparts = alledits[ee].match(new RegExp(entitiesEditorsExtractorz));
-						var lnk = editlink(susuemail, allparts[4], false, allparts[3]);
+						var lnk = editlink(this.emailSubject, allparts[4], false, allparts[3]);
 						var a = document.createElement("a");
 						a.setAttribute("href", allparts[4].replace(/\/edits$/, ""));
 						a.setAttribute("target", "_blank");
 						a.style.setProperty("background-color", colourclicked);
 						var im = a.appendChild(document.createElement("img"));
 						var openedits = "/open_edits";
-						if ((type = allparts[4].match(/artist|collection|label|series/))) {
-							im.setAttribute("src", preferredProtocol + "//musicbrainz.org/static/images/entity/%type%.svg".replace(/%type%/, type).replace(/collection|series/, "release_group"));
+						let type = allparts[4].match(/artist|collection|label|series/);
+						if (type) {
+							im.setAttribute("src", "//musicbrainz.org/static/images/entity/%type%.svg".replace(/%type%/, type).replace(/collection/, "release_group"));
 							im.setAttribute("height", "16px");
+							im.setAttribute("width", "16px");
 						} else if (allparts[4].match(/user/)) {
-							im.setAttribute("src", preferredProtocol + "//gravatar.com/avatar/placeholder?d=mm&s=12");
+							im.setAttribute("src", "//gravatar.com/avatar/placeholder?d=mm&s=12");
 							openedits = "/edits/open";
 						}
 						im.style.setProperty("margin-right", "4px");
@@ -160,59 +137,68 @@ if (emails) {
 					}
 				}
 			});
-			xhr.open("get", email.getAttribute("href"), true);
+			xhr.open("get", emailHref, true);
 			xhr.send(null);
 		}
-		if (email.getAttribute("title").match(triggerno)) { // An own no‐voted edit
-			var nonoemailfrom = getParent(email, "tr").querySelector("tr > td > div > a.mlink");
-			nonoemailfrom.style.setProperty("background-color", colourloading);
-			nonoemailfrom.replaceChild(loading(), nonoemailfrom.firstChild);
-			emailnovotes[decodeURIComponent(email.getAttribute("href").match(/(?:&|\?)mid=([^&$]+)/)[1])] = email;
-			var xhr = new XMLHttpRequest();
-			xhr.addEventListener("readystatechange", function(event) {
-				if (this.readyState > 2 && this.status < 400 && this.status > 199) {
-					var nonoemail = this.responseText.match(triggerResponseURL);
-					if (nonoemail && (nonoemail = emailnovotes[this.responseText.match(triggerResponseURL)[1]])) {
-						nonoemail = getParent(nonoemail, "tr");
-						nonoemail.classList.remove("msgnew");
-						var nono = this.responseText.match(triggernoextractorz);
-						nonoemail = nonoemail.querySelector("tr > td > div > a");
-						if (nono) {
-							nonoemail.replaceChild(document.createTextNode(nono[1]), nonoemail.firstChild);/* from: xxx */
-							nonoemail.style.setProperty("background-color", colournobg);
-							nonoemail.style.setProperty("color", colourno);
-							nonoemail.setAttribute("href", nonoemail.getAttribute("href").replace(/[^/]+$/, encodeURIComponent(nono[1])));
-						} else {
-							nonoemail.replaceChild(document.createTextNode("(._.?)"), nonoemail.firstChild);
-						}
+		if (emailSubject.getAttribute("title").match(/^Someone has voted against your edit(?: #[0-9]+)?$/)) { // An own no‐voted edit
+			emailSender.style.setProperty("background-color", colourloading);
+			emailSender.replaceChild(loading(), emailSender.firstChild);
+			let xhr = new XMLHttpRequest();
+			xhr.emailSubject = emailSubject;
+			xhr.emailSender = emailSender;
+			xhr.emailRow = getParent(emailSubject, "tr");
+			xhr.addEventListener("load", function(event) {
+				if (this.status > 199 && this.status < 400) {
+					this.emailRow.classList.remove("u_b"); // mark as read
+					var nono = this.responseText.match(/'([^']+)' has voted against your edit #([0-9]+)/);
+					if (nono) {
+						this.emailSender.replaceChild(document.createTextNode(nono[1]), this.emailSender.firstChild); // from: xxx
+						this.emailSender.style.setProperty("background-color", colournobg);
+						this.emailSender.style.setProperty("color", colourno);
+						this.emailSender.setAttribute("href", this.emailSender.getAttribute("href").replace(/[^/]+$/, encodeURIComponent(nono[1])));
+					} else {
+						this.emailSender.replaceChild(document.createTextNode("(._.?)"), this.emailSender.firstChild);
 					}
 				}
 			});
-			xhr.open("get", email.getAttribute("href"), true);
+			xhr.open("get", emailHref, true);
 			xhr.send(null);
 		}
 	}
 }
-function editlink(email, urlOrEditId, dupe, txt) {
+function editlink(emailSubject, urlOrEditId, dupe, txt) {
 	var fragment = document.createDocumentFragment();
 	var a = document.createElement("a");
 	a.addEventListener("click", function(event) {
-		var edits = getParent(this, "table", "tbldata").querySelectorAll("table#datatable > tbody > tr > td > h2 > a." + userjs + "new[href$='" + this.getAttribute("href").replace(/^(https?:)?\/\/(beta\.)?/g, "") + "']"); //in case of on the fly change by mb-PREFERRED-MBS
-		for (var e = 0; e < edits.length; e++) {
-			edits[e].className = edits[e].className.replace(userjs + "new", userjs + "read");
-			edits[e].style.setProperty("background-color", colourclicked);
-			edits[e].style.setProperty("text-decoration", "line-through");
-			if (markReadEditsForDeletion && (cb = getParent(edits[e], "tr")) && cb.getElementsByClassName(userjs + "new").length == 0 && (cb = cb.querySelector("input.selectmsg[type='checkbox']"))) { cb.checked = true; }
+		var sameEditLinks = document.querySelectorAll("table#messageListContainer > tbody a." + userjs + "new[href$='" + this.getAttribute("href").replace(/^(https?:)?\/\/(beta\.)?/g, "") + "']"); // in case of on the fly change by mb-PREFERRED-MBS
+		for (var e = 0; e < sameEditLinks.length; e++) {
+			sameEditLinks[e].className = sameEditLinks[e].classList.replace(userjs + "new", userjs + "read");
+			sameEditLinks[e].style.setProperty("background-color", colourclicked);
+			sameEditLinks[e].style.setProperty("text-decoration", "line-through");
+			if (markReadEditsForDeletion) {
+				var cb = getParent(sameEditLinks[e], "tr");
+				if (
+					cb
+					&& cb.getElementsByClassName(userjs + "new").length == 0
+					&& (cb = cb.querySelector("input[name='mids[]'][type='checkbox']"))
+				) {
+					cb.checked = true;
+				}
+			}
 		}
 	}, true);
-	a.setAttribute("href", urlOrEditId.match(/^\d+$/) ? editurl + urlOrEditId : urlOrEditId);
-	a.className = userjs + "new";
+	a.setAttribute("href", urlOrEditId.match(/^\d+$/) ? "//musicbrainz.org/edit/" + urlOrEditId : urlOrEditId);
+	a.classList.add(userjs + "new");
 	a.setAttribute("target", "_blank");
 	a.style.setProperty("background-color", dupe ? colourdupe : colour);
+	if (dupe) {
+		edits[urlOrEditId].style.setProperty("background-color", colourdupe);
+		emailSubject.style.setProperty("background-color", colourdupe);
+	}
 	a.appendChild(document.createTextNode(txt ? txt : "Edit #" + urlOrEditId));
 	fragment.appendChild(a);
 	fragment.appendChild(document.createElement("br"));
-	email.parentNode.insertBefore(fragment, email);
+	emailSubject.parentNode.insertBefore(fragment, emailSubject);
 	return a;
 }
 function loading() {
@@ -223,17 +209,4 @@ function loading() {
 	frag.appendChild(span);
 	frag.appendChild(document.createTextNode(" "));
 	return frag;
-}
-function getParent(obj, tag, cls) {
-	var cur = obj;
-	if (cur.parentNode) {
-		cur = cur.parentNode;
-		if (cur.tagName.toUpperCase() == tag.toUpperCase() && (!cls || cls && cur.classList.contains(cls))) {
-			return cur;
-		} else {
-			return getParent(cur, tag, cls);
-		}
-	} else {
-		return null;
-	}
 }

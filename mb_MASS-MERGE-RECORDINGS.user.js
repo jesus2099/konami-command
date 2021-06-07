@@ -1,44 +1,28 @@
-"use strict";
-var meta = function() {
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2016.6.15
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_MASS-MERGE-RECORDINGS.user.js
+// @version      2021.3.8
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
-// @homepage     http://userscripts-mirror.org/scripts/show/120382
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MASS-MERGE-RECORDINGS
-// @compatible   opera(12.18.1872)+violentmonkey  my setup
-// @compatible   firefox(41.0.2)+greasemonkey     tested sometimes
-// @compatible   chromium(46)+tampermonkey        tested sometimes
-// @compatible   chrome+tampermonkey              should be same as chromium
+// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(64.0)+greasemonkey          tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_MASS-MERGE-RECORDINGS.user.js
-// @author       PATATE12
-// @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2011-12-13
+// @author       jesus2099
+// @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+// @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @since        2011-12-13; https://web.archive.org/web/20131103163401/userscripts.org/scripts/show/120382 / https://web.archive.org/web/20141011084015/userscripts-mirror.org/scripts/show/120382
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=70394&v=2015.8.27
-// @grant        none
-// @match        *://*.mbsandbox.org/release/*
-// @match        *://*.musicbrainz.org/release/*
-// @exclude      *.org/release/*/*
-// @exclude      *.org/release/add
-// @exclude      *.org/release/add?*
-// @exclude      *.org/release/merge*
+// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
+// @grant        GM_info
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/(disc\/\d+)?)?(#.*)?$/
 // @run-at       document-end
 // ==/UserScript==
-// ==OpenUserJS==
-// @unstableMinify it might break metadata block parser
-// ==/OpenUserJS==
+"use strict";
+let userjs = {
+	id: "MMR2099userjs120382", // linked to mb_INLINE-STUFF
+	name: GM_info.script.name.substr(4).replace(/\s/g, "\u00a0"),
+	version: GM_info.script.version
 };
-if (meta && meta.toString && (meta = meta.toString())) {
-	meta = {
-		n: meta.match(/@name\s+(.+)/)[1],
-		v: meta.match(/@version\s+(.+)/)[1],
-		ns: meta.match(/@namespace\s+(.+)/)[1]
-	}; 
-}
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 /* COLOURS */
 var cOK = "greenyellow";
@@ -48,46 +32,41 @@ var cWarning = "yellow";
 var cMerge = "#fcc";
 var cCancel = "#cfc";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
-meta.n = meta.n.substr(4);
 var lastTick = new Date().getTime();
 var MBSminimumDelay = 1000;
 var retryDelay = 2000;
 var currentButt;
-var KBD = {
-	ENTER: 13,
-	M:     77,
-	O:     79,
-	S:     83
-};
-var MMRid = "MMR2099userjs120382"; // linked to mb_INLINE-STUFF
 var MBS = self.location.protocol + "//" + self.location.host;
 var sidebar = document.getElementById("sidebar");
-var recid2trackIndex = {remote: {}, local: {}};/*recid:tracks index*/
-var mergeQueue = [];/*contains next mergeButts*/
+var recid2trackIndex = {remote: {}, local: {}}; // recid:tracks index
+var mergeQueue = []; // contains next mergeButts
 var sregex_MBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var regex_MBID = new RegExp(sregex_MBID, "i");
 var css_track = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
 var css_track_ac = "td:not([class]) + td:not([class])";
 var css_collapsed_medium = "div#content > table.tbl > thead > tr > th > a.expand-medium > span.expand-triangle";
-var sregex_title = "[^“]+“(.+)” \\S+ (.+) - MusicBrainz";
+var sregex_title = ".+?[„“«‘] ?(.+) ?[“”»’] \\S+ (.+?) - MusicBrainz";
 var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
 var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
 var rem2loc = "◀";
 var loc2rem = "▶";
 var retry = {count: 0, checking: false};
-document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-var css = document.styleSheets[document.styleSheets.length - 1];
-css.insertRule("body." + MMRid + " div#" + MMRid + " > .main-shortcut { display: none; }", 0);
-css.insertRule("body." + MMRid + " div#content table.tbl > * > tr > .rating { display: none; }", 0);
-css.insertRule("body." + MMRid + " div#content table.tbl > tbody > tr > td > div.ars { display: none; }", 0);
-css.insertRule("body." + MMRid + " div#content table.tbl > tbody > tr > td > a[href^='http://acousticbrainz.org/'][style='float: right;'] { display: none; }", 0); //link to mb_ACOUSTICBRAINZ-LINKS https://gist.github.com/jesus2099/8e223f09d64d831a9514
-css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " { margin-top: 12px; cursor: pointer; }", 0);
-css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " > :not(h2):not(.main-shortcut) { display: none; }", 0);
-css.insertRule("body:not(." + MMRid + ") div#" + MMRid + " input[name='mergeStatus'] { font-size: 9px!important; background-color: #fcf; }", 0);
-css.insertRule("div#" + MMRid + " { background-color: #fcf; text-shadow: 1px 1px 2px #663; padding: 4px; margin: 0px -6px 12px; border: 2px dotted white; }", 0);
-css.insertRule("div#" + MMRid + " > .main-shortcut { margin: 0px; }", 0);
-css.insertRule("div#" + MMRid + " h2 { color: maroon; text-shadow: 2px 2px 4px #996; margin: 0px; }", 0);
-css.insertRule("div#" + MMRid + " kbd { background-color: silver; border: 2px grey outset; padding: 0px 4px; font-size: .8em; }", 0);
+var css = document.createElement("style");
+css.setAttribute("type", "text/css");
+document.head.appendChild(css);
+css = css.sheet;
+css.insertRule("body." + userjs.id + " div#" + userjs.id + " > .main-shortcut { display: none; }", 0);
+css.insertRule("body." + userjs.id + " div#content table.tbl > * > tr > .rating { display: none; }", 0);
+css.insertRule("body." + userjs.id + " div#content table.tbl > tbody > tr > td > div.ars { display: none; }", 0);
+css.insertRule("body." + userjs.id + " div#content table.tbl > tbody > tr > td > a[href^='http://acousticbrainz.org/'][style='float: right;'] { display: none; }", 0); // link to mb_ACOUSTICBRAINZ-LINKS https://gist.github.com/jesus2099/8e223f09d64d831a9514
+css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " { margin-top: 12px; cursor: pointer; }", 0);
+css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " > :not(h2):not(.main-shortcut) { display: none; }", 0);
+css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " input[name='mergeStatus'] { font-size: 9px!important; background-color: #fcf; }", 0);
+css.insertRule("div#" + userjs.id + " { background-color: #fcf; text-shadow: 1px 1px 2px #663; padding: 4px; margin: 0px -6px 12px; border: 2px dotted white; }", 0);
+css.insertRule("div#" + userjs.id + " > .main-shortcut { margin: 0px; }", 0);
+css.insertRule("div#" + userjs.id + " h2 { color: maroon; text-shadow: 2px 2px 4px #996; margin: 0px; }", 0);
+css.insertRule("div#" + userjs.id + " kbd { background-color: silver; border: 2px grey outset; padding: 0px 4px; font-size: .8em; }", 0);
+css.insertRule(".remoteRecordingLength.largeSpread { color: yellow; background-color: red; text-shadow: 2px 2px 4px black; }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
 if (ltitle) {
@@ -101,140 +80,157 @@ if (ltitle) {
 		tracks: []
 	};
 	var safeLengthDelta = 4;
+	var largeSpread = 15; // MBS-7417 / https://github.com/metabrainz/musicbrainz-server/blob/217111e3a12b705b9499e7fdda6be93876d30fb0/lib/MusicBrainz/Server/Edit/Utils.pm#L467
 	if (localRelease.comment) localRelease.comment = " (" + localRelease.comment.textContent + ")"; else localRelease.comment = "";
 	var remoteRelease = {tracks: []};
-	var collapsedMediums = document.querySelectorAll(css_collapsed_medium);
-	if (collapsedMediums.length > 1) {
-		var tracklistHeader = document.querySelector("h2.tracklist");
-		if (tracklistHeader) {
-			tracklistHeader.appendChild(createTag("span", {a: {title: "by and for " + meta.n}, s: {color: "#999", opacity: ".5"}}, [" (", createTag("a", {a: {ref: "▶"}}, "expand"), "/", createTag("a", {a: {ref: "▼"}}, "collapse"), " all mediums)"]));
-			tracklistHeader.addEventListener("click", function(event) { if (event.target.tagName == "A") expandCollapseAllMediums(event.target.getAttribute("ref")); });
-		}
-	}
 	if (document.getElementsByClassName("account").length > 0) {
 		sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 		document.body.addEventListener("keydown", function(event) {
-			if (!event.altKey && event.ctrlKey && event.shiftKey && event.keyCode == KBD.M) {
+			if (!event.altKey && event.ctrlKey && event.shiftKey && event.key == "M") {
 				prepareLocalRelease();
 				return stop(event);
 			}
 		});
 	}
-	//	sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, meta.n)]), sidebar.querySelector("h2.editing + ul.links li"));
+	// sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, userjs.name)]), sidebar.querySelector("h2.editing + ul.links li"));
+} else {
+	console.error("Local title (/^" + sregex_title + "$/) not found in document.title (" + document.title + ").");
 }
 function mergeRecsStep(_step) {
-	var step = _step || 0;
-	var MMR = document.getElementById(MMRid);
-	var statuses = ["adding recs. to merge", "applying merge edit"];
-	var buttStatuses = ["Stacking…", "Merging…"];
-	var urls = ["/recording/merge_queue", "/recording/merge"];
-	var params = [
-		"add-to-merge=" + to.value + "&add-to-merge=" + from.value,
-		"merge.merging.0=" + to.value + "&merge.target=" + to.value + "&merge.merging.1=" + from.value
-	];
-	disableInputs([matchMode.sequential, matchMode.title, matchMode.titleAndAC, startpos, mergeStatus]);
-	if (step == 1) {
-		disableInputs([editNote, currentButt, currentButt.parentNode.querySelector("input." + MMRid + "dirbutt")]);
-		params[step] += "&merge.edit_note=";
-		var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
-		if (paramsup != "") paramsup += "\n —\n";
-		paramsup += releaseInfoRow("source", swap.value == "no" ? remoteRelease : localRelease, swap.value == "no" ? recid2trackIndex.remote[from.value] : recid2trackIndex.local[from.value]);
-		paramsup += releaseInfoRow("target", swap.value == "no" ? localRelease : remoteRelease, swap.value == "no" ? recid2trackIndex.local[to.value] : recid2trackIndex.remote[to.value]);
-		paramsup += " —\n";
-		var targetID = parseInt(to.value, 10);
-		var sourceID = parseInt(from.value, 10);
-		if (sourceID > targetID) {
-			paramsup += "👍 '''Targetting oldest [MBID]''' (" + format(to.value) + " ← " + format(from.value) + ")" + "\n";
+	if (editNote.value && editNote.value.match(/\w{4,}/g) && editNote.value.match(/\w{4,}/g).length > 3) {
+		editNote.style.removeProperty("background-color");
+		var step = _step || 0;
+		var MMR = document.getElementById(userjs.id);
+		var statuses = ["adding recs. to merge", "applying merge edit"];
+		var buttStatuses = ["Stacking…", "Merging…"];
+		var urls = ["/recording/merge_queue", "/recording/merge"];
+		var params = [
+			"add-to-merge=" + to.value + "&add-to-merge=" + from.value,
+			"merge.merging.0=" + to.value + "&merge.target=" + to.value + "&merge.merging.1=" + from.value
+		];
+		disableInputs([matchMode.sequential, matchMode.title, matchMode.titleAndAC, startpos, mergeStatus]);
+		if (step == 1) {
+			disableInputs([editNote, currentButt, currentButt.parentNode.querySelector("input." + userjs.id + "dirbutt")]);
+			params[step] += "&merge.edit_note=";
+			var paramsup = MMR.getElementsByTagName("textarea")[0].value.trim();
+			if (paramsup != "") paramsup += "\n —\n";
+			paramsup += releaseInfoRow("source", swap.value == "no" ? remoteRelease : localRelease, swap.value == "no" ? recid2trackIndex.remote[from.value] : recid2trackIndex.local[from.value]);
+			paramsup += releaseInfoRow("target", swap.value == "no" ? localRelease : remoteRelease, swap.value == "no" ? recid2trackIndex.local[to.value] : recid2trackIndex.remote[to.value]);
+			paramsup += " —\n";
+			var targetID = parseInt(to.value, 10);
+			var sourceID = parseInt(from.value, 10);
+			if (sourceID > targetID) {
+				paramsup += "👍 '''Targetting oldest [MBID]''' (" + format(to.value) + " ← " + format(from.value) + ")" + "\n";
+			}
+			var locTrack = localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]];
+			var remTrack = remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]];
+			if (locTrack.name == remTrack.name) paramsup += "👍 '''Same track title''' “" + protectEditNoteText(locTrack.name) + "”\n";
+			else if (locTrack.name.toUpperCase() == remTrack.name.toUpperCase()) paramsup += "👍 '''Same track title''' (case insensitive)\n";
+			else if (locTrack.looseName == remTrack.looseName) paramsup += "👍 '''Similar track title''' (loose comparison)\n";
+			if (locTrack.artistCredit == remTrack.artistCreditAsPlainText) paramsup += "👍 '''Same track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
+			else if (locTrack.artistCredit.toUpperCase() == remTrack.artistCreditAsPlainText.toUpperCase()) paramsup += "👍 '''Same track artist credit ([AC])''' (case insensitive)\n";
+			else if (locTrack.looseAC == remTrack.looseAC) paramsup += "👍 '''Similar track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
+			if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
+				var delta = Math.abs(locTrack.length - remTrack.length);
+				if (delta <= safeLengthDelta * 1000) paramsup += "👍 '''" + (delta === 0 ? "Same" : "Very close") + " track times''' " + /* temporary hidden until milliseconds are back (delta === 0 ? "(in milliseconds)" : */ "(" + (time(locTrack.length) == time(remTrack.length) ? time(locTrack.length) : "within " + safeLengthDelta + " seconds: " + time((swap.value == "no" ? locTrack : remTrack).length) + " ← " + time((swap.value == "no" ? remTrack : locTrack).length)) + ")" /* ) temporary */ + "\n";
+			}
+			if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “" + protectEditNoteText(localRelease.ac) + "”\n";
+			if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “" + protectEditNoteText(localRelease.title) + "”\n";
+			else if (localRelease.title.toUpperCase() == remoteRelease.title.toUpperCase()) paramsup += "👍 '''Same release title''' (case insensitive)\n";
+			else if (localRelease.looseTitle == remoteRelease.looseTitle) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
+			// else if (leven(localRelease.looseTitle, remoteRelease.looseTitle)) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
+			if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' (" + MBS + "/release-group/" + localRelease["release-group"] + ")\n";
+			paramsup += " —\n" + userjs.name + " (" + userjs.version + ") in “" + matchMode.current.value.replace(/^Match unordered /i, "") + "” match mode";
+			if (retry.count > 0) {
+				paramsup += " — '''retry'''" + (retry.count > 1 ? " #" + retry.count : "") + " (" + protectEditNoteText(retry.message) + ")";
+			}
+			params[step] += encodeURIComponent(paramsup);
 		}
-		var locTrack = localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]];
-		var remTrack = remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]];
-		if (locTrack.name == remTrack.name) paramsup += "👍 '''Same track title''' “" + protectEditNoteText(locTrack.name) + "”\n";
-		else if (locTrack.name.toUpperCase() == remTrack.name.toUpperCase()) paramsup += "👍 '''Same track title''' (case insensitive)\n";
-		else if (locTrack.looseName == remTrack.looseName) paramsup += "👍 '''Similar track title''' (loose comparison)\n";
-		if (locTrack.artistCredit == remTrack.artistCreditAsPlainText) paramsup += "👍 '''Same track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
-		else if (locTrack.artistCredit.toUpperCase() == remTrack.artistCreditAsPlainText.toUpperCase()) paramsup += "👍 '''Same track artist credit ([AC])''' (case insensitive)\n";
-		else if (locTrack.looseAC == remTrack.looseAC) paramsup += "👍 '''Similar track artist credit ([AC])''' “" + locTrack.artistCredit + "”\n";
-		if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
-			var delta = Math.abs(locTrack.length - remTrack.length);
-			if (delta <= safeLengthDelta * 1000) paramsup += "👍 '''" + (delta === 0 ? "Same" : "Very close") + " track times''' " + /*temporary hidden until milliseconds are back(delta === 0 ? "(in milliseconds)" : */ "(" + (time(locTrack.length) == time(remTrack.length) ? time(locTrack.length) : "within " + safeLengthDelta + " seconds: " + time((swap.value == "no" ? locTrack : remTrack).length) + " ← " + time((swap.value == "no" ? remTrack : locTrack).length)) + ")" /*)temporary*/ + "\n";
-		}
-		if (localRelease.ac == remoteRelease.ac) paramsup += "👍 '''Same release artist''' “" + protectEditNoteText(localRelease.ac) + "”\n";
-		if (localRelease.title == remoteRelease.title) paramsup += "👍 '''Same release title''' “" + protectEditNoteText(localRelease.title) + "”\n";
-		else if (localRelease.title.toUpperCase() == remoteRelease.title.toUpperCase()) paramsup += "👍 '''Same release title''' (case insensitive)\n";
-		else if (localRelease.looseTitle == remoteRelease.looseTitle) paramsup += "👍 '''Almost same release title''' (loose comparison)\n";
-		if (localRelease["release-group"] == remoteRelease["release-group"]) paramsup += "👍 '''Same release group''' (" + MBS + "/release-group/" + localRelease["release-group"] + ")\n";
-		paramsup += " —\n" + meta.n + " (" + meta.v + ") in “" + matchMode.current.value.replace(/^Match unordered /i, "") + "” match mode";
-		if (retry.count > 0) {
-			paramsup += " — '''retry'''" + (retry.count > 1 ? " #" + retry.count : "") + " (" + protectEditNoteText(retry.message) + ")";
-		}
-		params[step] += encodeURIComponent(paramsup);
-	}
-	infoMerge("#" + from.value + " to #" + to.value + " " + statuses[step] + "…");
-	currentButt.setAttribute("value", buttStatuses[step] + " " + (step + 1) + "/2");
-	currentButt.setAttribute("ref", step);
-	var xhr = new XMLHttpRequest();
-	function releaseInfoRow(sourceOrTarget, rel, trackIndex) {
-		return sourceOrTarget + ": " + MBS + "/release/" + rel.id + " #'''" + (trackIndex + 1) + "'''/" + rel.tracks.length + ". “'''" + protectEditNoteText(rel.title) + "'''”" + protectEditNoteText(rel.comment) + " by '''" + protectEditNoteText(rel.ac) + "'''\n";
-	}
-	xhr.onreadystatechange = function(event) {
-		if (this.readyState == 4) {
-			if (to.value === "") {
-				nextButt(false);
-			} else if (this.status == 200) {
-				if (step === 0) {
-					if (
-						this.responseText.indexOf('<form action="' + MBS + '/recording/merge" method="post">') > -1
-						&& this.responseText.indexOf('value="' + from.value + '"') > -1
-						&& this.responseText.indexOf('<a href="/recording/' + from.getAttribute("ref") + '">') > -1
-						&& this.responseText.indexOf('value="' + to.value + '"') > -1
-						&& this.responseText.indexOf('<a href="/recording/' + to.getAttribute("ref") + '">') > -1
-					) {
-						mergeRecsStep(1);
-					} else {
-						tryAgain("Did not queue");
+		infoMerge("#" + from.value + " to #" + to.value + " " + statuses[step] + "…");
+		currentButt.setAttribute("value", buttStatuses[step] + " " + (step + 1) + "/2");
+		currentButt.setAttribute("ref", step);
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function(event) {
+			if (this.readyState == 4) {
+				if (to.value === "") {
+					nextButt(false);
+				} else if (this.status == 200) {
+					if (step === 0) {
+						if (
+							this.responseText.match(new RegExp('<form action="' + MBS.replace(/[./]/g, "\\$&") + '\\/recording\\/merge\\?returnto=([^"]+)?" method="post">'))
+							&& this.responseText.indexOf('value="' + from.value + '"') > -1
+							&& this.responseText.indexOf('<a href="/recording/' + from.getAttribute("ref") + '">') > -1
+							&& this.responseText.indexOf('value="' + to.value + '"') > -1
+							&& this.responseText.indexOf('<a href="/recording/' + to.getAttribute("ref") + '">') > -1
+						) {
+							mergeRecsStep(1);
+						} else {
+							tryAgain("Did not queue");
+						}
+					} else if (step === 1) {
+						if (
+							this.responseText.indexOf('<h1><span class="mp"><a href="/recording/' + to.getAttribute("ref") + '">') > -1
+							&& this.responseText.indexOf('href="/recording/merge_queue?add-to-merge=' + to.value) > -1
+						) {
+							nextButt(true);
+						} else {
+							checkMerge("Did not merge");
+						}
 					}
-				} else if (step === 1) {
-					if (
-						this.responseText.indexOf('"@id":"https://musicbrainz.org/recording/' + to.getAttribute("ref") + '"') > -1
-						&& this.responseText.indexOf('href="' + MBS + '/recording/merge_queue?add-to-merge=' + to.value + '"') > -1
-					) {
-						nextButt(true);
+				} else {
+					var errorText = "Error " + this.status + " “" + this.statusText + "” in step " + (step + 1) + "/2";
+					if (step === 0) {
+						tryAgain(errorText);
 					} else {
-						checkMerge("Did not merge");
+						checkMerge(errorText);
 					}
 				}
-			} else {
-				checkMerge("Error " + this.status + ": “" + this.statusText + "” in step " + (step + 1) + "/2");
 			}
-		}
-	};
-	xhr.open("POST", urls[step], true);
-	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-	setTimeout(function() { xhr.send(params[step]); }, chrono(MBSminimumDelay));
+		};
+		xhr.open("POST", MBS + urls[step], true);
+		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		setTimeout(function() { xhr.send(params[step]); }, chrono(MBSminimumDelay));
+	} else {
+		alert("Merging recordings is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\n\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc.");
+		editNote.style.setProperty("background-color", cNG);
+		infoMerge("Proper edit note missing.", false, true);
+	}
+}
+function releaseInfoRow(sourceOrTarget, rel, trackIndex) {
+	return sourceOrTarget + ": " + MBS + "/release/" + rel.id + " #'''" + (trackIndex + 1) + "'''/" + rel.tracks.length + ". “'''" + protectEditNoteText(rel.title) + "'''”" + protectEditNoteText(rel.comment) + " by '''" + protectEditNoteText(rel.ac) + "'''\n";
 }
 function checkMerge(errorText) {
 	retry.checking = true;
 	infoMerge("Checking merge (" + errorText + ")…", false);
 	var xhr = new XMLHttpRequest();
-	xhr.addEventListener("load", function(event) {
-		var retryStep = 0;
-		if (this.status == 200 && typeof this.responseText == "string") {
-			if (this.responseText.indexOf('class="edit-list"') > -1) {
-				var editID = this.responseText.match(/>Edit #(\d+)/);
-				nextButt(editID ? editID[1] : true);
-			} else if (this.responseText.indexOf('id="remove.' + from.value + '"') > -1 && this.responseText.indexOf('id="remove.' + to.value + '"') > -1) {
-				retry.count += 1;
-				retry.message = errorText;
-				mergeRecsStep(1);
-			} else {
-				tryAgain(errorText);
-			}
-		} else {
+	xhr.addEventListener("error", function(event) {
+		setTimeout(function() {
+			infoMerge("Retrying in 2s (error " + this. status + ": “" + this.statusText + "”)…", false);
 			checkMerge(errorText);
-		}
-		retry.checking = false;
+		}, 2000);
 	});
-	xhr.open("GET", "/search/edits?negation=0&combinator=and&conditions.0.field=recording&conditions.0.operator=%3D&conditions.0.name=" + from.value + "&conditions.0.args.0=" + from.value + "&conditions.1.field=recording&conditions.1.operator=%3D&conditions.1.name=" + to.value + "&conditions.1.args.0=" + to.value + "&conditions.2.field=type&conditions.2.operator=%3D&conditions.2.args=74&conditions.3.field=status&conditions.3.operator=%3D&conditions.3.args=1", true);
+	xhr.addEventListener("load", function(event) {
+		if (this.status < 200 || this.status >= 400) {
+			sendEvent(this, "error");
+		} else {
+			if (typeof this.responseText == "string") {
+				if (this.responseText.indexOf('class="edit-list"') > -1) {
+					var editID = this.responseText.match(/>Edit #(\d+)/);
+					nextButt(editID ? editID[1] : true);
+				} else if (this.responseText.indexOf('id="remove.' + from.value + '"') > -1 && this.responseText.indexOf('id="remove.' + to.value + '"') > -1) {
+					retry.count += 1;
+					retry.message = errorText;
+					mergeRecsStep(1);
+				} else {
+					tryAgain(errorText);
+				}
+			} else {
+				sendEvent(this, "error");
+			}
+			retry.checking = false;
+		}
+	});
+	xhr.open("GET", MBS + "/search/edits?negation=0&combinator=and&conditions.0.field=recording&conditions.0.operator=%3D&conditions.0.name=" + from.value + "&conditions.0.args.0=" + from.value + "&conditions.1.field=recording&conditions.1.operator=%3D&conditions.1.name=" + to.value + "&conditions.1.args.0=" + to.value + "&conditions.2.field=type&conditions.2.operator=%3D&conditions.2.args=74&conditions.3.field=status&conditions.3.operator=%3D&conditions.3.args=1", true);
 	setTimeout(function() { xhr.send(null); }, chrono(retryDelay));
 }
 function nextButt(successOrEditID) {
@@ -261,7 +257,7 @@ function nextButt(successOrEditID) {
 }
 function tryAgain(errorText) {
 	retry.count += 1;
-	retry.message = errorText
+	retry.message = errorText;
 	var errormsg = errorText;
 	if (currentButt) {
 		errormsg = "Retry in " + Math.ceil(retryDelay / 1000) + " seconds (" + errormsg + ").";
@@ -277,8 +273,11 @@ function enableAndClick(butt) {
 }
 function infoMerge(msg, goodNews, reset) {
 	mergeStatus.value = msg;
-	if (goodNews != null) { mergeStatus.style.setProperty("background-color", goodNews ? cOK : cNG); }
-	else { mergeStatus.style.setProperty("background-color", cInfo); }
+	if (goodNews != null) {
+		mergeStatus.style.setProperty("background-color", goodNews ? cOK : cNG);
+	} else {
+		mergeStatus.style.setProperty("background-color", cInfo);
+	}
 	if (reset) {
 		from.value = "";
 		to.value = "";
@@ -290,13 +289,13 @@ function queueTrack() {
 	document.title = (mergeQueue.length + 1) + "⌛ " + dtitle;
 }
 function cleanTrack(track, editID, retryCount) {
-	var rmForm = track.tr.querySelector("td:not(.pos):not(.video) form." + MMRid);
+	var rmForm = track.tr.querySelector("td:not(.pos):not(.video) form." + userjs.id);
 	if (rmForm) {
 		if (editID) {
 			mp(track.tr.querySelector(css_track), true);
 			var noPendingOpenEdits = document.querySelector("div#sidebar :not(.mp) > a[href='/release/" + localRelease.id + "/open_edits']");
-			var mb_PENDING_EDITS = document.querySelectorAll("div#sidebar .jesus2099userjs42102count");
-			for (var counts = 0; counts < mb_PENDING_EDITS.length; counts++) {
+			var mb_PENDING_EDITS = document.querySelectorAll("div#sidebar .jesus2099PendingEditsCount");
+			for (let counts = 0; counts < mb_PENDING_EDITS.length; counts++) {
 				var currentCount = mb_PENDING_EDITS[counts].textContent.trim();
 				if ((currentCount = currentCount.match(/^\d+$/)) && mb_PENDING_EDITS[counts].style.getPropertyValue("background-color") != "pink") {
 					mb_PENDING_EDITS[counts].replaceChild(document.createTextNode(parseInt(currentCount, 10) + 1), mb_PENDING_EDITS[counts].firstChild);
@@ -306,9 +305,9 @@ function cleanTrack(track, editID, retryCount) {
 				if (mb_PENDING_EDITS.length > 0) {
 					noPendingOpenEdits.parentNode.classList.add("mp");
 					noPendingOpenEdits.style.removeProperty("text-decoration");
-					for (var counts = 0; counts < mb_PENDING_EDITS.length; counts++) {
-						mb_PENDING_EDITS[counts].parentNode.parentNode.removeAttribute("title")
-						mb_PENDING_EDITS[counts].parentNode.parentNode.style.removeProperty("opacity")
+					for (let counts = 0; counts < mb_PENDING_EDITS.length; counts++) {
+						mb_PENDING_EDITS[counts].parentNode.parentNode.removeAttribute("title");
+						mb_PENDING_EDITS[counts].parentNode.parentNode.style.removeProperty("opacity");
 					}
 				} else {
 					mp(noPendingOpenEdits, true);
@@ -325,7 +324,7 @@ function cleanTrack(track, editID, retryCount) {
 						infoSpan.appendChild(document.createTextNode(", "));
 					}
 					var retryLabel = "retr";
-					if (retryCount > 1 ) {
+					if (retryCount > 1) {
 						retryLabel = retryCount + " " + retryLabel + "ies";
 					} else {
 						retryLabel += "y";
@@ -339,8 +338,9 @@ function cleanTrack(track, editID, retryCount) {
 	} else {
 		var lengthcell = track.tr.querySelector("td.treleases");
 		if (track.length && lengthcell) {
-			lengthcell.replaceChild(document.createTextNode(time(track.length, true)), lengthcell.firstChild);
+			lengthcell.replaceChild(document.createTextNode(time(track.length, false)), lengthcell.firstChild);
 			lengthcell.style.setProperty("font-family", "monospace");
+			lengthcell.style.setProperty("text-align", "right");
 		}
 	}
 }
@@ -351,11 +351,11 @@ function changeMatchMode(event) {
 		spreadTracks(event);
 	} else {
 		var matchedRemoteTracks = [];
-		for (var loc = 0; loc < localRelease.tracks.length; loc++) {
+		for (let loc = 0; loc < localRelease.tracks.length; loc++) {
 			cleanTrack(localRelease.tracks[loc]);
 			var rem = bestStartPosition(loc, matchMode.current == matchMode.titleAndAC);
 			if (rem !== null) {
-				var rem = 0 - rem + loc;
+				rem = 0 - rem + loc;
 				if (matchedRemoteTracks.indexOf(rem) < 0) {
 					matchedRemoteTracks.push(rem);
 					buildMergeForm(loc, rem);
@@ -370,33 +370,33 @@ function changeMatchMode(event) {
 	}
 }
 function updateMatchModeDisplay() {
-	for (var mode in matchMode) if (matchMode.hasOwnProperty(mode)) {
+	for (let mode in matchMode) if (Object.prototype.hasOwnProperty.call(matchMode, mode)) {
 		disableInputs(matchMode[mode], matchMode[mode] == matchMode.current);
 	}
 	enableInputs(startpos, matchMode.sequential == matchMode.current);
 }
 function massMergeGUI() {
-	var MMRdiv = createTag("div", {a: {id: MMRid}, e: {
+	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
-			if (event.keyCode == KBD.ENTER && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
+			if (event.key == "Enter" && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
 				queueAll.click();
 			} else if (event.target == editNote && !event.altKey && event.ctrlKey && !event.shiftKey) {
-				switch (event.keyCode) {
-					case KBD.S:
+				switch (event.key) {
+					case "s":
 						return saveEditNote(event);
-					case KBD.O:
+					case "o":
 						return loadEditNote(event);
 				}
 			}
 		},
 		click: prepareLocalRelease
 	}}, [
-		createTag("h2", {}, meta.n),
-		createTag("p", {}, "version " + meta.v),
+		createTag("h2", {}, userjs.name),
+		createTag("p", {}, "version " + userjs.version),
 		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", createTag("kbd", {}, "CTRL"), " + ", createTag("kbd", {}, "SHIFT"), "+", createTag("kbd", {}, "M")]),
 		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release", createTag("span", {a: {"class": "remote-release-link"}}), ":"]),
 	]);
-	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", meta.n + " remote release URL"));
+	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", userjs.name + " remote release URL"));
 	mergeStatus.style.setProperty("width", "100%");
 	mergeStatus.addEventListener("input", function(event) {
 		matchMode.current = matchMode.sequential;
@@ -407,12 +407,13 @@ function massMergeGUI() {
 			recid2trackIndex.local = {};
 			removeChildren(startpos);
 			var trs = document.querySelectorAll("div#content > table.tbl > tbody > tr");
-	//		var jsonRelease, scripts = document.querySelectorAll("script:not([src])");
-	//		for (var s = 0; s < scripts.length && !jsonRelease; s++) {
-	//			jsonRelease = scripts[s].textContent.match(/MB\.Release\.init\(([^<]+)\)/);
-	//		}
-	//		if (jsonRelease) jsonRelease = JSON.parse(jsonRelease[1]);
-			for (var itrs = 0, t = 0, d = 0, dt = 0; itrs < trs.length; itrs++) {
+			/* var jsonRelease, scripts = document.querySelectorAll("script:not([src])");
+			for (let s = 0; s < scripts.length && !jsonRelease; s++) {
+				jsonRelease = scripts[s].textContent.match(/MB\.Release\.init\(([^<]+)\)/);
+			}
+			if (jsonRelease) jsonRelease = JSON.parse(jsonRelease[1]); */
+			var multiDiscRelease = document.querySelectorAll(css_collapsed_medium).length > 1;
+			for (let itrs = 0, t = 0, d = 0, dt = 0; itrs < trs.length; itrs++) {
 				if (!trs[itrs].classList.contains("subh")) {
 					var tracka = trs[itrs].querySelector(css_track);
 					var recoid = trs[itrs].querySelector("td.rating a.set-rating").getAttribute("href").match(/id=([0-9]+)/)[1];
@@ -432,15 +433,15 @@ function massMergeGUI() {
 					});
 					localRelease.tracks[t].looseName = looseTitle(localRelease.tracks[t].name);
 					localRelease.tracks[t].looseAC = looseTitle(localRelease.tracks[t].artistCredit);
-	//				if (jsonRelease) {
-	////					localRelease.tracks[localRelease.tracks.length - 1] = jsonRelease.mediums[d - 1].tracks[dt];
-	//					for (var key in jsonRelease.mediums[d - 1].tracks[dt]) if (jsonRelease.mediums[d - 1].tracks[dt].hasOwnProperty(key)) {
-	//						localRelease.tracks[localRelease.tracks.length - 1][key] = jsonRelease.mediums[d - 1].tracks[dt][key];
-	//					}
-	//				}
+					/* if (jsonRelease) {
+						// localRelease.tracks[localRelease.tracks.length - 1] = jsonRelease.mediums[d - 1].tracks[dt];
+						for (let key in jsonRelease.mediums[d - 1].tracks[dt]) if (jsonRelease.mediums[d - 1].tracks[dt].hasOwnProperty(key)) {
+							localRelease.tracks[localRelease.tracks.length - 1][key] = jsonRelease.mediums[d - 1].tracks[dt][key];
+						}
+					} */
 					dt++;
 					recid2trackIndex.local[recoid] = t;
-					addOption(startpos, t, d + "." + (dt < 10 ? " " : "") + dt + ". " + trackname);
+					addOption(startpos, t, (multiDiscRelease ? d + "." : "") + dt + ". " + trackname);
 					t++;
 				} else if (!trs[itrs].querySelector("div.data-track")) {
 					d++; dt = 0;
@@ -451,13 +452,13 @@ function massMergeGUI() {
 			remoteRelease.disc = mbid[2] || "";
 			infoMerge("Fetching recordings…");
 			loadReleasePage();
-			loadReleaseWS();
+			// loadReleaseWS(remoteRelease.id);
 		}
 	});
 	MMRdiv.appendChild(createTag("p", {}, "Once you paste the remote release URL or MBID, all its recordings will be loaded and made available for merge with the local recordings in the left hand tracklist."));
 	MMRdiv.appendChild(createTag("p", {}, "Herebelow, you can shift the alignement of local and remote tracklists."));
 	MMRdiv.appendChild(createTag("p", {s: {marginBottom: "0px"}}, "Start position:"));
-	/*track parsing*/
+	/* track parsing */
 	startpos = MMRdiv.appendChild(createTag("select", {s: {fontSize: ".8em", width: "100%"}, e: {change: function(event) {
 		/* hitting ENTER on a once changed <select> triggers onchange even if no recent change */
 		if (this.getAttribute("previousValue") != this.value) {
@@ -470,12 +471,37 @@ function massMergeGUI() {
 		}
 	}}}));
 	if (navigator.userAgent.match(/firefox/i)) startpos.addEventListener("keyup", function(event) {
-		if (event.keyCode != KBD.ENTER) {
+		if (event.key != "Enter") {
 			this.blur();
 			this.focus();
 		}
 	});
-	MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "↑"), " / ", createTag("kbd", {}, "→"), " / ", createTag("kbd", {}, "↓"), " / ", createTag("kbd", {}, "←"), ": shift up/down", document.createElement("br"), "☞ ", createTag("kbd", {}, "ENTER"), ": queue all"]));
+	MMRdiv.appendChild(createTag("p", {}, [
+		"☞ ",
+		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "↑"),
+		" / ",
+		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "→"),
+		" / ",
+		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "↓"),
+		" / ",
+		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "←"),
+		": shift up/down",
+		document.createElement("br"),
+		"☞ ",
+		createTag("kbd", {}, "ENTER"),
+		": queue all"
+	]));
+	MMRdiv.addEventListener("click", function(event) {
+		if (matchMode.current == matchMode.sequential && event.target.classList.contains(userjs.id + "arrowButton")) {
+			startpos.focus();
+			if (event.target.textContent.match(/[↑←]/) && startpos.selectedIndex > 0) {
+				startpos.selectedIndex -= 1;
+			} else if (event.target.textContent.match(/[↓→]/) && startpos.selectedIndex < startpos.length - 1) {
+				startpos.selectedIndex += 1;
+			}
+			sendEvent(startpos, "change");
+		}
+	});
 	matchMode.sequential = createInput("button", "", "Sequential");
 	matchMode.sequential.setAttribute("title", "Restore remote tracks order");
 	matchMode.sequential.addEventListener("click", changeMatchMode);
@@ -490,7 +516,7 @@ function massMergeGUI() {
 	MMRdiv.appendChild(createTag("p", {}, [matchMode.sequential, matchMode.title, matchMode.titleAndAC]));
 	MMRdiv.appendChild(createTag("p", {s: {marginBottom: "0px"}}, "Merge edit notes:"));
 	editNote = MMRdiv.appendChild(createInput("textarea", "merge.edit_note"));
-	var lastEditNote = (localStorage && localStorage.getItem(MMRid));
+	var lastEditNote = (localStorage && localStorage.getItem(userjs.id));
 	if (lastEditNote) {
 		editNote.appendChild(document.createTextNode(lastEditNote));
 		editNote.style.setProperty("background-color", cOK);
@@ -518,17 +544,17 @@ function massMergeGUI() {
 	var changeAllDirButt = createInput("button", "", "Change all merge targets to " + (swap.value == "no" ? "remote" : "local"));
 	changeAllDirButt.style.setProperty("background-color", cOK);
 	changeAllDirButt.addEventListener("click", function(event) {
-		var allbutts = document.querySelectorAll("input." + MMRid + "dirbutt:not([disabled])");
+		var allbutts = document.querySelectorAll("input." + userjs.id + "dirbutt:not([disabled])");
 		var direction = this.value.match(/local/) ? rem2loc : loc2rem;
-		for (var iab = 0; iab < allbutts.length; iab++) if (allbutts[iab].value != direction) allbutts[iab].click();
+		for (let iab = 0; iab < allbutts.length; iab++) if (allbutts[iab].value != direction) allbutts[iab].click();
 		swap.value = direction == rem2loc ? "no" : "yes";
 		this.value = this.value.replace(/\w+$/, swap.value == "no" ? "remote" : "local");
 		this.style.setProperty("background-color", swap.value == "no" ? cInfo : cOK);
 	});
 	var resetAllDirButt = createInput("button", "", "Reset all merge directions to oldest");
 	resetAllDirButt.addEventListener("click", function(event) {
-		var allbutts = document.querySelectorAll("input." + MMRid + "dirbutt:not([disabled])");
-		for (var iab = 0; iab < allbutts.length; iab++) {
+		var allbutts = document.querySelectorAll("input." + userjs.id + "dirbutt:not([disabled])");
+		for (let iab = 0; iab < allbutts.length; iab++) {
 			var remoteRowID = parseInt(allbutts[iab].parentNode.querySelector("input[name='merge.merging.1']").value, 10);
 			var localRowID = parseInt(allbutts[iab].parentNode.querySelector("input[name='merge.merging.0']").value, 10);
 			if (remoteRowID > localRowID && allbutts[iab].value == loc2rem || remoteRowID < localRowID && allbutts[iab].value == rem2loc) {
@@ -542,8 +568,8 @@ function massMergeGUI() {
 	queueAll.setAttribute("ref", queueAll.value);
 	queueAll.style.setProperty("background-color", cMerge);
 	queueAll.addEventListener("click", function(event) {
-		var allbutts = document.getElementsByClassName(MMRid + "mergebutt");
-		for (var iab = 0; iab < allbutts.length; iab++) {
+		var allbutts = document.getElementsByClassName(userjs.id + "mergebutt");
+		for (let iab = 0; iab < allbutts.length; iab++) {
 			if (allbutts[iab].value == "Merge") allbutts[iab].click();
 		}
 	});
@@ -552,7 +578,7 @@ function massMergeGUI() {
 	emptyQueueButt.addEventListener("click", function(event) {
 		if (mergeQueue.length > 0) {
 			while (mergeQueue.length > 0) {
-				var unqueuedbutt = mergeQueue.shift()
+				var unqueuedbutt = mergeQueue.shift();
 				unqueuedbutt.style.setProperty("background-color", cMerge);
 				enableInputs(unqueuedbutt);
 				unqueuedbutt.value = "Merge";
@@ -565,11 +591,11 @@ function massMergeGUI() {
 	return MMRdiv;
 }
 function loadReleasePage() {
-	for (var ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
-		/*//TODO should probably remove some in spreadTracks() etc.*/
+	for (let ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
+		// TODO: should probably remove some in spreadTracks() etc.
 		cleanTrack(localRelease.tracks[ltrack]);
 	}
-	var mbidInfo = document.getElementById(MMRid).querySelector(".remote-release-link");
+	var mbidInfo = document.getElementById(userjs.id).querySelector(".remote-release-link");
 	removeChildren(mbidInfo);
 	mbidInfo.setAttribute("title", remoteRelease.id + remoteRelease.disc);
 	mbidInfo.appendChild(document.createTextNode(" "));
@@ -577,21 +603,23 @@ function loadReleasePage() {
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("error", function() { infoMerge("Error " + this.status + ": “" + this.statusText + "”", false); });
 	xhr.addEventListener("load", function(event) {
-		if (this.status == 200) {
+		if (this.status < 200 || this.status >= 400) {
+			sendEvent(this, "error");
+		} else {
 			var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
 			var recIDx5 = releaseWithoutARs.match(/entity_id=\d+[^"]*entity_type=recording|entity_type=recording[^"]*entity_id=\d+/g);
 			var trackRows = releaseWithoutARs.match(/<tr class="(even|odd)" id="[-\da-z]{36}">[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
 			var trackInfos = releaseWithoutARs.match(new RegExp("<a href=\"/recording/" + sregex_MBID + "\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
 			var trackTimes = releaseWithoutARs.match(/<td class="treleases">[^<]*<\/td>/g);
 			var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
-			var releaseAC = releaseWithoutARs.match(/\s+Release by (<.+>)/);
+			var releaseAC = releaseWithoutARs.match(/<p class="subheader"><span class="prefix">~<\/span> <!-- -->[^<]+ (<.+?) <span class="small">\(/);
 			var discount = releaseWithoutARs.match(/<a class="expand-medium"/g).length;
 			if (recIDx5 && trackInfos && trackTimes && rtitle) {
 				var recIDs = [];
-				for (var i5 = 0; i5 < recIDx5.length; i5 += 5) {
+				for (let i5 = 0; i5 < recIDx5.length; i5 += 5) {
 					recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
 				}
-				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>)?<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>)?\)/)[1];
+				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>){0,2}<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>){0,2}\)/)[1];
 				remoteRelease.title = HTMLToText(rtitle[1]);
 				remoteRelease.looseTitle = looseTitle(remoteRelease.title);
 				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
@@ -609,7 +637,7 @@ function loadReleasePage() {
 					}
 				}
 				remoteRelease.tracks = [];
-				for (var t = 0; t < recIDs.length; t++) {
+				for (let t = 0; t < recIDs.length; t++) {
 					var trackLength = trackTimes[t].match(/(\d+:)?\d+:\d+/);
 					if (trackLength) trackLength = strtime2ms(trackLength[0]);
 					remoteRelease.tracks.push({
@@ -630,24 +658,24 @@ function loadReleasePage() {
 					remoteRelease.tracks[t].looseAC = looseTitle(remoteRelease.tracks[t].artistCreditAsPlainText);
 					recid2trackIndex.remote[recIDs[t]] = t;
 				}
-//									for (var rd = 0; rd < jsonRelease.mediums.length; rd++) {
-//										for (var rt = 0; rt < jsonRelease.mediums[rd].tracks.length; rt++) {
-//											remoteRelease.tracks.push(jsonRelease.mediums[rd].tracks[rt]);
-//											recid2trackIndex.remote[jsonRelease.mediums[rd].tracks[rt].recording.rowid] = remoteRelease.tracks.length - 1;
-//										}
-//									}
-//									jsonRelease = null;/*maybe it frees up memory*/
-				/*(re)build negative startpos*/
+										/* for (let rd = 0; rd < jsonRelease.mediums.length; rd++) {
+											for (let rt = 0; rt < jsonRelease.mediums[rd].tracks.length; rt++) {
+												remoteRelease.tracks.push(jsonRelease.mediums[rd].tracks[rt]);
+												recid2trackIndex.remote[jsonRelease.mediums[rd].tracks[rt].recording.rowid] = remoteRelease.tracks.length - 1;
+											}
+										}
+										jsonRelease = null; /* maybe it frees up memory */
+				/* (re)build negative startpos */
 				var negativeOptions = startpos.querySelectorAll("option[value^='-']");
-				for (var nopt = 0; nopt < negativeOptions.length; nopt++) {
+				for (let nopt = 0; nopt < negativeOptions.length; nopt++) {
 					removeNode(negativeOptions[nopt]);
 				}
-				for (var rtrack = 0; rtrack < remoteRelease.tracks.length - 1; rtrack++) {
+				for (let rtrack = 0; rtrack < remoteRelease.tracks.length - 1; rtrack++) {
 					addOption(startpos, 0 - rtrack - 1, 0 - rtrack - 1, true);
 				}
 				startpos.value = bestStartPosition() || 0;
 				spreadTracks(event);
-			} else if(discount > 10) {
+			} else if (discount > 10) {
 				var disc = prompt("This release has " + discount + " discs.\n11+ disc releases can only be used as local release.\nDo you want to load one of its mediums?\n\nNext time you can directly paste the medium link (" + MBS + "/release/" + remoteRelease.id + "/disc/1).", "1");
 				if (disc && disc.match(/^\d+$/) && disc > 0 && disc <= discount) {
 					remoteRelease.disc = "/disc/" + disc;
@@ -656,20 +684,20 @@ function loadReleasePage() {
 					infoMerge("Disc number out of bounds (1–" + discount + ") or unreadable", false);
 				}
 			}
-		} else {
-			infoMerge("Error " + this.status + ": “" + this.statusText + "”", false);
 		}
 	});
-	xhr.open("GET", "/release/" + remoteRelease.id + remoteRelease.disc, true);
+	xhr.open("GET", MBS + "/release/" + remoteRelease.id + remoteRelease.disc, true);
 	setTimeout(function() { xhr.send(null); }, chrono(MBSminimumDelay));
 }
 function bestStartPosition(localTrack, matchAC) {
 	var singleTrackMode = typeof localTrack != "undefined";
-	for (var loc = singleTrackMode ? localTrack : 0; loc < (singleTrackMode ? localTrack + 1 : localRelease.tracks.length); loc++) {
-		for (var rem = 0; rem < remoteRelease.tracks.length; rem++) {
+	for (let loc = singleTrackMode ? localTrack : 0; loc < (singleTrackMode ? localTrack + 1 : localRelease.tracks.length); loc++) {
+		for (let rem = 0; rem < remoteRelease.tracks.length; rem++) {
 			if (
 				localRelease.tracks[loc].looseName == remoteRelease.tracks[rem].looseName
 				&& (!matchAC || localRelease.tracks[loc].looseAC == remoteRelease.tracks[rem].looseAC)
+				// leven(localRelease.tracks[loc].looseName, remoteRelease.tracks[rem].looseName) < 5
+				// && (!matchAC || leven(localRelease.tracks[loc].looseAC, remoteRelease.tracks[rem].looseAC) < 5)
 			) {
 				return loc - rem;
 			}
@@ -677,14 +705,14 @@ function bestStartPosition(localTrack, matchAC) {
 	}
 	return null;
 }
-function loadReleaseWS(mbid) {
-}
+// function loadReleaseWS(mbid) {
+// }
 function spreadTracks(event) {
 	var rtrack = startpos.value < 0 ? 0 - startpos.value : 0;
-	for (var ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
+	for (let ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
 		cleanTrack(localRelease.tracks[ltrack]);
-		if(ltrack >= startpos.value && rtrack < remoteRelease.tracks.length) {
-			var ntitl = "local recording #" + format(localRelease.tracks[ltrack].recid) + "\r\n" + localRelease.tracks[ltrack].looseName + "\r\n" + localRelease.tracks[ltrack].looseAC;
+		if (ltrack >= startpos.value && rtrack < remoteRelease.tracks.length) {
+			var ntitl = "local recording #" + format(localRelease.tracks[ltrack].recid) + "\n" + localRelease.tracks[ltrack].looseName + "\n" + localRelease.tracks[ltrack].looseAC;
 			var ntit = localRelease.tracks[ltrack].a.getAttribute("title");
 			if (!ntit || (ntit && !ntit.match(new RegExp(ntitl)))) {
 				localRelease.tracks[ltrack].a.setAttribute("title", (ntit ? ntit + " — " : "") + ntitl);
@@ -693,7 +721,7 @@ function spreadTracks(event) {
 			rtrack++;
 		}
 	}
-	var mergebutts = document.getElementsByClassName(MMRid + "mergebutt").length;
+	var mergebutts = document.getElementsByClassName(userjs.id + "mergebutt").length;
 	var outOfView = Math.max(0, parseInt(startpos.value, 10) + remoteRelease.tracks.length - localRelease.tracks.length);
 	if (startpos.value < 0) outOfView -= startpos.value;
 	infoMerge("☞ " + mergebutts + " recording" + (mergebutts == 1 ? "" : "s") + " ready to merge" + (outOfView > 0 ? " (" + outOfView + " out of view)" : ""), mergebutts > 0);
@@ -706,9 +734,9 @@ function buildMergeForm(loc, rem) {
 	var rmForm = document.createElement("form");
 	rmForm.setAttribute("action", "/recording/merge");
 	rmForm.setAttribute("method", "post");
-//		rmForm.setAttribute("title", "AC: " + ac2str(remTrack.artistCredit) + "\nremote recording #" + remTrack.recording.rowid);
-	rmForm.setAttribute("title", "remote recording #" + format(remTrack.recording.rowid) + "\r\n" + remTrack.looseName + "\r\n" + remTrack.looseAC);
-	rmForm.setAttribute("class", MMRid);
+	// rmForm.setAttribute("title", "AC: " + ac2str(remTrack.artistCredit) + "\nremote recording #" + remTrack.recording.rowid);
+	rmForm.setAttribute("title", "remote recording #" + format(remTrack.recording.rowid) + "\n" + remTrack.looseName + "\n" + remTrack.looseAC);
+	rmForm.setAttribute("class", userjs.id);
 	rmForm.style.setProperty("display", "inline");
 	rmForm.appendChild(createInput("hidden", "merge.merging.0", locTrack.recid)).setAttribute("ref", locTrack.a.getAttribute("href").match(regex_MBID)[0]);
 	rmForm.appendChild(createInput("hidden", "merge.target", locTrack.recid));
@@ -717,7 +745,7 @@ function buildMergeForm(loc, rem) {
 	if (remTrack.recording.rowid != locTrack.recid) {
 		rmForm.style.setProperty("background-color", cWarning);
 		var dirButt = rmForm.appendChild(createInput("button", "direction", swap.value == "no" ? rem2loc : loc2rem));
-		dirButt.setAttribute("class", MMRid + "dirbutt");
+		dirButt.setAttribute("class", userjs.id + "dirbutt");
 		dirButt.style.setProperty("background-color", swap.value == "no" ? cOK : cInfo);
 		dirButt.style.setProperty("padding", "0 1em .5em 1em");
 		dirButt.style.setProperty("margin", "0 4px");
@@ -745,39 +773,39 @@ function buildMergeForm(loc, rem) {
 		var reclen = remrec.appendChild(document.createElement("span"));
 		reclen.style.setProperty("float", "right");
 		reclen.style.setProperty("font-family", "monospace");
+		reclen.classList.add("remoteRecordingLength");
 		reclen.appendChild(document.createTextNode(" " + time(remTrack.length, true)));
 		if (typeof locTrack.length == "number" && typeof remTrack.length == "number") {
 			var delta = Math.abs(locTrack.length - remTrack.length);
-			if (delta != false && delta > safeLengthDelta*1000) {
-				if (delta >= 15*1000) {/*MBS-7417:MBS/lib/MusicBrainz/Server/Edit/Utils.pm*/
-					reclen.style.setProperty("color", "red");
-					reclen.style.setProperty("background-color", "black");
+			if (delta != false && delta > safeLengthDelta * 1000) {
+				if (delta >= largeSpread * 1000) {
+					reclen.classList.add("largeSpread");
 					reclen.setAttribute("title", "MORE THAN " + 15 + " SECONDS DIFFERENCE");
 				} else {
 					reclen.style.setProperty("background-color", cNG);
 					reclen.setAttribute("title", "more than " + safeLengthDelta + " seconds difference");
 				}
 			} else {
-				reclen.style.setProperty("background-color", delta&&delta > 500 ? cWarning : cOK);
+				reclen.style.setProperty("background-color", delta && delta > 500 ? cWarning : cOK);
 			}
 		}
 		rmForm.appendChild(document.createTextNode(" by "));
-//			rmForm.appendChild(ac2dom(remTrack.artistCredit));
+		// rmForm.appendChild(ac2dom(remTrack.artistCredit));
 		var AC = document.createElement("span");
 		AC.innerHTML = remTrack.artistCredit;
 		if (locTrack.looseAC == remTrack.looseAC) {
-			for (var spanMp = AC.querySelectorAll("span.mp"), m = 0; m < spanMp.length; m++) {
+			for (let spanMp = AC.querySelectorAll("span.mp"), m = 0; m < spanMp.length; m++) {
 				spanMp[m].classList.remove("mp");
 			}
 			AC.style.setProperty("background-color", cOK);
 		}
 		rmForm.appendChild(AC);
 		var mergeButt = rmForm.appendChild(createInput("button", "", "Merge"));
-		mergeButt.setAttribute("class", MMRid + "mergebutt");
+		mergeButt.setAttribute("class", userjs.id + "mergebutt");
 		mergeButt.style.setProperty("background-color", cMerge);
 		mergeButt.style.setProperty("float", "right");
 		mergeButt.addEventListener("click", function(event) {
-			var swapbutt = this.parentNode.querySelector("input." + MMRid + "dirbutt");
+			var swapbutt = this.parentNode.querySelector("input." + userjs.id + "dirbutt");
 			this.style.setProperty("background-color", cInfo);
 			var queuedItem;
 			if (from.value == "") {
@@ -832,31 +860,32 @@ function buildMergeForm(loc, rem) {
 	if (remTrack.recording.rowid != locTrack.recid) {
 		var remoteRowID = parseInt(remTrack.recording.rowid, 10);
 		var localRowID = parseInt(locTrack.recid, 10);
-		var dirbutt = rmForm.querySelector("input[type='button']." + MMRid + "dirbutt");
+		var dirbutt = rmForm.querySelector("input[type='button']." + userjs.id + "dirbutt");
 		if (remoteRowID > localRowID && dirbutt.value == loc2rem || remoteRowID < localRowID && dirbutt.value == rem2loc) {
 			dirbutt.click();
 		}
 	}
 }
 function expandCollapseAllMediums(clickThis) {
-	if (clickThis) for (var collapsedMediums = document.querySelectorAll(css_collapsed_medium), a = collapsedMediums.length - 1; a >= 0; a--) {
+	// MBS expand-all-mediums loads them from top to bottom, I want them from bottom to top to avoid creating a please wait loading message
+	if (clickThis) for (let collapsedMediums = document.querySelectorAll(css_collapsed_medium), a = collapsedMediums.length - 1; a >= 0; a--) {
 		if (collapsedMediums[a].textContent.trim() == clickThis) {
 			collapsedMediums[a].click();
 		}
 	}
 }
 function prepareLocalRelease() {
-	//link to mb_INLINE-STUFF (start)
+	// link to mb_INLINE-STUFF (start)
 	var inlineStuffedRecordingNames = document.querySelectorAll("a[jesus2099userjs81127recname]");
-	for (var n = 0; n < inlineStuffedRecordingNames.length; n++) {
+	for (let n = 0; n < inlineStuffedRecordingNames.length; n++) {
 		replaceChildren(createTag("bdi", {}, inlineStuffedRecordingNames[n].getAttribute("jesus2099userjs81127recname")), inlineStuffedRecordingNames[n]);
 		inlineStuffedRecordingNames[n].removeAttribute("jesus2099userjs81127recname");
 	}
 	var inlineStuffedRecordingComments = document.querySelectorAll("span.jesus2099userjs81127recdis");
-	for (var c = 0; c < inlineStuffedRecordingComments.length; c++) {
+	for (let c = 0; c < inlineStuffedRecordingComments.length; c++) {
 		removeNode(inlineStuffedRecordingComments[c]);
 	}
-	//link to mb_INLINE-STUFF (end)
+	// link to mb_INLINE-STUFF (end)
 	expandCollapseAllMediums("▶");
 	setTimeout(loadingAllMediums, 10);
 }
@@ -868,9 +897,9 @@ function loadingAllMediums() {
 	}
 }
 function showGUI() {
-	if (!document.body.classList.contains(MMRid)) {
-		document.body.classList.add(MMRid);
-		var MMRdiv = document.getElementById(MMRid);
+	if (!document.body.classList.contains(userjs.id)) {
+		document.body.classList.add(userjs.id);
+		var MMRdiv = document.getElementById(userjs.id);
 		var tracklistTop = document.querySelector("h2.tracklist");
 		if (tracklistTop && tracklistTop.offsetTop) {
 			var margin = tracklistTop.offsetTop - startpos.offsetTop + MMRdiv.offsetTop;
@@ -881,10 +910,10 @@ function showGUI() {
 		}
 		MMRdiv.removeEventListener("click", prepareLocalRelease);
 		var firstElements = [];
-		for (var child = 0; sidebar.childNodes[child] != MMRdiv && child < sidebar.childNodes.length; child++) {
+		for (let child = 0; sidebar.childNodes[child] != MMRdiv && child < sidebar.childNodes.length; child++) {
 			firstElements.unshift(sidebar.childNodes[child]);
 		}
-		for (var elem = 0; elem < firstElements.length; elem++) {
+		for (let elem = 0; elem < firstElements.length; elem++) {
 			addAfter(sidebar.removeChild(firstElements[elem]), MMRdiv);
 		}
 	}
@@ -892,7 +921,7 @@ function showGUI() {
 }
 function saveEditNote(event) {
 	if (localStorage) {
-		localStorage.setItem(MMRid, editNote.value);
+		localStorage.setItem(userjs.id, editNote.value);
 		editNote.style.setProperty("background-color", cOK);
 		editNote.setAttribute("title", "Saved to local storage");
 	} else {
@@ -903,7 +932,7 @@ function saveEditNote(event) {
 }
 function loadEditNote(event) {
 	if (localStorage) {
-		var savedEditNote = localStorage.getItem(MMRid);
+		var savedEditNote = localStorage.getItem(userjs.id);
 		if (savedEditNote) {
 			editNote.value = savedEditNote;
 			editNote.style.setProperty("background-color", cOK);
@@ -953,24 +982,23 @@ function mp(o, set) {
 		o.parentNode.replaceChild(smp.appendChild(o.cloneNode(true)).parentNode, o);
 		return smp.firstChild;
 	} else if (!set && mp(o)) {
-		o.parentNode.parentNode.replaceChild(o.cloneNode(true), o.parentNode)
+		o.parentNode.parentNode.replaceChild(o.cloneNode(true), o.parentNode);
 	}
 }
-function strtime2ms(str) {/*temporary until WS available again*/
+function strtime2ms(str) { // temporary until WS available again
 	var time = str.split(":");
 	var ms = 0;
-	for (var mult = 1; time.length > 0; ) {
+	for (let mult = 1; time.length > 0;) {
 		ms += time.pop() * mult * 1000;
 		mult *= 60;
 	}
 	return ms;
 }
-function time(_ms, pad) {/*from 166877*/
+function time(_ms, pad) {/* adapt mb_INLINE-TRACK-ARTIST’s with milliseconds instead when https://github.com/jesus2099/konami-command/issues/48 is fixed */
 	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
 	if (ms > 0) {
-		var d = new Date();
-		d.setTime(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000);
-		return /*milliseconds temporary hidden*/(d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad&&d.getMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getMinutes() + ":" + (d.getSeconds() < 10 ? "0" : "") + d.getSeconds()/* + (pad||d.getMilliseconds() > 0 ? "." + (d.getMilliseconds() < 100 ? "0" : "") + (d.getMilliseconds() < 10 ? "0" : "") + d.getMilliseconds() : "")*/;
+		var d = new Date(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000); // a trick to round to nearest second as we hide milliseconds
+		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad && d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2);
 	}
 	return "?:??";
 }
@@ -978,9 +1006,10 @@ function format(number) {
 	/* thanks to http://snipplr.com/view/72657/thousand-separator */
 	return (number + "").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
 }
+/*
 function ac2str(ac) {
 	var str = "";
-	for (var c = 0; c < ac.length; c++) {
+	for (let c = 0; c < ac.length; c++) {
 		str += ac[c].name + ac[c].joinPhrase;
 	}
 	return str;
@@ -988,7 +1017,7 @@ function ac2str(ac) {
 function ac2dom(ac) {
 	if (typeof ac == "string") return document.createTextNode(ac);
 	var dom = document.createDocumentFragment();
-	for (var c = 0; c < ac.length; c++) {
+	for (let c = 0; c < ac.length; c++) {
 		var a = createA(ac[c].name, "/artist/" + ac[c].artist.id);
 		if (ac[c].name != ac[c].artist.name) {
 			a.setAttribute("title", ac[c].artist.name);
@@ -1000,8 +1029,9 @@ function ac2dom(ac) {
 	}
 	return dom;
 }
+*/
 function protectEditNoteText(text) {
-	return text.replace(/\'/g, "&#x0027;");
+	return text.replace(/'/g, "&#x0027;");
 }
 function MBicon(iconCss) {
 	var icon = document.createElement("div");
@@ -1056,9 +1086,10 @@ function looseTitle(title) {
 		{from: /ⅹ/ig, to: "X"},
 		{from: /ⅺ/ig, to: "XI"},
 		{from: /ⅻ/ig, to: "XII"},
-		{from: /\s+|[\u0021-\u002F\u003A-\u003F\u005B-\u0060\u007B-\u00BF\u2000-\u2064\u2190-\u21FF\u2460-\u27FF\u2960-\u2B59\u3000-\u3030\u30FB\uFF5E-\uFF65]+|S\b|^(?:AN?|THE)\s+|,\s+(?:AN?|THE)$/g, to: ""}
+		{from: /[\u0021-\u002F\u003A-\u003F\u005B-\u0060\u007B-\u00BF\u2000-\u2064\u2190-\u21FF\u2460-\u27FF\u2960-\u2B59\u3000-\u3030\u30FB\uFF5E-\uFF65]+/g, to: ""},
+		{from: /\s+|\BS\b|^(?:AN?|THE)\s+|\s+(?:AN?|THE)$/g, to: ""}
 	];
-	for (var s = 0; s < simplifications.length; s++) {
+	for (let s = 0; s < simplifications.length; s++) {
 		genericTitle = genericTitle.replace(simplifications[s].from, simplifications[s].to);
 	}
 	return genericTitle;
@@ -1072,7 +1103,7 @@ function HTMLToText(HTMLBlurb) {
 	var decoder = document.createElement("div");
 	decoder.innerHTML = HTMLBlurb;
 	return decoder.textContent;
-};
+}
 function chrono(minimumDelay) {
 	if (minimumDelay) {
 		var del = minimumDelay + lastTick - new Date().getTime();
@@ -1088,3 +1119,45 @@ function noScrollFocus(field) {
 	field.focus();
 	scrollTo(x, y);
 }
+/*
+// 'leven' function taken from https://github.com/sindresorhus/leven
+// Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+// Released under the MIT License:
+// https://raw.githubusercontent.com/sindresorhus/leven/49baddd/license
+function leven(a, b) {
+	if (a === b) {
+		return 0;
+	}
+	var aLen = a.length;
+	var bLen = b.length;
+	if (aLen === 0) {
+		return bLen;
+	}
+	if (bLen === 0) {
+		return aLen;
+	}
+	var bCharCode;
+	var ret;
+	var tmp;
+	var tmp2;
+	var i = 0;
+	var j = 0;
+	var arr = [];
+	var charCodeCache = [];
+	while (i < aLen) {
+		charCodeCache[i] = a.charCodeAt(i);
+		arr[i] = ++i;
+	}
+	while (j < bLen) {
+		bCharCode = b.charCodeAt(j);
+		tmp = j++;
+		ret = j;
+		for (i = 0; i < aLen; i++) {
+			tmp2 = bCharCode === charCodeCache[i] ? tmp : tmp + 1;
+			tmp = arr[i];
+			ret = arr[i] = tmp > ret ? tmp2 > ret ? ret + 1 : tmp2 : tmp2 > tmp ? tmp + 1 : tmp2;
+		}
+	}
+	return ret;
+}
+*/

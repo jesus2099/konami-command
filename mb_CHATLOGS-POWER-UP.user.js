@@ -1,19 +1,21 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2016.6.16
+// @version      2018.3.4.2099
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CHATLOGS-POWER-UP.user.js
 // @description  chatlogs.metabrainz.org/brainzbot. swicth between #musicbrainz, #metabrainz and #musicbrainz-ja channels; previous/next date log page (it was once a better script)
-// @homepage     http://userscripts-mirror.org/scripts/show/127580
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
-// @compatible   opera(12.18.1872)+violentmonkey  my setup
+// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
+// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
+// @compatible   firefox(47.0)+greasemonkey           tested sometimes
+// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_CHATLOGS-POWER-UP.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_CHATLOGS-POWER-UP.user.js
-// @author       PATATE12
-// @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2012-03-05
+// @author       jesus2099
+// @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+// @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @since        2012-03-05; https://web.archive.org/web/20131103163408/userscripts.org/scripts/show/127580 / https://web.archive.org/web/20141011084021/userscripts-mirror.org/scripts/show/127580
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
 // @grant        none
 // @match        *://chatlogs.metabrainz.org/brainzbot/*
 // @match        *://hcm.fam.cx/mbja/chatlog.cgi*
@@ -29,20 +31,24 @@ if (cat) {
 	var mbCHATLOGSPOWERUPinterval = setInterval(function() {
 		if (document.head && document.body) {
 			clearInterval(mbCHATLOGSPOWERUPinterval);
-			document.head.appendChild(document.createElement("style")).setAttribute("type", "text/css");
-			var css = document.styleSheets[document.styleSheets.length - 1];
+			var css = document.createElement("style");
+			css.setAttribute("type", "text/css");
+			document.head.appendChild(css);
+			css = css.sheet;
 			if (cat != "musicbrainz-ja") {
 				// remove top black bar which overlaps content with Opera 12
 				css.insertRule("header#Site-Header { display: none; }", 0);
 				css.insertRule("header#Log-Header { padding: 0px; }", 0);
+				css.insertRule("header#Log-Header { top: 0px; }", 0);
 				// remove sidebar which does some funky endless reloading with Opera 12
-				css.insertRule(".timeline-navigation { display: none; }", 0)
+				css.insertRule(".timeline-navigation { display: none; }", 0);
 				css.insertRule("#Log-Container { margin-top: 0px; }", 0);
 				css.insertRule("#Log-Container article { margin-right: 0px; }", 0);
 			}
 			css.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; z-index: 50; }", 0);
 			css.insertRule("body { padding-bottom: .5em; }", 0);
-			var ctt = createTag("div", {a: {id: userjs + "toolbar"}});
+			var ctt = document.createElement("div");
+			ctt.setAttribute("id", userjs + "toolbar");
 			/* cross linking */
 			separate(ctt);
 			if (!cat.match(/-ja/)) {

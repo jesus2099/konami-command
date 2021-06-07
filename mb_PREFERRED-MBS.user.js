@@ -1,33 +1,39 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2016.6.15
+// @version      2021.3.21
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
-// @description  choose your favourite MusicBrainz server (http/https, main/beta) and no link will ever send you to the others
-// @inspiration  http://userscripts-mirror.org/scripts/show/487275
+// @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
-// @compatible   opera(12.18.1872)+violentmonkey  my own setup
-// @compatible   firefox(39)+greasemonkey         quickly tested
-// @compatible   chromium(46)+tampermonkey        quickly tested
-// @compatible   chrome+tampermonkey              should be same as chromium
-// @namespace    jesus2099/shamo
+// @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
+// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
+// @compatible   firefox(68.0.1)+violentmonkey       tested sometimes
+// @compatible   chrome+violentmonkey                should be same as vivaldi
+// @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
-// @author       PATATE12
-// @licence      CC BY-NC-SA 3.0 (https://creativecommons.org/licenses/by-nc-sa/3.0/)
-// @since        2016-01-12
+// @author       jesus2099
+// @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+// @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @since        2016-01-12; inspiration by https://web.archive.org/web/20140712013355/userscripts-mirror.org/scripts/show/487275
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=84017&v=2015.11.2
+// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
 // @grant        none
-// @match        *://*/*
+// @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\//
 // @run-at       document-start
 // ==/UserScript==
 "use strict";
-/*-----------------------------------------------*/
-/* preferredMBS can be either
- * http://musicbrainz.org, https://musicbrainz.org, http://beta.musicbrainz.org or https://beta.musicbrainz.org
+/* ----------------------------------------------- */
+/* preferredMBS can be either (there is no more HTTP)
+ * https://musicbrainz.org or https://beta.musicbrainz.org
  * it is not intended to work with any other values */
-var preferredMBS = "http://musicbrainz.org";
-/*-----------------------------------------------*/
+var preferredMBS = "https://musicbrainz.org";
+/* ----------------------------------------------- */
+/* Simple Discourse click tracker problem work-around ------------- */
+var discourseURL = self.location.href.match(/^https?:\/\/community\.metabrainz\.org\/clicks\/track\?url=([^?&]+)/);
+if (discourseURL) {
+	self.location.replace(decodeURIComponent(discourseURL[1]));
+}
+/* ---------------------------------------------------------------- */
 preferredMBS = leftTrim(preferredMBS);
 document.addEventListener("submit", function(event) {
 	var element = event.target || event.srcElement;
@@ -57,12 +63,12 @@ document.addEventListener("mousedown", function(event) {
 		if (element.tagName != "A") {
 			element = getParent(element, "a");
 		}
-		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) {//linked in mb_SUPER-MIND-CONTROL-II-X-TURBO
+		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) { // mb_SUPER-MIND-CONTROL-II-X-TURBO
 			process(element);
 		}
 	}
 });
-/* for Snap Links extension v1.9.5 by Ayush and Mpkstroff http://addons.opera.com/extensions/details/snap-links */
+// for Snap Links extension v1.9.5 by Ayush and Mpkstroff http://addons.opera.com/extensions/details/snap-links
 document.addEventListener("mousedown", function(event) {
 	document.addEventListener("DOMAttrModified", snapLinksDOMAttrModified);
 });
@@ -72,7 +78,7 @@ document.addEventListener("mouseup", function(event) {
 function snapLinksDOMAttrModified(event) {
 	var element = event.target || event.srcElement;
 	if (element && element.tagName == "A" && event.attrName == "style" && event.attrChange == 2 && event.newValue.match(/outline.+!important/)) {
-		/*attrChange: 1 MODIFICATION, 2 ADDITION, 3 REMOVAL*/
+		// attrChange: 1 MODIFICATION, 2 ADDITION, 3 REMOVAL
 		process(element);
 	}
 }
@@ -87,23 +93,17 @@ function process(anchor) {
 			anchor.style.setProperty("text-decoration", "line-through");
 			var tooltip = anchor.getAttribute("title") || "";
 			if (tooltip) {
-				tooltip += "\r\n";
+				tooltip += "\n";
 			}
-			anchor.setAttribute("title", tooltip + "old: " + HREF + "\r\nnew: " + newHref);
+			anchor.setAttribute("title", tooltip + "old: " + HREF + "\nnew: " + newHref);
 		}
 	}
 }
 function prefer(URL) {
 	var newUrl = preferredMBS;
-	var urlMatch = URL.match(/^(https?:)?(\/\/)?((?:beta\.)?musicbrainz\.org(?::\d+)?)(\/.*)?(\?.*)?(#.*)?$/);
+	var urlMatch = URL.trim().match(/^(https?:)?(\/\/)?((?:beta\.)?musicbrainz\.org(?::\d+)?)(\/.*)?(\?.*)?(#.*)?$/);
 	if (urlMatch) {
 		newUrl += (urlMatch[4] ? urlMatch[4] : "") + (urlMatch[5] ? urlMatch[5] : "") + (urlMatch[6] ? urlMatch[6] : "");
-	} else if (
-		self.location.href.match(/^https?:\/\/(beta\.)?musicbrainz\.org/)
-		&& URL.match(/^\/([^/]|$)/)
-		&& preferredMBS.match(/^(https?:)?\/\//)
-	) {
-		newUrl += URL;
 	}
 	return (newUrl && newUrl != preferredMBS && newUrl != leftTrim(URL) ? newUrl : null);
 }
