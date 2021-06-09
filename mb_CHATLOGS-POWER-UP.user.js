@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2018.3.4.2099
+// @version      2021.6.9
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CHATLOGS-POWER-UP.user.js
-// @description  chatlogs.metabrainz.org/brainzbot. swicth between #musicbrainz, #metabrainz and #musicbrainz-ja channels; previous/next date log page (it was once a better script)
+// @description  chatlogs.metabrainz.org: swicth between #musicbrainz, #metabrainz and #musicbrainz-ja channels; previous/next date log page (it was once a better script)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
 // @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
@@ -17,7 +17,7 @@
 // @since        2012-03-05; https://web.archive.org/web/20131103163408/userscripts.org/scripts/show/127580 / https://web.archive.org/web/20141011084021/userscripts-mirror.org/scripts/show/127580
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @match        *://chatlogs.metabrainz.org/brainzbot/*
+// @include      /^https?:\/\/chatlogs\.metabrainz\.org\/(brainzbot|libera)\//
 // @match        *://hcm.fam.cx/mbja/chatlog.cgi*
 // @run-at       document-start
 // ==/UserScript==
@@ -25,9 +25,9 @@
 var userjs = "j2userjs127580";
 var date = self.location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
 if (date) date = date[1] + "-" + date[2] + "-" + date[3];
-var cat = self.location.href.match(/https?:\/\/chatlogs\.metabrainz\.org\/brainzbot\/([^/]+)\/|mbja/);
-if (cat) {
-	cat = cat[1] ? cat[1] : "musicbrainz-ja";
+var loc = self.location.href.match(/https?:\/\/chatlogs\.metabrainz\.org\/(brainzbot|libera)\/([^/]+)\/|mbja/);
+if (loc) {
+	var cat = loc[2] ? loc[2] : "musicbrainz-ja";
 	var mbCHATLOGSPOWERUPinterval = setInterval(function() {
 		if (document.head && document.body) {
 			clearInterval(mbCHATLOGSPOWERUPinterval);
@@ -75,9 +75,9 @@ if (cat) {
 						path += dateDetect[1] + "-" + (dateDetect[2] ? dateDetect[2] : "01") + "-" + (dateDetect[3] ? dateDetect[3] : "01") + "/";
 					}
 				}
-				ctt.appendChild(createA("#musicbrainz", "http://chatlogs.metabrainz.org/brainzbot/musicbrainz/" + path));
+				ctt.appendChild(createA("#musicbrainz", "//chatlogs.metabrainz.org/" + loc[1] + "/musicbrainz/" + path));
 				separate(ctt);
-				ctt.appendChild(createA("#metabrainz", "http://chatlogs.metabrainz.org/brainzbot/metabrainz/" + path));
+				ctt.appendChild(createA("#metabrainz", "//chatlogs.metabrainz.org/" + loc[1] + "/metabrainz/" + path));
 				separate(ctt);
 				ctt.appendChild(document.createTextNode("#musicbrainz-ja"));
 			}
