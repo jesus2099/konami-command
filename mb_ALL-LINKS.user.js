@@ -252,9 +252,13 @@ var whitelistSearchLinks = {
 				},
 				Discogs: [
 					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%artist-name%&type=artist"},
-					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-name%&type=release"},
-					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%release-group-name%&type=master"},
+					{"de en es fr it ja": "//www.discogs.com/%language%/search?title=%release-name%&type=release"},
+					{"de en es fr it ja": "//www.discogs.com/%language%/search?title=%release-group-name%&type=release"},
 					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%label-name%&type=label"}
+				],
+				"Discogs (artist credit)": [
+					{"de en es fr it ja": "//www.discogs.com/%language%/search?title=%release-name%&artist=%release-artist-credit%&type=release"},
+					{"de en es fr it ja": "//www.discogs.com/%language%/search?title=%release-group-name%&artist=%release-group-artist-credit%&type=release"},
 				],
 				"Discogs (barcode)":  "https://www.discogs.com/search/?q=%release-barcode%&type=release",
 				GeoNames: [
@@ -522,6 +526,12 @@ function main() {
 					delete tokenValues["%entity-name%"];
 					delete tokenValues["%url-name%"];
 					tokenValues["%url-target%"] = entityName;
+				}
+				if (entityType.match(/^release(-group)?/)) {
+					var artistCredit = document.querySelector("div#content > div." + entityHeaderClass + " > p.subheader");
+					if (artistCredit) {
+						tokenValues["%" + entityType + "-artist-credit%"] = parseArtistCredit(artistCredit);
+					}
 				}
 			}
 			extlinks = sidebar.querySelector("h2.external-links + ul.external_links");
@@ -1135,6 +1145,18 @@ function parseLanguages(inputLanguages) {
 		}
 	}
 	return outputLanguages;
+}
+function parseArtistCredit(subheader) {
+	var artistCredit = "";
+	for (var i = 0, acStarted = false; i < subheader.childNodes.length && !(subheader.childNodes[i].nodeType === Node.ELEMENT_NODE && subheader.childNodes[i].tagName === "SPAN" && subheader.childNodes[i].classList.contains("small")); i++) {
+		if (!acStarted && subheader.childNodes[i].nodeType === Node.ELEMENT_NODE && subheader.childNodes[i].tagName === "A") {
+			acStarted = true;
+		}
+		if (acStarted) {
+			artistCredit += subheader.childNodes[i].textContent;
+		}
+	}
+	return artistCredit.trim();
 }
 function configureModule(event) {
 	switch (event.target.getAttribute("title")) {
