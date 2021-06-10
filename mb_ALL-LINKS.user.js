@@ -184,9 +184,9 @@ var whitelistSearchLinks = {
 					},
 					items: {
 						"Musik-Sammler.de": [
-							{de: "https://www.musik-sammler.de/search/%artist-name%/?q=artist"},
-							{de: "https://www.musik-sammler.de/search/%release-name%/?q=medium"},
-							{de: "https://www.musik-sammler.de/search/%release-group-name%/?q=album"}
+							"https://www.musik-sammler.de/search/%artist-name%/?q=artist",
+							"https://www.musik-sammler.de/search/%release-name%/?q=medium",
+							"https://www.musik-sammler.de/search/%release-group-name%/?q=album"
 						],
 						"DNB - Deutsches Musikarchiv": {de: "https://portal.dnb.de/opac.htm?query=%28mat%3DMusic+OR+cod%3Dmt%29+AND+%release-name%&method=simpleSearch&cqlMode=true"}
 					}
@@ -242,50 +242,50 @@ var whitelistSearchLinks = {
 			items: {
 				AllMusic: {
 					target: [
-						{en: "//www.allmusic.com/search/artists/%artist-name%"},
-						{en: "//www.allmusic.com/search/labels/%label-name%"},
-						{en: "//www.allmusic.com/search/songs/%recording-name%"},
-						{en: "//www.allmusic.com/search/all/%release-name%"},
-						{en: "//www.allmusic.com/search/albums/%release-group-name%"},
-						{en: "//www.allmusic.com/search/compositions/%work-name%"}
+						"//www.allmusic.com/search/artists/%artist-name%",
+						"//www.allmusic.com/search/labels/%label-name%",
+						"//www.allmusic.com/search/songs/%recording-name%",
+						"//www.allmusic.com/search/all/%release-name%",
+						"//www.allmusic.com/search/albums/%release-group-name%",
+						"//www.allmusic.com/search/compositions/%work-name%"
 					]
 				},
 				Discogs: [
-					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%artist-name%&type=artist"},
-					{"de en es fr it ja": "//www.discogs.com/%language%/search?title=%release-name%&type=release"},
-					{"de en es fr it ja": "//www.discogs.com/%language%/search?title=%release-group-name%&type=release"},
-					{"de en es fr it ja": "//www.discogs.com/%language%/search?q=%label-name%&type=label"}
+					"//www.discogs.com/%language%/search?q=%artist-name%&type=artist",
+					"//www.discogs.com/%language%/search?title=%release-name%&type=release",
+					"//www.discogs.com/%language%/search?title=%release-group-name%&type=release",
+					"//www.discogs.com/%language%/search?q=%label-name%&type=label"
 				],
 				"Discogs (artist credit)": [
-					{"de en es fr it ja": "//www.discogs.com/%language%/search?title=%release-name%&artist=%release-artist-credit%&type=release"},
-					{"de en es fr it ja": "//www.discogs.com/%language%/search?title=%release-group-name%&artist=%release-group-artist-credit%&type=release"},
+					"//www.discogs.com/%language%/search?title=%release-name%&artist=%release-artist-credit%&type=release",
+					"//www.discogs.com/%language%/search?title=%release-group-name%&artist=%release-group-artist-credit%&type=release"
 				],
-				"Discogs (barcode)":  "https://www.discogs.com/search/?q=%release-barcode%&type=release",
+				"Discogs (barcode)":  "//www.discogs.com/%language%/search/?q=%release-barcode%&type=release",
 				GeoNames: [
-					{en: "http://www.geonames.org/search.html?q=%area-name%"},
-					{en: "http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"}
+					"http://www.geonames.org/search.html?q=%area-name%",
+					"http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"
 				],
 				IMDb: "//www.imdb.com/find?q=%artist-name%&s=nm",
 				// TODO: ISNI: "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
-				ISNI: {en: "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%"},
+				ISNI: "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 				VIAF: "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
 				"Last.fm (MBID)": {
-					"en": "http://last.fm/mbid/%artist-mbid%",
-					"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/mbid/%artist-mbid%"
+					"en": "//last.fm/mbid/%artist-mbid%",
+					"de es fr it ja pl pt ru sv tr zh": "//last.fm/%language%/mbid/%artist-mbid%"
 				},
 				lastfmName: {
 					title: {en: "Last.fm (name)", de: "Last.fm (Name)", es: "Last.fm (nombre)", fr: "Last.fm (nom)", it: "Last.fm (Nome)", ja: "Last.fm (名)", pl: "Last.fm (Nazwa)", pt: "Last.fm (nome)", ru: "Last.fm (имя)", sv: "Last.fm (namn)", tr: "Last.fm (ad)", zh: "Last.fm (名)"},
 					target: {
-						"en": "http://last.fm/search?q=%artist-name%",
-						"de es fr it ja pl pt ru sv tr zh": "http://last.fm/%language%/search?q=%artist-name%"
+						"en": "//last.fm/search?q=%artist-name%",
+						"de es fr it ja pl pt ru sv tr zh": "//last.fm/%language%/search?q=%artist-name%"
 					}
 				},
 				"BBC Music": "http://www.bbc.co.uk/music/artists/%artist-mbid%",
 				"Rate Your Music": [
-					{en: "//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%"},
-					{en: "//rateyourmusic.com/search?searchtype=b&searchterm=%label-name%"},
-					{en: "//rateyourmusic.com/search?searchtype=l&searchterm=%release-name%"},
-					{en: "//rateyourmusic.com/search?searchtype=r&searchterm=%work-name%"}
+					"//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%",
+					"//rateyourmusic.com/search?searchtype=b&searchterm=%label-name%",
+					"//rateyourmusic.com/search?searchtype=l&searchterm=%release-name%",
+					"//rateyourmusic.com/search?searchtype=r&searchterm=%work-name%"
 				],
 				SecondHandSongs: [
 					"//secondhandsongs.com/search/artist?op_commonName=contains&commonName=%artist-name%&op_type=equals&display=commonName.type&sort=simplifiedCommonName",
@@ -302,8 +302,8 @@ var whitelistSearchLinks = {
 				Wikidata: "//www.wikidata.org/w?search=%entity-name%",
 				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+intitle%3A%22%entity-name%%22",
 				LocalWikipedia: {
-					title: {"en fr ja vi de nl": "Wikipedia (%language%)"},
-					target: {"en fr ja vi de nl": "//%language%.wikipedia.org/w?search=%entity-name%"}
+					title: "Wikipedia (%language%)",
+					target: "//%language%.wikipedia.org/w?search=%entity-name%"
 				}
 			}
 		}
@@ -896,7 +896,11 @@ function addUserLinks() {
 }
 function getLocalisedText(textSet) {
 	if (typeof textSet === "string") {
-		return textSet;
+		if (textSet.match(/%language%/)) {
+			return textSet.replace(/%language%/g, parseLanguages(["musicbrainz", "navigator"])[0]);
+		} else {
+			return textSet;
+		}
 	}
 	// Manages both "fr" and multinligual "fr vi ja en" formats
 	var expanded = {};
