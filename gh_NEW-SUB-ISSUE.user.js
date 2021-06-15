@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         gh. NEW SUB-ISSUE
-// @version      2021.5.20
+// @version      2021.6.15
 // @description  github.com: A yellow button to create a sub-issue that links to its parent. You still have to manually create the sub-issue list in the parent issue.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/gh_NEW-SUB-ISSUE
@@ -25,8 +25,8 @@ setInterval(function() {
 		if (issueEditButton && !subIssue) {
 			subIssue = document.createElement("a");
 			subIssue.classList.add("new-sub-issue-link-j2", "btn", "btn-sm");
-			subIssue.style.setProperty("border-color", "gold");
-			subIssue.style.setProperty("text-shadow", "1px 2px 2px black");
+			subIssue.style.setProperty("border-color", "var(--color-border-warning)");
+			subIssue.style.setProperty("text-shadow", "1px 2px 2px var(--color-bg-backdrop)");
 			subIssue.setAttribute("href", repo + "/issues/new?body=" + encodeURIComponent("↖ #" + issueId + " – " + issueTitle + "\n\n---\n\n"));
 			subIssue.appendChild(document.createTextNode("New sub-issue"));
 			issueEditButton.parentNode.insertBefore(subIssue, issueEditButton.nextSibling);
