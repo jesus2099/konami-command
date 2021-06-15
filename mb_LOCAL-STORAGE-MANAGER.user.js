@@ -1,10 +1,9 @@
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2021.2.2
+// @version      2021.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_LOCAL-STORAGE-MANAGER
-// @compatible   opera(12.18.1872)+violentmonkey     my setup
 // @namespace    https://github.com/jesus2099/konami-command
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_LOCAL-STORAGE-MANAGER.user.js
@@ -21,6 +20,8 @@
 var userjs = "jesus2099userjs126475";
 var lsm, lskeys;
 var j2set = document.querySelector("div.header ul.menu li.about > ul > li.jesus2099");
+var lang = document.querySelector("html[lang]");
+lang = lang && lang.getAttribute("lang") || "en-GB";
 if (!j2set && (j2set = document.querySelector("div.header ul.menu li.about > ul"))) {
 	j2set.parentNode.querySelector("span.menu-header").style.setProperty("text-shadow", "0 0 8px purple");
 	j2set = j2set.appendChild(createTag("li", {a: {class: "jesus2099 separator"}}));
@@ -61,9 +62,11 @@ if (j2set) {
 					createTag("a", {a: {title: "Close local storage manager"}, e: {click: function(event){unloadLS();}}}, "close"),
 					")"
 				])), document.getElementById("page"));
-				if (self.opera) lsm.appendChild(createTag("p", {}, "☞ Opera 12 has its own local storage editor: CTRL+SHIFT+I (Dragon fly) > Storage > Local Storage."));
-				else if (navigator.userAgent.match(/firefox/i)) lsm.appendChild(createTag("p", {}, "☞ Firefox’s Firebug has its own local storage editor: DOM > localStorage."));
-				else if (navigator.userAgent.match(/chrom(ium|e)/i)) lsm.appendChild(createTag("p", {}, "☞ Chromium has its own local storage editor: F12 > Resources > Local Storage."));
+				var browserLocalStorageEditor;
+				if (self.opera) browserLocalStorageEditor = "CTRL+SHIFT+I (Dragon fly) > Storage > Local Storage";
+				else if (navigator.userAgent.match(/firefox/i)) browserLocalStorageEditor = "Ctrl+Shift+I (Firebug) > DOM > localStorage";
+				else if (navigator.userAgent.match(/chrom(ium|e)/i)/*includes Vivaldi*/) browserLocalStorageEditor = "F12 > Application or Resources > Local Storage";
+				lsm.appendChild(createTag("p", {}, "☞ Your browser has its own local storage editor: " + browserLocalStorageEditor + "."));
 				document.addEventListener("storage", function(event) { loadLS(); }, false); // does never trigger btw
 				loadLS();
 				lsm.scrollIntoView();
@@ -83,7 +86,7 @@ function loadLS() {
 		lskeys.push(localStorage.key(ls));
 	}
 	lskeys.sort();
-	addRow(keylist, ["#", "Key", "Content", "\u00a0", "Size (characters)"], "th");
+	addRow(keylist, ["\u00a0", "Key", "Content", "\u00a0", "Characters"], "th");
 	var size = 0;
 	for (var k = 0; k < lskeys.length; k++) {
 		var key = lskeys[k];
@@ -100,7 +103,7 @@ function loadLS() {
 					function(event) {
 						stop(event);
 						var item = this.getAttribute("title").match(/^remove (.+)$/)[1];
-						if (confirm("Do you want to remove following item?\n" + item)) {
+						if (confirm("Do you want to remove following item?\n\n" + item)) {
 							localStorage.removeItem(item);
 						}
 						loadLS();
@@ -108,7 +111,7 @@ function loadLS() {
 					"remove " + key
 				),
 			]),
-			content.length + ""
+			content.length.toLocaleString(lang)
 		]);
 		tr.setAttribute("title", "edit " + key);
 		tr.addEventListener("click", function(event){
@@ -131,7 +134,7 @@ function loadLS() {
 				var item = this.getAttribute("title");
 				var oval = localStorage.getItem(item);
 				var nval = this.nextSibling.value;
-				if (oval != nval && confirm("Do you want to save following item?\n" + item)) {
+				if (oval != nval && confirm("Do you want to save following item?\n\n" + item)) {
 					localStorage.setItem(item, nval);
 				}
 				this.parentNode.removeChild(this.nextSibling);
@@ -147,7 +150,7 @@ function loadLS() {
 			bidule.select();
 		}, false);
 	}
-	addRow(keylist, ["\u00a0", "\u00a0", "\u00a0", "\u00a0", size + ""]);
+	addRow(keylist, ["\u00a0", "\u00a0", "\u00a0", "\u00a0", size.toLocaleString(lang)], "th");
 	var lsm = document.getElementById(userjs + "lsm");
 	var lsmkeys = lsm.querySelector("table");
 	if (lsmkeys) {
@@ -170,6 +173,9 @@ function addRow(table, cells, type) {
 		var td = tr.appendChild(document.createElement(type == "th" ? "th" : "td"));
 		td.style.setProperty("padding", "0 4px");
 		td.appendChild(typeof cells[cell] == "string" ? document.createTextNode(cells[cell]) : cells[cell]);
+		if (cell === cells.length - 1) {
+			td.style.setProperty("text-align", "right");
+		}
 	}
 	return tr;
 }
