@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AMZ. shrink product links and direct link to full size pictures
-// @version      2021.1.19.2099
-// @description  Amazon. Shows links to full size images. Shrinks product and search URLs. Prevents from opening new windows in amazn.jp searches.
+// @version      2021.6.15
+// @description  ☠ OBSOLETE ☠ Amazon. Shows links to full size images. Shrinks product and search URLs. Prevents from opening new windows in amazn.jp searches.
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -13,6 +13,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+alert("Please uninstall my “AMZ. shrink product links and direct link to full size pictures” userscript.\nI stop support because I know I will never do anything with it in the future\n\nThank you for using my scripts.\njesus2099");
 // ------------CONFIG-START------------
 var shrink = true; // https://amazon.jp/dp/B00005LLFD (shortest) on links and https://www.amazon.co.jp/dp/B00005LLFD in adress bar instead of crazy stufff like https://www.amazon.co.jp/AJICO-SHOW/dp/B00005LLFD/ref=ntt_mus_dp_dpt_2
 var shortestShrinkOnHeader = true; // show the shortest link on header of product page

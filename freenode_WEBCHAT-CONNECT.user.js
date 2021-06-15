@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         freenode. WEBCHAT CONNECT
-// @version      2019.9.12.2099
-// @description  webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. cleverly focus first empty field.
+// @version      2021.6.15
+// @description  ☠ OBSOLETE ☠ webchat.freenode.net: Remembers your last used nickname and channels. Reloads properly if problem. cleverly focus first empty field.
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -17,6 +17,9 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+if (confirm("Please uninstall my “freenode. WEBCHAT CONNECT” userscript. I stop support because the replacement Kiwi IRC that I see on Libera.Chat does remember your user name. And you can store a favourite with your channels.\n\nClick Confirm to open a new tab with more info, discussion and an example of favourite with channel names.\n\nThank you for using my scripts.\njesus2099")) {
+	open("https://github.com/jesus2099/konami-command/issues/594");
+}
 setTimeout(function() {
 	var userjs = {name: "freenode. WEBCHAT CONNECT", key: "j2fwc"};
 	var defaultChannels = "#github,#last.fm,##musicbrainz-lol,#musicbrainz";

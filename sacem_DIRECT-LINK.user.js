@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         sacem. DIRECT LINK
-// @version      2021.1.19.2099
+// @version      2021.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/sacem_DIRECT-LINK.user.js
-// @description  Automatically clean up cookie to allow direct link to various works even when browsing occurs between them
+// @description  ☠ OBSOLETE ☠ Automatically clean up cookie to allow direct link to various works even when browsing occurs between them
 // @supportURL   https://github.com/jesus2099/konami-command/labels/sacem_DIRECT-LINK
 // @compatible   vivaldi(1.15.1147.64)+violentmonkey my o. setup (Chrome based)
 // @compatible   firefox+greasemonkey                sometimes tested
@@ -21,6 +21,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+alert("Please uninstall my “sacem. DIRECT LINK” userscript.\nIt is no longer needed.\n\nThank you for using my scripts.\njesus2099");
 var erreurprod = document.querySelector("tbody > tr.erreurprod > td + td");
 if (erreurprod && erreurprod.textContent.match(/\s+500\s+/) && getCookie("LECATSESSIONID")) {
 	deleteCookie("LECATSESSIONID");

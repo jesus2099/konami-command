@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         last.fm. ALL LINKS TO LOCAL SITE
-// @version      2021.3.21
+// @version      2021.6.15
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/lastfm_ALL-LINKS-TO-LOCAL-SITE.user.js
-// @description  Replaces any lastfm link by the desired language, like "www.lastfm.xx" or else
+// @description  ☠ OBSOLETE ☠ Replaces any lastfm link by the desired language, like "www.lastfm.xx" or else
 // @supportURL   https://github.com/jesus2099/konami-command/labels/lastfm_ALL-LINKS-TO-LOCAL-SITE
 // @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -24,6 +24,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+alert("Please uninstall my “last.fm. ALL LINKS TO LOCAL SITE” userscript.\nI stop support because I don't use Last.fm any more and I lack time to maintain too many scripts.\n\nThank you for using my scripts.\njesus2099");
 var preferred_lastfm = "last.fm";
 /* In above setting, choose your favourite host :
 "last.fm" for minimalistic auto-lang despatch links (often english)
