@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2021.6.9
+// @version      2021.6.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CHATLOGS-POWER-UP.user.js
-// @description  chatlogs.metabrainz.org: swicth between #musicbrainz, #metabrainz and #musicbrainz-ja channels; previous/next date log page (it was once a better script)
+// @description  chatlogs.metabrainz.org: swicth between #musicbrainz and #metabrainz channels; previous/next date log page (it was once a better script)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
 // @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
 // @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
@@ -18,7 +18,6 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @include      /^https?:\/\/chatlogs\.metabrainz\.org\/(brainzbot|libera)\//
-// @match        *://hcm.fam.cx/mbja/chatlog.cgi*
 // @run-at       document-start
 // ==/UserScript==
 "use strict";
@@ -27,7 +26,7 @@ var date = self.location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
 if (date) date = date[1] + "-" + date[2] + "-" + date[3];
 var loc = self.location.href.match(/https?:\/\/chatlogs\.metabrainz\.org\/(brainzbot|libera)\/([^/]+)\/|mbja/);
 if (loc) {
-	var cat = loc[2] ? loc[2] : "musicbrainz-ja";
+	var cat = loc[2];
 	var mbCHATLOGSPOWERUPinterval = setInterval(function() {
 		if (document.head && document.body) {
 			clearInterval(mbCHATLOGSPOWERUPinterval);
@@ -35,58 +34,40 @@ if (loc) {
 			css.setAttribute("type", "text/css");
 			document.head.appendChild(css);
 			css = css.sheet;
-			if (cat != "musicbrainz-ja") {
-				// remove top black bar which overlaps content with Opera 12
-				css.insertRule("header#Site-Header { display: none; }", 0);
-				css.insertRule("header#Log-Header { padding: 0px; }", 0);
-				css.insertRule("header#Log-Header { top: 0px; }", 0);
-				// remove sidebar which does some funky endless reloading with Opera 12
-				css.insertRule(".timeline-navigation { display: none; }", 0);
-				css.insertRule("#Log-Container { margin-top: 0px; }", 0);
-				css.insertRule("#Log-Container article { margin-right: 0px; }", 0);
-			}
+			// remove top black bar which overlaps content with Opera 12
+			css.insertRule("header#Site-Header { display: none; }", 0);
+			css.insertRule("header#Log-Header { padding: 0px; }", 0);
+			css.insertRule("header#Log-Header { top: 0px; }", 0);
+			// remove sidebar which does some funky endless reloading with Opera 12
+			css.insertRule(".timeline-navigation { display: none; }", 0);
+			css.insertRule("#Log-Container { margin-top: 0px; }", 0);
+			css.insertRule("#Log-Container article { margin-right: 0px; }", 0);
+			// toolbar
 			css.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; z-index: 50; }", 0);
 			css.insertRule("body { padding-bottom: .5em; }", 0);
 			var ctt = document.createElement("div");
 			ctt.setAttribute("id", userjs + "toolbar");
 			/* cross linking */
 			separate(ctt);
-			if (!cat.match(/-ja/)) {
-				var tgt = (cat.match(/^musicbrainz$/) ? "meta" : "music") + "brainz";
-				var tgtA = createA("#" + tgt, (self.location.pathname.match(/\/search\/$/) ? self.location.href : self.location.pathname).replace(/\/(meta|music)brainz\//, "/" + tgt + "/"));
-				if (cat == "musicbrainz") {
-					ctt.appendChild(document.createTextNode("#musicbrainz"));
-				} else {
-					ctt.appendChild(tgtA);
-				}
-				separate(ctt);
-				if (cat == "metabrainz") {
-					ctt.appendChild(document.createTextNode("#metabrainz"));
-				} else {
-					ctt.appendChild(tgtA);
-				}
-				separate(ctt);
-				ctt.appendChild(createA("#musicbrainz-ja", "http://hcm.fam.cx/mbja/chatlog.cgi/" + (self.location.pathname.match(/\d/) ? (self.location.pathname.match(/[\d-]+(?=\/$|\.html$)/) + "").replace(/-/g, "/") : "")));
+			var tgt = (cat.match(/^musicbrainz$/) ? "meta" : "music") + "brainz";
+			var tgtA = createA("#" + tgt, (self.location.pathname.match(/\/search\/$/) ? self.location.href : self.location.pathname).replace(/\/(meta|music)brainz\//, "/" + tgt + "/"));
+			if (cat == "musicbrainz") {
+				ctt.appendChild(document.createTextNode("#musicbrainz"));
 			} else {
-				var path = "";
-				if (self.location.pathname.match(/\d/)) {
-					var dateDetect = self.location.pathname.match(/(\d{4})\/(?:(\d{2})\/)?(\d{2})?$/);
-					if (dateDetect) {
-						path += dateDetect[1] + "-" + (dateDetect[2] ? dateDetect[2] : "01") + "-" + (dateDetect[3] ? dateDetect[3] : "01") + "/";
-					}
-				}
-				ctt.appendChild(createA("#musicbrainz", "//chatlogs.metabrainz.org/" + loc[1] + "/musicbrainz/" + path));
-				separate(ctt);
-				ctt.appendChild(createA("#metabrainz", "//chatlogs.metabrainz.org/" + loc[1] + "/metabrainz/" + path));
-				separate(ctt);
-				ctt.appendChild(document.createTextNode("#musicbrainz-ja"));
+				ctt.appendChild(tgtA);
+			}
+			separate(ctt);
+			if (cat == "metabrainz") {
+				ctt.appendChild(document.createTextNode("#metabrainz"));
+			} else {
+				ctt.appendChild(tgtA);
 			}
 			/* prev./next day */
 			if (date) {
 				separate(ctt);
-				ctt.appendChild(createA("« " + (cat.match(/-ja/) ? "前日" : "prev."), shiftDate(-1)));
+				ctt.appendChild(createA("« prev.", shiftDate(-1)));
 				separate(ctt);
-				ctt.appendChild(createA((cat.match(/-ja/) ? "翌日" : "next") + " »", shiftDate(+1)));
+				ctt.appendChild(createA("next »", shiftDate(+1)));
 			}
 			if (document.body.firstChild) {
 				document.body.insertBefore(ctt, document.body.firstChild);
@@ -102,7 +83,7 @@ function shiftDate(shift) {
 	var yyyy = zeroPad(sdate.getFullYear(), 4);
 	var mm = zeroPad(sdate.getMonth() + 1, 2);
 	var dd = zeroPad(sdate.getDate(), 2);
-	return self.location.pathname.match(/[^\d]+/) + yyyy + (cat.match(/-ja/) ? "/" + mm + "/" + dd : "-" + mm + "-" + dd + "/");
+	return self.location.pathname.match(/[^\d]+/) + yyyy + "-" + mm + "-" + dd + "/";
 }
 function zeroPad(i, cols) {
 	var str = "" + i;
