@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2021.2.11.1823
+// @version      2021.6.21
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -79,7 +79,7 @@ if (pagecat) {
 			if (contractFingerPrints) {
 				css.insertRule("div.ars[class^='ars AcoustID'] code { display: inline-block; overflow-x: hidden; vertical-align: bottom; width: 6ch}", 0);
 			}
-			if (pageMbid && (tracksHtml = document.querySelectorAll("div#content > table.tbl > tbody > tr[id]:not(.subh)")).length > 0) {
+			if (pageMbid && (tracksHtml = document.querySelectorAll("div#content table.tbl.medium > tbody > tr[id]:not(.subh)")).length > 0) {
 				if (recUseInRelationshipLink || recAddToMergeLink) {
 					for (var ith = 0; ith < tracksHtml.length; ith++) {
 						var toolzone = tracksHtml[ith].querySelector("td.treleases");
