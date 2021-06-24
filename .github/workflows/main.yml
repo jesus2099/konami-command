@@ -25,14 +25,20 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Check out repository
         uses: actions/checkout@v2
+      - name: Debug
+        run: |
+          echo "::debug::$(pwd)"
+          echo "::debug::$(ls)"
+          echo "::debug::$(git status)"
+          echo "::debug::$(git log --online)"
+          echo "::debug::$(git show ${{ github.sha }})"
+          echo "::debug::$(git show ${{ github.event.pull_request.base.sha }})"
       - name: Get changed files
         id: changes
         # Set outputs using the command.
         run: |
           echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
           echo "::set-output name=js::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep --extended-regexp '\.js(on)?$' | xargs)"
-          echo "::debug::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
-          echo "::debug::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep --extended-regexp '\.js(on)?$' | xargs)"
 
   eslint:
     # The type of runner that the job will run on
