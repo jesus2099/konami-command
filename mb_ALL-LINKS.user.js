@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2021.5.26
+// @version      2021.7.1
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @compatible   vivaldi(2.11.1811.33)+violentmonkey my setup
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -604,19 +604,21 @@ function addExternalLink(parameters/* text, target, begin, end, sntarget, mbid, 
 	if (parameters.target) {
 		// This is a link
 		if (typeof parameters.target === "string") {
+			console.debug(GM_info.script.name + " ### Strange it now does not run for everything?\ntarget: " + parameters.target);
+			var escapedTarget = parameters.target.replace(/'/g, "\\'");
 			var existingLink =
-				sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "']")
+				sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "']")
 				// MBS adds a trailing code to ASIN URL https://github.com/metabrainz/musicbrainz-server/blob/7b16dfae25fef7ef570bbc96e2d7cb71f123139e/lib/DBDefs/Default.pm#L318-L328
-				|| parameters.target.match(/\bamazon\.ca\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music0b72-20']")
-				|| parameters.target.match(/\bamazon\.co\.jp\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=musicbrainzjp-22']")
-				|| parameters.target.match(/\bamazon\.co\.uk\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music080d-21']")
-				|| parameters.target.match(/\bamazon\.com\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=musicbrainz0d-20']")
-				|| parameters.target.match(/\bamazon\.de\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music059-21']")
-				|| parameters.target.match(/\bamazon\.fr\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music083d-21']")
-				|| parameters.target.match(/\bamazon\.it\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music084d-21']")
-				|| parameters.target.match(/\bamazon\.es\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "?tag=music02e-21']")
+				|| parameters.target.match(/\bamazon\.ca\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "?tag=music0b72-20']")
+				|| parameters.target.match(/\bamazon\.co\.jp\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "?tag=musicbrainzjp-22']")
+				|| parameters.target.match(/\bamazon\.co\.uk\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "?tag=music080d-21']")
+				|| parameters.target.match(/\bamazon\.com\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "?tag=musicbrainz0d-20']")
+				|| parameters.target.match(/\bamazon\.de\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "?tag=music059-21']")
+				|| parameters.target.match(/\bamazon\.fr\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "?tag=music083d-21']")
+				|| parameters.target.match(/\bamazon\.it\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "?tag=music084d-21']")
+				|| parameters.target.match(/\bamazon\.es\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "?tag=music02e-21']")
 				// MBS adds a trailing slash to viaf URL https://github.com/jesus2099/konami-command/issues/293#issuecomment-376875307
-				|| parameters.target.match(/\bviaf\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + parameters.target.replace(/^https?:/, "") + "/']");
+				|| parameters.target.match(/\bviaf\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "/']");
 			if (existingLink) {
 				newLink = false;
 				li = getParent(existingLink, "li");
