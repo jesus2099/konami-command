@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2021.3.8
+// @version      2021.7.2
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -406,7 +406,7 @@ function massMergeGUI() {
 			localRelease.tracks = [];
 			recid2trackIndex.local = {};
 			removeChildren(startpos);
-			var trs = document.querySelectorAll("div#content > table.tbl > tbody > tr");
+			var trs = document.querySelectorAll("div#content table.tbl.medium > tbody > tr");
 			/* var jsonRelease, scripts = document.querySelectorAll("script:not([src])");
 			for (let s = 0; s < scripts.length && !jsonRelease; s++) {
 				jsonRelease = scripts[s].textContent.match(/MB\.Release\.init\(([^<]+)\)/);
@@ -641,9 +641,9 @@ function loadReleasePage() {
 					var trackLength = trackTimes[t].match(/(\d+:)?\d+:\d+/);
 					if (trackLength) trackLength = strtime2ms(trackLength[0]);
 					remoteRelease.tracks.push({
-						number: trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + MBS + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
+						number: trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
 						name: HTMLToText(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
-						artistCredit: trackRows[t].match(/<td>/g).length > 1 ? trackRows[t].match(/[\s\S]*<td>([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : releaseAC[1],
+						artistCredit: trackRows[t].match(/<td>/g) && trackRows[t].match(/<td>/g).length > 1 ? trackRows[t].match(/[\s\S]*<td>([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : releaseAC[1],
 						length: trackLength,
 						recording: {
 							rowid: recIDs[t],
