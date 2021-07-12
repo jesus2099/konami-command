@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2021.7.2
+// @version      2021.7.12
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -44,7 +44,7 @@ var sregex_MBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"
 var regex_MBID = new RegExp(sregex_MBID, "i");
 var css_track = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
 var css_track_ac = "td:not([class]) + td:not([class])";
-var css_collapsed_medium = "div#content > table.tbl > thead > tr > th > a.expand-medium > span.expand-triangle";
+var css_collapsed_medium = "div#content table.tbl.medium > thead > tr > th > a.expand-medium > span.expand-triangle";
 var sregex_title = ".+?[„“«‘] ?(.+) ?[“”»’] \\S+ (.+?) - MusicBrainz";
 var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
 var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
@@ -56,9 +56,9 @@ css.setAttribute("type", "text/css");
 document.head.appendChild(css);
 css = css.sheet;
 css.insertRule("body." + userjs.id + " div#" + userjs.id + " > .main-shortcut { display: none; }", 0);
-css.insertRule("body." + userjs.id + " div#content table.tbl > * > tr > .rating { display: none; }", 0);
-css.insertRule("body." + userjs.id + " div#content table.tbl > tbody > tr > td > div.ars { display: none; }", 0);
-css.insertRule("body." + userjs.id + " div#content table.tbl > tbody > tr > td > a[href^='http://acousticbrainz.org/'][style='float: right;'] { display: none; }", 0); // link to mb_ACOUSTICBRAINZ-LINKS https://gist.github.com/jesus2099/8e223f09d64d831a9514
+css.insertRule("body." + userjs.id + " div#content table.tbl.medium > * > tr > .rating { display: none; }", 0);
+css.insertRule("body." + userjs.id + " div#content table.tbl.medium > tbody > tr > td > div.ars { display: none; }", 0);
+css.insertRule("body." + userjs.id + " div#content table.tbl.medium > tbody > tr > td > a[href^='http://acousticbrainz.org/'][style='float: right;'] { display: none; }", 0); // link to mb_ACOUSTICBRAINZ-LINKS https://gist.github.com/jesus2099/8e223f09d64d831a9514
 css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " { margin-top: 12px; cursor: pointer; }", 0);
 css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " > :not(h2):not(.main-shortcut) { display: none; }", 0);
 css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " input[name='mergeStatus'] { font-size: 9px!important; background-color: #fcf; }", 0);
@@ -614,7 +614,15 @@ function loadReleasePage() {
 			var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
 			var releaseAC = releaseWithoutARs.match(/<p class="subheader"><span class="prefix">~<\/span> <!-- -->[^<]+ (<.+?) <span class="small">\(/);
 			var discount = releaseWithoutARs.match(/<a class="expand-medium"/g).length;
-			if (recIDx5 && trackInfos && trackTimes && rtitle) {
+			if (!remoteRelease.disc && releaseWithoutARs.match(/<tbody style="display:none"><\/tbody>/)) {
+				var disc = prompt("This " + discount + " medium release has some collapsed mediums.\nIn this case I can only load one medium at a time.\n\nPlease enter the medium number that you want to load.\n\nNext time you can directly paste the medium link:\n " + MBS + "/release/" + remoteRelease.id + "/disc/1.", "1");
+				if (disc && disc.match(/^\d+$/) && disc > 0 && disc <= discount) {
+					remoteRelease.disc = "/disc/" + disc;
+					loadReleasePage();
+				} else {
+					infoMerge("Disc number out of bounds (1–" + discount + ") or unreadable", false);
+				}
+			} else if (recIDx5 && trackInfos && trackTimes && rtitle) {
 				var recIDs = [];
 				for (let i5 = 0; i5 < recIDx5.length; i5 += 5) {
 					recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
@@ -675,14 +683,6 @@ function loadReleasePage() {
 				}
 				startpos.value = bestStartPosition() || 0;
 				spreadTracks(event);
-			} else if (discount > 10) {
-				var disc = prompt("This release has " + discount + " discs.\n11+ disc releases can only be used as local release.\nDo you want to load one of its mediums?\n\nNext time you can directly paste the medium link (" + MBS + "/release/" + remoteRelease.id + "/disc/1).", "1");
-				if (disc && disc.match(/^\d+$/) && disc > 0 && disc <= discount) {
-					remoteRelease.disc = "/disc/" + disc;
-					loadReleasePage();
-				} else {
-					infoMerge("Disc number out of bounds (1–" + discount + ") or unreadable", false);
-				}
 			}
 		}
 	});
@@ -887,16 +887,21 @@ function prepareLocalRelease() {
 	}
 	// link to mb_INLINE-STUFF (end)
 	expandCollapseAllMediums("▶");
+	document.body.appendChild(createTag("div", {a: {class: "loading-" + userjs.id}, s: {position: "fixed", background: "#FEF", opacity: ".6", top: "0px", right: "0px", bottom: "0px", left: "0px"}}));
+	document.body.appendChild(createTag("h1", {a: {class: "loading-" + userjs.id}, s: {position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)"}}, "LOADING ALL MEDIUMS…"));
 	setTimeout(loadingAllMediums, 10);
 }
 function loadingAllMediums() {
-	if (document.querySelector("table.tbl > tbody > tr > td > div.loading-message")) {
+	if (document.querySelector("div#content table.tbl.medium > tbody .loading-message")) {
 		setTimeout(loadingAllMediums, 200);
 	} else {
 		showGUI();
 	}
 }
 function showGUI() {
+	for (var loadingMessages = document.querySelectorAll(".loading-" + userjs.id), i = 0; i < loadingMessages.length; i++) {
+		removeNode(loadingMessages[i]);
+	}
 	if (!document.body.classList.contains(userjs.id)) {
 		document.body.classList.add(userjs.id);
 		var MMRdiv = document.getElementById(userjs.id);
