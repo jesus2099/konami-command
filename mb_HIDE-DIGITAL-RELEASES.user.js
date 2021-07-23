@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2021.4.6
-// @description  musicbrainz.org: (VERY BASIC AT THE MOMENT) Release group page: Hide digital releases
+// @version      2021.7.24
+// @description  musicbrainz.org: Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_HIDE-DIGITAL-RELEASES.user.js
@@ -40,28 +40,46 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 	case "/artist/": // /artist/*/releases
 		// fall through
 	case "/release-group/":
-		// download release styling (hide)
-		var css = document.createElement("style");
-		css.setAttribute("type", "text/css");
-		document.head.appendChild(css);
-		css = css.sheet;
-		css.insertRule("." + userjs.id + "fullDownload { opacity: .1; }", 0);
-		css.insertRule("." + userjs.id + "fullDownload:hover { opacity: revert; }", 0);
 		// find download releases and apply style class
-		markDownloadReleases(document.querySelectorAll("table.tbl > tbody > tr:not(.subh)"), location.pathname.match(/\/releases$/) ? 3 : 2);
+		var releaseRows = document.querySelectorAll("table.tbl > tbody > tr:not(.subh)");
+		markDownloadReleases(releaseRows);
+		// download release styling (hide) only if there are physical releases
+		var hiddenReleases = document.querySelectorAll("tr." + userjs.id);
+		if (releaseRows.length > hiddenReleases.length) {
+			var css = document.createElement("style");
+			css.setAttribute("type", "text/css");
+			document.head.appendChild(css);
+			css = css.sheet;
+			css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
+			css.insertRule("tr." + userjs.id + " { filter: grayscale(1); opacity: .6; }", 0);
+			// css.insertRule("body." + userjs.id + " tr." + userjs.id + " { opacity: .1; }", 0);
+			// css.insertRule("body." + userjs.id + " tr." + userjs.id + ":hover { opacity: revert; }", 0);
+			// toggle button
+			var mergeButton = document.querySelector("div.row > span.buttons > button[type='submit']");
+			var toggleButton = document.createElement("button");
+			toggleButton.appendChild(document.createTextNode("Show/hide the " + hiddenReleases.length + " DL releases"));
+			toggleButton.style.setProperty("background-color", "#FF6");
+			toggleButton.setAttribute("title", userjs.id);
+			toggleButton.setAttribute("type", "");
+			document.body.classList.add(userjs.id);
+			toggleButton.addEventListener("click", function(event) {
+				event.preventDefault();
+				document.body.classList.toggle(userjs.id);
+			});
+			mergeButton.parentNode.appendChild(toggleButton);
+		}
 		break;
 }
-function markDownloadReleases(releaseRows, formatRowIndex) {
-	if (releaseRows.length > 0) {
-		for (var r = 0; r < releaseRows.length; r++) {
-			if (
-				// don’t match half physical releases
-				!releaseRows[r].cells[formatRowIndex].textContent.match(/\+/)
-				// match fully digital releases
-				&& releaseRows[r].cells[formatRowIndex].textContent.match(new RegExp("([0-9]+×)?" + MBGlossary["medium-format"][12][lang], "iu"))
-			) {
-				releaseRows[r].classList.add(userjs.id + "fullDownload");
-			}
+function markDownloadReleases(releaseRows) {
+	var formatRowIndex = location.pathname.match(/\/releases$/) ? 3 : 2;
+	for (var r = 0; r < releaseRows.length; r++) {
+		if (
+			// don’t match half physical releases
+			!releaseRows[r].cells[formatRowIndex].textContent.match(/\+/)
+			// match fully digital releases
+			&& releaseRows[r].cells[formatRowIndex].textContent.match(new RegExp("([0-9]+×)?" + MBGlossary["medium-format"][12][lang], "iu"))
+		) {
+			releaseRows[r].classList.add(userjs.id);
 		}
 	}
 }
