@@ -43,18 +43,19 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 		// find download releases and apply style class
 		var releaseRows = document.querySelectorAll("table.tbl > tbody > tr:not(.subh)");
 		markDownloadReleases(releaseRows);
-		// download release styling (hide) only if there are physical releases
+		var css = document.createElement("style");
+		css.setAttribute("type", "text/css");
+		document.head.appendChild(css);
+		css = css.sheet;
+		css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
+		css.insertRule("tr." + userjs.id + " { opacity: .6; }", 0);
+		css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
+		// css.insertRule("body." + userjs.id + " tr." + userjs.id + " { opacity: .1; }", 0);
+		// css.insertRule("body." + userjs.id + " tr." + userjs.id + ":hover { opacity: revert; }", 0);
+		// hide only if there are physical releases
 		var hiddenReleases = document.querySelectorAll("tr." + userjs.id);
 		if (releaseRows.length > hiddenReleases.length) {
-			var css = document.createElement("style");
-			css.setAttribute("type", "text/css");
-			document.head.appendChild(css);
-			css = css.sheet;
-			css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
-			css.insertRule("tr." + userjs.id + " { opacity: .6; }", 0);
-			css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
-			// css.insertRule("body." + userjs.id + " tr." + userjs.id + " { opacity: .1; }", 0);
-			// css.insertRule("body." + userjs.id + " tr." + userjs.id + ":hover { opacity: revert; }", 0);
+			document.body.classList.add(userjs.id);
 			// toggle button
 			var mergeButton = document.querySelector("div.row > span.buttons > button[type='submit']");
 			var toggleButton = document.createElement("button");
@@ -62,7 +63,6 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 			toggleButton.style.setProperty("background-color", "#FF6");
 			toggleButton.setAttribute("title", userjs.id);
 			toggleButton.setAttribute("type", "");
-			document.body.classList.add(userjs.id);
 			toggleButton.addEventListener("click", function(event) {
 				event.preventDefault();
 				document.body.classList.toggle(userjs.id);
