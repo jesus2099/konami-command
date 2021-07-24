@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2021.7.24
+// @version      2021.7.24.1111
 // @description  musicbrainz.org: Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
@@ -51,7 +51,8 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 			document.head.appendChild(css);
 			css = css.sheet;
 			css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
-			css.insertRule("tr." + userjs.id + " { filter: grayscale(1); opacity: .6; }", 0);
+			css.insertRule("tr." + userjs.id + " { opacity: .6; }", 0);
+			css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
 			// css.insertRule("body." + userjs.id + " tr." + userjs.id + " { opacity: .1; }", 0);
 			// css.insertRule("body." + userjs.id + " tr." + userjs.id + ":hover { opacity: revert; }", 0);
 			// toggle button
