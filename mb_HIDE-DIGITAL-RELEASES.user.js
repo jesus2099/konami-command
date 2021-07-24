@@ -50,8 +50,6 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 		css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
 		css.insertRule("tr." + userjs.id + " { opacity: .6; }", 0);
 		css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
-		// css.insertRule("body." + userjs.id + " tr." + userjs.id + " { opacity: .1; }", 0);
-		// css.insertRule("body." + userjs.id + " tr." + userjs.id + ":hover { opacity: revert; }", 0);
 		// hide only if there are physical releases
 		var hiddenReleases = document.querySelectorAll("tr." + userjs.id);
 		if (releaseRows.length > hiddenReleases.length) {
