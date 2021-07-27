@@ -48,6 +48,8 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 		document.head.appendChild(css);
 		css = css.sheet;
 		css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
+		css.insertRule("body." + userjs.id + " table.tbl > tbody > tr { border-top: 1px solid #ECE; }", 0);
+		css.insertRule("body." + userjs.id + " table.tbl > tbody > tr > td { background-color: #FEF; }", 0);
 		css.insertRule("tr." + userjs.id + " { opacity: .6; }", 0);
 		css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
 		// hide only if there are physical releases
@@ -58,7 +60,7 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 			var mergeButton = document.querySelector("div.row > span.buttons > button[type='submit']");
 			var toggleButton = document.createElement("button");
 			toggleButton.appendChild(document.createTextNode("Show/hide the " + hiddenReleases.length + " DL releases"));
-			toggleButton.style.setProperty("background-color", "#FF6");
+			toggleButton.style.setProperty("background-color", "#FEF");
 			toggleButton.setAttribute("title", userjs.id);
 			toggleButton.setAttribute("type", "");
 			toggleButton.addEventListener("click", function(event) {
