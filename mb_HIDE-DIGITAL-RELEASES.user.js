@@ -48,6 +48,7 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 		document.head.appendChild(css);
 		css = css.sheet;
 		css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
+		css.insertRule("body." + userjs.id + " div.jesus2099userjs154481bigbox > a." + userjs.id + " { display: none !important; }", 0); // link to mb_FUNKEY-ILLUSTRATED-RECORDS
 		css.insertRule("body." + userjs.id + " table.tbl > tbody > tr { border-top: 1px solid #ECE; }", 0);
 		css.insertRule("body." + userjs.id + " table.tbl > tbody > tr > td { background-color: #FEF; }", 0);
 		css.insertRule("tr." + userjs.id + " { opacity: .6; }", 0);
@@ -71,6 +72,16 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 		}
 		break;
 }
+// Hide associated mb_FUNKEY-ILLUSTRATED-RECORDS
+setTimeout(function() {
+	var hiddenReleases = document.querySelectorAll("tr." + userjs.id + " a[href^='/release/']");
+	for (var r = 0; r < hiddenReleases.length; r++) {
+		var hiddenReleaseCAA = document.querySelector("div.jesus2099userjs154481bigbox > a[href*='" + hiddenReleases[r].getAttribute("href") + "']");
+		if (hiddenReleaseCAA) {
+			hiddenReleaseCAA.classList.add(userjs.id);
+		}
+	}
+}, 500);
 function markDownloadReleases(releaseRows) {
 	var formatRowIndex = location.pathname.match(/\/releases$/) ? 3 : 2;
 	for (var r = 0; r < releaseRows.length; r++) {
