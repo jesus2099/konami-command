@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2021.7.24.1111
+// @version      2021.7.27
 // @description  musicbrainz.org: Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
@@ -17,7 +17,7 @@
 // ==/UserScript==
 "use strict";
 var userjs = {
-	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-"),
+	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-")
 };
 var MBGlossary = {
 	"medium-format": {
@@ -52,7 +52,7 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 		css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
 		// hide only if there are physical releases
 		var hiddenReleases = document.querySelectorAll("tr." + userjs.id);
-		if (releaseRows.length > hiddenReleases.length) {
+		if (hiddenReleases.length > 0 && releaseRows.length > hiddenReleases.length) {
 			document.body.classList.add(userjs.id);
 			// toggle button
 			var mergeButton = document.querySelector("div.row > span.buttons > button[type='submit']");
