@@ -867,6 +867,12 @@ function buildMergeForm(loc, rem) {
 	}
 }
 function prepareLocalRelease() {
+	if (self.location.pathname.match(/\/disc\/\d+/)) {
+		if(confirm(userjs.name + " only works on normal release pages (not on this kind of disc anchor version).\n\nDo you agree to reload page?")) {
+			self.location.assign(MBS + "/release/" + localRelease.id);
+		}
+		return;
+	}
 	// link to mb_INLINE-STUFF (start)
 	var inlineStuffedRecordingNames = document.querySelectorAll("a[jesus2099userjs81127recname]");
 	for (let n = 0; n < inlineStuffedRecordingNames.length; n++) {
