@@ -866,14 +866,6 @@ function buildMergeForm(loc, rem) {
 		}
 	}
 }
-function expandCollapseAllMediums(clickThis) {
-	// MBS expand-all-mediums loads them from top to bottom, I want them from bottom to top to avoid creating a please wait loading message
-	if (clickThis) for (let collapsedMediums = document.querySelectorAll(css_collapsed_medium), a = collapsedMediums.length - 1; a >= 0; a--) {
-		if (collapsedMediums[a].textContent.trim() == clickThis) {
-			collapsedMediums[a].click();
-		}
-	}
-}
 function prepareLocalRelease() {
 	// link to mb_INLINE-STUFF (start)
 	var inlineStuffedRecordingNames = document.querySelectorAll("a[jesus2099userjs81127recname]");
@@ -886,9 +878,12 @@ function prepareLocalRelease() {
 		removeNode(inlineStuffedRecordingComments[c]);
 	}
 	// link to mb_INLINE-STUFF (end)
-	expandCollapseAllMediums("▶");
 	document.body.appendChild(createTag("div", {a: {class: "loading-" + userjs.id}, s: {position: "fixed", background: "#FEF", opacity: ".6", top: "0px", right: "0px", bottom: "0px", left: "0px"}}));
 	document.body.appendChild(createTag("h1", {a: {class: "loading-" + userjs.id}, s: {position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textShadow: "0 0 8px white"}}, "LOADING ALL MEDIUMS…"));
+	var expandAllMediums = document.querySelector("div#content button#expand-all-mediums");
+	if (expandAllMediums) {
+		expandAllMediums.click();
+	}
 	setTimeout(loadingAllMediums, 10);
 }
 function loadingAllMediums() {
