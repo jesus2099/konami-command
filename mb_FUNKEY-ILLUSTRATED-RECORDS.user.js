@@ -31,7 +31,7 @@ var smallpics = true; // displays small pics for every releases and release grou
 var colour = "yellow"; // used for various mouse-over highlights
 /* ---CONFIG-STOPR--- */
 
-let userjs = "jesus2099userjs154481";
+let userjs = "jesus2099userjs154481"; // linked in mb. MERGE HELPOR 2, mb_HIDE-DIGITAL-RELEASES and mb_PRINT-ALL-PAGES
 let types = ["release-group", "release"];
 let GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 
