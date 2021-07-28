@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2021.7.27
+// @version      2021.7.28
 // @description  musicbrainz.org: Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
@@ -12,6 +12,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/releases/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
 // @run-at       document-ready
 // ==/UserScript==
@@ -38,6 +39,8 @@ var MBGlossary = {
 var lang = document.getElementsByTagName("html")[0].getAttribute("lang");
 switch (location.pathname.match(/\/[^/]+\//)[0]) {
 	case "/artist/": // /artist/*/releases
+		// fall through
+	case "/collection/": // /release collections
 		// fall through
 	case "/release-group/":
 		// find download releases and apply style class
@@ -83,7 +86,7 @@ setTimeout(function() {
 	}
 }, 500);
 function markDownloadReleases(releaseRows) {
-	var formatRowIndex = location.pathname.match(/\/releases$/) ? 3 : 2;
+	var formatRowIndex = location.pathname.match(/\/releases$|collection/) ? 3 : 2;
 	for (var r = 0; r < releaseRows.length; r++) {
 		if (
 			// don’t match half physical releases
