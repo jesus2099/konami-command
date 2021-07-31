@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2021.7.30
+// @version      2021.7.31
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -866,6 +866,14 @@ function buildMergeForm(loc, rem) {
 		}
 	}
 }
+function expandCollapseAllMediums(clickThis) {
+	// Native a#expand-all-mediums randomly collapses mediums if called by my script
+	if (clickThis) for (let collapsedMediums = document.querySelectorAll(css_collapsed_medium), a = collapsedMediums.length - 1; a >= 0; a--) {
+		if (collapsedMediums[a].textContent.trim() == clickThis) {
+			collapsedMediums[a].click();
+		}
+	}
+}
 function prepareLocalRelease() {
 	if (self.location.pathname.match(/\/disc\/\d+/)) {
 		if(confirm(userjs.name + " only works on normal release pages (not on this kind of disc anchor version).\n\nDo you agree to reload page?")) {
@@ -886,10 +894,7 @@ function prepareLocalRelease() {
 	// link to mb_INLINE-STUFF (end)
 	document.body.appendChild(createTag("div", {a: {class: "loading-" + userjs.id}, s: {position: "fixed", background: "#FEF", opacity: ".6", top: "0px", right: "0px", bottom: "0px", left: "0px"}}));
 	document.body.appendChild(createTag("h1", {a: {class: "loading-" + userjs.id}, s: {position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textShadow: "0 0 8px white"}}, "LOADING ALL MEDIUMS…"));
-	var expandAllMediums = document.querySelector("div#content button#expand-all-mediums");
-	if (expandAllMediums) {
-		expandAllMediums.click();
-	}
+	expandCollapseAllMediums("▶");
 	setTimeout(loadingAllMediums, 10);
 }
 function loadingAllMediums() {
