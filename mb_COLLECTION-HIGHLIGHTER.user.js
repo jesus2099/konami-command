@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2021.7.28
+// @version      2021.7.31
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -193,14 +193,15 @@ if (cat) {
 // ############################################################################
 // #                                    COLLECT LINKS TO HIGHLIGHT / DECORATE #
 // ############################################################################
-		var deferScript = setInterval(function() {
-			debug("Interval " + deferScript);
-			// Make sure no more React funny stuff will redraw content (on /recording/merge for the moment)
-			if (!document.querySelector("p.loading-message")) {
-				clearInterval(deferScript);
+		var DOMChanged = true;
+		document.querySelector("div#content").addEventListener("DOMNodeInserted", function(event) { DOMChanged = true; });
+		setInterval(function() {
+			// Make sure to re-scan page content (after, not during) each time React does some funny stuff hydrate redraw content
+			if (!document.querySelector("p.loading-message") && DOMChanged) {
+				DOMChanged = false;
 				findOwnedStuff();
 			}
-		}, 500);
+		}, 1000);
 	}
 }
 function findOwnedStuff() {
@@ -218,7 +219,7 @@ function findOwnedStuff() {
 			downhill += "[count(ancestor::xhtml:div[contains(@class, 'edit-notes')])=0]";
 		}
 		var root = cat == "track" /* acoustid.org */ ? "//musicbrainz.org/" : "/";
-		var path = uphill + "//xhtml:a[starts-with(@href, '" + root + cstuff + "/')]" + downhill;
+		var path = uphill + "//xhtml:a[starts-with(@href, '" + root + cstuff + "/')][not(starts-with(@class, '" + prefix + "'))]" + downhill;
 		var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		for (let i = 0; i < xp.snapshotLength; i++) {
 			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
