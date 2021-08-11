@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2021.7.28
+// @version      2021.8.11
 // @description  musicbrainz.org: Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
@@ -52,14 +52,12 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 		css = css.sheet;
 		css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
 		css.insertRule("body." + userjs.id + " div.jesus2099userjs154481bigbox > a." + userjs.id + " { display: none !important; }", 0); // link to mb_FUNKEY-ILLUSTRATED-RECORDS
-		css.insertRule("body." + userjs.id + " table.tbl > tbody > tr { border-top: 1px solid #ECE; }", 0);
-		css.insertRule("body." + userjs.id + " table.tbl > tbody > tr > td { background-color: #FEF; }", 0);
-		css.insertRule("tr." + userjs.id + " { opacity: .6; }", 0);
+		css.insertRule("body." + userjs.id + " table.tbl > tbody > tr.even > td { background-color: #FEF; }", 0);
 		css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
 		// hide only if there are physical releases
 		var hiddenReleases = document.querySelectorAll("tr." + userjs.id);
 		if (hiddenReleases.length > 0 && releaseRows.length > hiddenReleases.length) {
-			document.body.classList.add(userjs.id);
+			toggleDLReleases();
 			// toggle button
 			var mergeButton = document.querySelector("div.row > span.buttons > button[type='submit']");
 			var toggleButton = document.createElement("button");
@@ -67,10 +65,7 @@ switch (location.pathname.match(/\/[^/]+\//)[0]) {
 			toggleButton.style.setProperty("background-color", "#FEF");
 			toggleButton.setAttribute("title", userjs.id);
 			toggleButton.setAttribute("type", "");
-			toggleButton.addEventListener("click", function(event) {
-				event.preventDefault();
-				document.body.classList.toggle(userjs.id);
-			});
+			toggleButton.addEventListener("click", toggleDLReleases);
 			mergeButton.parentNode.appendChild(toggleButton);
 		}
 		break;
@@ -95,6 +90,25 @@ function markDownloadReleases(releaseRows) {
 			&& releaseRows[r].cells[formatRowIndex].textContent.match(new RegExp("([0-9]+×)?" + MBGlossary["medium-format"][12][lang], "iu"))
 		) {
 			releaseRows[r].classList.add(userjs.id);
+		}
+	}
+}
+function toggleDLReleases(event) {
+	// do not submit merge_queue form
+	if (event) event.preventDefault();
+	// toggle DL release visibility
+	document.body.classList.toggle(userjs.id);
+	// redistribute MBS odd/even style for visible rows
+	var rows = document.querySelectorAll("table.tbl > tbody > tr");
+	for (var r = 0, vr = 1; r < rows.length; r++) {
+		if (rows[r].classList.contains("subh")) {
+			vr = 1;
+			continue;
+		} else if (self.getComputedStyle(rows[r]).getPropertyValue("display") != "none") {
+			var odd = (vr % 2);
+			rows[r].classList.remove(odd ? "even" : "odd");
+			rows[r].classList.add(odd ? "odd" : "even");
+			vr += 1;
 		}
 	}
 }
