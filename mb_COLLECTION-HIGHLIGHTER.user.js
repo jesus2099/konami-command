@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2021.7.31
+// @version      2021.8.14
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -194,7 +194,7 @@ if (cat) {
 // #                                    COLLECT LINKS TO HIGHLIGHT / DECORATE #
 // ############################################################################
 		var DOMChanged = true;
-		document.querySelector("div#content").addEventListener("DOMNodeInserted", function(event) { DOMChanged = true; });
+		document.querySelector("div#content, div#page").addEventListener("DOMNodeInserted", function(event) { DOMChanged = true; });
 		setInterval(function() {
 			// Make sure to re-scan page content (after, not during) each time React does some funny stuff hydrate redraw content
 			if (!document.querySelector("p.loading-message") && DOMChanged) {
