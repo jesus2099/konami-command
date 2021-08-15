@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2021.8.13
+// @version      2021.8.15
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -400,13 +400,14 @@ function formTarget(releaseIndex, event) {
 j2setting("USER_STATS", true, true, "adds convenient edit stats to user page (percentage of yes/no voted edits) and cool links like edit note searches");
 if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 	var stats = document.querySelectorAll("table.statistics > tbody");
-	var editorPathname = self.location.pathname.lastIndexOf("/") + 1;
-	editorPathname = self.location.pathname.substr(editorPathname);
-	if (!isEncoded(editorPathname)) {
+	var editor = {
+		pathname: self.location.pathname.substr(self.location.pathname.lastIndexOf("/") + 1)
+	};
+	if (!isEncoded(editor.pathname)) {
 		// Opera 12 alone is surprisingly decoding location.pathname
-		editorPathname = encodeURIComponent(editorPathname);
+		editor.pathname = encodeURIComponent(editor.pathname);
 	}
-	var editorName = decodeURIComponent(editorPathname);
+	editor.name = decodeURIComponent(editor.pathname);
 	if (stats.length == 3) {
 		debug("USER_STATS");
 		// Edits
@@ -424,10 +425,10 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		stats[0].rows[2].replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top editors"}, s: {cursor: "help"}}, stats[0].rows[2].cells[0].firstChild.textContent)), stats[0].rows[2].cells[0]);
 		// Votes
 		var refined24hSearch = stats[0].rows[7].cells[1].getElementsByTagName("a")[0].getAttribute("href");
-		var editorID = refined24hSearch.match(/conditions\.0\.args\.0=(\d+)/)[1];
+		editor.id = refined24hSearch.match(/conditions\.0\.args\.0=(\d+)/)[1];
 		var voteSearch = MBS + "/search/edits?conditions.0.field=voter&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.voter_id=%editorID%&conditions.0.args=%vote%";
-		voteSearch = voteSearch.replace(/%editorName%/, editorPathname);
-		voteSearch = voteSearch.replace(/%editorID%/, editorID);
+		voteSearch = voteSearch.replace(/%editorName%/, editor.pathname);
+		voteSearch = voteSearch.replace(/%editorID%/, editor.id);
 		for (let i = 0; i < stats[1].rows.length; i++) {
 			var vote = stats[1].rows[i].cells[2];
 			vote.replaceChild(createTag("a", {a: {href: voteSearch.replace(/%vote%/, {0: 1 /* Yes */, 1: 0 /* No */, 2: -1 /* Abstain */, 3: 2 /* Approve */}[i])}}, [vote.firstChild.cloneNode(true)]), vote.firstChild);
@@ -448,13 +449,15 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 			stats[1].rows[stats[1].rows.length > 3 ? 3 : 2]
 		);
 		// Edit notes
-		var myEditNotes = "/search/edits?conditions.0.field=editor&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.args.0=%editorID%&conditions.1.field=edit_note_author&conditions.1.operator=me";
-		var theirEditNotes = "/search/edits?conditions.0.field=editor&conditions.0.operator=me&conditions.1.field=edit_note_author&conditions.1.operator=%3D&conditions.1.name=%editorName%&conditions.1.args.0=%editorID%";
-		stats[0].parentNode.previousSibling.parentNode.insertBefore(createTag("h2", {a: {title: userjs.name + " (USER_STATS)"}}, "Cool links"), stats[0].parentNode.previousSibling);
-		stats[0].parentNode.previousSibling.parentNode.insertBefore(createTag("ul", {a: {title: userjs.name + " (USER_STATS)"}}, [
-			createTag("li", {}, createTag("a", {a: {href: myEditNotes.replace(/%editorID%/, editorID).replace(/%editorName%/, editorPathname)}}, "My edit notes on " + editorName + " edits")),
-			createTag("li", {}, createTag("a", {a: {href: theirEditNotes.replace(/%editorID%/, editorID).replace(/%editorName%/, editorPathname)}}, editorName + " edit notes on my edits")),
-		]), stats[0].parentNode.previousSibling);
+		if (account && account.pathname !== "/user/" + editor.pathname) {
+			var myEditNotes = "/search/edits?conditions.0.field=editor&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.args.0=%editorID%&conditions.1.field=edit_note_author&conditions.1.operator=me";
+			var theirEditNotes = "/search/edits?conditions.0.field=editor&conditions.0.operator=me&conditions.1.field=edit_note_author&conditions.1.operator=%3D&conditions.1.name=%editorName%&conditions.1.args.0=%editorID%";
+			stats[0].parentNode.previousSibling.parentNode.insertBefore(createTag("h2", {a: {title: userjs.name + " (USER_STATS)"}}, "Edit Notes"), stats[0].parentNode.previousSibling);
+			stats[0].parentNode.previousSibling.parentNode.insertBefore(createTag("ul", {a: {title: userjs.name + " (USER_STATS)"}}, [
+				createTag("li", {}, createTag("a", {a: {href: myEditNotes.replace(/%editorID%/, editor.id).replace(/%editorName%/, editor.pathname)}}, "My edit notes on " + editor.name + " edits")),
+				createTag("li", {}, createTag("a", {a: {href: theirEditNotes.replace(/%editorID%/, editor.id).replace(/%editorName%/, editor.pathname)}}, editor.name + " edit notes on my edits")),
+			]), stats[0].parentNode.previousSibling);
+		}
 		// Added entities
 		var addedEntities = 0;
 		for (let i = 0; i < stats[2].rows.length; i++) {
