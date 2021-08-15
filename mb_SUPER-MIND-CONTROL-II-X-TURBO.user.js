@@ -538,6 +538,7 @@ function EASY_DATE_calmDOM() {
 }
 function EASY_DATE_init() {
 	debug("EASY_DATE_init");
+	var nativeInputValueSetter = Object.getOwnPropertyDescriptor(self.HTMLInputElement.prototype, "value").set;
 	for (let years = document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(." + userjs.id + "easydate)"), y = 0; y < years.length; y++) {
 		addAfter(
 			createTag("input", {
@@ -578,8 +579,9 @@ function EASY_DATE_init() {
 									ymd[i] = "0" + ymd[i];
 								}
 								var input = this.parentNode.querySelector("input[placeholder='" + i + "']");
-								input.value = ymd[i];
 								input.focus();
+								// use native input value setter to bypass React
+								nativeInputValueSetter.call(input, ymd[i]);
 								sendEvent(input, "change");
 							}
 							this.style.setProperty("background-color", "#cfc");
