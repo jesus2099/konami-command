@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2021.8.15
+// @version      2021.8.16
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -452,10 +452,12 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 		if (account && account.pathname !== "/user/" + editor.pathname) {
 			var myEditNotes = "/search/edits?conditions.0.field=editor&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.args.0=%editorID%&conditions.1.field=edit_note_author&conditions.1.operator=me";
 			var theirEditNotes = "/search/edits?conditions.0.field=editor&conditions.0.operator=me&conditions.1.field=edit_note_author&conditions.1.operator=%3D&conditions.1.name=%editorName%&conditions.1.args.0=%editorID%";
+			var ourEditNotes = "/search/edits?conditions.0.field=editor&conditions.0.operator=not_me&conditions.1.field=editor&conditions.1.operator=%21%3D&conditions.1.name=%editorName%&conditions.1.args.0=%editorID%&conditions.2.field=edit_note_author&conditions.2.operator=me&conditions.3.field=edit_note_author&conditions.3.operator=%3D&conditions.3.name=%editorName%&conditions.3.args.0=%editorID%";
 			stats[0].parentNode.previousSibling.parentNode.insertBefore(createTag("h2", {a: {title: userjs.name + " (USER_STATS)"}}, "Edit Notes"), stats[0].parentNode.previousSibling);
 			stats[0].parentNode.previousSibling.parentNode.insertBefore(createTag("ul", {a: {title: userjs.name + " (USER_STATS)"}}, [
-				createTag("li", {}, createTag("a", {a: {href: myEditNotes.replace(/%editorID%/, editor.id).replace(/%editorName%/, editor.pathname)}}, "My edit notes on " + editor.name + " edits")),
-				createTag("li", {}, createTag("a", {a: {href: theirEditNotes.replace(/%editorID%/, editor.id).replace(/%editorName%/, editor.pathname)}}, editor.name + " edit notes on my edits")),
+				createTag("li", {}, createTag("a", {a: {href: myEditNotes.replace(/%editorID%/, editor.id).replace(/%editorName%/, editor.pathname)}}, [createTag("b", {}, "Edits by " + editor.name), " (with my comments)"])),
+				createTag("li", {}, createTag("a", {a: {href: theirEditNotes.replace(/%editorID%/, editor.id).replace(/%editorName%/, editor.pathname)}}, [createTag("b", {}, "Comments by " + editor.name), " (on my edits)"])),
+				createTag("li", {}, createTag("a", {a: {href: ourEditNotes.replace(/%editorID%/g, editor.id).replace(/%editorName%/g, editor.pathname)}}, "Other edits with comments by both me and " + editor.name))
 			]), stats[0].parentNode.previousSibling);
 		}
 		// Added entities
