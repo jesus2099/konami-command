@@ -17,13 +17,18 @@
 // ==/UserScript==
 "use strict";
 var DEBUG = false;
-// load blacklist
-var blacklist = localStorage.getItem(GM_info.script.name);
-if (typeof blacklist === "string") {
-	debug("Loaded: " + blacklist);
-	blacklist = blacklist.split(" ");
+// load blacklist settings
+var settings = localStorage.getItem(GM_info.script.name);
+try {
+	settings = JSON.parse(settings);
+} catch(error) {
+	debug("Settings corrupted: " + settings);
+}
+if (typeof settings === "object" && settings.users && Array.isArray(settings.users) && settings.topics && typeof settings.topics === "object") {
+	debug("Loaded: " + settings.users);
 } else {
-	blacklist = [];
+	debug("Reset settings");
+	settings = {users: [], topics: {}};
 }
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
@@ -36,23 +41,24 @@ css.insertRule("table.topic-list > tbody > tr.blacklisted-op > td.posters a:firs
 css.insertRule("table.topic-list > tbody > tr.blacklisted-op > td:first-child a.title { text-shadow: 1px 2px 2px red; }", 0);
 // blacklist editor
 GM_registerMenuCommand("Edit blacklist", function() {
-	var newBlacklist = prompt(GM_info.script.name + "\n\nList user IDs, separated by spaces\nExample: user1 user2 user3", blacklist.join(" "));
+	var newBlacklist = prompt(GM_info.script.name + "\n\nList user IDs, separated by spaces\nExample: user1 user2 user3", settings.users.join(" "));
 	if (newBlacklist !== null) {
-		blacklist = newBlacklist.trim().replace(/\s+/g, " ").split(" ").sort();
-		localStorage.setItem(GM_info.script.name, blacklist.join(" "));
-		debug("Blacklist saved: " + blacklist.join(" "));
+		settings.users = newBlacklist.trim().replace(/\s+/g, " ").split(" ");
+		debug("Save new blacklist: " + settings.users);
+		localStorage.setItem(GM_info.script.name, JSON.stringify(settings));
 	}
 });
 // hide topics created by backlisted users
 setInterval(function() {
 	if (document.querySelector("table.topic-list")) {
-		for (var p = 0; p < blacklist.length; p++) {
-			var unwanted = document.querySelectorAll("table.topic-list > tbody > tr:not(.blacklisted-op) > td.posters > a:first-child[data-user-card='" + blacklist[p] + "']");
-			for (var u = 0; u < unwanted.length; u++) {
-				unwanted[u].parentNode.parentNode.classList.add("blacklisted-op");
-				var topicTitle = unwanted[u].parentNode.parentNode.querySelector("a.title");
+		// PC version
+		for (var u = 0; u < settings.users.length; u++) {
+			var topics = document.querySelectorAll("table.topic-list > tbody > tr:not(.blacklisted-op) > td.posters > a:first-child[data-user-card='" + settings.users[u] + "']");
+			for (var t = 0; t < topics.length; t++) {
+				topics[t].parentNode.parentNode.classList.add("blacklisted-op");
+				var topicTitle = topics[t].parentNode.parentNode.querySelector("a.title");
 				debug(
-					unwanted[u].getAttribute("data-user-card") + "’s topic hidden: " + topicTitle.textContent + "\n" +
+					topics[t].getAttribute("data-user-card") + "’s topic hidden: " + topicTitle.textContent + "\n" +
 					location.protocol + "//" + location.host + topicTitle.getAttribute("href")
 				);
 			}
@@ -61,7 +67,7 @@ setInterval(function() {
 }, 500);
 // show blacklisted user topics on click
 document.body.addEventListener("click", function(event) {
-	debug(event.target.tagName + "\n" + event.target.parentNode.tagName + "\n" + event.target.parentNode.classList);
+	debug(event.type + " " + event.target.tagName + " in " + event.target.parentNode.tagName + "." + event.target.parentNode.classList);
 	if (
 		event.target.tagName === "TD"
 		&& event.target.parentNode.tagName === "TR"
