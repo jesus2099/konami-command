@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2021.8.14
+// @version      2021.8.23
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -39,7 +39,7 @@ if (cat) {
 	var MBWSRate = 999;
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var prefix = "collectionHighlighter";
-	var DEBUG = false;
+	var DEBUG = true;
 	var dialogprefix = "..:: " + scriptNameAndVersion.replace(/ /g, " :: ") + " ::..\n\n";
 	var maxRetry = 20;
 	var retryPause = 5000;
@@ -493,13 +493,15 @@ function collectionUpdater(link, action) {
 			}
 			if (stuff["release"].ids && releaseID) {
 				setTitle(true);
-				var checks = getStuffs();
-				switch (action) {
+				//var checks = getStuffs();
+				dynamicUpdate({action: "load", then: action, releaseID: releaseID});
+				/*switch (action) {
 					case "add":
 						if (stuff["release"].rawids.indexOf(releaseID) == -1) {
 							modal(true, concat([createTag("b", {}, "Adding this release"), " to loaded collection…"]), 1);
-							stuff["release"].rawids += releaseID + " ";
-							GM_setValue("releases", stuff["release"].rawids);
+							
+							//stuff["release"].rawids += releaseID + " ";
+							//GM_setValue("releases", stuff["release"].rawids);
 							altered = true;
 						}
 						for (let c = 0; c < checks.length; c++) {
@@ -508,8 +510,8 @@ function collectionUpdater(link, action) {
 								var type = match[1], mbid = match[2];
 								if (stuff[type].ids && stuff[type].rawids.indexOf(mbid) < 0 && (type != "artist" || skipArtists.indexOf(mbid) < 0)) {
 									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].getAttribute("jesus2099userjs81127recname") || checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1); // jesus2099userjs81127recname linked to mb_INLINE-STUFF
-									stuff[type].rawids += mbid + " ";
-									GM_setValue(type + "s", stuff[type].rawids);
+									//stuff[type].rawids += mbid + " ";
+									//GM_setValue(type + "s", stuff[type].rawids);
 									altered = true;
 								}
 							}
@@ -529,17 +531,46 @@ function collectionUpdater(link, action) {
 							return stop(event);
 						}
 						break;
-				}
+				}*/
 			}
-			if (!altered) {
+			//if (!altered) {
 				modal(true, "Nothing has changed.", 1);
-				setTimeout(function() { modal(false); }, 1000);
+				//setTimeout(function() { modal(false); }, 1000);
 				return stop(event);
-			} else {
-				modal(true, "Re‐loading page…", 1);
-			}
+			//} else {
+			//	modal(true, "Re‐loading page…", 1);
+			//}
 		}, false);
 		decorate(link);
+	}
+}
+function dynamicUpdate(parameters) {
+	switch (parameters.action) {
+		case "load":
+			var xhr = new XMLHttpRequest();
+			xhr.addEventListener("load", function(event) {
+				dynamicUpdate({action: parameters.then, release: this.response});
+			});
+			xhr.open("GET", MBS + "/ws/2/release/" + releaseID + "?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels", true);
+			debug(MBS + "/ws/2/release/" + releaseID + "?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels");
+			xhr.responseType = "json";
+			xhr.setRequestHeader("Accept", "application/json");
+			xhr.send();
+			break;
+		case "add":
+			alert(parameters.release.media.length + " medias");
+			for (var m = 0; m < parameters.release.media.length; m++) {
+				debug("########################################\nmedia " + (m+1) + " (" + parameters.release.media[m].tracks.length + " tracks)");
+				for (var t = 0; t < parameters.release.media[m].tracks.length; t++) {
+						debug("track (" + (t+1) + "): " + parameters.release.media[m].tracks[t].title + "\nrecording: " + parameters.release.media[m].tracks[t].recording.title);
+					for (var r = 0; r < parameters.release.media[m].tracks[t].recording.relations.length; r++) {
+						if (parameters.release.media[m].tracks[t].recording.relations[r]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+							debug("work: " + parameters.release.media[m].tracks[t].recording.relations[r].work.title);
+						}
+					}
+				}
+			}
+			break;
 	}
 }
 // ############################################################################
