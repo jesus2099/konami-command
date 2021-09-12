@@ -54,7 +54,7 @@ Please eventually add an issue to report any bug.
 
 ---
 
-※ Find more MusicBrainz scripts by [repo topics](https://github.com/search?q=topic%3Amusicbrainz+topic%3Auserscripts), [code search](https://github.com/search?l=JavaScript&q=%22%3D%3DUserScript%3D%3D%22+MusicBrainz&type=Code) and [gist search](https://gist.github.com/search?l=JavaScript&o=desc&q=%22%3D%3DUserScript%3D%3D%22+MusicBrainz&s=stars), or in 
+※ Find more MusicBrainz scripts by [repo topics](https://github.com/search?q=topic%3Amusicbrainz+topic%3Auserscripts), [code search](https://github.com/search?l=JavaScript&o=desc&q=%22%3D%3DUserScript%3D%3D%22+MusicBrainz&s=indexed&type=Code) and [gist search](https://gist.github.com/search?l=JavaScript&o=desc&q=%22%3D%3DUserScript%3D%3D%22+MusicBrainz&s=stars), or in 
 [GF](//greasyfork.org/scripts?set=9&sort=ratings) and in [OUJS](//openuserjs.org/group/musicbrainz?orderBy=rating&orderDir=desc).
 
 ※ Those scripts used to be hosted at 
