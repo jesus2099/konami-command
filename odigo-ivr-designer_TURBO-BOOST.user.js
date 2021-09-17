@@ -24,6 +24,7 @@ switch (self.location.pathname) {
 		document.head.appendChild(css);
 		css = css.sheet;
 		css.insertRule("div#main-container div.modal-dialog { min-width: 600px; width: unset !important; }", 0);
+		css.insertRule("div#main-container div#modBuilder-form-table-table, div#main-container div#modBuilder-form-table-table div.wtHolder { height: fit-content !important; }", 0);
 		setInterval(function() {
 			var treeViewButton = document.querySelector("div#arborescence a.tree-view");
 			var listViewButton = document.querySelector("div#arborescence a.list-view");
