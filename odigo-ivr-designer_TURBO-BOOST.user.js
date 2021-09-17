@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
 // @version      2021.9.17
-// @description  Various quality of life enhancements: Open application in one click; Auto expand narrow table editors
+// @description  Various quality of life enhancements: Auto expand narrow table editors; Double-click to View Tree
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
@@ -18,6 +18,7 @@
 
 switch (self.location.pathname) {
 	case "/application.html":
+		// Auto expand narrow table editors
 		setInterval(function() {
 			var narrowTable = document.querySelector("div#modBuilder-form-table-table-container.col-sm-7");
 			var expandButton = document.querySelector("img#modBuilder-form-table-stretch");
@@ -28,24 +29,37 @@ switch (self.location.pathname) {
 		}, 500);
 		break;
 	case "/appNservices.html":
-		setTimeout(function() {
-			// Direct View tree buttons
-			var viewTree1 = document.querySelector("div#main-container a#viewOpenTree1");
-			var applications = document.querySelectorAll("div#main-container table#applications > tbody tr > td.action > input[type='checkbox']");
-			for (var a = 0; a < applications.length; a++) {
-				var viewTree = document.createElement("img");
-				viewTree.setAttribute("src", "/img/icon/opentree.png");
-				viewTree.classList.add("j2viewTree");
-				viewTree.style.setProperty("cursor", "pointer");
-				viewTree.addEventListener("click", function(event) {
-					event.target.previousSibling.click();
-					viewTree1.click();
-				});
-				applications[a].parentNode.appendChild(viewTree);
-				applications[a].parentNode.parentNode.addEventListener("dblclick", function(event) {
-					event.currentTarget.querySelector("img.j2viewTree").click();
-				});
-			}
-		}, 1000);
+		// Double-click to View Tree
+		var applicationTable = document.querySelector("div#main-container table#applications > tbody");
+		var viewTree1 = document.querySelector("div#main-container a#viewOpenTree1");
+		if (applicationTable && viewTree1) {
+			applicationTable.addEventListener("dblclick", function(event) {
+				var selectedApplication = parentRow(event.target);
+				if (selectedApplication) {
+					selectedApplication = selectedApplication.querySelector("input[type='checkbox']#serviceID1");
+					if (selectedApplication) {
+						for (
+							var allApplications = applicationTable.querySelectorAll("input[type='checkbox']#serviceID1:checked"), a = 0;
+							a < allApplications.length;
+							a++
+						) {
+							allApplications[a].click();
+						}
+						document.body.style.setProperty("opacity", ".3");
+						selectedApplication.click();
+						viewTree1.click();
+					}
+				}
+			});
+		}
 		break;
+}
+function parentRow(node) {
+	if (node.tagName && node.tagName === "TR") {
+		return node;
+	} else if (node.tagName && (node.tagName === "BODY" || node.tagName === "HTML")) {
+		return null;
+	} else {
+		return parentRow(node.parentNode);
+	}
 }
