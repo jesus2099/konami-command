@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2021.9.17.1251
-// @description  Various quality of life enhancements: Go to List View by default; Show only tables List View by default; Auto expand narrow table editors; Double-click to View Tree
+// @version      2021.9.17.1435
+// @description  Various quality of life enhancements: Go to List View by default; Show only tables List View by default; Auto stretch narrow tables and modal dialogs; Double-click to View Tree
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
@@ -18,6 +18,12 @@
 
 switch (self.location.pathname) {
 	case "/application.html":
+		// Auto stretch modal dialogs
+		var css = document.createElement("style");
+		css.setAttribute("type", "text/css");
+		document.head.appendChild(css);
+		css = css.sheet;
+		css.insertRule("div#main-container div.modal-dialog { min-width: 600px; width: unset !important; }", 0);
 		setInterval(function() {
 			var treeViewButton = document.querySelector("div#arborescence a.tree-view");
 			var listViewButton = document.querySelector("div#arborescence a.list-view");
@@ -35,7 +41,7 @@ switch (self.location.pathname) {
 				event.initEvent("change", true, true);
 				filterSelect.dispatchEvent(event);
 			}
-			// Auto expand narrow table editors
+			// Auto stretch narrow tables
 			var narrowTable = document.querySelector("div#modBuilder-form-table-table-container.col-sm-7");
 			var expandButton = document.querySelector("img#modBuilder-form-table-stretch");
 			if (narrowTable && expandButton) {
