@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2021.9.17
-// @description  Various quality of life enhancements: Auto expand narrow table editors; Double-click to View Tree
+// @version      2021.9.17.1251
+// @description  Various quality of life enhancements: Go to List View by default; Show only tables List View by default; Auto expand narrow table editors; Double-click to View Tree
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
@@ -18,12 +18,27 @@
 
 switch (self.location.pathname) {
 	case "/application.html":
-		// Auto expand narrow table editors
 		setInterval(function() {
+			var treeViewButton = document.querySelector("div#arborescence a.tree-view");
+			var listViewButton = document.querySelector("div#arborescence a.list-view");
+			var filterSelect = document.querySelector("div#main-content div#actions-bar select#arbo-type");
+			// Go to List View by default
+			if (treeViewButton.classList.contains("selected") && !treeViewButton.classList.contains("jesus2099")) {
+				treeViewButton.classList.add("jesus2099");
+				listViewButton.click();
+			}
+			// Show only tables List View by default
+			if (listViewButton.classList.contains("selected") && !listViewButton.classList.contains("jesus2099") && filterSelect) {
+				listViewButton.classList.add("jesus2099");
+				filterSelect.value = "table";
+				var event = document.createEvent("HTMLEvents");
+				event.initEvent("change", true, true);
+				filterSelect.dispatchEvent(event);
+			}
+			// Auto expand narrow table editors
 			var narrowTable = document.querySelector("div#modBuilder-form-table-table-container.col-sm-7");
 			var expandButton = document.querySelector("img#modBuilder-form-table-stretch");
 			if (narrowTable && expandButton) {
-				console.debug(narrowTable + " " + expandButton);
 				expandButton.click();
 			}
 		}, 500);
