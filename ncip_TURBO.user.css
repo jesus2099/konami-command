@@ -1,0 +1,21 @@
+/* ==UserStyle==
+@name           ncip. TURBO
+@namespace      https://github.com/jesus2099/konami-command
+@version        2021.10.4
+@description    Hide tax column. Expand name (libellé) and routing (acheminement).
+@author         jesus2099
+==/UserStyle== */
+
+@-moz-document url-prefix("https://numero-contact.orange-business.com/snc/") {
+
+	app-contact-number-list > table.table > * > tr > .taxLevel {
+		display: none;
+	}
+	app-contact-number-list > table.table > * > tr > .name {
+		width: unset !important;
+	}
+	app-contact-number-list > table.table > * > tr > .defaultRouting span.name.ellipsis {
+		max-width: unset;
+	}
+
+}
