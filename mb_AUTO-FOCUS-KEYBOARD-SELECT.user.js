@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2021.2.5
+// @version      2021.10.8
 // @description  musicbrainz.org: MOUSE-LESS EDITING ! Cleverly focuses fields in various musicbrainz edit pages and allows keyboard selection of relationship types as well as some release editor keyboard navigation performance features
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_AUTO-FOCUS-KEYBOARD-SELECT
@@ -124,9 +124,10 @@ function mostCleverInputToFocus() {
 				if (tracklist) {
 					tracklist.addEventListener("keydown", function(event) {
 						// detect UP ↑ / DOWN ↓ to push cursor to upper or lower text field
-						if (event.target.className.match(/pos|track-(name|length)/) && (event.key == "ArrowUp" || event.key == "ArrowDown")) {
+						var classNameMatch = event.target.className.match(/pos|track-(name|length)/);
+						if (classNameMatch && (event.key == "ArrowUp" || event.key == "ArrowDown")) {
 							event.preventDefault();
-							var its = tracklist.querySelectorAll("input." + event.target.className);
+							var its = tracklist.querySelectorAll("input." + classNameMatch[0]);
 							var it;
 							for (it = 0; it < its.length; it++) {
 								if (its[it] == event.target) {
