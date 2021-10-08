@@ -124,10 +124,10 @@ function mostCleverInputToFocus() {
 				if (tracklist) {
 					tracklist.addEventListener("keydown", function(event) {
 						// detect UP ↑ / DOWN ↓ to push cursor to upper or lower text field
-						var classNameMatch = event.target.className.match(/pos|track-(name|length)/);
+						var classNameMatch = event.target.className.match(/(?:\s|^)(pos|track-(name|length))(?:\s|$)/);
 						if (classNameMatch && (event.key == "ArrowUp" || event.key == "ArrowDown")) {
 							event.preventDefault();
-							var its = tracklist.querySelectorAll("input." + classNameMatch[0]);
+							var its = tracklist.querySelectorAll("input." + classNameMatch[1]);
 							var it;
 							for (it = 0; it < its.length; it++) {
 								if (its[it] == event.target) {
