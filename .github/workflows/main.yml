@@ -27,18 +27,24 @@ jobs:
         uses: actions/checkout@v2
       - name: Debug
         run: |
+          echo "::debug::pwd"
           echo "::debug::$(pwd)"
-          echo "::debug::$(ls)"
+          echo "::debug::git status"
           echo "::debug::$(git status)"
+          echo "::debug::git log --online"
           echo "::debug::$(git log --online)"
-          echo "::debug::$(git show ${{ github.sha }})"
-          echo "::debug::$(git show ${{ github.event.pull_request.base.sha }})"
+          echo "::debug::github.sha: ${{ github.sha }}"
+          echo "::debug::$(git log --max-count=1 --oneline ${{ github.sha }})"
+          echo "::debug::github.event.pull_request.head.sha: ${{ github.event.pull_request.head.sha }}"
+          echo "::debug::$(git log --max-count=1 --oneline ${{ github.event.pull_request.head.sha }})"
+          echo "::debug::github.event.pull_request.base.sha: ${{ github.event.pull_request.base.sha }}"
+          echo "::debug::$(git log --max-count=1 --oneline ${{ github.event.pull_request.base.sha }})"
       - name: Get changed files
         id: changes
         # Set outputs using the command.
         run: |
-          echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
-          echo "::set-output name=js::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep --extended-regexp '\.js(on)?$' | xargs)"
+          echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | xargs)"
+          echo "::set-output name=js::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep --extended-regexp '\.js(on)?$' | xargs)"
 
   eslint:
     # The type of runner that the job will run on
