@@ -197,11 +197,10 @@ for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, ed
 			}
 			var inputs = document.querySelectorAll("form#edit-search li.condition span.field-editor > span.autocomplete.editor > input.name.ui-autocomplete-input.lookup-performed[value='" + editorName + "']");
 			for (var i = 0; i < inputs.length; i++) {
-				inputs[i].setAttribute("_focus-value", inputs[i].value);
+				inputs[i].setAttribute("_deletedEditor", inputs[i].value);
 				inputs[i].value = editors[editor].namewas;
 				inputs[i].setAttribute("title", editors[editor].title);
 				inputs[i].style.setProperty("color", "darkred");
-				inputs[i].setAttribute("_blur-value", inputs[i].value);
 				inputs[i].addEventListener("focus", swapValues);
 				inputs[i].addEventListener("blur", swapValues);
 				document.querySelector("form#edit-search").addEventListener("submit", function() {
@@ -248,7 +247,22 @@ function profileEntry(content, header) {
 	return entry;
 }
 function swapValues(event) {
-	this.value = this.getAttribute("_" + event.type + "-value");
+	switch (event.type) {
+		case "focus":
+			var deletedEditor = this.getAttribute("_deletedEditor");
+			if (deletedEditor) {
+				this.value = deletedEditor;
+				this.removeAttribute("_deletedEditor");
+			}
+			break;
+		case "blur":
+			var deletedEditor = this.value.match(/Deleted Editor #(\d+)/);
+			if (deletedEditor && editors[deletedEditor[1]]) {
+				this.setAttribute("_deletedEditor", this.value);
+				this.value = editors[deletedEditor[1]].namewas;
+			}
+			break;
+	}
 }
 function removeChildren(p) {
 	while (p && p.hasChildNodes()) { p.removeChild(p.firstChild); }
