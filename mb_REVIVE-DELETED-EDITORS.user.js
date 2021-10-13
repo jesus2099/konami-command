@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2021.9.10
+// @version      2021.10.13
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -29,7 +29,7 @@
 // @match        *://*.musicbrainz.org/statistics/editors*
 // @match        *://*.musicbrainz.org/user/*
 // @match        *://*.musicbrainz.org/work/*
-// @run-at       document-end
+// @run-at       document-idle
 // ==/UserScript==
 "use strict";
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
