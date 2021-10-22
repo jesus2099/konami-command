@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2021.10.22
+// @version      2021.10.23
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @compatible   vivaldi(2.11.1811.33)+violentmonkey my setup
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -209,10 +209,10 @@ var whitelistSearchLinks = {
 					title: "Québec",
 					items: {
 						"Québec Info Musique": [
-							// TODO: requires my old POST search for ISO-8859-1 charset support with probable HTTP issue now like JASRAC search #623
-							// "http://quebecinfomusique.com/artistes/artiste.asp?search=%artist-name%",
-							// "http://quebecinfomusique.com/albums/albums.asp?search=%release-name% %release-artist-credit%",
-							// "http://quebecinfomusique.com/albums/albums.asp?search=%release-group-name% %release-group-artist-credit%"
+							// TODO: make it work with "=" in title: https://musicbrainz.org/release-group/22d4bc68-c5f3-4e53-ab07-07d5920bbee1
+							"http://jesus2099.gitlab.io/forward-request.html?_action=http://quebecinfomusique.com/artistes/artiste.asp&_accept-charset=ISO-8859-1&search=%artist-name%",
+							"http://jesus2099.gitlab.io/forward-request.html?_action=http://quebecinfomusique.com/albums/albums.asp&_accept-charset=ISO-8859-1&search=%release-name%",
+							"http://jesus2099.gitlab.io/forward-request.html?_action=http://quebecinfomusique.com/albums/albums.asp&_accept-charset=ISO-8859-1&search=%release-group-name%",
 						]
 					}
 				}
