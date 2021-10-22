@@ -204,6 +204,17 @@ var whitelistSearchLinks = {
 							"http://www.encyclopedisque.fr/recherche.html?rd=%release-name%&sp=1#resultat"
 						]
 					}
+				},
+				"CA-QC": {
+					title: "Québec",
+					items: {
+						"Québec Info Musique": [
+							// TODO: requires my old POST search for ISO-8859-1 charset support with probable HTTP issue now like JASRAC search #623
+							// "http://quebecinfomusique.com/artistes/artiste.asp?search=%artist-name%",
+							// "http://quebecinfomusique.com/albums/albums.asp?search=%release-name% %release-artist-credit%",
+							// "http://quebecinfomusique.com/albums/albums.asp?search=%release-group-name% %release-group-artist-credit%"
+						]
+					}
 				}
 			}
 		},
