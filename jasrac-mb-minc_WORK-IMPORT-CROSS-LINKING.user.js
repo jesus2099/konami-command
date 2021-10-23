@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2021.10.22
+// @version      2021.10.24
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -571,7 +571,6 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				}
 			}, false); */
 			xhrForm.submit = xhrForm.form.querySelector("div.row button.submit.positive[type='submit']");
-			insertBefore(createTag("input", {a: {type: "reset", value: "Reset", title: "reset form values", tabindex: "-1", class: "styled-button"}, s: {float: "left", fontSize: ".77em", height: "16px", width: "32px", margin: "0 8px", border: "1px solid #ccc"}}), xhrForm.submit);
 			xhrForm.originalInputs = {inputs: [], values: [], css: "form > div > fieldset:not(." + userjs.id + ") input:not([type='button']), form > div > fieldset:not(." + userjs.id + ") select"};
 			xhrForm.originalInputs.inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
 			for (let i = 0; i < xhrForm.originalInputs.inputs.length; i++) {
