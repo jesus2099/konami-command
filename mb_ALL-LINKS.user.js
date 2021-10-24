@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2021.10.23
+// @version      2021.10.24
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @compatible   vivaldi(2.11.1811.33)+violentmonkey my setup
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -372,8 +372,14 @@ var additionalSearchLinks = {
 						en: "Japan"
 					},
 					items: {
-						"音楽の森（アーティスト）": "//www.minc.gr.jp/db/ArtNmSrch.aspx?ArtNm=%artist-name%",
-						"音楽の森（著作者）": "//www.minc.gr.jp/db/KenriSrch.aspx?KENRISYANM=%artist-family-name-first%"
+						"音楽の森（アーティスト）": "//search.minc.or.jp/artist/list/?nm=%artist-name%",
+						"音楽の森（CD商品検索）": [
+							"//search.minc.or.jp/product/list/?tl=%release-group-name%&ta=%release-group-artist-credit%&type=search-form-title&match=2",
+							"//search.minc.or.jp/product/list/?tl=%release-name%&ta=%release-artist-credit%&type=search-form-title&match=2",
+						],
+						// TODO: Add %release-catalogue-number% (or %release-catno%, it used to be %catnum% and %catnum2%) support back https://github.com/jesus2099/konami-command/issues/45
+						"音楽の森（CD商品検索：品番）": "//search.minc.or.jp/product/list/?dn=%release-catalogue-number%&type=search-form-diskno",
+
 					}
 				}
 			}
