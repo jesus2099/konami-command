@@ -876,7 +876,7 @@ function expandCollapseAllMediums(clickThis) {
 }
 function prepareLocalRelease() {
 	if (self.location.pathname.match(/\/disc\/\d+/)) {
-		if(confirm(userjs.name + " only works on normal release pages (not on this kind of disc anchor version).\n\nDo you agree to reload page?")) {
+		if (confirm(userjs.name + " only works on normal release pages (not on this kind of disc anchor version).\n\nDo you agree to reload page?")) {
 			self.location.assign(MBS + "/release/" + localRelease.id);
 		}
 		return;
@@ -909,7 +909,6 @@ function loadingAllMediums() {
 			} else {
 				loadingMessage.appendChild(document.createTextNode("."));
 			}
-			
 			loadTracks.click();
 			setTimeout(loadingAllMediums, 200);
 		} else {

@@ -21,7 +21,7 @@ var DEBUG = false;
 var settings = localStorage.getItem(GM_info.script.name);
 try {
 	settings = JSON.parse(settings);
-} catch(error) {
+} catch (error) {
 	debug("Settings corrupted: " + settings);
 }
 if (typeof settings === "object" && settings.users && Array.isArray(settings.users) && settings.topics && typeof settings.topics === "object") {
