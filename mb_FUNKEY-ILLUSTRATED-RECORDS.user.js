@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2021.2.12
+// @version      2021.11.11
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -35,6 +35,13 @@ let userjs = "jesus2099userjs154481"; // linked in mb. MERGE HELPOR 2, mb_HIDE-D
 let types = ["release-group", "release"];
 let GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 
+// Hide MBS-11059 release group CAA icon, once my linked and thumbnailed CAA icon is loading
+var css = document.createElement("style");
+css.setAttribute("type", "text/css");
+document.head.appendChild(css);
+css = css.sheet;
+css.insertRule("table.tbl.release-group-list > tbody > tr > td > a[href$='/cover-art'] ~ span.caa-icon { display: none; }", 0);
+// Add thumbnail in MBS release CAA icons
 var caaIcons = document.querySelectorAll("a[href$='/cover-art'] > span.caa-icon");
 if (caaIcons.length > 0) {
 	smallpics = false;
@@ -59,8 +66,6 @@ for (var t = 0; t < types.length; t++) {
 // ----------
 			if (smallpics && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
 				if (types[t] == "release-group") {
-					// https://tickets.metabrainz.org/browse/MBS-11059
-					// For the moment, release group CAA icons have to be added by userscript
 					var CAALoader = new XMLHttpRequest();
 					CAALoader.addEventListener("load", function(event) {
 						if (this.status == 200) {
@@ -75,7 +80,7 @@ for (var t = 0; t < types.length; t++) {
 										}},
 										createTag("span", {a: {class: "caa-icon " + userjs}})
 									),
-									this.releaseGroup).firstChild
+									this.releaseGroup.parentNode.firstChild).firstChild
 								);
 							}
 						} else {
