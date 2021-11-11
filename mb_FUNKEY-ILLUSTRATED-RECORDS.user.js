@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2021.11.11
+// @version      2021.11.11.238
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -96,7 +96,6 @@ for (var t = 0; t < types.length; t++) {
 					CAALoader.send(null);
 				}
 			}
-			var tr = getParent(as[a], "tr") || getParent(as[a], "li");
 			// TODO: I think there is no longer any UL LI, now only TABLE TR, I guess but not sure...
 			var box = getParent(as[a], "table") || getParent(as[a], "ul");
 			box.addEventListener("mouseover", updateBig);
