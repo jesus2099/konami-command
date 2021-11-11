@@ -97,10 +97,10 @@ for (var t = 0; t < types.length; t++) {
 				}
 			}
 			var tr = getParent(as[a], "tr") || getParent(as[a], "li");
-			tr.addEventListener("mouseover", updateBig, false);
-			tr.addEventListener("mouseout", updateBig, false);
-			// I don’t know if this box does still exist sometimes afer server update 2019-06-03 https://blog.musicbrainz.org/?p=7439 https://tickets.metabrainz.org/browse/MBS-9849
+			// TODO: I think there is no longer any UL LI, now only TABLE TR, I guess but not sure...
 			var box = getParent(as[a], "table") || getParent(as[a], "ul");
+			box.addEventListener("mouseover", updateBig);
+			box.addEventListener("mouseout", updateBig);
 // BIG PICS
 // --------
 			if (bigpics && (box = box.previousSibling && box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
@@ -136,16 +136,19 @@ function updateA(event) {
 	}
 }
 function updateBig(event) {
-	var img = this.querySelector("a[href^='/release']");
-	if (img) {
-		img = document.querySelector("div." + userjs + "bigbox > a > img[src='//coverartarchive.org" + img.getAttribute("href") + "/front-250']");
+	var tr = getParent(event.target, "tr") || getParent(event.target, "li");
+	if (tr) {
+		var img = tr.querySelector("a[href^='/release']:not([href$='/cover-art'])");
 		if (img) {
-			if (event.type == "mouseover") {
-				img.parentNode.style.setProperty("border", "4px solid " + colour);
-				img.parentNode.style.setProperty("margin", img.parentNode.style.getPropertyValue("margin").replace(/\.\d*/g, "").replace(/-?\d+/g, function(number) { return +number - 4; }));
-			} else {
-				img.parentNode.style.removeProperty("border");
-				img.parentNode.style.setProperty("margin", img.parentNode.style.getPropertyValue("margin").replace(/\.\d*/g, "").replace(/-?\d+/g, function(number) { return +number + 4; }));
+			img = document.querySelector("div." + userjs + "bigbox > a > img[src='//coverartarchive.org" + img.getAttribute("href") + "/front-250']");
+			if (img) {
+				if (event.type == "mouseover") {
+					img.parentNode.style.setProperty("border", "4px solid " + colour);
+					img.parentNode.style.setProperty("margin", img.parentNode.style.getPropertyValue("margin").replace(/\.\d*/g, "").replace(/-?\d+/g, function(number) { return +number - 4; }));
+				} else {
+					img.parentNode.style.removeProperty("border");
+					img.parentNode.style.setProperty("margin", img.parentNode.style.getPropertyValue("margin").replace(/\.\d*/g, "").replace(/-?\d+/g, function(number) { return +number + 4; }));
+				}
 			}
 		}
 	}
