@@ -13,7 +13,7 @@
 // @require      https://github.com/murdos/musicbrainz-userscripts/raw/6f6760426010c004cde6e4c5ddb597b9b7d2106b/lib/mbimport.js
 // @grant        GM_info
 // @include      /^https://gnudb.org/cd/[a-z]{2}[0-9a-f]{2}[0-9a-f]{4}[0-9a-f]{2}$/
-// @run-at       document-end
+// @run-at       document-idle
 // ==/UserScript==
 "use strict";
 // http://libcddb.sourceforge.net/API/cddb__disc_8h.html
@@ -76,13 +76,13 @@ for (var r = 1; r < tracklist.rows.length; r++) {
 // TODO: add manual data track and last audio track fix button (instead?)
 var lastTrack = parsedRelease.discs[0].tracks.length - 1;
 if (parsedRelease.discs[0].tracks[lastTrack].title.match(/^(data track|extra)$/i) && confirm("Do you confirm that the last track is a data track and that it should be removed?")) {
-	parsedRelease.discs[0].tracks.pop();
-	tracklist.deleteRow(-1);
 	parsedRelease.discs[0].format = "Enhanced CD";
-	tracklist.rows[lastTrack].cells[1].replaceChild(document.createTextNode(
-		msToDuration(durationToMs(parsedRelease.discs[0].tracks[lastTrack - 1].duration) - 152000)
-	), tracklist.rows[lastTrack].cells[1].firstChild);
-	parsedRelease.discs[0].tracks[lastTrack - 1].duration = tracklist.rows[lastTrack].cells[1].textContent;
+	parsedRelease.discs[0].tracks.pop();
+	parsedRelease.discs[0].tracks[lastTrack - 1].duration = msToDuration(durationToMs(parsedRelease.discs[0].tracks[lastTrack - 1].duration) - 152000);
+	tracklist.rows[lastTrack + 1].style.setProperty("background", "pink");
+	tracklist.rows[lastTrack].cells[1].style.setProperty("background", "pink");
+	tracklist.rows[lastTrack].cells[1].appendChild(document.createTextNode("→" + parsedRelease.discs[0].tracks[lastTrack - 1].duration));
+	
 }
 // insert murdos MB search and import buttons, with (cough) innerHTML
 var MBStuff = document.createElement("span");
