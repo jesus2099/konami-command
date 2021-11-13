@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. GNUDB IMPORTER
-// @version      2021.11.12
+// @version      2021.11.13
 // @description  GnuDB.org: EXPERIMENTAL! Import GnuDB/FreeDB/CDDB entries to MusicBrainz, thanks to murdos mbimport.js library
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_GNUDB-IMPORTER
@@ -25,7 +25,7 @@ var tracklist = document.querySelector("div#content > table > tbody");
 // Handle "Various Artists" releases
 var va = false;
 var vaSeparator = "";
-if (releaseArtist.match(/\bdivers(es)?\b|\bcompil(ation\b)?|^nhi[ềe]u\s|^オムニバス$|^various\s|^v\.?a\.?$|^o\.?s\.?t\.?$|\bfilm\b|\bjeux?\b|\bgames?\b/i)) {
+if (releaseArtist.match(/\bdivers(es)?\b|\bcompil(ation\b)?|^nhi[ềe]u\s|^オムニバス$|^various\b|^v\.?a\.?$|^o\.?s\.?t\.?$|\bfilm\b|\bjeux?\b|\bgames?\b/i)) {
 	for (var s = 0, separators = [" / ", "／", " - ", "/"]; !va && s < separators.length; s++) {
 		for (var r = 1; r < tracklist.rows.length; r++) {
 			var checkSeparator = tracklist.rows[r].cells[2].textContent.match(new RegExp(separators[s]));
