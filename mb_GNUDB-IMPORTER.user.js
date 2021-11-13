@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. GNUDB IMPORTER
-// @version      2021.11.13
+// @version      2021.11.12.1032
 // @description  GnuDB.org: EXPERIMENTAL! Import GnuDB/FreeDB/CDDB entries to MusicBrainz, thanks to murdos mbimport.js library
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_GNUDB-IMPORTER
@@ -78,6 +78,7 @@ var lastTrack = parsedRelease.discs[0].tracks.length - 1;
 if (parsedRelease.discs[0].tracks[lastTrack].title.match(/^(data track|extra)$/i) && confirm("Do you confirm that the last track is a data track and that it should be removed?")) {
 	parsedRelease.discs[0].tracks.pop();
 	tracklist.deleteRow(-1);
+	parsedRelease.discs[0].format = "Enhanced CD";
 	tracklist.rows[lastTrack].cells[1].replaceChild(document.createTextNode(
 		msToDuration(durationToMs(parsedRelease.discs[0].tracks[lastTrack - 1].duration) - 152000)
 	), tracklist.rows[lastTrack].cells[1].firstChild);
