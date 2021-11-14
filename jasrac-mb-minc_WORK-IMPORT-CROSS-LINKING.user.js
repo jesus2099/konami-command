@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2021.10.24
+// @version      2021.11.14
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -467,7 +467,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				/* -- vv ------ JASRAC + ongakunomori sakuhin code link ------ vv -- */
 				// var codes = new RegExp(reAnnotCode, "ig")
 				let donecodes = [];
-				var jasracIDs = document.querySelectorAll("div#sidebar > dl.properties > dd.work-attribute-jasrac-id");
+				var jasracIDs = document.querySelectorAll("div#sidebar dl.properties > dd.work-attribute-jasrac-id");
 				for (let i = 0; i < jasracIDs.length; i++) {
 					var ddcode = jasracIDs[i].textContent.trim();
 					replaceElement(createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, ddcode), jasracIDs[i].firstChild);
