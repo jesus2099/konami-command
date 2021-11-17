@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. GNUDB IMPORTER
-// @version      2021.11.12.1032
+// @version      2021.11.17
 // @description  GnuDB.org: EXPERIMENTAL! Import GnuDB/FreeDB/CDDB entries to MusicBrainz, thanks to murdos mbimport.js library
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_GNUDB-IMPORTER
@@ -10,7 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2021-11-12
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://github.com/murdos/musicbrainz-userscripts/raw/6f6760426010c004cde6e4c5ddb597b9b7d2106b/lib/mbimport.js
+// @require      https://github.com/murdos/musicbrainz-userscripts/raw/9fc80f796e361554f1f477a999dcdc8c45534a31/lib/mbimport.js
 // @grant        GM_info
 // @include      /^https://gnudb.org/cd/[a-z]{2}[0-9a-f]{2}[0-9a-f]{4}[0-9a-f]{2}$/
 // @run-at       document-idle
@@ -47,11 +47,9 @@ var parsedRelease = {
 	title: document.querySelector("h2").textContent,
 	artist_credit: [{
 		artist_name: va ? "Various Artists" : releaseArtist,
-		mbid: va ? "89ad4ac3-39f7-470e-963a-56509c546377" : null // TODO: doc says artist_mbid
+		mbid: va ? "89ad4ac3-39f7-470e-963a-56509c546377" : null
 	}],
-	labels: [], // TODO: crashes without empty table
 	annotation: "Imported from " + location.href,
-	urls: [], // TODO: crashes without empty table
 	discs: [{
 		format: "CD",
 		tracks: []
