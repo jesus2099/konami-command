@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2021.8.11
+// @version      2021.11.23
 // @description  musicbrainz.org: Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
@@ -13,7 +13,9 @@
 // @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/releases/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/label\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\?query=.+\btype=release\b/
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
@@ -36,39 +38,32 @@ var MBGlossary = {
 		}
 	}
 };
+var account = document.querySelector("ul.menu li.account");
 var lang = document.getElementsByTagName("html")[0].getAttribute("lang");
-switch (location.pathname.match(/\/[^/]+\//)[0]) {
-	case "/artist/": // /artist/*/releases
-		// fall through
-	case "/collection/": // /release collections
-		// fall through
-	case "/release-group/":
-		// find download releases and apply style class
-		var releaseRows = document.querySelectorAll("table.tbl > tbody > tr:not(.subh)");
-		markDownloadReleases(releaseRows);
-		var css = document.createElement("style");
-		css.setAttribute("type", "text/css");
-		document.head.appendChild(css);
-		css = css.sheet;
-		css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
-		css.insertRule("body." + userjs.id + " div.jesus2099userjs154481bigbox > a." + userjs.id + " { display: none !important; }", 0); // link to mb_FUNKEY-ILLUSTRATED-RECORDS
-		css.insertRule("body." + userjs.id + " table.tbl > tbody > tr.even > td { background-color: #FEF; }", 0);
-		css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
-		// hide only if there are physical releases
-		var hiddenReleases = document.querySelectorAll("tr." + userjs.id);
-		if (hiddenReleases.length > 0 && releaseRows.length > hiddenReleases.length) {
-			toggleDLReleases();
-			// toggle button
-			var mergeButton = document.querySelector("div.row > span.buttons > button[type='submit']");
-			var toggleButton = document.createElement("button");
-			toggleButton.appendChild(document.createTextNode("Show/hide the " + hiddenReleases.length + " DL releases"));
-			toggleButton.style.setProperty("background-color", "#FEF");
-			toggleButton.setAttribute("title", userjs.id);
-			toggleButton.setAttribute("type", "");
-			toggleButton.addEventListener("click", toggleDLReleases);
-			mergeButton.parentNode.appendChild(toggleButton);
-		}
-		break;
+// find download releases and apply style class
+var releaseRows = document.querySelectorAll("table.tbl > tbody > tr:not(.subh)");
+markDownloadReleases(releaseRows);
+var css = document.createElement("style");
+css.setAttribute("type", "text/css");
+document.head.appendChild(css);
+css = css.sheet;
+css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
+css.insertRule("body." + userjs.id + " div.jesus2099userjs154481bigbox > a." + userjs.id + " { display: none !important; }", 0); // link to mb_FUNKEY-ILLUSTRATED-RECORDS
+css.insertRule("body." + userjs.id + " table.tbl > tbody > tr.even > td { background-color: #FEF; }", 0);
+css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
+// hide only if there are physical releases
+var hiddenReleases = document.querySelectorAll("tr." + userjs.id);
+if (hiddenReleases.length > 0 && releaseRows.length > hiddenReleases.length) {
+	toggleDLReleases();
+	// toggle button
+	var mergeButton = document.querySelector("div.row > span.buttons > button[type='submit']");
+	var toggleButton = document.createElement("button");
+	toggleButton.appendChild(document.createTextNode("Show/hide the " + hiddenReleases.length + " DL releases"));
+	toggleButton.style.setProperty("background-color", "#FEF");
+	toggleButton.setAttribute("title", userjs.id);
+	toggleButton.setAttribute("type", "");
+	toggleButton.addEventListener("click", toggleDLReleases);
+	mergeButton.parentNode.appendChild(toggleButton);
 }
 // Hide associated mb_FUNKEY-ILLUSTRATED-RECORDS
 setTimeout(function() {
@@ -81,7 +76,7 @@ setTimeout(function() {
 	}
 }, 500);
 function markDownloadReleases(releaseRows) {
-	var formatRowIndex = location.pathname.match(/\/releases$|collection/) ? 3 : 2;
+	var formatRowIndex = !account || location.pathname.match(/\/search\b/) ? 2 : 3;
 	for (var r = 0; r < releaseRows.length; r++) {
 		if (
 			// don’t match half physical releases
