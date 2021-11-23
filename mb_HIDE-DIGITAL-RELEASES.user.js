@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2021.11.23
+// @version      2021.11.23.2319
 // @description  musicbrainz.org: Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
@@ -14,7 +14,7 @@
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/releases/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/label\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\?query=.+\btype=release\b/
 // @run-at       document-ready
 // ==/UserScript==
