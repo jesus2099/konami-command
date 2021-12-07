@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2021.9.17.1435
+// @version      2021.12.7
 // @description  Various quality of life enhancements: Go to List View by default; Show only tables List View by default; Auto stretch narrow tables and modal dialogs; Double-click to View Tree
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -51,27 +51,32 @@ switch (self.location.pathname) {
 		}, 500);
 		break;
 	case "/appNservices.html":
+		// Click to select row checkbox
+		var container = document.querySelector("div#main-container");
+		if (container) {
+			container.addEventListener("click", function(event) {
+				var row = parentRow(event.target);
+				if (row) {
+					var rowCheckbox = row.querySelector("input[type='checkbox']");
+					if (rowCheckbox) {
+						for (
+							var rowCheckboxes = row.parentNode.querySelectorAll("input[type='checkbox']:checked"), c = 0;
+							c < rowCheckboxes.length;
+							c++
+						) {
+							rowCheckboxes[c].click();
+						}
+						rowCheckbox.click();
+					}
+				}
+			});
+		}
 		// Double-click to View Tree
 		var applicationTable = document.querySelector("div#main-container table#applications > tbody");
 		var viewTree1 = document.querySelector("div#main-container a#viewOpenTree1");
 		if (applicationTable && viewTree1) {
 			applicationTable.addEventListener("dblclick", function(event) {
-				var selectedApplication = parentRow(event.target);
-				if (selectedApplication) {
-					selectedApplication = selectedApplication.querySelector("input[type='checkbox']#serviceID1");
-					if (selectedApplication) {
-						for (
-							var allApplications = applicationTable.querySelectorAll("input[type='checkbox']#serviceID1:checked"), a = 0;
-							a < allApplications.length;
-							a++
-						) {
-							allApplications[a].click();
-						}
-						document.body.style.setProperty("opacity", ".3");
-						selectedApplication.click();
-						viewTree1.click();
-					}
-				}
+				viewTree1.click();
 			});
 		}
 		break;
