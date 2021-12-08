@@ -17,6 +17,36 @@
 "use strict";
 
 switch (self.location.pathname) {
+	case "/appNservices.html":
+		// Click to select row checkbox
+		var container = document.querySelector("div#main-container");
+		if (container) {
+			container.addEventListener("click", function(event) {
+				var row = parentRow(event.target);
+				if (row) {
+					var rowCheckbox = row.querySelector("input[type='checkbox']");
+					if (rowCheckbox) {
+						for (
+							var rowCheckboxes = row.parentNode.querySelectorAll("input[type='checkbox']:checked"), c = 0;
+							c < rowCheckboxes.length;
+							c++
+						) {
+							rowCheckboxes[c].click();
+						}
+						rowCheckbox.click();
+					}
+				}
+			});
+		}
+		// Double-click to View Tree
+		var applicationTable = document.querySelector("div#main-container table#applications > tbody");
+		var viewTree1 = document.querySelector("div#main-container a#viewOpenTree1");
+		if (applicationTable && viewTree1) {
+			applicationTable.addEventListener("dblclick", function(event) {
+				viewTree1.click();
+			});
+		}
+		break;
 	case "/application.html":
 		// Auto stretch modal dialogs
 		var css = document.createElement("style");
@@ -49,36 +79,6 @@ switch (self.location.pathname) {
 				expandButton.click();
 			}
 		}, 500);
-		break;
-	case "/appNservices.html":
-		// Click to select row checkbox
-		var container = document.querySelector("div#main-container");
-		if (container) {
-			container.addEventListener("click", function(event) {
-				var row = parentRow(event.target);
-				if (row) {
-					var rowCheckbox = row.querySelector("input[type='checkbox']");
-					if (rowCheckbox) {
-						for (
-							var rowCheckboxes = row.parentNode.querySelectorAll("input[type='checkbox']:checked"), c = 0;
-							c < rowCheckboxes.length;
-							c++
-						) {
-							rowCheckboxes[c].click();
-						}
-						rowCheckbox.click();
-					}
-				}
-			});
-		}
-		// Double-click to View Tree
-		var applicationTable = document.querySelector("div#main-container table#applications > tbody");
-		var viewTree1 = document.querySelector("div#main-container a#viewOpenTree1");
-		if (applicationTable && viewTree1) {
-			applicationTable.addEventListener("dblclick", function(event) {
-				viewTree1.click();
-			});
-		}
 		break;
 }
 function parentRow(node) {
