@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2021.10.7
+// @version      2021.12.8
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -973,7 +973,10 @@ if (j2sets.COPY_TOC && account && self.location.pathname.match(/^\/cdtoc\/[^/]+-
 // ==================================================================== LINK+
 // ## SERVER_SWITCH ##
 // ==========================================================================
+// Most of this code was written when we had *.mbsandbox.org dev test servers: https://wiki.musicbrainz.org/History:Development/Sandbox
+// It is now limited to MBS, beta and test but I am reluctent to remove dead code, just in case
 j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta and test. look for the new top-right MBS menu");
+// j2setting("SERVER_SWITCH_mbsandbox", '["celes", "chirlu", "reosarevok"]', true, "type an array of subdomains to .mbsandbox.org");
 if (j2sets.SERVER_SWITCH) {
 	debug("SERVER_SWITCH");
 	var langMenu = document.querySelector("div.header ul.menu li.language-selector");
@@ -1010,6 +1013,15 @@ if (j2sets.SERVER_SWITCH) {
 		for (let mb = 0; mb < mbMains.length; mb++) {
 			menu.appendChild(serverSwitch(mbMains[mb] + "musicbrainz.org"));
 		}
+		if (j2sets.SERVER_SWITCH_mbsandbox) {
+			var mbSandBoxes = JSON.parse(j2sets.SERVER_SWITCH_mbsandbox);
+			if (mbSandBoxes.length) {
+				mbSandBoxes.sort();
+				for (var sb = 0; sb < mbSandBoxes.length; sb++) {
+					menu.appendChild(serverSwitch(mbSandBoxes[sb] + ".mbsandbox.org", sb == 0));
+				}
+			}
+		}
 	}
 }
 function serverSwitch(server, separator) {
@@ -1026,6 +1038,8 @@ function serverSwitch(server, separator) {
 		var hrefHost;
 		if (protocolAndHost) {
 			hrefHost = protocolAndHost[1] + "//" + protocolAndHost[2];
+		} else if (server.match(/mbsandbox/)) {
+			hrefHost = "http://" + server;
 		} else {
 			hrefHost = "//" + server;
 		}
