@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2021.12.8
+// @version      2021.12.13
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -411,21 +411,19 @@ if (j2sets.USER_STATS && self.location.pathname.match(/^\/user\/[^/]+$/)) {
 	if (stats.length >= 3) {
 		debug("USER_STATS");
 		// Edits
-		var acceptedEdits = readStat(stats[0].rows[0].cells[1]);
-		// var autoEdits = readStat(stats[0].rows[1].cells[1]);
-		var voteddownEdits = readStat(stats[0].rows[3].cells[1]);
-		// var failedEdits = readStat(stats[0].rows[4].cells[1]);
-		// var cancelledEdits = readStat(stats[0].rows[5].cells[1]);
-		// var openEdits = readStat(stats[0].rows[6].cells[1]);
-		var total = acceptedEdits + voteddownEdits;
-		writeStat(stats[0].rows[0].cells[1], acceptedEdits, total);
-		stats[0].rows[0].cells[1].style.setProperty("font-weight", "bold");
-		writeStat(stats[0].rows[3].cells[1], voteddownEdits, total);
-		stats[0].rows[3].cells[1].style.setProperty("font-weight", "bold");
-		stats[0].rows[2].replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top editors"}, s: {cursor: "help"}}, stats[0].rows[2].cells[0].firstChild.textContent)), stats[0].rows[2].cells[0]);
+		var cell_acceptedEdits = getParent(stats[0].querySelector("a[href$='/edits/accepted']"), "td");
+		var cell_voteddownEdits = getParent(stats[0].querySelector("a[href$='/edits/rejected']"), "td");
+		var cell_appliedEdits = getParent(stats[0].querySelector("a[href$='/edits/applied']"), "td");
+		var nb_acceptedEdits = readStat(cell_acceptedEdits);
+		var nb_voteddownEdits = readStat(cell_voteddownEdits);
+		var nb_totalNonAuto = nb_acceptedEdits + nb_voteddownEdits;
+		writeStat(cell_acceptedEdits, nb_acceptedEdits, nb_totalNonAuto);
+		cell_acceptedEdits.style.setProperty("font-weight", "bold");
+		writeStat(cell_voteddownEdits, nb_voteddownEdits, nb_totalNonAuto);
+		cell_voteddownEdits.style.setProperty("font-weight", "bold");
+		cell_appliedEdits.parentNode.replaceChild(createTag("th", null, createTag("a", {a: {href: "/statistics/editors", title: "See top editors"}, s: {cursor: "help"}}, cell_appliedEdits.parentNode.firstChild.textContent)), cell_appliedEdits.previousSibling);
 		// Votes
-		var refined24hSearch = stats[0].rows[7].cells[1].getElementsByTagName("a")[0].getAttribute("href");
-		editor.id = refined24hSearch.match(/conditions\.0\.args\.0=(\d+)/)[1];
+		editor.id = stats[0].querySelector("a[href^='/search/edits?']").getAttribute("href").match(/conditions\.0\.args\.0=(\d+)/)[1];
 		var voteSearch = MBS + "/search/edits?conditions.0.field=voter&conditions.0.operator=%3D&conditions.0.name=%editorName%&conditions.0.voter_id=%editorID%&conditions.0.args=%vote%";
 		voteSearch = voteSearch.replace(/%editorName%/, editor.pathname);
 		voteSearch = voteSearch.replace(/%editorID%/, editor.id);
