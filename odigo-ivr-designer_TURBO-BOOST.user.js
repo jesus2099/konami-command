@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2021.12.7
-// @description  Various quality of life enhancements: Go to List View by default; Show only tables List View by default; Auto stretch narrow tables and modal dialogs; Double-click to View Tree
+// @version      2021.12.14
+// @description  Various quality of life enhancements: Go to List View by default; Show only tables List View by default; Auto stretch narrow tables and modal dialogs; Double-click to View Tree; Click to select row; Press Escape to close modal
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
@@ -16,8 +16,14 @@
 // ==/UserScript==
 "use strict";
 
+var css = document.createElement("style");
+css.setAttribute("type", "text/css");
+document.head.appendChild(css);
+css = css.sheet;
+
 switch (self.location.pathname) {
 	case "/appNservices.html":
+
 		// Click to select row checkbox
 		var container = document.querySelector("div#main-container");
 		if (container) {
@@ -38,6 +44,7 @@ switch (self.location.pathname) {
 				}
 			});
 		}
+
 		// Double-click to View Tree
 		var applicationTable = document.querySelector("div#main-container table#applications > tbody");
 		var viewTree1 = document.querySelector("div#main-container a#viewOpenTree1");
@@ -46,24 +53,42 @@ switch (self.location.pathname) {
 				viewTree1.click();
 			});
 		}
+
 		break;
 	case "/application.html":
+
 		// Auto stretch modal dialogs
-		var css = document.createElement("style");
-		css.setAttribute("type", "text/css");
-		document.head.appendChild(css);
-		css = css.sheet;
 		css.insertRule("div#main-container div.modal-dialog { min-width: 600px; width: unset !important; }", 0);
 		css.insertRule("div#main-container div#modBuilder-form-table-table, div#main-container div#modBuilder-form-table-table div.wtHolder { height: fit-content !important; }", 0);
+
+		// highlight most important item in filter selection
+		css.insertRule("div#main-content div#actions-bar select#arbo-type option[value='table'], div#main-content div#actions-bar select#arbo-type option[value='sound_set'] { background: #FCF; }", 0);
+
+		// Keyboard shortcut handler
+		document.body.addEventListener("keydown", function(event) {
+			switch (event.key) {
+				// Press Escape to close modal dialog
+				case "Escape":
+					var visibleModalCloseButton = document.querySelector("div#mod-properties-container[aria-hidden='false'] div.modal-header button[type='button'][data-dismiss='modal'].close");
+					if (visibleModalCloseButton) {
+						visibleModalCloseButton.click();
+					}
+					break;
+			}
+		});
+
+		// Improvement daemon
 		setInterval(function() {
 			var treeViewButton = document.querySelector("div#arborescence a.tree-view");
 			var listViewButton = document.querySelector("div#arborescence a.list-view");
 			var filterSelect = document.querySelector("div#main-content div#actions-bar select#arbo-type");
+
 			// Go to List View by default
 			if (treeViewButton.classList.contains("selected") && !treeViewButton.classList.contains("jesus2099")) {
 				treeViewButton.classList.add("jesus2099");
 				listViewButton.click();
 			}
+
 			// Show only tables List View by default
 			if (listViewButton.classList.contains("selected") && !listViewButton.classList.contains("jesus2099") && filterSelect) {
 				listViewButton.classList.add("jesus2099");
@@ -72,6 +97,7 @@ switch (self.location.pathname) {
 				event.initEvent("change", true, true);
 				filterSelect.dispatchEvent(event);
 			}
+
 			// Auto stretch narrow tables
 			var narrowTable = document.querySelector("div#modBuilder-form-table-table-container.col-sm-7");
 			var expandButton = document.querySelector("img#modBuilder-form-table-stretch");
@@ -81,6 +107,7 @@ switch (self.location.pathname) {
 		}, 500);
 		break;
 }
+
 function parentRow(node) {
 	if (node.tagName && node.tagName === "TR") {
 		return node;
