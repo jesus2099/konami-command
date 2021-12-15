@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2021.8.14
+// @version      2021.12.15
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -189,10 +189,14 @@ if (cat) {
 				}
 			}
 		}
-	} else {
 // ############################################################################
 // #                                    COLLECT LINKS TO HIGHLIGHT / DECORATE #
 // ############################################################################
+	} else if (cat == "track" /* AcoustID */) {
+		// AcoustID.org: no problems
+		findOwnedStuff();
+	} else {
+		// MusicBrainz.org: React problems
 		var DOMChanged = true;
 		document.querySelector("div#content, div#page").addEventListener("DOMNodeInserted", function(event) { DOMChanged = true; });
 		setInterval(function() {
