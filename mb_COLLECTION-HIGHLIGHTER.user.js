@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2021.8.23
+// @version      2021.12.20-beta
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -494,7 +494,7 @@ function collectionUpdater(link, action) {
 			if (stuff["release"].ids && releaseID) {
 				setTitle(true);
 				//var checks = getStuffs();
-				dynamicUpdate({action: "load", then: action, releaseID: releaseID});
+				addRemoveRelease({action: "load", then: action, releaseID: releaseID, lastLink: this.getAttribute("href")});
 				/*switch (action) {
 					case "add":
 						if (stuff["release"].rawids.indexOf(releaseID) == -1) {
@@ -544,33 +544,30 @@ function collectionUpdater(link, action) {
 		decorate(link);
 	}
 }
-function dynamicUpdate(parameters) {
-	switch (parameters.action) {
-		case "load":
-			var xhr = new XMLHttpRequest();
-			xhr.addEventListener("load", function(event) {
-				dynamicUpdate({action: parameters.then, release: this.response});
-			});
-			xhr.open("GET", MBS + "/ws/2/release/" + releaseID + "?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels", true);
-			debug(MBS + "/ws/2/release/" + releaseID + "?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels");
-			xhr.responseType = "json";
-			xhr.setRequestHeader("Accept", "application/json");
-			xhr.send();
-			break;
-		case "add":
-			alert(parameters.release.media.length + " medias");
-			for (var m = 0; m < parameters.release.media.length; m++) {
-				debug("########################################\nmedia " + (m+1) + " (" + parameters.release.media[m].tracks.length + " tracks)");
-				for (var t = 0; t < parameters.release.media[m].tracks.length; t++) {
-						debug("track (" + (t+1) + "): " + parameters.release.media[m].tracks[t].title + "\nrecording: " + parameters.release.media[m].tracks[t].recording.title);
-					for (var r = 0; r < parameters.release.media[m].tracks[t].recording.relations.length; r++) {
-						if (parameters.release.media[m].tracks[t].recording.relations[r]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
-							debug("work: " + parameters.release.media[m].tracks[t].recording.relations[r].work.title);
-						}
+function addRemoveRelease(parameters) {
+	if (parameters.action == "load") {
+		var xhr = new XMLHttpRequest();
+		xhr.addEventListener("load", function(event) {
+			addRemoveRelease({action: parameters.then, release: this.response});
+		});
+		xhr.open("GET", MBS + "/ws/2/release/" + parameters.releaseID + "?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels", true);
+		debug(MBS + "/ws/2/release/" + parameters.releaseID + "?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels");
+		xhr.responseType = "json";
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.send();
+	} else {
+		// release loaded, now parse its elements for add/remove
+		for (var m = 0; m < parameters.release.media.length; m++) {
+			debug("########################################\nmedia " + (m+1) + " (" + parameters.release.media[m].tracks.length + " tracks)");
+			for (var t = 0; t < parameters.release.media[m].tracks.length; t++) {
+					debug("track (" + (t+1) + "): " + parameters.release.media[m].tracks[t].title + "\nrecording: " + parameters.release.media[m].tracks[t].recording.title);
+				for (var r = 0; r < parameters.release.media[m].tracks[t].recording.relations.length; r++) {
+					if (parameters.release.media[m].tracks[t].recording.relations[r]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+						debug("work: " + parameters.release.media[m].tracks[t].recording.relations[r].work.title);
 					}
 				}
 			}
-			break;
+		}
 	}
 }
 // ############################################################################
@@ -646,6 +643,7 @@ function stuffRemover(checks, pp) {
 					break;
 			}
 			if (stuff[checkAgainst].rawids && stuff[checkType].rawids.indexOf(checkID) > -1) {
+				// var url = "/ws/2/" + checkType + "/?" + checkType + "=" + checkID + "&limit=" + limit + "&offset=" + ((p - 1) * limit);
 				var url = "/" + checkType + "/" + checkID;
 				if (checkType == "artist") { url += "/recordings"; }
 				url += "?page=" + p;
