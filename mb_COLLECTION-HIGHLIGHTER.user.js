@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2021.12.15
+// @version      2021.12.28
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -417,9 +417,8 @@ function fetchReleasesStuff(pi) {
 					if (cou.length > 0) {
 						cou = cou[0].textContent;
 					}
-					if (typeof cou == "string" && cou.length == 2 && (cou.charAt(0) != "X" || cou == "XE")) {
-						frg.appendChild(createTag("img", {a: {alt: cou, src: "//raw.githubusercontent.com/markjames/famfamfam-flag-icons/master/icons/png/" + (cou == "XE" ? "europeanunion" : cou.toLowerCase()) + ".png"}}));
-						frg.appendChild(document.createTextNode(" "));
+					if (typeof cou == "string" && cou.length == 2) {
+						frg.appendChild(createTag("alt", {a: {class: "flag flag-" + cou}}));
 					}
 					modal(true, concat([
 						frg,
