@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2021.12.28
+// @version      9999.2021.12.31
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -26,7 +26,7 @@
 let scriptNameAndVersion = GM_info.script.name.substr("4") + " " + GM_info.script.version;
 // ############################################################################
 // #                                                                          #
-// #                           MAIN RUN                                       #
+// #                         BUTTONS / TRIGGERS / GUI                         #
 // #                                                                          #
 // ############################################################################
 var MBS = self.location.protocol + "//" + self.location.host;
@@ -208,6 +208,14 @@ if (cat) {
 		}, 1000);
 	}
 }
+// ############################################################################
+// #                                                                          #
+// #                           MAIN FUNCTIONS                                 #
+// #                                                                          #
+// ############################################################################
+// ############################################################################
+// #                                     FIND COLLECTION ENTITIES IN THE PAGE #
+// ############################################################################
 function findOwnedStuff() {
 	stuff = {};
 	// Annotation link trim spaces and protocol + "//" + host
@@ -246,11 +254,6 @@ function findOwnedStuff() {
 	}
 	debug("");
 }
-// ############################################################################
-// #                                                                          #
-// #                           MAIN FUNCTIONS                                 #
-// #                                                                          #
-// ############################################################################
 // ############################################################################
 // #                                              HIGHLIGHT / DECORATE A LINK #
 // ############################################################################
