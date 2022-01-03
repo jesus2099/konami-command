@@ -39,7 +39,7 @@ if (cat) {
 	var MBWSRate = 999;
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var prefix = "collectionHighlighter";
-	var DEBUG = false;
+	var DEBUG = true;
 	var dialogprefix = "..:: " + scriptNameAndVersion.replace(/ /g, " :: ") + " ::..\n\n";
 	var maxRetry = 20;
 	var retryPause = 5000;
@@ -62,7 +62,7 @@ if (cat) {
 	var stuff, collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
 	var strType = "release-group|recording|label|artist|work";
 	var strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
-	var collectionLoadingStartDate;
+	var collectionLoadingStartDate = Date.now();
 	cat = cat[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
 	debug("CAT: " + cat);
 // ############################################################################
@@ -119,8 +119,7 @@ if (cat) {
 						for (let opt = 0; opt < opts.length; opt++) {
 							stuff[opts[opt].getAttribute("name")] = {};
 						}
-						var pageCrawlMode = cantUseWS(this);
-						loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0);
+						loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), "add");
 					},
 					"Add this collection’s content to highlighter (" + collid + ")"
 				));
@@ -305,15 +304,14 @@ function decorate(entityLink) {
 	}
 }
 // ############################################################################
-// #                                   COLLECT RELEASES FROM COLLECTION PAGES #
+// #                                         COLLECT RELEASES FROM COLLECTION #
 // ############################################################################
-function loadCollection(collectionMBID, WSMode, pageOrOffset) {
+function loadCollection(collectionMBID, action, _offset) {
 	var limit = 100;
-	var offset = pageOrOffset;
-	var page = !WSMode ? pageOrOffset : offset / limit + 1;
+	var offset = _offset || 0;
 	setTitle(true);
-	var url = WSMode ? "/ws/2/collection/" + collectionMBID + "/releases?limit=" + limit + "&offset=" + offset : "/collection/" + collectionMBID + "?page=" + page;
-	if (page == 1) {
+	var url = "/ws/2/release?collection=" + collectionMBID + "&inc=release-groups+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + limit + "&offset=" + offset + "&fmt=json";
+	if (offset == 0) {
 		// Add collection MBID to list of highlighted
 		collectionsID = GM_getValue("collections") || "";
 		if (collectionsID.indexOf(collectionMBID) < 0) {
@@ -322,165 +320,156 @@ function loadCollection(collectionMBID, WSMode, pageOrOffset) {
 		GM_setValue("collections", collectionsID);
 		modal(true, "Loading collection " + collectionMBID + "…", 1);
 		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page."]), 2);
-		modal(true, concat(["<hr>", "Fetching releases…"]), 2);
-		stuff["release-tmp"] = {ids: []};
-		for (let stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
+		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
 			stuff[stu].rawids = GM_getValue(stu + "s") || "";
-			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
+			// stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
 		}
+		stuff["release-new"] = {ids: []};
+		stuff["missingRecordingWorks"] = {};
 	}
-	modal(true, "Reading page " + page + "… ");
+	modal(true, "Fetching releases…", 1);
 	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (this.readyState == 4) {
-			if (this.status == 401) {
-				modal(true, concat(["NG.", "<br>", "Private collection problem, switching to slower mode…"]), 1);
-				loadCollection(collectionMBID, false, 1);
-			} else if (this.status == 200) {
-				var re = WSMode ? '<release id="(' + strMBID + ')">' : '<td>(?:<span class="mp">)?<a href="/release/(' + strMBID + ')">(.+)</a>';
-				var rels = this.responseText.match(new RegExp(re, "g"));
-				if (rels) {
-					for (let rel = 0; rel < rels.length; rel++) {
-						var release = rels[rel].match(new RegExp(re))[1];
-						if (stuff["release"].ids.indexOf(release) < 0) {
-							stuff["release"].ids.push(release);
-							stuff["release"].rawids += release + " ";
-							stuff["release-tmp"].ids.push(release);
-						}
-					}
-					modal(true, rels.length + " release" + (rels.length == 1 ? "" : "s") + " fetched.", 1);
-				}
-				var lastPage, nextPage;
-				if (WSMode && (lastPage = this.responseText.match(/<release-list count="(\d+)">/))) {
-					lastPage = Math.ceil(parseInt(lastPage[1], 10) / limit);
-				} else if (!WSMode) {
-					var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
-					nextPage = responseDOM.querySelector(css_nextPage);
-				}
-				if (lastPage && page < lastPage || nextPage) {
-					if (lastPage && page == 1) { modal(true, "(total " + lastPage + " pages)", 1); }
-					retry = 0;
-					setTimeout(function() { loadCollection(collectionMBID, WSMode, WSMode ? offset + limit : page + 1); }, chrono(MBWSRate));
-				} else if (lastPage && lastPage == page || !nextPage) {
-					modal(true, " ", 1);
-					if (stuff["release-tmp"].ids.length > 0) {
-						GM_setValue("releases", stuff["release"].rawids);
-						modal(true, concat([createTag("b", {}, stuff["release"].ids.length + " release" + (stuff["release"].ids.length == 1 ? "" : "s")), " saved… "]));
-						modal(true, "OK.", 2);
+	xhr.addEventListener("load", function(event) {
+		if (this.status == 401) {
+			end(false, concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
+		} else if (this.status == 200) {
+			modal(true, "Fetched " + this.response.releases.length + " release" + (this.response.releases.length == 1 ? "" : "s") + ".", 1, [offset + this.response.releases.length, this.response["release-count"]]);
+			browseReleases(this.response.releases, action);
+			modal(true, " ", 1);
+			var newOffset = this.response["release-offset"] + this.response.releases.length;
+			if (this.response["release-offset"] + this.response.releases.length < this.response["release-count"]) {
+				retry = 0;
+				setTimeout(function() { loadCollection(collectionMBID, action, newOffset); }, chrono(MBWSRate));
+			} else {
+				if (stuff["release-new"].ids.length > 0) {
+					var missingRecordingWorks = Object.keys(stuff["missingRecordingWorks"]).length;
+					if (missingRecordingWorks > 0) {
+						modal(true, "⚠ Due to big release(s), " + Object.keys(stuff["missingRecordingWorks"]).length + " recordings are missing their work info. Loading them now, please wait a little bit longer…", 1);
 						retry = 0;
-						setTimeout(function() { collectionLoadingStartDate = Date.now(); fetchReleasesStuff(); }, chrono(MBWSRate));
+						setTimeout(function() { loadMissingRecordingWorks(action); }, chrono(MBWSRate));
 					} else {
-						modal(true, "No new releases.", 2);
 						end(true);
 					}
-					stuff["release"].rawids = "";
 				} else {
-					end(false, "Error while loading page " + page + (lastPage ? "/" + lastPage : "") + ".");
-				}
-			} else {
-				if (retry++ < maxRetry) {
-					MBWSRate += slowDownStepAfterRetry;
-					modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
-					debugRetry(this.status);
-					setTimeout(function() { loadCollection(collectionMBID, WSMode, WSMode ? offset : page); }, chrono(retryPause));
-				} else {
-					end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
+					modal(true, "No new releases.", 2);
+					end(true);
 				}
 			}
+		} else {
+			if (retry++ < maxRetry) {
+				MBWSRate += slowDownStepAfterRetry;
+				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
+				debugRetry(this.status);
+				setTimeout(function() { loadCollection(collectionMBID, action, offset); }, chrono(retryPause));
+			} else {
+				end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
+			}
 		}
-	};
+	});
 	debug(MBS + url, true);
 	chrono();
 	xhr.open("GET", MBS + url, true);
+	xhr.responseType = "json";
+	xhr.setRequestHeader("Accept", "application/json");
 	xhr.send(null);
 }
 // ############################################################################
 // #                                  COLLECT ALL DATA FROM A SET OF RELEASES #
 // ############################################################################
-function fetchReleasesStuff(pi) {
-	var i = pi ? pi : 0;
-	var mbid = stuff["release-tmp"].ids[i];
-	if (mbid && mbid.match(new RegExp(strMBID))) {
-		if (i == 0) {
-			modal(true, concat(["<hr>", "Fetching release related stuffs…"]), 2);
-		}
-		var url = "/ws/2/release/" + stuff["release-tmp"].ids[i] + "?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels";
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function(event) {
-			if (this.readyState == 4) {
-				if (this.status == 200) {
-					var res = this.responseXML;
-					var xp = res.evaluate("//mb:release[1]", res, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-					var relName = xp.snapshotItem(0).getElementsByTagName("title")[0].textContent;
-					var relid = xp.snapshotItem(0).getAttribute("id");
-					var relComm = res.evaluate("./mb:disambiguation/text()", xp.snapshotItem(0), nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-					relComm = relComm.snapshotLength > 0 ? " (" + relComm.snapshotItem(0).textContent + ")" : "";
-					var frg = document.createDocumentFragment();
-					var cou = xp.snapshotItem(0).getElementsByTagName("country");
-					if (cou.length > 0) {
-						cou = cou[0].textContent;
-					}
-					if (typeof cou == "string" && cou.length == 2) {
-						frg.appendChild(createTag("alt", {a: {class: "flag flag-" + cou}}));
-					}
-					modal(true, concat([
-						frg,
-						createA(relName, "/release/" + relid),
-						relComm,
-						"<br>",
-					]), 0, [i + 1, stuff["release-tmp"].ids.length]);
-					var sep = "";
-					var totalAddedStuff = 0;
-					for (let stu in stuff) if (stu != "release" && Object.prototype.hasOwnProperty.call(stuff, stu)) {
-						var addedStuff = 0;
-						xp = res.evaluate("//mb:release[1]//mb:" + stu, res, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-						for (let ixp = 0; ixp < xp.snapshotLength; ixp++) {
-							var rgid = xp.snapshotItem(ixp).getAttribute("id");
-							if (stu != "artist" || skipArtists.indexOf(rgid) < 0) {
-								var stupos = stuff[stu].ids.indexOf(rgid);
-								if (stupos < 0) {
-									stuff[stu].ids.push(rgid);
-									stuff[stu].rawids += rgid + " ";
-									addedStuff++; totalAddedStuff++;
-								}
-							}
+function browseReleases(releases, action) {
+	for (var r = 0; r < releases.length; r++) {
+		if (stuff["release"].rawids.indexOf(releases[r].id) < 0) { stuff["release-new"].ids.push(releases[r].id); }
+		addRemoveEntities("release", releases[r], action);
+		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["artist-credit"], action); }
+		if (stuff["label"]) { addRemoveEntities("label", releases[r]["label-info"], action); }
+		addRemoveEntities("release-group", releases[r]["release-group"], action);
+		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"]["artist-credit"], action); }
+		for (var m = 0; m < releases[r].media.length; m++) {
+			for (var t = 0; t < releases[r].media[m].tracks.length; t++) {
+				if (stuff["recording"]) { addRemoveEntities("recording", releases[r].media[m].tracks[t].recording, action); }
+				if (stuff["artist"]) { addRemoveEntities("artist", releases[r].media[m].tracks[t].recording["artist-credit"], action); }
+				if (releases[r].media[m].tracks[t].recording.relations) {
+					for (var w = 0; w < releases[r].media[m].tracks[t].recording.relations.length; w++) {
+						if (releases[r].media[m].tracks[t].recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+							if (stuff["work"]) { addRemoveEntities("work", releases[r].media[m].tracks[t].recording.relations[w].work, action); }
 						}
-						if (addedStuff > 0) {
-							modal(true, sep + addedStuff + " " + stu + (addedStuff == 1 ? "" : "s"));
-							sep = ", ";
-						}
-					}
-					if (totalAddedStuff > 0) { modal(true, ".", 1); }
-					if (++i < stuff["release-tmp"].ids.length) {
-						retry = 0;
-						setTimeout(function() { fetchReleasesStuff(i); }, chrono(MBWSRate));
-					} else {
-						modal(true, " ", 1);
-						delete(stuff["release-tmp"]);
-						for (let stu in stuff) if (stu != "release" && Object.prototype.hasOwnProperty.call(stuff, stu)) {
-							GM_setValue(stu + "s", stuff[stu].rawids);
-							stuff[stu].rawids = "";
-							modal(true, concat([createTag("b", {}, stuff[stu].ids.length + " " + stu + (stuff[stu].ids.length == 1 ? "" : "s")), " saved… "]));
-							modal(true, "OK.", 1);
-						}
-						end(true);
 					}
 				} else {
-					if (retry++ < maxRetry) {
-						MBWSRate += slowDownStepAfterRetry;
-						modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
-						debugRetry(this.status);
-						setTimeout(function() { fetchReleasesStuff(i); }, chrono(retryPause));
-					} else {
-						end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading releases’ stuff).");
+					// when there are more than 500 tracks, the recording relationships are not returned
+					if (!stuff["missingRecordingWorks"][releases[r].media[m].tracks[t].recording.id]) {
+						// add recording to a list for later later work fetch
+						stuff["missingRecordingWorks"][releases[r].media[m].tracks[t].recording.id] = releases[r].media[m].tracks[t].recording;
 					}
 				}
 			}
-		};
-		debug(MBS + url, true);
-		chrono();
-		xhr.open("GET", MBS + url, true);
-		xhr.send(null);
+		}
+	}
+}
+// ############################################################################
+// #                                                             UPDATE STUFF #
+// ############################################################################
+function addRemoveEntities(type, _entities, action) {
+	debug(type + " " + Array.isArray(_entities));
+	var entities = Array.isArray(_entities) ? _entities : [_entities];
+	debug(type + " " + Array.isArray(_entities) + " length:" + entities.length);
+	for (var e = 0; e < entities.length; e++) {
+		debug(e + ": " + JSON.stringify(entities[e]));
+		var entity = {};
+		switch (type) {
+			case "artist":
+				// pass through
+			case "label":
+				if (entities[e][type]) {
+					entity.id = entities[e][type].id;
+					entity.name = entities[e][type].name;
+				} else {
+					// labels can be null
+					entity = null;
+				}
+				break;
+			case "recording":
+				// pass through
+			case "release":
+				// pass through
+			case "release-group":
+				// pass through
+			case "work":
+				entity.id = entities[e].id;
+				entity.name = entities[e].title;
+				break;
+		}
+		if (
+			entity !== null // labels can be null
+			&& stuff[type] // this type is highlighted
+			&& stuff[type].rawids.indexOf(entity.id) < 0 // this entity is not yet tracked
+			&& !(type == "artist" && skipArtists.indexOf(entity.id) >= 0) // ignore Various Artists, etc.
+		) {
+			switch (action) {
+				case "add":
+//					modal(true, concat([createTag("b", {}, "Adding "), type, " ", createA(entity.name, "/" + type + "/" + entity.id), "…"]), 1);
+					stuff[type].rawids += entity.id + " ";
+					GM_setValue(type + "s", stuff[type].rawids);
+					break;
+				case "remove":
+					// TODO: remove entity
+					break;
+			}
+		}
+	}
+}
+// ############################################################################
+// #                                  LOAD WORKS FROM HUNDREDS OF RECORDINGS #
+// ############################################################################
+function loadMissingRecordingWorks(action, _offset) {
+	var offset = _offset || 0;
+	// TODO: I should probably rather do with normal Array and pop()
+	for (var recording in stuff["missingRecordingWorks"]) {
+		// modal(true, recording, 1);
+		//if (Object.prototype.hasOwnProperty.call(stuff, recording)) {
+		// modal(true, "⚠ " + stuff["missingRecordingWorks"][recording].title, 1);
+		// TODO: https://github.com/jesus2099/konami-command/issues/174#issuecomment-1002340381
+		// make batches of 100 recordings
+		// and call /ws/2/work?query=rid%3A001303d1-0113-4896-86c0-f72e438a593d+OR+rid%3A0057e68e-368a-4cb2-b81e-ee6279e678c8+OR+…
 	}
 }
 // ############################################################################
@@ -493,7 +482,7 @@ function collectionUpdater(link, action) {
 			altered = this.getAttribute("href") != self.location.href;
 			modal(true, "Refreshing memory…", 1);
 			collectionsID = GM_getValue("collections") || "";
-			for (let stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
+			for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
 				stuff[stu].rawids = GM_getValue(stu + "s");
 				stuff[stu].ids = stuff[stu].rawids != null ? (stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : []) : null;
 			}
@@ -701,7 +690,16 @@ function end(ok, msg) {
 	setTitle(false);
 	if (debugBuffer != "") { debug(""); }
 	if (ok) {
-		modal(true, concat(["<br>", "<hr>", "Collection succesfully loaded in highlighter.", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
+		modal(true, " ", 1);
+		delete(stuff["release-new"]);
+		modal(true, concat(["<hr>", "Highlighted stuff:"]), 1);
+		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && stuff[stu].rawids) {
+			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
+			modal(true, createTag("b", {}, stuff[stu].ids.length + " " + stu + (stuff[stu].ids.length == 1 ? "" : "s")), 1);
+			stuff[stu].rawids = "";
+			stuff[stu].ids = [];
+		}
+		modal(true, concat(["<hr>", "Collection succesfully loaded in highlighter.", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
 	} else {
 		modal(true, msg, 1).style.setProperty("background-color", "pink");
 		alert(dialogprefix + msg);
@@ -815,14 +813,6 @@ function modal(show, txt, brs, gauge) {
 // #                           ACCESSORY TECHNICAL FUNCTIONS                  #
 // #                                                                          #
 // ############################################################################
-function cantUseWS(button) {
-	var privacy;
-	if (typeof opera != "undefined" && (privacy = getParent(button, "tr")) && privacy.textContent.match(/\n\s*Private\s*\n/)) {
-		return true;
-	} else {
-		return false;
-	}
-}
 function lastLink(href) {
 	if (href) {
 		GM_setValue("lastlink", href);
