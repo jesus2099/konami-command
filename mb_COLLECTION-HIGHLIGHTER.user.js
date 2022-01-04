@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      9999.2021.1.4
+// @version      9999.2022.1.4
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -310,7 +310,7 @@ function loadCollection(collectionMBID, action, _offset) {
 	var limit = 100;
 	var offset = _offset || 0;
 	setTitle(true);
-	var url = "/ws/2/release?collection=" + collectionMBID + "&inc=release-groups+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + limit + "&offset=" + offset + "&fmt=json";
+	var url = "/ws/2/release?collection=" + collectionMBID + "&inc=release-groups+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + limit + "&offset=" + offset;
 	if (offset == 0) {
 		// Add collection MBID to list of highlighted
 		collectionsID = GM_getValue("collections") || "";
@@ -344,7 +344,7 @@ function loadCollection(collectionMBID, action, _offset) {
 				if (stuff["release-new"].ids.length > 0) {
 					var missingRecordingWorks = Object.keys(stuff["missingRecordingWorks"]).length;
 					if (missingRecordingWorks > 0) {
-						modal(true, "⚠ Due to big release(s), " + Object.keys(stuff["missingRecordingWorks"]).length + " recordings are missing their work info. Loading them now, please wait a little bit longer…", 1);
+						modal(true, "\u26A0\uFE0F Big release(s): " + Object.keys(stuff["missingRecordingWorks"]).length + " recordings are missing their work info. Loading them now, please wait a little bit longer…", 1);
 						retry = 0;
 						setTimeout(function() { loadMissingRecordingWorks(action); }, chrono(MBWSRate));
 					} else {
@@ -378,6 +378,7 @@ function loadCollection(collectionMBID, action, _offset) {
 // ############################################################################
 function browseReleases(releases, action) {
 	for (var r = 0; r < releases.length; r++) {
+		var missingRecordingLevelRels = false;
 		if (stuff["release"].rawids.indexOf(releases[r].id) < 0) { stuff["release-new"].ids.push(releases[r].id); }
 		addRemoveEntities("release", releases[r], action);
 		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["artist-credit"], action); }
@@ -388,6 +389,7 @@ function browseReleases(releases, action) {
 			for (var allTracks in {"tracks": 1, "data-tracks": 1}) {
 				if (releases[r].media[m][allTracks]) {
 					for (var t = 0; t < releases[r].media[m][allTracks].length; t++) {
+						if (stuff["artist"]) { addRemoveEntities("artist", releases[r].media[m][allTracks][t]["artist-credit"], action); }
 						if (stuff["recording"]) { addRemoveEntities("recording", releases[r].media[m][allTracks][t].recording, action); }
 						if (stuff["artist"]) { addRemoveEntities("artist", releases[r].media[m][allTracks][t].recording["artist-credit"], action); }
 						if (releases[r].media[m][allTracks][t].recording.relations) {
@@ -397,8 +399,11 @@ function browseReleases(releases, action) {
 								}
 							}
 						} else {
-							// when there are more than 500 tracks, the recording relationships are not returned
+							// when there are more than 500 tracks, the recording-level-rels are not returned
 							if (!stuff["missingRecordingWorks"][releases[r].media[m][allTracks][t].recording.id]) {
+								if (!missingRecordingLevelRels) {
+									missingRecordingLevelRels = true;
+								}
 								// add recording to a list for later later work fetch
 								stuff["missingRecordingWorks"][releases[r].media[m][allTracks][t].recording.id] = releases[r].media[m][allTracks][t].recording;
 							}
@@ -406,6 +411,12 @@ function browseReleases(releases, action) {
 					}
 				}
 			}
+		}
+		modal(true, releases[r].title + " loaded", 0);
+		if (missingRecordingLevelRels) {
+			modal(true, " \u26A0\uFE0F", 1);
+		} else {
+			modal(true, "", 1);
 		}
 	}
 }
@@ -473,6 +484,7 @@ function loadMissingRecordingWorks(action, _offset) {
 		// make batches of 100 recordings
 		// and call /ws/2/work?query=rid%3A001303d1-0113-4896-86c0-f72e438a593d+OR+rid%3A0057e68e-368a-4cb2-b81e-ee6279e678c8+OR+…
 	}
+	end(true);
 }
 // ############################################################################
 // #                         DYNAMIC COLLECTION UPDATER (FOR CURRENT RELEASE) #
@@ -767,7 +779,7 @@ function modal(show, txt, brs, gauge) {
 						if ((obj = document.getElementById(prefix + "Modal")) !== null) {
 							obj.firstChild.style.setProperty("display", "none");
 						}
-					}, 4000);
+					}, 10000);
 				}
 			}
 		}
@@ -891,7 +903,7 @@ function debug(txt, buffer) {
 		if (buffer) {
 			debugBuffer += txt + "\n";
 		} else {
-			console.log(prefix + "\n" + debugBuffer + txt);
+			console.debug(prefix + "\n" + debugBuffer + txt);
 			debugBuffer = "";
 		}
 	}
