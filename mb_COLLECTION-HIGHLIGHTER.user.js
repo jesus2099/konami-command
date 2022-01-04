@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      9999.2021.12.31
+// @version      9999.2021.1.4
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -385,20 +385,24 @@ function browseReleases(releases, action) {
 		addRemoveEntities("release-group", releases[r]["release-group"], action);
 		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"]["artist-credit"], action); }
 		for (var m = 0; m < releases[r].media.length; m++) {
-			for (var t = 0; t < releases[r].media[m].tracks.length; t++) {
-				if (stuff["recording"]) { addRemoveEntities("recording", releases[r].media[m].tracks[t].recording, action); }
-				if (stuff["artist"]) { addRemoveEntities("artist", releases[r].media[m].tracks[t].recording["artist-credit"], action); }
-				if (releases[r].media[m].tracks[t].recording.relations) {
-					for (var w = 0; w < releases[r].media[m].tracks[t].recording.relations.length; w++) {
-						if (releases[r].media[m].tracks[t].recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
-							if (stuff["work"]) { addRemoveEntities("work", releases[r].media[m].tracks[t].recording.relations[w].work, action); }
+			for (var allTracks in {"tracks": 1, "data-tracks": 1}) {
+				if (releases[r].media[m][allTracks]) {
+					for (var t = 0; t < releases[r].media[m][allTracks].length; t++) {
+						if (stuff["recording"]) { addRemoveEntities("recording", releases[r].media[m][allTracks][t].recording, action); }
+						if (stuff["artist"]) { addRemoveEntities("artist", releases[r].media[m][allTracks][t].recording["artist-credit"], action); }
+						if (releases[r].media[m][allTracks][t].recording.relations) {
+							for (var w = 0; w < releases[r].media[m][allTracks][t].recording.relations.length; w++) {
+								if (releases[r].media[m][allTracks][t].recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+									if (stuff["work"]) { addRemoveEntities("work", releases[r].media[m][allTracks][t].recording.relations[w].work, action); }
+								}
+							}
+						} else {
+							// when there are more than 500 tracks, the recording relationships are not returned
+							if (!stuff["missingRecordingWorks"][releases[r].media[m][allTracks][t].recording.id]) {
+								// add recording to a list for later later work fetch
+								stuff["missingRecordingWorks"][releases[r].media[m][allTracks][t].recording.id] = releases[r].media[m][allTracks][t].recording;
+							}
 						}
-					}
-				} else {
-					// when there are more than 500 tracks, the recording relationships are not returned
-					if (!stuff["missingRecordingWorks"][releases[r].media[m].tracks[t].recording.id]) {
-						// add recording to a list for later later work fetch
-						stuff["missingRecordingWorks"][releases[r].media[m].tracks[t].recording.id] = releases[r].media[m].tracks[t].recording;
 					}
 				}
 			}
@@ -409,11 +413,9 @@ function browseReleases(releases, action) {
 // #                                                             UPDATE STUFF #
 // ############################################################################
 function addRemoveEntities(type, _entities, action) {
-	debug(type + " " + Array.isArray(_entities));
 	var entities = Array.isArray(_entities) ? _entities : [_entities];
-	debug(type + " " + Array.isArray(_entities) + " length:" + entities.length);
 	for (var e = 0; e < entities.length; e++) {
-		debug(e + ": " + JSON.stringify(entities[e]));
+		debug(action + " " + type + "\n" + JSON.stringify(entities[e]));
 		var entity = {};
 		switch (type) {
 			case "artist":
@@ -692,10 +694,10 @@ function end(ok, msg) {
 	if (ok) {
 		modal(true, " ", 1);
 		delete(stuff["release-new"]);
-		modal(true, concat(["<hr>", "Highlighted stuff:"]), 1);
+		modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
 		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && stuff[stu].rawids) {
 			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
-			modal(true, createTag("b", {}, stuff[stu].ids.length + " " + stu + (stuff[stu].ids.length == 1 ? "" : "s")), 1);
+			modal(true, createTag("div", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[stu].ids.length.toString().padStart(6, " ")), createTag("span", {}, " " + stu.replace(/-/, " ") + (stuff[stu].ids.length == 1 ? "" : "s"))]));
 			stuff[stu].rawids = "";
 			stuff[stu].ids = [];
 		}
