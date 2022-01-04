@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2021.10.29
+// @version      2022.1.4
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -34,9 +34,11 @@
 "use strict";
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 var editors = {
+	      "208": ["2001-01-19", "2014-01-28", "bawjaws"],
 	      "387": ["2001-05-22", "2010-10-29", "tturner"],
 	    "10698": ["2002-07-01", "2020-12-29", "djce"],
 	    "32978": ["2003-12-13", "2005-12-16", "tenebrous"],
+	    "39883": ["2004-03-06", "2017-06-10", "HairMetalAddict"],
 	    "49249": ["2004-05-15", "2017-04-21", "inhouseuk"],
 	    "52273": ["2004-06-14", "2015-06-06", "DrMuller"],
 	    "62590": ["2004-09-04", "2021-09-09", "Senax"],
@@ -44,6 +46,7 @@ var editors = {
 	    "95678": ["2005-02-18", "2012-09-24", "brianfreud"],
 	   "112569": ["2005-04-24", "2014-05-30", "c777"],
 	   "129671": ["2005-06-30", "2009-02-02", "Shlublu"],
+	   "135888": ["2005-07-28", "2015-09-21", "artysmokes"],
 	   "157767": ["2005-10-20", "2010-01-05", "michael"],
 	   "161352": ["2005-11-01", "2006-07-08", "claiborne"],
 	   "163497": ["2005-11-09", "2012-07-12", "RedHotHeat"],
