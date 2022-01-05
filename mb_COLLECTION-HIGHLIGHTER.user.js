@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      9999.2022.1.4
+// @version      9999.2022.1.5
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -309,7 +309,7 @@ function decorate(entityLink) {
 function loadCollection(collectionMBID, action, _offset) {
 	var limit = 100;
 	var offset = _offset || 0;
-	setTitle(true);
+	if (offset === 0) { setTitle(true); }
 	var url = "/ws/2/release?collection=" + collectionMBID + "&inc=release-groups+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + limit + "&offset=" + offset;
 	if (offset == 0) {
 		// Add collection MBID to list of highlighted
@@ -333,8 +333,8 @@ function loadCollection(collectionMBID, action, _offset) {
 		if (this.status == 401) {
 			end(false, concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
 		} else if (this.status == 200) {
-			modal(true, "Fetched " + this.response.releases.length + " release" + (this.response.releases.length == 1 ? "" : "s") + ".", 1, [offset + this.response.releases.length, this.response["release-count"]]);
-			browseReleases(this.response.releases, action);
+			modal(true, "Fetched " + this.response.releases.length + " release" + (this.response.releases.length == 1 ? "" : "s") + ".", 1);
+			browseReleases(this.response.releases, action, offset, this.response["release-count"]);
 			modal(true, " ", 1);
 			var newOffset = this.response["release-offset"] + this.response.releases.length;
 			if (this.response["release-offset"] + this.response.releases.length < this.response["release-count"]) {
@@ -376,7 +376,7 @@ function loadCollection(collectionMBID, action, _offset) {
 // ############################################################################
 // #                                  COLLECT ALL DATA FROM A SET OF RELEASES #
 // ############################################################################
-function browseReleases(releases, action) {
+function browseReleases(releases, action, offset, releaseCount) {
 	for (var r = 0; r < releases.length; r++) {
 		var missingRecordingLevelRels = false;
 		if (stuff["release"].rawids.indexOf(releases[r].id) < 0) { stuff["release-new"].ids.push(releases[r].id); }
@@ -412,12 +412,20 @@ function browseReleases(releases, action) {
 				}
 			}
 		}
-		modal(true, releases[r].title + " loaded", 0);
-		if (missingRecordingLevelRels) {
-			modal(true, " \u26A0\uFE0F", 1);
+		var frg = document.createDocumentFragment();
+		var country = releases[r].country;
+		if (country) {
+			country = createTag("span", {a: {class: "flag flag-" + country}});
 		} else {
-			modal(true, "", 1);
+			country = "";
 		}
+		var disambiguation = releases[r].disambiguation;
+		if (disambiguation) {
+			disambiguation = " (" + disambiguation + ")";
+		} else {
+			disambiguation = "";
+		}
+		modal(true, concat([country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation, missingRecordingLevelRels ? " \u26A0\uFE0F" : "", "<br>"]), 0, [offset + r + 1, releaseCount]);
 	}
 }
 // ############################################################################
@@ -691,11 +699,11 @@ function stuffRemover(checks, pp) {
 // #                           ACCESSORY DISPLAY FUNCTIONS                    #
 // #                                                                          #
 // ############################################################################
-function setTitle(ldng, pc) {
+function setTitle(ldng, percentage) {
 	var old = document.title.match(/ :: (.+)$/);
 	old = old ? old[1] : document.title;
 	if (ldng) {
-		document.title = (pc ? pc + "%" : "⌛") + " Altering highlighter content… :: " + old;
+		document.title = (percentage ? percentage + "%" : "⌛") + " Altering highlighter content… :: " + old;
 	} else {
 		document.title = old;
 	}
@@ -761,8 +769,8 @@ function modal(show, txt, brs, gauge) {
 	if (show && obj && txt) {
 		if (gauge) {
 			// gauge[0] stands for processed releases, gauge[1] stands for remaining releases
-			var pc = Math.floor(100 * gauge[0] / gauge[1]);
-			if (pc) {
+			var percentage = Math.floor(100 * gauge[0] / gauge[1]);
+			if (percentage) {
 				var gau = obj.firstChild;
 				if (gaugeto || gau.style.getPropertyValue("display") == "none") {
 					clearTimeout(gaugeto);
@@ -772,8 +780,8 @@ function modal(show, txt, brs, gauge) {
 				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge[0] / gauge[1]) + "px");
 				var elapsedSeconds = Math.floor((Date.now() - collectionLoadingStartDate) / 1000);
 				var totalSeconds = Math.ceil(elapsedSeconds > 0 ? elapsedSeconds * gauge[1] / gauge[0] : (gauge[1] - gauge[0]) * MBWSRate / 1000);
-				gau.lastChild.replaceChild(document.createTextNode(gauge[0] + "/" + gauge[1] + " (" + pc + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
-				setTitle(true, pc);
+				gau.lastChild.replaceChild(document.createTextNode(gauge[0] + "/" + gauge[1] + " (" + percentage + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
+				setTitle(true, percentage);
 				if (gauge[0] >= gauge[1]) {
 					gaugeto = setTimeout(function() {
 						if ((obj = document.getElementById(prefix + "Modal")) !== null) {
