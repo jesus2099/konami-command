@@ -189,7 +189,7 @@ if (cat) {
 			}
 		}
 // ############################################################################
-// #                                    COLLECT LINKS TO HIGHLIGHT / DECORATE #
+// #                                     LAUNCH THE HIGHLIGHTING ON ALL PAGES #
 // ############################################################################
 	} else if (cat == "track" /* AcoustID */) {
 		// AcoustID.org: no problems
@@ -239,7 +239,7 @@ function findOwnedStuff() {
 				if (!stuff[cstuff].loaded) {
 					stuff[cstuff].rawids = GM_getValue(cstuff + "s");
 					if (stuff[cstuff].rawids) {
-						stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
+						stuff[cstuff].ids = stuff[cstuff].rawids.trim().split(" ");
 						debug(" \n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\nMatching: " + path, true);
 					} else { debug(" \nNo " + cstuff.toUpperCase() + "S in highlighter (" + cstuff + "s)", true); }
 					stuff[cstuff].loaded = true;
@@ -322,7 +322,7 @@ function loadCollection(collectionMBID, action, _offset) {
 		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page."]), 2);
 		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
 			stuff[stu].rawids = GM_getValue(stu + "s") || "";
-			// stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
+			// stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.trim().split(" ") : [];
 		}
 		stuff["release-new"] = {ids: []};
 		stuff["missingRecordingWorks"] = {};
@@ -333,7 +333,7 @@ function loadCollection(collectionMBID, action, _offset) {
 		if (this.status == 401) {
 			end(false, concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
 		} else if (this.status == 200) {
-			modal(true, "Fetched " + this.response.releases.length + " release" + (this.response.releases.length == 1 ? "" : "s") + ".", 1);
+			modal(true, "Received " + this.response.releases.length + " release" + (this.response.releases.length == 1 ? "" : "s") + ":", 2);
 			browseReleases(this.response.releases, action, offset, this.response["release-count"]);
 			modal(true, " ", 1);
 			var newOffset = this.response["release-offset"] + this.response.releases.length;
@@ -412,7 +412,6 @@ function browseReleases(releases, action, offset, releaseCount) {
 				}
 			}
 		}
-		var frg = document.createDocumentFragment();
 		var country = releases[r].country;
 		if (country) {
 			country = createTag("span", {a: {class: "flag flag-" + country}});
@@ -425,7 +424,7 @@ function browseReleases(releases, action, offset, releaseCount) {
 		} else {
 			disambiguation = "";
 		}
-		modal(true, concat([country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation, missingRecordingLevelRels ? " \u26A0\uFE0F" : "", "<br>"]), 0, [offset + r + 1, releaseCount]);
+		modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toString().padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation, missingRecordingLevelRels ? " \u26A0\uFE0F" : "", "<br>"]), 0, [offset + r + 1, releaseCount]);
 	}
 }
 // ############################################################################
@@ -506,7 +505,7 @@ function collectionUpdater(link, action) {
 			collectionsID = GM_getValue("collections") || "";
 			for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
 				stuff[stu].rawids = GM_getValue(stu + "s");
-				stuff[stu].ids = stuff[stu].rawids != null ? (stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : []) : null;
+				stuff[stu].ids = stuff[stu].rawids != null ? (stuff[stu].rawids.length > 0 ? stuff[stu].rawids.trim().split(" ") : []) : null;
 			}
 			if (stuff["release"].ids && releaseID) {
 				setTitle(true);
@@ -716,7 +715,7 @@ function end(ok, msg) {
 		delete(stuff["release-new"]);
 		modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
 		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && stuff[stu].rawids) {
-			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
+			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.trim().split(" ") : [];
 			modal(true, createTag("div", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[stu].ids.length.toString().padStart(6, " ")), createTag("span", {}, " " + stu.replace(/-/, " ") + (stuff[stu].ids.length == 1 ? "" : "s"))]));
 			stuff[stu].rawids = "";
 			stuff[stu].ids = [];
