@@ -310,7 +310,7 @@ function loadCollection(collectionMBID, action, _offset) {
 	var limit = 100;
 	var offset = _offset || 0;
 	if (offset === 0) { setTitle(true); }
-	var url = "/ws/2/release?collection=" + collectionMBID + "&inc=release-groups+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + limit + "&offset=" + offset;
+	var url = "/ws/2/release?collection=" + collectionMBID + "&inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + limit + "&offset=" + offset;
 	if (offset == 0) {
 		// Add collection MBID to list of highlighted
 		collectionsID = GM_getValue("collections") || "";
@@ -344,7 +344,7 @@ function loadCollection(collectionMBID, action, _offset) {
 				if (stuff["release-new"].ids.length > 0) {
 					var missingRecordingWorks = Object.keys(stuff["missingRecordingWorks"]).length;
 					if (missingRecordingWorks > 0) {
-						modal(true, "\u26A0\uFE0F Big release(s): " + Object.keys(stuff["missingRecordingWorks"]).length + " recordings are missing their work info. Loading them now, please wait a little bit longer…", 1);
+						modal(true, "\u26A0\uFE0F Big release(s): " + Object.keys(stuff["missingRecordingWorks"]).length + " recordings are missing their work info. Loading them now, please wait a little bit longer…", 2);
 						retry = 0;
 						setTimeout(function() { loadMissingRecordingWorks(action); }, chrono(MBWSRate));
 					} else {
@@ -378,11 +378,29 @@ function loadCollection(collectionMBID, action, _offset) {
 // ############################################################################
 function browseReleases(releases, action, offset, releaseCount) {
 	for (var r = 0; r < releases.length; r++) {
+		var country = releases[r].country ? createTag("span", {a: {class: "flag flag-" + releases[r].country}}) : "";
+		var disambiguation = releases[r].disambiguation ? " (" + releases[r].disambiguation + ")" : "";
+		modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toString().padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation]), 1, [offset + r + 1, releaseCount]);
 		var missingRecordingLevelRels = false;
 		if (stuff["release"].rawids.indexOf(releases[r].id) < 0) { stuff["release-new"].ids.push(releases[r].id); }
 		addRemoveEntities("release", releases[r], action);
 		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["artist-credit"], action); }
 		if (stuff["label"]) { addRemoveEntities("label", releases[r]["label-info"], action); }
+		addRemoveEntities("release-group", releases[r]["release-group"], action);
+		for (var rgRel = 0; rgRel < releases[r]["release-group"].relations.length; rgRel++) {
+			// add included release groups and their artists
+			if (
+				(
+					releases[r]["release-group"].relations[rgRel].type == "included in"
+					|| releases[r]["release-group"].relations[rgRel]["type-id"] == "589447ea-be2c-46cc-b9e9-469e1d06e18a"
+				)
+				&& releases[r]["release-group"].relations[rgRel].direction == "backward"
+			) {
+				modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " Includes ", createA(releases[r]["release-group"].relations[rgRel].release_group.title, "/release-group/" + releases[r]["release-group"].relations[rgRel].release_group.id)]), 1);
+				addRemoveEntities("release-group", releases[r]["release-group"].relations[rgRel].release_group, action);
+				if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"].relations[rgRel].release_group["artist-credit"], action); }
+			}
+		}
 		addRemoveEntities("release-group", releases[r]["release-group"], action);
 		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"]["artist-credit"], action); }
 		for (var m = 0; m < releases[r].media.length; m++) {
@@ -402,6 +420,7 @@ function browseReleases(releases, action, offset, releaseCount) {
 							// when there are more than 500 tracks, the recording-level-rels are not returned
 							if (!stuff["missingRecordingWorks"][releases[r].media[m][allTracks][t].recording.id]) {
 								if (!missingRecordingLevelRels) {
+									modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F missing work relationships"]), 1);
 									missingRecordingLevelRels = true;
 								}
 								// add recording to a list for later later work fetch
@@ -412,19 +431,6 @@ function browseReleases(releases, action, offset, releaseCount) {
 				}
 			}
 		}
-		var country = releases[r].country;
-		if (country) {
-			country = createTag("span", {a: {class: "flag flag-" + country}});
-		} else {
-			country = "";
-		}
-		var disambiguation = releases[r].disambiguation;
-		if (disambiguation) {
-			disambiguation = " (" + disambiguation + ")";
-		} else {
-			disambiguation = "";
-		}
-		modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toString().padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation, missingRecordingLevelRels ? " \u26A0\uFE0F" : "", "<br>"]), 0, [offset + r + 1, releaseCount]);
 	}
 }
 // ############################################################################
@@ -711,7 +717,7 @@ function end(ok, msg) {
 	setTitle(false);
 	if (debugBuffer != "") { debug(""); }
 	if (ok) {
-		modal(true, " ", 1);
+		modal(true, "End of loading.", 1);
 		delete(stuff["release-new"]);
 		modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
 		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && stuff[stu].rawids) {
