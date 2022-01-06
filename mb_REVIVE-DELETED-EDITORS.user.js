@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2022.1.4
+// @version      2022.1.6
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -115,9 +115,10 @@ var editors = {
 	  "1687525": ["2016-08-17", "2016-09-14", "seung3panda", "itsgbitch"],
 	  "1712953": ["2016-09-16", "2016-09-17", "itsgbitch", "2nd"],
 	  "1713810": ["2016-09-18", "2017-02-12", "itsgbitch", "3rd"],
+	  "2049662": ["2019-01-16", "2019-01-17", "therealdero", "2nd"],
 	/* funny stuff */
 	"jesus2099": "GOLD MASTER KING",
-	    "%you%": "PROPHET PRINCE CHAMPION",
+	    "%you%": "BEST MB EDITOR EVER",
 };
 var standout /* from the crowd */ = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
