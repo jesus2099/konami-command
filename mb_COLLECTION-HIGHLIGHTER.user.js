@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      9999.2022.1.5
+// @version      9999.2022.1.8
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -23,6 +23,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+var DEBUG = false;
 let scriptNameAndVersion = GM_info.script.name.substr("4") + " " + GM_info.script.version;
 // ############################################################################
 // #                                                                          #
@@ -37,9 +38,9 @@ if (cat) {
 	var highlightInEditNotes = false;
 	var skipArtists = "89ad4ac3-39f7-470e-963a-56509c546377"; // put artist GUID separated by space that you want to skip, example here it’s VA
 	var MBWSRate = 999;
+	var MBWSSpeedLimit = 100; // from 1 (only 1 result per request) to 100 (maxium amount of result per request)
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var prefix = "collectionHighlighter";
-	var DEBUG = true;
 	var dialogprefix = "..:: " + scriptNameAndVersion.replace(/ /g, " :: ") + " ::..\n\n";
 	var maxRetry = 20;
 	var retryPause = 5000;
@@ -307,11 +308,10 @@ function decorate(entityLink) {
 // #                                         COLLECT RELEASES FROM COLLECTION #
 // ############################################################################
 function loadCollection(collectionMBID, action, _offset) {
-	var limit = 100;
 	var offset = _offset || 0;
-	if (offset === 0) { setTitle(true); }
-	var url = "/ws/2/release?collection=" + collectionMBID + "&inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + limit + "&offset=" + offset;
-	if (offset == 0) {
+	var url = "/ws/2/release?collection=" + collectionMBID + "&inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + MBWSSpeedLimit + "&offset=" + offset;
+	if (offset === 0) {
+		setTitle(true);
 		// Add collection MBID to list of highlighted
 		collectionsID = GM_getValue("collections") || "";
 		if (collectionsID.indexOf(collectionMBID) < 0) {
@@ -325,7 +325,7 @@ function loadCollection(collectionMBID, action, _offset) {
 			// stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.trim().split(" ") : [];
 		}
 		stuff["release-new"] = {ids: []};
-		stuff["missingRecordingWorks"] = {};
+		stuff["missingRecordingWorks"] = [];
 	}
 	modal(true, "Fetching releases…", 1);
 	var xhr = new XMLHttpRequest();
@@ -337,16 +337,19 @@ function loadCollection(collectionMBID, action, _offset) {
 			browseReleases(this.response.releases, action, offset, this.response["release-count"]);
 			modal(true, " ", 1);
 			var newOffset = this.response["release-offset"] + this.response.releases.length;
-			if (this.response["release-offset"] + this.response.releases.length < this.response["release-count"]) {
+			if (newOffset < this.response["release-count"]) {
 				retry = 0;
 				setTimeout(function() { loadCollection(collectionMBID, action, newOffset); }, chrono(MBWSRate));
 			} else {
 				if (stuff["release-new"].ids.length > 0) {
-					var missingRecordingWorks = Object.keys(stuff["missingRecordingWorks"]).length;
-					if (missingRecordingWorks > 0) {
-						modal(true, "\u26A0\uFE0F Big release(s): " + Object.keys(stuff["missingRecordingWorks"]).length + " recordings are missing their work info. Loading them now, please wait a little bit longer…", 2);
+					delete(stuff["release-new"]); // free up memory
+					if (stuff["missingRecordingWorks"].length > 0) {
+						modal(true, concat(["\u26A0\uFE0F It is not possible to fetch works for releases with more than 500 tracks.", "<br>", "Fetching missing works now from " + stuff["missingRecordingWorks"].length + " recordings. Just wait a little more time:"]), 2);
 						retry = 0;
-						setTimeout(function() { loadMissingRecordingWorks(action); }, chrono(MBWSRate));
+						setTimeout(function() {
+							loadMissingRecordingWorks(stuff["missingRecordingWorks"], action);
+							delete(stuff["missingRecordingWorks"]); // free up memory
+						}, chrono(MBWSRate));
 					} else {
 						end(true);
 					}
@@ -380,7 +383,7 @@ function browseReleases(releases, action, offset, releaseCount) {
 	for (var r = 0; r < releases.length; r++) {
 		var country = releases[r].country ? createTag("span", {a: {class: "flag flag-" + releases[r].country}}) : "";
 		var disambiguation = releases[r].disambiguation ? " (" + releases[r].disambiguation + ")" : "";
-		modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toString().padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation]), 1, [offset + r + 1, releaseCount]);
+		modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toString().padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
 		var missingRecordingLevelRels = false;
 		if (stuff["release"].rawids.indexOf(releases[r].id) < 0) { stuff["release-new"].ids.push(releases[r].id); }
 		addRemoveEntities("release", releases[r], action);
@@ -417,14 +420,15 @@ function browseReleases(releases, action, offset, releaseCount) {
 								}
 							}
 						} else {
-							// when there are more than 500 tracks, the recording-level-rels are not returned
-							if (!stuff["missingRecordingWorks"][releases[r].media[m][allTracks][t].recording.id]) {
+							// recording.relations when there are more than 500 tracks, the recording-level-rels are not returned
+							if (stuff["missingRecordingWorks"].indexOf(releases[r].media[m][allTracks][t].recording.id) < 0) {
 								if (!missingRecordingLevelRels) {
+									// activate a flag for deferred work loading and warn user (only once per release)
 									modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F missing work relationships"]), 1);
 									missingRecordingLevelRels = true;
 								}
-								// add recording to a list for later later work fetch
-								stuff["missingRecordingWorks"][releases[r].media[m][allTracks][t].recording.id] = releases[r].media[m][allTracks][t].recording;
+								// add each recording to a list for later later work fetch
+								stuff["missingRecordingWorks"].push(releases[r].media[m][allTracks][t].recording.id);
 							}
 						}
 					}
@@ -486,18 +490,56 @@ function addRemoveEntities(type, _entities, action) {
 // ############################################################################
 // #                                  LOAD WORKS FROM HUNDREDS OF RECORDINGS #
 // ############################################################################
-function loadMissingRecordingWorks(action, _offset) {
-	var offset = _offset || 0;
-	// TODO: I should probably rather do with normal Array and pop()
-	for (var recording in stuff["missingRecordingWorks"]) {
-		// modal(true, recording, 1);
-		//if (Object.prototype.hasOwnProperty.call(stuff, recording)) {
-		// modal(true, "⚠ " + stuff["missingRecordingWorks"][recording].title, 1);
-		// TODO: https://github.com/jesus2099/konami-command/issues/174#issuecomment-1002340381
-		// make batches of 100 recordings
-		// and call /ws/2/work?query=rid%3A001303d1-0113-4896-86c0-f72e438a593d+OR+rid%3A0057e68e-368a-4cb2-b81e-ee6279e678c8+OR+…
+function loadMissingRecordingWorks(recordings, action, _batchOffset, _wsResponseOffset) {
+	var batchOffset = _batchOffset || 0;
+	var wsResponseOffset = _wsResponseOffset || 0;
+	// keep the query URL short enough (100 recordings) to avoid 414 Request-URI Too Large
+	var batchSize = 100;
+	var batch = recordings.slice(batchOffset, batchOffset + batchSize);
+	var workQueryURL = "/ws/2/work?query=rid%3A" + batch.join("+OR+rid%3A") + "&limit=" + MBWSSpeedLimit + "&offset=" + wsResponseOffset;
+	if (wsResponseOffset === 0) {
+		modal(true, "Fetching works from " + batch.length + " recordings… ", 0);
 	}
-	end(true);
+	var xhr = new XMLHttpRequest();
+	xhr.addEventListener("load", function(event) {
+		if (this.status == 200) {
+			modal(true, this.response.works.length.toString(), 0, {text: "recordings", current: batchOffset + batch.length, total: recordings.length});
+			for (var r = 0; r < this.response.works.length; r++) {
+				if (stuff["work"]) { addRemoveEntities("work", this.response.works[r], action); }
+			}
+			var newWsResponseOffset = this.response.offset + this.response.works.length;
+			if (newWsResponseOffset < this.response.count) {
+				modal(true, createTag("span", {s: {color: "grey"}}, "+"), 0);
+				retry = 0;
+				setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
+			} else {
+				modal(true, " ", 1);
+				var newBatchOffset = batchOffset + batch.length;
+				if (newBatchOffset < recordings.length) {
+					retry = 0;
+					setTimeout(function() { loadMissingRecordingWorks(recordings, action, newBatchOffset); }, chrono(MBWSRate));
+				} else {
+					modal(true, " ", 1);
+					end(true);
+				}
+			}
+		} else {
+			if (retry++ < maxRetry) {
+				MBWSRate += slowDownStepAfterRetry;
+				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
+				debugRetry(this.status);
+				setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset, wsResponseOffset); }, chrono(retryPause));
+			} else {
+				end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading missing recording works).");
+			}
+		}
+	});
+	debug(MBS + workQueryURL + "&fmt=json");
+	chrono();
+	xhr.open("GET", MBS + workQueryURL, true);
+	xhr.responseType = "json";
+	xhr.setRequestHeader("Accept", "application/json");
+	xhr.send(null);
 }
 // ############################################################################
 // #                         DYNAMIC COLLECTION UPDATER (FOR CURRENT RELEASE) #
@@ -717,8 +759,6 @@ function end(ok, msg) {
 	setTitle(false);
 	if (debugBuffer != "") { debug(""); }
 	if (ok) {
-		modal(true, "End of loading.", 1);
-		delete(stuff["release-new"]);
 		modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
 		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && stuff[stu].rawids) {
 			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.trim().split(" ") : [];
@@ -726,9 +766,9 @@ function end(ok, msg) {
 			stuff[stu].rawids = "";
 			stuff[stu].ids = [];
 		}
-		modal(true, concat(["<hr>", "Collection succesfully loaded in highlighter.", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
+		modal(true, concat(["<hr>", "Collection successfully loaded in highlighter.", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
 	} else {
-		modal(true, msg, 1).style.setProperty("background-color", "pink");
+		modal(true, createTag("pre", {s: {fontWeight: "bolder", backgroundColor: "yellow", color: "red", border: "2px dashed black", boxShadow: "2px 2px 2px grey", width: "fit-content", margin: "1em auto", padding: "1em"}}, createTag("code", {}, msg)), 1).style.setProperty("background-color", "pink");
 		alert(dialogprefix + msg);
 		modal(true, concat(["You may ", createA("have a look at known issues and/or create a new bug report", GM_info.script.namespace + "/issues/new?labels=" + GM_info.script.name.replace(". ", "_").replace(" ", "-")), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
 	}
@@ -773,8 +813,7 @@ function modal(show, txt, brs, gauge) {
 	}
 	if (show && obj && txt) {
 		if (gauge) {
-			// gauge[0] stands for processed releases, gauge[1] stands for remaining releases
-			var percentage = Math.floor(100 * gauge[0] / gauge[1]);
+			var percentage = Math.floor(100 * gauge.current / gauge.total);
 			if (percentage) {
 				var gau = obj.firstChild;
 				if (gaugeto || gau.style.getPropertyValue("display") == "none") {
@@ -782,12 +821,12 @@ function modal(show, txt, brs, gauge) {
 					gaugeto = null;
 					gau.style.setProperty("display", "block");
 				}
-				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge[0] / gauge[1]) + "px");
+				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge.current / gauge.total) + "px");
 				var elapsedSeconds = Math.floor((Date.now() - collectionLoadingStartDate) / 1000);
-				var totalSeconds = Math.ceil(elapsedSeconds > 0 ? elapsedSeconds * gauge[1] / gauge[0] : (gauge[1] - gauge[0]) * MBWSRate / 1000);
-				gau.lastChild.replaceChild(document.createTextNode(gauge[0] + "/" + gauge[1] + " (" + percentage + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
+				var totalSeconds = Math.ceil(elapsedSeconds > 0 ? elapsedSeconds * gauge.total / gauge.current : (gauge.total - gauge.current) * MBWSRate / 1000);
+				gau.lastChild.replaceChild(document.createTextNode((gauge.text ? gauge.text + " " : "") + gauge.current + "/" + gauge.total + " (" + percentage + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
 				setTitle(true, percentage);
-				if (gauge[0] >= gauge[1]) {
+				if (gauge.current >= gauge.total) {
 					gaugeto = setTimeout(function() {
 						if ((obj = document.getElementById(prefix + "Modal")) !== null) {
 							obj.firstChild.style.setProperty("display", "none");
