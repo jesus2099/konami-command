@@ -318,8 +318,7 @@ function loadCollection(collectionMBID, action, _offset) {
 			collectionsID += collectionMBID + " ";
 		}
 		GM_setValue("collections", collectionsID);
-		modal(true, "Loading collection " + collectionMBID + "…", 1);
-		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page."]), 2);
+		modal(true, concat([createTag("h3", {}, dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "Loading collection " + collectionMBID + "…"]), 2);
 		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
 			stuff[stu].rawids = GM_getValue(stu + "s") || "";
 			// stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.trim().split(" ") : [];
@@ -736,7 +735,7 @@ function stuffRemover(checks, pp) {
 				xhr.send(null);
 			} else {
 				if (!stuff[checkAgainst].rawids) {/* Protection for some edge cases of new script using old script data */
-					modal(true, concat([createTag("span", {s: {color: "grey"}}, ["no ", checkAgainst, "s at all (", createA("//github.com/jesus2099/konami-command/issues/87", "#87"), "): "]), "removing…"]), 1);
+					modal(true, concat([createTag("span", {s: {color: "grey"}}, ["no ", checkAgainst, "s at all (", createA("#87", "//github.com/jesus2099/konami-command/issues/87"), "): "]), "removing…"]), 1);
 					stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
 					GM_setValue(checkType + "s", stuff[checkType].rawids);
 					altered = true;
@@ -775,7 +774,7 @@ function end(ok, msg) {
 			stuff[stu].rawids = "";
 			stuff[stu].ids = [];
 		}
-		modal(true, concat(["<hr>", "Collection successfully loaded in highlighter.", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
+		modal(true, concat(["<hr>", "Collection loaded in highlighter in ", sInt2msStr(Math.floor((Date.now() - collectionLoadingStartDate) / 1000)), ".", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
 	} else {
 		modal(true, createTag("pre", {s: {fontWeight: "bolder", backgroundColor: "yellow", color: "red", border: "2px dashed black", boxShadow: "2px 2px 2px grey", width: "fit-content", margin: "1em auto", padding: "1em"}}, createTag("code", {}, msg)), 1).style.setProperty("background-color", "pink");
 		alert(dialogprefix + msg);
