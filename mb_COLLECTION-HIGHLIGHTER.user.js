@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      9999.2022.1.8
+// @version      9999.2022.1.9
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -424,7 +424,7 @@ function browseReleases(releases, action, offset, releaseCount) {
 							if (stuff["missingRecordingWorks"].indexOf(releases[r].media[m][allTracks][t].recording.id) < 0) {
 								if (!missingRecordingLevelRels) {
 									// activate a flag for deferred work loading and warn user (only once per release)
-									modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F missing work relationships"]), 1);
+									modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F missing work relationships (will be loaded later)"]), 1);
 									missingRecordingLevelRels = true;
 								}
 								// add each recording to a list for later later work fetch
@@ -490,11 +490,13 @@ function addRemoveEntities(type, _entities, action) {
 // ############################################################################
 // #                                  LOAD WORKS FROM HUNDREDS OF RECORDINGS #
 // ############################################################################
+var mbs12154 = 0; // #### REMOVE WHEN MBS-12154 FIXED // reduce batch size (results in random order, we try to get less than 101 results to keep them all on one page)
 function loadMissingRecordingWorks(recordings, action, _batchOffset, _wsResponseOffset) {
 	var batchOffset = _batchOffset || 0;
 	var wsResponseOffset = _wsResponseOffset || 0;
 	// keep the query URL short enough (100 recordings) to avoid 414 Request-URI Too Large
 	var batchSize = 100;
+	batchSize -= mbs12154; // #### REMOVE WHEN MBS-12154 FIXED
 	var batch = recordings.slice(batchOffset, batchOffset + batchSize);
 	var workQueryURL = "/ws/2/work?query=rid%3A" + batch.join("+OR+rid%3A") + "&limit=" + MBWSSpeedLimit + "&offset=" + wsResponseOffset;
 	if (wsResponseOffset === 0) {
@@ -510,8 +512,15 @@ function loadMissingRecordingWorks(recordings, action, _batchOffset, _wsResponse
 			var newWsResponseOffset = this.response.offset + this.response.works.length;
 			if (newWsResponseOffset < this.response.count) {
 				modal(true, createTag("span", {s: {color: "grey"}}, "+"), 0);
+				mbs12154 += this.response.count - MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
+				if (mbs12154 < MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
+					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: "red"}}, "MBS-12154 pagination bug!"), "<br>", "Reducing recording batch size: ", createTag("del", {}, batchSize), "→", createTag("ins", {}, batchSize - mbs12154), " — ", createA("more info", "//github.com/jesus2099/konami-command/issues/174#issuecomment-1008267401")]), 2); // #### REMOVE WHEN MBS-12154 FIXED
 				retry = 0;
-				setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
+// #### UNCOMMENT WHEN MBS-12154 FIXED				setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
+					setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset); }, chrono(MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
+				} else { // #### REMOVE WHEN MBS-12154 FIXED
+					end(false, "MBS-12154 bug\n\nCannot load works."); // #### REMOVE WHEN MBS-12154 FIXED
+				} // #### REMOVE WHEN MBS-12154 FIXED
 			} else {
 				modal(true, " ", 1);
 				var newBatchOffset = batchOffset + batch.length;
