@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      9999.2022.1.9
+// @version      9999.2022.1.10
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -318,7 +318,7 @@ function loadCollection(collectionMBID, action, _offset) {
 			collectionsID += collectionMBID + " ";
 		}
 		GM_setValue("collections", collectionsID);
-		modal(true, concat([createTag("h3", {}, dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "Loading collection " + collectionMBID + "…"]), 2);
+		modal(true, concat([createTag("h3", {}, dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "<hr>", "Loading collection " + collectionMBID + "…"]), 2);
 		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
 			stuff[stu].rawids = GM_getValue(stu + "s") || "";
 			// stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.trim().split(" ") : [];
@@ -343,7 +343,7 @@ function loadCollection(collectionMBID, action, _offset) {
 				if (stuff["release-new"].ids.length > 0) {
 					delete(stuff["release-new"]); // free up memory
 					if (stuff["missingRecordingWorks"].length > 0) {
-						modal(true, concat(["\u26A0\uFE0F It is not possible to fetch works for releases with more than 500 tracks.", "<br>", "Fetching missing works now from " + stuff["missingRecordingWorks"].length + " recordings. Just wait a little more time:"]), 2);
+						modal(true, concat(["<hr>", "\u26A0\uFE0F It is not possible to fetch works for releases with more than 500 tracks.", "<br>", "Fetching missing works now from " + stuff["missingRecordingWorks"].length + " recordings. Just wait a little more time:"]), 2);
 						retry = 0;
 						setTimeout(function() {
 							loadMissingRecordingWorks(stuff["missingRecordingWorks"], action);
@@ -406,30 +406,37 @@ function browseReleases(releases, action, offset, releaseCount) {
 		addRemoveEntities("release-group", releases[r]["release-group"], action);
 		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"]["artist-credit"], action); }
 		for (var m = 0; m < releases[r].media.length; m++) {
-			for (var allTracks in {"tracks": 1, "data-tracks": 1}) {
-				if (releases[r].media[m][allTracks]) {
-					for (var t = 0; t < releases[r].media[m][allTracks].length; t++) {
-						if (stuff["artist"]) { addRemoveEntities("artist", releases[r].media[m][allTracks][t]["artist-credit"], action); }
-						if (stuff["recording"]) { addRemoveEntities("recording", releases[r].media[m][allTracks][t].recording, action); }
-						if (stuff["artist"]) { addRemoveEntities("artist", releases[r].media[m][allTracks][t].recording["artist-credit"], action); }
-						if (releases[r].media[m][allTracks][t].recording.relations) {
-							for (var w = 0; w < releases[r].media[m][allTracks][t].recording.relations.length; w++) {
-								if (releases[r].media[m][allTracks][t].recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
-									if (stuff["work"]) { addRemoveEntities("work", releases[r].media[m][allTracks][t].recording.relations[w].work, action); }
-								}
-							}
-						} else {
-							// recording.relations when there are more than 500 tracks, the recording-level-rels are not returned
-							if (stuff["missingRecordingWorks"].indexOf(releases[r].media[m][allTracks][t].recording.id) < 0) {
-								if (!missingRecordingLevelRels) {
-									// activate a flag for deferred work loading and warn user (only once per release)
-									modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F missing work relationships (will be loaded later)"]), 1);
-									missingRecordingLevelRels = true;
-								}
-								// add each recording to a list for later later work fetch
-								stuff["missingRecordingWorks"].push(releases[r].media[m][allTracks][t].recording.id);
-							}
+			var allTracks = [];
+			if (releases[r].media[m].pregap) {
+				allTracks.push(releases[r].media[m].pregap);
+			}
+			// TODO: let's study this strange for loop style from https://stackoverflow.com/a/18738341/2236179 one day
+			if (releases[r].media[m].tracks) for (var i = 0, len = releases[r].media[m].tracks.length; i < len; ++i) {
+				allTracks.push(releases[r].media[m].tracks[i]);
+			}
+			if (releases[r].media[m]["data-tracks"]) for (var i = 0, len = releases[r].media[m]["data-tracks"].length; i < len; ++i) {
+				allTracks.push(releases[r].media[m]["data-tracks"][i]);
+			}
+			for (var t = 0; t < allTracks.length; t++) {
+				if (stuff["artist"]) { addRemoveEntities("artist", allTracks[t]["artist-credit"], action); }
+				if (stuff["recording"]) { addRemoveEntities("recording", allTracks[t].recording, action); }
+				if (stuff["artist"]) { addRemoveEntities("artist", allTracks[t].recording["artist-credit"], action); }
+				if (allTracks[t].recording.relations) {
+					for (var w = 0; w < allTracks[t].recording.relations.length; w++) {
+						if (allTracks[t].recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+							if (stuff["work"]) { addRemoveEntities("work", allTracks[t].recording.relations[w].work, action); }
 						}
+					}
+				} else {
+					// recording.relations when there are more than 500 tracks, the recording-level-rels are not returned
+					if (stuff["missingRecordingWorks"].indexOf(allTracks[t].recording.id) < 0) {
+						if (!missingRecordingLevelRels) {
+							// activate a flag for deferred work loading and warn user (only once per release)
+							modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F missing work relationships (will be loaded later)"]), 1);
+							missingRecordingLevelRels = true;
+						}
+						// add each recording to a list for later later work fetch
+						stuff["missingRecordingWorks"].push(allTracks[t].recording.id);
 					}
 				}
 			}
