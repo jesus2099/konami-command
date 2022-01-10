@@ -317,7 +317,6 @@ function loadCollection(collectionMBID, action, _offset) {
 		if (collectionsID.indexOf(collectionMBID) < 0) {
 			collectionsID += collectionMBID + " ";
 		}
-		GM_setValue("collections", collectionsID);
 		modal(true, concat([createTag("h3", {}, dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "<hr>", "Loading collection " + collectionMBID + "…"]), 2);
 		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
 			stuff[stu].rawids = GM_getValue(stu + "s") || "";
@@ -484,7 +483,6 @@ function addRemoveEntities(type, _entities, action) {
 				case "add":
 //					modal(true, concat([createTag("b", {}, "Adding "), type, " ", createA(entity.name, "/" + type + "/" + entity.id), "…"]), 1);
 					stuff[type].rawids += entity.id + " ";
-					GM_setValue(type + "s", stuff[type].rawids);
 					break;
 				case "remove":
 					// TODO: remove entity
@@ -775,12 +773,15 @@ function end(ok, msg) {
 	if (debugBuffer != "") { debug(""); }
 	if (ok) {
 		modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
-		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && stuff[stu].rawids) {
-			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.trim().split(" ") : [];
-			modal(true, createTag("div", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[stu].ids.length.toString().padStart(6, " ")), createTag("span", {}, " " + stu.replace(/-/, " ") + (stuff[stu].ids.length == 1 ? "" : "s"))]));
-			stuff[stu].rawids = "";
-			stuff[stu].ids = [];
+		for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && stuff[type].rawids) {
+			stuff[type].ids = stuff[type].rawids.length > 0 ? stuff[type].rawids.trim().split(" ") : [];
+			modal(true, createTag("span", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[type].ids.length.toString().padStart(6, " ")), createTag("b", {}, " " + type.replace(/-/, " ") + (stuff[type].ids.length == 1 ? "" : "s")), "… "]));
+			GM_setValue(type + "s", stuff[type].rawids);
+			modal(true, "saved.", 1);
+			stuff[type].rawids = "";
+			stuff[type].ids = [];
 		}
+		GM_setValue("collections", collectionsID);
 		modal(true, concat(["<hr>", "Collection loaded in highlighter in ", sInt2msStr(Math.floor((Date.now() - collectionLoadingStartDate) / 1000)), ".", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
 	} else {
 		modal(true, createTag("pre", {s: {fontWeight: "bolder", backgroundColor: "yellow", color: "red", border: "2px dashed black", boxShadow: "2px 2px 2px grey", width: "fit-content", margin: "1em auto", padding: "1em"}}, createTag("code", {}, msg)), 1).style.setProperty("background-color", "pink");
