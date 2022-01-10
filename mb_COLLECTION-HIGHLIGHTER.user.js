@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.1.10.1555
+// @version      2022.1.10.1827
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -798,12 +798,20 @@ function end(ok, msg) {
 	closeButt();
 }
 function closeButt() {
-	modal(true, concat(["☞ You can now review these cute logs, or ", createA("close", function(event) { modal(false); }, "this will close this cute little window"), " them. ஜ۩۞۩ஜ"]), 1);
-	document.getElementById(prefix + "Modal").previousSibling.addEventListener("click", function(event) {
+	modal(true, concat(["☞ You can now review these cute logs, or close it (press “Escape” or click outside). ஜ۩۞۩ஜ"]), 1);
+	document.getElementById(prefix + "Modal").previousSibling.addEventListener("click", closeModal);
+	document.body.addEventListener("keydown", closeModal);
+}
+function closeModal(event) {
+	if (event.type == "click" || event.type == "keydown" && event.key == "Escape") {
+		var modalWall = document.getElementById(prefix + "Modal").previousSibling;
 		if (gaugeto) { clearTimeout(gaugeto); gaugeto = null; }
-		this.parentNode.removeChild(this.nextSibling);
-		this.parentNode.removeChild(this);
-	}, false);
+		modalWall.parentNode.removeChild(modalWall.nextSibling);
+		modalWall.parentNode.removeChild(modalWall);
+		if (event.type == "keydown") {
+			document.body.removeEventListener("keydown", closeModal);
+		}
+	}
 }
 var gaugeto;
 function modal(show, txt, brs, gauge) {
