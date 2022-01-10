@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      9999.2022.1.10-0853
+// @version      9999.2022.1.10-1234a
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -31,6 +31,8 @@ let scriptNameAndVersion = GM_info.script.name.substr("4") + " " + GM_info.scrip
 // #                                                                          #
 // ############################################################################
 var MBS = self.location.protocol + "//" + self.location.host;
+var lang = document.querySelector("html[lang]");
+lang = lang && lang.getAttribute("lang") || "en-GB";
 var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
@@ -331,7 +333,7 @@ function loadCollection(collectionMBID, action, _offset) {
 		if (this.status == 401) {
 			end(false, concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
 		} else if (this.status == 200) {
-			modal(true, "Received " + this.response.releases.length + " release" + (this.response.releases.length == 1 ? "" : "s") + ":", 2);
+			modal(true, "Received " + this.response.releases.length.toLocaleString(lang) + " release" + (this.response.releases.length == 1 ? "" : "s") + ":", 2);
 			browseReleases(this.response.releases, action, offset, this.response["release-count"]);
 			modal(true, " ", 1);
 			var newOffset = this.response["release-offset"] + this.response.releases.length;
@@ -342,7 +344,7 @@ function loadCollection(collectionMBID, action, _offset) {
 				if (stuff["release-new"].ids.length > 0) {
 					delete(stuff["release-new"]); // free up memory
 					if (stuff["missingRecordingWorks"].length > 0) {
-						modal(true, concat(["<hr>", "\u26A0\uFE0F It is not possible to fetch works for releases with more than 500 tracks.", "<br>", "Fetching missing works now from " + stuff["missingRecordingWorks"].length + " recordings. Just wait a little more time:"]), 2);
+						modal(true, concat(["<hr>", "\u26A0\uFE0F It is not possible to fetch works for releases with more than 500 tracks.", "<br>", "Fetching missing works now from " + stuff["missingRecordingWorks"].length.toLocaleString(lang) + " recordings. Just wait a little more time:"]), 2);
 						retry = 0;
 						setTimeout(function() {
 							loadMissingRecordingWorks(stuff["missingRecordingWorks"], action);
@@ -381,7 +383,7 @@ function browseReleases(releases, action, offset, releaseCount) {
 	for (var r = 0; r < releases.length; r++) {
 		var country = releases[r].country ? createTag("span", {a: {class: "flag flag-" + releases[r].country}}) : "";
 		var disambiguation = releases[r].disambiguation ? " (" + releases[r].disambiguation + ")" : "";
-		modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toString().padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
+		modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toLocaleString(lang).padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
 		var missingRecordingLevelRels = false;
 		if (stuff["release"].rawids.indexOf(releases[r].id) < 0) { stuff["release-new"].ids.push(releases[r].id); }
 		addRemoveEntities("release", releases[r], action);
@@ -518,7 +520,7 @@ function loadMissingRecordingWorks(recordings, action, _batchOffset, _wsResponse
 				modal(true, createTag("span", {s: {color: "grey"}}, "+"), 0);
 				mbs12154 += this.response.count - MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
 				if (mbs12154 < MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
-					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: "red"}}, "MBS-12154 pagination bug!"), "<br>", "Reducing recording batch size: ", createTag("del", {}, batchSize), "→", createTag("ins", {}, batchSize - this.response.count + MBWSSpeedLimit), " — ", createA("more info", "//github.com/jesus2099/konami-command/issues/174#issuecomment-1008267401")]), 2); // #### REMOVE WHEN MBS-12154 FIXED
+					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: "red"}}, "MBS-12154 pagination bug!"), "<br>", "Reducing recording batch size: ", createTag("del", {}, batchSize), "→", createTag("b", {}, batchSize - this.response.count + MBWSSpeedLimit), " — ", createA("more info", "//github.com/jesus2099/konami-command/issues/174#issuecomment-1008267401")]), 2); // #### REMOVE WHEN MBS-12154 FIXED
 				retry = 0;
 // #### UNCOMMENT WHEN MBS-12154 FIXED				setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
 					setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset); }, chrono(MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
@@ -776,7 +778,7 @@ function end(ok, msg) {
 		// display summary of added entities and write all MBID in the storage now
 		for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && stuff[type].rawids) {
 			stuff[type].ids = stuff[type].rawids.length > 0 ? stuff[type].rawids.trim().split(" ") : [];
-			modal(true, createTag("span", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[type].ids.length.toString().padStart(6, " ")), createTag("b", {}, " " + type.replace(/-/, " ") + (stuff[type].ids.length == 1 ? "" : "s")), "… "]));
+			modal(true, createTag("span", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[type].ids.length.toLocaleString(lang).padStart(12, " ")), createTag("b", {}, " " + type.replace(/-/, " ") + (stuff[type].ids.length == 1 ? "" : "s")), "… "]));
 			GM_setValue(type + "s", stuff[type].rawids);
 			modal(true, "saved.", 1);
 			stuff[type].rawids = "";
@@ -804,7 +806,7 @@ function modal(show, txt, brs, gauge) {
 	var obj = document.getElementById(prefix + "Modal");
 	if (show && !obj) {
 		coolstuff("div", "50", "100%", "100%", "black", ".6");
-		obj = coolstuff("div", "55", "600px", "50%", "white");
+		obj = coolstuff("div", "55", "600px", "92%", "white");
 		obj.setAttribute("id", prefix + "Modal");
 		obj.style.setProperty("padding", "4px");
 		obj.style.setProperty("overflow", "auto");
@@ -841,7 +843,7 @@ function modal(show, txt, brs, gauge) {
 				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge.current / gauge.total) + "px");
 				var elapsedSeconds = Math.floor((Date.now() - collectionLoadingStartDate) / 1000);
 				var totalSeconds = Math.ceil(elapsedSeconds > 0 ? elapsedSeconds * gauge.total / gauge.current : (gauge.total - gauge.current) * MBWSRate / 1000);
-				gau.lastChild.replaceChild(document.createTextNode((gauge.text ? gauge.text + " " : "") + gauge.current + "/" + gauge.total + " (" + percentage + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
+				gau.lastChild.replaceChild(document.createTextNode((gauge.text ? gauge.text + " " : "") + gauge.current.toLocaleString(lang) + " / " + gauge.total.toLocaleString(lang) + " (" + percentage + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / estimated total " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
 				setTitle(true, percentage);
 				if (gauge.current >= gauge.total) {
 					gaugeto = setTimeout(function() {
@@ -884,7 +886,7 @@ function modal(show, txt, brs, gauge) {
 		truc.style.setProperty("height", y);
 		var yy = y.match(/^([0-9]+)(px|%)$/);
 		if (yy) {
-			truc.style.setProperty("top", ((yy[2] == "%" ? 100 : self.innerHeight) - yy[1]) / 2 + yy[2]);
+			truc.style.setProperty("top", ((yy[2] == "%" ? 100 : self.innerHeight) - yy[1]) / 4 + yy[2]);
 		}
 		if (b) { truc.style.setProperty("background", b); }
 		if (o) { truc.style.setProperty("opacity", o); }
