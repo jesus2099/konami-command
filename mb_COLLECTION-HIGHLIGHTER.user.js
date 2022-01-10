@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      9999.2022.1.10
+// @version      9999.2022.1.10-0853
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -359,7 +359,7 @@ function loadCollection(collectionMBID, action, _offset) {
 		} else {
 			if (retry++ < maxRetry) {
 				MBWSRate += slowDownStepAfterRetry;
-				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
+				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 2);
 				debugRetry(this.status);
 				setTimeout(function() { loadCollection(collectionMBID, action, offset); }, chrono(retryPause));
 			} else {
@@ -518,7 +518,7 @@ function loadMissingRecordingWorks(recordings, action, _batchOffset, _wsResponse
 				modal(true, createTag("span", {s: {color: "grey"}}, "+"), 0);
 				mbs12154 += this.response.count - MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
 				if (mbs12154 < MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
-					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: "red"}}, "MBS-12154 pagination bug!"), "<br>", "Reducing recording batch size: ", createTag("del", {}, batchSize), "→", createTag("ins", {}, batchSize - mbs12154), " — ", createA("more info", "//github.com/jesus2099/konami-command/issues/174#issuecomment-1008267401")]), 2); // #### REMOVE WHEN MBS-12154 FIXED
+					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: "red"}}, "MBS-12154 pagination bug!"), "<br>", "Reducing recording batch size: ", createTag("del", {}, batchSize), "→", createTag("ins", {}, batchSize - this.response.count + MBWSSpeedLimit), " — ", createA("more info", "//github.com/jesus2099/konami-command/issues/174#issuecomment-1008267401")]), 2); // #### REMOVE WHEN MBS-12154 FIXED
 				retry = 0;
 // #### UNCOMMENT WHEN MBS-12154 FIXED				setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
 					setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset); }, chrono(MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
@@ -539,7 +539,7 @@ function loadMissingRecordingWorks(recordings, action, _batchOffset, _wsResponse
 		} else {
 			if (retry++ < maxRetry) {
 				MBWSRate += slowDownStepAfterRetry;
-				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
+				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 2);
 				debugRetry(this.status);
 				setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset, wsResponseOffset); }, chrono(retryPause));
 			} else {
@@ -773,6 +773,7 @@ function end(ok, msg) {
 	if (debugBuffer != "") { debug(""); }
 	if (ok) {
 		modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
+		// display summary of added entities and write all MBID in the storage now
 		for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && stuff[type].rawids) {
 			stuff[type].ids = stuff[type].rawids.length > 0 ? stuff[type].rawids.trim().split(" ") : [];
 			modal(true, createTag("span", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[type].ids.length.toString().padStart(6, " ")), createTag("b", {}, " " + type.replace(/-/, " ") + (stuff[type].ids.length == 1 ? "" : "s")), "… "]));
