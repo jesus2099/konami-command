@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      9999.2022.1.10-1234b
+// @version      2022.1.10.1555
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -66,6 +66,7 @@ if (cat) {
 	var strType = "release-group|recording|label|artist|work";
 	var strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var collectionLoadingStartDate = Date.now();
+	var currentTaskStartDate;
 	cat = cat[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
 	debug("CAT: " + cat);
 // ############################################################################
@@ -122,6 +123,7 @@ if (cat) {
 						for (let opt = 0; opt < opts.length; opt++) {
 							stuff[opts[opt].getAttribute("name")] = {};
 						}
+						currentTaskStartDate = Date.now();
 						loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), "add");
 					},
 					"Add this collection’s content to highlighter (" + collid + ")"
@@ -347,6 +349,7 @@ function loadCollection(collectionMBID, action, _offset) {
 						modal(true, concat(["<hr>", "\u26A0\uFE0F It is not possible to fetch works for releases with more than 500 tracks.", "<br>", "Fetching missing works now from " + stuff["missingRecordingWorks"].length.toLocaleString(lang) + " recordings. Just wait a little more time:"]), 2);
 						retry = 0;
 						setTimeout(function() {
+							currentTaskStartDate = Date.now();
 							loadMissingRecordingWorks(stuff["missingRecordingWorks"], action);
 							delete(stuff["missingRecordingWorks"]); // free up memory
 						}, chrono(MBWSRate));
@@ -842,7 +845,7 @@ function modal(show, txt, brs, gauge) {
 					gau.style.setProperty("display", "block");
 				}
 				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge.current / gauge.total) + "px");
-				var elapsedSeconds = Math.floor((Date.now() - collectionLoadingStartDate) / 1000);
+				var elapsedSeconds = Math.floor((Date.now() - currentTaskStartDate) / 1000);
 				var totalSeconds = Math.ceil(elapsedSeconds > 0 ? elapsedSeconds * gauge.total / gauge.current : (gauge.total - gauge.current) * MBWSRate / 1000);
 				gau.lastChild.replaceChild(document.createTextNode((gauge.text ? gauge.text + " " : "") + gauge.current.toLocaleString(lang) + " / " + gauge.total.toLocaleString(lang) + " (" + percentage + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / estimated total " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
 				setTitle(true, percentage);
