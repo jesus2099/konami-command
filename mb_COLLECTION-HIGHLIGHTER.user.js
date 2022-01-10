@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      9999.2022.1.10-1234a
+// @version      9999.2022.1.10-1234b
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -384,7 +384,7 @@ function browseReleases(releases, action, offset, releaseCount) {
 		var country = releases[r].country ? createTag("span", {a: {class: "flag flag-" + releases[r].country}}) : "";
 		var disambiguation = releases[r].disambiguation ? " (" + releases[r].disambiguation + ")" : "";
 		modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toLocaleString(lang).padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
-		var missingRecordingLevelRels = false;
+		var missingRecordingLevelRels = 0;
 		if (stuff["release"].rawids.indexOf(releases[r].id) < 0) { stuff["release-new"].ids.push(releases[r].id); }
 		addRemoveEntities("release", releases[r], action);
 		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["artist-credit"], action); }
@@ -407,42 +407,43 @@ function browseReleases(releases, action, offset, releaseCount) {
 		addRemoveEntities("release-group", releases[r]["release-group"], action);
 		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"]["artist-credit"], action); }
 		for (var m = 0; m < releases[r].media.length; m++) {
-			var allTracks = [];
 			if (releases[r].media[m].pregap) {
-				allTracks.push(releases[r].media[m].pregap);
+				missingRecordingLevelRels += browseTrack(releases[r].media[m].pregap, action);
 			}
 			// TODO: let's study this strange for loop style from https://stackoverflow.com/a/18738341/2236179 one day
 			if (releases[r].media[m].tracks) for (var i = 0, len = releases[r].media[m].tracks.length; i < len; ++i) {
-				allTracks.push(releases[r].media[m].tracks[i]);
+				missingRecordingLevelRels += browseTrack(releases[r].media[m].tracks[i], action);
 			}
 			if (releases[r].media[m]["data-tracks"]) for (var i = 0, len = releases[r].media[m]["data-tracks"].length; i < len; ++i) {
-				allTracks.push(releases[r].media[m]["data-tracks"][i]);
-			}
-			for (var t = 0; t < allTracks.length; t++) {
-				if (stuff["artist"]) { addRemoveEntities("artist", allTracks[t]["artist-credit"], action); }
-				if (stuff["recording"]) { addRemoveEntities("recording", allTracks[t].recording, action); }
-				if (stuff["artist"]) { addRemoveEntities("artist", allTracks[t].recording["artist-credit"], action); }
-				if (allTracks[t].recording.relations) {
-					for (var w = 0; w < allTracks[t].recording.relations.length; w++) {
-						if (allTracks[t].recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
-							if (stuff["work"]) { addRemoveEntities("work", allTracks[t].recording.relations[w].work, action); }
-						}
-					}
-				} else {
-					// recording.relations when there are more than 500 tracks, the recording-level-rels are not returned
-					if (stuff["missingRecordingWorks"].indexOf(allTracks[t].recording.id) < 0) {
-						if (!missingRecordingLevelRels) {
-							// activate a flag for deferred work loading and warn user (only once per release)
-							modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F missing work relationships (will be loaded later)"]), 1);
-							missingRecordingLevelRels = true;
-						}
-						// add each recording to a list for later later work fetch
-						stuff["missingRecordingWorks"].push(allTracks[t].recording.id);
-					}
-				}
+				missingRecordingLevelRels += browseTrack(releases[r].media[m]["data-tracks"][i], action);
 			}
 		}
+		if (missingRecordingLevelRels > 0) {
+			modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F missing work relationships for " + missingRecordingLevelRels.toLocaleString(lang) + " recordings (will be loaded later)"]), 1);
+		}
 	}
+}
+function browseTrack(track, action) {
+	var missingRecordingLevelRels = 0;
+	if (stuff["artist"]) { addRemoveEntities("artist", track["artist-credit"], action); }
+	if (stuff["recording"]) { addRemoveEntities("recording", track.recording, action); }
+	if (stuff["artist"]) { addRemoveEntities("artist", track.recording["artist-credit"], action); }
+	if (track.recording.relations) {
+		for (var w = 0; w < track.recording.relations.length; w++) {
+			if (track.recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+				// is a recording of
+				if (stuff["work"]) { addRemoveEntities("work", track.recording.relations[w].work, action); }
+			}
+		}
+	} else {
+		// no recording.relations: when there are more than 500 tracks, the recording-level-rels are not returned
+		if (stuff["missingRecordingWorks"].indexOf(track.recording.id) < 0) {
+			// add each recording to a list for later later work fetch
+			stuff["missingRecordingWorks"].push(track.recording.id);
+			missingRecordingLevelRels += 1;
+		}
+	}
+	return missingRecordingLevelRels;
 }
 // ############################################################################
 // #                                                             UPDATE STUFF #
