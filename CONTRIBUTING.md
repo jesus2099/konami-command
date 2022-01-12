@@ -72,7 +72,7 @@ No problemo.
 
 Ignore the weirdo warnings, like:
 
-> npm does not support Node.js v10.23.1`
+> npm does not support Node.js v10.23.1
 
 The thing stills works good.
 
