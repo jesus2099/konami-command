@@ -1,66 +1,100 @@
-﻿↑↑↓↓←→←→BA（コナミコマンド）
-=====================
+﻿
+↑ ↑ ↓ ↓ ← → ← → B A
+===================
 
-**ARE YOU RAYDEE TO AUGMENT YOUR BORWSING ?** (with userjs, user javascript, 
-greasemonkey, **userscripts**, etc.)
+**ARE YOU RAYDEE TO AUGMENT YOUR BORWSING ?**
+(with User JS, user JavaScript, Greasemonkey scripts, **userscripts**, user scripts, etc.)
 
-**YES ?**
+A userscript, is a piece of JavaScript code that runs on your PC or mobile
+and that enhances existing websites, for you.
+They can display additional information,
+they can make repetitive tedious tasks more easy, fast and efficient!
 
-Here are my small **multi‐browser** user scripts.
-Mostly for [MusicBrainz](https://musicbrainz.org).
+It’s like cheat codes for web sites, like the famous
+[KONAMI COMMAND](https://duckduckgo.com/?q=%22KONAMI+COMMAND%22) /
+[コナミコマンド](https://duckduckgo.com/?q=%22%E3%82%B3%E3%83%8A%E3%83%9F%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%22) !
+
+> I encourage you to write your own userscripts for the
+> websites you frequently use but are not completely satisfied with.
+> It’s so powerful and it can make you save so much time in many cases.
+
+In this repo I store my userscripts,
+mostly for [MusicBrainz](https://musicbrainz.org),
+but not only.
 
 
-HOW TO INSTALL
---------------
+HOW TO USE MY USERSCRIPTS
+-------------------------
 
-Please install all your scripts from this GitHub page.
+### BROWSER USERSCRIPT SUPPORT ###
 
-Click on a script to review its description and code, then 
-Click on **Raw** button to install.
+First thing you should do is make sure your browser supports a userscripts extension / add‐on.
+Here is a list where it is possible:
 
-You can start by installing [INSTALL-USER-SCRIPT](https://github.com/jesus2099/konami-command/blob/master/INSTALL-USER-SCRIPT.user.js) 
-which adds a direct download/install ![monkey](https://github.com/violentmonkey/violentmonkey/raw/1d911bffd7d4c37f82b5bcdada16f0b79fe0a70a/src/public/images/icon16.png) **monkey** icon button in front of each userscripts 
-in github, gitlab and bitbucket file listings.
+- Android
+  - Kiwi Browser
+  - <del>Firefox 68.11.0</del> <ins>(**obsolete: security risks**)</ins>
+- iOS
+  - :x: None
+- Linux and Windows
+  - Firefox
+  - All Chromium derivates (Vivaldi, Chrome, etc.)
+- Mac OS
+  - Safari
+
+As for the extension / add‐on, I advise [**Violentmonkey**](https://violentmonkey.github.io),
+which is the only one to be both **multi‐browser** and **open source**.
+I think on Mac OS with Safari, you may have to use **Tampermonkey**, which is also nice to use, but not **open source**.
 
 
-COMPATIBILITY
--------------
+### INSTALLING USERSCRIPTS IN BROWSER ###
 
-There are 3 userscript engines that I know:
+Install my userscripts from this **jesus2099/konami-command** GitHub repo, directly:
 
-- Greasemonkey: Open source pioneer
-- [Violentmonkey](https://violentmonkey.github.io): Open source multi-browser
-- Tampermonkey: Closed source
+1. Click on a userscript `*.user.js` file link to review its description and code
+2. Click on the **Raw** button to install
+   (on mobile, you must first click on the “…” ellipsis button to see **Raw** menu item)
 
-I advise Violentmonkey as it works in every browsers consistently and is open source.
-Unfortunately, Greasemonkey has had several outstanding issues since version 4+ and only works in Firefox.
+> **Hint**: If you install the userscript called [INSTALL USER SCRIPT](https://github.com/jesus2099/konami-command/blob/master/INSTALL-USER-SCRIPT.user.js),
+> you will get a direct download/install
+> ![monkey](https://github.com/violentmonkey/violentmonkey/raw/1d911bffd7d4c37f82b5bcdada16f0b79fe0a70a/src/public/images/icon16.png)
+> **monkey** icon button in front of each userscript file, making them installable in a single click.
+> It works in GitHub, in GitLab and in Bitbucket file listings.
 
-For information, here are setups that I use most (as of 2021-03-15):
 
-- [Firefox](https://mozilla.org/firefox) on Linux, Android (FF v68) and Windows + [Violentmonkey][vm-ff]
-- [Vivaldi](https://vivaldi.com) on Windows + [Violentmonkey][vm-ch]
-- Chromium on Raspberry Pi 3B+ OS Raspbian + [Violentmonkey][vm-ch]
+HOW TO CONTRIBUTE
+-----------------
 
-As Vivaldi is based on Chromium, it also works in Chrome.
-I have been told it also works in Safari.
-Please report bugs if it does not work in your setup (see next section).
+### ISSUES ###
 
-ISSUES
-------
-
-If you encounter a problem, you can see if it is an [already known issue](https://github.com/jesus2099/konami-command/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc) 
+If you encounter a problem, you can check if it is an
+[already known issue (top voted)](https://github.com/jesus2099/konami-command/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc)
 and you can also upvote issues by clicking the :+1: thumb up icon on the issue description.
-Please eventually add an issue to report any bug.
+
+Please, add an issue when you want to report any new bugs, with the **New issue** button.
+
+For information, I have only little available time but here are
+[the bugs or features that we are currently working on](https://github.com/jesus2099/konami-command/issues?q=is%3Aopen+assignee%3A*).
+
+
+### SUBMIT PATCHES ###
+
+If you want to fix stuff yourself, please have a look at
+the short [contributing guidelines](CONTRIBUTING.md).
+
 
 ---
 
-※ Find more MusicBrainz scripts by [repo topics](https://github.com/search?q=topic%3Amusicbrainz+topic%3Auserscripts), [code search](https://github.com/search?l=JavaScript&o=desc&q=%22%3D%3DUserScript%3D%3D%22+MusicBrainz&s=indexed&type=Code) and [gist search](https://gist.github.com/search?l=JavaScript&o=desc&q=%22%3D%3DUserScript%3D%3D%22+MusicBrainz&s=stars), or in 
-[GF](//greasyfork.org/scripts?set=9&sort=ratings) and in [OUJS](//openuserjs.org/group/musicbrainz?orderBy=rating&orderDir=desc).
+※ Here are some links to help you find more MusicBrainz userscripts:
 
-※ Those scripts used to be hosted at 
-[jesus2099’s scripts - Userscripts.org (archived)](https://web.archive.org/web/20131108065418/userscripts.org/users/31010/scripts) 
-since 18.7.2007 and until the May 2014 break down.
+- https://github.com/search?q=topic%3Amusicbrainz+topic%3Auserscripts
+- https://github.com/search?l=JavaScript&o=desc&q=%22%3D%3DUserScript%3D%3D%22+MusicBrainz&s=indexed&type=Code
+- https://gist.github.com/search?l=JavaScript&o=desc&q=%22%3D%3DUserScript%3D%3D%22+MusicBrainz&s=stars
+- https://greasyfork.org/scripts?set=9&sort=ratings
+- https://openuserjs.org/group/musicbrainz?orderBy=rating&orderDir=desc
 
 
-[vm-ff]: https://addons.mozilla.org/firefox/addon/violentmonkey
-[vm-ch]: https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag
+---
+
+© [2014.5.23](https://github.com/jesus2099/konami-command/commit/31582dcb5d658e0bd273d2278ff26958bf1de0fa) – 2022 jesus2099
+© [2007.7.18 – 2014.5](https://web.archive.org/web/20131108065418/userscripts.org/users/31010/scripts) jesus2099

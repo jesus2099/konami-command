@@ -2,14 +2,13 @@
 How to contribute
 =================
 
-Thank you very much for your interest in contributing to these userscripts.
+Thank you very much for your interest in contributing to these userscripts!
 
 
 Code style
 ----------
 
-Before committing your change, make sure you followed the code style,
-as much as possible:
+Before you start coding, please read the simple code style:
 
 - Indent with tabs
 - Use English words
@@ -18,79 +17,78 @@ as much as possible:
 Testing
 -------
 
-Usually https://test.musicbrainz.org is a great place for testing the
-userscripts that make changes to the MB database (edits), as it is a sandbox.
-
-Take care not making test edits on MBS, except if really necessary.
-
-For testing features that only display things without editing, 
-you should use the main https://musicbrainz.org site (MBS) and make sure
-your change does work properly over there.
+- MusicBrainz (**MB**) database edits should be tested on the **sandbox**:
+  https://test.musicbrainz.org
+- Other tests can be done on the main MusicBrainz site (**MBS**):
+  https://musicbrainz.org
 
 ### Interesting MB test pages ###
 
-Here are some interesting cases:
+Here are some interesting special releases or release groups,
+for which the web site and/or the web services do special treatments
+like pagination, data filtering or data limiting:
 
-- [Release groups with more than 100 releases](https://musicbrainz.org/search?query=releases%3A%5B101+TO+9999999%5D&type=release_group&method=advanced) (paginated)
-- [Releases with more than 500 tracks](https://musicbrainz.org/search?query=tracks%3A%5B501+TO+9999999%5D&type=release&method=advanced) for which recording relationships will not be returned as `relations` by [web service](https://musicbrainz.org/ws/2/release/64e12f22-9377-49d3-99a9-155f7f6c4eae?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels&fmt=json)
+- [Release groups with more than 100 releases](https://musicbrainz.org/search?query=releases%3A%5B101+TO+9999999%5D&type=release_group&method=advanced)
+  (paginated)
+- [Releases with more than 500 tracks](https://musicbrainz.org/search?query=tracks%3A%5B501+TO+9999999%5D&type=release&method=advanced)
+  for which `recording-level-rels` will not be returned by
+  `/ws/2/release/64e12f22-9377-49d3-99a9-155f7f6c4eae?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels`
+  (`relations` will not only be an empty `[]` array, it will be completely asbent ≈ `null`,
+  which is fortunate to let us know that we are in this case and that we should fetch the relationships by an additional alternate request)
+- [Releases with empty mediums](https://musicbrainz.org/search?query=tracksmedium%3A0&type=release&method=advanced)
+- [Releases without mediums](https://musicbrainz.org/search?query=mediums%3A0&type=release&method=advanced)
+  (none: not sure if it can really happen)
 
 
 ESLint
 ------
 
-eSLint is a kind of code checker.
-Don't worry too  mich about this.
+[ESLint](https://eslint.org) is a kind of code checker.
+This section is mostly for me to remember how to use it.
 
 I have set up an `.eslintrc.yaml` ESLint ruleset in this repo.
-
-ESLint is a code inspector: https://eslint.org
-
-If you make a big change or if you like, and if you know how to do,
-you can run eslint to check if your code change is OK.
-
-I have documented how to do it. Mostly for myself.
 
 
 ### Install (nodejs, npm, eslint) on your PC ###
 
 You must first install some big heavy packages on your PC.
-Install the `npm` pakage, it should also install `nodejs`:
+Install the so called `npm` package, that might install something called `nodejs`:
 
     sudo apt install npm
 
-From here you can already run eslint, but it installs it everytime
-before each run, which takes very much time.
 
+### Install eslint in each repo ###
 
-### Install eslint on your clone ###
+Now eslint can be called from anywhere, but it installs each time,
+therefore it is very sluggish to run.
 
-Then go into your cloned repository (`/konami-command/` folder).
-Notice that there is a `package.json` file here,
-which is some sort of `nodejs` (or `npm`? no idea) project file.
-Useful or useless, I do not know but
-I think you do not need to edit it.
-
-Now to install eslint and other stuff, locally in this cloned repository, run:
+Go into repo to _install_ (copy?) eslint locally:
 
     npm install --save-dev
 
-You may, like me, get some weirdo warning like:
+It will add many files to the repo but don’t worry,
+it’s all in `/konami-command/.gitignore`.
+No problemo.
 
-    npm does not support Node.js v10.23.1`
+Ignore the weirdo warnings, like:
 
-but worry not, it works nonetheless.
+> npm does not support Node.js v10.23.1`
 
-### Run eslint on your modified file ###
+The thing stills works good.
 
-I think it would be possible to add a pre-commit script in `.git/hooks`
-as well as PR checks in `.github/workflows/checks.yml`.
-But I will try that later.
 
-For the moment, you can run one of the following commands:
+### Use eslint to scan userscript files ###
 
-    npx eslint <modified.user.js>
-    npm eslint <modified.user.js>
+You can run either one of the following commands:
 
-I have added the following to my Geany (an editor) build command (F8):
+    npx eslint modified.user.js
+    npm eslint modified.user.js
+
+You can replace `modified.user.js` by `.` to scan all files.
+
+I have added the following to my Geany editor build command (F8):
 
     npx eslint --format compact "%f"
+
+But maybe I should have used `npm`? I don’t know…
+I don’t remember which one is best!
