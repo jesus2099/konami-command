@@ -96,6 +96,6 @@ the short [contributing guidelines](CONTRIBUTING.md).
 
 ---
 
-© [2007.7.18 – 2014.5](https://web.archive.org/web/20131108065418/userscripts.org/users/31010/scripts) jesus2099
+© [2007.7.18 – 2014.5](https://web.archive.org/web/20131108065418/userscripts.org/users/31010/scripts) jesus2099
 
-© [2014.5.23](https://github.com/jesus2099/konami-command/commit/31582dcb5d658e0bd273d2278ff26958bf1de0fa) – 2022 jesus2099
+© [2014.5.23](https://github.com/jesus2099/konami-command/commit/31582dcb5d658e0bd273d2278ff26958bf1de0fa) – 2022 jesus2099
