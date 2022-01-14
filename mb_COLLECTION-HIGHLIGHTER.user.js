@@ -325,7 +325,6 @@ function loadCollection(collectionMBID, action, _offset) {
 		modal(true, concat([createTag("h3", {}, dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "<hr>", "Loading collection " + collectionMBID + "…"]), 2);
 		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
 			stuff[stu].rawids = GM_getValue(stu + "s") || "";
-			// stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.trim().split(" ") : [];
 		}
 		stuff["release-new"] = {ids: []};
 		stuff["missingRecordingWorks"] = [];
@@ -344,6 +343,7 @@ function loadCollection(collectionMBID, action, _offset) {
 				retry = 0;
 				setTimeout(function() { loadCollection(collectionMBID, action, newOffset); }, chrono(MBWSRate));
 			} else {
+				// end of recursive function
 				if (stuff["release-new"].ids.length > 0) {
 					delete(stuff["release-new"]); // free up memory
 					if (stuff["missingRecordingWorks"].length > 0) {
@@ -414,12 +414,11 @@ function browseReleases(releases, action, offset, releaseCount) {
 			if (releases[r].media[m].pregap) {
 				missingRecordingLevelRels += browseTrack(releases[r].media[m].pregap, action);
 			}
-			// TODO: let's study this strange for loop style from https://stackoverflow.com/a/18738341/2236179 one day
-			if (releases[r].media[m].tracks) for (var i = 0, len = releases[r].media[m].tracks.length; i < len; ++i) {
-				missingRecordingLevelRels += browseTrack(releases[r].media[m].tracks[i], action);
+			if (releases[r].media[m].tracks) for (var t = 0; t < releases[r].media[m].tracks.length; t++) {
+				missingRecordingLevelRels += browseTrack(releases[r].media[m].tracks[t], action);
 			}
-			if (releases[r].media[m]["data-tracks"]) for (var i = 0, len = releases[r].media[m]["data-tracks"].length; i < len; ++i) {
-				missingRecordingLevelRels += browseTrack(releases[r].media[m]["data-tracks"][i], action);
+			if (releases[r].media[m]["data-tracks"]) for (var dt = 0; dt < releases[r].media[m]["data-tracks"].length; dt++) {
+				missingRecordingLevelRels += browseTrack(releases[r].media[m]["data-tracks"][dt], action);
 			}
 		}
 		if (missingRecordingLevelRels > 0) {
@@ -488,7 +487,6 @@ function addRemoveEntities(type, _entities, action) {
 		) {
 			switch (action) {
 				case "add":
-//					modal(true, concat([createTag("b", {}, "Adding "), type, " ", createA(entity.name, "/" + type + "/" + entity.id), "…"]), 1);
 					stuff[type].rawids += entity.id + " ";
 					break;
 				case "remove":
@@ -539,6 +537,7 @@ function loadMissingRecordingWorks(recordings, action, _batchOffset, _wsResponse
 					retry = 0;
 					setTimeout(function() { loadMissingRecordingWorks(recordings, action, newBatchOffset); }, chrono(MBWSRate));
 				} else {
+					// end of recursive function
 					modal(true, " ", 1);
 					end(true);
 				}
@@ -757,6 +756,7 @@ function stuffRemover(checks, pp) {
 			}
 		}
 	} else {
+		// end of recursive function
 		setTitle(false);
 		if (altered) { lastLink(); } else { modal(false); }
 	}
@@ -786,6 +786,7 @@ function end(ok, msg) {
 			modal(true, createTag("span", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[type].ids.length.toLocaleString(lang).padStart(12, " ")), createTag("b", {}, " " + type.replace(/-/, " ") + (stuff[type].ids.length == 1 ? "" : "s")), "… "]));
 			GM_setValue(type + "s", stuff[type].rawids);
 			modal(true, "saved.", 1);
+			// free up memory
 			stuff[type].rawids = "";
 			stuff[type].ids = [];
 		}
