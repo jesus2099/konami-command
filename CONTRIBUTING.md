@@ -30,7 +30,8 @@ like pagination, data filtering or data limiting:
 
 - [Release groups with more than 100 releases](https://musicbrainz.org/search?query=releases%3A%5B101+TO+9999999%5D&type=release_group&method=advanced)
   (paginated)
-- [Releases with more than 500 tracks](https://musicbrainz.org/search?query=tracks%3A%5B501+TO+9999999%5D&type=release&method=advanced)
+- [Releases with more than 10 mediums](https://musicbrainz.org/search?query=mediums%3A%5B11+TO+99999999%5D&type=release&method=advanced) (mediums 11 and above are collapsed)
+- [Releases with more than 500 tracks](https://musicbrainz.org/search?query=tracks%3A%5B501+TO+99999999%5D&type=release&method=advanced)
   for which `recording-level-rels` will not be returned by
   `/ws/2/release/64e12f22-9377-49d3-99a9-155f7f6c4eae?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels`
   (`relations` will not only be an empty `[]` array, it will be completely asbent ≈ `null`,
