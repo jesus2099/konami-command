@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2021.12.16
-// @description  APPLICATION LIST: Click to select row, Double-click to open application; APPLICATION: Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals
+// @version      2022.1.21
+// @description  APPLICATION LIST: Click to select row, Double-click to open application; APPLICATION: Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
@@ -85,6 +85,23 @@ switch (self.location.pathname) {
 
 		// highlight most important item in filter selection
 		css.insertRule("div#main-content div#actions-bar select#arbo-type option[value='table'], div#main-content div#actions-bar select#arbo-type option[value='sound_set'] { background: " + lightBgColour + "; }", 0);
+
+		// reveal secret JSON view and copy JSON to clipboard
+		css.insertRule("div#arborescence li#btn-json { display: block !important; background: " + lightBgColour + "; }", 0);
+		css.insertRule("div#arborescence pre#app-json { cursor: pointer; background: " + lightBgColour + "; }", 0);
+		document.body.addEventListener("click", function(event) {
+			var appJson = document.querySelector("div#arborescence pre#app-json");
+			if (event.target == appJson || event.target == document.querySelector("div#arborescence li#btn-json a")) {
+				navigator.clipboard.writeText(appJson.textContent).then(
+					function () {
+						alert("JSON copied to clipboard.");
+					},
+					function () {
+						alert("ERROR copying JSON to clipboard!");
+					}
+				);
+			}
+		});
 
 		// Keyboard shortcut handler
 		document.body.addEventListener("keydown", function(event) {
