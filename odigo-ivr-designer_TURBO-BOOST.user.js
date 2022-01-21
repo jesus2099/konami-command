@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.1.21
+// @version      2022.1.21.1434
 // @description  APPLICATION LIST: Click to select row, Double-click to open application; APPLICATION: Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -83,25 +83,21 @@ switch (self.location.pathname) {
 		css.insertRule("div#main-container div.modal-dialog { min-width: 600px; width: unset !important; }", 0);
 		css.insertRule("div#main-container div#modBuilder-form-table-table, div#main-container div#modBuilder-form-table-table div.wtHolder { height: fit-content !important; }", 0);
 
-		// highlight most important item in filter selection
+		// Highlight most important item in filter selection
 		css.insertRule("div#main-content div#actions-bar select#arbo-type option[value='table'], div#main-content div#actions-bar select#arbo-type option[value='sound_set'] { background: " + lightBgColour + "; }", 0);
 
-		// reveal secret JSON view and copy JSON to clipboard
+		// Copy secret JSON to clipboard
 		css.insertRule("div#arborescence li#btn-json { display: block !important; background: " + lightBgColour + "; }", 0);
-		css.insertRule("div#arborescence pre#app-json { cursor: pointer; background: " + lightBgColour + "; }", 0);
+		css.insertRule("div#arborescence li#btn-json a::before { content: 'Copy secret '; }", 0);
 		document.body.addEventListener("click", function(event) {
-			var appJson = document.querySelector("div#arborescence pre#app-json");
-			if (event.target == appJson || event.target == document.querySelector("div#arborescence li#btn-json a")) {
-				navigator.clipboard.writeText(appJson.textContent).then(
-					function () {
-						alert("JSON copied to clipboard.");
-					},
-					function () {
-						alert("ERROR copying JSON to clipboard!");
-					}
+			if (script && event.target == document.querySelector("div#arborescence li#btn-json > a")) {
+				navigator.clipboard.writeText(JSON.stringify(script, null, 2)).then(
+					function() { Header._ShowNotification({level: "success", message: "Secret JSON succesfully copied to clipboard", close:"×", duration: 4000}); },
+					function() { Header._ShowNotification({level: "error", message: "Error copying JSON to clipboard!"}); }
 				);
+				return stop(event);
 			}
-		});
+		}, true);
 
 		// Keyboard shortcut handler
 		document.body.addEventListener("keydown", function(event) {
@@ -155,4 +151,10 @@ function parentRow(node) {
 	} else {
 		return parentRow(node.parentNode);
 	}
+}
+function stop(event) {
+	event.cancelBubble = true;
+	if (event.stopPropagation) event.stopPropagation();
+	event.preventDefault();
+	return false;
 }
