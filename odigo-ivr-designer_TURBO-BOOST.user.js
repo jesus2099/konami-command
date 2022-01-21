@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.1.21.1434
-// @description  APPLICATION LIST: Click to select row, Double-click to open application; APPLICATION: Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
+// @version      2022.1.22
+// @description  APPLICATION LIST: Click to select row, Double-click to open application logs and versions; APPLICATION: Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
@@ -40,10 +40,9 @@ switch (self.location.pathname) {
 
 		// Custom highlight colour
 		css.insertRule(".table-hover > tbody > tr:hover > td, .table > tbody > tr > td.rowselect { background-color: " + lightBgColour + " !important; }", 0);
-		css.insertRule(".table > tbody > tr > td.rowselect * { color: black; }", 0);
+		css.insertRule(".table > tbody > tr > td.rowselect > * { color: black; }", 0);
 		// Contextual help about click/dblclick actions
-		css.insertRule(".table-hover > tbody > tr:hover:after, .table-hover > tbody > tr:hover:after { position: absolute; right: 40%; padding: 0 6px; margin-top: 4px; background-color: white; content: 'click to select / double-click to open'; cursor: pointer; }", 0);
-		css.insertRule(".table-hover > tbody > tr:hover > td { cursor: pointer; }", 0);
+		css.insertRule(".table-hover > tbody > tr:hover > td { cursor: default; }", 0);
 
 		// Click to select row checkbox
 		var container = document.querySelector("div#main-container");
@@ -66,14 +65,22 @@ switch (self.location.pathname) {
 			});
 		}
 
-		// Double-click to View Tree
-		var applicationTable = document.querySelector("div#main-container table#applications > tbody");
-		var viewTree1 = document.querySelector("div#main-container a#viewOpenTree1");
-		if (applicationTable && viewTree1) {
-			viewTree1.style.setProperty("background-color", lightBgColour);
-			applicationTable.addEventListener("dblclick", function(event) {
-				viewTree1.click();
-			});
+		// Double-click to open application, logs and versions
+		var DblClickTableActions = [
+			{table: "div#main-container table#applications > tbody", action: "div#main-container a#viewOpenTree1"},
+			{table: "div#main-container table#services > tbody", action: "div#main-container a#getLogs1"},
+			{table: "div#main-container div[ng-show='showReleaseTable'] table > tbody", action: "div#main-container a#viewRelOpenTree1"}
+		];
+		for (var a = 0; a < DblClickTableActions.length; a++) {
+			var table = document.querySelector(DblClickTableActions[a].table);
+			var action = document.querySelector(DblClickTableActions[a].action);
+			if (table && action) {
+				table.setAttribute("_dblClickAction", DblClickTableActions[a].action);
+				action.style.setProperty("background-color", lightBgColour);
+				table.addEventListener("dblclick", function(event) {
+					document.querySelector(this.getAttribute("_dblClickAction")).click();
+				});
+			}
 		}
 
 		break;
