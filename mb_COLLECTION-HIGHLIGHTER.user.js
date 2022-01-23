@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2021.12.28
+// @version      2022.1.23
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -23,13 +23,16 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+var DEBUG = false;
 let scriptNameAndVersion = GM_info.script.name.substr("4") + " " + GM_info.script.version;
 // ############################################################################
 // #                                                                          #
-// #                           MAIN RUN                                       #
+// #                         BUTTONS / TRIGGERS / GUI                         #
 // #                                                                          #
 // ############################################################################
 var MBS = self.location.protocol + "//" + self.location.host;
+var lang = document.querySelector("html[lang]");
+lang = lang && lang.getAttribute("lang") || "en-GB";
 var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
@@ -37,9 +40,9 @@ if (cat) {
 	var highlightInEditNotes = false;
 	var skipArtists = "89ad4ac3-39f7-470e-963a-56509c546377"; // put artist GUID separated by space that you want to skip, example here it’s VA
 	var MBWSRate = 999;
+	var MBWSSpeedLimit = 100; // from 1 (only 1 result per request) to 100 (maxium amount of result per request)
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
 	var prefix = "collectionHighlighter";
-	var DEBUG = false;
 	var dialogprefix = "..:: " + scriptNameAndVersion.replace(/ /g, " :: ") + " ::..\n\n";
 	var maxRetry = 20;
 	var retryPause = 5000;
@@ -63,6 +66,7 @@ if (cat) {
 	var strType = "release-group|recording|label|artist|work";
 	var strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var collectionLoadingStartDate;
+	var currentTaskStartDate;
 	cat = cat[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
 	debug("CAT: " + cat);
 // ############################################################################
@@ -119,8 +123,9 @@ if (cat) {
 						for (let opt = 0; opt < opts.length; opt++) {
 							stuff[opts[opt].getAttribute("name")] = {};
 						}
-						var pageCrawlMode = cantUseWS(this);
-						loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), !pageCrawlMode, pageCrawlMode ? 1 : 0);
+						collectionLoadingStartDate = Date.now();
+						currentTaskStartDate = Date.now();
+						loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), "add");
 					},
 					"Add this collection’s content to highlighter (" + collid + ")"
 				));
@@ -190,7 +195,7 @@ if (cat) {
 			}
 		}
 // ############################################################################
-// #                                    COLLECT LINKS TO HIGHLIGHT / DECORATE #
+// #                                     LAUNCH THE HIGHLIGHTING ON ALL PAGES #
 // ############################################################################
 	} else if (cat == "track" /* AcoustID */) {
 		// AcoustID.org: no problems
@@ -208,6 +213,14 @@ if (cat) {
 		}, 1000);
 	}
 }
+// ############################################################################
+// #                                                                          #
+// #                           MAIN FUNCTIONS                                 #
+// #                                                                          #
+// ############################################################################
+// ############################################################################
+// #                                     FIND COLLECTION ENTITIES IN THE PAGE #
+// ############################################################################
 function findOwnedStuff() {
 	stuff = {};
 	// Annotation link trim spaces and protocol + "//" + host
@@ -232,7 +245,7 @@ function findOwnedStuff() {
 				if (!stuff[cstuff].loaded) {
 					stuff[cstuff].rawids = GM_getValue(cstuff + "s");
 					if (stuff[cstuff].rawids) {
-						stuff[cstuff].ids = stuff[cstuff].rawids.split(" ");
+						stuff[cstuff].ids = stuff[cstuff].rawids.trim().split(" ");
 						debug(" \n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\nMatching: " + path, true);
 					} else { debug(" \nNo " + cstuff.toUpperCase() + "S in highlighter (" + cstuff + "s)", true); }
 					stuff[cstuff].loaded = true;
@@ -246,11 +259,6 @@ function findOwnedStuff() {
 	}
 	debug("");
 }
-// ############################################################################
-// #                                                                          #
-// #                           MAIN FUNCTIONS                                 #
-// #                                                                          #
-// ############################################################################
 // ############################################################################
 // #                                              HIGHLIGHT / DECORATE A LINK #
 // ############################################################################
@@ -302,183 +310,260 @@ function decorate(entityLink) {
 	}
 }
 // ############################################################################
-// #                                   COLLECT RELEASES FROM COLLECTION PAGES #
+// #                                         COLLECT RELEASES FROM COLLECTION #
 // ############################################################################
-function loadCollection(collectionMBID, WSMode, pageOrOffset) {
-	var limit = 100;
-	var offset = pageOrOffset;
-	var page = !WSMode ? pageOrOffset : offset / limit + 1;
+function loadCollection(collectionMBID, action) {
 	setTitle(true);
-	var url = WSMode ? "/ws/2/collection/" + collectionMBID + "/releases?limit=" + limit + "&offset=" + offset : "/collection/" + collectionMBID + "?page=" + page;
-	if (page == 1) {
-		// Add collection MBID to list of highlighted
-		collectionsID = GM_getValue("collections") || "";
-		if (collectionsID.indexOf(collectionMBID) < 0) {
-			collectionsID += collectionMBID + " ";
-		}
-		GM_setValue("collections", collectionsID);
-		modal(true, "Loading collection " + collectionMBID + "…", 1);
-		modal(true, concat(["WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page."]), 2);
-		modal(true, concat(["<hr>", "Fetching releases…"]), 2);
-		stuff["release-tmp"] = {ids: []};
-		for (let stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
-			stuff[stu].rawids = GM_getValue(stu + "s") || "";
-			stuff[stu].ids = stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : [];
-		}
+	// Add collection MBID to list of highlighted
+	collectionsID = GM_getValue("collections") || "";
+	if (collectionsID.indexOf(collectionMBID) < 0) {
+		collectionsID += collectionMBID + " ";
 	}
-	modal(true, "Reading page " + page + "… ");
+	modal(true, concat([createTag("h3", {}, dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "<hr>", "Loading collection " + collectionMBID + "…"]), 2);
+	for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
+		stuff[stu].rawids = GM_getValue(stu + "s") || "";
+	}
+	stuff["release-new"] = {ids: []};
+	stuff["missingRecordingWorks"] = [];
+	loadReleases("?collection=" + collectionMBID, "add", concludeCollectionLoading);
+}
+function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add or remove */, conclusionCallback, _offset) {
+	var offset = _offset || 0;
+	var ws2releaseUrl = "/ws/2/release" + query + (query.indexOf("?") >= 0 ? "&" : "?") + "inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + MBWSSpeedLimit + "&offset=" + offset;
+	modal(true, "Fetching releases…", 1);
 	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (this.readyState == 4) {
-			if (this.status == 401) {
-				modal(true, concat(["NG.", "<br>", "Private collection problem, switching to slower mode…"]), 1);
-				loadCollection(collectionMBID, false, 1);
-			} else if (this.status == 200) {
-				var re = WSMode ? '<release id="(' + strMBID + ')">' : '<td>(?:<span class="mp">)?<a href="/release/(' + strMBID + ')">(.+)</a>';
-				var rels = this.responseText.match(new RegExp(re, "g"));
-				if (rels) {
-					for (let rel = 0; rel < rels.length; rel++) {
-						var release = rels[rel].match(new RegExp(re))[1];
-						if (stuff["release"].ids.indexOf(release) < 0) {
-							stuff["release"].ids.push(release);
-							stuff["release"].rawids += release + " ";
-							stuff["release-tmp"].ids.push(release);
-						}
-					}
-					modal(true, rels.length + " release" + (rels.length == 1 ? "" : "s") + " fetched.", 1);
-				}
-				var lastPage, nextPage;
-				if (WSMode && (lastPage = this.responseText.match(/<release-list count="(\d+)">/))) {
-					lastPage = Math.ceil(parseInt(lastPage[1], 10) / limit);
-				} else if (!WSMode) {
-					var responseDOM = document.createElement("html"); responseDOM.innerHTML = this.responseText;
-					nextPage = responseDOM.querySelector(css_nextPage);
-				}
-				if (lastPage && page < lastPage || nextPage) {
-					if (lastPage && page == 1) { modal(true, "(total " + lastPage + " pages)", 1); }
-					retry = 0;
-					setTimeout(function() { loadCollection(collectionMBID, WSMode, WSMode ? offset + limit : page + 1); }, chrono(MBWSRate));
-				} else if (lastPage && lastPage == page || !nextPage) {
-					modal(true, " ", 1);
-					if (stuff["release-tmp"].ids.length > 0) {
-						GM_setValue("releases", stuff["release"].rawids);
-						modal(true, concat([createTag("b", {}, stuff["release"].ids.length + " release" + (stuff["release"].ids.length == 1 ? "" : "s")), " saved… "]));
-						modal(true, "OK.", 2);
-						retry = 0;
-						setTimeout(function() { collectionLoadingStartDate = Date.now(); fetchReleasesStuff(); }, chrono(MBWSRate));
-					} else {
-						modal(true, "No new releases.", 2);
-						end(true);
-					}
-					stuff["release"].rawids = "";
-				} else {
-					end(false, "Error while loading page " + page + (lastPage ? "/" + lastPage : "") + ".");
-				}
+	xhr.addEventListener("load", function(event) {
+		if (this.status == 401) {
+			error(concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
+		} else if (this.status == 200) {
+			var oneRelease = this.response.releases === undefined;
+			modal(true, "Received " + (oneRelease ? 1 : this.response.releases.length.toLocaleString(lang)) + " release" + ((oneRelease ? 1 : this.response.releases.length) == 1 ? "" : "s") + ":", 2);
+			browseReleases(oneRelease ? [this.response] : this.response.releases, action, offset, oneRelease ? 1 : this.response["release-count"]);
+			modal(true, " ", 1);
+			var newOffset = !oneRelease && this.response["release-offset"] + this.response.releases.length;
+			if (!oneRelease && newOffset < this.response["release-count"]) {
+				retry = 0;
+				setTimeout(function() { loadReleases(query, action, conclusionCallback, newOffset); }, chrono(MBWSRate));
 			} else {
-				if (retry++ < maxRetry) {
-					MBWSRate += slowDownStepAfterRetry;
-					modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
-					debugRetry(this.status);
-					setTimeout(function() { loadCollection(collectionMBID, WSMode, WSMode ? offset : page); }, chrono(retryPause));
+				// end of recursive function
+				if (stuff["release-new"].ids.length > 0) {
+					delete(stuff["release-new"]); // free up memory
+					if (stuff["missingRecordingWorks"].length > 0) {
+						modal(true, concat(["<hr>", "\u26A0\uFE0F Big releases require ", createTag("b", {s: {color: highlightColour}}, "delayed work fetching"), " (from " + stuff["missingRecordingWorks"].length.toLocaleString(lang) + " recordings):"]), 2);
+						retry = 0;
+						setTimeout(function() {
+							currentTaskStartDate = Date.now();
+							loadMissingRecordingWorks(stuff["missingRecordingWorks"], action, conclusionCallback);
+							delete(stuff["missingRecordingWorks"]); // free up memory
+						}, chrono(MBWSRate));
+					} else {
+						conclusionCallback();
+					}
 				} else {
-					end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
+					modal(true, "No new releases.", 2);
+					unlockModal();
 				}
 			}
+		} else {
+			if (retry++ < maxRetry) {
+				MBWSRate += slowDownStepAfterRetry;
+				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 2);
+				debugRetry(this.status);
+				setTimeout(function() { loadReleases(query, action, conclusionCallback, offset); }, chrono(retryPause));
+			} else {
+				error("Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
+			}
 		}
-	};
-	debug(MBS + url, true);
+	});
+	debug(MBS + ws2releaseUrl, true);
 	chrono();
-	xhr.open("GET", MBS + url, true);
+	xhr.open("GET", MBS + ws2releaseUrl, true);
+	xhr.responseType = "json";
+	xhr.setRequestHeader("Accept", "application/json");
 	xhr.send(null);
 }
 // ############################################################################
 // #                                  COLLECT ALL DATA FROM A SET OF RELEASES #
 // ############################################################################
-function fetchReleasesStuff(pi) {
-	var i = pi ? pi : 0;
-	var mbid = stuff["release-tmp"].ids[i];
-	if (mbid && mbid.match(new RegExp(strMBID))) {
-		if (i == 0) {
-			modal(true, concat(["<hr>", "Fetching release related stuffs…"]), 2);
+function browseReleases(releases, action, offset, releaseCount) {
+	for (var r = 0; r < releases.length; r++) {
+		var country = releases[r].country ? createTag("span", {a: {class: "flag flag-" + releases[r].country}}) : "";
+		var disambiguation = releases[r].disambiguation ? " (" + releases[r].disambiguation + ")" : "";
+		modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toLocaleString(lang).padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
+		var missingRecordingLevelRels = 0;
+		if (stuff["release"].rawids.indexOf(releases[r].id) < 0) { stuff["release-new"].ids.push(releases[r].id); }
+		addRemoveEntities("release", releases[r], action);
+		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["artist-credit"], action); }
+		if (stuff["label"]) { addRemoveEntities("label", releases[r]["label-info"], action); }
+		addRemoveEntities("release-group", releases[r]["release-group"], action);
+		for (var rgRel = 0; rgRel < releases[r]["release-group"].relations.length; rgRel++) {
+			// add included release groups and their artists
+			if (
+				(
+					releases[r]["release-group"].relations[rgRel].type == "included in"
+					|| releases[r]["release-group"].relations[rgRel]["type-id"] == "589447ea-be2c-46cc-b9e9-469e1d06e18a"
+				)
+				&& releases[r]["release-group"].relations[rgRel].direction == "backward"
+			) {
+				modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " Includes ", createA(releases[r]["release-group"].relations[rgRel].release_group.title, "/release-group/" + releases[r]["release-group"].relations[rgRel].release_group.id)]), 1);
+				addRemoveEntities("release-group", releases[r]["release-group"].relations[rgRel].release_group, action);
+				if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"].relations[rgRel].release_group["artist-credit"], action); }
+			}
 		}
-		var url = "/ws/2/release/" + stuff["release-tmp"].ids[i] + "?inc=release-groups+recordings+artists+artist-credits+labels+recording-level-rels+work-rels";
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function(event) {
-			if (this.readyState == 4) {
-				if (this.status == 200) {
-					var res = this.responseXML;
-					var xp = res.evaluate("//mb:release[1]", res, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-					var relName = xp.snapshotItem(0).getElementsByTagName("title")[0].textContent;
-					var relid = xp.snapshotItem(0).getAttribute("id");
-					var relComm = res.evaluate("./mb:disambiguation/text()", xp.snapshotItem(0), nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-					relComm = relComm.snapshotLength > 0 ? " (" + relComm.snapshotItem(0).textContent + ")" : "";
-					var frg = document.createDocumentFragment();
-					var cou = xp.snapshotItem(0).getElementsByTagName("country");
-					if (cou.length > 0) {
-						cou = cou[0].textContent;
-					}
-					if (typeof cou == "string" && cou.length == 2) {
-						frg.appendChild(createTag("alt", {a: {class: "flag flag-" + cou}}));
-					}
-					modal(true, concat([
-						frg,
-						createA(relName, "/release/" + relid),
-						relComm,
-						"<br>",
-					]), 0, [i + 1, stuff["release-tmp"].ids.length]);
-					var sep = "";
-					var totalAddedStuff = 0;
-					for (let stu in stuff) if (stu != "release" && Object.prototype.hasOwnProperty.call(stuff, stu)) {
-						var addedStuff = 0;
-						xp = res.evaluate("//mb:release[1]//mb:" + stu, res, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-						for (let ixp = 0; ixp < xp.snapshotLength; ixp++) {
-							var rgid = xp.snapshotItem(ixp).getAttribute("id");
-							if (stu != "artist" || skipArtists.indexOf(rgid) < 0) {
-								var stupos = stuff[stu].ids.indexOf(rgid);
-								if (stupos < 0) {
-									stuff[stu].ids.push(rgid);
-									stuff[stu].rawids += rgid + " ";
-									addedStuff++; totalAddedStuff++;
-								}
-							}
-						}
-						if (addedStuff > 0) {
-							modal(true, sep + addedStuff + " " + stu + (addedStuff == 1 ? "" : "s"));
-							sep = ", ";
-						}
-					}
-					if (totalAddedStuff > 0) { modal(true, ".", 1); }
-					if (++i < stuff["release-tmp"].ids.length) {
-						retry = 0;
-						setTimeout(function() { fetchReleasesStuff(i); }, chrono(MBWSRate));
-					} else {
-						modal(true, " ", 1);
-						delete(stuff["release-tmp"]);
-						for (let stu in stuff) if (stu != "release" && Object.prototype.hasOwnProperty.call(stuff, stu)) {
-							GM_setValue(stu + "s", stuff[stu].rawids);
-							stuff[stu].rawids = "";
-							modal(true, concat([createTag("b", {}, stuff[stu].ids.length + " " + stu + (stuff[stu].ids.length == 1 ? "" : "s")), " saved… "]));
-							modal(true, "OK.", 1);
-						}
-						end(true);
-					}
+		addRemoveEntities("release-group", releases[r]["release-group"], action);
+		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"]["artist-credit"], action); }
+		for (var m = 0; m < releases[r].media.length; m++) {
+			if (releases[r].media[m].pregap) {
+				missingRecordingLevelRels += browseTrack(releases[r].media[m].pregap, action);
+			}
+			if (releases[r].media[m].tracks) for (var t = 0; t < releases[r].media[m].tracks.length; t++) {
+				missingRecordingLevelRels += browseTrack(releases[r].media[m].tracks[t], action);
+			}
+			if (releases[r].media[m]["data-tracks"]) for (var dt = 0; dt < releases[r].media[m]["data-tracks"].length; dt++) {
+				missingRecordingLevelRels += browseTrack(releases[r].media[m]["data-tracks"][dt], action);
+			}
+		}
+		if (missingRecordingLevelRels > 0) {
+			modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F " + missingRecordingLevelRels.toLocaleString(lang) + " recordings queued for ", createTag("b", {s: {color: highlightColour}}, "delayed work fetching")]), 1);
+		}
+	}
+}
+function browseTrack(track, action) {
+	var missingRecordingLevelRels = 0;
+	if (stuff["artist"]) { addRemoveEntities("artist", track["artist-credit"], action); }
+	if (stuff["recording"]) { addRemoveEntities("recording", track.recording, action); }
+	if (stuff["artist"]) { addRemoveEntities("artist", track.recording["artist-credit"], action); }
+	if (stuff["work"]) {
+		if (track.recording.relations) {
+			for (var w = 0; w < track.recording.relations.length; w++) {
+				// is a recording of works
+				if (track.recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+					if (stuff["work"]) { addRemoveEntities("work", track.recording.relations[w].work, action); }
+				}
+				// compiles other recordings
+			}
+		} else {
+			// no recording.relations: when there are more than 500 tracks, the recording-level-rels are not returned
+			if (stuff["missingRecordingWorks"].indexOf(track.recording.id) < 0) {
+				// add each recording to a list for later later work fetch
+				stuff["missingRecordingWorks"].push(track.recording.id);
+				missingRecordingLevelRels += 1;
+			}
+		}
+	}
+	return missingRecordingLevelRels;
+}
+// ############################################################################
+// #                                                             UPDATE STUFF #
+// ############################################################################
+function addRemoveEntities(type, _entities, action) {
+	var entities = Array.isArray(_entities) ? _entities : [_entities];
+	for (var e = 0; e < entities.length; e++) {
+		debug(action + " " + type + "\n" + JSON.stringify(entities[e]));
+		var entity = {};
+		switch (type) {
+			case "artist":
+				// pass through
+			case "label":
+				if (entities[e][type]) {
+					entity.id = entities[e][type].id;
+					entity.name = entities[e][type].name;
 				} else {
-					if (retry++ < maxRetry) {
-						MBWSRate += slowDownStepAfterRetry;
-						modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 1);
-						debugRetry(this.status);
-						setTimeout(function() { fetchReleasesStuff(i); }, chrono(retryPause));
-					} else {
-						end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading releases’ stuff).");
-					}
+					// labels can be null
+					entity = null;
+				}
+				break;
+			case "recording":
+				// pass through
+			case "release":
+				// pass through
+			case "release-group":
+				// pass through
+			case "work":
+				entity.id = entities[e].id;
+				entity.name = entities[e].title;
+				break;
+		}
+		if (
+			entity !== null // labels can be null
+			&& stuff[type] // this type is highlighted
+			&& stuff[type].rawids.indexOf(entity.id) < 0 // this entity is not yet tracked
+			&& !(type == "artist" && skipArtists.indexOf(entity.id) >= 0) // ignore Various Artists, etc.
+		) {
+			switch (action) {
+				case "add":
+					stuff[type].rawids += entity.id + " ";
+					break;
+				case "remove":
+					// TODO: remove entity
+					break;
+			}
+		}
+	}
+}
+// ############################################################################
+// #                                  LOAD WORKS FROM HUNDREDS OF RECORDINGS #
+// ############################################################################
+var mbs12154 = 0; // #### REMOVE WHEN MBS-12154 FIXED // reduce batch size (results in random order, we try to get less than 101 results to keep them all on one page)
+function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batchOffset, _wsResponseOffset) {
+	var batchOffset = _batchOffset || 0;
+	var wsResponseOffset = _wsResponseOffset || 0;
+	// keep the query URL short enough (100 recordings) to avoid 414 Request-URI Too Large
+	var batchSize = 100;
+	batchSize -= mbs12154; // #### REMOVE WHEN MBS-12154 FIXED
+	var batch = recordings.slice(batchOffset, batchOffset + batchSize);
+	var workQueryURL = "/ws/2/work?query=rid%3A" + batch.join("+OR+rid%3A") + "&limit=" + MBWSSpeedLimit + "&offset=" + wsResponseOffset;
+	if (wsResponseOffset === 0) {
+		modal(true, "Fetching works from " + batch.length + " recordings… ", 0);
+	}
+	var xhr = new XMLHttpRequest();
+	xhr.addEventListener("load", function(event) {
+		if (this.status == 200) {
+			modal(true, this.response.works.length.toString(), 0, {text: "recordings", current: batchOffset + batch.length, total: recordings.length});
+			for (var r = 0; r < this.response.works.length; r++) {
+				if (stuff["work"]) { addRemoveEntities("work", this.response.works[r], action); }
+			}
+			var newWsResponseOffset = this.response.offset + this.response.works.length;
+			if (newWsResponseOffset < this.response.count) {
+				modal(true, createTag("span", {s: {color: "grey"}}, "+"), 0);
+				mbs12154 += this.response.count - MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
+				if (mbs12154 < MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
+					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: highlightColour}}, "MBS-12154 requires slowing down."), "<br>", "Reducing recording batch size: ", createTag("del", {}, batchSize), "→", createTag("b", {}, batchSize - this.response.count + MBWSSpeedLimit)]), 2); // #### REMOVE WHEN MBS-12154 FIXED
+				retry = 0;
+// #### UNCOMMENT WHEN MBS-12154 FIXED				setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
+					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset); }, chrono(MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
+				} else { // #### REMOVE WHEN MBS-12154 FIXED
+					error("MBS-12154 bug\n\nCannot load works."); // #### REMOVE WHEN MBS-12154 FIXED
+				} // #### REMOVE WHEN MBS-12154 FIXED
+			} else {
+				modal(true, " ", 1);
+				var newBatchOffset = batchOffset + batch.length;
+				if (newBatchOffset < recordings.length) {
+					retry = 0;
+					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, newBatchOffset); }, chrono(MBWSRate));
+				} else {
+					// end of recursive function
+					modal(true, " ", 1);
+					conclusionCallback();
 				}
 			}
-		};
-		debug(MBS + url, true);
-		chrono();
-		xhr.open("GET", MBS + url, true);
-		xhr.send(null);
-	}
+		} else {
+			if (retry++ < maxRetry) {
+				MBWSRate += slowDownStepAfterRetry;
+				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 2);
+				debugRetry(this.status);
+				setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, wsResponseOffset); }, chrono(retryPause));
+			} else {
+				error("Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading missing recording works).");
+			}
+		}
+	});
+	debug(MBS + workQueryURL + "&fmt=json");
+	chrono();
+	xhr.open("GET", MBS + workQueryURL, true);
+	xhr.responseType = "json";
+	xhr.setRequestHeader("Accept", "application/json");
+	xhr.send(null);
 }
 // ############################################################################
 // #                         DYNAMIC COLLECTION UPDATER (FOR CURRENT RELEASE) #
@@ -487,52 +572,37 @@ var altered = false;
 function collectionUpdater(link, action) {
 	if (link && action) {
 		link.addEventListener("click", function(event) {
-			altered = this.getAttribute("href") != self.location.href;
 			modal(true, "Refreshing memory…", 1);
 			collectionsID = GM_getValue("collections") || "";
-			for (let stu in stuff) if (collectedStuff.indexOf(stu) >= 0) {
-				stuff[stu].rawids = GM_getValue(stu + "s");
-				stuff[stu].ids = stuff[stu].rawids != null ? (stuff[stu].rawids.length > 0 ? stuff[stu].rawids.split(" ") : []) : null;
+			for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && collectedStuff.indexOf(type) >= 0) {
+				stuff[type].rawids = GM_getValue(type + "s");
+				stuff[type].ids = stuff[type].rawids != null ? (stuff[type].rawids.length > 0 ? stuff[type].rawids.trim().split(" ") : []) : null;
 			}
-			if (stuff["release"].ids && releaseID) {
-				setTitle(true);
-				var checks = getStuffs();
-				switch (action) {
-					case "add":
-						if (stuff["release"].rawids.indexOf(releaseID) == -1) {
-							modal(true, concat([createTag("b", {}, "Adding this release"), " to loaded collection…"]), 1);
-							stuff["release"].rawids += releaseID + " ";
-							GM_setValue("releases", stuff["release"].rawids);
-							altered = true;
-						}
-						for (let c = 0; c < checks.length; c++) {
-							var match = checks[c].getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
-							if (match) {
-								var type = match[1], mbid = match[2];
-								if (stuff[type].ids && stuff[type].rawids.indexOf(mbid) < 0 && (type != "artist" || skipArtists.indexOf(mbid) < 0)) {
-									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].getAttribute("jesus2099userjs81127recname") || checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1); // jesus2099userjs81127recname linked to mb_INLINE-STUFF
-									stuff[type].rawids += mbid + " ";
-									GM_setValue(type + "s", stuff[type].rawids);
-									altered = true;
-								}
-							}
-						}
-						setTitle(false);
-						break;
-					case "remove":
-						if (stuff["release"].rawids.indexOf(releaseID) > -1) {
-							modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
-							stuff["release"].rawids = stuff["release"].rawids.replace(new RegExp(releaseID + "( |$)"), "");
-							GM_setValue("releases", stuff["release"].rawids);
-							altered = true;
-						}
-						if (checks.length > 0) {
-							lastLink(this.getAttribute("href"));
-							stuffRemover(checks);
-							return stop(event);
-						}
-						break;
-				}
+			setTitle(true);
+			lastLink(this.getAttribute("href"));
+			switch (action) {
+				case "add":
+					stuff["release-new"] = {ids: []};
+					stuff["missingRecordingWorks"] = [];
+					loadReleases("/" + releaseID, action, concludeDynamicReleaseLoading);
+					return stop(event);
+					break;
+				case "remove":
+					// Force release for "Add to / Remove from collection" but not for "Force highlight ON /OFF"
+					altered = this.getAttribute("href") != self.location.href;
+					var checks = getStuffs();
+					if (stuff["release"].rawids.indexOf(releaseID) > -1) {
+						modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
+						stuff["release"].rawids = stuff["release"].rawids.replace(new RegExp(releaseID + "( |$)"), "");
+						GM_setValue("releases", stuff["release"].rawids);
+						altered = true;
+					}
+					if (checks.length > 0) {
+						lastLink(this.getAttribute("href"));
+						stuffRemover(checks);
+						return stop(event);
+					}
+					break;
 			}
 			if (!altered) {
 				modal(true, "Nothing has changed.", 1);
@@ -655,7 +725,7 @@ function stuffRemover(checks, pp) {
 								debugRetry(this.status);
 								setTimeout(function() { stuffRemover(checks, p); }, chrono(retryPause));
 							} else {
-								end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " while checking stuff to remove).");
+								error("Too many (" + maxRetry + ") errors (last " + this.status + " while checking stuff to remove).");
 							}
 						}
 					} // 4
@@ -666,7 +736,7 @@ function stuffRemover(checks, pp) {
 				xhr.send(null);
 			} else {
 				if (!stuff[checkAgainst].rawids) {/* Protection for some edge cases of new script using old script data */
-					modal(true, concat([createTag("span", {s: {color: "grey"}}, ["no ", checkAgainst, "s at all (", createA("//github.com/jesus2099/konami-command/issues/87", "#87"), "): "]), "removing…"]), 1);
+					modal(true, concat([createTag("span", {s: {color: "grey"}}, ["no ", checkAgainst, "s at all (", createA("#87", "//github.com/jesus2099/konami-command/issues/87"), "): "]), "removing…"]), 1);
 					stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
 					GM_setValue(checkType + "s", stuff[checkType].rawids);
 					altered = true;
@@ -676,6 +746,7 @@ function stuffRemover(checks, pp) {
 			}
 		}
 	} else {
+		// end of recursive function
 		setTitle(false);
 		if (altered) { lastLink(); } else { modal(false); }
 	}
@@ -685,41 +756,72 @@ function stuffRemover(checks, pp) {
 // #                           ACCESSORY DISPLAY FUNCTIONS                    #
 // #                                                                          #
 // ############################################################################
-function setTitle(ldng, pc) {
+function setTitle(ldng, percentage) {
 	var old = document.title.match(/ :: (.+)$/);
 	old = old ? old[1] : document.title;
 	if (ldng) {
-		document.title = (pc ? pc + "%" : "⌛") + " Altering highlighter content… :: " + old;
+		document.title = (percentage ? percentage + "%" : "⌛") + " Altering highlighter content… :: " + old;
 	} else {
 		document.title = old;
 	}
 }
-function end(ok, msg) {
+function concludeCollectionLoading() {
+	saveRawIdsToGMStorage();
+	unlockModal();
+}
+function concludeDynamicReleaseLoading() {
+	modal(true, "Re‐loading page…", 1);
+	saveRawIdsToGMStorage();
+	lastLink();
+}
+function saveRawIdsToGMStorage() {
 	setTitle(false);
 	if (debugBuffer != "") { debug(""); }
-	if (ok) {
-		modal(true, concat(["<br>", "<hr>", "Collection succesfully loaded in highlighter.", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
-	} else {
-		modal(true, msg, 1).style.setProperty("background-color", "pink");
-		alert(dialogprefix + msg);
-		modal(true, concat(["You may ", createA("have a look at known issues and/or create a new bug report", GM_info.script.namespace + "/issues/new?labels=" + GM_info.script.name.replace(". ", "_").replace(" ", "-")), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
+	modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
+	// display summary of added entities and write all MBID in the storage now
+	for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && stuff[type].rawids) {
+		stuff[type].ids = stuff[type].rawids.length > 0 ? stuff[type].rawids.trim().split(" ") : [];
+		modal(true, createTag("span", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[type].ids.length.toLocaleString(lang).padStart(12, " ")), createTag("b", {}, " " + type.replace(/-/, " ") + (stuff[type].ids.length == 1 ? "" : "s")), "… "]));
+		GM_setValue(type + "s", stuff[type].rawids);
+		modal(true, "saved.", 1);
+		// free up memory
+		stuff[type].rawids = "";
+		stuff[type].ids = [];
 	}
-	closeButt();
+	GM_setValue("collections", collectionsID);
+	modal(true, concat(["<br>", createTag("b", {s: {color: highlightColour}}, "Everything loaded!")]), 1);
+	modal(true, concat(["<hr>", "Collection loaded in highlighter in ", sInt2msStr(Math.floor((Date.now() - collectionLoadingStartDate) / 1000)), ".", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
 }
-function closeButt() {
-	modal(true, concat(["☞ You can now review these cute logs, or ", createA("close", function(event) { modal(false); }, "this will close this cute little window"), " them. ஜ۩۞۩ஜ"]), 1);
-	document.getElementById(prefix + "Modal").previousSibling.addEventListener("click", function(event) {
+function error(msg) {
+	setTitle(false);
+	if (debugBuffer != "") { debug(""); }
+	modal(true, createTag("pre", {s: {fontWeight: "bolder", backgroundColor: "yellow", color: "red", border: "2px dashed black", boxShadow: "2px 2px 2px grey", width: "fit-content", margin: "1em auto", padding: "1em"}}, createTag("code", {}, msg)), 1).style.setProperty("background-color", "pink");
+	alert(dialogprefix + msg);
+	modal(true, concat(["You may ", createA("have a look at known issues and/or create a new bug report", GM_info.script.namespace + "/issues/new?labels=" + GM_info.script.name.replace(". ", "_").replace(" ", "-")), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
+	unlockModal();
+}
+function unlockModal() {
+	modal(true, concat(["☞ You can now review these cute logs, or close it (press “Escape” or click outside). ஜ۩۞۩ஜ"]), 1);
+	document.getElementById(prefix + "Modal").previousSibling.addEventListener("click", closeModal);
+	document.body.addEventListener("keydown", closeModal);
+}
+function closeModal(event) {
+	if (event.type == "click" || event.type == "keydown" && event.key == "Escape") {
+		var modalWall = document.getElementById(prefix + "Modal").previousSibling;
 		if (gaugeto) { clearTimeout(gaugeto); gaugeto = null; }
-		this.parentNode.removeChild(this.nextSibling);
-		this.parentNode.removeChild(this);
-	}, false);
+		modalWall.parentNode.removeChild(modalWall.nextSibling);
+		modalWall.parentNode.removeChild(modalWall);
+		if (event.type == "keydown") {
+			document.body.removeEventListener("keydown", closeModal);
+		}
+	}
 }
 var gaugeto;
 function modal(show, txt, brs, gauge) {
 	var obj = document.getElementById(prefix + "Modal");
 	if (show && !obj) {
 		coolstuff("div", "50", "100%", "100%", "black", ".6");
-		obj = coolstuff("div", "55", "600px", "50%", "white");
+		obj = coolstuff("div", "55", "600px", "92%", "white");
 		obj.setAttribute("id", prefix + "Modal");
 		obj.style.setProperty("padding", "4px");
 		obj.style.setProperty("overflow", "auto");
@@ -745,26 +847,25 @@ function modal(show, txt, brs, gauge) {
 	}
 	if (show && obj && txt) {
 		if (gauge) {
-			// gauge[0] stands for processed releases, gauge[1] stands for remaining releases
-			var pc = Math.floor(100 * gauge[0] / gauge[1]);
-			if (pc) {
+			var percentage = Math.floor(100 * gauge.current / gauge.total);
+			if (percentage) {
 				var gau = obj.firstChild;
 				if (gaugeto || gau.style.getPropertyValue("display") == "none") {
 					clearTimeout(gaugeto);
 					gaugeto = null;
 					gau.style.setProperty("display", "block");
 				}
-				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge[0] / gauge[1]) + "px");
-				var elapsedSeconds = Math.floor((Date.now() - collectionLoadingStartDate) / 1000);
-				var totalSeconds = Math.ceil(elapsedSeconds > 0 ? elapsedSeconds * gauge[1] / gauge[0] : (gauge[1] - gauge[0]) * MBWSRate / 1000);
-				gau.lastChild.replaceChild(document.createTextNode(gauge[0] + "/" + gauge[1] + " (" + pc + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
-				setTitle(true, pc);
-				if (gauge[0] >= gauge[1]) {
+				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge.current / gauge.total) + "px");
+				var elapsedSeconds = Math.floor((Date.now() - currentTaskStartDate) / 1000);
+				var totalSeconds = Math.ceil(elapsedSeconds > 0 ? elapsedSeconds * gauge.total / gauge.current : (gauge.total - gauge.current) * MBWSRate / 1000);
+				gau.lastChild.replaceChild(document.createTextNode((gauge.text ? gauge.text + " " : "") + gauge.current.toLocaleString(lang) + " / " + gauge.total.toLocaleString(lang) + " (" + percentage + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / estimated total " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
+				setTitle(true, percentage);
+				if (gauge.current >= gauge.total) {
 					gaugeto = setTimeout(function() {
 						if ((obj = document.getElementById(prefix + "Modal")) !== null) {
 							obj.firstChild.style.setProperty("display", "none");
 						}
-					}, 4000);
+					}, 10000);
 				}
 			}
 		}
@@ -800,7 +901,7 @@ function modal(show, txt, brs, gauge) {
 		truc.style.setProperty("height", y);
 		var yy = y.match(/^([0-9]+)(px|%)$/);
 		if (yy) {
-			truc.style.setProperty("top", ((yy[2] == "%" ? 100 : self.innerHeight) - yy[1]) / 2 + yy[2]);
+			truc.style.setProperty("top", ((yy[2] == "%" ? 100 : self.innerHeight) - yy[1]) / 4 + yy[2]);
 		}
 		if (b) { truc.style.setProperty("background", b); }
 		if (o) { truc.style.setProperty("opacity", o); }
@@ -812,14 +913,6 @@ function modal(show, txt, brs, gauge) {
 // #                           ACCESSORY TECHNICAL FUNCTIONS                  #
 // #                                                                          #
 // ############################################################################
-function cantUseWS(button) {
-	var privacy;
-	if (typeof opera != "undefined" && (privacy = getParent(button, "tr")) && privacy.textContent.match(/\n\s*Private\s*\n/)) {
-		return true;
-	} else {
-		return false;
-	}
-}
 function lastLink(href) {
 	if (href) {
 		GM_setValue("lastlink", href);
@@ -831,7 +924,7 @@ function lastLink(href) {
 			setTimeout(function() { self.location.href = ll; }, chrono(MBWSRate));
 		} else {
 			modal(true, " ", 1);
-			end(false, "Sorry, I’m lost. I don’t know what was the link you last clicked.");
+			error("Sorry, I’m lost. I don’t know what was the link you last clicked.");
 		}
 	}
 }
@@ -896,7 +989,7 @@ function debug(txt, buffer) {
 		if (buffer) {
 			debugBuffer += txt + "\n";
 		} else {
-			console.log(prefix + "\n" + debugBuffer + txt);
+			console.debug(prefix + "\n" + debugBuffer + txt);
 			debugBuffer = "";
 		}
 	}
