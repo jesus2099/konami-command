@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.1.10.2022
+// @version      2022.1.23
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -312,36 +312,38 @@ function decorate(entityLink) {
 // ############################################################################
 // #                                         COLLECT RELEASES FROM COLLECTION #
 // ############################################################################
-function loadCollection(collectionMBID, action, _offset) {
-	var offset = _offset || 0;
-	var url = "/ws/2/release?collection=" + collectionMBID + "&inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + MBWSSpeedLimit + "&offset=" + offset;
-	if (offset === 0) {
-		setTitle(true);
-		// Add collection MBID to list of highlighted
-		collectionsID = GM_getValue("collections") || "";
-		if (collectionsID.indexOf(collectionMBID) < 0) {
-			collectionsID += collectionMBID + " ";
-		}
-		modal(true, concat([createTag("h3", {}, dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "<hr>", "Loading collection " + collectionMBID + "…"]), 2);
-		for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
-			stuff[stu].rawids = GM_getValue(stu + "s") || "";
-		}
-		stuff["release-new"] = {ids: []};
-		stuff["missingRecordingWorks"] = [];
+function loadCollection(collectionMBID, action) {
+	setTitle(true);
+	// Add collection MBID to list of highlighted
+	collectionsID = GM_getValue("collections") || "";
+	if (collectionsID.indexOf(collectionMBID) < 0) {
+		collectionsID += collectionMBID + " ";
 	}
+	modal(true, concat([createTag("h3", {}, dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "<hr>", "Loading collection " + collectionMBID + "…"]), 2);
+	for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
+		stuff[stu].rawids = GM_getValue(stu + "s") || "";
+	}
+	stuff["release-new"] = {ids: []};
+	stuff["missingRecordingWorks"] = [];
+	loadReleases("?collection=" + collectionMBID, "add", concludeCollectionLoading);
+}
+function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add or remove */, conclusionCallback, _offset) {
+	var offset = _offset || 0;
+	var ws2releaseUrl = "/ws/2/release" + query + (query.indexOf("?") >= 0 ? "&" : "?") + "inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + MBWSSpeedLimit + "&offset=" + offset;
 	modal(true, "Fetching releases…", 1);
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function(event) {
 		if (this.status == 401) {
-			end(false, concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
+			error(concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
 		} else if (this.status == 200) {
-			modal(true, "Received " + this.response.releases.length.toLocaleString(lang) + " release" + (this.response.releases.length == 1 ? "" : "s") + ":", 2);
-			browseReleases(this.response.releases, action, offset, this.response["release-count"]);
+			var oneRelease = this.response.releases === undefined;
+			modal(true, "Received " + (oneRelease ? 1 : this.response.releases.length.toLocaleString(lang)) + " release" + ((oneRelease ? 1 : this.response.releases.length) == 1 ? "" : "s") + ":", 2);
+			browseReleases(oneRelease ? [this.response] : this.response.releases, action, offset, oneRelease ? 1 : this.response["release-count"]);
 			modal(true, " ", 1);
-			var newOffset = this.response["release-offset"] + this.response.releases.length;
-			if (newOffset < this.response["release-count"]) {
+			var newOffset = !oneRelease && this.response["release-offset"] + this.response.releases.length;
+			if (!oneRelease && newOffset < this.response["release-count"]) {
 				retry = 0;
-				setTimeout(function() { loadCollection(collectionMBID, action, newOffset); }, chrono(MBWSRate));
+				setTimeout(function() { loadReleases(query, action, conclusionCallback, newOffset); }, chrono(MBWSRate));
 			} else {
 				// end of recursive function
 				if (stuff["release-new"].ids.length > 0) {
@@ -351,15 +353,15 @@ function loadCollection(collectionMBID, action, _offset) {
 						retry = 0;
 						setTimeout(function() {
 							currentTaskStartDate = Date.now();
-							loadMissingRecordingWorks(stuff["missingRecordingWorks"], action);
+							loadMissingRecordingWorks(stuff["missingRecordingWorks"], action, conclusionCallback);
 							delete(stuff["missingRecordingWorks"]); // free up memory
 						}, chrono(MBWSRate));
 					} else {
-						end(true);
+						conclusionCallback();
 					}
 				} else {
 					modal(true, "No new releases.", 2);
-					end(true);
+					unlockModal();
 				}
 			}
 		} else {
@@ -367,15 +369,15 @@ function loadCollection(collectionMBID, action, _offset) {
 				MBWSRate += slowDownStepAfterRetry;
 				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 2);
 				debugRetry(this.status);
-				setTimeout(function() { loadCollection(collectionMBID, action, offset); }, chrono(retryPause));
+				setTimeout(function() { loadReleases(query, action, conclusionCallback, offset); }, chrono(retryPause));
 			} else {
-				end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
+				error("Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
 			}
 		}
 	});
-	debug(MBS + url, true);
+	debug(MBS + ws2releaseUrl, true);
 	chrono();
-	xhr.open("GET", MBS + url, true);
+	xhr.open("GET", MBS + ws2releaseUrl, true);
 	xhr.responseType = "json";
 	xhr.setRequestHeader("Accept", "application/json");
 	xhr.send(null);
@@ -431,19 +433,22 @@ function browseTrack(track, action) {
 	if (stuff["artist"]) { addRemoveEntities("artist", track["artist-credit"], action); }
 	if (stuff["recording"]) { addRemoveEntities("recording", track.recording, action); }
 	if (stuff["artist"]) { addRemoveEntities("artist", track.recording["artist-credit"], action); }
-	if (track.recording.relations) {
-		for (var w = 0; w < track.recording.relations.length; w++) {
-			if (track.recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
-				// is a recording of
-				if (stuff["work"]) { addRemoveEntities("work", track.recording.relations[w].work, action); }
+	if (stuff["work"]) {
+		if (track.recording.relations) {
+			for (var w = 0; w < track.recording.relations.length; w++) {
+				// is a recording of works
+				if (track.recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+					if (stuff["work"]) { addRemoveEntities("work", track.recording.relations[w].work, action); }
+				}
+				// compiles other recordings
 			}
-		}
-	} else {
-		// no recording.relations: when there are more than 500 tracks, the recording-level-rels are not returned
-		if (stuff["missingRecordingWorks"].indexOf(track.recording.id) < 0) {
-			// add each recording to a list for later later work fetch
-			stuff["missingRecordingWorks"].push(track.recording.id);
-			missingRecordingLevelRels += 1;
+		} else {
+			// no recording.relations: when there are more than 500 tracks, the recording-level-rels are not returned
+			if (stuff["missingRecordingWorks"].indexOf(track.recording.id) < 0) {
+				// add each recording to a list for later later work fetch
+				stuff["missingRecordingWorks"].push(track.recording.id);
+				missingRecordingLevelRels += 1;
+			}
 		}
 	}
 	return missingRecordingLevelRels;
@@ -500,7 +505,7 @@ function addRemoveEntities(type, _entities, action) {
 // #                                  LOAD WORKS FROM HUNDREDS OF RECORDINGS #
 // ############################################################################
 var mbs12154 = 0; // #### REMOVE WHEN MBS-12154 FIXED // reduce batch size (results in random order, we try to get less than 101 results to keep them all on one page)
-function loadMissingRecordingWorks(recordings, action, _batchOffset, _wsResponseOffset) {
+function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batchOffset, _wsResponseOffset) {
 	var batchOffset = _batchOffset || 0;
 	var wsResponseOffset = _wsResponseOffset || 0;
 	// keep the query URL short enough (100 recordings) to avoid 414 Request-URI Too Large
@@ -525,21 +530,21 @@ function loadMissingRecordingWorks(recordings, action, _batchOffset, _wsResponse
 				if (mbs12154 < MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
 					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: highlightColour}}, "MBS-12154 requires slowing down."), "<br>", "Reducing recording batch size: ", createTag("del", {}, batchSize), "→", createTag("b", {}, batchSize - this.response.count + MBWSSpeedLimit)]), 2); // #### REMOVE WHEN MBS-12154 FIXED
 				retry = 0;
-// #### UNCOMMENT WHEN MBS-12154 FIXED				setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
-					setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset); }, chrono(MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
+// #### UNCOMMENT WHEN MBS-12154 FIXED				setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
+					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset); }, chrono(MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
 				} else { // #### REMOVE WHEN MBS-12154 FIXED
-					end(false, "MBS-12154 bug\n\nCannot load works."); // #### REMOVE WHEN MBS-12154 FIXED
+					error("MBS-12154 bug\n\nCannot load works."); // #### REMOVE WHEN MBS-12154 FIXED
 				} // #### REMOVE WHEN MBS-12154 FIXED
 			} else {
 				modal(true, " ", 1);
 				var newBatchOffset = batchOffset + batch.length;
 				if (newBatchOffset < recordings.length) {
 					retry = 0;
-					setTimeout(function() { loadMissingRecordingWorks(recordings, action, newBatchOffset); }, chrono(MBWSRate));
+					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, newBatchOffset); }, chrono(MBWSRate));
 				} else {
 					// end of recursive function
 					modal(true, " ", 1);
-					end(true);
+					conclusionCallback();
 				}
 			}
 		} else {
@@ -547,9 +552,9 @@ function loadMissingRecordingWorks(recordings, action, _batchOffset, _wsResponse
 				MBWSRate += slowDownStepAfterRetry;
 				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 2);
 				debugRetry(this.status);
-				setTimeout(function() { loadMissingRecordingWorks(recordings, action, batchOffset, wsResponseOffset); }, chrono(retryPause));
+				setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, wsResponseOffset); }, chrono(retryPause));
 			} else {
-				end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading missing recording works).");
+				error("Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading missing recording works).");
 			}
 		}
 	});
@@ -567,52 +572,37 @@ var altered = false;
 function collectionUpdater(link, action) {
 	if (link && action) {
 		link.addEventListener("click", function(event) {
-			altered = this.getAttribute("href") != self.location.href;
 			modal(true, "Refreshing memory…", 1);
 			collectionsID = GM_getValue("collections") || "";
-			for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
-				stuff[stu].rawids = GM_getValue(stu + "s");
-				stuff[stu].ids = stuff[stu].rawids != null ? (stuff[stu].rawids.length > 0 ? stuff[stu].rawids.trim().split(" ") : []) : null;
+			for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && collectedStuff.indexOf(type) >= 0) {
+				stuff[type].rawids = GM_getValue(type + "s");
+				stuff[type].ids = stuff[type].rawids != null ? (stuff[type].rawids.length > 0 ? stuff[type].rawids.trim().split(" ") : []) : null;
 			}
-			if (stuff["release"].ids && releaseID) {
-				setTitle(true);
-				var checks = getStuffs();
-				switch (action) {
-					case "add":
-						if (stuff["release"].rawids.indexOf(releaseID) == -1) {
-							modal(true, concat([createTag("b", {}, "Adding this release"), " to loaded collection…"]), 1);
-							stuff["release"].rawids += releaseID + " ";
-							GM_setValue("releases", stuff["release"].rawids);
-							altered = true;
-						}
-						for (let c = 0; c < checks.length; c++) {
-							var match = checks[c].getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
-							if (match) {
-								var type = match[1], mbid = match[2];
-								if (stuff[type].ids && stuff[type].rawids.indexOf(mbid) < 0 && (type != "artist" || skipArtists.indexOf(mbid) < 0)) {
-									modal(true, concat([createTag("b", {}, ["Adding " + type, " ", createA(type != "release-group" ? checks[c].getAttribute("jesus2099userjs81127recname") || checks[c].textContent : mbid, checks[c].getAttribute("href"), type)]), "…"]), 1); // jesus2099userjs81127recname linked to mb_INLINE-STUFF
-									stuff[type].rawids += mbid + " ";
-									GM_setValue(type + "s", stuff[type].rawids);
-									altered = true;
-								}
-							}
-						}
-						setTitle(false);
-						break;
-					case "remove":
-						if (stuff["release"].rawids.indexOf(releaseID) > -1) {
-							modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
-							stuff["release"].rawids = stuff["release"].rawids.replace(new RegExp(releaseID + "( |$)"), "");
-							GM_setValue("releases", stuff["release"].rawids);
-							altered = true;
-						}
-						if (checks.length > 0) {
-							lastLink(this.getAttribute("href"));
-							stuffRemover(checks);
-							return stop(event);
-						}
-						break;
-				}
+			setTitle(true);
+			lastLink(this.getAttribute("href"));
+			switch (action) {
+				case "add":
+					stuff["release-new"] = {ids: []};
+					stuff["missingRecordingWorks"] = [];
+					loadReleases("/" + releaseID, action, concludeDynamicReleaseLoading);
+					return stop(event);
+					break;
+				case "remove":
+					// Force release for "Add to / Remove from collection" but not for "Force highlight ON /OFF"
+					altered = this.getAttribute("href") != self.location.href;
+					var checks = getStuffs();
+					if (stuff["release"].rawids.indexOf(releaseID) > -1) {
+						modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
+						stuff["release"].rawids = stuff["release"].rawids.replace(new RegExp(releaseID + "( |$)"), "");
+						GM_setValue("releases", stuff["release"].rawids);
+						altered = true;
+					}
+					if (checks.length > 0) {
+						lastLink(this.getAttribute("href"));
+						stuffRemover(checks);
+						return stop(event);
+					}
+					break;
 			}
 			if (!altered) {
 				modal(true, "Nothing has changed.", 1);
@@ -735,7 +725,7 @@ function stuffRemover(checks, pp) {
 								debugRetry(this.status);
 								setTimeout(function() { stuffRemover(checks, p); }, chrono(retryPause));
 							} else {
-								end(false, "Too many (" + maxRetry + ") errors (last " + this.status + " while checking stuff to remove).");
+								error("Too many (" + maxRetry + ") errors (last " + this.status + " while checking stuff to remove).");
 							}
 						}
 					} // 4
@@ -775,32 +765,42 @@ function setTitle(ldng, percentage) {
 		document.title = old;
 	}
 }
-function end(ok, msg) {
+function concludeCollectionLoading() {
+	saveRawIdsToGMStorage();
+	unlockModal();
+}
+function concludeDynamicReleaseLoading() {
+	modal(true, "Re‐loading page…", 1);
+	saveRawIdsToGMStorage();
+	lastLink();
+}
+function saveRawIdsToGMStorage() {
 	setTitle(false);
 	if (debugBuffer != "") { debug(""); }
-	if (ok) {
-		modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
-		// display summary of added entities and write all MBID in the storage now
-		for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && stuff[type].rawids) {
-			stuff[type].ids = stuff[type].rawids.length > 0 ? stuff[type].rawids.trim().split(" ") : [];
-			modal(true, createTag("span", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[type].ids.length.toLocaleString(lang).padStart(12, " ")), createTag("b", {}, " " + type.replace(/-/, " ") + (stuff[type].ids.length == 1 ? "" : "s")), "… "]));
-			GM_setValue(type + "s", stuff[type].rawids);
-			modal(true, "saved.", 1);
-			// free up memory
-			stuff[type].rawids = "";
-			stuff[type].ids = [];
-		}
-		GM_setValue("collections", collectionsID);
-		modal(true, concat(["<br>", createTag("b", {s: {color: highlightColour}}, "Everything loaded!")]), 1);
-		modal(true, concat(["<hr>", "Collection loaded in highlighter in ", sInt2msStr(Math.floor((Date.now() - collectionLoadingStartDate) / 1000)), ".", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
-	} else {
-		modal(true, createTag("pre", {s: {fontWeight: "bolder", backgroundColor: "yellow", color: "red", border: "2px dashed black", boxShadow: "2px 2px 2px grey", width: "fit-content", margin: "1em auto", padding: "1em"}}, createTag("code", {}, msg)), 1).style.setProperty("background-color", "pink");
-		alert(dialogprefix + msg);
-		modal(true, concat(["You may ", createA("have a look at known issues and/or create a new bug report", GM_info.script.namespace + "/issues/new?labels=" + GM_info.script.name.replace(". ", "_").replace(" ", "-")), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
+	modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
+	// display summary of added entities and write all MBID in the storage now
+	for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && stuff[type].rawids) {
+		stuff[type].ids = stuff[type].rawids.length > 0 ? stuff[type].rawids.trim().split(" ") : [];
+		modal(true, createTag("span", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[type].ids.length.toLocaleString(lang).padStart(12, " ")), createTag("b", {}, " " + type.replace(/-/, " ") + (stuff[type].ids.length == 1 ? "" : "s")), "… "]));
+		GM_setValue(type + "s", stuff[type].rawids);
+		modal(true, "saved.", 1);
+		// free up memory
+		stuff[type].rawids = "";
+		stuff[type].ids = [];
 	}
-	closeButt();
+	GM_setValue("collections", collectionsID);
+	modal(true, concat(["<br>", createTag("b", {s: {color: highlightColour}}, "Everything loaded!")]), 1);
+	modal(true, concat(["<hr>", "Collection loaded in highlighter in ", sInt2msStr(Math.floor((Date.now() - collectionLoadingStartDate) / 1000)), ".", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
 }
-function closeButt() {
+function error(msg) {
+	setTitle(false);
+	if (debugBuffer != "") { debug(""); }
+	modal(true, createTag("pre", {s: {fontWeight: "bolder", backgroundColor: "yellow", color: "red", border: "2px dashed black", boxShadow: "2px 2px 2px grey", width: "fit-content", margin: "1em auto", padding: "1em"}}, createTag("code", {}, msg)), 1).style.setProperty("background-color", "pink");
+	alert(dialogprefix + msg);
+	modal(true, concat(["You may ", createA("have a look at known issues and/or create a new bug report", GM_info.script.namespace + "/issues/new?labels=" + GM_info.script.name.replace(". ", "_").replace(" ", "-")), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
+	unlockModal();
+}
+function unlockModal() {
 	modal(true, concat(["☞ You can now review these cute logs, or close it (press “Escape” or click outside). ஜ۩۞۩ஜ"]), 1);
 	document.getElementById(prefix + "Modal").previousSibling.addEventListener("click", closeModal);
 	document.body.addEventListener("keydown", closeModal);
@@ -924,7 +924,7 @@ function lastLink(href) {
 			setTimeout(function() { self.location.href = ll; }, chrono(MBWSRate));
 		} else {
 			modal(true, " ", 1);
-			end(false, "Sorry, I’m lost. I don’t know what was the link you last clicked.");
+			error("Sorry, I’m lost. I don’t know what was the link you last clicked.");
 		}
 	}
 }
