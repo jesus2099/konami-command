@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
-// @version      2021.3.26
+// @version      2022.1.27
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac_DIRECT-LINK
@@ -11,11 +11,11 @@
 // @since        2012-04-22; https://web.archive.org/web/20131104205642/userscripts.org/scripts/show/131591 / https://web.archive.org/web/20141011084006/userscripts-mirror.org/scripts/show/131591
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      http://www2.jasrac.or.jp/eJwid/*
+// @include      /^https?:\/\/www2\.jasrac\.or\.jp\/eJwid\//
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var proceedButton, home = "http://www2.jasrac.or.jp/eJwid/main?trxID=F00100";
+var proceedButton, home = "https://www2.jasrac.or.jp/eJwid/main?trxID=F00100";
 /* mark visited links */
 var j2css = document.createElement("style");
 j2css.setAttribute("type", "text/css");
