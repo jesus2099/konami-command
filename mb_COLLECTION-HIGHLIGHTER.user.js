@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.1.23
+// @version      2022.1.27
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -486,7 +486,7 @@ function addRemoveEntities(type, _entities, action) {
 		}
 		if (
 			entity !== null // labels can be null
-			&& stuff[type] // this type is highlighted
+			&& stuff[type].rawids // this type is highlighted
 			&& stuff[type].rawids.indexOf(entity.id) < 0 // this entity is not yet tracked
 			&& !(type == "artist" && skipArtists.indexOf(entity.id) >= 0) // ignore Various Artists, etc.
 		) {
