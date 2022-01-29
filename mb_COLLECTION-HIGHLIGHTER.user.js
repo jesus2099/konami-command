@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.1.27
+// @version      2022.1.28
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -23,7 +23,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var DEBUG = false;
+var DEBUG = true;
 let scriptNameAndVersion = GM_info.script.name.substr("4") + " " + GM_info.script.version;
 // ############################################################################
 // #                                                                          #
@@ -49,7 +49,6 @@ if (cat) {
 	var slowDownStepAfterRetry = 0;
 	var css_nextPage = "ul.pagination > li:last-of-type > a";
 	var retry = 0;
-	var debugBuffer = "";
 	var j2ss = document.createElement("style");
 	j2ss.setAttribute("type", "text/css");
 	document.head.appendChild(j2ss);
@@ -242,22 +241,24 @@ function findOwnedStuff() {
 			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
 			if (mbid) {
 				mbid = mbid[1];
+				debug(cstuff + " is already loaded? " + stuff[cstuff].loaded);
 				if (!stuff[cstuff].loaded) {
+					debug("Load " + cstuff);
 					stuff[cstuff].rawids = GM_getValue(cstuff + "s");
 					if (stuff[cstuff].rawids) {
 						stuff[cstuff].ids = stuff[cstuff].rawids.trim().split(" ");
-						debug(" \n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\nMatching: " + path, true);
-					} else { debug(" \nNo " + cstuff.toUpperCase() + "S in highlighter (" + cstuff + "s)", true); }
+						debug(" \n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\nMatching: " + path);
+					} else { debug(" \nNo " + cstuff.toUpperCase() + "S in highlighter (" + cstuff + "s)"); }
 					stuff[cstuff].loaded = true;
+					debug(cstuff + " is now loaded? " + stuff[cstuff].loaded);
 				}
 				if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
-					debug(mbid + " ● “" + xp.snapshotItem(i).textContent + "”", true);
+					debug(mbid + " ● “" + xp.snapshotItem(i).textContent + "”");
 					decorate(xp.snapshotItem(i));
 				}
 			}
 		}
 	}
-	debug("");
 }
 // ############################################################################
 // #                                              HIGHLIGHT / DECORATE A LINK #
@@ -375,7 +376,7 @@ function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add
 			}
 		}
 	});
-	debug(MBS + ws2releaseUrl, true);
+	debug(MBS + ws2releaseUrl);
 	chrono();
 	xhr.open("GET", MBS + ws2releaseUrl, true);
 	xhr.responseType = "json";
@@ -484,6 +485,8 @@ function addRemoveEntities(type, _entities, action) {
 				entity.name = entities[e].title;
 				break;
 		}
+		debug(type);
+		debug(stuff[type]);
 		if (
 			entity !== null // labels can be null
 			&& stuff[type].rawids // this type is highlighted
@@ -502,7 +505,7 @@ function addRemoveEntities(type, _entities, action) {
 	}
 }
 // ############################################################################
-// #                                  LOAD WORKS FROM HUNDREDS OF RECORDINGS #
+// #                                   LOAD WORKS FROM HUNDREDS OF RECORDINGS #
 // ############################################################################
 var mbs12154 = 0; // #### REMOVE WHEN MBS-12154 FIXED // reduce batch size (results in random order, we try to get less than 101 results to keep them all on one page)
 function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batchOffset, _wsResponseOffset) {
@@ -776,7 +779,6 @@ function concludeDynamicReleaseLoading() {
 }
 function saveRawIdsToGMStorage() {
 	setTitle(false);
-	if (debugBuffer != "") { debug(""); }
 	modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
 	// display summary of added entities and write all MBID in the storage now
 	for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && stuff[type].rawids) {
@@ -794,7 +796,6 @@ function saveRawIdsToGMStorage() {
 }
 function error(msg) {
 	setTitle(false);
-	if (debugBuffer != "") { debug(""); }
 	modal(true, createTag("pre", {s: {fontWeight: "bolder", backgroundColor: "yellow", color: "red", border: "2px dashed black", boxShadow: "2px 2px 2px grey", width: "fit-content", margin: "1em auto", padding: "1em"}}, createTag("code", {}, msg)), 1).style.setProperty("background-color", "pink");
 	alert(dialogprefix + msg);
 	modal(true, concat(["You may ", createA("have a look at known issues and/or create a new bug report", GM_info.script.namespace + "/issues/new?labels=" + GM_info.script.name.replace(". ", "_").replace(" ", "-")), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
@@ -945,14 +946,11 @@ function createA(text, link, title, stay) {
 	if (title){ a.setAttribute("title", title); }
 	return a;
 }
-function concat(tstuff) {
+function concat(_nodes) {
 	var concats = document.createDocumentFragment();
-	var stuff = tstuff;
-	if (typeof stuff != "object" || !stuff.length) {
-		stuff = [stuff];
-	}
-	for (let thisStuff = 0; thisStuff < stuff.length; thisStuff++) {
-		var ccat = stuff[thisStuff];
+	var nodes = (typeof _nodes != "object" || !_nodes.length) ? [_nodes] : _nodes;
+	for (let n = 0; n < nodes.length; n++) {
+		var ccat = nodes[n];
 		if (typeof ccat == "string") {
 			var ccatr = ccat.match(/^<(.+)>$/);
 			if (ccatr) {
@@ -984,14 +982,9 @@ function sInt2msStr(seconds) {
 	    s = Math.ceil(div % 60);
 	return ((h > 0 ? h + ":" : "") + (m > 9 ? m : "0" + m) + ":" + (s > 9 ? s : "0" + s));
 }
-function debug(txt, buffer) {
+function debug(txt) {
 	if (DEBUG) {
-		if (buffer) {
-			debugBuffer += txt + "\n";
-		} else {
-			console.debug(prefix + "\n" + debugBuffer + txt);
-			debugBuffer = "";
-		}
+		console.debug(prefix + "\n" + txt);
 	}
 }
 function debugRetry(status) {
