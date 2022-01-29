@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.1.28
+// @version      2022.1.29
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -23,7 +23,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var DEBUG = true;
+var DEBUG = false;
 let scriptNameAndVersion = GM_info.script.name.substr("4") + " " + GM_info.script.version;
 // ############################################################################
 // #                                                                          #
@@ -61,7 +61,8 @@ if (cat) {
 	j2ss.insertRule("." + prefix + "Row ." + prefix + "Item { border: 0; padding: 0; }", 0);
 	var collectionsID = GM_getValue("collections") || "";
 	var releaseID;
-	var stuff, collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
+	var stuff = {};
+	var collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
 	var strType = "release-group|recording|label|artist|work";
 	var strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	var collectionLoadingStartDate;
@@ -117,7 +118,9 @@ if (cat) {
 				loadButtons.push(createA(
 					"Append",
 					function(event) {
-						var opts = document.querySelectorAll("td." + prefix + " input[type='checkbox']:checked");
+						// ignore settings for the moment, highlight everything https://github.com/jesus2099/konami-command/issues/665
+						// var opts = document.querySelectorAll("td." + prefix + " input[type='checkbox']:checked");
+						var opts = document.querySelectorAll("td." + prefix + " input[type='checkbox']");
 						stuff = {};
 						for (let opt = 0; opt < opts.length; opt++) {
 							stuff[opts[opt].getAttribute("name")] = {};
@@ -151,15 +154,21 @@ if (cat) {
 					for (let stu = 0; stu < collectedStuff.length; stu++) if (collectedStuff[stu] != "collection") {
 						var cstuff = collectedStuff[stu];
 						var lab = document.createElement("label");
-						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue("cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
-						var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
-						if (cstuff.match(/artist|recording|release(-group)?|work/)) { // defaults
+						// ignore settings for the moment, highlight everything https://github.com/jesus2099/konami-command/issues/665
+						// lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue("cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
+						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff, disabled: "disabled", checked: "checked"}}), cstuff + "s "]));
+						lab.setAttribute("title", "sorry, settings are ignored due to bug #665");
+						/*var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
+						if (cstuff.match(/artist|recording|release(-group)?|work/)) {
+							// defaults
 							cfgcb.setAttribute("checked", "checked");
 						}
-						if (cstuff.match(/release(-group)?/)) { // forced
+						if (cstuff.match(/release(-group)?/)) {
+							// forced
 							lab.style.setProperty("opacity", ".5");
 							cfgcb.setAttribute("disabled", "disabled");
-						} else {/* read previous settings */
+						} else {
+							// read previous settings
 							var cfgstu = GM_getValue("cfg" + cstuff);
 							if (cfgstu == "1") {
 								cfgcb.setAttribute("checked", "checked");
@@ -167,7 +176,8 @@ if (cat) {
 								cfgcb.removeAttribute("checked");
 							}
 						}
-						if (cstuff.match(/artist|work/)) { // artist and work tracking requires recording tracking
+						if (cstuff.match(/artist|work/)) {
+							// artist and work tracking requires recording tracking
 							cfgcb.addEventListener("change", function(event) {
 								if (this.checked) {
 									var recording = this.parentNode.parentNode.querySelector("input[name='recording']");
@@ -185,7 +195,7 @@ if (cat) {
 									}
 								}
 							}, false);
-						}
+						}*/
 						settings.push(lab);
 						settings.push(document.createElement("br"));
 					}
@@ -221,7 +231,7 @@ if (cat) {
 // #                                     FIND COLLECTION ENTITIES IN THE PAGE #
 // ############################################################################
 function findOwnedStuff() {
-	stuff = {};
+	// stuff = {}; hmmm? #665
 	// Annotation link trim spaces and protocol + "//" + host
 	for (let annotationLinks = document.querySelectorAll("div#content div.annotation a"), l = 0; l < annotationLinks.length; l++) {
 		annotationLinks[l].setAttribute("href", annotationLinks[l].getAttribute("href").trim().replace(/^((https?:)?\/\/(\w+\.)?musicbrainz\.org)\//, "/"));
@@ -489,7 +499,7 @@ function addRemoveEntities(type, _entities, action) {
 		debug(stuff[type]);
 		if (
 			entity !== null // labels can be null
-			&& stuff[type].rawids // this type is highlighted
+			&& (stuff[type] || stuff[type].rawids) // this type is highlighted (initial load || dynamic load) // it still does not work: ignore settings for the moment, highlight everything https://github.com/jesus2099/konami-command/issues/665
 			&& stuff[type].rawids.indexOf(entity.id) < 0 // this entity is not yet tracked
 			&& !(type == "artist" && skipArtists.indexOf(entity.id) >= 0) // ignore Various Artists, etc.
 		) {
@@ -690,7 +700,7 @@ function stuffRemover(checks, pp) {
 					checkAgainst = "recording";
 					break;
 			}
-			if (stuff[checkAgainst].rawids && stuff[checkType].rawids.indexOf(checkID) > -1) {
+			if (typeof stuff[checkAgainst].rawids == "string" && stuff[checkType].rawids.indexOf(checkID) > -1) {
 				var url = "/" + checkType + "/" + checkID;
 				if (checkType == "artist") { url += "/recordings"; }
 				url += "?page=" + p;
