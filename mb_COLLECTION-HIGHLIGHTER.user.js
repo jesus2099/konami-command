@@ -494,7 +494,7 @@ function addRemoveEntities(type, _entities, action) {
 		if (
 			entity !== null // labels can be null
 			&& stuff[type] // this type is highlighted (initial load)
-			&& typeof stuff[type].rawids =="string" // this type is highlighted (dynamic load)
+			&& typeof stuff[type].rawids == "string" // this type is highlighted (dynamic load)
 			&& stuff[type].rawids.indexOf(entity.id) < 0 // this entity is not yet tracked
 			&& !(type == "artist" && skipArtists.indexOf(entity.id) >= 0) // ignore Various Artists, etc.
 		) {
@@ -592,6 +592,8 @@ function collectionUpdater(link, action) {
 				case "add":
 					stuff["release-new"] = {ids: []};
 					stuff["missingRecordingWorks"] = [];
+					collectionLoadingStartDate = Date.now();
+					currentTaskStartDate = Date.now();
 					loadReleases("/" + releaseID, action, concludeDynamicReleaseLoading);
 					return stop(event);
 					break;
