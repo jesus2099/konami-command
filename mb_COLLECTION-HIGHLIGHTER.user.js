@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.1.29
+// @version      2022.1.31
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -118,9 +118,7 @@ if (cat) {
 				loadButtons.push(createA(
 					"Append",
 					function(event) {
-						// ignore settings for the moment, highlight everything https://github.com/jesus2099/konami-command/issues/665
-						// var opts = document.querySelectorAll("td." + prefix + " input[type='checkbox']:checked");
-						var opts = document.querySelectorAll("td." + prefix + " input[type='checkbox']");
+						var opts = document.querySelectorAll("td." + prefix + " input[type='checkbox']:checked");
 						stuff = {};
 						for (let opt = 0; opt < opts.length; opt++) {
 							stuff[opts[opt].getAttribute("name")] = {};
@@ -154,11 +152,8 @@ if (cat) {
 					for (let stu = 0; stu < collectedStuff.length; stu++) if (collectedStuff[stu] != "collection") {
 						var cstuff = collectedStuff[stu];
 						var lab = document.createElement("label");
-						// ignore settings for the moment, highlight everything https://github.com/jesus2099/konami-command/issues/665
-						// lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue("cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
-						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff, disabled: "disabled", checked: "checked"}}), cstuff + "s "]));
-						lab.setAttribute("title", "sorry, settings are ignored due to bug #665");
-						/*var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
+						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue("cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
+						var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
 						if (cstuff.match(/artist|recording|release(-group)?|work/)) {
 							// defaults
 							cfgcb.setAttribute("checked", "checked");
@@ -195,7 +190,7 @@ if (cat) {
 									}
 								}
 							}, false);
-						}*/
+						}
 						settings.push(lab);
 						settings.push(document.createElement("br"));
 					}
@@ -231,7 +226,6 @@ if (cat) {
 // #                                     FIND COLLECTION ENTITIES IN THE PAGE #
 // ############################################################################
 function findOwnedStuff() {
-	// stuff = {}; hmmm? #665
 	// Annotation link trim spaces and protocol + "//" + host
 	for (let annotationLinks = document.querySelectorAll("div#content div.annotation a"), l = 0; l < annotationLinks.length; l++) {
 		annotationLinks[l].setAttribute("href", annotationLinks[l].getAttribute("href").trim().replace(/^((https?:)?\/\/(\w+\.)?musicbrainz\.org)\//, "/"));
@@ -499,7 +493,8 @@ function addRemoveEntities(type, _entities, action) {
 		debug(stuff[type]);
 		if (
 			entity !== null // labels can be null
-			&& (stuff[type] || stuff[type].rawids) // this type is highlighted (initial load || dynamic load) // it still does not work: ignore settings for the moment, highlight everything https://github.com/jesus2099/konami-command/issues/665
+			&& stuff[type] // this type is highlighted (initial load)
+			&& typeof stuff[type].rawids =="string" // this type is highlighted (dynamic load)
 			&& stuff[type].rawids.indexOf(entity.id) < 0 // this entity is not yet tracked
 			&& !(type == "artist" && skipArtists.indexOf(entity.id) >= 0) // ignore Various Artists, etc.
 		) {
