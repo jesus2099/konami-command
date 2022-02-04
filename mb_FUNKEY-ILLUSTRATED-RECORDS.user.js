@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2021.12.20
+// @version      2022.2.4
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -73,7 +73,12 @@ for (var t = 0; t < types.length; t++) {
 						if (this.status == 200) {
 							var RGCAA = JSON.parse(this.responseText);
 							if (RGCAA.images.length > 0) {
-								loadCaaIcon(this.releaseGroup.parentNode.insertBefore(
+								var releaseGroupOrSpanMp = this.releaseGroup;
+								if (releaseGroupOrSpanMp.parentNode.tagName == "SPAN" && releaseGroupOrSpanMp.parentNode.classList.contains("mp")) {
+									// release group has pending edits, thus, a span.mp parent
+									releaseGroupOrSpanMp = releaseGroupOrSpanMp.parentNode;
+								}
+								loadCaaIcon(releaseGroupOrSpanMp.parentNode.insertBefore(
 									createTag("a",
 										{a: {
 											href: RGCAA.release + "/cover-art",
@@ -82,7 +87,7 @@ for (var t = 0; t < types.length; t++) {
 										}},
 										createTag("span", {a: {class: "caa-icon " + userjs}})
 									),
-									this.releaseGroup.parentNode.firstChild).firstChild
+									releaseGroupOrSpanMp.parentNode.firstChild).firstChild
 								);
 							}
 						} else {
