@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.1.31
+// @version      2022.2.4
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -330,7 +330,7 @@ function loadCollection(collectionMBID, action) {
 	}
 	stuff["release-new"] = {ids: []};
 	stuff["missingRecordingWorks"] = [];
-	loadReleases("?collection=" + collectionMBID, "add", concludeCollectionLoading);
+	loadReleases("?collection=" + collectionMBID, action, concludeCollectionLoading);
 }
 function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add or remove */, conclusionCallback, _offset) {
 	var offset = _offset || 0;
@@ -468,7 +468,7 @@ function addRemoveEntities(type, _entities, action) {
 		var entity = {};
 		switch (type) {
 			case "artist":
-				// pass through
+				// fall through
 			case "label":
 				if (entities[e][type]) {
 					entity.id = entities[e][type].id;
@@ -479,11 +479,11 @@ function addRemoveEntities(type, _entities, action) {
 				}
 				break;
 			case "recording":
-				// pass through
+				// fall through
 			case "release":
-				// pass through
+				// fall through
 			case "release-group":
-				// pass through
+				// fall through
 			case "work":
 				entity.id = entities[e].id;
 				entity.name = entities[e].title;
@@ -537,8 +537,8 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 				mbs12154 += this.response.count - MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
 				if (mbs12154 < MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
 					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: highlightColour}}, "MBS-12154 requires slowing down."), "<br>", "Reducing recording batch size: ", createTag("del", {}, batchSize), "→", createTag("b", {}, batchSize - this.response.count + MBWSSpeedLimit)]), 2); // #### REMOVE WHEN MBS-12154 FIXED
-				retry = 0;
-// #### UNCOMMENT WHEN MBS-12154 FIXED				setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
+					retry = 0;
+					// #### UNCOMMENT WHEN MBS-12154 FIXED // setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
 					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset); }, chrono(MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
 				} else { // #### REMOVE WHEN MBS-12154 FIXED
 					error("MBS-12154 bug\n\nCannot load works."); // #### REMOVE WHEN MBS-12154 FIXED
@@ -596,7 +596,7 @@ function collectionUpdater(link, action) {
 					currentTaskStartDate = Date.now();
 					loadReleases("/" + releaseID, action, concludeDynamicReleaseLoading);
 					return stop(event);
-					break;
+					// break;
 				case "remove":
 					// Force release for "Add to / Remove from collection" but not for "Force highlight ON /OFF"
 					altered = this.getAttribute("href") != self.location.href;

@@ -65,7 +65,7 @@ if (j2set) {
 				var browserLocalStorageEditor;
 				if (self.opera) browserLocalStorageEditor = "CTRL+SHIFT+I (Dragon fly) > Storage > Local Storage";
 				else if (navigator.userAgent.match(/firefox/i)) browserLocalStorageEditor = "Ctrl+Shift+I (Firebug) > DOM > localStorage";
-				else if (navigator.userAgent.match(/chrom(ium|e)/i)/*includes Vivaldi*/) browserLocalStorageEditor = "F12 > Application or Resources > Local Storage";
+				else if (navigator.userAgent.match(/chrom(ium|e)/i)/* includes Vivaldi */) browserLocalStorageEditor = "F12 > Application or Resources > Local Storage";
 				lsm.appendChild(createTag("p", {}, "☞ Your browser has its own local storage editor: " + browserLocalStorageEditor + "."));
 				document.addEventListener("storage", function(event) { loadLS(); }, false); // does never trigger btw
 				loadLS();

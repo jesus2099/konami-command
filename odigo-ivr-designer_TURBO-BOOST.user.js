@@ -99,7 +99,7 @@ switch (self.location.pathname) {
 		document.body.addEventListener("click", function(event) {
 			if (script && event.target == document.querySelector("div#arborescence li#btn-json > a")) {
 				navigator.clipboard.writeText(JSON.stringify(script, null, 2)).then(
-					function() { Header._ShowNotification({level: "success", message: "Secret JSON succesfully copied to clipboard", close:"×", duration: 4000}); },
+					function() { Header._ShowNotification({level: "success", message: "Secret JSON succesfully copied to clipboard", close: "×", duration: 4000}); },
 					function() { Header._ShowNotification({level: "error", message: "Error copying JSON to clipboard!"}); }
 				);
 				return stop(event);

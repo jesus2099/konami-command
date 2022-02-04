@@ -80,17 +80,16 @@ if (parsedRelease.discs[0].tracks[lastTrack].title.match(/^(data track|extra)$/i
 	tracklist.rows[lastTrack + 1].style.setProperty("background", "pink");
 	tracklist.rows[lastTrack].cells[1].style.setProperty("background", "pink");
 	tracklist.rows[lastTrack].cells[1].appendChild(document.createTextNode("→" + parsedRelease.discs[0].tracks[lastTrack - 1].duration));
-	
 }
 // insert murdos MB search and import buttons, with (cough) innerHTML
 var MBStuff = document.createElement("span");
 MBStuff.innerHTML = MBImport.buildSearchLink(parsedRelease).replace("tracks:", "tracksmedium:").replace("<a", "<a target=_blank") + MBImport.buildFormHTML(MBImport.buildFormParameters(parsedRelease, "\n\n—\n" + location.href + " imported by " + GM_info.script.downloadURL.replace("raw", "blob") + " (" + GM_info.script.version + ") "));
 document.querySelector("div#content").insertBefore(MBStuff, document.querySelector("div#content > hr"));
-//tools
+// tools
 function durationToMs(duration) {
 	var durationItems = duration.split(":");
 	var durationMs = 0;
-	for (var i = durationItems.length -1, multiplicator = 1000; i >= 0; i--) {
+	for (var i = durationItems.length - 1, multiplicator = 1000; i >= 0; i--) {
 		durationMs += durationItems[i] * multiplicator;
 		multiplicator *= 60;
 	}
