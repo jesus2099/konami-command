@@ -83,13 +83,9 @@ The thing stills works good.
 You can run either one of the following commands:
 
     npx eslint modified.user.js
-    npm eslint modified.user.js
 
 You can replace `modified.user.js` by `.` to scan all files.
 
 I have added the following to my Geany editor build command (F8):
 
     npx eslint --format compact "%f"
-
-But maybe I should have used `npm`? I don’t know…
-I don’t remember which one is best!
