@@ -34,7 +34,7 @@ supportLink.setAttribute("target", "_blank");
 doc.setAttribute("data-title", GM_info.script.description.replace(/:/g, "\n\n‣").replace(/,/g, "\n‣").replace(/; /g, "\n\n"));
 document.body.appendChild(doc);
 
-// Double-click to select text
+// Click to select text
 css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
 document.body.addEventListener("click", function(event) {
 	if (event.target.tagName == "DIV" && event.target.getAttribute("unselectable") == "on") {
