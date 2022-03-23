@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2022.3.23
-// @description  ALL LISTS: Simple-click cell to select text, Ctrl+click row to view in background tab, Ctrl+Alt+click row to edit in background tab, Pencil and eye icons open in new tab on middle-click Ctrl+click and Shift+click
+// @version      2022.3.23.1136
+// @description  CLICK TO SELECT: click cell to select its text for copy; DOUBLE CLICK TO OPEN à la Mandora: dblclick row to view item, +alt to edit, +ctrl for background tab, +shift for new tab; PENCIL AND EYE ICONS: ctrl+click or middle-click for background tab, shift+click for new tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-routing_TURBO-BOOST.user.js
@@ -34,31 +34,46 @@ supportLink.setAttribute("target", "_blank");
 doc.setAttribute("data-title", GM_info.script.description.replace(/:/g, "\n\n‣").replace(/,/g, "\n‣").replace(/; /g, "\n\n"));
 document.body.appendChild(doc);
 
-// Pencil and eye icons open in new (unfortunately not background) tab on middle-click, Ctrl+click and Shift+click
-document.body.addEventListener("mousedown", function(event) {
-	if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView"))) {
-		if (event.button === 1 || event.ctrlKey || event.shiftKey) {
-			event.preventDefault();
-			openInTab(parentRow(event.target), event.target.classList.contains("iconView") ? "view" : "edit");
+// click cell to select its text for copy
+css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
+document.body.addEventListener("click", function(event) {
+	if (event.target.tagName == "DIV" && event.target.getAttribute("unselectable") == "on" && event.detail === 1) {
+		self.getSelection().selectAllChildren(event.target);
+	}
+});
+
+// Double-click row to view (+Alt to edit) à la Mandora
+document.body.addEventListener("dblclick", function(event) {
+	if (event.target.tagName == "DIV" && event.target.getAttribute("unselectable") == "on") {
+		var row = parentRow(event.target);
+		if (event.ctrlKey || event.shiftKey) {
+			// Use +Ctrl for background tab or +Shift for new tab
+			openInTab(row, event.altKey ? "edit" : "view");
+		} else {
+			// Double-click row for current tab
+			row.querySelector("img.icon" + (event.altKey ? "Modify" : "View")).click();
 		}
 	}
 });
 
-// Click row for actions
-css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
-document.body.addEventListener("click", function(event) {
-	// Is it a viewable/editable Odigo object
-	if (event.target.tagName == "DIV" && event.target.getAttribute("unselectable") == "on") {
-		if (event.ctrlKey) {
-			// Ctrl+click row to view in background tab
-			// Ctrl+Alt+click row to edit in background tab
-			openInTab(parentRow(event.target), event.altKey ? "edit" : "view");
-		} else {
-			// Simple-click cell to select text
-			self.getSelection().selectAllChildren(event.target);
+// Pencil and eye icons open in background tab (ctrl or middle) or new tab (shift)
+document.body.addEventListener("mouseup", backgroundTabIcons);
+document.body.addEventListener("click", backgroundTabIcons, true);
+function backgroundTabIcons(event) {
+	console.log(event.type + " " + event.detail + " on " + event.target);
+	if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView")) && event.detail === 1) {
+		if (event.button === 1 || event.ctrlKey || event.shiftKey) {
+			if (event.type == "mouseup") {
+				openInTab(parentRow(event.target), event.target.classList.contains("iconView") ? "view" : "edit");
+			} else {
+				event.cancelBubble = true;
+				if (event.stopPropagation) event.stopPropagation();
+				event.preventDefault();
+				return false;
+			}
 		}
 	}
-});
+}
 
 function openInTab(row, action) {
 	var openObjectURL = {
@@ -152,16 +167,14 @@ function openInTab(row, action) {
 			url = url.replace("$base64key", btoa(row.querySelector("td:nth-child(" + (openObjectURL[listType].keyCellIndex || 1) + ") > div[unselectable='on']").textContent));
 			url = url.replace("$key", encodeURIComponent(row.querySelector("td:nth-child(" + (openObjectURL[listType].keyCellIndex || 1) + ") > div[unselectable='on']").textContent));
 		}
-		// Unfortunately this blur/focus trick to open background tab does not work in Vivaldi
-		open(url).blur();
-		top.focus();
+		open(url)
 	} else {
 		// fallback to native buttons, view or edit in current tab
 		var actionIcons = {
 			view: row.querySelector("img.iconView"),
 			edit: row.querySelector("img.iconModify"),
 		};
-		if (event.altKey && actionIcons.edit) {
+		if (action == "edit" && actionIcons.edit) {
 			actionIcons.edit.click();
 		} else if (actionIcons.view) {
 			actionIcons.view.click();
