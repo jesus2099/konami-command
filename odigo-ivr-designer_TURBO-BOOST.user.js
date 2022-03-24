@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.1.22
-// @description  APPLICATION LIST: Click to select row, Double-click to open application logs and versions; APPLICATION: Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
+// @version      2022.1.24.123
+// @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
@@ -34,6 +34,8 @@ supportLink.setAttribute("href", GM_info.script.supportURL);
 supportLink.setAttribute("target", "_blank");
 doc.setAttribute("data-title", GM_info.script.description.replace(/:/g, "\n\n‣").replace(/,/g, "\n‣").replace(/; /g, "\n\n"));
 document.body.appendChild(doc);
+
+waitForElement("input#keyword", function(element) { element.focus(); });
 
 switch (self.location.pathname) {
 	case "/appNservices.html":
@@ -164,4 +166,14 @@ function stop(event) {
 	if (event.stopPropagation) event.stopPropagation();
 	event.preventDefault();
 	return false;
+}
+function waitForElement(selector, callback) {
+	var waitForElementIntervalID = setInterval(function() {
+		var element = document.querySelector(selector);
+		if (element) {
+			callback(element);
+		} else {
+			clearInterval(waitForElementIntervalID);
+		}
+	}, 100);
 }
