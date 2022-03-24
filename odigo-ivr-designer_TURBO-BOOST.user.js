@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.1.24.123
+// @version      2022.1.24.224
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -171,9 +171,8 @@ function waitForElement(selector, callback) {
 	var waitForElementIntervalID = setInterval(function() {
 		var element = document.querySelector(selector);
 		if (element) {
-			callback(element);
-		} else {
 			clearInterval(waitForElementIntervalID);
+			callback(element);
 		}
 	}, 100);
 }
