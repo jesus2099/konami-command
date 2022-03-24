@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2022.3.23.1136
+// @version      2022.3.24
 // @description  CLICK TO SELECT: click cell to select its text for copy; DOUBLE CLICK TO OPEN à la Mandora: dblclick row to view item, +alt to edit, +ctrl for background tab, +shift for new tab; PENCIL AND EYE ICONS: ctrl+click or middle-click for background tab, shift+click for new tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -57,15 +57,18 @@ document.body.addEventListener("dblclick", function(event) {
 });
 
 // Pencil and eye icons open in background tab (ctrl or middle) or new tab (shift)
+document.body.addEventListener("mousedown", backgroundTabIcons);
 document.body.addEventListener("mouseup", backgroundTabIcons);
 document.body.addEventListener("click", backgroundTabIcons, true);
 function backgroundTabIcons(event) {
-	console.log(event.type + " " + event.detail + " on " + event.target);
+	debug(event.type + " detail=" + event.detail + " button=" + event.button + " on " + event.target);
 	if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView")) && event.detail === 1) {
 		if (event.button === 1 || event.ctrlKey || event.shiftKey) {
 			if (event.type == "mouseup") {
 				openInTab(parentRow(event.target), event.target.classList.contains("iconView") ? "view" : "edit");
 			} else {
+				// prevent scroll with middle-click on mousedown
+				// prevent navigate in current tab with action icons on click
 				event.cancelBubble = true;
 				if (event.stopPropagation) event.stopPropagation();
 				event.preventDefault();
@@ -190,4 +193,7 @@ function parentRow(node) {
 	} else {
 		return parentRow(node.parentNode);
 	}
+}
+function debug(text) {
+	console.debug(GM_info.script.name + "\n" + (typeof text == "string" ? text : JSON.stringify(text)));
 }
