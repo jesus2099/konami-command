@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2022.3.24
+// @version      2022.3.24.248
 // @description  CLICK TO SELECT: click cell to select its text for copy; DOUBLE CLICK TO OPEN à la Mandora: dblclick row to view item, +alt to edit, +ctrl for background tab, +shift for new tab; PENCIL AND EYE ICONS: ctrl+click or middle-click for background tab, shift+click for new tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -9,6 +9,7 @@
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2022-03-21
+// @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_info
 // @include      /https?:\/\/[^.]+.odigo.cx\/[^/]+\/ui\/service/
 // @run-at       document-ready
@@ -45,7 +46,7 @@ document.body.addEventListener("click", function(event) {
 // Double-click row to view (+Alt to edit) à la Mandora
 document.body.addEventListener("dblclick", function(event) {
 	if (event.target.tagName == "DIV" && event.target.getAttribute("unselectable") == "on") {
-		var row = parentRow(event.target);
+		var row = getParent(event.target, "tr");
 		if (event.ctrlKey || event.shiftKey) {
 			// Use +Ctrl for background tab or +Shift for new tab
 			openInTab(row, event.altKey ? "edit" : "view");
@@ -65,7 +66,7 @@ function backgroundTabIcons(event) {
 	if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView")) && event.detail === 1) {
 		if (event.button === 1 || event.ctrlKey || event.shiftKey) {
 			if (event.type == "mouseup") {
-				openInTab(parentRow(event.target), event.target.classList.contains("iconView") ? "view" : "edit");
+				openInTab(getParent(event.target, "tr"), event.target.classList.contains("iconView") ? "view" : "edit");
 			} else {
 				// prevent scroll with middle-click on mousedown
 				// prevent navigate in current tab with action icons on click
@@ -185,15 +186,6 @@ function openInTab(row, action) {
 	}
 }
 
-function parentRow(node) {
-	if (node.tagName && node.tagName === "TR") {
-		return node;
-	} else if (node.tagName && (node.tagName === "BODY" || node.tagName === "HTML")) {
-		return null;
-	} else {
-		return parentRow(node.parentNode);
-	}
-}
 function debug(text) {
-	console.debug(GM_info.script.name + "\n" + (typeof text == "string" ? text : JSON.stringify(text)));
+	console.debug(GM_info.script.name + " ## " + (typeof text == "string" ? text : JSON.stringify(text)));
 }

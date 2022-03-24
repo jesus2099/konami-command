@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.1.24.224
+// @version      2022.1.24.234
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -9,6 +9,7 @@
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2021-04-23
+// @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_info
 // @include      /^https?:\/\/ivr-designer\d?\.prosodie\.com\/application\.html/
 // @include      /^https?:\/\/ivr-designer\d?\.prosodie\.com\/appNservices\.html/
@@ -50,7 +51,7 @@ switch (self.location.pathname) {
 		var container = document.querySelector("div#main-container");
 		if (container) {
 			container.addEventListener("click", function(event) {
-				var row = parentRow(event.target);
+				var row = getParent(event.target, "tr");
 				if (row) {
 					var rowCheckbox = row.querySelector("input[type='checkbox']");
 					if (rowCheckbox) {
@@ -150,29 +151,4 @@ switch (self.location.pathname) {
 			}
 		}, 500);
 		break;
-}
-
-function parentRow(node) {
-	if (node.tagName && node.tagName === "TR") {
-		return node;
-	} else if (node.tagName && (node.tagName === "BODY" || node.tagName === "HTML")) {
-		return null;
-	} else {
-		return parentRow(node.parentNode);
-	}
-}
-function stop(event) {
-	event.cancelBubble = true;
-	if (event.stopPropagation) event.stopPropagation();
-	event.preventDefault();
-	return false;
-}
-function waitForElement(selector, callback) {
-	var waitForElementIntervalID = setInterval(function() {
-		var element = document.querySelector(selector);
-		if (element) {
-			clearInterval(waitForElementIntervalID);
-			callback(element);
-		}
-	}, 100);
 }
