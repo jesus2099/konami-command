@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2022.3.24.248
-// @description  CLICK TO SELECT: click cell to select its text for copy; DOUBLE CLICK TO OPEN à la Mandora: dblclick row to view item, +alt to edit, +ctrl for background tab, +shift for new tab; PENCIL AND EYE ICONS: ctrl+click or middle-click for background tab, shift+click for new tab
+// @version      2022.3.27
+// @description  CLICK CELL TO SELECT TEXT: for easy copy; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-routing_TURBO-BOOST.user.js
@@ -11,7 +11,7 @@
 // @since        2022-03-21
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_info
-// @include      /https?:\/\/[^.]+.odigo.cx\/[^/]+\/ui\/service/
+// @include      /^https?:\/\/[^.]+.odigo.cx\/[^/]+\/ui\/service/
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
@@ -58,6 +58,95 @@ document.body.addEventListener("dblclick", function(event) {
 });
 
 // Pencil and eye icons open in background tab (ctrl or middle) or new tab (shift)
+var openObjectURL = {
+	agentGroupSearch: {
+		view: "agentGroupEdit?action=VIEW&idString=$key",
+		edit: "agentGroupEdit?action=UPDATE&idString=$key",
+	},
+	agentGroupTreeSearch: {
+		view: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0",
+		edit: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0",
+	},
+	calendarSearch: {
+		view: "calendarEdit?action=VIEW&CalID=$key",
+		edit: "calendarEdit?action=EDIT&CalID=$key",
+	},
+	/* callbackIdSearch: { // cannot find callerId in page
+		view: "callbackIdEdit?action=VIEW&callerId=61",
+		edit: "callbackIdEdit?action=EDIT&callerId=61",
+	}, */
+	/* caseSearch: { // unknown pattern, no examples
+	}, */
+	channelSearch: {
+		view: "channelEdit?action=VIEW&id=$id",
+		edit: "channelEdit?action=EDIT&id=$id",
+	},
+	/* chatGroupSearch: { // cannot find idString in page
+		view: "chatGroupEdit?action=VIEW&idString=10",
+		edit: "chatGroupEdit?action=UPDATE&idString=10",
+	}, */
+	/* codificationSearch: { // cannot find codificationId in page
+		view: "codificationEdit?action=VIEW&codificationId=3",
+		edit: "codificationEdit?action=EDIT&codificationId=3",
+	}, */
+	/* commonQueueSearch: { // unknown pattern, no examples
+	}, */
+	ddiSearch: {
+		view: "ddiEdit?action=VIEW&keyWord=$base64key",
+		edit: "ddiEdit?action=EDIT&keyWord=$base64key",
+	},
+	gateSearch: {
+		view: "gateEdit?action=VIEW&keyWord=$key",
+		edit: "gateEdit?action=EDIT&keyWord=$key",
+		keyCellIndex: 2
+	},
+	gateSkillDispatchSearch: {
+		view: "gateSkillDispatchEdit?action=VIEW&dispatchId=$id",
+		edit: "gateSkillDispatchEdit?action=EDIT&dispatchId=$id",
+	},
+	gateTreeSearch: {
+		view: "gateTreeEdit?id=$id&label=$key&isCreation=0",
+		edit: "gateTreeEdit?id=$id&label=$key&isCreation=0",
+	},
+	/* miniDirectorySearch: { // cannot find annuaireId in page
+		view: "miniDirectoryEdit?action=VIEW&annuaireId=8",
+		edit: "miniDirectoryEdit?action=EDIT&annuaireId=3",
+	}, */
+	reasonForCallSearch: {
+		view: "reasonForCallListEdit?action=VIEW&rootId=$id",
+		edit: "reasonForCallListEdit?action=EDIT&rootId=$id",
+	},
+	/* smsTemplateSearch: { // unknown pattern, no examples
+	}, */
+	otherActivitySearch: {
+		view: "otherActivityEdit?activityId=$key",
+		edit: "otherActivityEdit?activityId=$key",
+	},
+	skillSearch: {
+		view: "skillDisplay?action=VIEW&keyWord=$key",
+		edit: "skillEdit?action=EDIT&keyWord=$key",
+		keyCellIndex: 2
+	},
+	userSearch: {
+		view: "userEdit?action=VIEW&isTemplate=false&idUtilisateurAEditer=$key",
+		edit: "userEdit?action=EDIT&isTemplate=false&userFromLdap=false&idUtilisateurAEditer=$key",
+		keyCellIndex: 2
+	},
+	userTemplateSearch: {
+		view: "userEdit?action=VIEW&isTemplate=true&idUtilisateurAEditer=$key",
+		edit: "userEdit?action=EDIT&isTemplate=true&idUtilisateurAEditer=$key",
+		keyCellIndex: 3
+	},
+};
+var listType = location.pathname.match(/([^/]+Search)$/)[1];
+if (openObjectURL[listType]) {
+	css.insertRule("img.iconModify, img.iconView, img.iconModify:hover, img.iconView:hover { height: 20px; width: 20px; background-size: contain; background-color: " + lightBgColour + "; box-shadow: 1px 1px 3px " + darkBgColour + "; }", 0);
+} else {
+	var span = document.createElement("span");
+	span.appendChild(document.createTextNode("⚠️ "));
+	span.setAttribute("title", "Cannot open " + listType.replace(/Search$/, "").replace(/([A-Z])/g, " $1").toLowerCase() + " in new or background tab!");
+	doc.insertBefore(span, doc.firstChild);
+}
 document.body.addEventListener("mousedown", backgroundTabIcons);
 document.body.addEventListener("mouseup", backgroundTabIcons);
 document.body.addEventListener("click", backgroundTabIcons, true);
@@ -80,87 +169,6 @@ function backgroundTabIcons(event) {
 }
 
 function openInTab(row, action) {
-	var openObjectURL = {
-		agentGroupSearch: {
-			view: "agentGroupEdit?action=VIEW&idString=$key",
-			edit: "agentGroupEdit?action=UPDATE&idString=$key",
-		},
-		agentGroupTreeSearch: {
-			view: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0",
-			edit: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0",
-		},
-		calendarSearch: {
-			view: "calendarEdit?action=VIEW&CalID=$key",
-			edit: "calendarEdit?action=EDIT&CalID=$key",
-		},
-		/* callbackIdSearch: { // cannot find callerId in page
-			view: "callbackIdEdit?action=VIEW&callerId=61",
-			edit: "callbackIdEdit?action=EDIT&callerId=61",
-		}, */
-		/* caseSearch: { // unknown pattern, no examples
-		}, */
-		channelSearch: {
-			view: "channelEdit?action=VIEW&id=$id",
-			edit: "channelEdit?action=EDIT&id=$id",
-		},
-		/* chatGroupSearch: { // cannot find idString in page
-			view: "chatGroupEdit?action=VIEW&idString=10",
-			edit: "chatGroupEdit?action=UPDATE&idString=10",
-		}, */
-		/* codificationSearch: { // cannot find codificationId in page
-			view: "codificationEdit?action=VIEW&codificationId=3",
-			edit: "codificationEdit?action=EDIT&codificationId=3",
-		}, */
-		/* commonQueueSearch: { // unknown pattern, no examples
-		}, */
-		ddiSearch: {
-			view: "ddiEdit?action=VIEW&keyWord=$base64key",
-			edit: "ddiEdit?action=EDIT&keyWord=$base64key",
-		},
-		gateSearch: {
-			view: "gateEdit?action=VIEW&keyWord=$key",
-			edit: "gateEdit?action=EDIT&keyWord=$key",
-			keyCellIndex: 2
-		},
-		gateSkillDispatchSearch: {
-			view: "gateSkillDispatchEdit?action=VIEW&dispatchId=$id",
-			edit: "gateSkillDispatchEdit?action=EDIT&dispatchId=$id",
-		},
-		gateTreeSearch: {
-			view: "gateTreeEdit?id=$id&label=$key&isCreation=0",
-			edit: "gateTreeEdit?id=$id&label=$key&isCreation=0",
-		},
-		/* miniDirectorySearch: { // cannot find annuaireId in page
-			view: "miniDirectoryEdit?action=VIEW&annuaireId=8",
-			edit: "miniDirectoryEdit?action=EDIT&annuaireId=3",
-		}, */
-		reasonForCallSearch: {
-			view: "reasonForCallListEdit?action=VIEW&rootId=$id",
-			edit: "reasonForCallListEdit?action=EDIT&rootId=$id",
-		},
-		/* smsTemplateSearch: { // unknown pattern, no examples
-		}, */
-		otherActivitySearch: {
-			view: "otherActivityEdit?activityId=$key",
-			edit: "otherActivityEdit?activityId=$key",
-		},
-		skillSearch: {
-			view: "skillDisplay?action=VIEW&keyWord=$key",
-			edit: "skillEdit?action=EDIT&keyWord=$key",
-			keyCellIndex: 2
-		},
-		userSearch: {
-			view: "userEdit?action=VIEW&isTemplate=false&idUtilisateurAEditer=$key",
-			edit: "userEdit?action=EDIT&isTemplate=false&userFromLdap=false&idUtilisateurAEditer=$key",
-			keyCellIndex: 2
-		},
-		userTemplateSearch: {
-			view: "userEdit?action=VIEW&isTemplate=true&idUtilisateurAEditer=$key",
-			edit: "userEdit?action=EDIT&isTemplate=true&idUtilisateurAEditer=$key",
-			keyCellIndex: 3
-		},
-	};
-	var listType = location.pathname.match(/[^/]+$/)[0];
 	if (openObjectURL[listType]) {
 		var url = openObjectURL[listType][action];
 		if (url.match(/\$id/)) {
@@ -168,8 +176,8 @@ function openInTab(row, action) {
 		}
 		if (url.match(/\$(base64)?key/)) {
 			var key = row.querySelector("td:nth-child(" + (openObjectURL[listType].keyCellIndex || 1) + ") > div[unselectable='on']").textContent;
-			url = url.replace("$base64key", btoa(row.querySelector("td:nth-child(" + (openObjectURL[listType].keyCellIndex || 1) + ") > div[unselectable='on']").textContent));
-			url = url.replace("$key", encodeURIComponent(row.querySelector("td:nth-child(" + (openObjectURL[listType].keyCellIndex || 1) + ") > div[unselectable='on']").textContent));
+			url = url.replace("$base64key", btoa(key));
+			url = url.replace("$key", encodeURIComponent(key));
 		}
 		open(url)
 	} else {
