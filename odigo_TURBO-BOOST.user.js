@@ -1,16 +1,17 @@
 // ==UserScript==
-// @name         odigo ivr designer. TURBO BOOST
-// @version      2022.1.24.234
-// @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
+// @name         odigo. TURBO BOOST
+// @version      2022.1.25
+// @description  [ivr] APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions; [ivr] APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard; [routing] CLICK TO SELECT: click cell to select its text for copy; [routing] DOUBLE CLICK TO OPEN à la Mandora: dblclick row to view item, +alt to edit, +ctrl for background tab, +shift for new tab; [routing] PENCIL AND EYE ICONS: ctrl+click or middle-click for background tab, shift+click for new tab
 // @namespace    https://github.com/jesus2099/konami-command
-// @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
-// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
+// @supportURL   https://github.com/jesus2099/konami-command/labels/odigo_TURBO-BOOST
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo_TURBO-BOOST.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2021-04-23
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_info
+// @include      /^https?:\/\/[^.]+.odigo.cx\/[^/]+\/ui\/service/
 // @include      /^https?:\/\/ivr-designer\d?\.prosodie\.com\/application\.html/
 // @include      /^https?:\/\/ivr-designer\d?\.prosodie\.com\/appNservices\.html/
 // @run-at       document-ready
@@ -151,4 +152,159 @@ switch (self.location.pathname) {
 			}
 		}, 500);
 		break;
+}
+
+// click cell to select its text for copy
+css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
+document.body.addEventListener("click", function(event) {
+	if (event.target.tagName == "DIV" && event.target.getAttribute("unselectable") == "on" && event.detail === 1) {
+		self.getSelection().selectAllChildren(event.target);
+	}
+});
+
+// Double-click row to view (+Alt to edit) à la Mandora
+document.body.addEventListener("dblclick", function(event) {
+	if (event.target.tagName == "DIV" && event.target.getAttribute("unselectable") == "on") {
+		var row = getParent(event.target, "tr");
+		if (event.ctrlKey || event.shiftKey) {
+			// Use +Ctrl for background tab or +Shift for new tab
+			openInTab(row, event.altKey ? "edit" : "view");
+		} else {
+			// Double-click row for current tab
+			row.querySelector("img.icon" + (event.altKey ? "Modify" : "View")).click();
+		}
+	}
+});
+
+// Pencil and eye icons open in background tab (ctrl or middle) or new tab (shift)
+document.body.addEventListener("mousedown", backgroundTabIcons);
+document.body.addEventListener("mouseup", backgroundTabIcons);
+document.body.addEventListener("click", backgroundTabIcons, true);
+function backgroundTabIcons(event) {
+	debug(event.type + " detail=" + event.detail + " button=" + event.button + " on " + event.target);
+	if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView")) && event.detail === 1) {
+		if (event.button === 1 || event.ctrlKey || event.shiftKey) {
+			if (event.type == "mouseup") {
+				openInTab(getParent(event.target, "tr"), event.target.classList.contains("iconView") ? "view" : "edit");
+			} else {
+				// prevent scroll with middle-click on mousedown
+				// prevent navigate in current tab with action icons on click
+				event.cancelBubble = true;
+				if (event.stopPropagation) event.stopPropagation();
+				event.preventDefault();
+				return false;
+			}
+		}
+	}
+}
+
+function openInTab(row, action) {
+	var openObjectURL = {
+		agentGroupSearch: {
+			view: "agentGroupEdit?action=VIEW&idString=$key",
+			edit: "agentGroupEdit?action=UPDATE&idString=$key",
+		},
+		agentGroupTreeSearch: {
+			view: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0",
+			edit: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0",
+		},
+		calendarSearch: {
+			view: "calendarEdit?action=VIEW&CalID=$key",
+			edit: "calendarEdit?action=EDIT&CalID=$key",
+		},
+		/* callbackIdSearch: { // cannot find callerId in page
+			view: "callbackIdEdit?action=VIEW&callerId=61",
+			edit: "callbackIdEdit?action=EDIT&callerId=61",
+		}, */
+		/* caseSearch: { // unknown pattern, no examples
+		}, */
+		channelSearch: {
+			view: "channelEdit?action=VIEW&id=$id",
+			edit: "channelEdit?action=EDIT&id=$id",
+		},
+		/* chatGroupSearch: { // cannot find idString in page
+			view: "chatGroupEdit?action=VIEW&idString=10",
+			edit: "chatGroupEdit?action=UPDATE&idString=10",
+		}, */
+		/* codificationSearch: { // cannot find codificationId in page
+			view: "codificationEdit?action=VIEW&codificationId=3",
+			edit: "codificationEdit?action=EDIT&codificationId=3",
+		}, */
+		/* commonQueueSearch: { // unknown pattern, no examples
+		}, */
+		ddiSearch: {
+			view: "ddiEdit?action=VIEW&keyWord=$base64key",
+			edit: "ddiEdit?action=EDIT&keyWord=$base64key",
+		},
+		gateSearch: {
+			view: "gateEdit?action=VIEW&keyWord=$key",
+			edit: "gateEdit?action=EDIT&keyWord=$key",
+			keyCellIndex: 2
+		},
+		gateSkillDispatchSearch: {
+			view: "gateSkillDispatchEdit?action=VIEW&dispatchId=$id",
+			edit: "gateSkillDispatchEdit?action=EDIT&dispatchId=$id",
+		},
+		gateTreeSearch: {
+			view: "gateTreeEdit?id=$id&label=$key&isCreation=0",
+			edit: "gateTreeEdit?id=$id&label=$key&isCreation=0",
+		},
+		/* miniDirectorySearch: { // cannot find annuaireId in page
+			view: "miniDirectoryEdit?action=VIEW&annuaireId=8",
+			edit: "miniDirectoryEdit?action=EDIT&annuaireId=3",
+		}, */
+		reasonForCallSearch: {
+			view: "reasonForCallListEdit?action=VIEW&rootId=$id",
+			edit: "reasonForCallListEdit?action=EDIT&rootId=$id",
+		},
+		/* smsTemplateSearch: { // unknown pattern, no examples
+		}, */
+		otherActivitySearch: {
+			view: "otherActivityEdit?activityId=$key",
+			edit: "otherActivityEdit?activityId=$key",
+		},
+		skillSearch: {
+			view: "skillDisplay?action=VIEW&keyWord=$key",
+			edit: "skillEdit?action=EDIT&keyWord=$key",
+			keyCellIndex: 2
+		},
+		userSearch: {
+			view: "userEdit?action=VIEW&isTemplate=false&idUtilisateurAEditer=$key",
+			edit: "userEdit?action=EDIT&isTemplate=false&userFromLdap=false&idUtilisateurAEditer=$key",
+			keyCellIndex: 2
+		},
+		userTemplateSearch: {
+			view: "userEdit?action=VIEW&isTemplate=true&idUtilisateurAEditer=$key",
+			edit: "userEdit?action=EDIT&isTemplate=true&idUtilisateurAEditer=$key",
+			keyCellIndex: 3
+		},
+	};
+	var listType = location.pathname.match(/[^/]+$/)[0];
+	if (openObjectURL[listType]) {
+		var url = openObjectURL[listType][action];
+		if (url.match(/\$id/)) {
+			url = url.replace("$id", row.getAttribute("data-recordid"));
+		}
+		if (url.match(/\$(base64)?key/)) {
+			var key = row.querySelector("td:nth-child(" + (openObjectURL[listType].keyCellIndex || 1) + ") > div[unselectable='on']").textContent;
+			url = url.replace("$base64key", btoa(row.querySelector("td:nth-child(" + (openObjectURL[listType].keyCellIndex || 1) + ") > div[unselectable='on']").textContent));
+			url = url.replace("$key", encodeURIComponent(row.querySelector("td:nth-child(" + (openObjectURL[listType].keyCellIndex || 1) + ") > div[unselectable='on']").textContent));
+		}
+		open(url)
+	} else {
+		// fallback to native buttons, view or edit in current tab
+		var actionIcons = {
+			view: row.querySelector("img.iconView"),
+			edit: row.querySelector("img.iconModify"),
+		};
+		if (action == "edit" && actionIcons.edit) {
+			actionIcons.edit.click();
+		} else if (actionIcons.view) {
+			actionIcons.view.click();
+		}
+	}
+}
+
+function debug(text) {
+	console.debug(GM_info.script.name + " ## " + (typeof text == "string" ? text : JSON.stringify(text)));
 }
