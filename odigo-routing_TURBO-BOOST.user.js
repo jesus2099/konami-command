@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2022.3.27
-// @description  CLICK CELL TO SELECT TEXT: for easy copy; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
+// @version      2022.3.29
+// @description  CLICK CELL TO SELECT TEXT: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-routing_TURBO-BOOST.user.js
@@ -40,6 +40,19 @@ css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
 document.body.addEventListener("click", function(event) {
 	if (event.target.tagName == "DIV" && event.target.getAttribute("unselectable") == "on" && event.detail === 1) {
 		self.getSelection().selectAllChildren(event.target);
+	}
+});
+
+// SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision
+document.body.addEventListener("mouseover", function(event) {
+	if (
+		event.target.tagName == "DIV"
+		&& event.target.getAttribute("unselectable") == "on"
+		&& (event.target.scrollHeight > event.target.clientHeight || event.target.scrollWidth > event.target.clientWidth) // text overflows (is cut)
+		&& !event.target.parentNode.getAttribute("data-qtip") // no Odigo tooltip yet
+	) {
+		event.target.parentNode.setAttribute("data-qtip", event.target.textContent);
+		css.insertRule("#ext-quicktips-tip { background-color: " + lightBgColour + "; }", 0);
 	}
 });
 
