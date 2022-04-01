@@ -17,6 +17,8 @@
 // ==/UserScript==
 "use strict";
 
+/* global Header, script */
+
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);

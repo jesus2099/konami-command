@@ -16,6 +16,9 @@
 // @run-at       document-idle
 // ==/UserScript==
 "use strict";
+
+/* global MBImport */
+
 // http://libcddb.sourceforge.net/API/cddb__disc_8h.html
 // https://www.jwz.org/doc/cddb.html
 // https://en.wikipedia.org/wiki/CDDB

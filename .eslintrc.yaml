@@ -23,6 +23,7 @@ globals:
  removeNode:      readonly
  replaceChildren: readonly
  sendEvent:       readonly
+ waitForElement:  readonly
 
 ignorePatterns:
 - "*.md"

@@ -193,7 +193,7 @@ function openInTab(row, action) {
 			url = url.replace("$base64key", btoa(key));
 			url = url.replace("$key", encodeURIComponent(key));
 		}
-		open(url)
+		open(url);
 	} else {
 		// fallback to native buttons, view or edit in current tab
 		var actionIcons = {
