@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.1.24.234
+// @version      2022.4.1
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -11,8 +11,8 @@
 // @since        2021-04-23
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_info
-// @include      /^https?:\/\/ivr-designer\d?\.prosodie\.com\/application\.html/
-// @include      /^https?:\/\/ivr-designer\d?\.prosodie\.com\/appNservices\.html/
+// @include      /^https?:\/\/ivr-designer[^.]*\.(odigo\.cx|prosodie\.com)\/application\.html/
+// @include      /^https?:\/\/ivr-designer[^.]*\.(odigo\.cx|prosodie\.com)\/appNservices\.html/
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
