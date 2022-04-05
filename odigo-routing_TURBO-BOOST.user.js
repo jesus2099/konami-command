@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2022.3.30
+// @version      2022.4.5
 // @description  CLICK CELL TO SELECT TEXT: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -9,7 +9,6 @@
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2022-03-21
-// @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_info
 // @include      /^https?:\/\/[^.]+.odigo.cx\/[^/]+\/ui\/service/
 // @run-at       document-ready
@@ -39,7 +38,7 @@ document.body.appendChild(doc);
 css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
 css.insertRule(".x-unselectable { user-select: text; }", 0);
 document.body.addEventListener("click", function(event) {
-	if (event.target.tagName == "DIV" && event.target.getAttribute("unselectable") == "on" && event.detail === 1) {
+	if (event.target.closest("div[unselectable='on']") && event.detail === 1) {
 		self.getSelection().selectAllChildren(event.target);
 	}
 });
@@ -47,8 +46,7 @@ document.body.addEventListener("click", function(event) {
 // SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision
 document.body.addEventListener("mouseover", function(event) {
 	if (
-		event.target.tagName == "DIV"
-		&& event.target.getAttribute("unselectable") == "on"
+		event.target.closest("div[unselectable='on']")
 		&& (event.target.scrollHeight > event.target.clientHeight || event.target.scrollWidth > event.target.clientWidth) // text overflows (is cut)
 		&& !event.target.parentNode.getAttribute("data-qtip") // no Odigo tooltip yet
 	) {
@@ -59,8 +57,8 @@ document.body.addEventListener("mouseover", function(event) {
 
 // Double-click row to view (+Alt to edit) à la Mandora
 document.body.addEventListener("dblclick", function(event) {
-	if (event.target.tagName == "DIV" && event.target.getAttribute("unselectable") == "on") {
-		var row = getParent(event.target, "tr");
+	if (event.target.matches("div[unselectable='on']")) {
+		var row = event.target.closest("tr");
 		if (event.ctrlKey || event.shiftKey) {
 			// Use +Ctrl for background tab or +Shift for new tab
 			openInTab(row, event.altKey ? "edit" : "view");
@@ -165,11 +163,11 @@ document.body.addEventListener("mousedown", backgroundTabIcons);
 document.body.addEventListener("mouseup", backgroundTabIcons);
 document.body.addEventListener("click", backgroundTabIcons, true);
 function backgroundTabIcons(event) {
-	debug(event.type + " detail=" + event.detail + " button=" + event.button + " on " + event.target);
+	// debug(event.type + " detail=" + event.detail + " button=" + event.button + " on " + event.target);
 	if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView")) && event.detail === 1) {
 		if (event.button === 1 || event.ctrlKey || event.shiftKey) {
 			if (event.type == "mouseup") {
-				openInTab(getParent(event.target, "tr"), event.target.classList.contains("iconView") ? "view" : "edit");
+				openInTab(event.target.closest("tr"), event.target.classList.contains("iconView") ? "view" : "edit");
 			} else {
 				// prevent scroll with middle-click on mousedown
 				// prevent navigate in current tab with action icons on click
