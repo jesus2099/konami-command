@@ -468,22 +468,53 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			if (getExtLinks()) {
 				/* -- vv ------ JASRAC + ongakunomori sakuhin code link ------ vv -- */
 				// var codes = new RegExp(reAnnotCode, "ig")
-				let donecodes = [];
-				var jasracIDs = document.querySelectorAll("div#sidebar dl.properties > dd.work-attribute-jasrac-id");
-				for (let i = 0; i < jasracIDs.length; i++) {
-					var ddcode = jasracIDs[i].textContent.trim();
-					replaceElement(createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, ddcode), jasracIDs[i].firstChild);
-					if (donecodes.indexOf(ddcode) < 0) {
-						donecodes.push(ddcode);
-						getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "jasrac no-favicon"}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, "JASRAC — " + ddcode)));
-						getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "minc no-favicon"}}, createTag("a", {a: {href: workLookupURL("minc", "code", ddcode)}, s: {background: background}}, "音楽の森 — " + ddcode)));
-						getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "nextone no-favicon"}}, createTag("a", {a: {href: workLookupURL("nextone", "code", ddcode)}, s: {background: background}}, "NexTone — " + ddcode)));
-					} else {
-						if (confirm("Duplicate JASRAC ID detected in work attributes.\nDo you want to edit?")) {
-							self.location.href = self.location.pathname + "/edit";
+				setInterval(function() {
+					// React hydrate in work attributes requires such daemon
+					// retrieve collapsed JASRAC codes (when there are too many work attributes)
+					var attributes = document.querySelector("h2.work-attributes + script[type='application/json']");
+					if (attributes && attributes.textContent) {
+						attributes = JSON.parse(attributes.textContent).attributes;
+						var attributeList = document.querySelector("div#sidebar dl.work-attributes");
+						var codes = [];
+						for (var a = 0; a < attributes.length; a++) {
+							if (attributes[a].typeID == 3 && !document.querySelector("div#sidebar dl.work-attributes > dd.work-attribute-jasrac-id[ref='" + attributes[a].value + "']")) {
+								// {"id": 494106, "typeName": "JASRAC ID", "value_id": null, "value": "052-1235-9", "typeID": 3}
+								if (codes.indexOf(attributes[a].value.replace(/-/g, "")) > -1) {
+									if (confirm("Duplicate JASRAC work code " + attributes[a].value + " detected.\nDo you want to edit?")) {
+										self.location.href = self.location.pathname + "/edit";
+									}
+								}
+								codes.push(attributes[a].value.replace(/-/g, ""));
+								// check if this is not already displayed
+								var checkVisibleCodes = document.querySelectorAll("div#sidebar dl.work-attributes > dd.work-attribute-jasrac-id:not([ref='" + attributes[a].value + "'])");
+								var codeIsVisible = false;
+								for (var c = 0; c < checkVisibleCodes.length; c++) {
+									if (checkVisibleCodes[c].textContent.trim() == attributes[a].value) {
+										codeIsVisible = true;
+										break;
+									}
+								}
+								if (!codeIsVisible) {
+									// if this JASRAC ID is not visible yet
+									attributeList.insertBefore(createTag("dd", {a: {class: "work-attribute work-attribute-jasrac-id", ref: attributes[a].value}}, attributes[a].value), attributeList.firstChild);
+									attributeList.insertBefore(createTag("dt", {}, attributes[a].typeName + ":"), attributeList.firstChild);
+								}
+							}
 						}
 					}
-				}
+					var jasracIDs = document.querySelectorAll("div#sidebar dl.work-attributes > dd.work-attribute-jasrac-id:not(." + userjs.id + ")");
+					for (let i = 0; i < jasracIDs.length; i++) {
+						var ddcode = jasracIDs[i].textContent.trim();
+						replaceElement(createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, ddcode), jasracIDs[i].firstChild);
+						if (!getExtLinks().querySelector("li." + userjs.id + "jasrac[ref='" + ddcode + "']")) {
+							// add only one set of searches per JASRAC work code
+							getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "jasrac no-favicon", ref: ddcode}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, "JASRAC — " + ddcode)));
+							getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "minc no-favicon"}, ref: ddcode}, createTag("a", {a: {href: workLookupURL("minc", "code", ddcode)}, s: {background: background}}, "音楽の森 — " + ddcode)));
+							getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "nextone no-favicon"}, ref: ddcode}, createTag("a", {a: {href: workLookupURL("nextone", "code", ddcode)}, s: {background: background}}, "NexTone — " + ddcode)));
+						}
+						jasracIDs[i].classList.add(userjs.id);
+					}
+				}, 1000);
 				/* -- vv ------ JASRAC ISWC link ------ vv -- */
 				var iswcs = document.querySelectorAll("div#sidebar > dl.properties > dd.iswc > a[href*='/iswc/'] code");
 				for (let iswc = 0; iswc < iswcs.length; iswc++) {
