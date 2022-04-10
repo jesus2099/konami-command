@@ -415,6 +415,10 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						}
 				/* -- vv ------ Select music release rights, like CD, etc. ------ vv -- */
 						document.querySelector("div.management a[href='#tab-00-01']").click();
+				/* -- vv ------ Open performers section ------ vv -- */
+						// TODO: remove topmost setTimeout and use this waitForElement instead, when fixing this script
+						// waitForElement("section[data-role='artist'] a.btn-acd", function(element) { if (element.classList.contains("close")) element.click(); });
+						document.querySelector("section[data-role='artist'] a.btn-acd.close").click();
 					}
 				}
 			}, 4000); // quick and dirty patch
