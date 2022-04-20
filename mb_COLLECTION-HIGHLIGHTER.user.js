@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.2.4
+// @version      2099.4.26
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -58,7 +58,6 @@ if (cat) {
 	j2ss.insertRule("." + prefix + "Row {" + brdr + "}", 0);
 	j2ss.insertRule("li." + prefix + "Row { padding-left: 4px; }", 0);
 	j2ss.insertRule("." + prefix + "Item { text-shadow: 0 0 8px " + highlightColour + "!important; }", 0);
-	j2ss.insertRule("." + prefix + "Row ." + prefix + "Item { border: 0; padding: 0; }", 0);
 	var collectionsID = GM_getValue("collections") || "";
 	var releaseID;
 	var stuff = {};
@@ -242,7 +241,7 @@ function findOwnedStuff() {
 		var path = uphill + "//xhtml:a[starts-with(@href, '" + root + cstuff + "/')][not(starts-with(@class, '" + prefix + "'))]" + downhill;
 		var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		for (let i = 0; i < xp.snapshotLength; i++) {
-			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
+			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")"));
 			if (mbid) {
 				mbid = mbid[1];
 				debug(cstuff + " is already loaded? " + stuff[cstuff].loaded);
