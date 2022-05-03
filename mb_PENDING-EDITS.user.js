@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2021.1.19.2099
+// @version      2022.5.3
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
-// @compatible   vivaldi(2.11.1811.52)+violentmonkey  my setup
-// @compatible   firefox(72.0.1)+violentmonkey        tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PENDING-EDITS.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
@@ -106,11 +105,8 @@ function appendRefineSearchFormLink(baseEditLink) {
 	if (pageEntity.id) {
 		pageEntity.id = pageEntity.id.getAttribute("href").match(/=(\d+)/);
 		if (pageEntity.id) {
-			var row = getParent(baseEditLink, "li");
 			pageEntity.id = pageEntity.id[1];
-			row.appendChild(document.createTextNode(" ("));
-			row.appendChild(createTag("a", {s: {backgroundColor: "#FF6"}, a: {title: "Exclude failed edits\n(this link is added by mb. PENDING EDITS)", href: "/search/edits?order=desc&negation=0&combinator=and&conditions.0.field=" + pageEntity.type + "&conditions.0.operator=%3D&conditions.0.name=" + encodeURIComponent(pageEntity.name) + "&conditions.0.args.0=" + pageEntity.id + "&conditions.1.field=status&conditions.1.operator=%3D&conditions.1.args=1&conditions.1.args=2"}}, "effective"));
-			row.appendChild(document.createTextNode(")"));
+			addAfter(createTag("span", {}, [" (", createTag("a", {s: {backgroundColor: "#FF6"}, a: {title: "Exclude failed edits\n(this link is added by mb. PENDING EDITS)", href: "/search/edits?order=desc&negation=0&combinator=and&conditions.0.field=" + pageEntity.type + "&conditions.0.operator=%3D&conditions.0.name=" + encodeURIComponent(pageEntity.name) + "&conditions.0.args.0=" + pageEntity.id + "&conditions.1.field=status&conditions.1.operator=%3D&conditions.1.args=1&conditions.1.args=2"}}, "effective"), ")"]), baseEditLink);
 		}
 	}
 }
