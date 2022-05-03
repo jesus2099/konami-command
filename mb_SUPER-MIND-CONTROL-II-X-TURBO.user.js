@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2021.12.13
+// @version      2022.5.3
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -910,6 +910,7 @@ j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” 
 if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/search\/edits/)) {
 	debug("COOL_SEARCH_LINKS");
 	if (self.location.pathname.match(new RegExp("/[^/]+/" + stre_GUID + "$")) && !self.location.pathname.match(/label|work/)) {
+		// Entity base page
 		var entityType = self.location.pathname.match(/[^/]+/); entityType = entityType ? (entityType + "").replace(/-/, "_") : "";
 		var entityName = document.querySelector("div#content h1 a");
 		var entityID = document.querySelector("div#sidebar a[href^='/" + entityType + "/merge_queue?add-to-merge=']");
@@ -919,6 +920,10 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			entityName = entityName.textContent;
 			let refine = "/search/edits?conditions.0.operator=%3D&conditions.0.field=" + entityType + "&conditions.0.name=" + encodeURIComponent(entityName) + "&conditions.0.args.0=" + entityID + "&order=desc&combinator=and&negation=0";
 			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link", href: refine}, s: {background: "#ff6"}}, "refine"), ")"]), entityEdits);
+			var entityRefined = entitySpecificEdits(entityType);
+			if (entityRefined !== "") {
+				addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: userjs.name, href: refine + entityRefined}, s: {background: "#ff6"}}, entityType.replace(/_/, "\u00a0") + " only"), ")"]), entityEdits);
+			}
 		}
 	} else {
 		let refine = self.location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
@@ -955,6 +960,77 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 				searchHelp.insertBefore(createTag("tr", {s: {"text-shadow": "0 0 8px purple"}}, [createTag("th", {}, "Cool link" + (refines.childElementCount > 1 ? "s" : "") + ": "), refines]), searchHelp.firstChild);
 			}
 		}
+	}
+}
+function entitySpecificEdits(entityType) {
+	var refineSuffix = "";
+	switch (entityType) {
+		case "artist":
+			/* Add artist                       */ refineSuffix += appendArg("1");
+			/* Add artist alias                 */ refineSuffix += appendArg("6");
+			/* Add artist annotation            */ refineSuffix += appendArg("5");
+			/* Change artist quality (historic) */ refineSuffix += appendArg("252");
+			/* Edit artist                      */ refineSuffix += appendArg("2");
+			/* Edit artist alias                */ refineSuffix += appendArg("8");
+			/* Edit artist credit               */ refineSuffix += appendArg("9");
+			/* Merge artists                    */ refineSuffix += appendArg("4");
+			/* Remove artist                    */ refineSuffix += appendArg("3");
+			/* Remove artist alias              */ refineSuffix += appendArg("7");
+			break;
+		case "release":
+			/* Add cover art                                  */ refineSuffix += appendArg("314");
+			/* Add disc ID                                    */ refineSuffix += appendArg("55,232");
+			/* Add ISRCs                                      */ refineSuffix += appendArg("76");
+			/* Add release                                    */ refineSuffix += appendArg("31,216");
+			/* Add release alias                              */ refineSuffix += appendArg("318");
+			/* Add release annotation                         */ refineSuffix += appendArg("35,231");
+			/* Add release events (historic)                  */ refineSuffix += appendArg("249");
+			/* Add release label                              */ refineSuffix += appendArg("34");
+			/* Add standalone recording                       */ refineSuffix += appendArg("71");
+			/* Add track (historic)                           */ refineSuffix += appendArg("207,218");
+			/* Change release data quality                    */ refineSuffix += appendArg("38,263");
+			/* Convert release to multiple artists (historic) */ refineSuffix += appendArg("209");
+			/* Convert release to single artist (historic)    */ refineSuffix += appendArg("213");
+			/* Edit barcodes                                  */ refineSuffix += appendArg("39");
+			/* Edit cover art                                 */ refineSuffix += appendArg("316");
+			/* Edit medium                                    */ refineSuffix += appendArg("52");
+			/* Edit release                                   */ refineSuffix += appendArg("32,33,201,208,226,244,273,312");
+			/* Edit release alias                             */ refineSuffix += appendArg("320");
+			/* Edit release events (historic)                 */ refineSuffix += appendArg("229,250");
+			/* Edit release label                             */ refineSuffix += appendArg("37");
+			/* Merge releases                                 */ refineSuffix += appendArg("223,225,311");
+			/* Move disc ID                                   */ refineSuffix += appendArg("56,221");
+			/* Remove cover art                               */ refineSuffix += appendArg("315");
+			/* Remove disc ID                                 */ refineSuffix += appendArg("54,220");
+			/* Remove ISRC                                    */ refineSuffix += appendArg("78");
+			/* Remove medium                                  */ refineSuffix += appendArg("53");
+			/* Remove release                                 */ refineSuffix += appendArg("212,310");
+			/* Remove release events (historic)               */ refineSuffix += appendArg("251");
+			/* Remove release label                           */ refineSuffix += appendArg("36");
+			/* Remove releases (historic)                     */ refineSuffix += appendArg("224");
+			/* Remove track                                   */ refineSuffix += appendArg("211");
+			/* Reorder cover art                              */ refineSuffix += appendArg("317");
+			/* Reorder mediums                                */ refineSuffix += appendArg("313");
+			/* Set cover art                                  */ refineSuffix += appendArg("22");
+			/* Set track lengths                              */ refineSuffix += appendArg("58,253");
+			break;
+		case "release_group":
+			/* Add release group            */ refineSuffix += appendArg("20");
+			/* Add release group alias      */ refineSuffix += appendArg("26");
+			/* Add release group annotation */ refineSuffix += appendArg("25");
+			/* Edit release group           */ refineSuffix += appendArg("21");
+			/* Edit release group alias     */ refineSuffix += appendArg("28");
+			/* Merge release groups         */ refineSuffix += appendArg("24");
+			/* Remove release group         */ refineSuffix += appendArg("23");
+			/* Remove release group alias   */ refineSuffix += appendArg("27");
+			break;
+	}
+	if (refineSuffix !== "") {
+		refineSuffix = "&conditions.666.field=type&conditions.666.operator=%3D" + refineSuffix;
+	}
+	return refineSuffix;
+	function appendArg(arg) {
+		return "&conditions.666.args=" + encodeURIComponent(arg);
 	}
 }
 // ==================================================================== LINK+
