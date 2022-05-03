@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2022.5.3.1317
+// @version      2022.5.3.1826
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -921,9 +921,12 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			entityName = entityName.textContent;
 			let refine = "/search/edits?conditions.0.operator=%3D&conditions.0.field=" + entityType + "&conditions.0.name=" + encodeURIComponent(entityName) + "&conditions.0.args.0=" + entityID + "&order=desc&combinator=and&negation=0";
 			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link", href: refine}, s: {background: "#ff6"}}, "refine"), ")"]), entityEdits);
+			entityEdits.setAttribute("title", "Includes child/related entity edits");
 			var entityRefined = entitySpecificEdits(entityType);
 			if (entityRefined !== "") {
-				addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: userjs.name, href: refine + entityRefined}, s: {background: "#ff6"}}, entityType.replace(/_/, "\u00a0") + " only"), ")"]), entityEdits);
+				var refinedLinks = entityEdits.parentNode.appendChild(createTag("ul", {a: {title: userjs.name}, s: {background: "#ff6"}}));
+				refinedLinks.appendChild(createTag("li", {a: {title: userjs.name}}, createTag("a", {a: {title: "No child/related entity and no relationship edits", href: refine + entityRefined}}, "Pure " + entityType.replace(/_/, "\u00a0") + " edits")));
+				// TODO: Add relationship edits, cover art edits and all above (PLEASE WAIT! VERY SLOW!)
 			}
 		}
 	} else {
@@ -963,7 +966,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 		}
 	}
 }
-function entitySpecificEdits(entityType) {
+function entitySpecificEdits(entityType, searchType) {
 	var refineSuffix = "";
 	switch (entityType) {
 		case "artist":
