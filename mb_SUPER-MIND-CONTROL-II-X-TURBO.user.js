@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2022.5.5
+// @version      2022.5.13
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -910,7 +910,8 @@ j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” 
 if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/search\/edits/)) {
 	debug("COOL_SEARCH_LINKS");
 	var baseURL = self.location.pathname.match(new RegExp("^/([^/]+)/(" + stre_GUID + ")"));
-	if (baseURL) {
+	var editSearch = self.location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
+	if (baseURL && !editSearch) {
 		// Entity page
 		var entityType = baseURL[1].replace(/-/, "_");
 		var entityName = document.querySelector("div#content h1 a");
@@ -930,15 +931,15 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			}
 		}
 	} else {
-		let refine = self.location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
 		var searchHelp = document.querySelector("table.search-help > tbody");
-		if (searchHelp && refine) {
+		if (searchHelp && editSearch) {
 			var refines = document.createElement("td");
+			var refine;
 			var myID;
 			var notme = "&conditions.2099.field=editor&conditions.2099.operator=%21%3D&conditions.2099.name=%myName%&conditions.2099.args.0=%myID%";
 			var novote = "&conditions.2098.field=voter&conditions.2098.operator=%3D&conditions.2098.name=%myName%&conditions.2098.voter_id=%myID%&conditions.2098.args=no";
 			var onlyEffective = "&conditions.2097.field=status&conditions.2097.operator=%3D&conditions.2097.args=1&conditions.2097.args=2";
-			refines.appendChild(createTag("a", {a: {href: self.location.pathname.replace(/edits\/open|(open_)?edits/, refine[1] || refine[2] ? "edits" : (self.location.pathname.match(re_GUID) ? "open_edits" : "edits/open")) + self.location.search + self.location.hash}}, (refine[1] || refine[2] ? "All " : "Open ") + "edits"));
+			refines.appendChild(createTag("a", {a: {href: self.location.pathname.replace(/edits\/open|(open_)?edits/, editSearch[1] || editSearch[2] ? "edits" : (self.location.pathname.match(re_GUID) ? "open_edits" : "edits/open")) + self.location.search + self.location.hash}}, (editSearch[1] || editSearch[2] ? "All " : "Open ") + "edits"));
 			if (
 				self.location.href.indexOf(account.pathname) < 0 &&
 				(refine = document.querySelector("table.search-help td > a[href^='" + MBS + "/search/edits?'][href*='&conditions.']")) &&
