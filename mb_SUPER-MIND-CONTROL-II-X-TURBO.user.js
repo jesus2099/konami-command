@@ -909,7 +909,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” links excluding own and/or unvoted and/or cancelled/failed edits as well as quick switch between all edits / open_edits");
 if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/search\/edits/)) {
 	debug("COOL_SEARCH_LINKS");
-	var baseURL = self.location.pathname.match(new RegExp("^/([^/]+)/(" + stre_GUID + ")"))
+	var baseURL = self.location.pathname.match(new RegExp("^/([^/]+)/(" + stre_GUID + ")"));
 	if (baseURL) {
 		// Entity page
 		var entityType = baseURL[1].replace(/-/, "_");
@@ -977,9 +977,21 @@ function entitySpecificEdits(entityType, searchType) {
 			/* Edit artist                      */ refineSuffix += appendArg("2");
 			/* Edit artist alias                */ refineSuffix += appendArg("8");
 			/* Edit artist credit               */ refineSuffix += appendArg("9");
+			/* Edit URL                         */ refineSuffix += appendArg("101");
 			/* Merge artists                    */ refineSuffix += appendArg("4");
 			/* Remove artist                    */ refineSuffix += appendArg("3");
 			/* Remove artist alias              */ refineSuffix += appendArg("7");
+			break;
+		case "label":
+			/* Add label            */ refineSuffix += appendArg("10");
+			/* Add label alias      */ refineSuffix += appendArg("16");
+			/* Add label annotation */ refineSuffix += appendArg("15");
+			/* Edit label           */ refineSuffix += appendArg("11");
+			/* Edit label alias     */ refineSuffix += appendArg("18");
+			/* Edit URL             */ refineSuffix += appendArg("101");
+			/* Merge labels         */ refineSuffix += appendArg("14");
+			/* Remove label         */ refineSuffix += appendArg("13");
+			/* Remove label alias   */ refineSuffix += appendArg("17,262");
 			break;
 		case "release":
 			/* Add cover art                                  */ refineSuffix += appendArg("314");
@@ -1003,6 +1015,7 @@ function entitySpecificEdits(entityType, searchType) {
 			/* Edit release alias                             */ refineSuffix += appendArg("320");
 			/* Edit release events (historic)                 */ refineSuffix += appendArg("229,250");
 			/* Edit release label                             */ refineSuffix += appendArg("37");
+			/* Edit URL                                       */ refineSuffix += appendArg("101");
 			/* Merge releases                                 */ refineSuffix += appendArg("223,225,311");
 			/* Move disc ID                                   */ refineSuffix += appendArg("56,221");
 			/* Remove cover art                               */ refineSuffix += appendArg("315");
@@ -1025,6 +1038,7 @@ function entitySpecificEdits(entityType, searchType) {
 			/* Add release group annotation */ refineSuffix += appendArg("25");
 			/* Edit release group           */ refineSuffix += appendArg("21");
 			/* Edit release group alias     */ refineSuffix += appendArg("28");
+			/* Edit URL                     */ refineSuffix += appendArg("101");
 			/* Merge release groups         */ refineSuffix += appendArg("24");
 			/* Remove release group         */ refineSuffix += appendArg("23");
 			/* Remove release group alias   */ refineSuffix += appendArg("27");
