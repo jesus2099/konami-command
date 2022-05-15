@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2099.4.29
+// @version      2099.5.15
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -1350,6 +1350,8 @@ function recordingLink(recording) {
 		recordingFragment.appendChild(document.createTextNode(" "));
 		recordingFragment.appendChild(createTag("span", {a: {class: "comment"}}, "(" + recording.disambiguation + ")"));
 	}
+	recordingFragment.appendChild(document.createTextNode(" "));
+	recordingFragment.appendChild(createTag("code", {}, recording.id.match(/^[^-]+/)[0]));
 	return recordingFragment;
 }
 function ISRCList(recording) {
