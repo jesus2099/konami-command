@@ -15,34 +15,39 @@
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
-var languageCode = {
-	"Aucune": "nolang",
-	"Dutch (NL)": "nl-NL",
-	"English (GB)": "en-GB",
-	"French (FR)": "fr-FR",
+var texts = {
+	exportAll: {en: "Export all", fr: "Tout exporter"}
 }
 if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
-	document.querySelector("div#content-sidebar div.title-bar ul.toolbox li.dropdowns_right").appendChild(createTag("a", {a: {class: "btn btn-default"}, s: {backgroundColor: "#fcf"}, e: {click: function(event) {
+	var ExportAllButton = document.querySelector("div#content-sidebar div.title-bar ul.toolbox li.dropdowns_right a.btn[href$='export_all']");
+	var DLButton = createTag("a", {a: {class: "btn btn-default"}, s: {backgroundColor: "#fcf"}, e: {click: function(event) {
 		var app = document.querySelector("div.sidebar ul.tree > li.active > a[aria-current='page']");
 		app = {
 			id: app.getAttribute("href").match(/audio_folders\/(\d+)\/audios/)[1],
 			name: app.textContent.trim()
 		};
-		var audios = document.querySelectorAll("div#main_frame table#audios_table > tbody > tr[id^='audio_']");
-		for (
-			var audios = document.querySelectorAll("div#main_frame table#audios_table > tbody > tr[id^='audio_']"), a = 0;
-			a < audios.length;
-			a++
-		) {
-			var app = document.querySelector("div.sidebar ul.tree > li.active > a[aria-current='page']").textContent.trim();
-			var audio = audios[a].querySelector("a[data-id][data-title]");
-			var lang = languageCode[audios[a].querySelector("tr > td:nth-child(3)").textContent.trim()];
-			GM_download({
-				// or audio.getAttribute("data-url") for mp3
-				url: "/audio/audio_file_2016/" + audio.getAttribute("data-id") + "/" + audio.getAttribute("data-title"),
-				name: app + " - " + lang + " - " + audio.getAttribute("data-title"),
-				saveAs: false // not yet supported by VM
-			});
-		}
-	}}}, "Download"));
+		downloading();
+		GM_download({
+			url: "/audio_folders/" + app.id + "/audios/export_all",
+			name: app.name + ".zip",
+			onload: downloading
+		});
+	}}}, ExportAllButton ? ExportAllButton.textContent.trim() : texts.exportAll[I18n.lang]);
+	if (ExportAllButton) {
+		ExportAllButton.parentNode.replaceChild(DLButton, ExportAllButton);
+	} else {
+		document.querySelector("div#content-sidebar div.title-bar ul.toolbox li.dropdowns_right").appendChild(DLButton);
+	}
+}
+function downloading(event) {
+	var infoPopup = document.querySelector("div#main_frame div#audios_table_processing");
+	infoPopup.style.setProperty("visibility", event ? "hidden" : "visible");
+	if (event) {
+		document.body.removeChild(document.querySelector("div#j2loading"));
+	} else {
+		document.body.appendChild(createTag("div", {
+			a: {id: "j2loading"},
+			s: {position: "fixed", background: "#303", opacity: ".2", top: "0px", left: "0px", width: "100%", height: "100%"}
+		}));
+	}
 }
