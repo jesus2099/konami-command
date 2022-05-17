@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2022.5.17.1444
+// @version      2022.5.18
 // @description  Download audio folders as zip files
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -26,14 +26,15 @@ if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 		id: app.getAttribute("href").match(/audio_folders\/(\d+)\/audios/)[1],
 		name: app.textContent.trim()
 	};
-	var ExportAllButton = document.querySelector("div#content-sidebar div.title-bar ul.toolbox li.dropdowns_right a.btn[href$='export_all']");
+	var toolbox = document.querySelector("div#content-sidebar div.title-bar ul.toolbox li.dropdowns_right");
+	var ExportAllButton = toolbox.querySelector("a.btn[href$='export_all']");
 	var DLButton = createTag("a", {a: {class: "btn btn-default"}, s: {backgroundColor: "#fcf"}, e: {click: function(event) {
 		download(app.id, app.name);
 	}}}, [texts.download[I18n.lang], createTag("b", {s: {color: "black", background: "#fdf", padding: "0 4px"}}, app.name), ".zip"]);
 	if (ExportAllButton) {
-		ExportAllButton.parentNode.replaceChild(DLButton, ExportAllButton);
+		toolbox.replaceChild(DLButton, ExportAllButton);
 	} else {
-		document.querySelector("div#content-sidebar div.title-bar ul.toolbox li.dropdowns_right").appendChild(DLButton);
+		toolbox.appendChild(DLButton);
 	}
 } else if (location.pathname == "/audio_folders") {
 	// on the list of application audio folders
@@ -75,7 +76,7 @@ function downloading(event) {
 			}),
 			createTag("div", {
 				a: {class: "dataTables_processing "},
-				s: {position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textShadow: "0 0 8px white", zIndex: "77"}
+				s: {position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textShadow: "0 0 8px white", zIndex: "100"}
 			}, I18n.dataTables.language.loadingRecords)
 		]));
 	}
