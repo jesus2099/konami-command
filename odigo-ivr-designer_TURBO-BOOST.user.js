@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.4.1
+// @version      2022.5.18
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -23,7 +23,7 @@ var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
 css = css.sheet;
-var lightBgColour = "#FCF";
+var lightBgColour = "#fcf";
 var darkBgColour = "purple";
 
 // Show script badge and help tooltip
@@ -96,8 +96,19 @@ switch (self.location.pathname) {
 		css.insertRule("div#main-container div#modBuilder-form-table-table, div#main-container div#modBuilder-form-table-table div.wtHolder { height: fit-content !important; }", 0);
 
 		// Highlight most important item in filter selection
-		css.insertRule("div#main-content div#actions-bar select#arbo-type option[value='table'], div#main-content div#actions-bar select#arbo-type option[value='sound_set'] { background: " + lightBgColour + "; }", 0);
-
+		css.insertRule([
+			"div#arborescence table#sortList > tbody > tr > td[module_name='SCR_INIT_CONSOLE_DATA'] > a",
+			"div#arborescence table#sortList > tbody > tr > td[module_name='T_CONSOLE_ACTIVITY'] > a",
+			"div#arborescence table#sortList > tbody > tr > td[module_name='T_DDI'] > a",
+			"div#main-content div#actions-bar select#arbo-type option[value='script']",
+			"div#main-content div#actions-bar select#arbo-type option[value='table']",
+		].join(", ") + " { background: " + lightBgColour + "; }", 0);
+		css.insertRule([
+			"div#arborescence table#sortList > tbody > tr > td[module_name^='T_'][module_name$='_MSG'] > a",
+			"div#arborescence table#sortList > tbody > tr > td[module_name='SNS_EN'] > a",
+			"div#arborescence table#sortList > tbody > tr > td[module_name='SNS_FR'] > a",
+			"div#main-content div#actions-bar select#arbo-type option[value='sound_set']",
+		].join(", ") + " { background: #ffc; }", 0);
 		// Copy secret JSON to clipboard
 		css.insertRule("div#arborescence li#btn-json { display: block !important; background: " + lightBgColour + "; }", 0);
 		css.insertRule("div#arborescence li#btn-json a::before { content: 'Copy secret '; }", 0);
