@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2099.5.15
+// @version      2099.5.19
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -1275,17 +1275,18 @@ function loadingAllRecordings() {
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function(event) {
 		if (this.status == 200) {
-			appendToRecordingList(this.response.recordings);
+			if (this.response.recordings.length > 0) {
+				appendToRecordingList(this.response.recordings);
+			}
 			// alert(this.response.count > this.response.offset + this.response.recordings.length); // true: next page
 		} else {
 			alert("Error loading RG recordings!");
 		}
 	});
-	chrono();
 	xhr.open("GET", "/ws/2/recording?query=rgid%3A" + RGMode[1] + "&limit=100", true);
 	xhr.responseType = "json";
 	xhr.setRequestHeader("Accept", "application/json");
-	xhr.send(null);
+	setTimeout(function() { xhr.send(null); }, chrono(MBSminimumDelay));
 //	var loadTracks = document.querySelector("div#content table.tbl.medium > tbody a.load-tracks");
 //	if (loadTracks) {
 //		var loadingMessage = document.querySelector("h1.loading-" + userjs.id);
@@ -1297,6 +1298,7 @@ function loadingAllRecordings() {
 //	}
 }
 function appendToRecordingList(recordings) {
+	scrollTo(0, 0);
 	var recordingList = document.querySelector("div#content > table.tbl." + userjs.id + "reclist > tbody");
 	if (!recordingList) {
 		// initiate empty recording list (table)
