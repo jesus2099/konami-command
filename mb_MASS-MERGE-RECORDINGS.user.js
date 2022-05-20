@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2099.5.19
+// @version      2099.5.20
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -70,7 +70,9 @@ css.insertRule("div#" + userjs.id + " kbd { background-color: silver; border: 2p
 css.insertRule(".remoteRecordingLength.largeSpread { color: yellow; background-color: red; text-shadow: 2px 2px 4px black; }", 0);
 css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr:nth-child(even) > td { background-color: #f2f2f2; }", 0);
 css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist { counter-reset: recording-index; }", 0);
-css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist td:first-child:before { counter-increment: recording-index; content: counter(recording-index); }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist td:first-child:before { counter-increment: recording-index; content: counter(recording-index); opacity: .6; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist td:first-child { text-align: center; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist th:first-child { text-align: center; }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
 var RGMode = self.location.pathname.match(new RegExp("^/release-group/(" + sregex_MBID + ")$"));
@@ -1322,7 +1324,7 @@ function appendToRecordingList(recordings) {
 	for (var r = 0; r < recordings.length; r++) {
 		if (!recordingList.querySelector("td > a[href='/recording/" + recordings[r].id + "']")) {
 			var recordingRow = createTag("tr", {}, [
-				createTag("td"),
+				createTag("td", {}, [document.createElement("br"), createTag("code", {}, recordings[r].id.match(/^[^-]+/)[0])]),
 				// createTag("td", {}, createTag("input", {a: {type: "checkbox"}})),
 				createTag("td", {}, recordingLink(recordings[r])),
 				createTag("td", {}, ac2dom(recordings[r]["artist-credit"])),
@@ -1357,8 +1359,6 @@ function recordingLink(recording) {
 		recordingFragment.appendChild(document.createTextNode(" "));
 		recordingFragment.appendChild(createTag("span", {a: {class: "comment"}}, "(" + recording.disambiguation + ")"));
 	}
-	recordingFragment.appendChild(document.createTextNode(" "));
-	recordingFragment.appendChild(createTag("code", {}, recording.id.match(/^[^-]+/)[0]));
 	return recordingFragment;
 }
 function ISRCList(recording) {
