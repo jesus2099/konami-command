@@ -69,6 +69,8 @@ css.insertRule("div#" + userjs.id + " h2 { color: maroon; text-shadow: 2px 2px 4
 css.insertRule("div#" + userjs.id + " kbd { background-color: silver; border: 2px grey outset; padding: 0px 4px; font-size: .8em; }", 0);
 css.insertRule(".remoteRecordingLength.largeSpread { color: yellow; background-color: red; text-shadow: 2px 2px 4px black; }", 0);
 css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr:nth-child(even) > td { background-color: #f2f2f2; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist { counter-reset: recording-index; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist td:first-child:before { counter-increment: recording-index; content: counter(recording-index); }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
 var RGMode = self.location.pathname.match(new RegExp("^/release-group/(" + sregex_MBID + ")$"));
@@ -1279,6 +1281,7 @@ function loadingAllRecordings() {
 				appendToRecordingList(this.response.recordings);
 			}
 			// alert(this.response.count > this.response.offset + this.response.recordings.length); // true: next page
+			// 122 recordings: https://musicbrainz.org/release-group/98e078fe-37d9-43f7-8bb4-96526727c4e0
 		} else {
 			alert("Error loading RG recordings!");
 		}
@@ -1305,6 +1308,7 @@ function appendToRecordingList(recordings) {
 		document.querySelector("div#content").insertBefore(createTag("h2", {}, "Recordings"), document.querySelector("div#content > div.annotation"));
 		recordingList = document.querySelector("div#content").insertBefore(createTag("table", {a: {class: userjs.id + "reclist tbl"}}, [
 			createTag("thead", {}, [
+				createTag("th", {}, "#"),
 				// createTag("th", {a: {class: "checkbox-cell"}}, createTag("input", {a: {type: "checkbox"}})),
 				createTag("th", {}, "Recording"),
 				createTag("th", {}, "Artist"),
@@ -1318,6 +1322,7 @@ function appendToRecordingList(recordings) {
 	for (var r = 0; r < recordings.length; r++) {
 		if (!recordingList.querySelector("td > a[href='/recording/" + recordings[r].id + "']")) {
 			var recordingRow = createTag("tr", {}, [
+				createTag("td"),
 				// createTag("td", {}, createTag("input", {a: {type: "checkbox"}})),
 				createTag("td", {}, recordingLink(recordings[r])),
 				createTag("td", {}, ac2dom(recordings[r]["artist-credit"])),
@@ -1325,10 +1330,10 @@ function appendToRecordingList(recordings) {
 				createTag("td", {}, time(recordings[r].length)),
 				createTag("td", {}, releaseList(recordings[r]))
 			]);
-			var sortName = recordingRow.querySelector("td").textContent;
+			var sortName = recordingRow.querySelector("td:nth-child(2)").textContent;
 			for (var rr = 0; rr < recordingList.rows.length; rr++) {
-				console.log(sortName +"\n<\n" + recordingList.rows[rr].querySelector("td").textContent);
-				if (sortName < recordingList.rows[rr].querySelector("td").textContent) {
+				console.log(sortName +"\n<\n" + recordingList.rows[rr].querySelector("td:nth-child(2)").textContent);
+				if (sortName < recordingList.rows[rr].querySelector("td:nth-child(2)").textContent) {
 					console.log("oui");
 					recordingList.insertBefore(recordingRow, recordingList.rows[rr]);
 					sortName = false;
