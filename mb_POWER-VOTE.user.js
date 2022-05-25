@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2021.5.26.151
+// @version      2021.5.26.155
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -57,22 +57,10 @@ if (editform) {
 	var collapse = ["▼", "◀"];
 	var pendingXHRvote = 0;
 	// Prevent leaving voting page with unsaved changes
-	editform.addEventListener("input", unsavedChanges);
-	function unsavedChanges(event) {
-		switch (event.type) {
-			case "input":
-				editform.removeEventListener("input", unsavedChanges);
-				self.addEventListener("beforeunload", unsavedChanges);
-				break;
-			case "beforeunload":
-				event.preventDefault();
-				return event.returnValue = "There are some unsaved changes.\nAre you sure you want to exit?";
-				break;
-		}
-	}
+	editform.addEventListener("input", preventLosingUnsavedChanges);
 	// Prevent losing background voting queue
 	editform.addEventListener("submit", function(event) {
-		self.removeEventListener("beforeunload", unsavedChanges); // Allow unload on submit (volontary)
+		self.removeEventListener("beforeunload", preventLosingUnsavedChanges); // Allow unload on submit (volontary)
 		event.preventDefault();
 		if (pendingXHRvote > 0) {
 			if (submitShift || confirm("GOING BACKGROUND (AJAX)? (or not)\n\n" + pendingXHRvote + " background vote" + (pendingXHRvote == 1 ? " is" : "s are") + " pending,\ndo you want to add more votes to this queue?\n\nSHIFT+CLICK on submit to bypass this confirmation next time.")) {
@@ -338,6 +326,18 @@ function checkAfterQueue(xhr, event, queueType, callback) {
 		updateXHRstat(--pendingXHRvote);
 	}
 }
+function preventLosingUnsavedChanges(event) {
+	switch (event.type) {
+		case "input":
+			editform.removeEventListener("input", preventLosingUnsavedChanges);
+			self.addEventListener("beforeunload", preventLosingUnsavedChanges);
+			break;
+		case "beforeunload":
+			event.preventDefault();
+			return event.returnValue = "There are some unsaved changes.\nAre you sure you want to exit?";
+			break;
+	}
+}
 // From mb_NGS-MILESTONE
 // Show if edits are pre-NGS (NGS was released on 2011-05-16, last pre-NGS Edit #14459455, first NGS Edit #14459456)
 var firstNGSEdit = 14459456; // nikki work edit
@@ -481,7 +481,7 @@ function updateXHRstat(nbr) {
 	}
 	stat.replaceChild(document.createTextNode(nbr + " background vote" + (nbr == 1 ? "" : "s") + " pending…"), stat.firstChild);
 	if (!editform.querySelector("div.edit-list div.edit-description")) {
-		self.removeEventListener("beforeunload", unsavedChanges); // Allow reload (no more edits)
+		self.removeEventListener("beforeunload", preventLosingUnsavedChanges); // Allow reload (no more edits)
 		self.location.reload();
 	}
 	stat.style.setProperty("display", nbr > 0 ? "block" : "none");
