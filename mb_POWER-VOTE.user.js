@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
 // @version      2021.5.25
-// @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
+// @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js
@@ -79,6 +79,24 @@ if (editform) {
 			rac[r].parentNode.classList.add(userjs + "yes");
 		}
 	}
+	// Fast approve with edit notes
+	document.body.addEventListener("click", function(event) {
+		if (event.target.closest("div.edit-actions") && event.target.matches("a.positive[href^='/edit/'][href*='/approve']")) {
+			event.stopPropagation();
+			event.preventDefault();
+			var edit = event.target.closest("div.edit-list");
+			var editId = edit.querySelector("input[type='hidden'][name$='edit_id']");
+			if (edit && editId) {
+				var editNote = edit.querySelector("textarea");
+				if (editNote && editNote.value.trim() !== "") {
+					// Save edit note before approving
+					queueVote(edit, editId.value, "-2", queueApprove);
+				} else {
+					queueApprove(edit, editId.value);
+				}
+			}
+		}
+	}, true);
 	inputs = editform.querySelectorAll("div.voteopts input[type='radio']");
 	if (voteColours) {
 		editform.addEventListener("change", spreadBackgroundColour);
@@ -95,63 +113,13 @@ if (editform) {
 		preventDefault(labinput, "mousedown");
 		labinput.setAttribute("title", "double-click to vote this single edit");
 		labinput.addEventListener("dblclick", function(event) {
-			var ed = getParent(this, "div", "edit-list");
+			var edit = this.closest("div.edit-list");
 			var vote = (this.querySelector("input[type='radio']") || this).value;
-			var id = ed.querySelector("input[type='hidden'][name$='edit_id']");
-			if (ed && vote && id) {
-				var ta = ed.querySelector("textarea");
-				var params = "enter-vote.vote.0.edit_id=" + id.value + "&enter-vote.vote.0.vote=" + vote + "&url=" + encodeURIComponent("/edit/" + id.value);
-				if (ta) { params += "&enter-vote.vote.0.edit_note=" + encodeURIComponent(ta.value); }
-				var xhr = new XMLHttpRequest();
-				xhr.id = id.value;
-				xhr.addEventListener("load", function(event) {
-					var anotherEdit = this.responseText.match(/<title>\D*(\d+)\D*<\/title>/);
-					if (anotherEdit && anotherEdit[1] != this.id) {
-						anotherEdit = anotherEdit[1];
-					} else {
-						anotherEdit = false;
-					}
-					var editEntry = document.querySelector("input[type='hidden'][name$='edit_id'][value='" + this.id + "']");
-					if (editEntry) {
-						editEntry = getParent(editEntry, "div", "edit-list");
-					}
-					if (this.status == 200 && pendingXHRvote > 0 && !anotherEdit && editEntry) {
-						removeNode(editEntry);
-					} else {
-						var errorMessage = "Error while voting Edit #" + this.id + " in the background.\n\n";
-						if (this.status != 200) {
-							errorMessage += this.status + ": " + this.statusText + "\n";
-						}
-						if (anotherEdit) {
-							open("/edit/" + anotherEdit);
-							errorMessage += "Got Edit #" + anotherEdit + " instead in return page.\n";
-						}
-						if (pendingXHRvote < 1) {
-							errorMessage += "No votes pending.\n";
-						}
-						if (editEntry) {
-							ninja(event, editEntry, false, "force");
-							editEntry.setAttribute("title", errorMessage);
-							editEntry.style.setProperty("background-color", "pink");
-							editEntry.style.setProperty("cursor", "help");
-							editEntry.style.setProperty("display", "block");
-						} else {
-							open("/edit/" + this.id);
-							errorMessage += "Edit block not found.\n";
-							alert(errorMessage);
-						}
-					}
-					if (pendingXHRvote > 0) {
-						updateXHRstat(--pendingXHRvote);
-					}
-				});
-				xhr.open("POST", self.location.protocol + "//" + self.location.host + "/edit/enter_votes", true);
-				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-				updateXHRstat(++pendingXHRvote);
-				xhr.send(params);
-				ninja(event, ed, true, "force");
+			var editId = edit.querySelector("input[type='hidden'][name$='edit_id']");
+			if (edit && vote && editId) {
+				queueVote(edit, editId.value, vote);
 			}
-		}, false);
+		});
 		labinput.addEventListener("click", function(event) {
 			var rad = this.querySelector("input[type='radio']");
 			if (rangeclick && (rad || this)) {
@@ -282,6 +250,78 @@ if (editform) {
 		self.scrollTo(0, findPos(document.getElementById("edits")).y - self.getComputedStyle(document.getElementById("header-menu")).getPropertyValue("height").match(/\d+/));
 	}
 }
+function queueApprove(edit, editId) {
+	var xhr = new XMLHttpRequest();
+	xhr.editId = editId;
+	xhr.addEventListener("load", function(event) {
+		checkAfterQueue(this, event, "approving");
+	});
+	xhr.open("POST", "/edit/" + editId + "/approve", true);
+	updateXHRstat(++pendingXHRvote);
+	xhr.send(null);
+	ninja(null, edit, true, "force");
+}
+function queueVote(edit, editId, vote, callback) {
+	var editNote = edit.querySelector("textarea");
+	var params = "enter-vote.vote.0.edit_id=" + editId + "&enter-vote.vote.0.vote=" + vote + "&url=" + encodeURIComponent("/edit/" + editId);
+	if (editNote) { params += "&enter-vote.vote.0.edit_note=" + encodeURIComponent(editNote.value); }
+	var xhr = new XMLHttpRequest();
+	xhr.editId = editId;
+	xhr.addEventListener("load", function(event) {
+		checkAfterQueue(this, event, "voting", callback);
+	});
+	xhr.open("POST", self.location.protocol + "//" + self.location.host + "/edit/enter_votes", true);
+	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	updateXHRstat(++pendingXHRvote);
+	xhr.send(params);
+	ninja(event, edit, true, "force");
+}
+function checkAfterQueue(xhr, event, queueType, callback) {
+	var anotherEdit = xhr.responseText.match(/<title>\D*(\d+)\D*<\/title>/);
+	if (anotherEdit && anotherEdit[1] != xhr.editId) {
+		anotherEdit = anotherEdit[1];
+	} else {
+		anotherEdit = false;
+	}
+	var notApproved = queueType == "approving" && xhr.responseText.indexOf('<a class="positive" href="/edit/' + xhr.editId + '/approve') != -1;
+	var editEntry = document.querySelector("input[type='hidden'][name$='edit_id'][value='" + xhr.editId + "']");
+	if (editEntry) {
+		editEntry = editEntry.closest("div.edit-list");
+	}
+	if (xhr.status == 200 && pendingXHRvote > 0 && !anotherEdit && editEntry && !notApproved) {
+		if (callback) callback(editEntry, xhr.editId);
+		else removeNode(editEntry);
+	} else {
+		var errorMessage = "Error while " + queueType + " Edit #" + xhr.editId + " in the background.\n\n";
+		if (xhr.status != 200) {
+			errorMessage += xhr.status + ": " + xhr.statusText + "\n";
+		}
+		if (anotherEdit) {
+			open("/edit/" + anotherEdit);
+			errorMessage += "Got Edit #" + anotherEdit + " instead in return page.\n";
+		}
+		if (notApproved) {
+			errorMessage += "Edit still not approved.\n";
+		}
+		if (pendingXHRvote < 1) {
+			errorMessage += "No votes pending.\n";
+		}
+		if (editEntry) {
+			ninja(event, editEntry, false, "force");
+			editEntry.setAttribute("title", errorMessage);
+			editEntry.style.setProperty("background-color", "pink");
+			editEntry.style.setProperty("cursor", "help");
+			editEntry.style.setProperty("display", "block");
+		} else {
+			open("/edit/" + xhr.editId);
+			errorMessage += "Edit block not found.\n";
+			alert(errorMessage);
+		}
+	}
+	if (pendingXHRvote > 0) {
+		updateXHRstat(--pendingXHRvote);
+	}
+}
 // From mb_NGS-MILESTONE
 // Show if edits are pre-NGS (NGS was released on 2011-05-16, last pre-NGS Edit #14459455, first NGS Edit #14459456)
 var firstNGSEdit = 14459456; // nikki work edit
@@ -394,7 +434,7 @@ function ninja(event, o, n, spec) {
 			jQwtf = spec ? [o] : o.querySelectorAll(allbutheader);
 			console.log(error.message + "!\n" + chrome);
 		}
-		if (event.detail > 0 && !event.altKey && !event.ctrlKey && !event.shiftKey) {
+		if (event && event.detail > 0 && !event.altKey && !event.ctrlKey && !event.shiftKey) {
 			if (n) {
 				try { jQwtf.hide(100); } catch (error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", "none"); }
 			} else {
