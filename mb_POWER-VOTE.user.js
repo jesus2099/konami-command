@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2021.5.5
+// @version      2021.5.25
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits. , Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote).
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -345,10 +345,14 @@ function shortcut(vote, txt) {
 }
 function doitdoit(event, vote, min, max) {
 	if (vote != "omgcancel") {
-		for (let i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : radios.length); i++) { // FF shift+click label NG
-			if (radios[i].getAttribute("value") == vote && !radios[i].checked && !ninja(event, getParent(radios[i], "div", "edit-list")) && (event.shiftKey || isOkToVote(radios[i]))) {
-				sendEvent(radios[i], "click");
+		if (event.detail === 1) { // first click
+			for (let i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : radios.length); i++) { // FF shift+click label NG
+				if (radios[i].getAttribute("value") == vote && !radios[i].checked && !ninja(event, getParent(radios[i], "div", "edit-list")) && (event.shiftKey || isOkToVote(radios[i]))) {
+					sendEvent(radios[i], "click");
+				}
 			}
+		} else if (event.detail === 2) { // double click
+			sendEvent(submitButton, "click");
 		}
 	} else { for (let i = 0; i < radiosafe.length; i++) { sendEvent(radiosafe[i], "click"); } }
 }
