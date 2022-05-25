@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2021.5.25
-// @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes.
+// @version      2021.5.26
+// @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js
@@ -56,7 +56,23 @@ if (editform) {
 	var submitButton, submitClone, submitShift, inputs;
 	var collapse = ["▼", "◀"];
 	var pendingXHRvote = 0;
+	// Prevent leaving voting page with unsaved changes
+	editform.addEventListener("input", unsavedChanges);
+	function unsavedChanges(event) {
+		switch (event.type) {
+			case "input":
+				editform.removeEventListener("input", unsavedChanges);
+				self.addEventListener("beforeunload", unsavedChanges);
+				break;
+			case "beforeunload":
+				event.preventDefault();
+				return event.returnValue = "There are some unsaved changes.\nAre you sure you want to exit?";
+				break;
+		}
+	}
+	// Prevent losing background voting queue
 	editform.addEventListener("submit", function(event) {
+		self.removeEventListener("beforeunload", unsavedChanges); // Allow unload on submit (volontary)
 		event.preventDefault();
 		if (pendingXHRvote > 0) {
 			if (submitShift || confirm("GOING BACKGROUND (AJAX)? (or not)\n\n" + pendingXHRvote + " background vote" + (pendingXHRvote == 1 ? " is" : "s are") + " pending,\ndo you want to add more votes to this queue?\n\nSHIFT+CLICK on submit to bypass this confirmation next time.")) {
