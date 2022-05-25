@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2099.5.20
+// @version      2099.5.25
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -73,6 +73,7 @@ css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id
 css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist td:first-child:before { counter-increment: recording-index; content: counter(recording-index); opacity: .6; }", 0);
 css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist td:first-child { text-align: center; }", 0);
 css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist th:first-child { text-align: center; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist tr.sameName > td:nth-child(2) { border-left: 2px solid red; }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
 var RGMode = self.location.pathname.match(new RegExp("^/release-group/(" + sregex_MBID + ")$"));
@@ -1332,14 +1333,18 @@ function appendToRecordingList(recordings) {
 				createTag("td", {}, time(recordings[r].length)),
 				createTag("td", {}, releaseList(recordings[r]))
 			]);
-			var sortName = recordingRow.querySelector("td:nth-child(2)").textContent;
+			var sortName = stripName(recordingRow.querySelector("td:nth-child(2)").textContent + (recordingRow.querySelector("span.video") ? "_video" : ""));
 			for (var rr = 0; rr < recordingList.rows.length; rr++) {
-				console.log(sortName +"\n<\n" + recordingList.rows[rr].querySelector("td:nth-child(2)").textContent);
-				if (sortName < recordingList.rows[rr].querySelector("td:nth-child(2)").textContent) {
+				var recordingSortName = stripName(recordingList.rows[rr].querySelector("td:nth-child(2)").textContent + (recordingList.rows[rr].querySelector("span.video") ? "_video" : ""));
+				console.log(sortName + " <= " + recordingSortName);
+				if (sortName < recordingSortName) {
 					console.log("oui");
 					recordingList.insertBefore(recordingRow, recordingList.rows[rr]);
 					sortName = false;
 					break;
+				} else if (sortName == recordingSortName) {
+					recordingRow.classList.add("sameName");
+					recordingList.rows[rr].classList.add("sameName");
 				}
 			}
 			if (sortName != false) {
@@ -1349,10 +1354,13 @@ function appendToRecordingList(recordings) {
 		}
 	}
 }
+function stripName(name) {
+	return name.toLowerCase().replace(/\s/g, "");
+}
 function recordingLink(recording) {
 	var recordingFragment = document.createDocumentFragment();
 	if (recording.video) {
-		recordingFragment.appendChild(createTag("span", {a: {class: "video"}}));
+		recordingFragment.appendChild(createTag("span", {a: {class: "video", title: "This recording is a video"}}));
 	}
 	recordingFragment.appendChild(createTag("a", {a: {href: "/recording/" + recording.id, target: "_blank"}}, recording.title));
 	if (recording.disambiguation) {
