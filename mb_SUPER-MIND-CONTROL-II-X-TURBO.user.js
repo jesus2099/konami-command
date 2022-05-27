@@ -974,31 +974,40 @@ function entitySpecificEdits(entityType, searchType) {
 			/* Add artist                       */ refineSuffix += appendArg("1");
 			/* Add artist alias                 */ refineSuffix += appendArg("6");
 			/* Add artist annotation            */ refineSuffix += appendArg("5");
+			//* Add relationship                 */ refineSuffix += appendArg("90,233");
 			/* Change artist quality (historic) */ refineSuffix += appendArg("252");
 			/* Edit artist                      */ refineSuffix += appendArg("2");
 			/* Edit artist alias                */ refineSuffix += appendArg("8");
 			/* Edit artist credit               */ refineSuffix += appendArg("9");
+			//* Edit relationship                */ refineSuffix += appendArg("91,234");
 			/* Edit URL                         */ refineSuffix += appendArg("101");
 			/* Merge artists                    */ refineSuffix += appendArg("4");
 			/* Remove artist                    */ refineSuffix += appendArg("3");
 			/* Remove artist alias              */ refineSuffix += appendArg("7");
+			//* Remove relationship              */ refineSuffix += appendArg("92,235");
+			//* Reorder relationships            */ refineSuffix += appendArg("99");
 			break;
 		case "label":
 			/* Add label             */ refineSuffix += appendArg("10");
 			/* Add label alias       */ refineSuffix += appendArg("16");
 			/* Add label annotation  */ refineSuffix += appendArg("15");
+			//* Add relationship      */ refineSuffix += appendArg("90,233");
 			/* Edit label            */ refineSuffix += appendArg("11");
 			/* Edit label alias      */ refineSuffix += appendArg("18");
+			//* Edit relationship     */ refineSuffix += appendArg("91,234");
 			/* Edit URL              */ refineSuffix += appendArg("101");
 			/* Merge labels          */ refineSuffix += appendArg("14");
 			/* Remove label          */ refineSuffix += appendArg("13");
 			/* Remove label alias    */ refineSuffix += appendArg("17,262");
+			//* Remove relationship   */ refineSuffix += appendArg("92,235");
+			//* Reorder relationships */ refineSuffix += appendArg("99");
 			break;
 		case "release":
 			/* Add cover art                                  */ refineSuffix += appendArg("314");
 			/* Add disc ID                                    */ refineSuffix += appendArg("55,232");
 			/* Add ISRCs                                      */ refineSuffix += appendArg("76");
 			/* Add medium                                     */ refineSuffix += appendArg("51");
+			//* Add relationship                               */ refineSuffix += appendArg("90,233");
 			/* Add release                                    */ refineSuffix += appendArg("31,216");
 			/* Add release alias                              */ refineSuffix += appendArg("318");
 			/* Add release annotation                         */ refineSuffix += appendArg("35,231");
@@ -1012,6 +1021,7 @@ function entitySpecificEdits(entityType, searchType) {
 			/* Edit barcodes                                  */ refineSuffix += appendArg("39");
 			/* Edit cover art                                 */ refineSuffix += appendArg("316");
 			/* Edit medium                                    */ refineSuffix += appendArg("52");
+			//* Edit relationship                              */ refineSuffix += appendArg("91,234");
 			/* Edit release                                   */ refineSuffix += appendArg("32,33,201,208,226,244,273,312");
 			/* Edit release alias                             */ refineSuffix += appendArg("320");
 			/* Edit release events (historic)                 */ refineSuffix += appendArg("229,250");
@@ -1023,6 +1033,7 @@ function entitySpecificEdits(entityType, searchType) {
 			/* Remove disc ID                                 */ refineSuffix += appendArg("54,220");
 			/* Remove ISRC                                    */ refineSuffix += appendArg("78");
 			/* Remove medium                                  */ refineSuffix += appendArg("53");
+			//* Remove relationship                            */ refineSuffix += appendArg("92,235");
 			/* Remove release                                 */ refineSuffix += appendArg("212,310");
 			/* Remove release events (historic)               */ refineSuffix += appendArg("251");
 			/* Remove release label                           */ refineSuffix += appendArg("36");
@@ -1030,18 +1041,23 @@ function entitySpecificEdits(entityType, searchType) {
 			/* Remove track                                   */ refineSuffix += appendArg("211");
 			/* Reorder cover art                              */ refineSuffix += appendArg("317");
 			/* Reorder mediums                                */ refineSuffix += appendArg("313");
+			//* Reorder relationships                          */ refineSuffix += appendArg("99");
 			/* Set track lengths                              */ refineSuffix += appendArg("58,253");
 			break;
 		case "release_group":
+			//* Add relationship             */ refineSuffix += appendArg("90,233");
 			/* Add release group            */ refineSuffix += appendArg("20");
 			/* Add release group alias      */ refineSuffix += appendArg("26");
 			/* Add release group annotation */ refineSuffix += appendArg("25");
+			//* Edit relationship            */ refineSuffix += appendArg("91,234");
 			/* Edit release group           */ refineSuffix += appendArg("21");
 			/* Edit release group alias     */ refineSuffix += appendArg("28");
 			/* Edit URL                     */ refineSuffix += appendArg("101");
 			/* Merge release groups         */ refineSuffix += appendArg("24");
+			//* Remove relationship          */ refineSuffix += appendArg("92,235");
 			/* Remove release group         */ refineSuffix += appendArg("23");
 			/* Remove release group alias   */ refineSuffix += appendArg("27");
+			//* Reorder relationships        */ refineSuffix += appendArg("99");
 			/* Set cover art                */ refineSuffix += appendArg("22");
 			break;
 	}
