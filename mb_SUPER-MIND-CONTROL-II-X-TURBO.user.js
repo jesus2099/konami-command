@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2022.5.13
+// @version      2022.5.28
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -984,15 +984,15 @@ function entitySpecificEdits(entityType, searchType) {
 			/* Remove artist alias              */ refineSuffix += appendArg("7");
 			break;
 		case "label":
-			/* Add label            */ refineSuffix += appendArg("10");
-			/* Add label alias      */ refineSuffix += appendArg("16");
-			/* Add label annotation */ refineSuffix += appendArg("15");
-			/* Edit label           */ refineSuffix += appendArg("11");
-			/* Edit label alias     */ refineSuffix += appendArg("18");
-			/* Edit URL             */ refineSuffix += appendArg("101");
-			/* Merge labels         */ refineSuffix += appendArg("14");
-			/* Remove label         */ refineSuffix += appendArg("13");
-			/* Remove label alias   */ refineSuffix += appendArg("17,262");
+			/* Add label             */ refineSuffix += appendArg("10");
+			/* Add label alias       */ refineSuffix += appendArg("16");
+			/* Add label annotation  */ refineSuffix += appendArg("15");
+			/* Edit label            */ refineSuffix += appendArg("11");
+			/* Edit label alias      */ refineSuffix += appendArg("18");
+			/* Edit URL              */ refineSuffix += appendArg("101");
+			/* Merge labels          */ refineSuffix += appendArg("14");
+			/* Remove label          */ refineSuffix += appendArg("13");
+			/* Remove label alias    */ refineSuffix += appendArg("17,262");
 			break;
 		case "release":
 			/* Add cover art                                  */ refineSuffix += appendArg("314");
@@ -1030,7 +1030,6 @@ function entitySpecificEdits(entityType, searchType) {
 			/* Remove track                                   */ refineSuffix += appendArg("211");
 			/* Reorder cover art                              */ refineSuffix += appendArg("317");
 			/* Reorder mediums                                */ refineSuffix += appendArg("313");
-			/* Set cover art                                  */ refineSuffix += appendArg("22");
 			/* Set track lengths                              */ refineSuffix += appendArg("58,253");
 			break;
 		case "release_group":
@@ -1043,6 +1042,7 @@ function entitySpecificEdits(entityType, searchType) {
 			/* Merge release groups         */ refineSuffix += appendArg("24");
 			/* Remove release group         */ refineSuffix += appendArg("23");
 			/* Remove release group alias   */ refineSuffix += appendArg("27");
+			/* Set cover art                */ refineSuffix += appendArg("22");
 			break;
 	}
 	if (refineSuffix !== "") {
