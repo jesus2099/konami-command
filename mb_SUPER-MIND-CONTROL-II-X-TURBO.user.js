@@ -925,7 +925,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			entityEdits.setAttribute("title", "Includes child/related entity edits");
 			var refineEntity = entitySpecificEdits(entityType, refine, "pure+cover+relationship");
 			if (refineEntity) {
-				var refinedLinks = entityEdits.parentNode.appendChild(createTag("ul", {a: {title: userjs.name}, s: {border: "2px solid purple"}},
+				entityEdits.parentNode.appendChild(createTag("ul", {a: {title: userjs.name}, s: {border: "2px solid purple"}},
 					createTag("li", {}, [createTag("a", {a: {title: "No child/related entity (VERY SLOW)", href: refineEntity}}, "All " + entityType.replace(/_/, "\u00a0") + " edits"), " (slow)",
 						createTag("ul", {s: {paddingLeft: "10px"}}, [
 							createTag("li", {s: {background: "#ff6"}}, [createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "pure+cover")}}, "Non-relationship edits"),
@@ -934,11 +934,19 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 									createTag("li", {}, createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "cover")}}, "Cover art edits"))
 								])
 							]),
-							createTag("li", {}, [createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "relationship")}}, "Relationship edits"), " (slow)"]),
-							createTag("li", {}, [createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "ngs-relationship")}}, "Relationship edits"), " (NGS)"])
+							createTag("li", {}, [createTag("a", {a: {id: userjs.id + "pre-ngs-rels", href: entitySpecificEdits(entityType, refine, "relationship")}}, "Relationship edits"), " (slow)"]),
+							createTag("li", {}, [createTag("a", {a: {id: userjs.id + "ngs-rels", href: entitySpecificEdits(entityType, refine, "ngs-relationship")}}, "Relationship edits"), " (NGS)"])
 						])
 					])
 				));
+				var xhr = new XMLHttpRequest();
+				xhr.addEventListener("load", function(event) {
+					if (this.status == 200) {
+						removeNode(document.getElementById(userjs.id + (this.responseText.match(/<div id="edits">/) ? "" : "pre-") + "ngs-rels").parentNode);
+					}
+				});
+				xhr.open("get", refine + "&conditions.1.field=type&conditions.1.operator=%3D&conditions.1.args=233&conditions.1.args=234&conditions.1.args=235", true);
+				xhr.send(null);
 			}
 		}
 	} else {
