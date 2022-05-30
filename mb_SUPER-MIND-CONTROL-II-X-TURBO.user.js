@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2022.5.30
+// @version      2022.5.30.1753
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -928,12 +928,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 				entityEdits.parentNode.appendChild(createTag("ul", {a: {title: userjs.name}, s: {border: "2px solid purple"}},
 					createTag("li", {}, [createTag("a", {a: {title: "No child/related entity (VERY SLOW)", href: refineEntity}}, "All " + entityType.replace(/_/, "\u00a0") + " edits"), " (SLOW)",
 						createTag("ul", {s: {paddingLeft: "10px"}}, [
-							createTag("li", {s: {background: "#ff6"}}, [createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "pure+cover")}}, "Non‐relationship edits"),
-								createTag("ul", {s: {paddingLeft: "10px"}}, [
-									createTag("li", {}, createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "pure")}, s: {fontWeight: "bold"}}, "Pure " + entityType.replace(/_/, "\u00a0") + " edits")),
-									createTag("li", {}, createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "cover")}}, "Cover art edits"))
-								])
-							]),
+							createTag("li", {a: {id: userjs.id + "-pure+cover"}, s: {background: "#ff6"}}, createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "pure+cover")}}, "Non‐relationship edits")),
 							createTag("li", {}, [createTag("span", {}, [createTag("a", {a: {class: userjs.id + "-pre-ngs-rels", href: entitySpecificEdits(entityType, refine, "relationship")}}, "Relationship edits"), " (SLOW)"]),
 								createTag("ul", {s: {paddingLeft: "10px"}}, [
 									createTag("li", {s: {background: "#ff6", textDecoration: "initial"}}, createTag("a", {a: {class: userjs.id + "-post-ngs-rels", href: entitySpecificEdits(entityType, refine, "post-ngs-relationship")}, title: "Edits since 2011-05-17"}, "Post‐NGS")),
@@ -943,6 +938,15 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 						])
 					])
 				));
+				refineEntity = entitySpecificEdits(entityType, refine, "cover");
+				if (refineEntity) {
+					document.getElementById(userjs.id + "-pure+cover").appendChild(
+						createTag("ul", {a: {id: userjs.id + "-pure+cover"}, s: {paddingLeft: "10px"}}, [
+							createTag("li", {}, createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "pure")}, s: {fontWeight: "bold"}}, "Pure " + entityType.replace(/_/, "\u00a0") + " edits")),
+							createTag("li", {}, createTag("a", {a: {href: refineEntity}}, "Cover art edits"))
+						])
+					);
+				}
 				// Check if there are pre‐NGS relationship edits
 				var xhr = new XMLHttpRequest();
 				xhr.addEventListener("load", function(event) {
