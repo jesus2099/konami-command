@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2022.5.29.56
+// @version      2022.5.30
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -926,23 +926,40 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			var refineEntity = entitySpecificEdits(entityType, refine, "pure+cover+relationship");
 			if (refineEntity) {
 				entityEdits.parentNode.appendChild(createTag("ul", {a: {title: userjs.name}, s: {border: "2px solid purple"}},
-					createTag("li", {}, [createTag("a", {a: {title: "No child/related entity (VERY SLOW)", href: refineEntity}}, "All " + entityType.replace(/_/, "\u00a0") + " edits"), " (slow)",
+					createTag("li", {}, [createTag("a", {a: {title: "No child/related entity (VERY SLOW)", href: refineEntity}}, "All " + entityType.replace(/_/, "\u00a0") + " edits"), " (SLOW)",
 						createTag("ul", {s: {paddingLeft: "10px"}}, [
-							createTag("li", {s: {background: "#ff6"}}, [createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "pure+cover")}}, "Non-relationship edits"),
+							createTag("li", {s: {background: "#ff6"}}, [createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "pure+cover")}}, "Non‐relationship edits"),
 								createTag("ul", {s: {paddingLeft: "10px"}}, [
 									createTag("li", {}, createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "pure")}, s: {fontWeight: "bold"}}, "Pure " + entityType.replace(/_/, "\u00a0") + " edits")),
 									createTag("li", {}, createTag("a", {a: {href: entitySpecificEdits(entityType, refine, "cover")}}, "Cover art edits"))
 								])
 							]),
-							createTag("li", {}, [createTag("a", {a: {id: userjs.id + "pre-ngs-rels", href: entitySpecificEdits(entityType, refine, "relationship")}}, "Relationship edits"), " (slow)"]),
-							createTag("li", {}, [createTag("a", {a: {id: userjs.id + "ngs-rels", href: entitySpecificEdits(entityType, refine, "ngs-relationship")}}, "Relationship edits"), " (NGS)"])
+							createTag("li", {}, [createTag("span", {}, [createTag("a", {a: {class: userjs.id + "-pre-ngs-rels", href: entitySpecificEdits(entityType, refine, "relationship")}}, "Relationship edits"), " (SLOW)"]),
+								createTag("ul", {s: {paddingLeft: "10px"}}, [
+									createTag("li", {s: {background: "#ff6", textDecoration: "initial"}}, createTag("a", {a: {class: userjs.id + "-post-ngs-rels", href: entitySpecificEdits(entityType, refine, "post-ngs-relationship")}, title: "Edits since 2011-05-17"}, "Post‐NGS")),
+									createTag("li", {s: {background: "#ff6", textDecoration: "initial"}}, createTag("a", {a: {class: userjs.id + "-pre-ngs-rels", href: entitySpecificEdits(entityType, refine, "pre-ngs-relationship")}, title: "Edits before 2011-05-17"}, "Pre‐NGS"))
+								])
+							]),
 						])
 					])
 				));
+				// Check if there are pre‐NGS relationship edits
 				var xhr = new XMLHttpRequest();
 				xhr.addEventListener("load", function(event) {
 					if (this.status == 200) {
-						document.getElementById(userjs.id + (this.responseText.match(/<div id="edits">/) ? "" : "pre-") + "ngs-rels").parentNode.style.setProperty("text-decoration", "line-through");
+						var foundEdits = this.responseText.match(/<strong>([^<]*)<\/strong><\/p><\/div><div id="edits">/);
+						if (foundEdits) {
+							// Edits found
+							document.querySelector("li > a." + userjs.id + "-pre-ngs-rels").parentNode.appendChild(document.createTextNode(" (" + foundEdits[1].toLowerCase() + ")"));
+						} else {
+							// No edits found
+							var irrelevantLinks = document.querySelectorAll("a." + userjs.id + "-pre-ngs-rels");
+							for (var l = 0; l < irrelevantLinks.length; l++) {
+								irrelevantLinks[l].parentNode.style.setProperty("opacity", ".5");
+								irrelevantLinks[l].parentNode.style.setProperty("text-decoration", "line-through");
+								irrelevantLinks[l].parentNode.style.removeProperty("background");
+							}
+						}
 					}
 				});
 				xhr.open("get", refine + "&conditions.1.field=type&conditions.1.operator=%3D&conditions.1.args=233&conditions.1.args=234&conditions.1.args=235", true);
@@ -1147,7 +1164,7 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 			});
 			refineFullURL += "&" + "conditions.1.field=type&conditions.1.operator=%3D" + "&" + editTypes.join("&");
 		}
-		if (linkTypes.length > 0) {
+		if (!searchMode.match(/pre-ngs/) && linkTypes.length > 0) {
 			linkTypes = linkTypes.map(function(element) {
 				return "conditions.2.args=" + element;
 			});
@@ -1155,6 +1172,11 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 		}
 		if (searchMode.match(/relationship/) && !searchMode.match(/ngs/)) {
 			refineFullURL = refineFullURL.replace(/(combinator)=and/, "$1=or").replace(/(negation)=0/, "$1=1").replace(/(conditions\.\d+\.operator)=%3D/g, "$1=%21%3D");
+		}
+		if (searchMode.match(/post-ngs/)) {
+			refineFullURL += "&" + "conditions.3.field=open_time&conditions.3.operator=%3E&conditions.3.args.0=2011-05-16";
+		} else if (searchMode.match(/pre-ngs/)) {
+			refineFullURL += "&" + "conditions.2.field=open_time&conditions.2.operator=%3C&conditions.2.args.0=2011-05-17";
 		}
 		return refineFullURL;
 	}
