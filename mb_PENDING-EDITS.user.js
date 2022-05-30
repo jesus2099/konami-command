@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2022.5.3
+// @version      2022.5.31
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
@@ -140,7 +140,7 @@ function checkOpenEdits(obj) {
 			) {
 				var pagination = responseDOM.querySelector("ul.pagination");
 				editDetails = {
-					types: Array.from(this.responseText.match(/<h2><a href="[^"]+"><bdi>[^<]+<\/bdi><\/a><\/h2>/g), x => x.replace(/^.+ - /, "- ").replace(/<\/bdi>.+$/, "")),
+					types: Array.from(this.responseText.match(/<h2><a href="[^"]+"><bdi>[^<]+<\/bdi><\/a><\/h2>/g), x => x.replace(/^.+ [-–] /, "- ").replace(/<\/bdi>.+$/, "")),
 					editors: Array.from(this.responseText.match(/<\/h2><p class="subheader">[\S\s]+?<a href="\/user\/[^/]+">[\S\s]+?<\/p>/g), x => decodeURIComponent(x.replace(/^[\S\s]+\/user\/|">[\S\s]+$/g, ""))),
 					editCount: editCount
 				};
