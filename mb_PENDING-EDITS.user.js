@@ -171,14 +171,12 @@ function checkOpenEdits(obj) {
 }
 function updateLink(obj, details) {
 	var countText;
-	// var tooltip;
 	var li = getParent(obj.openedits, "li");
 	var count = li.querySelector("span." + SCRIPT_KEY + "Count");
 	if (typeof details == "object") {
 		countText = details.editCount;
 		if (details.editCount == 0) {
 			mp(obj.openedits, false);
-			// tooltip = "no pending edits";
 		} else if (details.editCount > 0) {
 			mp(obj.openedits, true);
 			if (details.atLeast) countText += "+";
@@ -204,7 +202,6 @@ function updateLink(obj, details) {
 				}
 				dupreset = false;
 			}
-			// tooltip = titarray.join("\n");
 			var expanded = "▼";
 			var collapsed = "◀";
 			var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
@@ -219,16 +216,11 @@ function updateLink(obj, details) {
 					editLi.style.setProperty("font-weight", "bold");
 				}
 			}
-				/* if (titarray.length < 2 && pecount <= EDITS_PER_PAGE) {
-					tooltip = tooltip.replace(/^- /, "");
-				} */
 			if (details.paginated) {
-				// tooltip += "\n- …";
 				ul.appendChild(createTag("li", {}, ["And ", createTag("span", {a: {class: "mp"}}, (details.editCount - details.types.length) + " older edit" + (details.editCount == (details.types.length + 1) ? "" : "s")), "…"]));
 			}
 			var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
 			if (titarray.length > 1) {
-				// tooltip += "\n \n(oldest edit on bottom)";
 				help.appendChild(document.createElement("br"));
 				help.appendChild(document.createTextNode(" newest edit on top"));
 			}
@@ -250,9 +242,6 @@ function updateLink(obj, details) {
 		countText = details;
 	}
 	count.replaceChild(document.createTextNode(countText), count.firstChild); // “countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
-	/* if (tooltip) {
-		obj.openedits.setAttribute("title", tooltip); // linked in mb_MASS-MERGE-RECORDINGS.user.js
-	} */
 }
 function mp(o, set) {
 	var li = getParent(o, "li");
