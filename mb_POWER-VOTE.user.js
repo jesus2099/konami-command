@@ -129,7 +129,7 @@ if (editform) {
 			if (rangeclick && (rad || this)) {
 				if (event.shiftKey && lastradio && rad != lastradio && rad.value == lastradio.value) {
 					rangeclick = false;
-					doitdoit(event, rad.value, Math.min(radios.indexOf(rad), radios.indexOf(lastradio)), Math.max(radios.indexOf(rad), radios.indexOf(lastradio)));
+					rangeVote(event, rad.value, Math.min(radios.indexOf(rad), radios.indexOf(lastradio)), Math.max(radios.indexOf(rad), radios.indexOf(lastradio)));
 					rangeclick = true;
 					lastradio = null;
 				} else {
@@ -159,7 +159,7 @@ if (editform) {
 				var collexpa = collexp.appendChild(document.createElement("a").appendChild(document.createTextNode(collapse[0])).parentNode);
 				collexp.style.setProperty("float", "right");
 				collexpa.className = userjs;
-				if (eheader.querySelectorAll("td.vote-count > div > strong").length == 1) collexpa.classList.add("autoedit");
+				if (eheader.querySelectorAll("td.vote-count > div > strong").length === 1) collexpa.classList.add("autoedit");
 				collexpa.style.setProperty("cursor", "pointer");
 				collexpa.style.setProperty("font-size", "2em");
 				preventDefault(collexpa, "mousedown");
@@ -170,7 +170,7 @@ if (editform) {
 					this.replaceChild(document.createTextNode(collapse[expand ? 0 : 1]), this.firstChild);
 					this.setAttribute("title", this.getAttribute("title").replace(new RegExp(expand ? "expand" : "collapse", "g"), expand ? "collapse" : "expand"));
 					this.setAttribute("rel", expand ? "collapse" : "expand");
-					ninja(event, getParent(this, "div", "edit-list"), !expand);
+					ninja(event, this.closest("div.edit-list"), !expand);
 					var editheader = getParent(this, "div", "edit-header");
 					var editheadersel = "div.edit-header", editor, vote;
 					var userCSS = "div.edit-header > p.subheader > a[href*='/user/']";
@@ -197,7 +197,7 @@ if (editform) {
 					if (event.altKey || event.ctrlKey || event.shiftKey) {
 						var others = editform.querySelectorAll(editheadersel + " a." + userjs + (autoedit ? ".autoedit" : "") + "[rel='" + (expand ? "expand" : "collapse") + "']");
 						for (let other = 0; other < others.length; other++) {
-							var ovote = getParent(others[other], "div", "edit-list").querySelector(voteCSS);
+							var ovote = others[other].closest("div.edit-list").querySelector(voteCSS);
 							if (ovote) ovote = ovote.getAttribute("value");
 							if (
 								(!editor || editor == getParent(others[other], "div", "edit-header").querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/)[1])
@@ -258,7 +258,7 @@ function queueApprove(edit, editId) {
 	var xhr = new XMLHttpRequest();
 	xhr.editId = editId;
 	xhr.addEventListener("load", function(event) {
-		checkAfterQueue(this, event, "approving");
+		checkAfterQueue(this, "approving");
 	});
 	xhr.open("POST", "/edit/" + editId + "/approve", true);
 	updateXHRstat(++pendingXHRvote);
@@ -272,15 +272,15 @@ function queueVote(edit, editId, vote, callback) {
 	var xhr = new XMLHttpRequest();
 	xhr.editId = editId;
 	xhr.addEventListener("load", function(event) {
-		checkAfterQueue(this, event, "voting", callback);
+		checkAfterQueue(this, "voting", callback);
 	});
 	xhr.open("POST", self.location.protocol + "//" + self.location.host + "/edit/enter_votes", true);
 	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	updateXHRstat(++pendingXHRvote);
 	xhr.send(params);
-	ninja(event, edit, true, "force");
+	ninja(null, edit, true, "force");
 }
-function checkAfterQueue(xhr, event, queueType, callback) {
+function checkAfterQueue(xhr, queueType, callback) {
 	var anotherEdit = xhr.responseText.match(/<title>\D*(\d+)\D*<\/title>/);
 	if (anotherEdit && anotherEdit[1] != xhr.editId) {
 		anotherEdit = anotherEdit[1];
@@ -311,7 +311,7 @@ function checkAfterQueue(xhr, event, queueType, callback) {
 			errorMessage += "No votes pending.\n";
 		}
 		if (editEntry) {
-			ninja(event, editEntry, false, "force");
+			ninja(null, editEntry, false, "force");
 			editEntry.setAttribute("title", errorMessage);
 			editEntry.style.setProperty("background-color", "pink");
 			editEntry.style.setProperty("cursor", "help");
@@ -378,49 +378,35 @@ function preNGS(editHeader) {
 	editHeader.parentNode.classList.add("pre-ngs");
 }
 function shortcutsRow() {
-	var editlist, editactions, voteopts, editdetails;
-	editlist = mkElt("div", "edit-list");
-	editlist.style.setProperty("border", border);
-	editactions = mkElt("div", "edit-actions c applied");
-	voteopts = mkElt("div", "voteopts buttons");
-	voteopts.style.setProperty("width", "175px");
-	voteopts.style.setProperty("margin", "0");
-	voteopts.appendChild(shortcut("1", "Yes"));
-	voteopts.appendChild(shortcut("0", "No"));
-	voteopts.appendChild(shortcut("-1", "Abstain"));
-	voteopts.appendChild(shortcut("-2", "None"));
-	editactions.appendChild(voteopts);
-	editlist.appendChild(editactions);
-	editdetails = mkElt("div", "edit-details");
-	editdetails.style.setProperty("text-align", "right");
-	editdetails.style.setProperty("margin", "0");
-	editdetails.appendChild(mkElt("span", "buttons").appendChild(shortcut("omgcancel", canceltext)).parentNode);
-	editdetails.appendChild(document.createTextNode(text));
-	editlist.appendChild(editdetails);
-	return editlist;
+	return createTag("div", {a: {class: "edit-list"}, s: {border: border}}, [
+		createTag("div", {a: {class: "edit-actions c applied"}},
+			createTag("div", {a: {class: "voteopts buttons"}, s: {margin: "0", width: "175px"}}, [
+				shortcut("1", "Yes"),
+				shortcut("0", "No"),
+				shortcut("-1", "Abstain"),
+				shortcut("-2", "None")
+			])
+		),
+		createTag("div", {a: {class: "edit-details"}, s: {margin: "0", textAlign: "right"}}, [
+			createTag("span", {a: {class: "buttons"}}, shortcut("reset-votes", canceltext)),
+			text
+		])
+	]);
 }
-function mkElt(typ, cls) {
-	var obj = document.createElement(typ);
-	obj.className = cls;
-	return obj;
-}
-function shortcut(vote, txt) {
-	var button = document.createElement("input");
-	button.setAttribute("type", "button");
-	button.className = "styled-button";
+function shortcut(vote, label) {
+	var button = createTag("input", {
+		a: {type: "button", value: label, class: "styled-button"},
+		s: {float: "none", margin: FF ? "0 3px 0 0" : "0 3px", padding: FF ? "0 2px" : "0 3px"},
+		e: {click: function(event) { rangeVote(event, vote); }}
+	});
 	if (onlySubmitTabIndexed) { button.setAttribute("tabindex", "-1"); }
-	button.style.setProperty("padding", FF ? "0 2px" : "0 3px");
-	button.style.setProperty("margin", FF ? "0 3px 0 0" : "0 3px");
-	button.style.setProperty("float", "none");
-	button.value = txt;
-	button.addEventListener("click", function(event) { doitdoit(event, vote); });
 	return button;
 }
-function doitdoit(event, vote, min, max) {
-	if (vote != "omgcancel") {
+function rangeVote(event, vote, min, max) {
+	if (vote != "reset-votes") {
 		if (event.detail === 1) { // first click
 			for (let i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : radios.length); i++) { // FF shift+click label NG
-				if (radios[i].getAttribute("value") == vote && !radios[i].checked && !ninja(event, getParent(radios[i], "div", "edit-list")) && (event.shiftKey || isOkToVote(radios[i]))) {
+				if (radios[i].getAttribute("value") == vote && !radios[i].checked && !ninja(event, radios[i].closest("div.edit-list")) && (event.shiftKey || notVotedYet(radios[i]))) {
 					sendEvent(radios[i], "click");
 				}
 			}
@@ -429,7 +415,7 @@ function doitdoit(event, vote, min, max) {
 		}
 	} else { for (let i = 0; i < radiosafe.length; i++) { sendEvent(radiosafe[i], "click"); } }
 }
-function isOkToVote(radiox) {
+function notVotedYet(radiox) {
 	return getParent(radiox, "div", "voteopts").querySelector("input[type='radio'][value='-2']").checked;
 }
 function findPos(obj) { /* http://www.quirksmode.org/js/findpos.html */
@@ -455,24 +441,24 @@ function disable(cont, dis) {
 		return true;
 	} else { return false; }
 }
-function ninja(event, o, n, spec) {
-	disable(o, n);
-	var cls = spec ? spec : "ninja";
-	if (n != null) {
+function ninja(event, edit, collapse, specificClassName) {
+	disable(edit, collapse);
+	var ninjaClassName = specificClassName ? specificClassName : "ninja";
+	if (collapse != null) {
 		var jQwtf;
 		var allbutheader = "div.edit-actions, div.edit-notes, div.edit-details";
 		try {
-			jQwtf = spec ? jQuery(o) : jQuery(o).children(allbutheader);
+			jQwtf = specificClassName ? jQuery(edit) : jQuery(edit).children(allbutheader);
 		} catch (error) {
-			jQwtf = spec ? [o] : o.querySelectorAll(allbutheader);
+			jQwtf = specificClassName ? [edit] : edit.querySelectorAll(allbutheader);
 			console.log(error.message + "!\n" + chrome);
 		}
 		if (event && event.detail > 0 && !event.altKey && !event.ctrlKey && !event.shiftKey) {
-			if (n) {
+			if (collapse) {
 				try { jQwtf.hide(100); } catch (error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", "none"); }
 			} else {
 				try {
-					jQuery(o).removeClass(userjs + "ninja");
+					jQuery(edit).removeClass(userjs + "ninja");
 					jQwtf.show(100);
 				} catch (error) {
 					for (let j = 0; j < jQwtf.length; j++) {
@@ -482,11 +468,11 @@ function ninja(event, o, n, spec) {
 				}
 			}
 		} else {
-			try { jQwtf.css("display", n ? "none" : ""); } catch (error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", n ? "none" : ""); }
-			if (n) o.classList.add(userjs + cls);
-			else o.classList.remove(userjs + cls);
+			try { jQwtf.css("display", collapse ? "none" : ""); } catch (error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", collapse ? "none" : ""); }
+			if (collapse) edit.classList.add(userjs + ninjaClassName);
+			else edit.classList.remove(userjs + ninjaClassName);
 		}
-	} else return o.classList.contains(userjs + cls);
+	} else return edit.classList.contains(userjs + ninjaClassName);
 }
 function updateXHRstat(nbr) {
 	var stat = document.getElementById(userjs + "xhrstat");
