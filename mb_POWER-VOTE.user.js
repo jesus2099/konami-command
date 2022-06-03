@@ -445,30 +445,23 @@ function ninja(event, edit, collapse, specificClassName) {
 	disable(edit, collapse);
 	var ninjaClassName = specificClassName ? specificClassName : "ninja";
 	if (collapse != null) {
-		var jQwtf;
 		var allbutheader = "div.edit-actions, div.edit-notes, div.edit-details";
-		try {
-			jQwtf = specificClassName ? jQuery(edit) : jQuery(edit).children(allbutheader);
-		} catch (error) {
-			jQwtf = specificClassName ? [edit] : edit.querySelectorAll(allbutheader);
-			console.log(error.message + "!\n" + chrome);
-		}
+		var editEntryContent = specificClassName ? [edit] : edit.querySelectorAll(allbutheader);
 		if (event && event.detail > 0 && !event.altKey && !event.ctrlKey && !event.shiftKey) {
 			if (collapse) {
-				try { jQwtf.hide(100); } catch (error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", "none"); }
+				for (var i = 0; i < editEntryContent.length; i++) {
+					editEntryContent[i].style.setProperty("display", "none");
+				}
 			} else {
-				try {
-					jQuery(edit).removeClass(userjs + "ninja");
-					jQwtf.show(100);
-				} catch (error) {
-					for (let j = 0; j < jQwtf.length; j++) {
-						jQwtf[j].classList.remove(userjs + "ninja");
-						jQwtf[j].style.setProperty("display", "block");
-					}
+				for (var i = 0; i < editEntryContent.length; i++) {
+					editEntryContent[i].classList.remove(userjs + "ninja");
+					editEntryContent[i].style.setProperty("display", "block");
 				}
 			}
 		} else {
-			try { jQwtf.css("display", collapse ? "none" : ""); } catch (error) { for (let j = 0; j < jQwtf.length; j++) jQwtf[j].style.setProperty("display", collapse ? "none" : ""); }
+			for (var i = 0; i < editEntryContent.length; i++) {
+				editEntryContent[i].style.setProperty("display", collapse ? "none" : "");
+			}
 			if (collapse) edit.classList.add(userjs + ninjaClassName);
 			else edit.classList.remove(userjs + ninjaClassName);
 		}
