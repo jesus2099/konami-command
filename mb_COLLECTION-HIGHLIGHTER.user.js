@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.2.4
+// @version      2022.6.3
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -49,6 +49,7 @@ if (cat) {
 	var slowDownStepAfterRetry = 0;
 	var css_nextPage = "ul.pagination > li:last-of-type > a";
 	var retry = 0;
+	var lowMemory = navigator.deviceMemory && navigator.deviceMemory <= 1; // 1 (GB) on my Raspberry Pi 3B+
 	var j2ss = document.createElement("style");
 	j2ss.setAttribute("type", "text/css");
 	document.head.appendChild(j2ss);
@@ -330,21 +331,30 @@ function loadCollection(collectionMBID, action) {
 	}
 	stuff["release-new"] = {ids: []};
 	stuff["missingRecordingWorks"] = [];
+	if (lowMemory) {
+		modal(true, "Low memory machine (" + navigator.deviceMemory + " GB): Displaying less stuff to preserve performances.", 2);
+	}
 	loadReleases("?collection=" + collectionMBID, action, concludeCollectionLoading);
 }
 function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add or remove */, conclusionCallback, _offset) {
 	var offset = _offset || 0;
 	var ws2releaseUrl = "/ws/2/release" + query + (query.indexOf("?") >= 0 ? "&" : "?") + "inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + MBWSSpeedLimit + "&offset=" + offset;
-	modal(true, "Fetching releases…", 1);
+	if (offset == 0 || !lowMemory) {
+		modal(true, "Fetching releases…", 1);
+	}
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function(event) {
 		if (this.status == 401) {
 			error(concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
 		} else if (this.status == 200) {
 			var oneRelease = this.response.releases === undefined;
-			modal(true, "Received " + (oneRelease ? 1 : this.response.releases.length.toLocaleString(lang)) + " release" + ((oneRelease ? 1 : this.response.releases.length) == 1 ? "" : "s") + ":", 2);
+			if (!lowMemory) {
+				modal(true, "Received " + (oneRelease ? 1 : this.response.releases.length.toLocaleString(lang)) + " release" + ((oneRelease ? 1 : this.response.releases.length) == 1 ? "" : "s") + ":", 2);
+			}
 			browseReleases(oneRelease ? [this.response] : this.response.releases, action, offset, oneRelease ? 1 : this.response["release-count"]);
-			modal(true, " ", 1);
+			if (!lowMemory) {
+				modal(true, "", 1);
+			}
 			var newOffset = !oneRelease && this.response["release-offset"] + this.response.releases.length;
 			if (!oneRelease && newOffset < this.response["release-count"]) {
 				retry = 0;
@@ -354,7 +364,7 @@ function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add
 				if (stuff["release-new"].ids.length > 0) {
 					delete(stuff["release-new"]); // free up memory
 					if (stuff["missingRecordingWorks"].length > 0) {
-						modal(true, concat(["<hr>", "\u26A0\uFE0F Big releases require ", createTag("b", {s: {color: highlightColour}}, "delayed work fetching"), " (from " + stuff["missingRecordingWorks"].length.toLocaleString(lang) + " recordings):"]), 2);
+						modal(true, concat(["<hr>", "\u26A0\uFE0F Big releases require ", createTag("b", {s: {color: highlightColour}}, "delayed work fetching"), " (for " + stuff["missingRecordingWorks"].length.toLocaleString(lang) + " recordings):"]), 2);
 						retry = 0;
 						setTimeout(function() {
 							currentTaskStartDate = Date.now();
@@ -394,7 +404,11 @@ function browseReleases(releases, action, offset, releaseCount) {
 	for (var r = 0; r < releases.length; r++) {
 		var country = releases[r].country ? createTag("span", {a: {class: "flag flag-" + releases[r].country}}) : "";
 		var disambiguation = releases[r].disambiguation ? " (" + releases[r].disambiguation + ")" : "";
-		modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toLocaleString(lang).padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
+		if (!lowMemory) {
+			modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toLocaleString(lang).padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
+		} else {
+			modal(true, "", 0, {text: "releases", current: offset + r + 1, total: releaseCount});
+		}
 		var missingRecordingLevelRels = 0;
 		if (stuff["release"].rawids.indexOf(releases[r].id) < 0) { stuff["release-new"].ids.push(releases[r].id); }
 		addRemoveEntities("release", releases[r], action);
@@ -410,7 +424,9 @@ function browseReleases(releases, action, offset, releaseCount) {
 				)
 				&& releases[r]["release-group"].relations[rgRel].direction == "backward"
 			) {
-				modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " Includes ", createA(releases[r]["release-group"].relations[rgRel].release_group.title, "/release-group/" + releases[r]["release-group"].relations[rgRel].release_group.id)]), 1);
+				if (!lowMemory) {
+					modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " Includes ", createA(releases[r]["release-group"].relations[rgRel].release_group.title, "/release-group/" + releases[r]["release-group"].relations[rgRel].release_group.id)]), 1);
+				}
 				addRemoveEntities("release-group", releases[r]["release-group"].relations[rgRel].release_group, action);
 				if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"].relations[rgRel].release_group["artist-credit"], action); }
 			}
@@ -428,7 +444,7 @@ function browseReleases(releases, action, offset, releaseCount) {
 				missingRecordingLevelRels += browseTrack(releases[r].media[m]["data-tracks"][dt], action);
 			}
 		}
-		if (missingRecordingLevelRels > 0) {
+		if (!lowMemory && missingRecordingLevelRels > 0) {
 			modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F " + missingRecordingLevelRels.toLocaleString(lang) + " recordings queued for ", createTag("b", {s: {color: highlightColour}}, "delayed work fetching")]), 1);
 		}
 	}
@@ -522,7 +538,7 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 	var batch = recordings.slice(batchOffset, batchOffset + batchSize);
 	var workQueryURL = "/ws/2/work?query=rid%3A" + batch.join("+OR+rid%3A") + "&limit=" + MBWSSpeedLimit + "&offset=" + wsResponseOffset;
 	if (wsResponseOffset === 0) {
-		modal(true, "Fetching works from " + batch.length + " recordings… ", 0);
+		modal(true, "Fetching works for " + batch.length + " recordings… ", 0);
 	}
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function(event) {
@@ -533,10 +549,10 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 			}
 			var newWsResponseOffset = this.response.offset + this.response.works.length;
 			if (newWsResponseOffset < this.response.count) {
-				modal(true, createTag("span", {s: {color: "grey"}}, "+"), 0);
+				modal(true, concat([createTag("span", {s: {color: "grey"}}, "+"), " works"]), 0);
 				mbs12154 += this.response.count - MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
 				if (mbs12154 < MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
-					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: highlightColour}}, "MBS-12154 requires slowing down."), "<br>", "Reducing recording batch size: ", createTag("del", {}, batchSize), "→", createTag("b", {}, batchSize - this.response.count + MBWSSpeedLimit)]), 2); // #### REMOVE WHEN MBS-12154 FIXED
+					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: highlightColour}}, ["Slow down required (", createTag("a", {a: {href: "https://tickets.metabrainz.org/browse/MBS-12154", target: "_blank"}}, "MBS-12154"), ")"]), "<br>", "Reducing recording query size: ", createTag("del", {}, batchSize), "→", createTag("b", {}, batchSize - this.response.count + MBWSSpeedLimit), " recordings"]), 2); // #### REMOVE WHEN MBS-12154 FIXED
 					retry = 0;
 					// #### UNCOMMENT WHEN MBS-12154 FIXED // setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
 					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset); }, chrono(MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
@@ -544,14 +560,14 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 					error("MBS-12154 bug\n\nCannot load works."); // #### REMOVE WHEN MBS-12154 FIXED
 				} // #### REMOVE WHEN MBS-12154 FIXED
 			} else {
-				modal(true, " ", 1);
+				modal(true, " works", 1);
 				var newBatchOffset = batchOffset + batch.length;
 				if (newBatchOffset < recordings.length) {
 					retry = 0;
 					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, newBatchOffset); }, chrono(MBWSRate));
 				} else {
 					// end of recursive function
-					modal(true, " ", 1);
+					modal(true, "", 1);
 					conclusionCallback();
 				}
 			}
@@ -825,7 +841,7 @@ function closeModal(event) {
 	}
 }
 var gaugeto;
-function modal(show, txt, brs, gauge) {
+function modal(show, data, newlines, gauge) {
 	var obj = document.getElementById(prefix + "Modal");
 	if (show && !obj) {
 		coolstuff("div", "50", "100%", "100%", "black", ".6");
@@ -853,7 +869,7 @@ function modal(show, txt, brs, gauge) {
 		gaug.style.setProperty("text-shadow", "1px 2px 2px black");
 		gaug.appendChild(document.createTextNode("\u00a0"));
 	}
-	if (show && obj && txt) {
+	if (show && obj) {
 		if (gauge) {
 			var percentage = Math.floor(100 * gauge.current / gauge.total);
 			if (percentage) {
@@ -877,13 +893,17 @@ function modal(show, txt, brs, gauge) {
 				}
 			}
 		}
-		var br = 0;
-		if (brs && brs > 0) { br = brs; }
-		obj.appendChild(typeof txt == "string" ? document.createTextNode(txt) : txt);
-		for (let ibr = 0; ibr < br; ibr++) {
-			obj.appendChild(document.createElement("br"));
+		if (data) {
+			// neither null nor empty string
+			obj.appendChild(typeof data == "string" ? document.createTextNode(data) : data);
 		}
-		if (obj.style.getPropertyValue("border-color") == "black") {
+		if (newlines) {
+			// neither null nor number 0
+			for (var b = 0; b < newlines; b++) {
+				obj.appendChild(document.createElement("br"));
+			}
+		}
+		if ((data || newlines) && obj.style.getPropertyValue("border-color") == "black") {
 			obj.scrollTop = obj.scrollHeight;
 		}
 	}
@@ -931,7 +951,7 @@ function lastLink(href) {
 			modal(true, "Re‐loading page…", 1);
 			setTimeout(function() { self.location.href = ll; }, chrono(MBWSRate));
 		} else {
-			modal(true, " ", 1);
+			modal(true, "", 1);
 			error("Sorry, I’m lost. I don’t know what was the link you last clicked.");
 		}
 	}
