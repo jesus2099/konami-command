@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.6.3
+// @version      2022.6.5
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -543,11 +543,14 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("load", function(event) {
 		if (this.status == 200) {
-			modal(true, this.response.works.length.toString(), 0, {text: "recordings", current: batchOffset + batch.length, total: recordings.length});
-			for (var r = 0; r < this.response.works.length; r++) {
-				if (stuff["work"]) { addRemoveEntities("work", this.response.works[r], action); }
+			var works = this.response.works;
+			modal(true, works.length.toString(), 0, {text: "recordings", current: batchOffset + batch.length, total: recordings.length});
+			if (stuff["work"]) {
+				for (var r = 0; r < works.length; r++) {
+					addRemoveEntities("work", works[r], action);
+				}
 			}
-			var newWsResponseOffset = this.response.offset + this.response.works.length;
+			var newWsResponseOffset = this.response.offset + works.length;
 			if (newWsResponseOffset < this.response.count) {
 				modal(true, concat([createTag("span", {s: {color: "grey"}}, "+"), " works"]), 0);
 				mbs12154 += this.response.count - MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
