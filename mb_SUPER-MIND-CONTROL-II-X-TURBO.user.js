@@ -910,7 +910,7 @@ j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” 
 if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/search\/edits/)) {
 	debug("COOL_SEARCH_LINKS");
 	var baseURL = self.location.pathname.match(new RegExp("^/([^/]+)/(" + stre_GUID + ")"));
-	var editSearch = self.location.pathname.match(/(?:(?:(open)_)?edits|edits\/(open))\/?$/);
+	var editSearch = self.location.pathname.match(/(?:(?:(open)_)?edits|edits\/(accepted|applied|autoedits|cancelled|failed|open|rejected))\/?$/);
 	if (baseURL && !editSearch) {
 		// Entity page
 		var entityType = baseURL[1].replace(/-/, "_");
@@ -979,23 +979,27 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			var novote = "&conditions.2098.field=voter&conditions.2098.operator=%3D&conditions.2098.name=%myName%&conditions.2098.voter_id=%myID%&conditions.2098.args=no";
 			var onlyEffective = "&conditions.2097.field=status&conditions.2097.operator=%3D&conditions.2097.args=1&conditions.2097.args=2";
 			if (
-				self.location.href.indexOf(account.pathname) < 0 &&
 				(refine = document.querySelector("table.search-help td > a[href^='" + MBS + "/search/edits?'][href*='&conditions.']")) &&
 				(refine = refine.getAttribute("href").replace(/&?form_only=yes/, ""))
 			) {
-				if (self.location.pathname.match(/\/edits$/)) {
+				if (self.location.pathname.match(/\bedits$/)) {
+					// No need for effective edit filter in /user/xxx/edits/(accepted|applied|autoedits|cancelled|failed|open|rejected)
 					refines.appendChild(document.createTextNode(" | "));
-					refines.appendChild(createTag("a", {a: {href: refine + onlyEffective}}, ["Refine this search (", createTag("strong", null, "effective edits only"), ")"]));
+					refines.appendChild(createTag("a", {a: {href: refine + onlyEffective}}, "Effective edits (open or applied)"));
 				}
-				if (typeof __MB__ !== "undefined") {
+				if (self.location.href.indexOf(account.pathname) < 0 && typeof __MB__ !== "undefined") {
 					var myID = __MB__.$c.user.id;
 					if (myID) {
 						if (myID != localStorage.getItem(userjs.id + "me-userid")) localStorage.setItem(userjs.id + "me-userid", myID);
-						refines.appendChild(document.createTextNode(" | "));
-						refines.appendChild(createTag("a", {a: {href: refine + notme.replace(/%myID%/g, myID).replace(/%myName%/g, escape(account.name))}}, ["Refine this search (", createTag("strong", null, "+not me"), ")"]));
-						novote = notme + novote;
-						refines.appendChild(document.createTextNode(" | "));
-						refines.appendChild(createTag("a", {a: {href: refine + novote.replace(/%myID%/g, myID).replace(/%myName%/g, escape(account.name))}}, ["Refine this search (", createTag("strong", null, "+not me +not voted"), ")"]));
+						if (!self.location.pathname.match(/^\/user\//)) {
+							refines.appendChild(document.createTextNode(" | "));
+							refines.appendChild(createTag("a", {a: {href: refine + notme.replace(/%myID%/g, myID).replace(/%myName%/g, escape(account.name))}}, "Exclude my own edits"));
+						}
+						if (!self.location.pathname.match(/\/edits\/autoedits/)) {
+							novote = notme + novote;
+							refines.appendChild(document.createTextNode(" | "));
+							refines.appendChild(createTag("a", {a: {href: refine + novote.replace(/%myID%/g, myID).replace(/%myName%/g, escape(account.name))}}, "Edits I have not voted"));
+						}
 					}
 				}
 			}
