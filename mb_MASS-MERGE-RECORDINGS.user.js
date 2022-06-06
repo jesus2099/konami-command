@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2099.5.25
+// @version      2099.6.7
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -33,6 +33,8 @@ var cWarning = "yellow";
 var cMerge = "#fcc";
 var cCancel = "#cfc";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
+var safeLengthDelta = 4;
+var largeSpread = 15; // MBS-7417 / https://github.com/metabrainz/musicbrainz-server/blob/217111e3a12b705b9499e7fdda6be93876d30fb0/lib/MusicBrainz/Server/Edit/Utils.pm#L467
 var lastTick = new Date().getTime();
 var MBSminimumDelay = 1000;
 var retryDelay = 2000;
@@ -70,10 +72,10 @@ css.insertRule("div#" + userjs.id + " kbd { background-color: silver; border: 2p
 css.insertRule(".remoteRecordingLength.largeSpread { color: yellow; background-color: red; text-shadow: 2px 2px 4px black; }", 0);
 css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr:nth-child(even) > td { background-color: #f2f2f2; }", 0);
 css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist { counter-reset: recording-index; }", 0);
-css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist td:first-child:before { counter-increment: recording-index; content: counter(recording-index); opacity: .6; }", 0);
-css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist td:first-child { text-align: center; }", 0);
-css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist th:first-child { text-align: center; }", 0);
-css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist tr.sameName > td:nth-child(2) { border-left: 2px solid red; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr > td:first-child:before { counter-increment: recording-index; content: counter(recording-index); opacity: .6; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr > td:first-child { text-align: center; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > thead > tr > th:first-child { text-align: center; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr.sameName > td:nth-child(2) { border-left: 2px solid red; }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
 var RGMode = self.location.pathname.match(new RegExp("^/release-group/(" + sregex_MBID + ")$"));
@@ -101,8 +103,6 @@ if (ltitle) {
 			id: self.location.pathname.match(regex_MBID)[0],
 			tracks: []
 		};
-		var safeLengthDelta = 4;
-		var largeSpread = 15; // MBS-7417 / https://github.com/metabrainz/musicbrainz-server/blob/217111e3a12b705b9499e7fdda6be93876d30fb0/lib/MusicBrainz/Server/Edit/Utils.pm#L467
 		if (localRelease.comment) localRelease.comment = " (" + localRelease.comment.textContent + ")"; else localRelease.comment = "";
 		var remoteRelease = {tracks: []};
 		if (document.getElementsByClassName("account").length > 0) {
@@ -1289,6 +1289,7 @@ function loadingAllRecordings() {
 			alert("Error loading RG recordings!");
 		}
 	});
+	console.log("/ws/2/recording?query=rgid%3A" + RGMode[1] + "&limit=100");
 	xhr.open("GET", "/ws/2/recording?query=rgid%3A" + RGMode[1] + "&limit=100", true);
 	xhr.responseType = "json";
 	xhr.setRequestHeader("Accept", "application/json");
@@ -1378,39 +1379,55 @@ function ISRCList(recording) {
 	}
 	return list;
 }
-/*function releaseList(recording) {
-	var list = document.createElement("ul");
-	if (recording.releases) {
-		for (var r = 0; r < recording.releases.length; r++) {
-			var li = list.appendChild(createTag("li", {}, createA(recording.releases[r].title, "/release/" + recording.releases[r].id)));
-			if (recording.releases[r].disambiguation) {
-				li.appendChild(document.createTextNode(" "));
-				li.appendChild(createTag("span", {a: {class: "comment"}}, "(" + recording.releases[r].disambiguation + ")"));
-			}
-		}
-	}
-	return list;
-}*/
 function releaseList(recording) {
-	var list = document.createDocumentFragment();
+	var list = document.createElement("table");
 	if (recording.releases) {
 		for (var r = 0; r < recording.releases.length; r++) {
-			if (r > 0) {
-				list.appendChild(document.createTextNode(", "));
+			var releaseRow = list.appendChild(createTag("tr"));
+			// .warn-lengths more than 15 seconds diff with rec length, yellow if more than 4 seconds
+			var trackLength = releaseRow.appendChild(createTag("td", {}, document.createTextNode(time(recording.releases[r].media[0].track[0].length))));
+			var lengthDelta = Math.abs(recording.length - recording.releases[r].media[0].track[0].length);
+			if (lengthDelta > safeLengthDelta * 1000) {
+				trackLength.style.setProperty("background-color", cNG, "important");
 			}
-			var releaseLink = createA(
-				/*recording.releases[r].media[0].position + "." +*/ (recording.releases[r].media[0]["track-offset"] + 1) + "/" + recording.releases[r].media[0]["track-count"],
-				"/release/" + recording.releases[r].id + (recording.releases[r].media[0].position > 1 ? "/disc/" + recording.releases[r].media[0].position + "#disc" + recording.releases[r].media[0].position : "")
-			);
-			releaseLink.setAttribute(
-				"title",
-				recording.releases[r].title + (recording.releases[r].disambiguation ? " (" + recording.releases[r].disambiguation + ")" : "")
-			);
-			if (recording.releases[r]["release-group"].id != RGMode[1]) {
-				releaseLink.style.setProperty("background-color", "#ff6");
+			if (lengthDelta >= largeSpread * 1000) {
+				trackLength.classList.add("warn-length");
 			}
-			list.appendChild(releaseLink);
+			// position
+			releaseRow.appendChild(createTag("td", {}, [createTag("a", {a: {title: recording.releases[r].media[0].format, href: "/track/" + recording.releases[r].media[0].track[0].id}}, recording.releases[r].media[0].position + "." + (recording.releases[r].media[0]["track-offset"] + 1)), "/", recording.releases[r].media[0]["track-count"]]));
+			// release link
+			var releaseCell = releaseRow.appendChild(createTag("td", {}, createA(recording.releases[r].title, "/release/" + recording.releases[r].id)));
+			if (recording.releases[r].disambiguation) {
+				releaseCell.appendChild(document.createTextNode(" "));
+				releaseCell.appendChild(createTag("span", {a: {class: "comment"}}, "(" + recording.releases[r].disambiguation + ")"));
+				if (recording.releases[r]["release-group"].id != RGMode[1]) {
+					releaseCell.style.setProperty("background-color", "#ff6", "important");
+				}
+			}
 		}
 	}
 	return list;
 }
+// function releaseList(recording) {
+// 	var list = document.createDocumentFragment();
+// 	if (recording.releases) {
+// 		for (var r = 0; r < recording.releases.length; r++) {
+// 			if (r > 0) {
+// 				list.appendChild(document.createTextNode(", "));
+// 			}
+// 			var releaseLink = createA(
+// 				/*recording.releases[r].media[0].position + "." +*/ (recording.releases[r].media[0]["track-offset"] + 1) + "/" + recording.releases[r].media[0]["track-count"],
+// 				"/release/" + recording.releases[r].id + (recording.releases[r].media[0].position > 1 ? "/disc/" + recording.releases[r].media[0].position + "#disc" + recording.releases[r].media[0].position : "")
+// 			);
+// 			releaseLink.setAttribute(
+// 				"title",
+// 				recording.releases[r].title + (recording.releases[r].disambiguation ? " (" + recording.releases[r].disambiguation + ")" : "")
+// 			);
+// 			if (recording.releases[r]["release-group"].id != RGMode[1]) {
+// 				releaseLink.style.setProperty("background-color", "#ff6");
+// 			}
+// 			list.appendChild(releaseLink);
+// 		}
+// 	}
+// 	return list;
+// }
