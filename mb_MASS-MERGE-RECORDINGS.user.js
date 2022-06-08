@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2099.6.7
+// @version      2099.6.9
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -1400,34 +1400,11 @@ function releaseList(recording) {
 			if (recording.releases[r].disambiguation) {
 				releaseCell.appendChild(document.createTextNode(" "));
 				releaseCell.appendChild(createTag("span", {a: {class: "comment"}}, "(" + recording.releases[r].disambiguation + ")"));
-				if (recording.releases[r]["release-group"].id != RGMode[1]) {
-					releaseCell.style.setProperty("background-color", "#ff6", "important");
-				}
+			}
+			if (recording.releases[r]["release-group"].id != RGMode[1]) {
+				releaseCell.style.setProperty("background-color", "#ff6", "important");
 			}
 		}
 	}
 	return list;
 }
-// function releaseList(recording) {
-// 	var list = document.createDocumentFragment();
-// 	if (recording.releases) {
-// 		for (var r = 0; r < recording.releases.length; r++) {
-// 			if (r > 0) {
-// 				list.appendChild(document.createTextNode(", "));
-// 			}
-// 			var releaseLink = createA(
-// 				/*recording.releases[r].media[0].position + "." +*/ (recording.releases[r].media[0]["track-offset"] + 1) + "/" + recording.releases[r].media[0]["track-count"],
-// 				"/release/" + recording.releases[r].id + (recording.releases[r].media[0].position > 1 ? "/disc/" + recording.releases[r].media[0].position + "#disc" + recording.releases[r].media[0].position : "")
-// 			);
-// 			releaseLink.setAttribute(
-// 				"title",
-// 				recording.releases[r].title + (recording.releases[r].disambiguation ? " (" + recording.releases[r].disambiguation + ")" : "")
-// 			);
-// 			if (recording.releases[r]["release-group"].id != RGMode[1]) {
-// 				releaseLink.style.setProperty("background-color", "#ff6");
-// 			}
-// 			list.appendChild(releaseLink);
-// 		}
-// 	}
-// 	return list;
-// }
