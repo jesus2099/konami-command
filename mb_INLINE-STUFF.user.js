@@ -59,6 +59,7 @@ if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
 if (pagecat != "edits" && self.location.pathname.match(/^\/recording\//i)) { pagecat = "recording"; }
 if (self.location.pathname.match(/^\/isrc\//)) { pagecat = "isrc"; }
 const pageMbid = self.location.pathname.match(re_GUID);
+var paginatedRelease = document.querySelector("div#content table.tbl.medium > tbody[style*='display'][style*='none'], div#content table.tbl.medium > tbody a.load-tracks");
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
@@ -462,7 +463,7 @@ function idCount(type, count) {
 			}
 		}, false);
 	}
-	if (count != 0) {
+	if (count != 0 && (!paginatedRelease || !type.match(/track|work/i))) {
 		var errorMsg = { "-20": "acoustid.org unreachable", "-21": "Strange result from acoustid.org" };
 		var cooldt = idCountZone.appendChild(document.createElement("dt")).appendChild(document.createTextNode(type + (count > 1 ? "s" : "") + ":")).parentNode;
 		var cooldd = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createTextNode(count < 0 ? errorMsg[count] + " (or\u00a0something\u00a0like\u00a0that)" : count)).parentNode;
