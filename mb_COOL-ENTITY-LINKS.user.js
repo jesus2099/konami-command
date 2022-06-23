@@ -69,6 +69,7 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 		cssas += "table.details a[href*='//test." + u + "'], ";
 		cssas += "table.details a[href*='//beta." + u + "'], ";
 		cssas += "table.details a[href*='//classic." + u + "'][href$='.html'], ";
+		cssas += "div.annotation-body a[href^='" + entities[ent].path + "'], "; // absolute path without domain
 		cssas += "div.annotation a[href*='//" + u + "'], ";
 		cssas += "div.annotation a[href*='//test." + u + "'], ";
 		cssas += "div.annotation a[href*='//beta." + u + "'], ";
@@ -93,7 +94,7 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 		var href, id;
 		if (
 			(href = as[a].getAttribute("href"))
-			&& (id = href.match(new RegExp(u + "(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
+			&& (id = href.match(new RegExp("(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
 			&& !as[a].querySelector("img:not(.rendericon)")
 		) {
 			var newA = as[a].cloneNode(true);
