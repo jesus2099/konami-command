@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2022.4.13
+// @version      2022.6.23
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COOL-ENTITY-LINKS
@@ -27,20 +27,21 @@ var userjs = "jesus2099userjs131731";
 var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var entities = {
 	acoustid: {fullpath: "//acoustid.org/track/"},
-	artist: {path: "/artist/", icon: "artist.png"},
+	artist: {path: "/artist/", icon: "artist.svg"},
 	bug: {fullpath: "//bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%"},
-	cdtoc: {path: "/cdtoc/", icon: "release.png", id: "[A-Za-z0-9_\\.]+-"},
+	cdtoc: {path: "/cdtoc/", icon: "release.svg", id: "[A-Za-z0-9_\\.]+-"},
 	"classic.edit": {path: "/show/edit/?editid=", id: "[0-9]+", label: "edit\u00a0#%id%"},
 	"classic.user": {path: "/show/user/?username=", id: ".+"},
 	edit: {path: "/edit/", id: "[0-9]+", label: "#%id%"},
-	label: {path: "/label/", icon: "label.png"},
+	label: {path: "/label/", icon: "label.svg"},
 	place: {path: "/place/", icon: "place.svg"},
-	recording: {path: "/recording/", icon: "recording.png"},
-	release: {path: "/release/", icon: "release.png"},
+	recording: {path: "/recording/", icon: "recording.svg"},
+	release: {path: "/release/", icon: "release.svg"},
 	"release-group": {path: "/release-group/", icon: "release_group.svg"},
+	series: {path: "/series/", icon: "series.svg"},
 	ticket: {fullpath: "//tickets.metabrainz.org/browse/", id: "[A-Za-z]+-[0-9]+"},
 	"ticket-old": {fullpath: "//tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", replace: [/#action_(\d+)/, "#comment-$1"]},
-	track: {path: "/track/", icon: "recording.png", noTools: true},
+	track: {path: "/track/", icon: "recording.svg", noTools: true},
 	user: {path: "/user/", id: ".+", openEdits: "/edits/open", noEdit: true},
 	work: {path: "/work/", icon: "work.svg"},
 };
@@ -68,6 +69,7 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 		cssas += "table.details a[href*='//test." + u + "'], ";
 		cssas += "table.details a[href*='//beta." + u + "'], ";
 		cssas += "table.details a[href*='//classic." + u + "'][href$='.html'], ";
+		cssas += "div.annotation-body a[href^='" + entities[ent].path + "'], "; // absolute path without domain
 		cssas += "div.annotation a[href*='//" + u + "'], ";
 		cssas += "div.annotation a[href*='//test." + u + "'], ";
 		cssas += "div.annotation a[href*='//beta." + u + "'], ";
@@ -92,7 +94,7 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 		var href, id;
 		if (
 			(href = as[a].getAttribute("href"))
-			&& (id = href.match(new RegExp(u + "(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
+			&& (id = href.match(new RegExp("(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
 			&& !as[a].querySelector("img:not(.rendericon)")
 		) {
 			var newA = as[a].cloneNode(true);
