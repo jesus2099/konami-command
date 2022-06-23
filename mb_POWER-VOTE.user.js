@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2022.6.4
+// @version      2022.6.23
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -14,7 +14,7 @@
 // @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits\b/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+\b/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/subscribed(_editors)?\b/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/(open|subscribed(_editors)?)\b/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\b/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/user\/[^/]+\/(edits(\/open)?|votes)\b/
 // @run-at       document-end
