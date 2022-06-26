@@ -31,7 +31,7 @@ let userjs = {
 	icon: createTag("img", {a: {src: GM_info.script.icon}, s: {verticalAlign: "middle", margin: "-8px 0"}})
 };
 var debugBuffer = "";
-var DEBUG = false;
+var DEBUG = true;
 var pageType = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (pageType) {
 	pageType = pageType[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
@@ -1282,6 +1282,7 @@ function serverSwitch(server, separator) {
 // ==========================================================================
 j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global");
 if (j2sets.TAG_TOOLS && account) {
+	// TAG LINKS
 	var tagscope = self.location.pathname.replace(new RegExp("^" + MBS + "|[?#].*$", "g"), "").match(/^(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
 	if (tagscope) {
 		debug("TAG_TOOLS");
@@ -1303,6 +1304,24 @@ if (j2sets.TAG_TOOLS && account) {
 	}
 	j2superturbo.addCSSRule("div.sidebar-tags ul[class$='-list'] a[href^='/user/'] { background-color: #B1EBB0 }");
 	updateTags();
+	// TAG RENAME
+	if (self.location.pathname == account.pathname + "/tags") {
+		var tags = document.querySelectorAll("div#all-tags > div /* #genres, #tags */ > ul /* .genre-list, .tag-list */ > li");
+		MBBanner(tags.length + " tags detected");
+		for (var t = 0; t < tags.length; t++) {
+			var a = tags[t].querySelector("a");
+			tags[t].insertBefore(createTag("button", {a: {_tag: a.textContent}, e: {click: function(event) {
+				var oldName = event.target.getAttribute("_tag");
+				var newName = prompt("Rename", oldName);
+				if (newName && newName !== oldName) {
+					var entities = ["area", "artist", "event", "instrument", "label", "place", "recording", "release", "release-group", "series", "work"];
+					for (var e = 0; e < entities.length; e++) {
+						MBBanner(account.pathname + "/tag/" + encodeURIComponent(oldName) + "/" + entities[e]);
+					}
+				}
+			}}}, "Rename"), a);
+		}
+	}
 }
 function updateTags(event) {
 	var tagZone = document.querySelector("div.sidebar-tags");
@@ -1793,4 +1812,13 @@ function debug(txt, buffer) {
 			debugBuffer = "";
 		}
 	}
+}
+function MBBanner(content) {
+	var lastBanner = document.querySelectorAll("div.header ~ div.banner");
+	if (lastBanner.length > 0) {
+		lastBanner = lastBanner[lastBanner.length - 1];
+	} else {
+		lastBanner = document.querySelector("div.header");
+	}
+	addAfter(createTag("div", {a: {class: "banner"}}, [createTag("p", {}, content), createTag("button", {a: {class: "dismiss-banner remove-item icon"}})]), lastBanner);
 }
