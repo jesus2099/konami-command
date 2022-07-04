@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2022.4.14
+// @version      2022.7.4
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -388,7 +388,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 							this.parentNode.submit();
 							return stop(event);
 						}}}, "Add to MB")) */
-						form.appendChild(createTag("a", {a: {href: createWork, title: MBS7313 + "\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "blink line-through", color: "blue"}}, "BROKEN")); // textDecoration: "underline" Add to MusicBrainz
+						form.appendChild(createTag("a", {a: {href: createWork, title: MBS7313 + "\nImport this work in MusicBrainz (name, iswc, type, edit note)"}, s: {background: background, cursor: "pointer", textDecoration: "blink line-through underline", color: "blue"}}, "Add to MusicBrainz"));
 						var sakuhin = document.querySelector(".baseinfo--name").firstChild; // quick and dirty patch
 						sakuhin.parentNode.appendChild(document.createTextNode(" （"));
 						sakuhin.parentNode.appendChild(form);
