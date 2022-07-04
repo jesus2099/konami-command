@@ -13,6 +13,7 @@
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_info
 // @match        *://*.musicbrainz.org/work/*
+// @match        *://search.minc.or.jp/product/list/*
 // @match        *://www.minc.gr.jp/db/*
 // @match        *://www2.jasrac.or.jp/eJwid/main?trxID=*WORKS_CD=*
 // @exclude      *.org/work/*/*edits*
@@ -37,7 +38,7 @@ var reISWC = "T- ?\\d{3}\\.\\d{3}.\\d{3}-\\d";
 var reCode = "\\d[A-Z\\d]\\d-\\d{4}-\\d";
 var reAnnotCode = "(?:jasrac|作品コード)\\W+(" + reCode + ")";
 var MBS = self.location.protocol + "//" + self.location.host;
-var pagecat = self.location.href.match(new RegExp("(jasrac(?=\\.or\\.jp)|minc(?=\\.gr\\.jp)|work(/" + RE_GUID + "/edit$|/create)|work)"));
+var pagecat = self.location.href.match(new RegExp("(jasrac(?=\\.or\\.jp)|minc(?=\\.or\\.jp)|work(/" + RE_GUID + "/edit$|/create)|work)"));
 var oldTitle = document.title;
 var xhrForm = {}, xhrWork = {}, h1, iname;
 var MBlookups = [];
@@ -427,6 +428,15 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			}); // quick and dirty patch
 			break;
 		case "minc":
+			setInterval(function() {
+				var workIDCells = document.querySelectorAll("div#cd_detail table > tbody > tr > td[data-th='JASRAC作品コード']:not(." + userjs.id + ")");
+				for (var w = 0; w < workIDCells.length; w++) {
+					workIDCells[w].classList.add(userjs.id);
+					var sakuhinCode = workIDCells[w].firstChild.textContent.trim();
+					workIDCells[w].appendChild(document.createTextNode(" "));
+					workIDCells[w].appendChild(createA("JW", workLookupURL("jasrac", "code", sakuhinCode), "Go to this work in JASRAC"));
+				}
+			}, 1234);
 			var sakuhinmei = document.querySelector("span[id$='_lbl_jas_nt_sakuhinnm']");
 			sakuhinCode = document.querySelector("span[id$='_jas_sakucd']");
 			var iswccode = document.querySelector("span[id$='_lbl_jas_nt_iswc']");
