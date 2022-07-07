@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2022.5.18
+// @version      2022.7.7
 // @description  Download audio folders as zip files
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -11,7 +11,7 @@
 // @since        2022-05-16
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_download
-// @include      /https?:\/\/next\.voicepublisher\.net\/audio_folders/
+// @include      /https?:\/\/(next|nivr)\.voicepublisher\.net\/audio_folders/
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
