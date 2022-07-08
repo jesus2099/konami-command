@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2022.6.6
+// @version      2022.7.9
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1311,42 +1311,25 @@ function updateTags(event) {
 			tagZone.parentNode.insertBefore(createTag("div", {s: {position: "relative", bottom: "-1rem", color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]), tagZone.previousSibling);
 			tagZone.addEventListener("DOMNodeInserted", updateTags);
 			tagZone.addEventListener("DOMSubtreeModified", updateTags);
-			var mytags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > span.tag-upvoted");
-			for (let t = 0; t < mytags.length; t++) {
-				ownifyTag(mytags[t].previousSibling);
-			}
-		} else if (event.target && event.target.nodeType === Node.ELEMENT_NODE) {
-			var tagLink;
-			var revert = false;
-			if (event.type == "DOMNodeInserted") {
-				//  new tag
-				if (event.target.querySelector("span.tag-upvoted")) {
-					tagLink = event.target.querySelector("a[href^='/tag/']");
-				}
-			} else if (event.type == "DOMSubtreeModified") {
-				// up/down-voted tag
-				if (event.target.tagName == "BUTTON" && event.target.classList.contains("tag-upvote")) {
-					// Vivaldi
-					tagLink = event.target.parentNode.previousSibling;
-					revert = event.target.getAttribute("disabled") === null;
-				} else if (event.target.tagName == "SPAN" && event.target.classList.contains("tag-vote-buttons")) {
-					// Firefox
-					tagLink = event.target.previousSibling;
-					revert = !event.target.classList.contains("tag-upvoted");
-				}
-			}
-			if (tagLink) {
-				ownifyTag(tagLink, revert);
-			}
 		}
+		setTimeout(function() {
+			var newUpvotedTags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > a:not([href^='" + account.pathname + "']) + span.tag-vote-buttons.tag-upvoted");
+			for (var t = 0; t < newUpvotedTags.length; t++) {
+				ownifyTag(newUpvotedTags[t].previousSibling);
+			}
+			var oldUpvotedTags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > a[href^='" + account.pathname + "'] + span.tag-vote-buttons:not(.tag-upvoted)");
+			for (var t = 0; t < oldUpvotedTags.length; t++) {
+				ownifyTag(oldUpvotedTags[t].previousSibling, true);
+			}
+		}, 123);
 	}
 }
 function ownifyTag(tag, revert) {
-	if (!tag.getAttribute(userjs.id + "tag")) {
-		tag.setAttribute(userjs.id + "tag", tag.getAttribute("href"));
-		tag.setAttribute(userjs.id + "ownTag", account.pathname + tag.getAttribute("href"));
+	if (revert) {
+		tag.setAttribute("href", tag.getAttribute("href").replace(account.pathname, ""));
+	} else {
+		tag.setAttribute("href", account.pathname + tag.getAttribute("href"));
 	}
-	tag.setAttribute("href", tag.getAttribute(userjs.id + (revert ? "tag" : "ownTag")));
 }
 function tagswitch(h1, urltxt) {
 	var switcht = h1.appendChild(createTag("span", {s: {color: "grey", textShadow: "1px 1px 2px silver"}}, " (see "));
