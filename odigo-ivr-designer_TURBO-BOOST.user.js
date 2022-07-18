@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.7.6
+// @version      2022.7.18
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -29,15 +29,20 @@ var darkBgColour = "purple";
 // Show script badge and help tooltip
 css.insertRule("span.badge." + GM_info.script.author + " { background-color: " + lightBgColour + "; color: black; cursor: help; position: fixed; top: 3px; right: 3px; box-shadow: inset 1px 1px 3px " + darkBgColour + "; z-index: 1035; }", 0);
 css.insertRule("span.badge." + GM_info.script.author + ":hover:after { background-color: " + lightBgColour + "; box-shadow: 1px 1px 3px " + darkBgColour + "; position: absolute; left: 2px; top: 20px; white-space: pre; padding: .5em; text-align: left; content: attr(data-title); }", 0);
-var doc = document.createElement("span");
-doc.classList.add("badge", GM_info.script.author);
-doc.appendChild(document.createTextNode(GM_info.script.name + " "));
-var supportLink = doc.appendChild(document.createElement("a")).appendChild(document.createTextNode("v" + GM_info.script.version)).parentNode;
-supportLink.setAttribute("href", GM_info.script.supportURL);
-supportLink.setAttribute("target", "_blank");
-doc.setAttribute("data-title", GM_info.script.description.replace(/:/g, "\n\n‣").replace(/,/g, "\n‣").replace(/; /g, "\n\n"));
-document.body.appendChild(doc);
-
+document.body.appendChild(
+	createTag(
+		"span",
+		{a: {
+			class: "badge " + GM_info.script.author,
+			dataTitle: GM_info.script.description.replace(/:/g, "\n\n‣").replace(/,/g, "\n‣").replace(/; /g, "\n\n")
+		}},
+		[
+			GM_info.script.name,
+			" ",
+			createTag("a", {a: {href: GM_info.script.supportURL, target: "_blank"}}, "v" + GM_info.script.version)
+		]
+	)
+);
 waitForElement("input#keyword", function(element) { element.focus(); });
 
 switch (self.location.pathname) {

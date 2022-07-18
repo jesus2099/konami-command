@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2022.4.5
+// @version      2022.7.18
 // @description  CLICK CELL TO SELECT TEXT: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -19,21 +19,26 @@ var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
 css = css.sheet;
-var lightBgColour = "#FCF";
+var lightBgColour = "#fcf";
 var darkBgColour = "purple";
 
 // Show script badge and help tooltip
 css.insertRule("span.badge." + GM_info.script.author + " { background-color: " + lightBgColour + "; color: black; cursor: help; position: fixed; top: 3px; right: 3px; box-shadow: inset 1px 1px 3px " + darkBgColour + "; z-index: 1035; }", 0);
 css.insertRule("span.badge." + GM_info.script.author + ":hover:after { background-color: " + lightBgColour + "; box-shadow: 1px 1px 3px " + darkBgColour + "; position: absolute; left: 2px; top: 20px; white-space: pre; padding: .5em; text-align: left; content: attr(data-title); }", 0);
-var doc = document.createElement("span");
-doc.classList.add("badge", GM_info.script.author);
-doc.appendChild(document.createTextNode(GM_info.script.name + " "));
-var supportLink = doc.appendChild(document.createElement("a")).appendChild(document.createTextNode("v" + GM_info.script.version)).parentNode;
-supportLink.setAttribute("href", GM_info.script.supportURL);
-supportLink.setAttribute("target", "_blank");
-doc.setAttribute("data-title", GM_info.script.description.replace(/:/g, "\n\n‣").replace(/,/g, "\n‣").replace(/; /g, "\n\n"));
-document.body.appendChild(doc);
-
+document.body.appendChild(
+	createTag(
+		"span",
+		{a: {
+			class: "badge " + GM_info.script.author,
+			dataTitle: GM_info.script.description.replace(/:/g, "\n\n‣").replace(/,/g, "\n‣").replace(/; /g, "\n\n")
+		}},
+		[
+			GM_info.script.name,
+			" ",
+			createTag("a", {a: {href: GM_info.script.supportURL, target: "_blank"}}, "v" + GM_info.script.version)
+		]
+	)
+);
 // click cell to select its text for copy
 css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
 css.insertRule(".x-unselectable { user-select: text; }", 0);
