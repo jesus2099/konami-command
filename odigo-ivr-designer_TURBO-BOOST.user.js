@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.7.28
+// @version      2022.7.28.2323
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Hide empty release user column; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -95,6 +95,8 @@ switch (self.location.pathname) {
 
 		// Auto stretch Release table cells DESCRIPTION and select it for easy copy
 		css.insertRule("div#main-container div[ng-show='showReleaseTable'] table > tbody > tr > td:nth-child(2) > p { white-space: unset; user-select: all; cursor: pointer; }", 0);
+		// Then no need for the bubble tooltip
+		css.insertRule("div#main-container div[ng-show='showReleaseTable'] table > tbody > tr > td:nth-child(2) > p ~ div { display: none !important; }", 0);
 
 		// Hide Release table empty column UTILISATEUR / USER
 		css.insertRule("div#main-container div[ng-show='showReleaseTable'] table > thead > tr > th:nth-child(3) { display: none; }", 0);
