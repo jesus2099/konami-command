@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2099.6.9
+// @version      2099.8.5
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -87,7 +87,7 @@ if (ltitle) {
 			sidebar.insertBefore(RGRecordingsMassMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
 				console.debug(event.type + "\n" + (event.altKey ? "alt+" : "") + (event.ctrlKey ? "crtl+" : "") + (event.shiftKey ? "shift+" : "") + event.key);
-				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key == "M") {
+				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key.match(/m/i)) {
 					loadRGRecordings(releases);
 					return stop(event);
 				}
@@ -109,7 +109,7 @@ if (ltitle) {
 			sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
 				console.debug(event.type + "\n" + (event.altKey ? "alt+" : "") + (event.ctrlKey ? "crtl+" : "") + (event.shiftKey ? "shift+" : "") + event.key);
-				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key == "M") {
+				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key.match(/m/i)) {
 					prepareLocalRelease();
 					return stop(event);
 				}
