@@ -1406,5 +1406,48 @@ function releaseList(recording) {
 			}
 		}
 	}
+	MB_collapsible_list(list, "release");
 	return list;
+}
+// ### MB-JUNK-SHOP.js ###
+var MB_JUNK_SHOP_CSS = document.createElement("style");
+MB_JUNK_SHOP_CSS.setAttribute("type", "text/css");
+document.head.appendChild(MB_JUNK_SHOP_CSS);
+MB_JUNK_SHOP_CSS = MB_JUNK_SHOP_CSS.sheet;
+MB_JUNK_SHOP_CSS.insertRule("." + userjs.id + "-collapse > ." + userjs.id + "-collapsible { display: none; }", 0);
+MB_JUNK_SHOP_CSS.insertRule("." + userjs.id + "-collapse > ." + userjs.id + "-show-less { display: none; }", 0);
+MB_JUNK_SHOP_CSS.insertRule("." + userjs.id + "-collapsible:not(." + userjs.id + "-collapse) > ." + userjs.id + "-show-all { display: none; }", 0);
+function MB_collapsible_list(list, type, toShowBefore, toShowAfter) {
+	// same MBS defaults as https://github.com/metabrainz/musicbrainz-server/blob/f2d7d9e635353f87f69cf3dc7f2cd0c3e58f4b0e/root/static/scripts/common/components/CollapsibleList.js
+	var TO_SHOW_BEFORE = toShowBefore ? toShowBefore : 2;
+	var TO_SHOW_AFTER = toShowAfter ? toShowAfter : 1;
+	var TO_TRIGGER_COLLAPSE = TO_SHOW_BEFORE + TO_SHOW_AFTER + 2;
+	var TYPE = type ? type : list.querySelector("a").getAttribute("href").match(/^\/([^/]+)\/.+/)[1].replace(/[-_]/g, " ");
+	TYPE = TYPE.replace(/[^s]$/, "$&s");
+	if (list.children.length >= TO_TRIGGER_COLLAPSE) {
+		list.classList.add(userjs.id + "-collapsible", userjs.id + "-collapse");
+		list.addEventListener("click", function(event) {
+			if (event.target.closest("." + userjs.id + "-show-all, ." + userjs.id + "-show-less")) {
+				event.target.closest("." + userjs.id + "-collapsible").classList.toggle(userjs.id + "-collapse");
+			}
+		});
+		for (var i = TO_SHOW_BEFORE; i < list.children.length - TO_SHOW_AFTER; i++) {
+			list.children[i].classList.add(userjs.id + "-collapsible");
+		}
+		var collapse_link = createTag("a", {a: {title: "Show less " + TYPE}}, "Show less");
+		var expand_link = createTag("a", {a: {title: "Show all " + TYPE}}, ["Show ", list.children.length - TO_SHOW_BEFORE - TO_SHOW_AFTER, " more"]);
+		switch (list.tagName) {
+			case "TABLE":
+				collapse_link = createTag("tr", {a: {class: userjs.id + "-show-less"}}, createTag("td", {a: {colspan: list.firstChild.children.length}}, ["(", collapse_link, ")"]));
+				expand_link = createTag("tr", {a: {class: userjs.id + "-show-all"}}, createTag("td", {a: {colspan: list.firstChild.children.length}}, ["(", expand_link, ")"]));
+				break;
+			case "OL":
+			case "UL":
+				collapse_link = createTag("li", {a: {class: userjs.id + "-show-less"}}, ["(", collapse_link, ")"]);
+				expand_link = createTag("li", {a: {class: userjs.id + "-show-all"}}, ["(", expand_link, ")"]);
+				break;
+		}
+		list.insertBefore(expand_link, list.children[list.children.length - TO_SHOW_AFTER]);
+		list.appendChild(collapse_link);
+	}
 }
