@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2099.8.5
+// @version      2022.8.7
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
@@ -1283,6 +1283,19 @@ function loadingAllRecordings() {
 		if (this.status == 200) {
 			if (this.response.recordings.length > 0) {
 				appendToRecordingList(this.response.recordings);
+				if (this.response.count > 100) {
+					if (document.querySelector("div#page")) { // TODO: copy MB_banner to MB JUNK SHOP, from TAG_TOOLS tag rename branch
+						document.body.insertBefore(
+							createTag("div", {a: {class: "banner editing-disabled"}}, createTag("p", {}, [
+								"ACHTÜNG: ", this.response.count - 100, " recordings are missing! — ",
+								createTag("a", {a: {href: "https://tickets.musicbrainz.org/browse/MBS-12154", target: "_blank"}}, "MBS-12154")
+							])),
+							document.querySelector("div#page")
+						);
+					} else {
+						alert("WARNING\n" + (this.response.count - 100) + " recordings are missing! — MBS-12154");
+					}
+				}
 			}
 			// alert(this.response.count > this.response.offset + this.response.recordings.length); // true: next page
 			// 122 recordings: https://musicbrainz.org/release-group/98e078fe-37d9-43f7-8bb4-96526727c4e0
