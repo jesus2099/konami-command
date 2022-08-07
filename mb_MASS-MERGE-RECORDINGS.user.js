@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2021.7.31
-// @description  musicbrainz.org: Merges selected or all recordings from release A to release B
+// @version      2022.8.7
+// @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
 // @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -12,9 +12,11 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-12-13; https://web.archive.org/web/20131103163401/userscripts.org/scripts/show/120382 / https://web.archive.org/web/20141011084015/userscripts-mirror.org/scripts/show/120382
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
+// @require      https://github.com/jesus2099/konami-command/raw/4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?version=2018.3.14
+// @require      https://github.com/jesus2099/konami-command/raw/add43b414a01cf1ef2c7d3733b7ff1b1cf115591/lib/MB-JUNK-SHOP.js?version=2022.8.7
 // @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/(disc\/\d+)?)?(\?tport=\d+)?(#.*)?$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -32,6 +34,8 @@ var cWarning = "yellow";
 var cMerge = "#fcc";
 var cCancel = "#cfc";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
+var safeLengthDelta = 4;
+var largeSpread = 15; // MBS-7417 / https://github.com/metabrainz/musicbrainz-server/blob/217111e3a12b705b9499e7fdda6be93876d30fb0/lib/MusicBrainz/Server/Edit/Utils.pm#L467
 var lastTick = new Date().getTime();
 var MBSminimumDelay = 1000;
 var retryDelay = 2000;
@@ -67,32 +71,53 @@ css.insertRule("div#" + userjs.id + " > .main-shortcut { margin: 0px; }", 0);
 css.insertRule("div#" + userjs.id + " h2 { color: maroon; text-shadow: 2px 2px 4px #996; margin: 0px; }", 0);
 css.insertRule("div#" + userjs.id + " kbd { background-color: silver; border: 2px grey outset; padding: 0px 4px; font-size: .8em; }", 0);
 css.insertRule(".remoteRecordingLength.largeSpread { color: yellow; background-color: red; text-shadow: 2px 2px 4px black; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr:nth-child(even) > td { background-color: #f2f2f2; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist { counter-reset: recording-index; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr > td:first-child:before { counter-increment: recording-index; content: counter(recording-index); opacity: .6; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr > td:first-child { text-align: center; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > thead > tr > th:first-child { text-align: center; }", 0);
+css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr.sameName > td:nth-child(2) { border-left: 2px solid red; }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
+var RGMode = self.location.pathname.match(new RegExp("^/release-group/(" + sregex_MBID + ")$"));
+var releases = document.querySelectorAll("div#content table.tbl > tbody > tr > td > a[href^='/release/'] > bdi, div#content table.tbl > tbody > tr > td > span.mp > a[href^='/release/'] > bdi");
 if (ltitle) {
-	var localRelease = {
-		"release-group": document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
-		title: ltitle[1],
-		looseTitle: looseTitle(ltitle[1]),
-		comment: document.querySelector("h1 > span.comment > bdi"),
-		ac: ltitle[2],
-		id: self.location.pathname.match(regex_MBID)[0],
-		tracks: []
-	};
-	var safeLengthDelta = 4;
-	var largeSpread = 15; // MBS-7417 / https://github.com/metabrainz/musicbrainz-server/blob/217111e3a12b705b9499e7fdda6be93876d30fb0/lib/MusicBrainz/Server/Edit/Utils.pm#L467
-	if (localRelease.comment) localRelease.comment = " (" + localRelease.comment.textContent + ")"; else localRelease.comment = "";
-	var remoteRelease = {tracks: []};
-	if (document.getElementsByClassName("account").length > 0) {
-		sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
-		document.body.addEventListener("keydown", function(event) {
-			if (!event.altKey && event.ctrlKey && event.shiftKey && event.key == "M") {
-				prepareLocalRelease();
-				return stop(event);
-			}
-		});
+	if (RGMode) {
+		if (document.getElementsByClassName("account").length > 0 && releases.length > 0) {
+			releases = Array.prototype.slice.call(releases);
+			sidebar.insertBefore(RGRecordingsMassMergeGUI(), sidebar.querySelector("h2.collections"));
+			document.body.addEventListener("keydown", function(event) {
+				console.debug(event.type + "\n" + (event.altKey ? "alt+" : "") + (event.ctrlKey ? "crtl+" : "") + (event.shiftKey ? "shift+" : "") + event.key);
+				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key.match(/m/i)) {
+					loadRGRecordings(releases);
+					return stop(event);
+				}
+			});
+		}
+	} else {
+		var localRelease = {
+			"release-group": document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
+			title: ltitle[1],
+			looseTitle: looseTitle(ltitle[1]),
+			comment: document.querySelector("h1 > span.comment > bdi"),
+			ac: ltitle[2],
+			id: self.location.pathname.match(regex_MBID)[0],
+			tracks: []
+		};
+		if (localRelease.comment) localRelease.comment = " (" + localRelease.comment.textContent + ")"; else localRelease.comment = "";
+		var remoteRelease = {tracks: []};
+		if (document.getElementsByClassName("account").length > 0) {
+			sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
+			document.body.addEventListener("keydown", function(event) {
+				console.debug(event.type + "\n" + (event.altKey ? "alt+" : "") + (event.ctrlKey ? "crtl+" : "") + (event.shiftKey ? "shift+" : "") + event.key);
+				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key.match(/m/i)) {
+					prepareLocalRelease();
+					return stop(event);
+				}
+			});
+		}
+		// sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, userjs.name)]), sidebar.querySelector("h2.editing + ul.links li"));
 	}
-	// sidebar.querySelector("h2.editing + ul.links").insertBefore(createTag("li", {}, [createTag("a", {}, userjs.name)]), sidebar.querySelector("h2.editing + ul.links li"));
 } else {
 	console.error("Local title (/^" + sregex_title + "$/) not found in document.title (" + document.title + ").");
 }
@@ -876,7 +901,7 @@ function expandCollapseAllMediums(clickThis) {
 }
 function prepareLocalRelease() {
 	if (self.location.pathname.match(/\/disc\/\d+/)) {
-		if (confirm(userjs.name + " only works on normal release pages (not on this kind of disc anchor version).\n\nDo you agree to reload page?")) {
+		if(confirm(userjs.name + " only works on normal release pages (not on this kind of disc anchor version).\n\nDo you agree to reload page?")) {
 			self.location.assign(MBS + "/release/" + localRelease.id);
 		}
 		return;
@@ -944,7 +969,7 @@ function showGUI() {
 }
 function saveEditNote(event) {
 	if (localStorage) {
-		localStorage.setItem(userjs.id, editNote.value);
+		localStorage.setItem(userjs.id + (RGMode ? "_RG" : ""), editNote.value);
 		editNote.style.setProperty("background-color", cOK);
 		editNote.setAttribute("title", "Saved to local storage");
 	} else {
@@ -955,7 +980,7 @@ function saveEditNote(event) {
 }
 function loadEditNote(event) {
 	if (localStorage) {
-		var savedEditNote = localStorage.getItem(userjs.id);
+		var savedEditNote = localStorage.getItem(userjs.id + (RGMode ? "_RG" : ""));
 		if (savedEditNote) {
 			editNote.value = savedEditNote;
 			editNote.style.setProperty("background-color", cOK);
@@ -1017,11 +1042,19 @@ function strtime2ms(str) { // temporary until WS available again
 	}
 	return ms;
 }
-function time(_ms, pad) {/* adapt mb_INLINE-TRACK-ARTIST’s with milliseconds instead when https://github.com/jesus2099/konami-command/issues/48 is fixed */
+/*function time(_ms, pad) {/* adapt mb_INLINE-TRACK-ARTIST’s with milliseconds instead when https://github.com/jesus2099/konami-command/issues/48 is fixed *//*
 	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
 	if (ms > 0) {
 		var d = new Date(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000); // a trick to round to nearest second as we hide milliseconds
 		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad && d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2);
+	}
+	return "?:??";
+}*/
+function time(_ms) { // from INLINE STUFF
+	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
+	if (ms > 0) {
+		var d = new Date(ms);
+		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" + (d.getUTCMinutes() / 100).toFixed(2).slice(2) : d.getUTCMinutes()) + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2) + (d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() / 1000).toFixed(3).slice(2) : "");
 	}
 	return "?:??";
 }
@@ -1037,6 +1070,7 @@ function ac2str(ac) {
 	}
 	return str;
 }
+*/
 function ac2dom(ac) {
 	if (typeof ac == "string") return document.createTextNode(ac);
 	var dom = document.createDocumentFragment();
@@ -1048,11 +1082,10 @@ function ac2dom(ac) {
 			a.className = "name-variation";
 		}
 		dom.appendChild(a);
-		if (ac[c].joinPhrase != "") dom.appendChild(document.createTextNode(ac[c].joinPhrase));
+		if (ac[c].joinphrase) dom.appendChild(document.createTextNode(ac[c].joinphrase));
 	}
 	return dom;
 }
-*/
 function protectEditNoteText(text) {
 	return text.replace(/'/g, "&#x0027;");
 }
@@ -1184,3 +1217,209 @@ function leven(a, b) {
 	return ret;
 }
 */
+function RGRecordingsMassMergeGUI() {
+	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
+		keydown: function(event) {
+			if (event.key == "Enter" && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
+				queueAll.click();
+			} else if (event.target == editNote && !event.altKey && event.ctrlKey && !event.shiftKey) {
+				switch (event.key) {
+					case "s":
+						return saveEditNote(event);
+					case "o":
+						return loadEditNote(event);
+				}
+			}
+		},
+		click: loadRGRecordings
+	}}, [
+		createTag("h2", {}, userjs.name),
+		createTag("p", {}, "version " + userjs.version),
+		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", createTag("kbd", {}, "CTRL"), " + ", createTag("kbd", {}, "SHIFT"), "+", createTag("kbd", {}, "M")]),
+//		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release", createTag("span", {a: {"class": "remote-release-link"}}), ":"]),
+	]);
+	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", userjs.name + " loading recordings…"));
+	mergeStatus.style.setProperty("width", "100%");
+	MMRdiv.appendChild(createTag("p", {s: {marginBottom: "0px"}}, "Merge edit notes:"));
+	editNote = MMRdiv.appendChild(createInput("textarea", "merge.edit_note"));
+	var lastEditNote = (localStorage && localStorage.getItem(userjs.id + "_RG"));
+	if (lastEditNote) {
+		editNote.appendChild(document.createTextNode(lastEditNote));
+		editNote.style.setProperty("background-color", cOK);
+		editNote.selectionEnd = 0;
+	}
+	editNote.style.setProperty("width", "100%");
+	editNote.setAttribute("rows", "5");
+	editNote.addEventListener("input", function(event) {
+		this.style.removeProperty("background-color");
+		this.removeAttribute("title");
+	});
+	var saveEditNoteButt = createInput("button", "", "Save edit note");
+	saveEditNoteButt.setAttribute("tabindex", "-1");
+	saveEditNoteButt.setAttribute("title", "Save edit note text to local storage for next time");
+	saveEditNoteButt.addEventListener("click", saveEditNote);
+	var loadEditNoteButt = createInput("button", "", "Load edit note");
+	loadEditNoteButt.setAttribute("tabindex", "-1");
+	loadEditNoteButt.setAttribute("title", "Reload edit note text from local storage");
+	loadEditNoteButt.addEventListener("click", loadEditNote);
+	MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "ENTER"), ": queue all", document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "S"), ": ", saveEditNoteButt, document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "O"), ": ", loadEditNoteButt]));
+	MMRdiv.appendChild(createTag("p", {}, "Each recording merge will automatically target the oldest MBID."));
+	queuetrack = MMRdiv.appendChild(createTag("div", {s: {textAlign: "center", backgroundColor: cInfo, display: "none"}}, "\u00A0"));
+	return MMRdiv;
+}
+function loadRGRecordings() {
+	if (!document.body.classList.contains(userjs.id)) {
+		document.body.classList.add(userjs.id);
+	}
+	setTimeout(loadingAllRecordings, 10);
+}
+function loadingAllRecordings() {
+	// https://musicbrainz.org/ws/2/recording?query=rgid%3A434a0e80-f6b7-3658-961b-07c373fa9cd5&fmt=json
+	// but this way we are missing row ID that are necessary for merge
+	// should use releases.pop() instead, even if slower and clumsier
+	// or defer row ID fetching until when we actually want to merge the recordings (like in Loujine acoustid.org recording merge script)
+	var xhr = new XMLHttpRequest();
+	xhr.addEventListener("load", function(event) {
+		if (this.status == 200) {
+			if (this.response.recordings.length > 0) {
+				appendToRecordingList(this.response.recordings);
+				if (this.response.count > 100) {
+					if (document.querySelector("div#page")) { // TODO: copy MB_banner to MB JUNK SHOP, from TAG_TOOLS tag rename branch
+						document.body.insertBefore(
+							createTag("div", {a: {class: "banner editing-disabled"}}, createTag("p", {}, [
+								"ACHTÜNG: ", this.response.count - 100, " recordings are missing! — ",
+								createTag("a", {a: {href: "https://tickets.musicbrainz.org/browse/MBS-12154", target: "_blank"}}, "MBS-12154")
+							])),
+							document.querySelector("div#page")
+						);
+					} else {
+						alert("WARNING\n" + (this.response.count - 100) + " recordings are missing! — MBS-12154");
+					}
+				}
+			}
+			// alert(this.response.count > this.response.offset + this.response.recordings.length); // true: next page
+			// 122 recordings: https://musicbrainz.org/release-group/98e078fe-37d9-43f7-8bb4-96526727c4e0
+		} else {
+			alert("Error loading RG recordings!");
+		}
+	});
+	console.log("/ws/2/recording?query=rgid%3A" + RGMode[1] + "&limit=100");
+	xhr.open("GET", "/ws/2/recording?query=rgid%3A" + RGMode[1] + "&limit=100", true);
+	xhr.responseType = "json";
+	xhr.setRequestHeader("Accept", "application/json");
+	setTimeout(function() { xhr.send(null); }, chrono(MBSminimumDelay));
+//	var loadTracks = document.querySelector("div#content table.tbl.medium > tbody a.load-tracks");
+//	if (loadTracks) {
+//		var loadingMessage = document.querySelector("h1.loading-" + userjs.id);
+//		loadingMessage.appendChild(document.createTextNode("."));
+//		loadTracks.click();
+//		setTimeout(loadingAllRecordings, 200);
+//	} else {
+//		showRGModeGUI();
+//	}
+}
+function appendToRecordingList(recordings) {
+	scrollTo(0, 0);
+	var recordingList = document.querySelector("div#content > table.tbl." + userjs.id + "reclist > tbody");
+	if (!recordingList) {
+		// initiate empty recording list (table)
+		document.querySelector("div#content").insertBefore(createTag("h2", {}, "Recordings"), document.querySelector("div#content > div.annotation"));
+		recordingList = document.querySelector("div#content").insertBefore(createTag("table", {a: {class: userjs.id + "reclist tbl"}}, [
+			createTag("thead", {}, [
+				createTag("th", {}, "#"),
+				// createTag("th", {a: {class: "checkbox-cell"}}, createTag("input", {a: {type: "checkbox"}})),
+				createTag("th", {}, "Recording"),
+				createTag("th", {}, "Artist"),
+				createTag("th", {}, "ISRCs"),
+				// createTag("th", {}, "AcoustIDs"),
+				createTag("th", {}, "Length"),
+				createTag("th", {}, ["Releases (including ", createTag("span", {s: {backgroundColor: "#ff6"}}, "from other release groups"), ")"])
+			])
+		]), document.querySelector("div#content > div.annotation")).appendChild(document.createElement("tbody"));
+	}
+	for (var r = 0; r < recordings.length; r++) {
+		if (!recordingList.querySelector("td > a[href='/recording/" + recordings[r].id + "']")) {
+			var recordingRow = createTag("tr", {}, [
+				createTag("td", {}, [document.createElement("br"), createTag("code", {}, recordings[r].id.match(/^[^-]+/)[0])]),
+				// createTag("td", {}, createTag("input", {a: {type: "checkbox"}})),
+				createTag("td", {}, recordingLink(recordings[r])),
+				createTag("td", {}, ac2dom(recordings[r]["artist-credit"])),
+				createTag("td", {}, ISRCList(recordings[r])),
+				createTag("td", {}, time(recordings[r].length)),
+				createTag("td", {}, releaseList(recordings[r]))
+			]);
+			var sortName = stripName(recordingRow.querySelector("td:nth-child(2)").textContent + (recordingRow.querySelector("span.video") ? "_video" : ""));
+			for (var rr = 0; rr < recordingList.rows.length; rr++) {
+				var recordingSortName = stripName(recordingList.rows[rr].querySelector("td:nth-child(2)").textContent + (recordingList.rows[rr].querySelector("span.video") ? "_video" : ""));
+				console.log(sortName + " <= " + recordingSortName);
+				if (sortName < recordingSortName) {
+					console.log("oui");
+					recordingList.insertBefore(recordingRow, recordingList.rows[rr]);
+					sortName = false;
+					break;
+				} else if (sortName == recordingSortName) {
+					recordingRow.classList.add("sameName");
+					recordingList.rows[rr].classList.add("sameName");
+				}
+			}
+			if (sortName != false) {
+				console.log("non");
+				recordingList.appendChild(recordingRow);
+			}
+		}
+	}
+}
+function stripName(name) {
+	return name.toLowerCase().replace(/\s/g, "");
+}
+function recordingLink(recording) {
+	var recordingFragment = document.createDocumentFragment();
+	if (recording.video) {
+		recordingFragment.appendChild(createTag("span", {a: {class: "video", title: "This recording is a video"}}));
+	}
+	recordingFragment.appendChild(createTag("a", {a: {href: "/recording/" + recording.id, target: "_blank"}}, recording.title));
+	if (recording.disambiguation) {
+		recordingFragment.appendChild(document.createTextNode(" "));
+		recordingFragment.appendChild(createTag("span", {a: {class: "comment"}}, "(" + recording.disambiguation + ")"));
+	}
+	return recordingFragment;
+}
+function ISRCList(recording) {
+	var list = document.createElement("ul");
+	if (recording.isrcs) {
+		for (var i = 0; i < recording.isrcs.length; i++) {
+			list.appendChild(createTag("li", {}, createA(recording.isrcs[i], "/isrc/" + recording.isrcs[i])));
+		}
+	}
+	return list;
+}
+function releaseList(recording) {
+	var list = document.createElement("table");
+	if (recording.releases) {
+		for (var r = 0; r < recording.releases.length; r++) {
+			var releaseRow = list.appendChild(createTag("tr"));
+			// .warn-lengths more than 15 seconds diff with rec length, yellow if more than 4 seconds
+			var trackLength = releaseRow.appendChild(createTag("td", {}, document.createTextNode(time(recording.releases[r].media[0].track[0].length))));
+			var lengthDelta = Math.abs(recording.length - recording.releases[r].media[0].track[0].length);
+			if (lengthDelta > safeLengthDelta * 1000) {
+				trackLength.style.setProperty("background-color", cNG, "important");
+			}
+			if (lengthDelta >= largeSpread * 1000) {
+				trackLength.classList.add("warn-length");
+			}
+			// position
+			releaseRow.appendChild(createTag("td", {}, [createTag("a", {a: {title: recording.releases[r].media[0].format, href: "/track/" + recording.releases[r].media[0].track[0].id}}, recording.releases[r].media[0].position + "." + (recording.releases[r].media[0]["track-offset"] + 1)), "/", recording.releases[r].media[0]["track-count"]]));
+			// release link
+			var releaseCell = releaseRow.appendChild(createTag("td", {}, createA(recording.releases[r].title, "/release/" + recording.releases[r].id)));
+			if (recording.releases[r].disambiguation) {
+				releaseCell.appendChild(document.createTextNode(" "));
+				releaseCell.appendChild(createTag("span", {a: {class: "comment"}}, "(" + recording.releases[r].disambiguation + ")"));
+			}
+			if (recording.releases[r]["release-group"].id != RGMode[1]) {
+				releaseCell.style.setProperty("background-color", "#ff6", "important");
+			}
+		}
+	}
+	MB_collapsible_list(list, "release");
+	return list;
+}
