@@ -8,22 +8,24 @@ extends: eslint:recommended
 
 globals:
 # MBS
- __MB__:          readonly
- MB:              readonly
+ __MB__:              readonly
+ MB:                  readonly
 # lib/COOL-BUBBLES.js
- coolBubble:      readonly
+ coolBubble:          readonly
+# lib/MB-JUNK-SHOP.js
+ MB_collapsible_list: readonly
 # lib/SUPER.js
- addAfter:        readonly
- createTag:       readonly
- disableInputs:   readonly
- enableInputs:    readonly
- getParent:       readonly
- getSibling:      readonly
- removeChildren:  readonly
- removeNode:      readonly
- replaceChildren: readonly
- sendEvent:       readonly
- waitForElement:  readonly
+ addAfter:            readonly
+ createTag:           readonly
+ disableInputs:       readonly
+ enableInputs:        readonly
+ getParent:           readonly
+ getSibling:          readonly
+ removeChildren:      readonly
+ removeNode:          readonly
+ replaceChildren:     readonly
+ sendEvent:           readonly
+ waitForElement:      readonly
 
 ignorePatterns:
 - "*.md"
