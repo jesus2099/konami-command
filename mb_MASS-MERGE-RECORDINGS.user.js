@@ -12,7 +12,8 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-12-13; https://web.archive.org/web/20131103163401/userscripts.org/scripts/show/120382 / https://web.archive.org/web/20141011084015/userscripts-mirror.org/scripts/show/120382
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
+// @require      https://github.com/jesus2099/konami-command/raw/4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?version=2018.3.14
+// @require      https://github.com/jesus2099/konami-command/raw/add43b414a01cf1ef2c7d3733b7ff1b1cf115591/lib/MB-JUNK-SHOP.js?version=2022.8.7
 // @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/(disc\/\d+)?)?(\?tport=\d+)?(#.*)?$/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
@@ -1408,46 +1409,4 @@ function releaseList(recording) {
 	}
 	MB_collapsible_list(list, "release");
 	return list;
-}
-// ### MB-JUNK-SHOP.js ###
-var MB_JUNK_SHOP_CSS = document.createElement("style");
-MB_JUNK_SHOP_CSS.setAttribute("type", "text/css");
-document.head.appendChild(MB_JUNK_SHOP_CSS);
-MB_JUNK_SHOP_CSS = MB_JUNK_SHOP_CSS.sheet;
-MB_JUNK_SHOP_CSS.insertRule("." + userjs.id + "-collapse > ." + userjs.id + "-collapsible { display: none; }", 0);
-MB_JUNK_SHOP_CSS.insertRule("." + userjs.id + "-collapse > ." + userjs.id + "-show-less { display: none; }", 0);
-MB_JUNK_SHOP_CSS.insertRule("." + userjs.id + "-collapsible:not(." + userjs.id + "-collapse) > ." + userjs.id + "-show-all { display: none; }", 0);
-function MB_collapsible_list(list, type, toShowBefore, toShowAfter) {
-	// same MBS defaults as https://github.com/metabrainz/musicbrainz-server/blob/f2d7d9e635353f87f69cf3dc7f2cd0c3e58f4b0e/root/static/scripts/common/components/CollapsibleList.js
-	var TO_SHOW_BEFORE = toShowBefore ? toShowBefore : 2;
-	var TO_SHOW_AFTER = toShowAfter ? toShowAfter : 1;
-	var TO_TRIGGER_COLLAPSE = TO_SHOW_BEFORE + TO_SHOW_AFTER + 2;
-	var TYPE = type ? type : list.querySelector("a").getAttribute("href").match(/^\/([^/]+)\/.+/)[1].replace(/[-_]/g, " ");
-	TYPE = TYPE.replace(/[^s]$/, "$&s");
-	if (list.children.length >= TO_TRIGGER_COLLAPSE) {
-		list.classList.add(userjs.id + "-collapsible", userjs.id + "-collapse");
-		list.addEventListener("click", function(event) {
-			if (event.target.closest("." + userjs.id + "-show-all, ." + userjs.id + "-show-less")) {
-				event.target.closest("." + userjs.id + "-collapsible").classList.toggle(userjs.id + "-collapse");
-			}
-		});
-		for (var i = TO_SHOW_BEFORE; i < list.children.length - TO_SHOW_AFTER; i++) {
-			list.children[i].classList.add(userjs.id + "-collapsible");
-		}
-		var collapse_link = createTag("a", {a: {title: "Show less " + TYPE}}, "Show less");
-		var expand_link = createTag("a", {a: {title: "Show all " + TYPE}}, ["Show ", list.children.length - TO_SHOW_BEFORE - TO_SHOW_AFTER, " more"]);
-		switch (list.tagName) {
-			case "TABLE":
-				collapse_link = createTag("tr", {a: {class: userjs.id + "-show-less"}}, createTag("td", {a: {colspan: list.firstChild.children.length}}, ["(", collapse_link, ")"]));
-				expand_link = createTag("tr", {a: {class: userjs.id + "-show-all"}}, createTag("td", {a: {colspan: list.firstChild.children.length}}, ["(", expand_link, ")"]));
-				break;
-			case "OL":
-			case "UL":
-				collapse_link = createTag("li", {a: {class: userjs.id + "-show-less"}}, ["(", collapse_link, ")"]);
-				expand_link = createTag("li", {a: {class: userjs.id + "-show-all"}}, ["(", expand_link, ")"]);
-				break;
-		}
-		list.insertBefore(expand_link, list.children[list.children.length - TO_SHOW_AFTER]);
-		list.appendChild(collapse_link);
-	}
 }
