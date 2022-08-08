@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2022.6.14
+// @version      2022.8.9
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -65,6 +65,7 @@ css.setAttribute("type", "text/css");
 document.head.appendChild(css);
 css = css.sheet;
 css.insertRule("div#page table.add-isrcs tbody a[href^='/isrc/'], div#page table.merge-recordings tbody a[href^='/isrc/'], div#page table.remove-isrc tbody a[href^='/isrc/'], div#page table." + userjs + "-has-isrcs tbody a[href^='/isrc/'] { white-space: nowrap !important; }", 0);
+css.insertRule("div#content." + userjs + "hide-recdis table.tbl.medium span." + userjs + "recdis.comment { display: none; }", 0);
 if (pagecat) {
 	switch (pagecat) {
 		case "release":
@@ -259,18 +260,6 @@ function createA(text, link, title, target) {
 	return a;
 }
 
-function addAfter(newNode, existingNode) {
-	if (newNode && existingNode) {
-		if (existingNode.nextSibling) {
-			return existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
-		} else {
-			return existingNode.parentNode.appendChild(newNode);
-		}
-	} else {
-		return null;
-	}
-}
-
 function isrcFish() {
 	if (this.readyState == 4 && this.status == 200 && tracksHtml) {
 		if (document.body.classList.contains("MMR2099userjs120382")) { // linked to mb_MASS-MERGE-RECORDINGS
@@ -331,11 +320,11 @@ function isrcFish() {
 						}
 					}
 					if (markTrackRecNameDiff && recnameNet[mbid].comment && !sameCompleteName) {
-						var recdis = document.createElement("span");
-						recdis.classList.add(userjs + "recdis"); // linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
-						recdis.classList.add("comment");
-						recdis.appendChild(document.createTextNode(" (" + recnameNet[mbid].comment + ")"));
-						addAfter(recdis, aRec);
+						// .userjsrecdis linked in mb_MASS-MERGE-RECORDINGS, mb_PLAIN-TEXT-TRACKLIST
+						addAfter(createTag("fragment", {}, [
+							" ",
+							createTag("span", {a: {class: userjs + "recdis comment"}}, "(" + recnameNet[mbid].comment + ")")
+						]), aRec);
 					}
 				}
 			}
@@ -435,6 +424,24 @@ function idCount(type, count) {
 		idCountZone = document.querySelector("div#sidebar > dl.properties").appendChild(document.createElement("div"));
 		idCountZone.setAttribute("id", userjs + "idcountzone");
 		idCountZone.style.setProperty("border", "1px dashed silver");
+		idCountZone.appendChild(createTag("fragment", {}, [createTag("h3", {}, "INLINE STUFF"), createTag("p", {}, GM_info.script.version)]));
+		idCountZone.appendChild(createTag("dd", {}, createTag("label", {}, [
+			createTag("input", {a: {type: "checkbox", ref: "recdis"}, e: {click: function(event) {
+				var content = document.querySelector("div#content");
+				if (content) {
+					localStorage.setItem(userjs + "hide-recdis", event.target.checked ? "0" : "1");
+					if (event.target.checked) {
+						content.classList.remove(userjs + "hide-recdis");
+					} else {
+						content.classList.add(userjs + "hide-recdis");
+					}
+				}
+			}}}),
+			" Show recording comments"
+		])));
+		if (localStorage.getItem(userjs + "hide-recdis") !== "1") {
+			idCountZone.querySelector("input[ref='recdis']").click();
+		}
 		var showOE = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createElement("label")).appendChild(document.createElement("input"));
 		showOE.setAttribute("type", "checkbox");
 		showOE.parentNode.appendChild(document.createTextNode(" Show recording open edits"));
