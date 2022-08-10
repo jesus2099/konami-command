@@ -70,9 +70,10 @@ function go(url) {
 			if (cancel_banner) {
 				cancel_banner.parentNode.removeChild(cancel_banner);
 			}
+			event.preventDefault();
 			event.stopPropagation = true;
 			return false;
 		}
-	}, true);
+	});
 	userjs.redirectTimeout = setTimeout(function() { self.location.assign(url); }, 2222);
 }
