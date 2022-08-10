@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.8.10
+// @version      2022.6.22
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -58,5 +58,21 @@ if (document.getElementById("headerid-query")) {
 	}
 }
 function go(url) {
+	var cancel_banner = document.createElement("div");
+	cancel_banner.classList.add(userjs.id, "banner");
+	cancel_banner.style.setProperty("background-color", "#fcf")
+	cancel_banner.appendChild(document.createTextNode("Press *Escape* to cancel redirection to best match!"));
+	document.body.insertBefore(cancel_banner, document.querySelector("div#page"));
+	document.body.addEventListener("keydown", function(event) {
+		if (event.key.match(/^Esc(ape)?$/)) {
+			clearTimeout(userjs.redirectTimeout);
+			var cancel_banner = document.querySelector("div.banner." + userjs.id);
+			if (cancel_banner) {
+				cancel_banner.parentNode.removeChild(cancel_banner);
+			}
+			event.stopPropagation = true;
+			return false;
+		}
+	}, true);
 	userjs.redirectTimeout = setTimeout(function() { self.location.assign(url); }, 2222);
 }
