@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.6.22
+// @version      2022.8.10
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -10,7 +10,8 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-06-30; fork of nikki/stars script http://web.archive.org/web/20150915074449/chatlogs.musicbrainz.org/musicbrainz/2011/2011-06/2011-06-30.html#T15-59-01-950029 / https://web.archive.org/web/20131103163409/userscripts.org/scripts/show/106156 / https://web.archive.org/web/20141011084017/userscripts-mirror.org/scripts/show/106156
 // @icon         data:image/gif;base64,R0lGODlhEAAQAOMMAAAAAP8A/wJR1MosEqGhBPyZUAD/APW1hQD///vPp///AP7++P///////////////yH5BAEKAA8ALAAAAAAQABAAAARbUMlJq0Ll6AN6z0liYNnWLV84FmUBLIsAAyqpuTEgA4VomzFUyMfaaDy9WhFw/PRoK6Zn2lFyqNio58DKSAEjQnczPtTEN+ww3AIMBrM1Qpxxud80VWDP7/sNEQA7
-// @grant        GM_info
+// @require      https://github.com/jesus2099/konami-command/raw/2c3673a61cfd4af6f8766f1a3c1d07be95f67218/lib/MB-JUNK-SHOP.js?version=2022.8.10
+// @grant        none
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search/
 // @run-at       document-idle
 // ==/UserScript==
@@ -38,31 +39,32 @@ if (document.getElementById("headerid-query")) {
 		if (rows.length == 1 && redirOnUniqueMatch) {
 			rows[0].classList.add(userjs.id);
 			if (onlyWhenNoReferrer) {
-				go(rows[0].querySelector("a > bdi").parentNode.getAttribute("href"));
+				redirect(rows[0].querySelector("a > bdi").parentNode);
 			}
 		} else if (redirOnUniqueExactMatch) {
-			var exactMatchURL;
+			var exactMatch;
 			var exactMatchesCount = 0;
 			for (var i = 0; i < rows.length; i++) {
 				if (parseInt(rows[i].getAttribute("data-score"), 10) > 90) {
 					rows[i].classList.add(userjs.id);
 					if (exactMatchesCount++ == 0) {
-						exactMatchURL = rows[i].querySelector("a > bdi").parentNode.getAttribute("href");
+						exactMatch = rows[i].querySelector("a > bdi").parentNode;
 					}
 				}
 			}
 			if (exactMatchesCount == 1 && onlyWhenNoReferrer) {
-				go(exactMatchURL);
+				redirect(exactMatch);
 			}
 		}
 	}
 }
-function go(url) {
-	var cancel_banner = document.createElement("div");
-	cancel_banner.classList.add(userjs.id, "banner");
-	cancel_banner.style.setProperty("background-color", "#fcf")
-	cancel_banner.appendChild(document.createTextNode("Press *Escape* to cancel redirection to best match!"));
-	document.body.insertBefore(cancel_banner, document.querySelector("div#page"));
+function redirect(entity) {
+	var cancel_info = document.createDocumentFragment();
+	cancel_info.appendChild(document.createTextNode("Press "));
+	cancel_info.appendChild(document.createElement("strong")).appendChild(document.createTextNode("Escape"));
+	cancel_info.appendChild(document.createTextNode(" to cancel redirection to best match: "));
+	cancel_info.appendChild(entity.cloneNode(true)).style.setProperty("font-weight", "bold");
+	MB_banner(cancel_info, userjs.id, true);
 	document.body.addEventListener("keydown", function(event) {
 		if (event.key.match(/^Esc(ape)?$/)) {
 			clearTimeout(userjs.redirectTimeout);
@@ -75,5 +77,5 @@ function go(url) {
 			return false;
 		}
 	});
-	userjs.redirectTimeout = setTimeout(function() { self.location.assign(url); }, 2222);
+	userjs.redirectTimeout = setTimeout(function() { self.location.assign(entity.getAttribute("href")); }, 2222);
 }
