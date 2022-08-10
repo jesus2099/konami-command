@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.6.22
+// @version      2022.8.10
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -12,7 +12,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAOMMAAAAAP8A/wJR1MosEqGhBPyZUAD/APW1hQD///vPp///AP7++P///////////////yH5BAEKAA8ALAAAAAAQABAAAARbUMlJq0Ll6AN6z0liYNnWLV84FmUBLIsAAyqpuTEgA4VomzFUyMfaaDy9WhFw/PRoK6Zn2lFyqNio58DKSAEjQnczPtTEN+ww3AIMBrM1Qpxxud80VWDP7/sNEQA7
 // @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search/
-// @run-at       document-end
+// @run-at       document-idle
 // ==/UserScript==
 "use strict";
 if (document.getElementById("headerid-query")) {
@@ -58,5 +58,5 @@ if (document.getElementById("headerid-query")) {
 	}
 }
 function go(url) {
-	setTimeout(function() { self.location.href = url; }, 123);
+	userjs.redirectTimeout = setTimeout(function() { self.location.assign(url); }, 2222);
 }
