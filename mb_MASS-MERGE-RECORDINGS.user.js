@@ -77,10 +77,10 @@ css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id
 css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr.sameName > td:nth-child(2) { border-left: 2px solid red; }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
-var RGMode = self.location.pathname.match(new RegExp("^/release-group/(" + sregex_MBID + ")$"));
+var release_group_MBID = self.location.pathname.match(new RegExp("^/release-group/(" + sregex_MBID + ")$"));
 var releases = document.querySelectorAll("div#content table.tbl > tbody > tr > td > a[href^='/release/'] > bdi, div#content table.tbl > tbody > tr > td > span.mp > a[href^='/release/'] > bdi");
 if (ltitle) {
-	if (RGMode) {
+	if (release_group_MBID) {
 		if (document.getElementsByClassName("account").length > 0 && releases.length > 0) {
 			releases = Array.prototype.slice.call(releases);
 			sidebar.insertBefore(RGRecordingsMassMergeGUI(), sidebar.querySelector("h2.collections"));
@@ -967,7 +967,7 @@ function showGUI() {
 }
 function saveEditNote(event) {
 	if (localStorage) {
-		localStorage.setItem(userjs.id + (RGMode ? "_RG" : ""), editNote.value);
+		localStorage.setItem(userjs.id + (release_group_MBID ? "_RG" : ""), editNote.value);
 		editNote.style.setProperty("background-color", cOK);
 		editNote.setAttribute("title", "Saved to local storage");
 	} else {
@@ -978,7 +978,7 @@ function saveEditNote(event) {
 }
 function loadEditNote(event) {
 	if (localStorage) {
-		var savedEditNote = localStorage.getItem(userjs.id + (RGMode ? "_RG" : ""));
+		var savedEditNote = localStorage.getItem(userjs.id + (release_group_MBID ? "_RG" : ""));
 		if (savedEditNote) {
 			editNote.value = savedEditNote;
 			editNote.style.setProperty("background-color", cOK);
@@ -1301,8 +1301,8 @@ function loadingAllRecordings() {
 			alert("Error loading RG recordings!");
 		}
 	});
-	console.log("/ws/2/recording?query=rgid%3A" + RGMode[1] + "&limit=100");
-	xhr.open("GET", "/ws/2/recording?query=rgid%3A" + RGMode[1] + "&limit=100", true);
+	console.log("/ws/2/recording?query=rgid%3A" + release_group_MBID[1] + "&limit=100");
+	xhr.open("GET", "/ws/2/recording?query=rgid%3A" + release_group_MBID[1] + "&limit=100", true);
 	xhr.responseType = "json";
 	xhr.setRequestHeader("Accept", "application/json");
 	setTimeout(function() { xhr.send(null); }, chrono(MBSminimumDelay));
@@ -1331,7 +1331,7 @@ function appendToRecordingList(recordings) {
 				createTag("th", {}, "ISRCs"),
 				// createTag("th", {}, "AcoustIDs"),
 				createTag("th", {}, "Length"),
-				createTag("th", {}, ["Releases (including ", createTag("span", {s: {backgroundColor: "#ff6"}}, "from other release groups"), ")"])
+				createTag("th", {}, ["Releases (including ", createTag("span", {s: {backgroundColor: "#ffc"}}, "from other release groups"), ")"])
 			])
 		]), document.querySelector("div#content > div.annotation")).appendChild(document.createElement("tbody"));
 	}
@@ -1395,7 +1395,8 @@ function releaseList(recording) {
 	var list = document.createElement("table");
 	if (recording.releases) {
 		for (var r = 0; r < recording.releases.length; r++) {
-			var releaseRow = list.appendChild(createTag("tr"));
+			// https://tickets.metabrainz.org/browse/MBS-12534 date problems
+			var releaseRow = list.appendChild(createTag("tr", {a: {title: recording.releases[r].date || ""}}));
 			// .warn-lengths more than 15 seconds diff with rec length, yellow if more than 4 seconds
 			var trackLength = releaseRow.appendChild(createTag("td", {}, document.createTextNode(time(recording.releases[r].media[0].track[0].length))));
 			var lengthDelta = Math.abs(recording.length - recording.releases[r].media[0].track[0].length);
@@ -1407,17 +1408,34 @@ function releaseList(recording) {
 			}
 			// position
 			releaseRow.appendChild(createTag("td", {}, [createTag("a", {a: {title: recording.releases[r].media[0].format, href: "/track/" + recording.releases[r].media[0].track[0].id}}, recording.releases[r].media[0].position + "." + (recording.releases[r].media[0]["track-offset"] + 1)), "/", recording.releases[r].media[0]["track-count"]]));
+			// release year (MBS-12534 date problems again)
+			releaseRow.appendChild(createTag("td", {a: {"data-release-date": recording.releases[r].date || "error"}}, recording.releases[r].date ? recording.releases[r].date.substr(0, 4) : "????"));
 			// release link
 			var releaseCell = releaseRow.appendChild(createTag("td", {}, createA(recording.releases[r].title, "/release/" + recording.releases[r].id)));
 			if (recording.releases[r].disambiguation) {
 				releaseCell.appendChild(document.createTextNode(" "));
 				releaseCell.appendChild(createTag("span", {a: {class: "comment"}}, "(" + recording.releases[r].disambiguation + ")"));
 			}
-			if (recording.releases[r]["release-group"].id != RGMode[1]) {
-				releaseCell.style.setProperty("background-color", "#ff6", "important");
+			// mark when release is in another release group
+			if (recording.releases[r]["release-group"].id != release_group_MBID[1]) {
+				releaseCell.style.setProperty("background-color", "#ffc", "important");
 			}
 		}
 	}
+	sort_elements(list, "release-date");
 	MB_collapsible_list(list, "release");
 	return list;
+}
+function sort_elements(container, data_sort) {
+	// data_sort = example-haha for data-example-haha
+	// dataSort = exampleHaha for dataset.exampleHaha
+	var dataSort = data_sort.replace(/-([a-z])/g, function(match, p1, offset, string) { return p1.toUpperCase(); });
+	var elements = Array.from(container.children);
+	elements.sort(function(a, b) {
+		return a.querySelector("[data-" + data_sort + "]").dataset[dataSort].localeCompare(b.querySelector("[data-" + data_sort + "]").dataset[dataSort]);
+	});
+	for (var e = 0; e < elements.length; e++) {
+		// appenChild will move elements when they already exist
+		container.appendChild(elements[e]);
+	}
 }
