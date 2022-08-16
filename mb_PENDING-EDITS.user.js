@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2022.5.31
+// @version      2022.8.16
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
@@ -39,7 +39,10 @@ if (
 		pageEntity.ul = document.querySelector("div#sidebar ul.links");
 		pageEntity.editinghistory = createLink("edits"); // reverts MBS-57 (Remove “normal artist” functionality from Various Artists) drawback
 	}
-	appendRefineSearchFormLink(pageEntity.editinghistory);
+	if (!/^collection$/.test(pageEntity.type)) {
+		// TODO: Allow collections with missing MBS-3922 feature “Edit search: Filter edits by collections” https://tickets.metabrainz.org/browse/MBS-3922
+		appendRefineSearchFormLink(pageEntity.editinghistory);
+	}
 	pageEntity.li = getParent(pageEntity.editinghistory, "li");
 // OPEN EDITS
 	pageEntity.openedits = document.querySelector("div#sidebar a[href$='" + pageEntity.base + "/open_edits']");
@@ -56,7 +59,7 @@ if (
 	checked.push(pageEntity.base);
 	checkOpenEdits(pageEntity);
 // ASSOCIATED ARTIST LINKS
-	if (!/(area|artist|collection|label)/.test(pageEntity.type)) {
+	if (!/^(area|artist|collection|label)$/.test(pageEntity.type)) {
 		var artists;
 		switch (pageEntity.type) {
 			case "release_group":
@@ -101,6 +104,7 @@ function createLink(historyType, associatedArtist) {
 	return newLink.firstChild.firstChild;
 }
 function appendRefineSearchFormLink(baseEditLink) {
+	// Use Merge link to find entity row ID
 	pageEntity.id = document.querySelector("div#sidebar a[href^='/rating/rate/?entity_type=" + pageEntity.type + "&entity_id='], div#sidebar a[href*='/merge_queue?add-to-merge='], div#sidebar a[href^='/collection/create?']");
 	if (pageEntity.id) {
 		pageEntity.id = pageEntity.id.getAttribute("href").match(/=(\d+)/);
