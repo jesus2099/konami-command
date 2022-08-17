@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2022.6.23
-// @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes.
+// @version      2022.8.17
+// @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_POWER-VOTE.user.js
@@ -20,13 +20,45 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+var userjs = "jesus2099userjs57765";
 var chrome = "Please run “" + GM_info.script.name + "” with Violentmonkey instead of plain Chrome.";
 var editform = document.querySelector("div#edits > form");
+var search_form = document.querySelector("div#content > form[action='/search/edits']");
 var j2css = document.createElement("style");
 j2css.setAttribute("type", "text/css");
 document.head.appendChild(j2css);
 j2css = j2css.sheet;
-if (editform) {
+// localisation
+var lang = document.querySelector("html[lang]");
+lang = lang && lang.getAttribute("lang") || "en";
+var texts = {
+	de: {
+		edit: "Bearbeiten",
+		editing_history: "Bearbeitungshistorie",
+		open_edits: "Offene Bearbeitungen",
+	},
+	en: {
+		edit: "Edit",
+		editing_history: "Editing history",
+		open_edits: "Open edits",
+	},
+	fr: {
+		edit: "Modifier",
+		editing_history: "Historique des modifications",
+		open_edits: "Modifications en attente",
+	},
+	it: {
+		edit: "Modifica",
+		editing_history: "Cronologia modifiche",
+		open_edits: "Modifiche in corso",
+	},
+	nl: {
+		edit: "Bewerken",
+		editing_history: "Alle bewerkingen",
+		open_edits: "Open bewerkingen",
+	},
+};
+if (search_form) {
 	// - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- -
 	var showtop = true;
 	var showbottom = true;
@@ -40,16 +72,73 @@ if (editform) {
 	var collapseEdits = true;
 	var voteColours = true;
 	// - --- - --- - --- - END  OF  CONFIGURATION - --- - --- - --- -
-	var userjs = "jesus2099userjs57765";
 	var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent); // FF has bugs
 	if (FF) { FF = {"1": "#b1ebb0", "0": "#ebb1ba", "-1": "#f2f0a5"}; }
 	j2css.insertRule("div.edit-list." + userjs + "force, div.edit-list." + userjs + "ninja > div.edit-actions, div.edit-list." + userjs + "ninja > div.edit-details, div.edit-list." + userjs + "ninja > div.edit-notes { overflow: hidden !important; height: 0 !important; !important; padding: 0 !important; margin: 0 !important; }", 0);
 	j2css.insertRule("div#" + userjs + "xhrstat { position: fixed; top: 0; left: 0; border: 2px solid black; border-width: 0 2px 2px 0; background-color: #ff6; }", 0);
 	j2css.insertRule("tr.rename-artist-credits." + userjs + "yes > th { vertical-align: middle; }", 0);
 	j2css.insertRule("tr.rename-artist-credits." + userjs + "yes > td { color: #f00; font-weight: bolder; font-size: 2em; text-shadow: 1px 1px 0 #663; text-transform: uppercase; }", 0);
+	j2css.insertRule("/*div#content >*/ form[action='/search/edits'] span." + userjs + "-permalink { background-color: #ffc; }", 0);
 	if (showtop || submitButtonOnTopToo) {
 		j2css.insertRule("div.overall-vote { display: none; }", 0);
 	}
+	(new MutationObserver(function(mutations, observer) {
+		for (var m = 0; m < mutations.length; m++) {
+			var span_autocomplete;
+			if (
+				mutations[m].type === "childList"
+				&&
+				mutations[m].target.matches("span.autocomplete")
+				&&
+				mutations[m].target.querySelector("span.autocomplete > input.name.ui-autocomplete-input.lookup-performed ~ input[type='hidden'].id[value]:not([value=''])")
+				&&
+				(span_autocomplete = mutations[m].target)
+				||
+				mutations[m].type === "attributes"
+				&&
+				mutations[m].target === mutations[m].target.parentNode.querySelector("span.autocomplete > input.name.ui-autocomplete-input.lookup-performed ~ input[type='hidden'].id")
+				&&
+				(span_autocomplete = mutations[m].target.parentNode)
+			) {
+				var type = span_autocomplete.className.match(/\b(area|artist|editor|event|instrument|label|place|recording|release-group|release|series|work)\b/);
+				var gid = span_autocomplete.querySelector("input[type='hidden'].gid").value;
+				var id = span_autocomplete.querySelector("input[type='hidden'].id").value;
+				var name = span_autocomplete.querySelector("input.name.ui-autocomplete-input.lookup-performed").value;
+				if (type && (gid || id) && name) {
+					type = type[1];
+					if (type == "editor") {
+						type = "user";
+						gid = escape(name);
+					}
+					var permalink = span_autocomplete.parentNode.querySelector("span." + userjs + "-permalink");
+					if (!permalink) {
+						var path = "/" + type + "/" + (gid || id);
+						span_autocomplete.parentNode.appendChild(createTag("span", {a: {class: userjs + "-permalink"}}, [
+							createTag("a", {a: {
+								href: path,
+								target: "_blank",
+								title: GM_info.script.name
+							}}, name),
+							" <",
+							createTag("a", {a: {href: path + "/open_edits", title: texts[lang].open_edits, class: userjs + "-permalink"}}, "O"),
+							createTag("a", {a: {href: path + "/edits", title: texts[lang].editing_history, class: userjs + "-permalink"}}, "H"),
+							createTag("a", {a: {href: path + "/edit", title: texts[lang].edit, class: userjs + "-permalink"}}, "E"),
+							">"
+						]));
+					} else if (permalink.querySelector("a").textContent != name) {
+						for (var l = 0, links = permalink.querySelectorAll("a"); l < links.length; l++) {
+							links[l].setAttribute("href", links[l].getAttribute("href").replace(/^\/[^/]+\/[^/]+/, "/" + type + "/" + (gid || id)));
+							if (l === 0) {
+								links[l].replaceChild(document.createTextNode(name), links[l].firstChild);
+							}
+						}
+					}
+				}
+			}
+		}
+	})).observe(search_form, {childList: true, subtree: true, attributes: true, attributeFilter: ["value"]});
+}
+if (editform) {
 	var radios = [];
 	var radiosafe = [];
 	var lastradio;
