@@ -1,15 +1,10 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2022.5.8
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_REVIVE-DELETED-EDITORS.user.js
+// @version      2022.8.18
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
-// @compatible   vivaldi(2.11.1811.52)+violentmonkey my setup
-// @compatible   firefox(64.0)+greasemonkey          tested sometimes
-// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_REVIVE-DELETED-EDITORS.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_REVIVE-DELETED-EDITORS.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
@@ -102,6 +97,7 @@ var editors = {
 	  "2057975": ["2019-03-11", "2021-03-31", "NeroA"],
 	  "2138248": ["2020-06-04", "2021-03-29", "theless"],
 	  "2179996": ["2021-01-01", "2021-05-16", "teichmaster2021"],
+	  "2182152": ["2021-01-11", "2021-10-18", "Misty_Pond"],
 	/* mistakes, duplicate accounts, etc. */
 	   "639228": ["2012-07-08", "2014-12-21", "ritaavenida", "betegouveia sockpuppet"],
 	   "639229": ["2012-07-08", "2013-07-12", null, "betegouveia sockpuppet"],
