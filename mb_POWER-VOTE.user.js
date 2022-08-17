@@ -33,29 +33,44 @@ var lang = document.querySelector("html[lang]");
 lang = lang && lang.getAttribute("lang") || "en";
 var texts = {
 	de: {
+		double_click_to_vote: "doppelklicken Sie, um diese Änderung abzustimmen",
 		edit: "Bearbeiten",
 		editing_history: "Bearbeitungshistorie",
 		open_edits: "Offene Bearbeitungen",
+		reset_votes: "Stimmenz urücksetzen",
+		vote_all: " // Über alle nicht abgestimmten Änderungen abstimmen (shift+Klick für alle) → ",
 	},
 	en: {
+		double_click_to_vote: "double-click to vote this edit",
 		edit: "Edit",
 		editing_history: "Editing history",
 		open_edits: "Open edits",
+		reset_votes: "Reset votes",
+		vote_all: " // Vote on all unvoted edits (shift+click for all) → ",
 	},
 	fr: {
+		double_click_to_vote: "double-cliquer pour voter cette modification",
 		edit: "Modifier",
 		editing_history: "Historique des modifications",
 		open_edits: "Modifications en attente",
+		reset_votes: "Réinitialiser les votes",
+		vote_all: " // Voter pour toutes les modifications non votées (shift+clic pour toutes) → ",
 	},
 	it: {
+		double_click_to_vote: "fare doppio clic per votare questa modifica",
 		edit: "Modifica",
 		editing_history: "Cronologia modifiche",
 		open_edits: "Modifiche in corso",
+		reset_votes: "Reimposta voti",
+		vote_all: " // Vota per tutte le modifiche non votate (shift+clic per tutte) → ",
 	},
 	nl: {
+		double_click_to_vote: "dubbelklik om deze wijziging te stemmen",
 		edit: "Bewerken",
 		editing_history: "Alle bewerkingen",
 		open_edits: "Open bewerkingen",
+		reset_votes: "Stemmen terugzetten",
+		vote_all: " // Stem op alle niet-gestemde wijzigingen (shift+klik voor alles) → ",
 	},
 };
 if (search_form) {
@@ -65,8 +80,6 @@ if (search_form) {
 	var border = "thin dashed red"; // leave "" for defaults
 	var submitButtonOnTopToo = true;
 	var onlySubmitTabIndexed = true; // hit tab after typed text or voted directly goes to a submit button
-	var text = " // Check all unvoted edits (shift+click to force all votes) → ";
-	var canceltext = "Reset votes";
 	var scrollToEdits = false; // will never get in the way if you have scrolled down yourself
 	var rangeclick = true; // multiple votes by clicking first vote then shift-clicking last radio in a range
 	var collapseEdits = true;
@@ -204,7 +217,7 @@ if (editform) {
 		}
 		var labinput = getParent(inputs[i], "label") || inputs[i];
 		preventDefault(labinput, "mousedown");
-		labinput.setAttribute("title", "double-click to vote this single edit");
+		labinput.setAttribute("title", texts[lang].double_click_to_vote);
 		labinput.addEventListener("dblclick", function(event) {
 			var edit = this.closest("div.edit-list");
 			var vote = (this.querySelector("input[type='radio']") || this).value;
@@ -229,6 +242,10 @@ if (editform) {
 		if (inputs[i].checked) { radiosafe.push(inputs[i]); }
 	}
 	if (radios.length > 4) {
+		// init localised vote texts directly from MBS page
+		for (var v = 0, votes = ["yes", "no", "abstain", "none"]; v < votes.length; v++) {
+			texts[lang][votes[v]] = radios[v].closest("label").textContent;
+		}
 		if (showtop) { showtop = editform.insertBefore(shortcutsRow(), editform.firstChild); }
 		if (showbottom) { showbottom = editform.insertBefore(shortcutsRow(), editform.lastChild.previousSibling); }
 	}
@@ -469,16 +486,16 @@ function preNGS(editHeader) {
 function shortcutsRow() {
 	return createTag("div", {a: {class: "edit-list"}, s: {border: border}}, [
 		createTag("div", {a: {class: "edit-actions c applied"}},
-			createTag("div", {a: {class: "voteopts buttons"}, s: {margin: "0", width: "175px"}}, [
-				shortcut("1", "Yes"),
-				shortcut("0", "No"),
-				shortcut("-1", "Abstain"),
-				shortcut("-2", "None")
+			createTag("div", {a: {class: "voteopts buttons"}}, [
+				shortcut("1", texts[lang].yes),
+				shortcut("0", texts[lang].no),
+				shortcut("-1", texts[lang].abstain),
+				shortcut("-2", texts[lang].none)
 			])
 		),
 		createTag("div", {a: {class: "edit-details"}, s: {margin: "0", textAlign: "right"}}, [
-			createTag("span", {a: {class: "buttons"}}, shortcut("reset-votes", canceltext)),
-			text
+			createTag("span", {a: {class: "buttons"}}, shortcut("reset-votes", texts[lang].reset_votes)),
+			texts[lang].vote_all
 		])
 	]);
 }
