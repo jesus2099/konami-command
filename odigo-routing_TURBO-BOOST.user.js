@@ -9,7 +9,7 @@
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2022-03-21
-// @grant        GM_info
+// @grant        none
 // @include      /^https?:\/\/[^.]+.odigo.cx\/[^/]+\/ui\/service/
 // @run-at       document-ready
 // ==/UserScript==

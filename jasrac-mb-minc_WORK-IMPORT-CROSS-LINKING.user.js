@@ -11,7 +11,7 @@
 // @since        2011-01-14; https://web.archive.org/web/20131103163356/userscripts.org/scripts/show/94676 / https://web.archive.org/web/20141011084012/userscripts-mirror.org/scripts/show/94676
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
-// @grant        GM_info
+// @grant        none
 // @match        *://*.musicbrainz.org/work/*
 // @match        *://search.minc.or.jp/product/list/*
 // @match        *://www.minc.gr.jp/db/*

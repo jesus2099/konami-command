@@ -12,7 +12,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-02-22; https://web.archive.org/web/20131103163410/userscripts.org/scripts/show/126475 / https://web.archive.org/web/20141011084022/userscripts-mirror.org/scripts/show/126475
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @grant        GM_info
+// @grant        none
 // @match        *://*.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==

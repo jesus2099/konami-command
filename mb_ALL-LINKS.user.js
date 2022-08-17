@@ -17,7 +17,7 @@
 // @since        2011-08-02; https://web.archive.org/web/20131103162328/userscripts.org/scripts/show/108889 / https://web.archive.org/web/20141011084020/userscripts-mirror.org/scripts/show/108889
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
-// @grant        GM_info
+// @grant        none
 // @match        *://*.musicbrainz.org/area/*
 // @match        *://*.musicbrainz.org/artist/*
 // @match        *://*.musicbrainz.org/event/*

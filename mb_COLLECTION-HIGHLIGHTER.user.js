@@ -14,7 +14,6 @@
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @grant        GM_info
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\//
 // @include      /^https?:\/\/acoustid\.org\/track\//
 // @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/account\//

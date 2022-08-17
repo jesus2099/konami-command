@@ -15,7 +15,7 @@
 // @since        2021-03-02; https://community.metabrainz.org/t/script-for-printing-collections/521437
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/fb2225a2146d1586b7f113ad13df476adf314ac7/lib/SUPER.js?v=2021.2.4
-// @grant        GM_info
+// @grant        none
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\?order=.*)?$/
 // @run-at       document-ready
 // ==/UserScript==
