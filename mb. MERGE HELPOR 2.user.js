@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2021.2.2.1852
+// @version      2022.8.25
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -23,7 +23,7 @@ var lastTick = new Date().getTime();
 var WSrate = 1000;
 if (mergeType) {
 	/* main merge tool */
-	var mergeForm = document.querySelector("div#content > form[action*='/merge']");
+	var mergeForm = document.querySelector("div#content > form[method='post']");
 	var tbl = mergeForm.querySelector("table.tbl");
 	var entities = {};
 	var deferScript = setInterval(function() {
@@ -80,7 +80,8 @@ if (mergeType) {
 		});
 		addAfter(reMergeButton, mergeButton);
 	}
-	/* Make “Remove selected entites” and “Cancel” buttons faster */
+	// Page bottom mini Merge Process form
+	// Make “Remove selected entites” and “Cancel” buttons faster
 	var currentMergeForm = document.querySelector("div#current-editing > form[action*='/merge']");
 	if (currentMergeForm) {
 		currentMergeForm.querySelector("button[type='submit'][value='remove']").addEventListener("click", function(event) {
