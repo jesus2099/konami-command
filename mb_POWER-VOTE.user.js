@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2022.8.18.55
+// @version      2022.8.26
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -46,6 +46,7 @@ j2css.insertRule("div#" + userjs + "xhrstat { position: fixed; top: 0; left: 0; 
 j2css.insertRule("tr.rename-artist-credits." + userjs + "yes > th { vertical-align: middle; }", 0);
 j2css.insertRule("tr.rename-artist-credits." + userjs + "yes > td { color: #f00; font-weight: bolder; font-size: 2em; text-shadow: 1px 1px 0 #663; text-transform: uppercase; }", 0);
 j2css.insertRule("/*div#content >*/ form[action='/search/edits'] span." + userjs + "-permalink { background-color: #ffc; }", 0);
+j2css.insertRule("/*div#content >*/ form[action='/search/edits'] span." + userjs + "-permalink[data-gid=''] { font-style: italic; }", 0);
 if (showtop || submitButtonOnTopToo) {
 	j2css.insertRule("div.overall-vote { display: none; }", 0);
 }
@@ -126,7 +127,7 @@ if (search_form) {
 					var permalink = span_autocomplete.parentNode.querySelector("span." + userjs + "-permalink");
 					if (!permalink) {
 						var path = "/" + type + "/" + (gid || id);
-						span_autocomplete.parentNode.appendChild(createTag("span", {a: {class: userjs + "-permalink"}}, [
+						permalink = span_autocomplete.parentNode.appendChild(createTag("span", {a: {class: userjs + "-permalink", "data-gid": gid}}, [
 							createTag("a", {a: {
 								href: path,
 								target: "_blank",
@@ -138,11 +139,34 @@ if (search_form) {
 							createTag("a", {a: {href: path + "/edit", title: texts[lang].edit, class: userjs + "-permalink"}}, "E"),
 							">"
 						]));
-					} else if (permalink.querySelector("a").textContent != name) {
+						if (!gid) {
+							// Entity page with ID URL redirects 302 to page with MBID URL, fetch MBID from there and finish permalink
+							var xhr = new XMLHttpRequest();
+							xhr.id = id;
+							xhr.type = type;
+							xhr.addEventListener("readystatechange", function(event) {
+								var MBID = this.responseURL.match(new RegExp("/" + this.type + "/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$"));
+								if (MBID) {
+									var permalink_a = document.querySelector("span." + userjs + "-permalink > a[href='/" + this.type + "/" + this.id + "']");
+									if (permalink_a) {
+										permalink_a.parentNode.parentNode.querySelector("input[type='hidden'].gid").value = MBID[1];
+										// Manual trigger
+										permalink_a.parentNode.parentNode.querySelector("span.autocomplete").appendChild(document.createTextNode(" "));
+									}
+									this.abort();
+								}
+							});
+							xhr.open("GET", path, true);
+							xhr.send(null);
+						}
+					} else if (permalink.dataset["gid"] != gid) {
 						for (var l = 0, links = permalink.querySelectorAll("a"); l < links.length; l++) {
+							// Bonus links
 							links[l].setAttribute("href", links[l].getAttribute("href").replace(/^\/[^/]+\/[^/]+/, "/" + type + "/" + (gid || id)));
 							if (l === 0) {
+								// Main link
 								links[l].replaceChild(document.createTextNode(name), links[l].firstChild);
+								links[l].parentNode.dataset["gid"] = gid;
 							}
 						}
 					}
