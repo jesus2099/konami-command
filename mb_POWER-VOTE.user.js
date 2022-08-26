@@ -124,9 +124,18 @@ if (search_form) {
 						type = "user";
 						gid = escape(name);
 					}
+					var path = "/" + type + "/" + (gid || id);
+					var bonus_links = {
+						open_edits: path + "/open_edits",
+						editing_history: path + "/edits",
+						edit: path + "/edit"
+					};
+					if (type == "user") {
+						bonus_links.open_edits = path + "/edits/open";
+						bonus_links.edit = "/admin/user/edit/" + gid;
+					}
 					var permalink = span_autocomplete.parentNode.querySelector("span." + userjs + "-permalink");
 					if (!permalink) {
-						var path = "/" + type + "/" + (gid || id);
 						permalink = span_autocomplete.parentNode.appendChild(createTag("span", {a: {class: userjs + "-permalink", "data-gid": gid}}, [
 							createTag("a", {a: {
 								href: path,
@@ -134,9 +143,9 @@ if (search_form) {
 								title: GM_info.script.name
 							}}, name),
 							" <",
-							createTag("a", {a: {href: path + "/open_edits", title: texts[lang].open_edits, class: userjs + "-permalink"}}, "O"),
-							createTag("a", {a: {href: path + "/edits", title: texts[lang].editing_history, class: userjs + "-permalink"}}, "H"),
-							createTag("a", {a: {href: path + "/edit", title: texts[lang].edit, class: userjs + "-permalink"}}, "E"),
+							createTag("a", {a: {href: bonus_links.open_edits, title: texts[lang].open_edits, class: userjs + "-permalink"}}, "O"),
+							createTag("a", {a: {href: bonus_links.editing_history, title: texts[lang].editing_history, class: userjs + "-permalink"}}, "H"),
+							createTag("a", {a: {href: bonus_links.edit, title: texts[lang].edit, class: userjs + "-permalink"}}, "E"),
 							">"
 						]));
 						if (!gid) {
