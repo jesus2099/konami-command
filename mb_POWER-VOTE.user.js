@@ -136,20 +136,22 @@ if (search_form) {
 						bonus_links.edit = "/admin/user/edit/" + gid;
 					}
 					var permalink = span_autocomplete.parentNode.querySelector("span." + userjs + "-permalink");
+					var new_permalink = createTag("span", {a: {class: userjs + "-permalink", "data-gid": gid}}, [
+						createTag("a", {a: {
+							href: path,
+							target: "_blank",
+							title: GM_info.script.name
+						}}, name),
+						" <",
+						createTag("a", {a: {href: bonus_links.open_edits, title: texts[lang].open_edits, class: userjs + "-permalink"}}, "O"),
+						createTag("a", {a: {href: bonus_links.editing_history, title: texts[lang].editing_history, class: userjs + "-permalink"}}, "H"),
+						createTag("a", {a: {href: bonus_links.edit, title: texts[lang].edit, class: userjs + "-permalink"}}, "E"),
+						">"
+					]);
 					if (!permalink) {
-						permalink = span_autocomplete.parentNode.appendChild(createTag("span", {a: {class: userjs + "-permalink", "data-gid": gid}}, [
-							createTag("a", {a: {
-								href: path,
-								target: "_blank",
-								title: GM_info.script.name
-							}}, name),
-							" <",
-							createTag("a", {a: {href: bonus_links.open_edits, title: texts[lang].open_edits, class: userjs + "-permalink"}}, "O"),
-							createTag("a", {a: {href: bonus_links.editing_history, title: texts[lang].editing_history, class: userjs + "-permalink"}}, "H"),
-							createTag("a", {a: {href: bonus_links.edit, title: texts[lang].edit, class: userjs + "-permalink"}}, "E"),
-							">"
-						]));
+						span_autocomplete.parentNode.appendChild(new_permalink);
 						if (!gid) {
+							// When opening a refine search with preloaded entity filters, MBID (gid) is unset
 							// Entity page with ID URL redirects 302 to page with MBID URL, fetch MBID from there and finish permalink
 							var xhr = new XMLHttpRequest();
 							xhr.id = id;
@@ -180,15 +182,7 @@ if (search_form) {
 							xhr.send(null);
 						}
 					} else if (permalink.dataset["gid"] != gid) {
-						for (var l = 0, links = permalink.querySelectorAll("a"); l < links.length; l++) {
-							// Bonus links
-							links[l].setAttribute("href", links[l].getAttribute("href").replace(/^\/[^/]+\/[^/]+/, "/" + type + "/" + (gid || id)));
-							if (l === 0) {
-								// Main link
-								links[l].replaceChild(document.createTextNode(name), links[l].firstChild);
-								links[l].parentNode.dataset["gid"] = gid;
-							}
-						}
+						span_autocomplete.parentNode.replaceChild(new_permalink, permalink);
 					}
 				}
 			}
