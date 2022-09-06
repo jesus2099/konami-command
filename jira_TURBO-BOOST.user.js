@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         jira. TURBO BOOST
-// @version      2022.9.5
+// @version      2022.9.6
 // @description  Toggle/switch quick filters (Ctrl for native additive behaviour)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jira_TURBO-BOOST
@@ -18,10 +18,11 @@ if (document.body.matches("body#jira")) {
 	css.setAttribute("type", "text/css");
 	document.head.appendChild(css);
 	css = css.sheet;
-	css.insertRule("div#content main#main dl#js-work-quickfilters:after { content: ' (click to switch / Ctrl to add) '; background-color: #ffc; text-transform: initial; }", 0);
+	css.insertRule("div#content main#main dl[id^='js-'][id$='-quickfilters']:after { content: ' (click to switch / Ctrl to add) '; background-color: #ffc; }", 0);
+	css.insertRule("div#content main#main dl[id^='js-'][id$='-quickfilters']:hover { background-color: #fef; }", 0);
 	document.body.addEventListener("click", function(event) {
-		if (!event.ctrlKey && !event.shiftKey && event.target.matches("div#content main#main dl#js-work-quickfilters > dd > a.js-quickfilter-button[data-filter-id].ghx-active")) {
-			var active_quick_filters = document.querySelectorAll("div#content main#main dl#js-work-quickfilters > dd > a.js-quickfilter-button[data-filter-id].ghx-active");
+		if (!event.ctrlKey && !event.shiftKey && event.target.matches("div#content main#main dl[id^='js-'][id$='-quickfilters'] > dd > a.js-quickfilter-button[data-filter-id].ghx-active")) {
+			var active_quick_filters = document.querySelectorAll("div#content main#main dl[id^='js-'][id$='-quickfilters'] > dd > a.js-quickfilter-button[data-filter-id].ghx-active");
 			if (active_quick_filters.length > 1) {
 				for (var f = 0; f < active_quick_filters.length; f++) {
 					if (active_quick_filters[f] != event.target) {
