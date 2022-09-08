@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.8.10
+// @version      2022.9.8
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -60,6 +60,8 @@ if (document.getElementById("headerid-query")) {
 }
 function redirect(entity) {
 	var cancel_info = document.createDocumentFragment();
+	cancel_info.appendChild(document.createElement("strong")).appendChild(document.createTextNode("Click anywhere on this page to enable browser history Back button on next page!"));
+	cancel_info.appendChild(document.createElement("br"));
 	cancel_info.appendChild(document.createTextNode("Press "));
 	cancel_info.appendChild(document.createElement("strong")).appendChild(document.createTextNode("Escape"));
 	cancel_info.appendChild(document.createTextNode(" to cancel redirection to best match: "));
@@ -77,5 +79,10 @@ function redirect(entity) {
 			return false;
 		}
 	});
-	userjs.redirectTimeout = setTimeout(function() { self.location.assign(entity.getAttribute("href")); }, 2222);
+	document.body.addEventListener("click", human_interaction);
+	function human_interaction (event) {
+		MB_banner("Yeah Man! Thanks to your human click, Back button should be OK.");
+		document.body.removeEventListener("click", human_interaction);
+	}
+	userjs.redirectTimeout = setTimeout(function() { self.location.assign(entity.getAttribute("href")); }, 1234);
 }
