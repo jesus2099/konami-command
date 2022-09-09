@@ -740,9 +740,6 @@ if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3
 			"tr." + userjs.id + "rowhld th",
 			"tr." + userjs.id + "rowhld td",
 			"div#release-editor > div#tracklist tr." + userjs.id + "rowhld td input",
-			"table.details td > span." + userjs.id + "rowhld",
-			"table.details td > span." + userjs.id + "rowhld a",
-			"table.details th." + userjs.id + "rowhld"
 		],
 		rule: [
 			"background-color:" + j2sets.ROW_HIGHLIGHTER_colour + "!important"
