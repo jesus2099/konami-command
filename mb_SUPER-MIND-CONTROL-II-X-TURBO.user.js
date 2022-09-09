@@ -735,68 +735,19 @@ if (j2sets.RATINGS_ON_TOP && sidebar && !j2sets.HIDE_RATINGS) {
 j2setting("ROW_HIGHLIGHTER", true, true, "highlights rows in various MB tables");
 j2setting("ROW_HIGHLIGHTER_colour", "#fcf", true, "use any CSS colour code or name");
 if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+|rgba\(.+\))$/i)) {
-	var hldrule = {
+	var row_highlighter_css = {
 		selector: [
-			"tr." + userjs.id + "rowhld th",
-			"tr." + userjs.id + "rowhld td",
-			"div#release-editor > div#tracklist tr." + userjs.id + "rowhld td input",
+			"div#content table.tbl > tbody > tr:hover > td",
+			"div#release-editor > div#tracklist tr:hover > td",
+			"div#release-editor > div#tracklist tr:hover > td input",
 		],
 		rule: [
-			"background-color:" + j2sets.ROW_HIGHLIGHTER_colour + "!important"
+			"background-color:" + j2sets.ROW_HIGHLIGHTER_colour,
 		]
 	};
-	j2superturbo.addCSSRule(hldrule.selector.join(",") + "{" + hldrule.rule.join(";") + "}");
-	ROW_HIGHLIGHTER_init();
-	document.body.addEventListener("DOMNodeInserted", ROW_HIGHLIGHTER_calmDOM);
-}
-var ROW_HIGHLIGHTER_calmDOMto;
-function ROW_HIGHLIGHTER_calmDOM() {
-	if (ROW_HIGHLIGHTER_calmDOMto) {
-		clearTimeout(ROW_HIGHLIGHTER_calmDOMto);
-	}
-	ROW_HIGHLIGHTER_calmDOMto = setTimeout(ROW_HIGHLIGHTER_init, 100);
-}
-function ROW_HIGHLIGHTER_init() {
-	debug("ROW_HIGHLIGHTER_init");
-	ROW_HIGHLIGHTER_calmDOMto = null;
-	var tds = document.querySelectorAll("table:not(#batch-tools):not(.advanced-format):not(.artist-credit):not(.details) > tbody > tr:not(.track-artist-credit) > *, table.details td > span");
-	for (let td = 0; td < tds.length; td++) {
-		tds[td].removeEventListener("mouseover", ROW_HIGHLIGHTER_refresh);
-		tds[td].removeEventListener("mouseout", ROW_HIGHLIGHTER_refresh);
-		/* sorry for the remove/add hack but it seems MBS still uses some
-		innerHTML="<bla></bla>" which breaks event listeners, parentality, etc. */
-		tds[td].addEventListener("mouseover", ROW_HIGHLIGHTER_refresh);
-		tds[td].addEventListener("mouseout", ROW_HIGHLIGHTER_refresh);
-	}
-}
-function ROW_HIGHLIGHTER_refresh(event) {
-	var row = [this.parentNode];
-	if (row[0]) {
-		if (self.location.pathname.match(new RegExp("^/release/(add|" + stre_GUID + "/edit)$"))) {
-			// release-editor hacks
-			if (getParent(this, "div", null, "recordings") /* Recordings */ && this.tagName == "TD") {
-				if (!row[0].classList.contains("track")) {
-					row[0] = getSibling(row[0], "tr", "track", true);
-				}
-				row.push(getSibling(row[0], "tr", "artist"));
-				row.push(getSibling(row[1], "tr", null, false, 4));
-			}
-		} else if (this.tagName == "SPAN") {
-			// AR list hacks
-			row = [
-				this,
-				this.style.getPropertyValue("float") == "right" ? getSibling(this, "span", false, true) : getSibling(this, "span", false),
-				getSibling(this.parentNode, "th", null, true)
-			];
-		}
-		for (let r = 0; r < row.length; r++) if (row[r]) {
-			if (event.type == "mouseover") {
-				row[r].classList.add(userjs.id + "rowhld");
-			} else if (event.type == "mouseout") {
-				row[r].classList.remove(userjs.id + "rowhld");
-			}
-		}
-	}
+	row_highlighter_css = row_highlighter_css.selector.join(", ") + " { " + row_highlighter_css.rule.join("; ") + "; }"
+	debug("ROW_HIGHLIGHTER\n" + row_highlighter_css);
+	j2superturbo.addCSSRule(row_highlighter_css);
 }
 // =================================================================== MOUSE+
 // ## Common form submission function ##
