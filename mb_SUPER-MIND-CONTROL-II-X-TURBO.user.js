@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2022.9.9.1134
+// @version      2022.9.9.1158
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -31,7 +31,7 @@ let userjs = {
 	icon: createTag("img", {a: {src: GM_info.script.icon}, s: {verticalAlign: "middle", margin: "-8px 0"}})
 };
 var debugBuffer = "";
-var DEBUG = false;
+var DEBUG = true;
 var pageType = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (pageType) {
 	pageType = pageType[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
@@ -733,8 +733,7 @@ if (j2sets.RATINGS_ON_TOP && sidebar && !j2sets.HIDE_RATINGS) {
 // MusicBrainz row highlighter https://web.archive.org/web/20131104205654/userscripts.org/scripts/show/118008
 // ==========================================================================
 j2setting("ROW_HIGHLIGHTER", true, true, "highlights rows in various MB tables");
-j2setting("ROW_HIGHLIGHTER_colour", "#fcf", true, "use any CSS colour code or name");
-if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+|(hsl|rgb)a?\(.+\))$/i)) {
+if (j2sets.ROW_HIGHLIGHTER) {
 	var row_highlighter_css = {
 		selector: [
 			"div#content table.tbl > tbody > tr:hover > td",
@@ -742,7 +741,7 @@ if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3
 			"div#release-editor > div#tracklist tr:hover > td input",
 		],
 		rule: [
-			"background-color:" + j2sets.ROW_HIGHLIGHTER_colour,
+			"background-image: linear-gradient(#f9f3, #f9f3)",
 		]
 	};
 	row_highlighter_css = row_highlighter_css.selector.join(", ") + " { " + row_highlighter_css.rule.join("; ") + "; }"
