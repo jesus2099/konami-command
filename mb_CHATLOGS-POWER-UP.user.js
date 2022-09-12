@@ -1,16 +1,10 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2021.6.17
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_CHATLOGS-POWER-UP.user.js
-// @description  chatlogs.metabrainz.org: swicth between #musicbrainz and #metabrainz channels; previous/next date log page (it was once a better script)
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
-// @compatible   vivaldi(1.0.435.46)+violentmonkey    my setup (ho.)
-// @compatible   vivaldi(1.13.1008.32)+violentmonkey  my setup (of.)
-// @compatible   firefox(47.0)+greasemonkey           tested sometimes
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
+// @version      2022.9.12
+// @description  chatlogs.metabrainz.org: swicth between #musicbrainz and #metabrainz channels; centre highlight message (for post permalink URL)
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_CHATLOGS-POWER-UP.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_CHATLOGS-POWER-UP.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
@@ -73,6 +67,15 @@ if (loc) {
 				document.body.insertBefore(ctt, document.body.firstChild);
 			} else {
 				document.body.appendChild(ctt);
+			}
+			if (self.location.search.match(/\bmsg=\d+/)) {
+				var center_highlight_message = setInterval(function() {
+					var highlight_message = document.querySelector("ul#Log > li.highlight");
+					if (highlight_message) {
+						clearInterval(center_highlight_message);
+						highlight_message.scrollIntoView({block: "center", behavior: "smooth"});
+					}
+				}, 666);
 			}
 		}
 	}, 123);
