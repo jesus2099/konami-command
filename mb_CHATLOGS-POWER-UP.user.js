@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2022.9.12
+// @version      2022.9.12.1510
 // @description  chatlogs.metabrainz.org: swicth between #musicbrainz and #metabrainz channels; centre highlight message (for post permalink URL)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
@@ -28,14 +28,10 @@ if (loc) {
 			css.setAttribute("type", "text/css");
 			document.head.appendChild(css);
 			css = css.sheet;
-			// remove top black bar which overlaps content with Opera 12
+			// remove top black bar which takes much space
 			css.insertRule("header#Site-Header { display: none; }", 0);
 			css.insertRule("header#Log-Header { padding: 0px; }", 0);
 			css.insertRule("header#Log-Header { top: 0px; }", 0);
-			// remove sidebar which does some funky endless reloading with Opera 12
-			css.insertRule(".timeline-navigation { display: none; }", 0);
-			css.insertRule("#Log-Container { margin-top: 0px; }", 0);
-			css.insertRule("#Log-Container article { margin-right: 0px; }", 0);
 			// toolbar
 			css.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; z-index: 50; }", 0);
 			css.insertRule("body { padding-bottom: .5em; }", 0);
@@ -69,13 +65,14 @@ if (loc) {
 				document.body.appendChild(ctt);
 			}
 			if (self.location.search.match(/\bmsg=\d+/)) {
+				// Bring permalinked post back on screen
 				var center_highlight_message = setInterval(function() {
 					var highlight_message = document.querySelector("ul#Log > li.highlight");
 					if (highlight_message) {
 						clearInterval(center_highlight_message);
 						highlight_message.scrollIntoView({block: "center", behavior: "smooth"});
 					}
-				}, 666);
+				}, 1234);
 			}
 		}
 	}, 123);
