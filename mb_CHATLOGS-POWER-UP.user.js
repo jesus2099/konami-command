@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2022.9.12.1510
+// @version      2022.9.16
 // @description  chatlogs.metabrainz.org: swicth between #musicbrainz and #metabrainz channels; centre highlight message (for post permalink URL)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
@@ -70,7 +70,9 @@ if (loc) {
 					var highlight_message = document.querySelector("ul#Log > li.highlight");
 					if (highlight_message) {
 						clearInterval(center_highlight_message);
-						highlight_message.scrollIntoView({block: "center", behavior: "smooth"});
+						if (!checkVisible(highlight_message, 50)) {
+							highlight_message.scrollIntoView({block: "center", behavior: "smooth"});
+						}
 					}
 				}, 1234);
 			}
@@ -109,4 +111,16 @@ function createA(text, link, title) {
 }
 function separate(cont, sep) {
 	if (cont.firstChild) cont.appendChild(document.createTextNode(sep ? sep : " | "));
+}
+function checkVisible(elm, threshold, mode) {
+	// awesome function by Tokimon https://stackoverflow.com/a/5354536/2236179
+	threshold = threshold || 0;
+	mode = mode || "visible";
+
+	var rect = elm.getBoundingClientRect();
+	var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
+	var above = rect.bottom - threshold < 0;
+	var below = rect.top - viewHeight + threshold >= 0;
+
+	return mode === "above" ? above : (mode === "below" ? below : !above && !below);
 }
