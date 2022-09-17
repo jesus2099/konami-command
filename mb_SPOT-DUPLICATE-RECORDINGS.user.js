@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SPOT DUPLICATE RECORDINGS
-// @version      2018.4.4.2099
+// @version      2022.9.17
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_SPOT-DUPLICATE-RECORDINGS.user.js
 // @description  musicbrainz.org: Spot recordings that are linked multiple times to the same work
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SPOT-DUPLICATE-RECORDINGS
@@ -17,7 +17,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-07-05; https://web.archive.org/web/20131103163405/userscripts.org/scripts/show/106145 / https://web.archive.org/web/20141011084009/userscripts-mirror.org/scripts/show/106145
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://cdn.jsdelivr.net/gh/jesus2099/konami-command@4fa74ddc55ec51927562f6e9d7215e2b43b1120b/lib/SUPER.js?v=2018.3.14
+// @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @match        *://*.musicbrainz.org/recording/*
 // @match        *://*.musicbrainz.org/work/*
