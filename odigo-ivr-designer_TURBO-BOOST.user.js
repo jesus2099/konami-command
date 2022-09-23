@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.9.7
-// @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Hide empty release user column; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
+// @version      2022.9.24
+// @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
@@ -74,6 +74,20 @@ switch (self.location.pathname) {
 				}
 			});
 		}
+
+		// Loading percent in tab/window name/title
+		var original_window_title = window.title;
+		setInterval(function() {
+			var progress = document.querySelector("#progress");
+			var percent = progress.textContent.replace(/\s/g, "");
+			if (progress) {
+				if (percent.match(/^\d?\d%$/)) {
+					document.title = progress.textContent.replace(/\s/g, "") + " " + progress.parentNode.previousSibling.previousSibling.textContent + original_window_title;
+				} else {
+					document.title = original_window_title;
+				}
+			}
+		}, 1000);
 
 		// Double-click to open application, logs and versions
 		var DblClickTableActions = [
