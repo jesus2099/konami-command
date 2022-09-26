@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. GNUDB IMPORTER
-// @version      2021.11.17
+// @version      2022.9.26
 // @description  GnuDB.org: EXPERIMENTAL! Import GnuDB/FreeDB/CDDB entries to MusicBrainz, thanks to murdos mbimport.js library
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_GNUDB-IMPORTER
@@ -10,7 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2021-11-12
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://github.com/murdos/musicbrainz-userscripts/raw/9fc80f796e361554f1f477a999dcdc8c45534a31/lib/mbimport.js
+// @require      https://github.com/murdos/musicbrainz-userscripts/raw/9fc80f796e361554f1f477a999dcdc8c45534a31/lib/mbimport.js#workaround-github.com/violentmonkey/violentmonkey/issues/1581-mb_GNUDB-IMPORTER
 // @grant        none
 // @include      /^https://gnudb.org/cd/[a-z]{2}[0-9a-f]{2}[0-9a-f]{4}[0-9a-f]{2}$/
 // @run-at       document-idle
