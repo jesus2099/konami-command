@@ -76,15 +76,20 @@ switch (self.location.pathname) {
 		}
 
 		// Loading percent in tab/window name/title
-		var original_window_title = window.title;
 		setInterval(function() {
 			var progress = document.querySelector("#progress");
-			var percent = progress.textContent.replace(/\s/g, "");
 			if (progress) {
+				var my_separator = " ⌛ ";
+				var percent = progress.textContent.replace(/\s/g, "");
 				if (percent.match(/^\d?\d%$/)) {
-					document.title = progress.textContent.replace(/\s/g, "") + " " + progress.parentNode.previousSibling.previousSibling.textContent + original_window_title;
-				} else {
-					document.title = original_window_title;
+					var progress_text = progress.textContent.replace(/\s/g, "") + " " + progress.parentNode.previousSibling.previousSibling.textContent;
+					if (document.title.match(new RegExp(my_separator))) {
+						document.title = document.title.replace(new RegExp("^.+" + my_separator), progress_text + my_separator);
+					} else {
+						document.title = progress_text + my_separator + document.title;
+					}
+				} else if (document.title.match(new RegExp(my_separator))) {
+					document.title = document.title.replace(new RegExp("^.+" + my_separator), "");
 				}
 			}
 		}, 1000);
