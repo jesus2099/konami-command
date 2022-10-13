@@ -13,6 +13,7 @@ globals:
 # lib/COOL-BUBBLES.js
  coolBubble:          readonly
 # lib/MB-JUNK-SHOP.js
+ MB_banner:           readonly
  MB_collapsible_list: readonly
 # lib/SUPER.js
  addAfter:            readonly

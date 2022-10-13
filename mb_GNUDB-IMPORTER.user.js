@@ -17,7 +17,7 @@
 // ==/UserScript==
 "use strict";
 
-/* global MBImport */
+/* global MBImport */ // eslint no-undef exception
 
 // http://libcddb.sourceforge.net/API/cddb__disc_8h.html
 // https://www.jwz.org/doc/cddb.html
@@ -28,9 +28,10 @@ var tracklist = document.querySelector("div#content > table > tbody");
 // Handle "Various Artists" releases
 var va = false;
 var vaSeparator = "";
+var r;
 if (releaseArtist.match(/\bdivers(es)?\b|\bcompil(ation\b)?|^nhi[ềe]u\s|^オムニバス$|^various\b|^v\.?a\.?$|^o\.?s\.?t\.?$|\bfilm\b|\bjeux?\b|\bgames?\b/i)) {
 	for (var s = 0, separators = [" / ", "／", " - ", "/"]; !va && s < separators.length; s++) {
-		for (var r = 1; r < tracklist.rows.length; r++) {
+		for (r = 1; r < tracklist.rows.length; r++) {
 			var checkSeparator = tracklist.rows[r].cells[2].textContent.match(new RegExp(separators[s]));
 			if (checkSeparator === null || checkSeparator.length !== 1) {
 				// if each track has exactly one occurrence of separator, this is it, otherwise try next separator
@@ -59,7 +60,7 @@ var parsedRelease = {
 	}]
 };
 // read tracklist
-for (var r = 1; r < tracklist.rows.length; r++) {
+for (r = 1; r < tracklist.rows.length; r++) {
 	var trackTitle = tracklist.rows[r].cells[2].textContent;
 	var trackArtistCredit = parsedRelease.artist_credit;
 	if (va) {

@@ -745,7 +745,7 @@ if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3
 			"background-color:" + j2sets.ROW_HIGHLIGHTER_colour,
 		]
 	};
-	row_highlighter_css = row_highlighter_css.selector.join(", ") + " { " + row_highlighter_css.rule.join("; ") + "; }"
+	row_highlighter_css = row_highlighter_css.selector.join(", ") + " { " + row_highlighter_css.rule.join("; ") + "; }";
 	debug("ROW_HIGHLIGHTER\n" + row_highlighter_css);
 	j2superturbo.addCSSRule(row_highlighter_css);
 }

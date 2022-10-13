@@ -15,6 +15,8 @@
 // ==/UserScript==
 "use strict";
 
+/* global LazyLoadingNavigation */ // eslint no-undef exception
+
 if (!document.querySelector("nav > ul.menu_level_1")) {
 	// Call menu if absent
 	// When tracking blockers crash DOMContentLoaded handler

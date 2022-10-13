@@ -15,9 +15,12 @@
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
+
+/* global I18n */ // eslint no-undef exception
+
 var texts = {
 	download: {en: "Download ", fr: "Télécharger "}
-}
+};
 var app;
 if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 	// inside an application audio folder

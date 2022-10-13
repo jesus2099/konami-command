@@ -899,7 +899,7 @@ function expandCollapseAllMediums(clickThis) {
 }
 function prepareLocalRelease() {
 	if (self.location.pathname.match(/\/disc\/\d+/)) {
-		if(confirm(userjs.name + " only works on normal release pages (not on this kind of disc anchor version).\n\nDo you agree to reload page?")) {
+		if (confirm(userjs.name + " only works on normal release pages (not on this kind of disc anchor version).\n\nDo you agree to reload page?")) {
 			self.location.assign(MBS + "/release/" + localRelease.id);
 		}
 		return;
@@ -1040,14 +1040,14 @@ function strtime2ms(str) { // temporary until WS available again
 	}
 	return ms;
 }
-/*function time(_ms, pad) {/* adapt mb_INLINE-TRACK-ARTIST’s with milliseconds instead when https://github.com/jesus2099/konami-command/issues/48 is fixed *//*
+/* function time(_ms, pad) {/* adapt mb_INLINE-TRACK-ARTIST’s with milliseconds instead when https://github.com/jesus2099/konami-command/issues/48 is fixed *//*
 	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
 	if (ms > 0) {
 		var d = new Date(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000); // a trick to round to nearest second as we hide milliseconds
 		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad && d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2);
 	}
 	return "?:??";
-}*/
+} */
 function time(_ms) { // from INLINE STUFF
 	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
 	if (ms > 0) {

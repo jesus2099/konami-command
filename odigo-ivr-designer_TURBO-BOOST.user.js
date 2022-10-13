@@ -17,7 +17,7 @@
 // ==/UserScript==
 "use strict";
 
-/* global Header, script */
+/* global Header script */ // eslint no-undef exception
 
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");

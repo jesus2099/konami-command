@@ -437,7 +437,7 @@ function checkAfterQueue(xhr, queueType, callback) {
 	} else {
 		anotherEdit = false;
 	}
-	var notApproved = queueType == "approving" && xhr.responseText.indexOf('<a class="positive" href="/edit/' + xhr.editId + '/approve') != -1;
+	var notApproved = queueType == "approving" && xhr.responseText.indexOf('<a class="positive" href="/edit/' + xhr.editId + "/approve") != -1;
 	var editEntry = document.querySelector("input[type='hidden'][name$='edit_id'][value='" + xhr.editId + "']");
 	if (editEntry) {
 		editEntry = editEntry.closest("div.edit-list");
@@ -486,7 +486,7 @@ function preventLosingUnsavedChanges(event) {
 			var formChanged = false;
 			// Check changed votes
 			for (var r = 0; r < radiosafe.length; r++) {
-				if(radiosafe[r].closest("body") && !radiosafe[r].checked) {
+				if (radiosafe[r].closest("body") && !radiosafe[r].checked) {
 					formChanged = true;
 					break;
 				}
