@@ -2,10 +2,9 @@
 // @name         cdj. TURBO DASH
 // @version      2021.1.19.2099
 // @description  CDJournal.com: adds quick links to artists’ CD and ビデオ. removes adcrap
-// @compatible   vivaldi(3.4.2066.106)+violentmonkey  my setup
-// @compatible   firefox(82.0.3)+violentmonkey        my other setup
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/cdj_TURBO-DASH
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/cdj_TURBO-DASH.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt

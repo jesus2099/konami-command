@@ -2,10 +2,9 @@
 // @name         mb. SHOW CAA COMMENTS IN REORDER PAGE
 // @version      2020.11.17.2099
 // @description  Show cover art comments to ease reordering, especially when thumbnails have not been generated yet.
-// @compatible   vivaldi(3.4.2066.106)+violentmonkey  my setup
-// @compatible   firefox(82.0.3)+violentmonkey        my other setup
-// @compatible   chrome+violentmonkey                 should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt

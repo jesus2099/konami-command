@@ -1,16 +1,10 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
 // @version      2022.9.26
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_PREFERRED-MBS.user.js
 // @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
-// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
-// @compatible   vivaldi(2.6.1566.49)+violentmonkey  my setup (office)
-// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
-// @compatible   firefox(68.0.1)+violentmonkey       tested sometimes
-// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt

@@ -2,11 +2,9 @@
 // @name         ymail-basic. ADVANCED TURBO
 // @version      2022.9.26
 // @description  Make BASIC Yahoo! MAIL more ADVANCED, SHIFT+CLICK for range-(un)select e-mails / TURBO select all / TURBO actions (e-mail moves, star/read/unread flags, etc.) will trigger immediately upon select / keyboard shortcuts (CTRL+A, DEL, ←, →) / Remove ads crap
-// @compatible   vivaldi(2.4.1488.38)+violentmonkey  my setup (office)
-// @compatible   vivaldi(1.0.435.46)+violentmonkey   my setup (home, xp)
-// @compatible   firefox(64.0)+greasemonkey          tested sometimes
-// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_ADVANCED-TURBO
+// @downloadURL  https://github.com/jesus2099/konami-command/raw/master/ymail-basic_ADVANCED-TURBO.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt

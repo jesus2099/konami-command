@@ -1,16 +1,10 @@
 // ==UserScript==
 // @name         confluence. PAGE HISTORY LAST CHANGE
 // @version      2016.4.8.2099
-// @changelog    https://github.com/jesus2099/konami-command/commits/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
 // @description  Atlassian Confluence wiki: pre-selects last change for one click comparison
-// @supportURL   https://github.com/jesus2099/konami-command/labels/confluence_PAGE-HISTORY-LAST-CHANGE
-// @compatible   opera(12.18.1872)+violentmonkey     my own setup
-// @compatible   firefox(45.0.1)+greasemonkey        quickly tested
-// @compatible   chromium(37.0.2030.0)+tampermonkey  quickly tested
-// @compatible   chrome+tampermonkey                 should be same as chromium
 // @namespace    https://github.com/jesus2099/konami-command
+// @supportURL   https://github.com/jesus2099/konami-command/labels/confluence_PAGE-HISTORY-LAST-CHANGE
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
-// @updateURL    https://github.com/jesus2099/konami-command/raw/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt

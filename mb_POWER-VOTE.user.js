@@ -21,7 +21,6 @@
 // ==/UserScript==
 "use strict";
 var userjs = "jesus2099userjs57765";
-var chrome = "Please run “" + GM_info.script.name + "” with Violentmonkey instead of plain Chrome.";
 var editform = document.querySelector("div#edits > form");
 var search_form = document.querySelector("div#content > form[action='/search/edits']");
 var j2css = document.createElement("style");

@@ -3,10 +3,6 @@
 // @version      2022.9.26
 // @description  musicbrainz.org: Print your complete collections to make your shopping lists or check lists. Maybe it will work on more than just collections, in the future.
 // @namespace    https://github.com/jesus2099/konami-command
-// @compatible   firefox(86.0)+violentmonkey(2.12.7)
-// @compatible   vivaldi(3.6.2165.40)+violentmonkey(2.12.9)
-// @compatible   chromium(88.0.4324.186)+violentmonkey(2.12.9) Vivaldi’s engine
-// @compatible   opera(12.18.1872)+violentmonkey               my oldest setup
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PRINT-ALL-PAGES
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PRINT-ALL-PAGES.user.js
 // @author       jesus2099

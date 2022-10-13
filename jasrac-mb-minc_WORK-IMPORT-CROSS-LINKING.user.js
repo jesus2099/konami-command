@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2022.9.26
+// @version      2022.10.13
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -31,7 +31,6 @@ let userjs = {
 	GET JASRAC ID (work attributes) NG http://tickets.musicbrainz.org/browse/MBS-8341
 */
 var MBS7313 = "This script has been partially fixed now but is back to VERY EXPERIMENTAL status!\n(ノ ゜Д゜)ノ 彡┻━┻ Work credits are back on import (not on edit yet). Aliases are still disabled (maybe forever?).";
-var chrome = "Please run “" + userjs.name + "” with Violentmonkey instead of plain Chrome.";
 var DEBUG = localStorage.getItem("jesus2099debug");
 var RE_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var reISWC = "T- ?\\d{3}\\.\\d{3}.\\d{3}-\\d";
@@ -800,10 +799,6 @@ function workCredits(txt) {
 		wcs = addAfter(createTag("fieldset", {a: {class: userjs.id}}, [createTag("legend", {}, "Relationships"), createTag("p", {}, [createTag("b", {}, "JASRAC sometimes has wrong credits"), " so, please double-check with your booklet then only lookup for the correct relationship(s) you want to create.", document.createElement("br"), "If you change your mind and want to un-lookup one of them, just select and clear the text field.", document.createElement("br"), "Only green fields will queue relationship edits."]), createTag("div", {a: {id: userjs.id + "wcs"}})]), xhrForm.form.querySelector("form > div > fieldset")).querySelector("div#" + userjs.id + "wcs");
 	}
 	removeChildren(wcs);
-	try { jQuery; } catch (error) {
-		wcs.parentNode.appendChild(createTag("p", {s: {color: "red"}}, error.message + " — “Credits inline searches” can’t work. " + chrome));
-		return;
-	}
 	workCredit("artist", {
 		"作詞": {nomatch: /^権利者　/, english: "lyrics", "ar.link_type_id": "165"},
 		"訳詞": {nomatch: /^権利者　/, english: "translate lyrics", "ar.link_type_id": "165", "ar.attrs.translated": "1"}, // TODO: obsolete, cf. da6c5d8a-ce13-474d-9375-61feb29039a5
