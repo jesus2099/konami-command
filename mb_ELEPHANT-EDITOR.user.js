@@ -126,7 +126,7 @@ function init(edit_notes) {
 		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
 		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
 		savecb.checked = save;
-		savecb.parentNode.appendChild(document.createTextNode(" remember  "));
+		savecb.parentNode.appendChild(document.createTextNode(" remember \u00a0"));
 		for (var ni = 0; ni < textLabels.length; ni++) {
 			let butt = createButtor(textLabels[ni], "50px");
 			let buttid = notetextStorage + "0" + ni;
@@ -221,7 +221,7 @@ function init(edit_notes) {
 function saveNote() {
 	if (notetext) {
 		if (textLabels.length > 0) {
-			var thisnotetext = notetext.value.replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "").replace(/\n?(\s*—[\s\S]+)?Merging\sinto\soldest\s\[MBID\]\s\(['\d,\s←+]+\)\.(\n|$)/g, "").replace(/(^[\n\r\s\t]+|[\n\r\s\t]+$)/g, "");
+			var thisnotetext = notetext.value.replace(/\u00a0—\u00a0[^—]+Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_MERGE-HELPOR-2.user.js
 			var ls00 = localStorage.getItem(notetextStorage + "00");
 			if (save && thisnotetext != ls00) {
 				if (ls00 != "") {
