@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2022.10.22
+// @version      2022.10.24
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -66,15 +66,10 @@ var notetext;
 var reldates = [];
 var xdate = [];
 var submitbtn;
-// React hydrate imposes delay
-if (content) {
-	var reactHydratePage = location.pathname.match(/\/(add-alias|alias\/\d+\/edit)$/);
-	setTimeout(init, reactHydratePage ? 1000 : 10);
-}
-function init() {
-	notetext = content.querySelectorAll("textarea" + (acoustid ? "" : ".edit-note, textarea#edit-note-text"));
-	if (notetext.length == 1) {
-		notetext = notetext[0];
+wait_for_elements((mb ? "#page" : "div.content") + " textarea" + (mb ? ".edit-note, textarea#edit-note-text" : ""), init);
+function init(edit_notes) {
+	if (edit_notes.length == 1) {
+		notetext = edit_notes[0];
 		if (acoustid) {
 			notetext.style.setProperty("height", "8em");
 			notetext.style.setProperty("width", "100%");
@@ -311,4 +306,13 @@ function focusYYYY(input) {
 		input.nextSibling.focus();
 	else
 		input.focus();
+}
+function wait_for_elements(selector, callback) {
+	var wait_for_elements_interval_id = setInterval(function() {
+		var elements = document.querySelectorAll(selector);
+		if (elements.length > 0) {
+			clearInterval(wait_for_elements_interval_id);
+			callback(elements);
+		}
+	}, 123);
 }
