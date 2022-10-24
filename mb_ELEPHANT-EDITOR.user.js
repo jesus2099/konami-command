@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2022.10.24
+// @version      2022.10.24.2352
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -221,7 +221,7 @@ function init(edit_notes) {
 function saveNote() {
 	if (notetext) {
 		if (textLabels.length > 0) {
-			var thisnotetext = notetext.value.replace(/\u00a0—\u00a0[^—]+Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_MERGE-HELPOR-2.user.js
+			var thisnotetext = notetext.value.replace(/\u00a0—\u00a0[\r\n]{1,2}Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_MERGE-HELPOR-2.user.js
 			var ls00 = localStorage.getItem(notetextStorage + "00");
 			if (save && thisnotetext != ls00) {
 				if (ls00 != "") {

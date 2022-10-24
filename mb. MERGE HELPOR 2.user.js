@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2022.10.24
+// @version      2022.10.24.2352
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -127,7 +127,7 @@ function findUsefulMergeInfo() {
 				// Script only triggered by Submit (button.positive), not Cancel (button.negative)
 				if (editNote && editNote.value && editNote.value.match(/\w{4,}/g) && editNote.value.match(/\w{4,}/g).length > 3) {
 					editNote.style.removeProperty("background-color");
-					editNote.value = editNote.value.replace(/\u00a0—\u00a0[^—]+Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_ELEPHANT-EDITOR.user.js
+					editNote.value = editNote.value.replace(/\u00a0—\u00a0[\r\n]{1,2}Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_ELEPHANT-EDITOR.user.js
 					var mergeTargets = mergeForm.querySelectorAll("form table.tbl > tbody input[type='radio'][name='merge.target'], form > ul > li input[type='radio'][name='merge.target']");
 					var mergeTarget;
 					var sortedTargets = [];
