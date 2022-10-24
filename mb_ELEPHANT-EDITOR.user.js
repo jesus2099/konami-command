@@ -26,6 +26,7 @@
 // @match        *://*.musicbrainz.org/*edits*
 // @match        *://*.musicbrainz.org/artist/*/split
 // @match        *://*.musicbrainz.org/cdtoc/*
+// @match        *://*.musicbrainz.org/dialog?path=%2F*%2Fcreate*
 // @match        *://*.musicbrainz.org/edit/*
 // @match        *://*.musicbrainz.org/edit/artist/add.html?*
 // @match        *://*.musicbrainz.org/edit/subscribed*
