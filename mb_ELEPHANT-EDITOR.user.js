@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2022.10.24.2352
+// @version      2022.10.28
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -69,7 +69,7 @@ var xdate = [];
 var submitbtn;
 wait_for_elements((mb ? "#page" : "div.content") + " textarea" + (mb ? ".edit-note, textarea#edit-note-text" : ""), init);
 function init(edit_notes) {
-	if (edit_notes.length == 1) {
+	if (edit_notes.length === 1) {
 		notetext = edit_notes[0];
 		if (acoustid) {
 			notetext.style.setProperty("height", "8em");
