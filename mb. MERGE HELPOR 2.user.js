@@ -110,18 +110,6 @@ function findUsefulMergeInfo() {
 	var showEntityInfo = true;
 	var minrowid;
 	if (mergeForm) {
-		/* entity merge pages progressively abandon ul layout in favour of table.tbl
-		* area          ul (but only for admins)
-		* artist        ul
-		* event         table.tbl
-		* label         table.tbl
-		* place         table.tbl
-		* recording     table.tbl
-		* release       table.tbl
-		* release group table.tbl
-		* series        table.tbl
-		* work          table.tbl
-		* what else     ? */
 		mergeForm.addEventListener("submit", function(event) {
 			var editNote = this.querySelector("textarea[name='merge.edit_note']");
 			if (event.submitter && event.submitter.classList.contains("positive")) {
@@ -132,7 +120,7 @@ function findUsefulMergeInfo() {
 					if (editNote.nextSibling.matches("p.error." + userjs)) {
 						editNote.parentNode.removeChild(editNote.nextSibling);
 					}
-					var mergeTargets = mergeForm.querySelectorAll("form table.tbl > tbody input[type='radio'][name='merge.target'], form > ul > li input[type='radio'][name='merge.target']");
+					var mergeTargets = mergeForm.querySelectorAll("form table.tbl > tbody input[type='radio'][name='merge.target']");
 					var mergeTarget;
 					var sortedTargets = [];
 					for (let t = 0; t < mergeTargets.length; t++) {
@@ -172,21 +160,18 @@ function findUsefulMergeInfo() {
 				}
 			}
 		});
-		var entityRows = mergeForm.getElementsByTagName("li");
-		if (tbl) {
-			entityRows = mergeForm.querySelectorAll("form table.tbl > tbody > tr");
-			var headers = tbl.querySelector("thead tr");
-			if (showEntityInfo && mergeType.match(/(release|release-group)/)) {
-				headers.appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
-			} else {
-				showEntityInfo = false;
-			}
-			var rowids = document.createElement("th");
-			rowids.setAttribute("id", userjs + "rowidsHeader");
-			rowids.style.setProperty("text-align", "right");
-			rowids.appendChild(document.createTextNode("MBID age (row ID) "));
-			headers.appendChild(rowids);
+		var entityRows = mergeForm.querySelectorAll("form table.tbl > tbody > tr");
+		var headers = tbl.querySelector("thead tr");
+		if (showEntityInfo && mergeType.match(/(release|release-group)/)) {
+			headers.appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
+		} else {
+			showEntityInfo = false;
 		}
+		var rowids = document.createElement("th");
+		rowids.setAttribute("id", userjs + "rowidsHeader");
+		rowids.style.setProperty("text-align", "right");
+		rowids.appendChild(document.createTextNode("MBID age (row ID) "));
+		headers.appendChild(rowids);
 		for (let row = 0; row < entityRows.length; row++) {
 			let a = entityRows[row].querySelector("a[href^='/" + mergeType + "/']");
 			var rad = entityRows[row].querySelector("input[type='radio'][name='merge.target']");
@@ -200,13 +185,9 @@ function findUsefulMergeInfo() {
 					var lmbid = a.getAttribute("href").match(rembid);
 					var rmbid = document.referrer.match(rembid);
 					if (lmbid && rmbid && lmbid[0] == rmbid[0]) {
-						if (tbl) {
-							var tds = entityRows[row].querySelectorAll("td");
-							for (let td = 0; td < tds.length; td++) {
-								tds[td].style.setProperty("background-color", "#FF6");
-							}
-						} else {
-							entityRows[row].style.setProperty("background-color", "#FF6");
+						var tds = entityRows[row].querySelectorAll("td");
+						for (let td = 0; td < tds.length; td++) {
+							tds[td].style.setProperty("background-color", "#FF6");
 						}
 						entityRows[row].style.setProperty("border", "thin dashed black");
 						entityRows[row].setAttribute("title", "LAST CLICK");
@@ -375,7 +356,7 @@ function sortBy(what) {
 		if (!entities[rowid][what]) {
 			entities[rowid].row.parentNode.appendChild(entities[rowid].row.parentNode.removeChild(entities[rowid].row));
 		} else {
-			var rows = entities[rowid].row.parentNode.querySelectorAll("tr, li");
+			var rows = entities[rowid].row.parentNode.querySelectorAll("tr");
 			for (let row = 0; row < rows.length; row++) {
 				var indexA = rows[row].querySelector("[id^='" + userjs + "rowID'] a[href^='/search/edits']"), index;
 				if (indexA && (index = parseInt(indexA.textContent.replace(/\D/g, ""), 10)) && index >= entities[rowid][what]) {
@@ -412,13 +393,13 @@ function loadimg(txt) {
 }
 function addZone(tbl, par, id) {
 	par.appendChild(document.createTextNode(" "));
-	var zone = par.appendChild(document.createElement(tbl ? "td" : "span"));
+	var zone = par.appendChild(document.createElement("td"));
 	zone.setAttribute("id", userjs + id);
 	par.appendChild(document.createTextNode(" "));
 	return zone;
 }
 function stackInfo(zone, info) {
-	fill(zone, tbl ? "" : " —\u00a0", info, ", ");
+	fill(zone, "", info, ", ");
 }
 function fill(par, beg, stu, sep) {
 	par.appendChild(document.createTextNode(par.hasChildNodes() ? sep : beg));
