@@ -484,7 +484,7 @@ function massMergeGUI() {
 			// loadReleaseWS(remoteRelease.id);
 		}
 	});
-	MMRdiv.appendChild(createTag("p", {}, "Once you paste the remote release URL or MBID, all its recordings will be loaded and made available for merge with the local recordings in the left hand tracklist."));
+	MMRdiv.appendChild(createTag("p", {}, "Once you paste the remote release URL, all its recordings will be loaded and made available for merge with the local recordings in the left hand tracklist."));
 	MMRdiv.appendChild(createTag("p", {}, "Herebelow, you can shift the alignement of local and remote tracklists."));
 	MMRdiv.appendChild(createTag("p", {s: {marginBottom: "0px"}}, "Start position:"));
 	/* track parsing */
