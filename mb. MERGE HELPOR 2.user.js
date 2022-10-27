@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2022.10.24.2352
+// @version      2022.10.27
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -10,6 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2012-01-31; https://web.archive.org/web/20131103163402/userscripts.org/scripts/show/124579 / https://web.archive.org/web/20141011084016/userscripts-mirror.org/scripts/show/124579
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://github.com/jesus2099/konami-command/raw/e835cfc19c665c8e9893ac1946fc52f639d8d672/lib/MB-JUNK-SHOP.js?version=2022.10.26#workaround-github.com/violentmonkey/violentmonkey/issues/1581-mb_MERGE-HELPOR-2
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224#workaround-github.com/violentmonkey/violentmonkey/issues/1581-mb_MERGE-HELPOR-2
 // @grant        none
 // @match        *://*.musicbrainz.org/*
@@ -125,9 +126,12 @@ function findUsefulMergeInfo() {
 			var editNote = this.querySelector("textarea[name='merge.edit_note']");
 			if (event.submitter && event.submitter.classList.contains("positive")) {
 				// Script only triggered by Submit (button.positive), not Cancel (button.negative)
-				if (editNote && editNote.value && editNote.value.match(/\w{4,}/g) && editNote.value.match(/\w{4,}/g).length > 3) {
-					editNote.style.removeProperty("background-color");
-					editNote.value = editNote.value.replace(/\u00a0—\u00a0[\r\n]{1,2}Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_ELEPHANT-EDITOR.user.js
+				editNote.style.removeProperty("background-color");
+				editNote.value = editNote.value.replace(/\u00a0—\u00a0[\r\n]{1,2}Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_ELEPHANT-EDITOR.user.js
+				if (editNote && editNote.value && !MB_is_invalid_edit_note(editNote.value)) {
+					if (editNote.nextSibling.matches("p.error." + userjs)) {
+						editNote.parentNode.removeChild(editNote.nextSibling);
+					}
 					var mergeTargets = mergeForm.querySelectorAll("form table.tbl > tbody input[type='radio'][name='merge.target'], form > ul > li input[type='radio'][name='merge.target']");
 					var mergeTarget;
 					var sortedTargets = [];
@@ -157,7 +161,12 @@ function findUsefulMergeInfo() {
 						editNote.value = (editNote.value ? editNote.value + "\n\u00a0—\u00a0\n" : "") + "Merging into oldest [MBID] (" + mergeTargets + ").";
 					}
 				} else {
-					alert("Merging entities is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\n\nPlease make sure your edit note makes it clear why you are sure that these entities are exactly the same versions, mixes, cuts, etc.");
+					if (!editNote.nextSibling.matches("p.error." + userjs)) {
+						if (mergeType == "recording") {
+							editNote.parentNode.insertBefore(createTag("p", {a: {class: "error"}}, "Merging recordings is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\n\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc."), editNote);
+						}
+						addAfter(createTag("p", {a: {class: "error " + userjs}}, MB_text("invalid_edit_note")), editNote);
+					}
 					editNote.style.setProperty("background-color", "pink");
 					return stop(event);
 				}
