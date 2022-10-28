@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.9.26
+// @version      2022.9.26.1
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -10,7 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-06-30; fork of nikki/stars script http://web.archive.org/web/20150915074449/chatlogs.musicbrainz.org/musicbrainz/2011/2011-06/2011-06-30.html#T15-59-01-950029 / https://web.archive.org/web/20131103163409/userscripts.org/scripts/show/106156 / https://web.archive.org/web/20141011084017/userscripts-mirror.org/scripts/show/106156
 // @icon         data:image/gif;base64,R0lGODlhEAAQAOMMAAAAAP8A/wJR1MosEqGhBPyZUAD/APW1hQD///vPp///AP7++P///////////////yH5BAEKAA8ALAAAAAAQABAAAARbUMlJq0Ll6AN6z0liYNnWLV84FmUBLIsAAyqpuTEgA4VomzFUyMfaaDy9WhFw/PRoK6Zn2lFyqNio58DKSAEjQnczPtTEN+ww3AIMBrM1Qpxxud80VWDP7/sNEQA7
-// @require      https://github.com/jesus2099/konami-command/raw/8bcce1e1868c8019d36ccc434e4735fa255bf1ac/lib/MB-JUNK-SHOP.js?version=2022.9.8#workaround-github.com/violentmonkey/violentmonkey/issues/1581-mb_REDIRECT-WHEN-UNIQUE-RESULT
+// @require      https://github.com/jesus2099/konami-command/raw/8bcce1e1868c8019d36ccc434e4735fa255bf1ac/lib/MB-JUNK-SHOP.js?version=2022.9.8
 // @grant        none
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search/
 // @run-at       document-idle
