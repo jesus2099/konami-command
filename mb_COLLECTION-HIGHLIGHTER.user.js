@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.10.28
+// @version      2022.10.28.1554
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -456,10 +456,8 @@ function browseTrack(track, action) {
 		if (track.recording.relations) {
 			for (var r = 0; r < track.recording.relations.length; r++) {
 				// add works
-				if (track.recording.relations[r]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
-					if (stuff["work"]) {
-						addRemoveEntities("work", track.recording.relations[r].work, action);
-					}
+				if (stuff["work"] && track.recording.relations[r]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+					addRemoveEntities("work", track.recording.relations[r].work, action);
 				}
 				// add compiled recordings and their artists
 				if (
