@@ -27,6 +27,7 @@ if (document.getElementById("headerid-query")) {
 	var onlyWhenNoReferrer = true; // for browser defined URL searches and duckduckgo MB !bangs like !mb !mbr !mblabel etc. only, for instance
 	var redirOnUniqueMatch = true; // redirect when one result
 	var redirOnUniqueExactMatch = true; // case insensitive, redirect when unique 100% scored result (both name and aliases) in several results
+	var skip_to_unique_RG_release = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 	var css = document.createElement("style");
 	css.setAttribute("type", "text/css");
@@ -65,6 +66,12 @@ if (document.getElementById("headerid-query")) {
 	var cookie = read_cookie(userjs.id);
 	if (cookie && (cookie = cookie.split("::")) && cookie[1] == location.pathname) {
 		MB_banner(createTag("fragment", {}, ["You have been redirected to unique or best match. ", createTag("a", {a: {href: cookie[0]}}, "Click here to go back to search results.")]), userjs.id);
+	}
+	if (skip_to_unique_RG_release && location.pathname.match(/^\/release-group\//)) {
+		var releases = document.querySelectorAll("table.tbl > tbody > tr > td > a[href^='/release/'] > bdi");
+		if (releases.length === 1 && document.referrer.indexOf(releases[0].parentNode.getAttribute("href")) < 0) {
+			redirect(releases[0].parentNode);
+		}
 	}
 }
 
