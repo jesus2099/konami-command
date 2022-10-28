@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.9.26.1
+// @version      2022.10.28
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -336,7 +336,7 @@ function loadCollection(collectionMBID, action) {
 }
 function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add or remove */, conclusionCallback, _offset) {
 	var offset = _offset || 0;
-	var ws2releaseUrl = "/ws/2/release" + query + (query.indexOf("?") >= 0 ? "&" : "?") + "inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels&limit=" + MBWSSpeedLimit + "&offset=" + offset;
+	var ws2releaseUrl = "/ws/2/release" + query + (query.indexOf("?") >= 0 ? "&" : "?") + "inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels+recording-rels&limit=" + MBWSSpeedLimit + "&offset=" + offset;
 	if (offset == 0 || !lowMemory) {
 		modal(true, "Fetching releases…", 1);
 	}
@@ -452,14 +452,32 @@ function browseTrack(track, action) {
 	if (stuff["artist"]) { addRemoveEntities("artist", track["artist-credit"], action); }
 	if (stuff["recording"]) { addRemoveEntities("recording", track.recording, action); }
 	if (stuff["artist"]) { addRemoveEntities("artist", track.recording["artist-credit"], action); }
-	if (stuff["work"]) {
+	if (stuff["recording"] || stuff["work"]) {
 		if (track.recording.relations) {
-			for (var w = 0; w < track.recording.relations.length; w++) {
-				// is a recording of works
-				if (track.recording.relations[w]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
-					if (stuff["work"]) { addRemoveEntities("work", track.recording.relations[w].work, action); }
+			for (var r = 0; r < track.recording.relations.length; r++) {
+				// add works
+				if (track.recording.relations[r]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+					if (stuff["work"]) {
+						addRemoveEntities("work", track.recording.relations[r].work, action);
+					}
 				}
-				// compiles other recordings
+				// add compiled recordings and their artists
+				if (
+					stuff["recording"]
+					&& (
+						track.recording.relations[r].type === "compilation"
+						|| track.recording.relations[r]["type-id"] === "1b6311e8-5f81-43b7-8c55-4bbae71ec00c"
+					)
+					&& track.recording.relations[r].direction == "forward"
+				) {
+					if (!lowMemory) {
+						modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " Compiles ", createA(track.recording.relations[r].recording.title, "/recording/" + track.recording.relations[r].recording.id)]), 1);
+					}
+					addRemoveEntities("recording", track.recording.relations[r].recording, action);
+					if (stuff["artist"]) {
+						addRemoveEntities("artist", track.recording.relations[r].recording["artist-credit"], action);
+					}
+				}
 			}
 		} else {
 			// no recording.relations: when there are more than 500 tracks, the recording-level-rels are not returned
