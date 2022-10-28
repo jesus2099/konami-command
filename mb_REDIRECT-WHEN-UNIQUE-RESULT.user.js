@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.9.26.1
+// @version      2022.9.28
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -10,21 +10,24 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-06-30; fork of nikki/stars script http://web.archive.org/web/20150915074449/chatlogs.musicbrainz.org/musicbrainz/2011/2011-06/2011-06-30.html#T15-59-01-950029 / https://web.archive.org/web/20131103163409/userscripts.org/scripts/show/106156 / https://web.archive.org/web/20141011084017/userscripts-mirror.org/scripts/show/106156
 // @icon         data:image/gif;base64,R0lGODlhEAAQAOMMAAAAAP8A/wJR1MosEqGhBPyZUAD/APW1hQD///vPp///AP7++P///////////////yH5BAEKAA8ALAAAAAAQABAAAARbUMlJq0Ll6AN6z0liYNnWLV84FmUBLIsAAyqpuTEgA4VomzFUyMfaaDy9WhFw/PRoK6Zn2lFyqNio58DKSAEjQnczPtTEN+ww3AIMBrM1Qpxxud80VWDP7/sNEQA7
-// @require      https://github.com/jesus2099/konami-command/raw/8bcce1e1868c8019d36ccc434e4735fa255bf1ac/lib/MB-JUNK-SHOP.js?version=2022.9.8
+// @require      https://github.com/jesus2099/konami-command/raw/76a8dfa01250d728c120529dc51717ae2d4ab58e/lib/MB-JUNK-SHOP.js?version=2022.10.28
+// @require      https://github.com/jesus2099/konami-command/raw/0263e65041a07664fc6f8169ca8861c3fdb81575/lib/SUPER.js?version=2022.10.28
 // @grant        none
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search/
-// @run-at       document-idle
+// @run-at       document-end
 // ==/UserScript==
 "use strict";
+var userjs = {
+	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-")
+};
 if (document.getElementById("headerid-query")) {
+	// search result page
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 	var onlyWhenNoReferrer = true; // for browser defined URL searches and duckduckgo MB !bangs like !mb !mbr !mblabel etc. only, for instance
 	var redirOnUniqueMatch = true; // redirect when one result
 	var redirOnUniqueExactMatch = true; // case insensitive, redirect when unique 100% scored result (both name and aliases) in several results
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
-	var userjs = {
-		id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-")
-	};
 	var css = document.createElement("style");
 	css.setAttribute("type", "text/css");
 	document.head.appendChild(css);
@@ -57,32 +60,35 @@ if (document.getElementById("headerid-query")) {
 			}
 		}
 	}
+} else {
+	// entity overview page
+	var cookie = read_cookie(userjs.id);
+	if (cookie && (cookie = cookie.split("::")) && cookie[1] == location.pathname) {
+		MB_banner(createTag("fragment", {}, ["You have been redirected to unique or best match. ", createTag("a", {a: {href: cookie[0]}}, "Click here to go back to search results.")]), userjs.id);
+	}
 }
+
 function redirect(entity) {
-	var cancel_info = document.createDocumentFragment();
-	cancel_info.appendChild(document.createElement("strong")).appendChild(document.createTextNode("Click anywhere on this page to enable browser history Back button on next page!"));
-	cancel_info.appendChild(document.createElement("br"));
-	cancel_info.appendChild(document.createTextNode("Press "));
-	cancel_info.appendChild(document.createElement("strong")).appendChild(document.createTextNode("Escape"));
-	cancel_info.appendChild(document.createTextNode(" to cancel redirection to best match: "));
-	cancel_info.appendChild(entity.cloneNode(true)).style.setProperty("font-weight", "bold");
-	MB_banner(cancel_info, userjs.id, true);
+	var redirect_banner = MB_banner(createTag("fragment", {}, ["Press ", createTag("b", {}, "Escape"), " to cancel redirection to best match: ", entity.cloneNode(true)]), userjs.id, true);
 	document.body.addEventListener("keydown", function(event) {
 		if (event.key.match(/^Esc(ape)?$/)) {
-			clearTimeout(userjs.redirectTimeout);
-			var cancel_banner = document.querySelector("div.banner." + userjs.id);
-			if (cancel_banner) {
-				cancel_banner.parentNode.removeChild(cancel_banner);
+			if (redirect_banner.parentNode) {
+				redirect_banner.parentNode.removeChild(redirect_banner);
 			}
-			event.preventDefault();
-			event.stopPropagation = true;
-			return false;
+			if (userjs.redirectTimeout) {
+				clearTimeout(userjs.redirectTimeout);
+				delete userjs.redirectTimeout;
+				event.preventDefault();
+				event.stopPropagation = true;
+				return false;
+			} else {
+				delete_cookie(userjs.id);
+			}
 		}
 	});
-	document.body.addEventListener("click", human_interaction);
-	function human_interaction (event) {
-		MB_banner("Yeah Man! Thanks to your human click, Back button should be OK.");
-		document.body.removeEventListener("click", human_interaction);
-	}
-	userjs.redirectTimeout = setTimeout(function() { self.location.assign(entity.getAttribute("href")); }, 1234);
+	userjs.redirectTimeout = setTimeout(function() {
+		delete userjs.redirectTimeout;
+		write_cookie(userjs.id, location.href.replace(new RegExp("^" + location.protocol + "//" + location.host), "") + "::" + entity.getAttribute("href"), 60);
+		self.location.assign(entity.getAttribute("href"));
+	}, 12);
 }
