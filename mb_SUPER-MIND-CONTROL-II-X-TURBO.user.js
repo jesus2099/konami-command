@@ -734,16 +734,14 @@ if (j2sets.RATINGS_ON_TOP && sidebar && !j2sets.HIDE_RATINGS) {
 // ==========================================================================
 j2setting("ROW_HIGHLIGHTER", true, true, "highlights rows in various MB tables");
 if (j2sets.ROW_HIGHLIGHTER) {
-	j2superturbo.addCSSRule("\
-		div#content table.tbl > tbody > tr:hover > td,\
-		div#page.fullwidth > table.tbl > tbody > tr:hover > td,\
-		div#release-editor > div#tracklist tr:hover > td,\
-		div#release-editor > div#tracklist tr:hover > td input {\
-			background-image: linear-gradient(#f9f3, #f9f3);\
-		}\
-	");
-	j2superturbo.addCSSRule("div#content table.tbl > tbody > tr:not(:last-child) { border-bottom: 1px solid transparent; }");
-	j2superturbo.addCSSRule("div#content table.tbl > tbody > tr:hover { border-color: black; }");
+	j2superturbo.addCSSRule(
+		"div#content table.tbl > tbody > tr:hover > td,"
+		+ "div#page.fullwidth > table.tbl > tbody > tr:hover > td,"
+		+ "div#release-editor > div#tracklist tr:hover > td,"
+		+ "div#release-editor > div#tracklist tr:hover > td input {"
+			+ "background-image: linear-gradient(#f9f3, #f9f3);"
+		+ "}"
+	);
 }
 // =================================================================== MOUSE+
 // ## Common form submission function ##
