@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.9.28
+// @version      2022.11.3
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -21,21 +21,21 @@
 var userjs = {
 	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-")
 };
-if (document.getElementById("headerid-query")) {
-	// search result page
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
-	var onlyWhenNoReferrer = true; // for browser defined URL searches and duckduckgo MB !bangs like !mb !mbr !mblabel etc. only, for instance
-	var redirOnUniqueMatch = true; // redirect when one result
-	var redirOnUniqueExactMatch = true; // case insensitive, redirect when unique 100% scored result (both name and aliases) in several results
-	var skip_to_unique_RG_release = true;
+var onlyWhenNoReferrer = true; // for browser defined URL searches and duckduckgo MB !bangs like !mb !mbr !mblabel etc. only, for instance
+var redirOnUniqueMatch = true; // redirect when one result
+var redirOnUniqueExactMatch = true; // case insensitive, redirect when unique 100% scored result (both name and aliases) in several results
+var skip_to_unique_RG_release = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
-	var css = document.createElement("style");
-	css.setAttribute("type", "text/css");
-	document.head.appendChild(css);
-	css = css.sheet;
-	css.insertRule("tr." + userjs.id + " { text-shadow: 1px 2px 2px #cc6; }", 0);
-	css.insertRule("tr." + userjs.id + ".odd > td { background: #ffc; }", 0);
-	css.insertRule("tr." + userjs.id + ".even > td { background: #eeb !important; }", 0);
+var css = document.createElement("style");
+css.setAttribute("type", "text/css");
+document.head.appendChild(css);
+css = css.sheet;
+css.insertRule("tr." + userjs.id + " { text-shadow: 1px 2px 2px #cc6; }", 0);
+css.insertRule("tr." + userjs.id + ".odd > td { background: #ffc; }", 0);
+css.insertRule("tr." + userjs.id + ".even > td { background: #eeb !important; }", 0);
+if (location.pathname.match(/^\/search/)) {
+	// search result page
 	var rows = document.querySelector("div#content tbody");
 	if (rows) {
 		onlyWhenNoReferrer = !onlyWhenNoReferrer || (onlyWhenNoReferrer && (document.referrer == "" || document.referrer.match(/^https?:\/\/duckduckgo\.com/)));
@@ -65,7 +65,7 @@ if (document.getElementById("headerid-query")) {
 	// entity overview page
 	var cookie = read_cookie(userjs.id);
 	if (cookie && (cookie = cookie.split("::")) && cookie[1] == location.pathname) {
-		MB_banner(createTag("fragment", {}, ["You have been redirected to unique or best match. ", createTag("a", {a: {href: cookie[0]}}, "Click here to go back to search results.")]), userjs.id);
+		MB_banner(createTag("fragment", {}, ["You have been redirected to unique or best match. ", createTag("br"), createTag("a", {a: {href: cookie[0]}, s: {fontWeight: "bold"}}, "Click here to go back"), " to search results or release group page."]), userjs.id);
 	}
 	if (skip_to_unique_RG_release && location.pathname.match(/^\/release-group\//)) {
 		var releases = document.querySelectorAll("table.tbl > tbody > tr > td > a[href^='/release/'] > bdi");
