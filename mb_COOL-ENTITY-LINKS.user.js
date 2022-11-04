@@ -13,6 +13,7 @@
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @match        *://*.musicbrainz.org/*
+// @match        *://blog.metabrainz.org/*
 // @match        *://chatlogs.metabrainz.org/libera/*
 // @match        *://tickets.metabrainz.org/browse/*
 // @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/account\//
