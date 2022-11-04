@@ -44,7 +44,7 @@ var entities = {
 	ticket: {fullpath: "//tickets.metabrainz.org/browse/", id: "[A-Za-z]+-[0-9]+"},
 	"ticket-old": {fullpath: "//tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", replace: [/#action_(\d+)/, "#comment-$1"]},
 	track: {path: "/track/", icon: "recording.svg", noTools: true},
-	user: {path: "/user/", id: "[^/]+", openEdits: "/edits/open", noEdit: true},
+	user: {path: "/user/", icon: "editor.svg", id: "[^/]+", openEdits: "/edits/open", noEdit: true},
 	work: {path: "/work/", icon: "work.svg"},
 };
 var j2css = document.createElement("style");
