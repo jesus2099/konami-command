@@ -78,11 +78,6 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 		cssas += "div[class^='edit-'] a[href*='//test." + u + "'], ";
 		cssas += "div[class^='edit-'] a[href*='//beta." + u + "'], ";
 		cssas += "div[class^='edit-'] a[href*='//classic." + u + "'][href$='.html']";
-		if (self.location.pathname.match(new RegExp("/(artist|label)/" + GUIDi + "/relationships|/place/" + GUIDi + "/performances"), "i")) {
-			cssas += ", table.tbl tr > td:first-child + td a[href*='//" + u + "'], ";
-			cssas += "table.tbl tr > td:first-child + td a[href*='//test." + u + "'], ";
-			cssas += "table.tbl tr > td:first-child + td a[href*='//beta." + u + "']";
-		}
 	} else {
 		cssas = "a[href*='//" + u + "'], ";
 		cssas += "a[href*='//test." + u + "'], ";
