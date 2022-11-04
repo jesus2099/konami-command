@@ -66,20 +66,17 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 	var as, cssas;
 	if (entities[ent].fullpath) {
 		cssas = "a[href^='" + u + "'], a[href^='http:" + u + "'], a[href^='https:" + u + "']";
-	} else if (self.location.href.match(/^https?:\/\/(test\.|beta\.|classic\.)?musicbrainz\.org/)) {
-		cssas = "table.details a[href*='//" + u + "'], ";
-		cssas += "table.details a[href*='//test." + u + "'], ";
-		cssas += "table.details a[href*='//beta." + u + "'], ";
-		cssas += "table.details a[href*='//classic." + u + "'][href$='.html'], ";
-		cssas += "div.annotation-body a[href^='" + entities[ent].path + "'], "; // absolute path without domain
-		cssas += "div.annotation a[href*='//" + u + "'], ";
-		cssas += "div.annotation a[href*='//test." + u + "'], ";
-		cssas += "div.annotation a[href*='//beta." + u + "'], ";
-		cssas += "div.annotation a[href*='//classic." + u + "'][href$='.html'], ";
-		cssas += "div[class^='edit-'] a[href*='//" + u + "'], ";
-		cssas += "div[class^='edit-'] a[href*='//test." + u + "'], ";
-		cssas += "div[class^='edit-'] a[href*='//beta." + u + "'], ";
-		cssas += "div[class^='edit-'] a[href*='//classic." + u + "'][href$='.html']";
+	} else if (self.location.href.match(/^https?:\/\/((beta|test)\.)?musicbrainz\.org/)) {
+		cssas  = ".annotation-body a[href^='" + entities[ent].path + "'], ";
+		cssas += ".annotation-body a[href*='//" + u + "'], ";
+		cssas += ".annotation-body a[href*='//test." + u + "'], ";
+		cssas += ".annotation-body a[href*='//beta." + u + "'], ";
+		cssas += ".annotation-body a[href*='//classic." + u + "'][href$='.html'], ";
+		cssas += ".edit-note-text a[href^='" + entities[ent].path + "'], ";
+		cssas += ".edit-note-text a[href*='//" + u + "'], ";
+		cssas += ".edit-note-text a[href*='//test." + u + "'], ";
+		cssas += ".edit-note-text a[href*='//beta." + u + "'], ";
+		cssas += ".edit-note-text a[href*='//classic." + u + "'][href$='.html']";
 	} else {
 		cssas = "a[href*='//" + u + "'], ";
 		cssas += "a[href*='//test." + u + "'], ";
