@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2022.9.26.1
+// @version      2022.11.4
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COOL-ENTITY-LINKS
@@ -31,7 +31,7 @@ var entities = {
 	bug: {fullpath: "//bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%"},
 	cdtoc: {path: "/cdtoc/", icon: "release.svg", id: "[A-Za-z0-9_\\.]+-"},
 	"classic.edit": {path: "/show/edit/?editid=", id: "[0-9]+", label: "edit\u00a0#%id%"},
-	"classic.user": {path: "/show/user/?username=", id: ".+"},
+	"classic.user": {path: "/show/user/?username=", id: "[^/]+"},
 	edit: {path: "/edit/", id: "[0-9]+", label: "#%id%"},
 	label: {path: "/label/", icon: "label.svg"},
 	place: {path: "/place/", icon: "place.svg"},
@@ -42,7 +42,7 @@ var entities = {
 	ticket: {fullpath: "//tickets.metabrainz.org/browse/", id: "[A-Za-z]+-[0-9]+"},
 	"ticket-old": {fullpath: "//tickets.musicbrainz.org/browse/", id: "[A-Za-z]+-[0-9]+", replace: [/#action_(\d+)/, "#comment-$1"]},
 	track: {path: "/track/", icon: "recording.svg", noTools: true},
-	user: {path: "/user/", id: ".+", openEdits: "/edits/open", noEdit: true},
+	user: {path: "/user/", id: "[^/]+", openEdits: "/edits/open", noEdit: true},
 	work: {path: "/work/", icon: "work.svg"},
 };
 var j2css = document.createElement("style");
@@ -94,7 +94,7 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 		var href, id;
 		if (
 			(href = as[a].getAttribute("href"))
-			&& (id = href.match(new RegExp("(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
+			&& (id = href.match(new RegExp("(?:" + u + (entities[ent].path ? "|" + entities[ent].path : "") + ")" + "(" + (entities[ent].id ? entities[ent].id : GUIDi) + ")(?:\\.html)?(/[a-z_-]+)?(.+)?$", "i")))
 			&& !as[a].querySelector("img:not(.rendericon)")
 		) {
 			var newA = as[a].cloneNode(true);
@@ -110,7 +110,14 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 					newA.replaceChild(entities[ent].id ? document.createTextNode(text) : createTag("code", {}, text), newA.firstChild);
 				}
 				if (id[2] || id[3]) {
-					newA.appendChild(document.createElement("small")).appendChild(document.createTextNode((id[2] ? id[2] : "") + (id[3] ? (id[2] == "/disc" ? id[3].match(/\/\d+/) : "") + "…" : ""))).parentNode.style.setProperty("opacity", ".5");
+					var subA = createTag("small", {s: {opacity: ".8"}});
+					if (id[2]) {
+						subA.appendChild(createTag("b", {}, id[2].replace(/^(\/)/, " $1\u00a0")));
+					}
+					if (id[3]) {
+						subA.appendChild(document.createTextNode(unescape(id[3]).replace(/(\/|#|\?|&)/g, " $1\u00a0").replace(/ /g, "\u00a0")));
+					}
+					newA.appendChild(subA);
 				}
 				var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.musicbrainz\.org)/);
 				if (altserv) {
