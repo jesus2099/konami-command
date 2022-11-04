@@ -13,6 +13,7 @@
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @match        *://*.musicbrainz.org/*
+// @match        *://chatlogs.metabrainz.org/libera/*
 // @match        *://tickets.metabrainz.org/browse/*
 // @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/account\//
 // @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/admin\//
@@ -98,7 +99,7 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 				newA.setAttribute("href", newA.getAttribute("href").replace(entities[ent].replace[0], entities[ent].replace[1]));
 			}
 			newA.classList.add(c);
-			if (as[a].textContent == href || /* forums */ as[a].textContent == href.substr(0, 39) + " … " + href.substr(-10) || /* edit-notes */ as[a].textContent == href.substr(0, 48) + "…") {
+			if (href.indexOf(as[a].textContent.replace(/(…|...)$/, "")) === 0) {
 				newA.classList.add(userjs);
 				var text = unescape(id[1]);
 				if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);
