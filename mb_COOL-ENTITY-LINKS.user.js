@@ -16,6 +16,7 @@
 // @match        *://blog.metabrainz.org/*
 // @match        *://chatlogs.metabrainz.org/libera/*
 // @match        *://tickets.metabrainz.org/browse/*
+// @match        *://web.archive.org/web/*/forums.musicbrainz.org/viewtopic.php*
 // @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/account\//
 // @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/admin\//
 // @run-at       document-end
@@ -97,7 +98,7 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 				newA.setAttribute("href", newA.getAttribute("href").replace(entities[ent].replace[0], entities[ent].replace[1]));
 			}
 			newA.classList.add(c);
-			if (href.indexOf(as[a].textContent.replace(/(…|...)$/, "")) === 0) {
+			if (href.indexOf(as[a].textContent.replace(/\s?(…|\.{3}).*$/, "")) === 0) {
 				newA.classList.add(userjs);
 				var text = unescape(id[1]);
 				if (entities[ent].label) text = entities[ent].label.replace(/%id%/, text);
