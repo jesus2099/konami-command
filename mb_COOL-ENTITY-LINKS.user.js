@@ -16,6 +16,8 @@
 // @match        *://blog.metabrainz.org/*
 // @match        *://chatlogs.metabrainz.org/libera/*
 // @match        *://tickets.metabrainz.org/browse/*
+// @match        *://web.archive.org/web/*/bugs.musicbrainz.org/ticket/*
+// @match        *://web.archive.org/web/*/chatlogs.musicbrainz.org/*
 // @match        *://web.archive.org/web/*/forums.musicbrainz.org/viewtopic.php*
 // @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/account\//
 // @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/admin\//
