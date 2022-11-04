@@ -31,7 +31,7 @@ var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var entities = {
 	acoustid: {fullpath: "//acoustid.org/track/"},
 	artist: {path: "/artist/", icon: "artist.svg"},
-	bug: {fullpath: "//bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%"},
+	bug: {fullpath: "//bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%", replace: [/^(https?:)\/\/bugs/, "https://web.archive.org/web/2017/bugs"]},
 	cdtoc: {path: "/cdtoc/", icon: "release.svg", id: "[A-Za-z0-9_\\.]+-"},
 	"classic.edit": {path: "/show/edit/?editid=", id: "[0-9]+", label: "edit\u00a0#%id%"},
 	"classic.user": {path: "/show/user/?username=", id: "[^/]+"},
