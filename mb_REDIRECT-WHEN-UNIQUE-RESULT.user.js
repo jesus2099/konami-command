@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.11.3
+// @version      2022.11.6
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -68,7 +68,7 @@ if (location.pathname.match(/^\/search/)) {
 		MB_banner(createTag("fragment", {}, ["You have been redirected to unique or best match. ", createTag("br"), createTag("a", {a: {href: cookie[0]}, s: {fontWeight: "bold"}}, "Click here to go back"), " to search results or release group page."]), userjs.id);
 	}
 	if (skip_to_unique_RG_release && location.pathname.match(/^\/release-group\//)) {
-		var releases = document.querySelectorAll("table.tbl > tbody > tr > td > a[href^='/release/'] > bdi");
+		var releases = document.querySelectorAll("table.tbl > tbody > tr > td > a[href^='/release/'] > bdi, table.tbl > tbody > tr > td > span.mp > a[href^='/release/'] > bdi");
 		if (releases.length === 1 && document.referrer.indexOf(releases[0].parentNode.getAttribute("href")) < 0) {
 			redirect(releases[0].parentNode);
 		}
