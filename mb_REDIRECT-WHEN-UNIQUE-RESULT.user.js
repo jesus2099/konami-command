@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.11.6
+// @version      2022.11.7
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -63,9 +63,9 @@ if (location.pathname.match(/^\/search/)) {
 	}
 } else {
 	// entity overview page
-	var cookie = read_cookie(userjs.id);
-	if (cookie && (cookie = cookie.split("::")) && cookie[1] == location.pathname) {
-		MB_banner(createTag("fragment", {}, ["You have been redirected to unique or best match. ", createTag("br"), createTag("a", {a: {href: cookie[0]}, s: {fontWeight: "bold"}}, "Click here to go back"), " to search results or release group page."]), userjs.id);
+	var referrer = sessionStorage.getItem(userjs.id + location.pathname + location.search + location.hash);
+	if (referrer && (!document.referrer || document.referrer == location.protocol + "//" + location.host + referrer)) {
+		MB_banner(createTag("fragment", {}, ["You have been redirected to unique or best match. ", createTag("br"), createTag("a", {a: {href: referrer}, s: {fontWeight: "bold"}}, "Click here to go back"), " to search results or release group page."]), userjs.id);
 	}
 	if (skip_to_unique_RG_release && location.pathname.match(/^\/release-group\//)) {
 		var releases = document.querySelectorAll("table.tbl > tbody > tr > td > a[href^='/release/'] > bdi, table.tbl > tbody > tr > td > span.mp > a[href^='/release/'] > bdi");
@@ -89,13 +89,13 @@ function redirect(entity) {
 				event.stopPropagation = true;
 				return false;
 			} else {
-				delete_cookie(userjs.id);
+				sessionStorage.removeItem(userjs.id + entity.getAttribute("href"));
 			}
 		}
 	});
 	userjs.redirectTimeout = setTimeout(function() {
 		delete userjs.redirectTimeout;
-		write_cookie(userjs.id, location.href.replace(new RegExp("^" + location.protocol + "//" + location.host), "") + "::" + entity.getAttribute("href"), 60);
+		sessionStorage.setItem(userjs.id + entity.getAttribute("href"), location.pathname + location.search + location.hash);
 		self.location.assign(entity.getAttribute("href"));
 	}, 12);
 }
