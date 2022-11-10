@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2022.7.28
+// @version      2022.11.10
 // @description  CLICK CELL TO SELECT TEXT: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -46,12 +46,12 @@ document.body.addEventListener("click", function(event) {
 // SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision
 document.body.addEventListener("mouseover", function(event) {
 	if (
-		event.target.closest("div[unselectable='on']")
+		event.target.closest("div[unselectable='on'], div.x-column-header-inner")
 		&& (event.target.scrollHeight > event.target.clientHeight || event.target.scrollWidth > event.target.clientWidth) // text overflows (is cut)
 		&& !event.target.parentNode.getAttribute("data-qtip") // no Odigo tooltip yet
 	) {
 		event.target.parentNode.setAttribute("data-qtip", event.target.textContent);
-		css.insertRule("#ext-quicktips-tip { background-color: " + lightBgColour + "; }", 0);
+		css.insertRule(".x-tip { background-color: " + lightBgColour + "; }", 0);
 	}
 });
 
