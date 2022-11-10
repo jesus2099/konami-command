@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.11.7
+// @version      2022.11.9
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -74,7 +74,6 @@ if (location.pathname.match(/^\/search/)) {
 		}
 	}
 }
-
 function redirect(entity) {
 	var redirect_banner = MB_banner(createTag("fragment", {}, ["Press ", createTag("b", {}, "Escape"), " to cancel redirection to best match: ", entity.cloneNode(true)]), userjs.id, true);
 	document.body.addEventListener("keydown", function(event) {
@@ -93,6 +92,9 @@ function redirect(entity) {
 			}
 		}
 	});
+	// force a step in the history, otherwise omitted because of quick redirect wihtout user interaction
+	history.pushState({}, "", location);
+	// quick redirect
 	userjs.redirectTimeout = setTimeout(function() {
 		delete userjs.redirectTimeout;
 		sessionStorage.setItem(userjs.id + entity.getAttribute("href"), location.pathname + location.search + location.hash);
