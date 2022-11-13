@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE TOPICS BY USERS
-// @version      2021.8.17
+// @version      2022.11.13
 // @description  community.metabrainz.org: Hide topics created by a custom list of users (blacklist) in (MusicBrainz) MetaBrainz Discourse forum
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-TOPICS-BY-USERS
@@ -23,7 +23,7 @@ try {
 } catch (error) {
 	debug("Settings corrupted: " + settings);
 }
-if (typeof settings === "object" && settings.users && Array.isArray(settings.users) && settings.topics && typeof settings.topics === "object") {
+if (settings !== null && typeof settings === "object" && settings.users && Array.isArray(settings.users) && settings.topics && typeof settings.topics === "object") {
 	debug("Loaded: " + settings.users);
 } else {
 	debug("Reset settings");
