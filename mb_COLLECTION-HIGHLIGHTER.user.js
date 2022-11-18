@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2022.10.28.1554
+// @version      2022.11.18
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -456,7 +456,15 @@ function browseTrack(track, action) {
 		if (track.recording.relations) {
 			for (var r = 0; r < track.recording.relations.length; r++) {
 				// add works
-				if (stuff["work"] && track.recording.relations[r]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0") {
+				if (
+					stuff["work"]
+					&& (
+						track.recording.relations[r].type === "performance"
+						|| track.recording.relations[r]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0"
+					)
+					// strange MBS-12714 bug
+					&& track.recording.relations[r]["target-type"] == "work" && track.recording.relations[r].work
+				) {
 					addRemoveEntities("work", track.recording.relations[r].work, action);
 				}
 				// add compiled recordings and their artists
@@ -467,6 +475,8 @@ function browseTrack(track, action) {
 						|| track.recording.relations[r]["type-id"] === "1b6311e8-5f81-43b7-8c55-4bbae71ec00c"
 					)
 					&& track.recording.relations[r].direction == "forward"
+					// in case of another MBS-12714
+					&& track.recording.relations[r]["target-type"] == "recording" && track.recording.relations[r].recording
 				) {
 					if (!lowMemory) {
 						modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " Compiles ", createA(track.recording.relations[r].recording.title, "/recording/" + track.recording.relations[r].recording.id)]), 1);
