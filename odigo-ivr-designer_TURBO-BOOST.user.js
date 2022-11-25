@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2022.11.25
+// @version      2022.11.25.1117
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Select first application and PROD, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Highlight modal table rows, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -118,7 +118,9 @@ switch (self.location.pathname) {
 			var first_application = document.querySelector("div#main-container table#applications > tbody > tr > td > input[type='checkbox']");
 			if (first_application && !first_application.classList.contains("jesus2099") && !first_application.checked) {
 				first_application.classList.add("jesus2099");
+				var active_element = document.activeElement;
 				first_application.click();
+				active_element.focus();
 			}
 			// Select PROD (only once)
 			var service, services = document.querySelectorAll("div#main-container table#services > tbody > tr > td:first-of-type > a.ng-binding[ng-click^='getservice']");
@@ -127,7 +129,9 @@ switch (self.location.pathname) {
 					var service = services[s].parentNode.parentNode.querySelector("input[type='checkbox']");
 					if (service && !service.classList.contains("jesus2099") && !service.checked) {
 						service.classList.add("jesus2099");
+						var active_element = document.activeElement;
 						service.click();
+						active_element.focus();
 					}
 					break;
 				}
