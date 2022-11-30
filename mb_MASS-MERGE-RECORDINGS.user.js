@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2022.11.30
+// @version      2022.11.30.2347
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -669,7 +669,7 @@ function loadReleasePage() {
 				}
 				remoteRelease.tracks = [];
 				for (var m = 0; m < mediums.length; m++) {
-					var current_medium = mediums[m].match(/<th colSpan="\d+">.+?<\/span>[<!->\s]*([^<:]+)[<:]/);
+					var current_medium = mediums[m].match(/<th colSpan="\d+">.+?<\/span>[<!->\s]*?([^<:]+)[<:]/);
 					if (current_medium) {
 						current_medium = current_medium[1].replace(/&quot;/, "ʺ") + "\u00a0– ";
 					} else if (mediums.length > 1) {
