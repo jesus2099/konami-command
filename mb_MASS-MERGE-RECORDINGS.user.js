@@ -298,6 +298,7 @@ function tryAgain(errorText) {
 }
 function enableAndClick(butt) {
 	enableInputs(butt);
+	butt.value = "Merge";
 	butt.click();
 }
 function infoMerge(msg, goodNews, reset) {
@@ -836,34 +837,38 @@ function buildMergeForm(loc, rem) {
 		mergeButt.addEventListener("click", function(event) {
 			var swapbutt = this.parentNode.querySelector("input." + userjs.id + "dirbutt");
 			this.style.setProperty("background-color", cInfo);
-			var queuedItem;
-			if (from.value == "") {
-				/* if no merge is ongoing, launch this merge */
-				var swapped = (swapbutt.value == loc2rem);
-				var mergeFrom = this.parentNode.getElementsByTagName("input")[swapped ? 0 : 2];
-				var mergeTo = this.parentNode.getElementsByTagName("input")[swapped ? 2 : 0];
-				from.value = mergeFrom.value;
-				from.setAttribute("ref", mergeFrom.getAttribute("ref"));
-				to.value = mergeTo.value;
-				to.setAttribute("ref", mergeTo.getAttribute("ref"));
-				swap.value = (swapped ? "yes" : "no");
-				currentButt = this;
-				mergeRecsStep();
+			if (this.value == "Merge") {
+				if (from.value === "") {
+					/* if no merge is ongoing, launch this merge */
+					var swapped = (swapbutt.value == loc2rem);
+					var mergeFrom = this.parentNode.getElementsByTagName("input")[swapped ? 0 : 2];
+					var mergeTo = this.parentNode.getElementsByTagName("input")[swapped ? 2 : 0];
+					from.value = mergeFrom.value;
+					from.setAttribute("ref", mergeFrom.getAttribute("ref"));
+					to.value = mergeTo.value;
+					to.setAttribute("ref", mergeTo.getAttribute("ref"));
+					swap.value = (swapped ? "yes" : "no");
+					currentButt = this;
+					mergeRecsStep();
+				} else if (retry.checking || retry.count > 0 || mergeQueue.indexOf(this) < 0) {
+					/* if a merge is ongoing or a checking/retry is pending, queue this one */
+					this.value = "Unqueue";
+					enableInputs([this, swapbutt]);
+					mergeQueue.push(this);
+				}
+			} else if (this.value == "Unqueue") {
+				var queuedItem = mergeQueue.indexOf(this);
+				if (queuedItem > -1) {
+					/* unqueue this one */
+					mergeQueue.splice(queuedItem, 1);
+					this.value = "Merge";
+				}
 			} else if (this.getAttribute("ref") === "0") {
 				/* if this merge is being stacked (step 0), cancel its submission (step 1) */
 				infoMerge("Cancelling merge…", true, true);
 				disableInputs(this);
 				this.removeAttribute("ref");
 				this.value = "Cancelling…";
-			} else if (retry.checking || retry.count > 0 || mergeQueue.indexOf(this) < 0) {
-				/* if a merge is ongoing or a checking/retry is pending, queue this one */
-				this.value = "Unqueue";
-				enableInputs([this, swapbutt]);
-				mergeQueue.push(this);
-			} else if ((queuedItem = mergeQueue.indexOf(this)) > -1) {
-				/* unqueue this one */
-				mergeQueue.splice(queuedItem, 1);
-				this.value = "Merge";
 			} else {
 				/* shit happens */
 				enableInputs([this, swapbutt]);
