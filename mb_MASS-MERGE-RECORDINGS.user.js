@@ -637,10 +637,7 @@ function loadReleasePage() {
 			sendEvent(this, "error");
 		} else {
 			var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
-			var recIDx5 = releaseWithoutARs.match(/entity_id=\d+[^"]*entity_type=recording|entity_type=recording[^"]*entity_id=\d+/g);
-			var trackRows = releaseWithoutARs.match(/<tr class="(even|odd)" id="[-\da-z]{36}">[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
-			var trackInfos = releaseWithoutARs.match(new RegExp("<a href=\"/recording/" + sregex_MBID + "\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
-			var trackTimes = releaseWithoutARs.match(/<td class="treleases">[^<]*<\/td>/g);
+			var mediums = releaseWithoutARs.match(/<table class="tbl medium">[\s\S]+?<\/table>/g);
 			var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
 			var releaseAC = releaseWithoutARs.match(/<p class="subheader"><span class="prefix">~<\/span> <!-- -->[^<]+ (<.+?) <span class="small">\(/);
 			var discount = releaseWithoutARs.match(/<a class="expand-medium"/g).length;
@@ -652,11 +649,7 @@ function loadReleasePage() {
 				} else {
 					infoMerge("Disc number out of bounds (1–" + discount + ") or unreadable", false);
 				}
-			} else if (recIDx5 && trackInfos && trackTimes && rtitle) {
-				var recIDs = [];
-				for (let i5 = 0; i5 < recIDx5.length; i5 += 5) {
-					recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
-				}
+			} else if (rtitle) {
 				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>){0,2}<a href=".*\/release-group\/([^"]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>){0,2}\)/)[1];
 				remoteRelease.title = HTMLToText(rtitle[1]);
 				remoteRelease.looseTitle = looseTitle(remoteRelease.title);
@@ -675,26 +668,47 @@ function loadReleasePage() {
 					}
 				}
 				remoteRelease.tracks = [];
-				for (let t = 0; t < recIDs.length; t++) {
-					var trackLength = trackTimes[t].match(/(\d+:)?\d+:\d+/);
-					if (trackLength) trackLength = strtime2ms(trackLength[0]);
-					remoteRelease.tracks.push({
-						number: trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
-						name: HTMLToText(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
-						artistCredit: trackRows[t].match(/<td>/g) && trackRows[t].match(/<td>/g).length === 1 ? trackRows[t].match(/[\s\S]*<td>([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : releaseAC[1],
-						length: trackLength,
-						recording: {
-							rowid: recIDs[t],
-							id: trackInfos[t].match(/\/recording\/([^"]+)/)[1],
-							video: trackRows[t].match(/<td[^>]+?is-video/),
-							editsPending: 0
-						},
-						isDataTrack: false
-					});
-					remoteRelease.tracks[t].artistCreditAsPlainText = HTMLToText(remoteRelease.tracks[t].artistCredit);
-					remoteRelease.tracks[t].looseName = looseTitle(remoteRelease.tracks[t].name);
-					remoteRelease.tracks[t].looseAC = looseTitle(remoteRelease.tracks[t].artistCreditAsPlainText);
-					recid2trackIndex.remote[recIDs[t]] = t;
+				for (var m = 0; m < mediums.length; m++) {
+					var current_medium = mediums[m].match(/<th colSpan="\d+">.+?<\/span>[<!->\s]*([^<:]+)[<:]/);
+					if (current_medium) {
+						current_medium = current_medium[1].replace(/&quot;/, "ʺ") + "\u00a0– ";
+					} else if (mediums.length > 1) {
+						current_medium = (m + 1) + ".";
+					} else {
+						current_medium = "";
+					}
+					var recIDx5 = mediums[m].match(/entity_id=\d+[^"]*entity_type=recording|entity_type=recording[^"]*entity_id=\d+/g);
+					var trackRows = mediums[m].match(/<tr class="(even|odd)" id="[-\da-z]{36}">[\s\S]+?<td class="treleases">[\s\S]+?<\/tr>/g);
+					var trackInfos = mediums[m].match(new RegExp("<a href=\"/recording/" + sregex_MBID + "\"( title=\"[^\"]*\")?><bdi>[^<]*</bdi></a>", "g"));
+					var trackTimes = mediums[m].match(/<td class="treleases">[^<]*<\/td>/g);
+					if (recIDx5 && trackInfos && trackTimes) {
+						var recIDs = [];
+						for (let i5 = 0; i5 < recIDx5.length; i5 += 5) {
+							recIDs.push(recIDx5[i5].match(/id=([0-9]+)/)[1]);
+						}
+						for (var t = 0; t < recIDs.length; t++) {
+							var trackLength = trackTimes[t].match(/(\d+:)?\d+:\d+/);
+							if (trackLength) trackLength = strtime2ms(trackLength[0]);
+							var current_track = {
+								number: current_medium + trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
+								name: HTMLToText(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
+								artistCredit: trackRows[t].match(/<td>/g) && trackRows[t].match(/<td>/g).length === 1 ? trackRows[t].match(/[\s\S]*<td>([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : releaseAC[1],
+								length: trackLength,
+								recording: {
+									rowid: recIDs[t],
+									id: trackInfos[t].match(/\/recording\/([^"]+)/)[1],
+									video: trackRows[t].match(/<td[^>]+?is-video/),
+									editsPending: 0
+								},
+								isDataTrack: false
+							};
+							current_track.artistCreditAsPlainText = HTMLToText(current_track.artistCredit);
+							current_track.looseName = looseTitle(current_track.name);
+							current_track.looseAC = looseTitle(current_track.artistCreditAsPlainText);
+							remoteRelease.tracks.push(current_track);
+							recid2trackIndex.remote[recIDs[t]] = remoteRelease.tracks.length - 1;
+						}
+					}
 				}
 										/* for (let rd = 0; rd < jsonRelease.mediums.length; rd++) {
 											for (let rt = 0; rt < jsonRelease.mediums[rd].tracks.length; rt++) {
