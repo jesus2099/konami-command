@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2022.10.27.1
+// @version      2022.11.30
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -86,7 +86,7 @@ if (ltitle) {
 			sidebar.insertBefore(RGRecordingsMassMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
 				console.debug(event.type + "\n" + (event.altKey ? "alt+" : "") + (event.ctrlKey ? "crtl+" : "") + (event.shiftKey ? "shift+" : "") + event.key);
-				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key.match(/m/i)) {
+				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key.match(/^m$/i)) {
 					loadRGRecordings(releases);
 					return stop(event);
 				}
@@ -108,7 +108,7 @@ if (ltitle) {
 			sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
 				console.debug(event.type + "\n" + (event.altKey ? "alt+" : "") + (event.ctrlKey ? "crtl+" : "") + (event.shiftKey ? "shift+" : "") + event.key);
-				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key.match(/m/i)) {
+				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key.match(/^m$/i)) {
 					prepareLocalRelease();
 					return stop(event);
 				}
