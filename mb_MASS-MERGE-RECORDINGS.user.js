@@ -697,7 +697,7 @@ function loadReleasePage() {
 								recording: {
 									rowid: recIDs[t],
 									id: trackInfos[t].match(/\/recording\/([^"]+)/)[1],
-									video: trackRows[t].match(/<td[^>]+?is-video/),
+									video: trackRows[t].match(/<span class="video"/) !== null,
 									editsPending: 0
 								},
 								isDataTrack: false
@@ -798,11 +798,10 @@ function buildMergeForm(loc, rem) {
 			this.style.setProperty("background-color", this.value == rem2loc ? cOK : cInfo);
 		});
 		var remrec = rmForm.appendChild(createA(remTrack.number + ". “", "/recording/" + remTrack.recording.id));
-		if (remTrack.isDataTrack) {
-			remrec.parentNode.insertBefore(createTag("span", {a: {class: "data-track icon img"}, s: {display: "inline-block", height: "14px", width: "16px"}}), remrec);
-		}
 		if (remTrack.recording.video) {
 			remrec.parentNode.insertBefore(createTag("span", {a: {class: "video"}}), remrec);
+		} else if (remTrack.isDataTrack) {
+			remrec.parentNode.insertBefore(createTag("span", {a: {class: "data-track icon img"}, s: {display: "inline-block", height: "14px", width: "16px"}}), remrec);
 		}
 		var rectitle = remrec.appendChild(document.createElement("span"));
 		rectitle.appendChild(document.createTextNode(remTrack.name));
