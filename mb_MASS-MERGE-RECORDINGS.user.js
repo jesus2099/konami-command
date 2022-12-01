@@ -698,7 +698,7 @@ function loadReleasePage() {
 									rowid: recIDs[t],
 									id: trackInfos[t].match(/\/recording\/([^"]+)/)[1],
 									video: trackRows[t].match(/<span class="video"/) !== null,
-									editsPending: 0
+									editsPending: trackRows[t].match(/<td class="title"><span class="mp">/) !== null ? 1 : 0,
 								},
 								isDataTrack: false
 							};
