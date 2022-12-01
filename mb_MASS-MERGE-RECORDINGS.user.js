@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2022.11.30.2347
+// @version      2022.12.1
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -799,10 +799,10 @@ function buildMergeForm(loc, rem) {
 		});
 		var remrec = rmForm.appendChild(createA(remTrack.number + ". “", "/recording/" + remTrack.recording.id));
 		if (remTrack.isDataTrack) {
-			remrec.parentNode.insertBefore(MBicon("data-track icon img"), remrec);
+			remrec.parentNode.insertBefore(createTag("span", {a: {class: "data-track icon img"}, s: {display: "inline-block", height: "14px", width: "16px"}}), remrec);
 		}
 		if (remTrack.recording.video) {
-			remrec.parentNode.insertBefore(MBicon("video is-video icon img"), remrec);
+			remrec.parentNode.insertBefore(createTag("span", {a: {class: "video"}}), remrec);
 		}
 		var rectitle = remrec.appendChild(document.createElement("span"));
 		rectitle.appendChild(document.createTextNode(remTrack.name));
@@ -1111,12 +1111,6 @@ function ac2dom(ac) {
 }
 function protectEditNoteText(text) {
 	return text.replace(/'/g, "&#x0027;");
-}
-function MBicon(iconCss) {
-	var icon = document.createElement("div");
-	icon.className = iconCss;
-	icon.style.setProperty("margin-right", "4px");
-	return icon;
 }
 function looseTitle(title) {
 	var genericTitle = toHalfWidth(title).toUpperCase();
