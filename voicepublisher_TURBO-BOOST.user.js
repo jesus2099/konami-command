@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2022.9.26.1
-// @description  Download audio folders as zip files
+// @version      2022.12.7
+// @description  Download audio folders as zip files; Double click to open call details; Nice call details copy paste with layout
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -12,6 +12,7 @@
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_download
 // @include      /https?:\/\/(next|nivr)\.voicepublisher\.net\/audio_folders/
+// @include      /https?:\/\/(next|nivr)\.voicepublisher\.net\/calls/
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
@@ -19,7 +20,8 @@
 /* global I18n */ // eslint no-undef exception
 
 var texts = {
-	download: {en: "Download ", fr: "Télécharger "}
+	copy: {en: "Copy", fr: "Copier"},
+	download: {en: "Download ", fr: "Télécharger "},
 };
 var app;
 if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
@@ -58,6 +60,35 @@ if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 			}
 		}
 	}, 500);
+} else if (location.pathname == "/calls") {
+	// double click call to open call details
+	waitForElement("table#big_data_listings_call_history_listings_table > tbody", function(calls) {
+		calls.addEventListener("dblclick", function(event) {
+			event.target.closest("tr").querySelector("td.actions i").click();
+		});
+	});
+	// allow call details nice copy with layout for pasting in document or e-mail
+	waitForElement("div#callDetailsModal div.modal-footer", function(element) {
+		element.appendChild(createTag("button", {a: {class: "btn btn-info"}, e: {click: function (event) {
+			var call_details = document.querySelector("div#callDetailsModal");
+			if (!call_details.classList.contains(GM_info.script.author)) {
+				var information_labels = call_details.querySelectorAll("fieldset.call_information div.group > label + span");
+				for (var l = 0; l < information_labels.length; l++) {
+					information_labels[l].insertBefore(document.createTextNode("\u00a0: "), information_labels[l].firstChild);
+				}
+				var route_items = call_details.querySelectorAll("fieldset.call_route > div > span.item");
+				for (var i = 0; i < route_items.length; i++) {
+					route_items[i].firstChild.replaceChild(document.createTextNode(route_items[i].firstChild.textContent.replace(/[:\s]*$/, "")), route_items[i].firstChild.firstChild);
+					route_items[i].firstChild.nextSibling.insertBefore(document.createTextNode("\u00a0: "), route_items[i].firstChild.nextSibling.firstChild);
+					route_items[i].appendChild(createTag("br"));
+				}
+				call_details.classList.add(GM_info.script.author);
+			}
+			getSelection().selectAllChildren(document.querySelector("div#callDetailsModal"));
+			document.execCommand("copy");
+			getSelection().removeAllRanges();
+		}}}, texts.copy[I18n.lang]));
+	});
 }
 function download(appID, appName) {
 	downloading();
