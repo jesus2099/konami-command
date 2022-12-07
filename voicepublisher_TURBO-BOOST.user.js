@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2022.12.7
+// @version      2022.12.7.1332
 // @description  Download audio folders as zip files; Double click to open call details; Nice call details copy paste with layout
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -71,18 +71,21 @@ if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 	waitForElement("div#callDetailsModal div.modal-footer", function(element) {
 		element.appendChild(createTag("button", {a: {class: "btn btn-info"}, e: {click: function (event) {
 			var call_details = document.querySelector("div#callDetailsModal");
-			if (!call_details.classList.contains(GM_info.script.author)) {
-				var information_labels = call_details.querySelectorAll("fieldset.call_information div.group > label + span");
-				for (var l = 0; l < information_labels.length; l++) {
-					information_labels[l].insertBefore(document.createTextNode("\u00a0: "), information_labels[l].firstChild);
+			if (call_details) {
+				var call_information = call_details.querySelector("fieldset.call_information");
+				if (!call_information.classList.contains(GM_info.script.author)) {
+					var information_labels = call_details.querySelectorAll("fieldset.call_information div.group > label + span");
+					for (var l = 0; l < information_labels.length; l++) {
+						information_labels[l].insertBefore(document.createTextNode("\u00a0: "), information_labels[l].firstChild);
+					}
+					var route_items = call_details.querySelectorAll("fieldset.call_route > div > span.item");
+					for (var i = 0; i < route_items.length; i++) {
+						route_items[i].firstChild.replaceChild(document.createTextNode(route_items[i].firstChild.textContent.replace(/[:\s]*$/, "")), route_items[i].firstChild.firstChild);
+						route_items[i].firstChild.nextSibling.insertBefore(document.createTextNode("\u00a0: "), route_items[i].firstChild.nextSibling.firstChild);
+						route_items[i].appendChild(createTag("br"));
+					}
+					call_information.classList.add(GM_info.script.author);
 				}
-				var route_items = call_details.querySelectorAll("fieldset.call_route > div > span.item");
-				for (var i = 0; i < route_items.length; i++) {
-					route_items[i].firstChild.replaceChild(document.createTextNode(route_items[i].firstChild.textContent.replace(/[:\s]*$/, "")), route_items[i].firstChild.firstChild);
-					route_items[i].firstChild.nextSibling.insertBefore(document.createTextNode("\u00a0: "), route_items[i].firstChild.nextSibling.firstChild);
-					route_items[i].appendChild(createTag("br"));
-				}
-				call_details.classList.add(GM_info.script.author);
 			}
 			getSelection().selectAllChildren(document.querySelector("div#callDetailsModal"));
 			document.execCommand("copy");
