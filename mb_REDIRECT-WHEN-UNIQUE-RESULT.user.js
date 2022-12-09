@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.11.9
+// @version      2022.11.10
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -69,7 +69,14 @@ if (location.pathname.match(/^\/search/)) {
 	}
 	if (skip_to_unique_RG_release && location.pathname.match(/^\/release-group\//)) {
 		var releases = document.querySelectorAll("table.tbl > tbody > tr > td > a[href^='/release/'] > bdi, table.tbl > tbody > tr > td > span.mp > a[href^='/release/'] > bdi");
-		if (releases.length === 1 && document.referrer.indexOf(releases[0].parentNode.getAttribute("href")) < 0) {
+		if (
+			// there is only one release in release group
+			releases.length === 1
+			// previous page is not the release
+			&& document.referrer.indexOf(releases[0].parentNode.getAttribute("href")) < 0
+			// previous page is not a sub page of the release group
+			&& document.referrer.indexOf(location.pathname) < 0
+		) {
 			redirect(releases[0].parentNode);
 		}
 	}
@@ -93,11 +100,12 @@ function redirect(entity) {
 		}
 	});
 	// force a step in the history, otherwise omitted because of quick redirect wihtout user interaction
-	history.pushState({}, "", location);
+		history.pushState({}, "", location);
 	// quick redirect
 	userjs.redirectTimeout = setTimeout(function() {
+		clearTimeout(userjs.redirectTimeout);
 		delete userjs.redirectTimeout;
 		sessionStorage.setItem(userjs.id + entity.getAttribute("href"), location.pathname + location.search + location.hash);
-		self.location.assign(entity.getAttribute("href"));
+		location.assign(entity.getAttribute("href"));
 	}, 12);
 }
