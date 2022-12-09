@@ -99,8 +99,10 @@ function redirect(entity) {
 			}
 		}
 	});
-	// force a step in the history, otherwise omitted because of quick redirect wihtout user interaction
+	if (navigator.userAgent.match(/\bChrome\b/)) {
+		// “History Skip” problem: https://bugs.chromium.org/p/chromium/issues/detail?id=907167
 		history.pushState({}, "", location);
+	}
 	// quick redirect
 	userjs.redirectTimeout = setTimeout(function() {
 		clearTimeout(userjs.redirectTimeout);
