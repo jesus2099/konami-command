@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         DEBUG
-// @version      2022.12.10
+// @version      2022.12.10.1706
 // @description  Event and context info
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/DEBUG
@@ -10,14 +10,29 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2022-12-10
 // @grant        none
-// @run-at       document-start
+// @run-at       document-end
 // ==/UserScript==
 "use strict";
-console.debug(GM_info.script.name + " - " + location.href);
+console.debug(GM_info.script.name + " - " + location.href + "\nGM_info.platform: " + JSON.stringify(GM_info.platform, null, "\t"));
 console.debug(GM_info);
-document.body.addEventListener("keydown", function(event) {
-	console.debug(event.type + "\n" + (event.altKey ? "alt+" : "") + (event.ctrlKey ? "crtl+" : "") + (event.metatKey ? "shift+" : "") + (event.shiftKey ? "shift+" : "") + event.key);
-});
-document.body.addEventListener("click", function(event) {
-	console.debug((event.altKey ? "alt+" : "") + (event.ctrlKey ? "crtl+" : "") + (event.metatKey ? "shift+" : "") + (event.shiftKey ? "shift+" : "") + event.type);
-});
+document.body.addEventListener("keydown", keyboardMouseEventDebug);
+document.body.addEventListener("keypress", keyboardMouseEventDebug);
+document.body.addEventListener("keyup", keyboardMouseEventDebug);
+document.body.addEventListener("auxclick", keyboardMouseEventDebug);
+document.body.addEventListener("click", keyboardMouseEventDebug);
+document.body.addEventListener("dblclick", keyboardMouseEventDebug);
+document.body.addEventListener("mousedown", keyboardMouseEventDebug);
+document.body.addEventListener("mouseup", keyboardMouseEventDebug);
+function keyboardMouseEventDebug(event) {
+	console.debug(
+		event.type.toUpperCase().padEnd(12)
+		+ (event.altKey && event.key != "Alt" ? "Alt + " : "")
+		+ (event.ctrlKey && event.key != "Control" ? "Control + " : "")
+		+ (event.metatKey && event.key != "Meta" ? "Meta + " : "")
+		+ (event.shiftKey && event.key != "Shift" ? "Shift + " : "")
+		+ (event.key !== undefined ? event.key + " " : "")
+		+ (event.location ? "(" + ["standard", "left", "right", "numpad", "mobile", "joystick"][event.location] + ") " : "")
+		+ (event.repeat === true ? "(repeat) " : "")
+		+ (event.button !== undefined ? ["left", "wheel", "right", "back", "forward"][event.button] + " " : "")
+	);
+}
