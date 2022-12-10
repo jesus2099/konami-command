@@ -7,6 +7,8 @@ env:
 extends: eslint:recommended
 
 globals:
+# GreaseMonkey
+ GM_download:         readonly
 # MBS
  __MB__:              readonly
  MB:                  readonly
@@ -15,6 +17,8 @@ globals:
 # lib/MB-JUNK-SHOP.js
  MB_banner:           readonly
  MB_collapsible_list: readonly
+ MB_is_invalid_edit_note: readonly
+ MB_text:             readonly
 # lib/SUPER.js
  addAfter:            readonly
  createTag:           readonly
@@ -32,6 +36,7 @@ ignorePatterns:
 - "*.md"
 
 parserOptions:
+ ecmaVersion: 2019
  ecmaFeatures:
   globalReturn: true
 
