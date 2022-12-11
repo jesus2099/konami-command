@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         DEBUG
-// @version      2022.12.10.1706
+// @version      2022.12.11
 // @description  Event and context info
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/DEBUG
@@ -13,7 +13,8 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-console.debug(GM_info.script.name + " - " + location.href + "\nGM_info.platform: " + JSON.stringify(GM_info.platform, null, "\t"));
+console.debug(GM_info.script.name + " - " + location.href);
+if (GM_info.platform) console.debug("GM_info.platform: " + JSON.stringify(GM_info.platform, null, "\t"));
 console.debug(GM_info);
 document.body.addEventListener("keydown", keyboardMouseEventDebug);
 document.body.addEventListener("keypress", keyboardMouseEventDebug);

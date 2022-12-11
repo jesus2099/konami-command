@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.12.10
+// @version      2022.12.11
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -99,7 +99,7 @@ function redirect(entity) {
 			}
 		}
 	});
-	if (GM_info.platform.browserName == "chrome") {
+	if (navigator.userAgent.match(/\bChrome\b/)) {
 		// “History Skip” problem: https://bugs.chromium.org/p/chromium/issues/detail?id=907167
 		history.pushState({}, "", location);
 	}
