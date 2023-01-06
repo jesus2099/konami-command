@@ -241,7 +241,7 @@ function findOwnedStuff() {
 		var path = uphill + "//xhtml:a[starts-with(@href, '" + root + cstuff + "/')][not(starts-with(@class, '" + prefix + "'))]" + downhill;
 		var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		for (let i = 0; i < xp.snapshotLength; i++) {
-			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")"));
+			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
 			if (mbid) {
 				mbid = mbid[1];
 				debug(cstuff + " is already loaded? " + stuff[cstuff].loaded);
