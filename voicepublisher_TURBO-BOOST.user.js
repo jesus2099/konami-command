@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2022.12.7.1332
+// @version      2023.1.12
 // @description  Download audio folders as zip files; Double click to open call details; Nice call details copy paste with layout
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -11,13 +11,19 @@
 // @since        2022-05-16
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_download
-// @include      /https?:\/\/(next|nivr)\.voicepublisher\.net\/audio_folders/
-// @include      /https?:\/\/(next|nivr)\.voicepublisher\.net\/calls/
+// @include      /https?:\/\/(allobiz|login|next|nivr)\.voicepublisher\.net\/audio_folders/
+// @include      /https?:\/\/(allobiz|login|next|nivr)\.voicepublisher\.net\/calls/
+// @match        *://next.voicepublisher.net/*
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
 
 /* global I18n */ // eslint no-undef exception
+
+if (location.host.match(/^next\./)) {
+	// next (and only next) crashes on call history when switching applications
+	location.assign(location.href.replace(/\bnext\b/, "nivr"));
+}
 
 var texts = {
 	copy: {en: "Copy", fr: "Copier"},
