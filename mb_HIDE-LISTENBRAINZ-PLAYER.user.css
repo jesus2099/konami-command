@@ -7,9 +7,7 @@
 @since        2023-01-12; https://community.metabrainz.org/t/play-on-listenbrainz-youtube-player-error/617141/5?u=jesus2099
 ==/UserStyle== */
 @-moz-document domain("musicbrainz.org") {
-
-	#sidebar > a.styled-button.listenbrainz-button[href^='//listenbrainz.org/player'] {
+	div#sidebar > a.styled-button.listenbrainz-button[href^='//listenbrainz.org/player'] {
 		display: none;
 	}
-
 }
