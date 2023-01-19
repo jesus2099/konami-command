@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2022.12.11
+// @version      2023.1.19
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -13,7 +13,7 @@
 // @require      https://github.com/jesus2099/konami-command/raw/76a8dfa01250d728c120529dc51717ae2d4ab58e/lib/MB-JUNK-SHOP.js?version=2022.10.28
 // @require      https://github.com/jesus2099/konami-command/raw/0263e65041a07664fc6f8169ca8861c3fdb81575/lib/SUPER.js?version=2022.10.28
 // @grant        none
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}($|\?)/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search/
 // @run-at       document-end
 // ==/UserScript==
