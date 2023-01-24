@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.1.19
-// @description  CLICK CELL TO SELECT TEXT: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
+// @version      2023.1.25
+// @description  CLICK CELL TO SELECT TEXT: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-routing_TURBO-BOOST.user.js
@@ -36,6 +36,19 @@ document.body.appendChild(doc);
 
 // Increase contrast of unreadable menu headers
 css.insertRule("div[role='menu'] h5 { color: #99c !important; }", 0);
+
+// LINKIFY MENU ITEMS: to allow open in other tab
+document.body.addEventListener("mousedown", function(event) {
+	if (event.target.matches("a[href='#'][onclick^='Menu._OnMenuListItemClick']")) {
+		var page = event.target.getAttribute("onclick").match(/^Menu\._OnMenuListItemClick\('1','([^']+)'\);$/);
+		if (page) {
+			page = page[1];
+			event.target.removeAttribute("onclick");
+			event.target.setAttribute("href", page.match(/^https?:\/\//) ? page : "/ama01/ui/service/" + page);
+			event.target.style.setProperty("color", "pink");
+		}
+	}
+});
 
 // click cell to select its text for copy
 css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
