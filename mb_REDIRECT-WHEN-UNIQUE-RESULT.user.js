@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REDIRECT WHEN UNIQUE RESULT
-// @version      2023.1.19
+// @version      2023.1.24
 // @description  Redirect to entity (release, artist, etc.) when only 1 result and/or unique 100% scored result of your entity search
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REDIRECT-WHEN-UNIQUE-RESULT
@@ -27,6 +27,7 @@ var redirOnUniqueMatch = true; // redirect when one result
 var redirOnUniqueExactMatch = true; // case insensitive, redirect when unique 100% scored result (both name and aliases) in several results
 var skip_to_unique_RG_release = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
+var IS_TOUCH_SCREEN = navigator.maxTouchPoints > 0;
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
@@ -82,23 +83,15 @@ if (location.pathname.match(/^\/search/)) {
 	}
 }
 function redirect(entity) {
-	var redirect_banner = MB_banner(createTag("fragment", {}, ["Press ", createTag("b", {}, "Escape"), " to cancel redirection to best match: ", entity.cloneNode(true)]), userjs.id, true);
-	document.body.addEventListener("keydown", function(event) {
-		if (event.key.match(/^Esc(ape)?$/)) {
-			if (redirect_banner.parentNode) {
-				redirect_banner.parentNode.removeChild(redirect_banner);
-			}
-			if (userjs.redirectTimeout) {
-				clearTimeout(userjs.redirectTimeout);
-				delete userjs.redirectTimeout;
-				event.preventDefault();
-				event.stopPropagation = true;
-				return false;
-			} else {
-				sessionStorage.removeItem(userjs.id + entity.getAttribute("href"));
-			}
-		}
-	});
+	var banner_text = " to cancel redirection to best match: ";
+	if (IS_TOUCH_SCREEN) {
+		banner_text = createTag("fragment", {}, [createTag("b", {}, "Touch anywhere"), banner_text, entity.cloneNode(true)]);
+	} else {
+		banner_text = createTag("fragment", {}, ["Press ", createTag("b", {}, "Escape"), " or click anywhere", banner_text, entity.cloneNode(true)]);
+	}
+	userjs.redirectBanner = MB_banner(banner_text, userjs.id, true);
+	document.body.addEventListener(IS_TOUCH_SCREEN ? "touchstart" : "mousedown", abort_redirect);
+	document.body.addEventListener("keydown", abort_redirect);
 	if (navigator.userAgent.match(/\bChrome\b/)) {
 		// “History Skip” problem: https://bugs.chromium.org/p/chromium/issues/detail?id=907167
 		history.pushState({}, "", location);
@@ -110,4 +103,26 @@ function redirect(entity) {
 		sessionStorage.setItem(userjs.id + entity.getAttribute("href"), location.pathname + location.search + location.hash);
 		location.assign(entity.getAttribute("href"));
 	}, 12);
+}
+
+function abort_redirect(event) {
+	if (event.type == "keydown") {
+		if (!event.key.match(/^Esc(ape)?$/)) {
+			return;
+		}
+	} else {
+		self.stop();
+	}
+	if (userjs.redirectBanner.parentNode) {
+		userjs.redirectBanner.parentNode.removeChild(userjs.redirectBanner);
+	}
+	if (userjs.redirectTimeout) {
+		clearTimeout(userjs.redirectTimeout);
+		delete userjs.redirectTimeout;
+		event.preventDefault();
+		event.stopPropagation = true;
+		return false;
+	} else {
+		sessionStorage.removeItem(userjs.id + entity.getAttribute("href"));
+	}
 }
