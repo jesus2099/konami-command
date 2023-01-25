@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.1.25.22
-// @description  CLICK CELL TO SELECT TEXT: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
+// @version      2023.1.25.1227
+// @description  ENABLE CELL TEXT SELECTION: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-routing_TURBO-BOOST.user.js
@@ -50,16 +50,11 @@ document.body.addEventListener("mousedown", function(event) {
 	}
 });
 
-// click cell to select its text for copy
-css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
+// ENABLE CELL TEXT SELECTION
+css.insertRule("tbody div[unselectable='on'] { cursor: text; }", 0);
 css.insertRule(".x-unselectable { user-select: text; }", 0);
-document.body.addEventListener("click", function(event) {
-	if (event.target.closest("div[unselectable='on']") && event.detail === 1) {
-		self.getSelection().selectAllChildren(event.target);
-	}
-});
 
-// SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision
+// SHOW CELL CROPPED TEXT TOOLTIPS
 document.body.addEventListener("mouseover", function(event) {
 	if (
 		event.target.closest("div[unselectable='on'], div.x-column-header-inner")
@@ -73,7 +68,7 @@ document.body.addEventListener("mouseover", function(event) {
 
 // Double-click row to view (+Alt to edit) à la Mandora
 document.body.addEventListener("dblclick", function(event) {
-	if (event.target.matches("div[unselectable='on']")) {
+	if (event.target.matches("div[unselectable='on']") && self.getSelection().isCollapsed) {
 		var row = event.target.closest("tr");
 		if (event.ctrlKey || event.shiftKey) {
 			// Use +Ctrl for background tab or +Shift for new tab
