@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.1.25.1227
+// @version      2023.1.28
 // @description  ENABLE CELL TEXT SELECTION: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -53,6 +53,7 @@ document.body.addEventListener("mousedown", function(event) {
 // ENABLE CELL TEXT SELECTION
 css.insertRule("tbody div[unselectable='on'] { cursor: text; }", 0);
 css.insertRule(".x-unselectable { user-select: text; }", 0);
+css.insertRule("tbody td:hover div[unselectable='on'] { word-break: break-all; }", 0);
 
 // SHOW CELL CROPPED TEXT TOOLTIPS
 document.body.addEventListener("mouseover", function(event) {
