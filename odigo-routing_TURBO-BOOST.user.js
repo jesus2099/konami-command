@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.1.28
-// @description  ENABLE CELL TEXT SELECTION: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab
+// @version      2023.1.31
+// @description  ENABLE CELL TEXT SELECTION: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-routing_TURBO-BOOST.user.js
@@ -162,34 +162,67 @@ var openObjectURL = {
 		keyCellIndex: 3
 	},
 };
-var listType = location.pathname.match(/([^/]+Search)$/)[1];
-if (openObjectURL[listType]) {
-	css.insertRule("img.iconModify, img.iconView, img.iconModify:hover, img.iconView:hover { height: 20px; width: 20px; background-size: contain; background-color: " + lightBgColour + "; box-shadow: 1px 1px 3px " + darkBgColour + "; }", 0);
-} else {
-	var span = document.createElement("span");
-	span.appendChild(document.createTextNode("⚠️ "));
-	span.setAttribute("title", "Cannot open " + listType.replace(/Search$/, "").replace(/([A-Z])/g, " $1").toLowerCase() + " in new or background tab!");
-	doc.insertBefore(span, doc.firstChild);
-}
-document.body.addEventListener("mousedown", backgroundTabIcons);
-document.body.addEventListener("mouseup", backgroundTabIcons);
-document.body.addEventListener("click", backgroundTabIcons, true);
-function backgroundTabIcons(event) {
-	// debug(event.type + " detail=" + event.detail + " button=" + event.button + " on " + event.target);
-	if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView")) && event.detail === 1) {
-		if (event.button === 1 || event.ctrlKey || event.shiftKey) {
-			if (event.type == "mouseup") {
-				openInTab(event.target.closest("tr"), event.target.classList.contains("iconView") ? "view" : "edit");
-			} else {
-				// prevent scroll with middle-click on mousedown
-				// prevent navigate in current tab with action icons on click
-				event.cancelBubble = true;
-				if (event.stopPropagation) event.stopPropagation();
-				event.preventDefault();
-				return false;
+var listType = location.pathname.match(/([^/]+Search)$/);
+if (listType) {
+	listType = listType[1];
+	if (!openObjectURL[listType]) {
+		var span = document.createElement("span");
+		span.appendChild(document.createTextNode("⚠️ "));
+		span.setAttribute("title", "Cannot open " + listType.replace(/Search$/, "").replace(/([A-Z])/g, " $1").toLowerCase() + " in new or background tab!");
+		doc.insertBefore(span, doc.firstChild);
+	}
+	document.body.addEventListener("mousedown", backgroundTabIcons);
+	document.body.addEventListener("mouseup", backgroundTabIcons);
+	document.body.addEventListener("click", backgroundTabIcons, true);
+	function backgroundTabIcons(event) {
+		// debug(event.type + " detail=" + event.detail + " button=" + event.button + " on " + event.target);
+		if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView")) && event.detail === 1) {
+			if (event.button === 1 || event.ctrlKey || event.shiftKey) {
+				if (event.type == "mouseup") {
+					openInTab(event.target.closest("tr"), event.target.classList.contains("iconView") ? "view" : "edit");
+				} else {
+					// prevent scroll with middle-click on mousedown
+					// prevent navigate in current tab with action icons on click
+					event.cancelBubble = true;
+					if (event.stopPropagation) event.stopPropagation();
+					event.preventDefault();
+					return false;
+				}
 			}
 		}
 	}
+}
+
+// EDIT/VIEW PAGE TOGGLE
+var shortPath = (location.pathname + location.search).match(/[^/]+(?:Edit|Display)\?action=(?:EDIT|UPDATE|VIEW)/);
+if (shortPath) {
+	var toggle = null;
+	var type = null;
+	for (var searchType in openObjectURL) if (Object.prototype.hasOwnProperty.call(openObjectURL, searchType)) {
+		console.log(shortPath + "\nview: " + openObjectURL[searchType].view + "\nedit: " + openObjectURL[searchType].edit);
+		if (openObjectURL[searchType].view.indexOf(shortPath) === 0) {
+			toggle = "edit";
+			type = searchType;
+			break;
+		} else if (openObjectURL[searchType].edit.indexOf(shortPath) === 0) {
+			toggle = "view";
+			type = searchType;
+			break;
+		}
+	}
+	console.log(toggle);
+	if (toggle !== null && type !== null && openObjectURL[type].edit != openObjectURL[type].view) {
+		var toggleLink = document.createElement("img");
+		toggleLink.setAttribute("class", toggle == "edit" ? "iconModify" : "iconView");
+		toggleLink = document.createElement("a").appendChild(toggleLink).parentNode;
+		toggleLink.setAttribute("href", (location.pathname + location.search).replace(shortPath, openObjectURL[type][toggle].match(/[^?]+\?action=(?:EDIT|UPDATE|VIEW)/)));
+		toggleLink.setAttribute("title", "Click here to " + toggle + " this object");
+		document.querySelector("div#body_page > h2").appendChild(toggleLink);
+	}
+}
+
+if (listType && openObjectURL[listType] || shortPath) {
+	css.insertRule("img.iconModify, img.iconView, img.iconModify:hover, img.iconView:hover { height: 20px; width: 20px; background-size: contain; background-color: " + lightBgColour + "; box-shadow: 1px 1px 3px " + darkBgColour + "; }", 0);
 }
 
 function openInTab(row, action) {
