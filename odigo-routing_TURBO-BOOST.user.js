@@ -51,7 +51,7 @@ document.body.addEventListener("mousedown", function(event) {
 });
 
 // ENABLE CELL TEXT SELECTION
-css.insertRule("tbody div[unselectable='on'] { cursor: text; }", 0);
+css.insertRule("tbody div[unselectable='on'] { cursor: auto; }", 0);
 css.insertRule(".x-unselectable { user-select: text; }", 0);
 css.insertRule("tbody td:hover div[unselectable='on'] { white-space: unset; word-break: break-all; }", 0);
 
