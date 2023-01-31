@@ -194,17 +194,18 @@ if (listType) {
 }
 
 // EDIT/VIEW PAGE TOGGLE
-var shortPath = (location.pathname + location.search).match(/[^/]+(?:Edit|Display)\?action=(?:EDIT|UPDATE|VIEW)/);
-if (shortPath) {
+var shortPath = location.pathname.match(/[^/]+(?:Edit|Display)$/);
+var shortQuery = location.search.match(/\baction=(?:EDIT|UPDATE|VIEW)\b/);
+if (shortPath && shortQuery) {
 	var toggle = null;
 	var type = null;
 	for (var searchType in openObjectURL) if (Object.prototype.hasOwnProperty.call(openObjectURL, searchType)) {
 		console.log(shortPath + "\nview: " + openObjectURL[searchType].view + "\nedit: " + openObjectURL[searchType].edit);
-		if (openObjectURL[searchType].view.indexOf(shortPath) === 0) {
+		if (openObjectURL[searchType].view.indexOf(shortPath) === 0 && openObjectURL[searchType].view.indexOf(shortQuery) > shortPath.length) {
 			toggle = "edit";
 			type = searchType;
 			break;
-		} else if (openObjectURL[searchType].edit.indexOf(shortPath) === 0) {
+		} else if (openObjectURL[searchType].edit.indexOf(shortPath) === 0 && openObjectURL[searchType].edit.indexOf(shortQuery) > shortPath.length) {
 			toggle = "view";
 			type = searchType;
 			break;
@@ -215,13 +216,13 @@ if (shortPath) {
 		var toggleLink = document.createElement("img");
 		toggleLink.setAttribute("class", toggle == "edit" ? "iconModify" : "iconView");
 		toggleLink = document.createElement("a").appendChild(toggleLink).parentNode;
-		toggleLink.setAttribute("href", (location.pathname + location.search).replace(shortPath, openObjectURL[type][toggle].match(/[^?]+\?action=(?:EDIT|UPDATE|VIEW)/)));
+		toggleLink.setAttribute("href", (location.pathname + location.search).replace(shortPath, openObjectURL[type][toggle].match(/[^?]+/)).replace(shortQuery, openObjectURL[type][toggle].match(/action=(?:EDIT|UPDATE|VIEW)/)));
 		toggleLink.setAttribute("title", "Click here to " + toggle + " this object");
 		document.querySelector("div#body_page > h2").appendChild(toggleLink);
 	}
 }
 
-if (listType && openObjectURL[listType] || shortPath) {
+if (listType && openObjectURL[listType] || shortPath && shortQuery) {
 	css.insertRule("img.iconModify, img.iconView, img.iconModify:hover, img.iconView:hover { height: 20px; width: 20px; background-size: contain; background-color: " + lightBgColour + "; box-shadow: 1px 1px 3px " + darkBgColour + "; }", 0);
 }
 
