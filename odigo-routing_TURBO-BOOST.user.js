@@ -99,8 +99,10 @@ var openObjectURL = {
 		view: "callbackIdEdit?action=VIEW&callerId=61",
 		edit: "callbackIdEdit?action=EDIT&callerId=61",
 	}, */
-	/* caseSearch: { // unknown pattern, no examples
-	}, */
+	caseSearch: {
+		view: "caseEdit?action=VIEW&id=$id",
+		edit: "caseEdit?action=EDIT&id=$id",
+	},
 	channelSearch: {
 		view: "channelEdit?action=VIEW&id=$id",
 		edit: "channelEdit?action=EDIT&id=$id",
