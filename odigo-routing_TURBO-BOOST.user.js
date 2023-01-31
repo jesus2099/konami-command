@@ -85,41 +85,43 @@ document.body.addEventListener("dblclick", function(event) {
 var openObjectURL = {
 	agentGroupSearch: {
 		view: "agentGroupEdit?action=VIEW&idString=$key",
-		edit: "agentGroupEdit?action=UPDATE&idString=$key",
+		edit: "agentGroupEdit?action=UPDATE&idString=$key"
 	},
 	agentGroupTreeSearch: {
 		view: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0",
-		edit: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0",
+		edit: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0"
 	},
 	calendarSearch: {
 		view: "calendarEdit?action=VIEW&CalID=$key",
-		edit: "calendarEdit?action=EDIT&CalID=$key",
+		edit: "calendarEdit?action=EDIT&CalID=$key"
 	},
 	/* callbackIdSearch: { // cannot find callerId in page
 		view: "callbackIdEdit?action=VIEW&callerId=61",
-		edit: "callbackIdEdit?action=EDIT&callerId=61",
+		edit: "callbackIdEdit?action=EDIT&callerId=61"
 	}, */
 	caseSearch: {
 		view: "caseEdit?action=VIEW&id=$id",
-		edit: "caseEdit?action=EDIT&id=$id",
+		edit: "caseEdit?action=EDIT&id=$id"
 	},
 	channelSearch: {
 		view: "channelEdit?action=VIEW&id=$id",
-		edit: "channelEdit?action=EDIT&id=$id",
+		edit: "channelEdit?action=EDIT&id=$id"
 	},
 	/* chatGroupSearch: { // cannot find idString in page
 		view: "chatGroupEdit?action=VIEW&idString=10",
-		edit: "chatGroupEdit?action=UPDATE&idString=10",
+		edit: "chatGroupEdit?action=UPDATE&idString=10"
 	}, */
 	/* codificationSearch: { // cannot find codificationId in page
 		view: "codificationEdit?action=VIEW&codificationId=3",
-		edit: "codificationEdit?action=EDIT&codificationId=3",
+		edit: "codificationEdit?action=EDIT&codificationId=3"
 	}, */
-	/* commonQueueSearch: { // unknown pattern, no examples
+	/* commonQueueSearch: { // cannot find commonQueueId without using some Odigo JavaScript that I didn't find how to call from userjs (store.data.getAt(0).commonQueueId linked to from tr.dataset.boundview + "-record-" + tr.dataset.recordid)
+		view: "commonQueueEdit?action=VIEW&commonQueueId=2",
+		edit: "commonQueueEdit?action=UPDATE&commonQueueId=2"
 	}, */
 	ddiSearch: {
 		view: "ddiEdit?action=VIEW&keyWord=$base64key",
-		edit: "ddiEdit?action=EDIT&keyWord=$base64key",
+		edit: "ddiEdit?action=EDIT&keyWord=$base64key"
 	},
 	gateSearch: {
 		view: "gateEdit?action=VIEW&keyWord=$key",
@@ -128,25 +130,25 @@ var openObjectURL = {
 	},
 	gateSkillDispatchSearch: {
 		view: "gateSkillDispatchEdit?action=VIEW&dispatchId=$id",
-		edit: "gateSkillDispatchEdit?action=EDIT&dispatchId=$id",
+		edit: "gateSkillDispatchEdit?action=EDIT&dispatchId=$id"
 	},
 	gateTreeSearch: {
 		view: "gateTreeEdit?id=$id&label=$key&isCreation=0",
-		edit: "gateTreeEdit?id=$id&label=$key&isCreation=0",
+		edit: "gateTreeEdit?id=$id&label=$key&isCreation=0"
 	},
 	/* miniDirectorySearch: { // cannot find annuaireId in page
 		view: "miniDirectoryEdit?action=VIEW&annuaireId=8",
-		edit: "miniDirectoryEdit?action=EDIT&annuaireId=3",
+		edit: "miniDirectoryEdit?action=EDIT&annuaireId=3"
 	}, */
 	reasonForCallSearch: {
 		view: "reasonForCallListEdit?action=VIEW&rootId=$id",
-		edit: "reasonForCallListEdit?action=EDIT&rootId=$id",
+		edit: "reasonForCallListEdit?action=EDIT&rootId=$id"
 	},
 	/* smsTemplateSearch: { // unknown pattern, no examples
 	}, */
 	otherActivitySearch: {
 		view: "otherActivityEdit?activityId=$key",
-		edit: "otherActivityEdit?activityId=$key",
+		edit: "otherActivityEdit?activityId=$key"
 	},
 	skillSearch: {
 		view: "skillDisplay?action=VIEW&keyWord=$key",
@@ -162,7 +164,7 @@ var openObjectURL = {
 		view: "userEdit?action=VIEW&isTemplate=true&idUtilisateurAEditer=$key",
 		edit: "userEdit?action=EDIT&isTemplate=true&idUtilisateurAEditer=$key",
 		keyCellIndex: 3
-	},
+	}
 };
 var listType = location.pathname.match(/([^/]+Search)$/);
 if (listType) {
@@ -177,7 +179,6 @@ if (listType) {
 	document.body.addEventListener("mouseup", backgroundTabIcons);
 	document.body.addEventListener("click", backgroundTabIcons, true);
 	function backgroundTabIcons(event) {
-		// debug(event.type + " detail=" + event.detail + " button=" + event.button + " on " + event.target);
 		if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView")) && event.detail === 1) {
 			if (event.button === 1 || event.ctrlKey || event.shiftKey) {
 				if (event.type == "mouseup") {
@@ -202,7 +203,6 @@ if (shortPath && shortQuery) {
 	var toggle = null;
 	var type = null;
 	for (var searchType in openObjectURL) if (Object.prototype.hasOwnProperty.call(openObjectURL, searchType)) {
-		console.log(shortPath + "\nview: " + openObjectURL[searchType].view + "\nedit: " + openObjectURL[searchType].edit);
 		if (openObjectURL[searchType].view.indexOf(shortPath) === 0 && openObjectURL[searchType].view.indexOf(shortQuery) > shortPath.length) {
 			toggle = "edit";
 			type = searchType;
@@ -213,7 +213,6 @@ if (shortPath && shortQuery) {
 			break;
 		}
 	}
-	console.log(toggle);
 	if (toggle !== null && type !== null && openObjectURL[type].edit != openObjectURL[type].view) {
 		var toggleLink = document.createElement("img");
 		toggleLink.setAttribute("class", toggle == "edit" ? "iconModify" : "iconView");
@@ -252,8 +251,4 @@ function openInTab(row, action) {
 			actionIcons.view.click();
 		}
 	}
-}
-
-function debug(text) {
-	console.debug(GM_info.script.name + " ## " + (typeof text == "string" ? text : JSON.stringify(text)));
 }
