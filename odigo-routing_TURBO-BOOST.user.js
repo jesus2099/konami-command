@@ -144,8 +144,6 @@ var openObjectURL = {
 		view: "reasonForCallListEdit?action=VIEW&rootId=$id",
 		edit: "reasonForCallListEdit?action=EDIT&rootId=$id"
 	},
-	/* smsTemplateSearch: { // unknown pattern, no examples
-	}, */
 	otherActivitySearch: {
 		view: "otherActivityEdit?activityId=$key",
 		edit: "otherActivityEdit?activityId=$key"
@@ -154,6 +152,10 @@ var openObjectURL = {
 		view: "skillDisplay?action=VIEW&keyWord=$key",
 		edit: "skillEdit?action=EDIT&keyWord=$key",
 		keyCellIndex: 2
+	},
+	smsTemplateSearch: {
+		view: "smsTemplateEdit?action=VIEW&id=&id",
+		edit: "smsTemplateEdit?action=EDIT&id=$id"
 	},
 	userSearch: {
 		view: "userEdit?action=VIEW&isTemplate=false&idUtilisateurAEditer=$key",
