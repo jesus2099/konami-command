@@ -54,6 +54,7 @@ document.body.addEventListener("mousedown", function(event) {
 css.insertRule("tbody div[unselectable='on'] { cursor: auto; }", 0);
 css.insertRule(".x-unselectable { user-select: text; }", 0);
 css.insertRule("tbody td:hover div[unselectable='on'] { white-space: unset; word-break: break-all; }", 0);
+css.insertRule("div.x-panel-body-default { height: unset !important; }", 0);
 
 // SHOW CELL CROPPED TEXT TOOLTIPS
 document.body.addEventListener("mouseover", function(event) {
