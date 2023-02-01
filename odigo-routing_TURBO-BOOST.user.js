@@ -21,6 +21,7 @@ document.head.appendChild(css);
 css = css.sheet;
 var lightBgColour = "#fcf";
 var darkBgColour = "purple";
+css.insertRule("a." + GM_info.script.author + " { background-color: " + lightBgColour + "; text-decoration: underline; }", 0);
 
 // Show script badge and help tooltip
 css.insertRule("span.badge." + GM_info.script.author + " { background-color: " + lightBgColour + "; color: black; cursor: help; position: fixed; top: 3px; right: 3px; box-shadow: inset 1px 1px 3px " + darkBgColour + "; z-index: 1035; }", 0);
@@ -222,6 +223,8 @@ if (shortPath && shortQuery) {
 		toggleLink = document.createElement("a").appendChild(toggleLink).parentNode;
 		toggleLink.setAttribute("href", (location.pathname + location.search).replace(shortPath, openObjectURL[type][toggle].match(/[^?]+/)).replace(shortQuery, openObjectURL[type][toggle].match(/action=(?:EDIT|UPDATE|VIEW)/)));
 		toggleLink.setAttribute("title", "Click here to " + toggle + " this object");
+		toggleLink.appendChild(document.createTextNode(" " + toggle));
+		toggleLink.classList.add(GM_info.script.author);
 		document.querySelector("div#body_page > h2").appendChild(toggleLink);
 	}
 }
