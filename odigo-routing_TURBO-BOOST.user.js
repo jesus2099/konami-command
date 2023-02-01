@@ -34,6 +34,11 @@ supportLink.setAttribute("href", GM_info.script.supportURL);
 supportLink.setAttribute("target", "_blank");
 doc.setAttribute("data-title", GM_info.script.description.replace(/:/g, "\n\n‣").replace(/,/g, "\n‣").replace(/; /g, "\n\n"));
 document.body.appendChild(doc);
+function warning(text) {
+		var div = document.createElement("div");
+		div.appendChild(document.createElement("code")).appendChild(document.createTextNode(text));
+		doc.appendChild(div);
+}
 
 // Increase contrast of unreadable menu headers
 css.insertRule("div[role='menu'] h5 { color: #99c !important; }", 0);
@@ -97,10 +102,11 @@ var openObjectURL = {
 		view: "calendarEdit?action=VIEW&CalID=$key",
 		edit: "calendarEdit?action=EDIT&CalID=$key"
 	},
-	/* callbackIdSearch: { // cannot find callerId in page
-		view: "callbackIdEdit?action=VIEW&callerId=61",
-		edit: "callbackIdEdit?action=EDIT&callerId=61"
-	}, */
+	callbackIdSearch: {
+		view: "callbackIdEdit?action=VIEW&callerId=$id",
+		edit: "callbackIdEdit?action=EDIT&callerId=$id",
+		noKey: true // cannot find callerId in <tr>
+	},
 	caseSearch: {
 		view: "caseEdit?action=VIEW&id=$id",
 		edit: "caseEdit?action=EDIT&id=$id"
@@ -109,18 +115,21 @@ var openObjectURL = {
 		view: "channelEdit?action=VIEW&id=$id",
 		edit: "channelEdit?action=EDIT&id=$id"
 	},
-	/* chatGroupSearch: { // cannot find idString in page
-		view: "chatGroupEdit?action=VIEW&idString=10",
-		edit: "chatGroupEdit?action=UPDATE&idString=10"
-	}, */
-	/* codificationSearch: { // cannot find codificationId in page
-		view: "codificationEdit?action=VIEW&codificationId=3",
-		edit: "codificationEdit?action=EDIT&codificationId=3"
-	}, */
-	/* commonQueueSearch: { // cannot find commonQueueId without using some Odigo JavaScript that I didn't find how to call from userjs (store.data.getAt(0).commonQueueId linked to from tr.dataset.boundview + "-record-" + tr.dataset.recordid)
-		view: "commonQueueEdit?action=VIEW&commonQueueId=2",
-		edit: "commonQueueEdit?action=UPDATE&commonQueueId=2"
-	}, */
+	chatGroupSearch: {
+		view: "chatGroupEdit?action=VIEW&idString=$id",
+		edit: "chatGroupEdit?action=UPDATE&idString=$id",
+		noKey: true // cannot find idString in <tr>
+	},
+	codificationSearch: {
+		view: "codificationEdit?action=VIEW&codificationId=$id",
+		edit: "codificationEdit?action=EDIT&codificationId=$id",
+		noKey: true // cannot find codificationId in <tr>
+	},
+	commonQueueSearch: {
+		view: "commonQueueEdit?action=VIEW&commonQueueId=$id",
+		edit: "commonQueueEdit?action=UPDATE&commonQueueId=$id",
+		noKey: true // cannot find commonQueueId in <tr> Odigo uses some private JavaScript that I didn't find how to call from userjs (store.data.getAt(0).commonQueueId linked to from tr.dataset.boundview + "-record-" + tr.dataset.recordid)
+	},
 	ddiSearch: {
 		view: "ddiEdit?action=VIEW&keyWord=$base64key",
 		edit: "ddiEdit?action=EDIT&keyWord=$base64key"
@@ -138,10 +147,11 @@ var openObjectURL = {
 		view: "gateTreeEdit?id=$id&label=$key&isCreation=0",
 		edit: "gateTreeEdit?id=$id&label=$key&isCreation=0"
 	},
-	/* miniDirectorySearch: { // cannot find annuaireId in page
-		view: "miniDirectoryEdit?action=VIEW&annuaireId=8",
-		edit: "miniDirectoryEdit?action=EDIT&annuaireId=3"
-	}, */
+	miniDirectorySearch: {
+		view: "miniDirectoryEdit?action=VIEW&annuaireId=$id",
+		edit: "miniDirectoryEdit?action=EDIT&annuaireId=$id",
+		noKey: true // cannot find annuaireId in <tr>
+	},
 	reasonForCallSearch: {
 		view: "reasonForCallListEdit?action=VIEW&rootId=$id",
 		edit: "reasonForCallListEdit?action=EDIT&rootId=$id"
@@ -170,30 +180,28 @@ var openObjectURL = {
 		keyCellIndex: 3
 	}
 };
-var listType = location.pathname.match(/([^/]+Search)$/);
+var listType = location.pathname.match(/\b((?!acd)[^/]+Search)$/);
 if (listType) {
 	listType = listType[1];
-	if (!openObjectURL[listType]) {
-		var span = document.createElement("span");
-		span.appendChild(document.createTextNode("⚠️ "));
-		span.setAttribute("title", "Cannot open " + listType.replace(/Search$/, "").replace(/([A-Z])/g, " $1").toLowerCase() + " in new or background tab!");
-		doc.insertBefore(span, doc.firstChild);
-	}
-	document.body.addEventListener("mousedown", backgroundTabIcons);
-	document.body.addEventListener("mouseup", backgroundTabIcons);
-	document.body.addEventListener("click", backgroundTabIcons, true);
-	function backgroundTabIcons(event) {
-		if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView")) && event.detail === 1) {
-			if (event.button === 1 || event.ctrlKey || event.shiftKey) {
-				if (event.type == "mouseup") {
-					openInTab(event.target.closest("tr"), event.target.classList.contains("iconView") ? "view" : "edit");
-				} else {
-					// prevent scroll with middle-click on mousedown
-					// prevent navigate in current tab with action icons on click
-					event.cancelBubble = true;
-					if (event.stopPropagation) event.stopPropagation();
-					event.preventDefault();
-					return false;
+	if (openObjectURL[listType].noKey) {
+		warning("⚠️ Cannot open " + listType.replace(/Search$/, "").replace(/([A-Z])/g, " $1").toLowerCase() + " in new or background tab!");
+	} else {
+		document.body.addEventListener("mousedown", backgroundTabIcons);
+		document.body.addEventListener("mouseup", backgroundTabIcons);
+		document.body.addEventListener("click", backgroundTabIcons, true);
+		function backgroundTabIcons(event) {
+			if (event.target.tagName == "IMG" && (event.target.classList.contains("iconModify") || event.target.classList.contains("iconView")) && event.detail === 1) {
+				if (event.button === 1 || event.ctrlKey || event.shiftKey) {
+					if (event.type == "mouseup") {
+						openInTab(event.target.closest("tr"), event.target.classList.contains("iconView") ? "view" : "edit");
+					} else {
+						// prevent scroll with middle-click on mousedown
+						// prevent navigate in current tab with action icons on click
+						event.cancelBubble = true;
+						if (event.stopPropagation) event.stopPropagation();
+						event.preventDefault();
+						return false;
+					}
 				}
 			}
 		}
@@ -229,12 +237,12 @@ if (shortPath && shortQuery) {
 	}
 }
 
-if (listType && openObjectURL[listType] || shortPath && shortQuery) {
+if (listType && openObjectURL[listType] && !openObjectURL[listType].noKey || shortPath && shortQuery) {
 	css.insertRule("img.iconModify, img.iconView, img.iconModify:hover, img.iconView:hover { height: 20px; width: 20px; background-size: contain; background-color: " + lightBgColour + "; box-shadow: 1px 1px 3px " + darkBgColour + "; }", 0);
 }
 
 function openInTab(row, action) {
-	if (openObjectURL[listType]) {
+	if (openObjectURL[listType] && !openObjectURL[listType].noKey) {
 		var url = openObjectURL[listType][action];
 		if (url.match(/\$id/)) {
 			url = url.replace("$id", row.getAttribute("data-recordid"));
