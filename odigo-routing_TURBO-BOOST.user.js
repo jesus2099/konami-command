@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.1.31
+// @version      2023.2.1
 // @description  ENABLE CELL TEXT SELECTION: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -90,101 +90,101 @@ document.body.addEventListener("dblclick", function(event) {
 
 // Pencil and eye icons open in background tab (ctrl or middle) or new tab (shift)
 var openObjectURL = {
-	agentGroupSearch: {
+	agentGroup: {
 		view: "agentGroupEdit?action=VIEW&idString=$key",
 		edit: "agentGroupEdit?action=UPDATE&idString=$key"
 	},
-	agentGroupTreeSearch: {
+	agentGroupTree: {
 		view: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0",
 		edit: "agentGroupOrganizationEdit?id=$id&label=$key&isCreation=0"
 	},
-	calendarSearch: {
+	calendar: {
 		view: "calendarEdit?action=VIEW&CalID=$key",
 		edit: "calendarEdit?action=EDIT&CalID=$key"
 	},
-	callbackIdSearch: {
+	callbackId: {
 		view: "callbackIdEdit?action=VIEW&callerId=$id",
 		edit: "callbackIdEdit?action=EDIT&callerId=$id",
 		noKey: true // cannot find callerId in <tr>
 	},
-	caseSearch: {
+	case: {
 		view: "caseEdit?action=VIEW&id=$id",
 		edit: "caseEdit?action=EDIT&id=$id"
 	},
-	channelSearch: {
+	channel: {
 		view: "channelEdit?action=VIEW&id=$id",
 		edit: "channelEdit?action=EDIT&id=$id"
 	},
-	chatGroupSearch: {
+	chatGroup: {
 		view: "chatGroupEdit?action=VIEW&idString=$id",
 		edit: "chatGroupEdit?action=UPDATE&idString=$id",
 		noKey: true // cannot find idString in <tr>
 	},
-	codificationSearch: {
+	codification: {
 		view: "codificationEdit?action=VIEW&codificationId=$id",
 		edit: "codificationEdit?action=EDIT&codificationId=$id",
 		noKey: true // cannot find codificationId in <tr>
 	},
-	commonQueueSearch: {
+	commonQueue: {
 		view: "commonQueueEdit?action=VIEW&commonQueueId=$id",
 		edit: "commonQueueEdit?action=UPDATE&commonQueueId=$id",
 		noKey: true // cannot find commonQueueId in <tr> Odigo uses some private JavaScript that I didn't find how to call from userjs (store.data.getAt(0).commonQueueId linked to from tr.dataset.boundview + "-record-" + tr.dataset.recordid)
 	},
-	ddiSearch: {
+	ddi: {
 		view: "ddiEdit?action=VIEW&keyWord=$base64key",
 		edit: "ddiEdit?action=EDIT&keyWord=$base64key"
 	},
-	gateSearch: {
+	gate: {
 		view: "gateEdit?action=VIEW&keyWord=$key",
 		edit: "gateEdit?action=EDIT&keyWord=$key",
 		keyCellIndex: 2
 	},
-	gateSkillDispatchSearch: {
+	gateSkillDispatch: {
 		view: "gateSkillDispatchEdit?action=VIEW&dispatchId=$id",
 		edit: "gateSkillDispatchEdit?action=EDIT&dispatchId=$id"
 	},
-	gateTreeSearch: {
+	gateTree: {
 		view: "gateTreeEdit?id=$id&label=$key&isCreation=0",
 		edit: "gateTreeEdit?id=$id&label=$key&isCreation=0"
 	},
-	miniDirectorySearch: {
+	miniDirectory: {
 		view: "miniDirectoryEdit?action=VIEW&annuaireId=$id",
 		edit: "miniDirectoryEdit?action=EDIT&annuaireId=$id",
 		noKey: true // cannot find annuaireId in <tr>
 	},
-	reasonForCallSearch: {
+	reasonForCall: {
 		view: "reasonForCallListEdit?action=VIEW&rootId=$id",
 		edit: "reasonForCallListEdit?action=EDIT&rootId=$id"
 	},
-	otherActivitySearch: {
+	otherActivity: {
 		view: "otherActivityEdit?activityId=$key",
 		edit: "otherActivityEdit?activityId=$key"
 	},
-	skillSearch: {
+	skill: {
 		view: "skillDisplay?action=VIEW&keyWord=$key",
 		edit: "skillEdit?action=EDIT&keyWord=$key",
 		keyCellIndex: 2
 	},
-	smsTemplateSearch: {
+	smsTemplate: {
 		view: "smsTemplateEdit?action=VIEW&id=&id",
 		edit: "smsTemplateEdit?action=EDIT&id=$id"
 	},
-	userSearch: {
+	user: {
 		view: "userEdit?action=VIEW&isTemplate=false&idUtilisateurAEditer=$key",
 		edit: "userEdit?action=EDIT&isTemplate=false&userFromLdap=false&idUtilisateurAEditer=$key",
 		keyCellIndex: 2
 	},
-	userTemplateSearch: {
+	userTemplate: {
 		view: "userEdit?action=VIEW&isTemplate=true&idUtilisateurAEditer=$key",
 		edit: "userEdit?action=EDIT&isTemplate=true&idUtilisateurAEditer=$key",
 		keyCellIndex: 3
 	}
 };
-var listType = location.pathname.match(/\b((?!acd)[^/]+Search)$/);
+var listType = location.pathname.match(/\b(?!acd)([^/]+)Search$/);
 if (listType) {
 	listType = listType[1];
 	if (openObjectURL[listType].noKey) {
-		warning("⚠️ Cannot open " + listType.replace(/Search$/, "").replace(/([A-Z])/g, " $1").toLowerCase() + " in new or background tab!");
+		warning("⚠️ Cannot open " + listType.replace(/([A-Z])/g, " $1").toLowerCase() + " in new or background tab!");
 	} else {
 		document.body.addEventListener("mousedown", backgroundTabIcons);
 		document.body.addEventListener("mouseup", backgroundTabIcons);
