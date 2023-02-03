@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2022.11.19
+// @version      2023.2.3
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -975,29 +975,25 @@ function getExtLinks() {
 	}
 	return el;
 }
-// bug I reported DSK-376978, opera adds a "; charset=accept-charset" to the POST Content-Type header: "Content-Type: application/x-www-form-urlencoded; charset=shift_jis"
-// workaround here, using multipart/form-data accepted by JASRAC (unlike GET)
 function jasracSearch(type, query) {
-	var searchURL = "http://jesus2099.gitlab.io/forward-request.html?";
-	searchURL += "_action=" + encodeURIComponent("http://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3#result") + "&";
-	searchURL += "_method=post&";
-	searchURL += "_accept-charset=Shift_JIS&";
-	searchURL += "IN_DEFAULT_WORKS_KOUHO_MAX=100&";
-	searchURL += "IN_DEFAULT_WORKS_KOUHO_SEQ=1&";
+	var formJASRAC = createTag("form", {a: {action: "https://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3#result", method: "post", "accept-charset": "Shift_JIS"}, s: {display: "inline", background: background}});
+	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_WORKS_KOUHO_MAX", value: "100"}}));
+	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_WORKS_KOUHO_SEQ", value: "1"}}));
 	switch (type) {
 		case "title":
 			if (!maybeJapanese(query)) {
 				query = removeLeadingArticle(query).toLowerCase();
 			}
 			query = removeAccents(query);
-			searchURL += "IN_WORKS_TITLE_NAME1=" + query + "&";
-			searchURL += "IN_WORKS_TITLE_CONDITION=1&";
-			searchURL += "IN_WORKS_TITLE_NAME2=" + encodeURIComponent(halfwidthToFullwidth(query)) + "&";
+			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_NAME1", value: query}}));
+			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_CONDITION", value: "1"}}));
+			formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_WORKS_TITLE_NAME2", value: encodeURIComponent(halfwidthToFullwidth(query))}}));
 			break;
 	}
-	searchURL += "IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&";
-	searchURL += "RESULT_CURRENT_PAGE=1&";
-	return createTag("a", {a: {href: searchURL}, s: {background: background}}, "JASRAC — " + query);
+	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_SEARCH_WORKS_NAIGAI", value: "0"}}));
+	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "RESULT_CURRENT_PAGE", value: "1"}}));
+	formJASRAC.appendChild(createCoolSubmit("JASRAC — " + query));
+	return formJASRAC;
 }
 // form charset trick to allow query from MS932 JASRAC site (and any other sites) to utf-8 MINC site
 function mincSearch(type, query, label) {
