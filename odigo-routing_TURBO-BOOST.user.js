@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.2.6
+// @version      2023.2.8
 // @description  ENABLE CELL TEXT SELECTION: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -47,7 +47,7 @@ css.insertRule("div[role='menu'] h5 { color: #99c !important; }", 0);
 document.body.addEventListener("mousedown", function(event) {
 	if (event.target.matches("a[href='#'][onclick^='Menu._OnMenuListItemClick']")) {
 		var page = event.target.getAttribute("onclick").match(/^Menu\._OnMenuListItemClick\('1','([^']+)'\);$/);
-		if (page) {
+		if (page && location.pathname.indexOf("/ama01/") == 0) {
 			page = page[1];
 			event.target.removeAttribute("onclick");
 			event.target.setAttribute("href", page.match(/^https?:\/\//) ? page : "/ama01/ui/service/" + page);
