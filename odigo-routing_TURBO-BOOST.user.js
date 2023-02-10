@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
 // @version      2023.2.10
-// @description  ENABLE CELL TEXT SELECTION: for easy copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE
+// @description  ENABLE CELL TEXT SELECTION: click to select, middle-click to copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-routing_TURBO-BOOST.user.js
@@ -56,27 +56,56 @@ document.body.addEventListener("mousedown", function(event) {
 	}
 });
 
-// ENABLE CELL TEXT SELECTION
-css.insertRule("tbody div[unselectable='on'] { cursor: auto; }", 0);
+// ENABLE CELL TEXT SELECTION: click to select, middle-click to copy
+css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
 css.insertRule(".x-unselectable { user-select: text; }", 0);
-css.insertRule("tbody td:hover div[unselectable='on'] { white-space: unset; word-break: break-all; }", 0);
-css.insertRule("div:not([id^='tree']).x-panel-body-default { height: unset !important; }", 0);
-
-// SHOW CELL CROPPED TEXT TOOLTIPS
-document.body.addEventListener("mouseover", function(event) {
-	if (
-		event.target.closest("div[unselectable='on'], div.x-column-header-inner")
-		&& (event.target.scrollHeight > event.target.clientHeight || event.target.scrollWidth > event.target.clientWidth) // text overflows (is cut)
-		&& !event.target.parentNode.getAttribute("data-qtip") // no Odigo tooltip yet
-	) {
-		event.target.parentNode.setAttribute("data-qtip", event.target.textContent);
-		css.insertRule(".x-tip { background-color: " + lightBgColour + "; }", 0);
+// Odigo achieved to even block CSS user-select: all, somehow, so we have to add a JavaScript
+document.body.addEventListener("click", click_select_copy);
+document.body.addEventListener("mousedown", click_select_copy);
+function click_select_copy(event) {
+	if (event.target.closest("div[unselectable='on']") && event.detail === 1) {
+		if (event.type == "mousedown" && event.button === 1 && typeof Header != "undefined" && navigator.clipboard) {
+			// middle click: copy to clipboard
+			if (event.target.textContent.trim() !== "") {
+				navigator.clipboard.writeText(event.target.textContent).then(
+					function() { Header._ShowNotification({level: "success", message: "“" + event.target.textContent + "” copied to clipboard", close: "×", duration: 4000}); },
+					function() {
+						Header._ShowNotification({level: "error", message: "Error when copying to clipboard!"});
+						self.getSelection().selectAllChildren(event.target);
+					}
+				);
+				// prevent middle click scroll
+				event.preventDefault();
+			}
+		} else if (event.type == "click" && event.button === 0) {
+			// main (left) click: select
+			self.getSelection().selectAllChildren(event.target);
+		}
 	}
-});
+}
+
+if (location.pathname.match(/\b(gateTreeEdit|supervision)/)) {
+	// SHOW CELL CROPPED TEXT TOOLTIPS
+	document.body.addEventListener("mouseover", function(event) {
+		if (
+			event.target.closest("div[unselectable='on'], div.x-column-header-inner")
+			&& (event.target.scrollHeight > event.target.clientHeight || event.target.scrollWidth > event.target.clientWidth) // text overflows (is cut)
+			&& !event.target.parentNode.getAttribute("data-qtip") // no Odigo tooltip yet
+		) {
+			event.target.parentNode.setAttribute("data-qtip", event.target.textContent);
+			css.insertRule(".x-tip { background-color: " + lightBgColour + "; }", 0);
+		}
+	});
+} else {
+	// EXPAND CELL TO SHOW CROPPED TEXT
+	// breaks gate tree page and is super slow in supervision
+	css.insertRule("tbody td:hover div[unselectable='on'] { white-space: unset; word-break: break-all; }", 0);
+	css.insertRule("div:not([id^='tree']).x-panel-body-default { height: unset !important; }", 0);
+}
 
 // Double-click row to view (+Alt to edit) à la Mandora
 document.body.addEventListener("dblclick", function(event) {
-	if (event.target.matches("div[unselectable='on']") && self.getSelection().isCollapsed) {
+	if (event.target.matches("div[unselectable='on']")) {
 		var row = event.target.closest("tr");
 		if (event.ctrlKey || event.shiftKey) {
 			// Use +Ctrl for background tab or +Shift for new tab
@@ -184,7 +213,7 @@ var openObjectURL = {
 		keyCellIndex: 3
 	}
 };
-var listType = location.pathname.match(/\b(?!acd)([^/]+)Search$/);
+var listType = location.pathname.match(/\b(?!acd)(?!supervision)([^/]+)Search$/);
 if (listType) {
 	listType = listType[1];
 	if (openObjectURL[listType].noKey) {
