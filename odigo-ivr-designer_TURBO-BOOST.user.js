@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2023.1.26
-// @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Select first application and PROD, Select current version, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Highlight modal table rows, Press Escape to close modals, Reveal secret JSON and copy to clipboard
+// @version      2023.2.10
+// @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Select first application and PROD, Select current version, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Highlight modal table rows, Emphasise reset and upgrade buttons, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
@@ -171,6 +171,9 @@ switch (self.location.pathname) {
 
 		break;
 	case "/application.html":
+
+		// Emphasise reset and upgrade buttons
+		css.insertRule("button#mod-btn-reset, button#mod-btn-upgrade { background-color: #603; }", 0);
 
 		// Auto stretch modal dialogs
 		css.insertRule("div#main-container div.modal-dialog { min-width: 600px; width: unset !important; }", 0);
