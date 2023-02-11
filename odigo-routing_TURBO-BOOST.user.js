@@ -57,7 +57,7 @@ document.body.addEventListener("mousedown", function(event) {
 });
 
 // ENABLE CELL TEXT SELECTION: click to select, middle-click to copy
-css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
+css.insertRule("tbody div[unselectable='on'] { cursor: pointer; /* reveal heading and trailing spaces */ white-space: pre-wrap !important; }", 0);
 css.insertRule(".x-unselectable { user-select: text; }", 0);
 // Odigo achieved to even block CSS user-select: all, somehow, so we have to add a JavaScript
 document.body.addEventListener("click", click_select_copy);
@@ -80,6 +80,10 @@ function click_select_copy(event) {
 		} else if (event.type == "click" && event.button === 0) {
 			// main (left) click: select
 			self.getSelection().selectAllChildren(event.target);
+		}
+		if (event.target.textContent.match(/(^\s+\S|\S\s+$)/)) {
+			// reveal heading and trailing spaces
+			event.target.style.setProperty("text-decoration", "underline overline 2px " + darkBgColour);
 		}
 	}
 }
