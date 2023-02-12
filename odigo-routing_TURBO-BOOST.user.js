@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.2.10
-// @description  ENABLE CELL TEXT SELECTION: click to select, middle-click to copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE
+// @version      2023.2.12
+// @description  ENABLE CELL TEXT SELECTION: click to select, middle-click to copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE; SPOT UNWANTED SPACES
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-routing_TURBO-BOOST.user.js
@@ -22,6 +22,20 @@ css = css.sheet;
 var lightBgColour = "#fcf";
 var darkBgColour = "purple";
 css.insertRule("a." + GM_info.script.author + " { background-color: " + lightBgColour + "; text-decoration: underline; }", 0);
+
+var lang = userLanguagePrefix.match(/\b(en|fr)\b/);
+if (lang) {
+	lang = lang[1];
+} else {
+	lang = "en";
+}
+
+var texts = {
+	unwanted_space: {
+		en: "unwanted space",
+		fr: "espace indésirable"
+	}
+};
 
 // Show script badge and help tooltip
 css.insertRule("span.badge." + GM_info.script.author + " { background-color: " + lightBgColour + "; color: black; cursor: help; position: fixed; top: 3px; right: 3px; box-shadow: inset 1px 1px 3px " + darkBgColour + "; z-index: 1035; }", 0);
@@ -57,7 +71,7 @@ document.body.addEventListener("mousedown", function(event) {
 });
 
 // ENABLE CELL TEXT SELECTION: click to select, middle-click to copy
-css.insertRule("tbody div[unselectable='on'] { cursor: pointer; /* reveal heading and trailing spaces */ white-space: pre-wrap !important; }", 0);
+css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
 css.insertRule(".x-unselectable { user-select: text; }", 0);
 // Odigo achieved to even block CSS user-select: all, somehow, so we have to add a JavaScript
 document.body.addEventListener("click", click_select_copy);
@@ -81,12 +95,20 @@ function click_select_copy(event) {
 			// main (left) click: select
 			self.getSelection().selectAllChildren(event.target);
 		}
-		if (event.target.textContent.match(/(^\s+\S|\S\s+$)/)) {
-			// reveal heading and trailing spaces
-			event.target.style.setProperty("text-decoration", "underline overline 2px " + darkBgColour);
-		}
 	}
 }
+
+// SPOT UNWANTED SPACES
+css.insertRule("tbody > tr > td[role='gridcell'] > div[unselectable='on'][title='" + texts.unwanted_space[lang] + "'] { background-color: " + lightBgColour + "; }", 0);
+setInterval(function() {
+	for (var c = 0, gridcells = document.querySelectorAll("tbody > tr > td[role='gridcell'] > div[unselectable='on']:not([title='" + texts.unwanted_space[lang] + "'])"); c < gridcells.length; c++) {
+		if (gridcells[c].textContent.match(/^\s+\S|\S\s+$/)) {
+			// reveal heading and trailing spaces
+			gridcells[c].setAttribute("title", texts.unwanted_space[lang]);
+			gridcells[c].replaceChild(document.createTextNode(gridcells[c].textContent.replace(/^\s+|\s+$/g, "⎵")), gridcells[c].firstChild);
+		}
+	}
+}, 2000);
 
 if (location.pathname.match(/\b(gateTreeEdit|supervision)/)) {
 	// SHOW CELL CROPPED TEXT TOOLTIPS
