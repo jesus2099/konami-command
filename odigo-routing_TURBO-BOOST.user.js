@@ -61,10 +61,12 @@ css.insertRule("div[role='menu'] h5 { color: #99c !important; }", 0);
 document.body.addEventListener("mousedown", function(event) {
 	if (event.target.matches("a[href='#'][onclick^='Menu._OnMenuListItemClick']")) {
 		var page = event.target.getAttribute("onclick").match(/^Menu\._OnMenuListItemClick\('1','([^']+)'\);$/);
-		if (page && location.pathname.indexOf("/ama01/") == 0) {
+		var pathname = location.pathname.match(/^(\/[^/]+\/ui\/service\/)/);
+		if (page && pathname) {
 			page = page[1];
+			pathname = pathname[1];
 			event.target.removeAttribute("onclick");
-			event.target.setAttribute("href", page.match(/^https?:\/\//) ? page : "/ama01/ui/service/" + page);
+			event.target.setAttribute("href", page.match(/^https?:\/\//) ? page : pathname + page);
 			event.target.style.setProperty("color", lightBgColour);
 		}
 	}
