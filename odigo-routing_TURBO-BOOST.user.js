@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
 // @version      2023.2.12
-// @description  ENABLE CELL TEXT SELECTION: click to select, middle-click to copy; SHOW CELL CROPPED TEXT TOOLTIPS: Show full text Odigo tooltips everywhere, not yet working in supervision; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE; SPOT UNWANTED SPACES
+// @description  ENABLE CELL TEXT SELECTION: click to select, middle-click to copy; SHOW CELL CROPPED TEXT; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE; SPOT UNWANTED SPACES
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-routing_TURBO-BOOST.user.js
@@ -110,24 +110,19 @@ setInterval(function() {
 	}
 }, 2000);
 
-if (location.pathname.match(/\b(gateTreeEdit|supervision)/)) {
-	// SHOW CELL CROPPED TEXT TOOLTIPS
-	document.body.addEventListener("mouseover", function(event) {
-		if (
-			event.target.closest("div[unselectable='on'], div.x-column-header-inner")
-			&& (event.target.scrollHeight > event.target.clientHeight || event.target.scrollWidth > event.target.clientWidth) // text overflows (is cut)
-			&& !event.target.parentNode.getAttribute("data-qtip") // no Odigo tooltip yet
-		) {
-			event.target.parentNode.setAttribute("data-qtip", event.target.textContent);
-			css.insertRule(".x-tip { background-color: " + lightBgColour + "; }", 0);
-		}
-	});
-} else {
-	// EXPAND CELL TO SHOW CROPPED TEXT
-	// breaks gate tree page and is super slow in supervision
-	css.insertRule("tbody td:hover div[unselectable='on'] { white-space: unset; word-break: break-all; }", 0);
-	css.insertRule("div:not([id^='tree']).x-panel-body-default { height: unset !important; }", 0);
-}
+// SHOW CELL CROPPED TEXT
+document.body.addEventListener("mouseover", function(event) {
+	if (
+		event.target.closest("div[unselectable='on'], div.x-column-header-inner")
+		&& (event.target.scrollHeight > event.target.clientHeight || event.target.scrollWidth > event.target.clientWidth) // text overflows (is cut)
+		&& !event.target.parentNode.getAttribute("data-qtip") // no Odigo tooltip yet
+	) {
+		event.target.parentNode.setAttribute("data-qtip", event.target.textContent);
+		css.insertRule(".x-tip { background-color: " + lightBgColour + "; }", 0);
+	}
+});
+// expand cell to show text only on click
+css.insertRule("tbody td:active div[unselectable='on'] { white-space: unset; word-break: break-all; }", 0);
 
 // Double-click row to view (+Alt to edit) à la Mandora
 document.body.addEventListener("dblclick", function(event) {
