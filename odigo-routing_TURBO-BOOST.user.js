@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.2.12
+// @version      2023.2.13
 // @description  ENABLE CELL TEXT SELECTION: click to select, middle-click to copy; SHOW CELL CROPPED TEXT; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE; SPOT UNWANTED SPACES
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -101,16 +101,18 @@ function click_select_copy(event) {
 }
 
 // SPOT UNWANTED SPACES
-css.insertRule("tbody > tr > td[role='gridcell'] > div[unselectable='on'][title='" + texts.unwanted_space[lang] + "'] { background-color: " + lightBgColour + "; }", 0);
-setInterval(function() {
-	for (var c = 0, gridcells = document.querySelectorAll("tbody > tr > td[role='gridcell'] > div[unselectable='on']:not([title='" + texts.unwanted_space[lang] + "'])"); c < gridcells.length; c++) {
-		if (gridcells[c].textContent.match(/^\s+\S|\S\s+$/)) {
-			// reveal heading and trailing spaces
-			gridcells[c].setAttribute("title", texts.unwanted_space[lang]);
-			gridcells[c].replaceChild(document.createTextNode(gridcells[c].textContent.replace(/^\s+|\s+$/g, "⎵")), gridcells[c].firstChild);
+if (!location.pathname.match(/\/supervision/)) {
+	css.insertRule("tbody > tr > td[role='gridcell'] > div[unselectable='on'][title='" + texts.unwanted_space[lang] + "'] { background-color: " + lightBgColour + "; }", 0);
+	setInterval(function() {
+		for (var c = 0, gridcells = document.querySelectorAll("tbody > tr > td[role='gridcell'] > div[unselectable='on']:not([title='" + texts.unwanted_space[lang] + "'])"); c < gridcells.length; c++) {
+			if (gridcells[c].textContent.match(/^\s+\S|\S\s+$/)) {
+				// reveal heading and trailing spaces
+				gridcells[c].setAttribute("title", texts.unwanted_space[lang]);
+				gridcells[c].replaceChild(document.createTextNode(gridcells[c].textContent.replace(/^\s+|\s+$/g, "⎵")), gridcells[c].firstChild);
+			}
 		}
-	}
-}, 2000);
+	}, 1000);
+}
 
 // SHOW CELL CROPPED TEXT
 document.body.addEventListener("mouseover", function(event) {
