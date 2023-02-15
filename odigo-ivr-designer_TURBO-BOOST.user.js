@@ -11,8 +11,7 @@
 // @since        2021-04-23
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
-// @include      /^https?:\/\/ivr-designer[^.]*\.(odigo\.cx|prosodie\.com)\/application\.html/
-// @include      /^https?:\/\/ivr-designer[^.]*\.(odigo\.cx|prosodie\.com)\/appNservices\.html/
+// @include      /^https?:\/\/ivr-designer[^.]*\.(odigo\.cx|prosodie\.com)\/(appNservices|quickChange|application)\.html/
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
@@ -46,32 +45,15 @@ document.body.appendChild(
 waitForElement("input#keyword", function(element) { element.focus(); });
 
 switch (self.location.pathname) {
+
 	case "/appNservices.html":
 
-		// Custom highlight colour
-		css.insertRule(".table-hover > tbody > tr:hover > td, .table > tbody > tr > td.rowselect { background-color: " + lightBgColour + " !important; }", 0);
-		css.insertRule(".table > tbody > tr > td.rowselect > * { color: black; }", 0);
-
-		// Click to select row checkbox
-		var container = document.querySelector("div#main-container");
-		if (container) {
-			container.addEventListener("click", function(event) {
-				var row = event.target.closest("tbody > tr");
-				if (row) {
-					var rowCheckbox = row.querySelector("input[type='checkbox']");
-					if (rowCheckbox) {
-						for (
-							var rowCheckboxes = row.parentNode.querySelectorAll("input[type='checkbox']:checked"), c = 0;
-							c < rowCheckboxes.length;
-							c++
-						) {
-							rowCheckboxes[c].click();
-						}
-						rowCheckbox.click();
-					}
-				}
-			});
-		}
+		select_row();
+		double_click_actions([ // Double-click to open application, logs and versions
+			{table: "div#main-container table#applications > tbody", action: "div#main-container a#viewOpenTree1"},
+			{table: "div#main-container table#services > tbody", action: "div#main-container a#getLogs1"},
+			{table: "div#main-container div[ng-show='showReleaseTable'] table > tbody", action: "div#main-container a#viewRelOpenTree1"}
+		]);
 
 		// Loading percent in tab/window name/title
 		setInterval(function() {
@@ -91,24 +73,6 @@ switch (self.location.pathname) {
 				}
 			}
 		}, 1000);
-
-		// Double-click to open application, logs and versions
-		var DblClickTableActions = [
-			{table: "div#main-container table#applications > tbody", action: "div#main-container a#viewOpenTree1"},
-			{table: "div#main-container table#services > tbody", action: "div#main-container a#getLogs1"},
-			{table: "div#main-container div[ng-show='showReleaseTable'] table > tbody", action: "div#main-container a#viewRelOpenTree1"}
-		];
-		for (var a = 0; a < DblClickTableActions.length; a++) {
-			var table = document.querySelector(DblClickTableActions[a].table);
-			var action = document.querySelector(DblClickTableActions[a].action);
-			if (table && action) {
-				table.setAttribute("_dblClickAction", DblClickTableActions[a].action);
-				action.style.setProperty("background-color", lightBgColour);
-				table.addEventListener("dblclick", function(event) {
-					document.querySelector(this.getAttribute("_dblClickAction")).click();
-				});
-			}
-		}
 
 		// Select first application and PROD
 		setInterval(function() {
@@ -168,6 +132,12 @@ switch (self.location.pathname) {
 		css.insertRule("div#main-container div[ng-show='showReleaseTable'] table > tbody > tr > td:nth-child(3) { display: none; }", 0);
 
 		break;
+
+	case "/quickChange.html":
+		select_row();
+		double_click_actions({table: "div#main-container table#sounds > tbody", action: "div#main-container a#modifyQuickChangeBtn1"});
+		break;
+
 	case "/application.html":
 
 		// Emphasise reset and upgrade buttons
@@ -248,5 +218,48 @@ switch (self.location.pathname) {
 				expandButton.click();
 			}
 		}, 500);
+
 		break;
+}
+
+function select_row() {
+	// Custom highlight colour
+	css.insertRule(".table-hover > tbody > tr:hover > td, .table > tbody > tr > td.rowselect { background-color: " + lightBgColour + " !important; }", 0);
+	css.insertRule(".table > tbody > tr > td.rowselect > * { color: black; }", 0);
+
+	// Click to select row checkbox
+	var container = document.querySelector("div#main-container");
+	if (container) {
+		container.addEventListener("click", function(event) {
+			var row = event.target.closest("tbody > tr");
+			if (row) {
+				var rowCheckbox = row.querySelector("input[type='checkbox']");
+				if (rowCheckbox) {
+					for (
+						var rowCheckboxes = row.parentNode.querySelectorAll("input[type='checkbox']:checked"), c = 0;
+						c < rowCheckboxes.length;
+						c++
+					) {
+						rowCheckboxes[c].click();
+					}
+					rowCheckbox.click();
+				}
+			}
+		});
+	}
+}
+
+function double_click_actions(_shortcuts) {
+	var shortcuts = Array.isArray(_shortcuts) ? _shortcuts : [_shortcuts];
+	for (var s = 0; s < shortcuts.length; s++) {
+		var table = document.querySelector(shortcuts[s].table);
+		var action = document.querySelector(shortcuts[s].action);
+		if (table && action) {
+			table.setAttribute("_dblClickAction", shortcuts[s].action);
+			action.style.setProperty("background-color", lightBgColour);
+			table.addEventListener("dblclick", function(event) {
+				document.querySelector(this.getAttribute("_dblClickAction")).click();
+			});
+		}
+	}
 }
