@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2023.2.10
+// @version      2023.2.15
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Select first application and PROD, Select current version, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Highlight modal table rows, Emphasise reset and upgrade buttons, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -105,9 +105,7 @@ switch (self.location.pathname) {
 				table.setAttribute("_dblClickAction", DblClickTableActions[a].action);
 				action.style.setProperty("background-color", lightBgColour);
 				table.addEventListener("dblclick", function(event) {
-					if (self.getSelection().isCollapsed) { // skip when selecting text
-						document.querySelector(this.getAttribute("_dblClickAction")).click();
-					}
+					document.querySelector(this.getAttribute("_dblClickAction")).click();
 				});
 			}
 		}
@@ -161,7 +159,7 @@ switch (self.location.pathname) {
 		}, 666);
 
 		// Auto stretch Release table cells DESCRIPTION and select it for easy copy
-		css.insertRule("div#main-container div[ng-show='showReleaseTable'] table > tbody > tr > td:nth-child(2) > p { white-space: unset; }", 0);
+		css.insertRule("div#main-container div[ng-show='showReleaseTable'] table > tbody > tr > td:nth-child(2) > p { white-space: unset; user-select: all; cursor: pointer; }", 0);
 		// Then no need for the bubble tooltip
 		css.insertRule("div#main-container div[ng-show='showReleaseTable'] table > tbody > tr > td:nth-child(2) > p ~ div { display: none !important; }", 0);
 
