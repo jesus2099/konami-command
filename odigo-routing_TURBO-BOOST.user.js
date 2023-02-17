@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.2.13
+// @version      2023.2.17
 // @description  ENABLE CELL TEXT SELECTION: click to select, middle-click to copy; SHOW CELL CROPPED TEXT; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE; SPOT UNWANTED SPACES
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -73,13 +73,13 @@ document.body.addEventListener("mousedown", function(event) {
 });
 
 // ENABLE CELL TEXT SELECTION: click to select, middle-click to copy
-css.insertRule("tbody div[unselectable='on'] { cursor: pointer; }", 0);
-css.insertRule(".x-unselectable { user-select: text; }", 0);
+css.insertRule("table:not([id^='treeview-']) > tbody div[unselectable='on'] { cursor: pointer; }", 0);
+css.insertRule("table:not([id^='treeview-']) > tbody .x-unselectable { user-select: text; }", 0);
 // Odigo achieved to even block CSS user-select: all, somehow, so we have to add a JavaScript
 document.body.addEventListener("click", click_select_copy);
 document.body.addEventListener("mousedown", click_select_copy);
 function click_select_copy(event) {
-	if (event.target.closest("div[unselectable='on']") && event.detail === 1) {
+	if (event.target.closest("table:not([id^='treeview-']) div[unselectable='on']") && event.detail === 1) {
 		if (event.type == "mousedown" && event.button === 1 && typeof Header != "undefined" && navigator.clipboard) {
 			// middle click: copy to clipboard
 			if (event.target.textContent.trim() !== "") {
@@ -102,9 +102,9 @@ function click_select_copy(event) {
 
 // SPOT UNWANTED SPACES
 if (!location.pathname.match(/\/supervision/)) {
-	css.insertRule("tbody > tr > td[role='gridcell'] > div[unselectable='on'][title='" + texts.unwanted_space[lang] + "'] { background-color: " + lightBgColour + "; }", 0);
+	css.insertRule("table:not([id^='treeview-']) > tbody > tr > td[role='gridcell'] > div[unselectable='on'][title='" + texts.unwanted_space[lang] + "'] { background-color: " + lightBgColour + "; }", 0);
 	setInterval(function() {
-		for (var c = 0, gridcells = document.querySelectorAll("tbody > tr > td[role='gridcell'] > div[unselectable='on']:not([title='" + texts.unwanted_space[lang] + "'])"); c < gridcells.length; c++) {
+		for (var c = 0, gridcells = document.querySelectorAll("table:not([id^='treeview-']) > tbody > tr > td[role='gridcell'] > div[unselectable='on']:not([title='" + texts.unwanted_space[lang] + "'])"); c < gridcells.length; c++) {
 			if (gridcells[c].textContent.match(/^\s+\S|\S\s+$/)) {
 				// reveal heading and trailing spaces
 				gridcells[c].setAttribute("title", texts.unwanted_space[lang]);
