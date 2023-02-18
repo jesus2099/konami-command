@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2022.12.14
+// @version      2023.2.19
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -11,7 +11,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2010-09-09; https://web.archive.org/web/20140328200933/userscripts.org/scripts/show/85790 / https://web.archive.org/web/20141011084019/userscripts-mirror.org/scripts/show/85790 / see topic GÓ GÓ AMÍGO
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
+// @require      https://github.com/jesus2099/konami-command/raw/0cbc1a2a5da75b123536b5451ed87f973c74a54a/lib/SUPER.js?version=2023.2.19
 // @grant        none
 // @match        *://*.musicbrainz.org/*
 // @exclude      *://blog.musicbrainz.org/*
@@ -538,8 +538,6 @@ function EASY_DATE_calmDOM() {
 }
 function EASY_DATE_init() {
 	debug("EASY_DATE_init");
-	// use native input value setter to bypass React
-	var nativeInputValueSetter = Object.getOwnPropertyDescriptor(self.HTMLInputElement.prototype, "value").set;
 	for (let years = document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(." + userjs.id + "easydate)"), y = 0; y < years.length; y++) {
 		addAfter(
 			createTag("input", {
@@ -581,16 +579,14 @@ function EASY_DATE_init() {
 								}
 								var input = this.parentNode.querySelector("input[placeholder='" + i + "']");
 								input.focus();
-								nativeInputValueSetter.call(input, ymd[i]);
-								sendEvent(input, "change");
+								set_react_value(input, ymd[i]);
 							}
 							this.style.setProperty("background-color", "#cfc");
 							if (self.location.pathname.match(/\/edit-relationships$/)) {
 								EASY_DATE_cloneDate(this);
 							}
 						} else {
-							nativeInputValueSetter.call(this.previousSibling, this.value);
-							sendEvent(this.previousSibling, "change");
+							set_react_value(this.previousSibling, this.value);
 							if (!this.value.match(/^\d\d\d\d$/)) this.style.setProperty("background-color", "#fcc");
 						}
 					},
