@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2022.12.12
+// @version      2023.2.23
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -10,6 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2009-09-14; https://web.archive.org/web/20131103163355/userscripts.org/scripts/show/57765 / https://web.archive.org/web/20141011084007/userscripts-mirror.org/scripts/show/57765
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://github.com/jesus2099/konami-command/raw/45e79077994ef566d0f7f513f8d838c151f1989d/lib/CONTROL-POMME.js?version=2023.2.23
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits\b/
@@ -41,10 +42,6 @@ var voteColours = true;
 var str_regex_gid = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent); // FF has bugs
 if (FF) { FF = {"1": "#b1ebb0", "0": "#ebb1ba", "-1": "#f2f0a5"}; }
-var mac = /\bMac(intosh| OS)\b/.test(navigator.userAgent);
-var alt = {key: "altKey", label: mac ? "\u2325\u00a0" : "Alt+"}; // Option
-var shift = {key: "shiftKey", label: mac ? "\u21E7\u00a0" : "Shift+"}; // Shift
-var ctrl = {key: mac ? "metaKey" : "ctrlKey", label: mac ? "\u2318\u00a0" : "Control+"}; // Command
 j2css.insertRule("div.edit-list." + userjs + "force, div.edit-list." + userjs + "ninja > div.edit-actions, div.edit-list." + userjs + "ninja > div.edit-details, div.edit-list." + userjs + "ninja > div.edit-notes { overflow: hidden !important; height: 0 !important; !important; padding: 0 !important; margin: 0 !important; }", 0);
 j2css.insertRule("div#" + userjs + "xhrstat { position: fixed; top: 0; left: 0; border: 2px solid black; border-width: 0 2px 2px 0; background-color: #ff6; }", 0);
 j2css.insertRule("tr.rename-artist-credits." + userjs + "yes > th { vertical-align: middle; }", 0);
@@ -72,7 +69,7 @@ var texts = {
 		editing_history: "Editing history",
 		open_edits: "Open edits",
 		reset_votes: "Reset votes",
-		vote_all: " // Vote on all unvoted edits (" + shift.label + "click for all) → ",
+		vote_all: " // Vote on all unvoted edits (" + CONTROL_POMME.shift.label + "click for all) → ",
 	},
 	fr: {
 		double_click_to_vote: "double-cliquer pour voter cette modification",
@@ -80,7 +77,7 @@ var texts = {
 		editing_history: "Historique des modifications",
 		open_edits: "Modifications en attente",
 		reset_votes: "Réinitialiser les votes",
-		vote_all: " // Voter pour toutes les modifications non votées (" + shift.label + "clic pour toutes) → ",
+		vote_all: " // Voter pour toutes les modifications non votées (" + CONTROL_POMME.shift.label + "clic pour toutes) → ",
 	},
 	it: {
 		double_click_to_vote: "fare doppio clic per votare questa modifica",
@@ -88,7 +85,7 @@ var texts = {
 		editing_history: "Cronologia modifiche",
 		open_edits: "Modifiche in corso",
 		reset_votes: "Reimposta voti",
-		vote_all: " // Vota per tutte le modifiche non votate (" + shift.label + "clic per tutte) → ",
+		vote_all: " // Vota per tutte le modifiche non votate (" + CONTROL_POMME.shift.label + "clic per tutte) → ",
 	},
 	nl: {
 		double_click_to_vote: "dubbelklik om deze wijziging te stemmen",
@@ -96,7 +93,7 @@ var texts = {
 		editing_history: "Alle bewerkingen",
 		open_edits: "Open bewerkingen",
 		reset_votes: "Stemmen terugzetten",
-		vote_all: " // Stem op alle niet-gestemde wijzigingen (" + shift.label + "klik voor alles) → ",
+		vote_all: " // Stem op alle niet-gestemde wijzigingen (" + CONTROL_POMME.shift.label + "klik voor alles) → ",
 	},
 };
 if (search_form) {
@@ -212,7 +209,7 @@ if (editform) {
 		self.removeEventListener("beforeunload", preventLosingUnsavedChanges); // Allow unload on submit (volontary)
 		event.preventDefault();
 		if (pendingXHRvote > 0) {
-			if (submitShift || confirm("GOING BACKGROUND (AJAX)? (or not)\n\n" + pendingXHRvote + " background vote" + (pendingXHRvote == 1 ? " is" : "s are") + " pending,\ndo you want to add more votes to this queue?\n\n" + shift.label + "click on submit to bypass this confirmation next time.")) {
+			if (submitShift || confirm("GOING BACKGROUND (AJAX)? (or not)\n\n" + pendingXHRvote + " background vote" + (pendingXHRvote == 1 ? " is" : "s are") + " pending,\ndo you want to add more votes to this queue?\n\n" + CONTROL_POMME.shift.label + "click on submit to bypass this confirmation next time.")) {
 				var pendingvotes = editform.querySelectorAll("div.voteopts input[type='radio']:not([value='-2']):not([disabled])");
 				for (let pv = 0; pv < pendingvotes.length; pv++) {
 					if (pendingvotes[pv].checked) {
@@ -276,7 +273,7 @@ if (editform) {
 		labinput.addEventListener("click", function(event) {
 			var rad = this.querySelector("input[type='radio']");
 			if (rangeclick && (rad || this)) {
-				if (event[shift.key] && lastradio && rad != lastradio && rad.value == lastradio.value) {
+				if (event[CONTROL_POMME.shift.key] && lastradio && rad != lastradio && rad.value == lastradio.value) {
 					rangeclick = false;
 					rangeVote(event, rad.value, Math.min(radios.indexOf(rad), radios.indexOf(lastradio)), Math.max(radios.indexOf(rad), radios.indexOf(lastradio)));
 					rangeclick = true;
@@ -298,7 +295,7 @@ if (editform) {
 	}
 	submitButton = editform.querySelector("div.row > span.buttons > button");
 	submitButton.addEventListener("click", submitShiftKey, false);
-	submitButton.setAttribute("title", shift.label + "click for background voting of selected edits");
+	submitButton.setAttribute("title", CONTROL_POMME.shift.label + "click for background voting of selected edits");
 	if (submitButtonOnTopToo) {
 		submitClone = editform.insertBefore(getParent(submitButton, "div", "row").cloneNode(true), editform.firstChild).querySelector("button[type='submit']");
 		submitClone.addEventListener("click", submitShiftKey, false);
@@ -316,7 +313,7 @@ if (editform) {
 				collexpa.style.setProperty("cursor", "pointer");
 				collexpa.style.setProperty("font-size", "2em");
 				preventDefault(collexpa, "mousedown");
-				collexpa.setAttribute("title", "collapse same EDITOR edits: " + ctrl.label.toUpperCase() + "click\n\ncollapse same TYPE edits: " + alt.label.toUpperCase() + "click\n\ncollapse " + (collexpa.classList.contains("autoedit") ? "auto" : "same VOTED ") + "edits: " + ctrl.label.toUpperCase() + alt.label.toUpperCase() + "click\n\ncollapse ALL edits: " + shift.label.toUpperCase() + "click");
+				collexpa.setAttribute("title", "collapse same EDITOR edits: " + CONTROL_POMME.ctrl.label.toUpperCase() + "click\n\ncollapse same TYPE edits: " + CONTROL_POMME.alt.label.toUpperCase() + "click\n\ncollapse " + (collexpa.classList.contains("autoedit") ? "auto" : "same VOTED ") + "edits: " + CONTROL_POMME.ctrl.label.toUpperCase() + CONTROL_POMME.alt.label.toUpperCase() + "click\n\ncollapse ALL edits: " + CONTROL_POMME.shift.label.toUpperCase() + "click");
 				collexpa.setAttribute("rel", "collapse");
 				collexpa.addEventListener("click", function(event) {
 					var expand = (this.getAttribute("rel") == "expand");
@@ -329,25 +326,25 @@ if (editform) {
 					var userCSS = "div.edit-header > p.subheader > a[href*='/user/']";
 					var voteCSS = "div.edit-list > div.edit-actions > div.voteopts input[type='radio']:checked";
 					var autoedit = false;
-					if (!event[shift.key]) {
-						if (event[alt.key] && event[ctrl.key]) {
+					if (!event[CONTROL_POMME.shift.key]) {
+						if (event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key]) {
 							if (this.classList.contains("autoedit")) autoedit = true;
 							else {
 								vote = editheader.parentNode.querySelector(voteCSS);
 								if (vote) vote = vote.getAttribute("value");
 							}
-						} else if (event[alt.key]) {
+						} else if (event[CONTROL_POMME.alt.key]) {
 							var edittype = editheader.getAttribute("class").match(/\W([a-z-]+)$/);
 							if (edittype) {
 								editheadersel += "." + edittype[1];
 							}
-						} else if (event[ctrl.key]) {
+						} else if (event[CONTROL_POMME.ctrl.key]) {
 							if ((editor = editheader.querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/))) {
 								editor = editor[1];
 							}
 						}
 					}
-					if (event[alt.key] || event[ctrl.key] || event[shift.key]) {
+					if (event[CONTROL_POMME.alt.key] || event[CONTROL_POMME.ctrl.key] || event[CONTROL_POMME.shift.key]) {
 						var others = editform.querySelectorAll(editheadersel + " a." + userjs + (autoedit ? ".autoedit" : "") + "[rel='" + (expand ? "expand" : "collapse") + "']");
 						for (let other = 0; other < others.length; other++) {
 							var ovote = others[other].closest("div.edit-list").querySelector(voteCSS);
@@ -559,7 +556,7 @@ function rangeVote(event, vote, min, max) {
 	if (vote != "reset-votes") {
 		if (event.detail === 1) { // first click
 			for (let i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : radios.length); i++) { // FF shift+click label NG
-				if (radios[i].getAttribute("value") == vote && !radios[i].checked && !ninja(event, radios[i].closest("div.edit-list")) && (event[shift.key] || notVotedYet(radios[i]))) {
+				if (radios[i].getAttribute("value") == vote && !radios[i].checked && !ninja(event, radios[i].closest("div.edit-list")) && (event[CONTROL_POMME.shift.key] || notVotedYet(radios[i]))) {
 					sendEvent(radios[i], "click");
 				}
 			}
@@ -600,7 +597,7 @@ function ninja(event, edit, collapse, specificClassName) {
 	if (collapse != null) {
 		var allbutheader = "div.edit-actions, div.edit-notes, div.edit-details";
 		var editEntryContent = specificClassName ? [edit] : edit.querySelectorAll(allbutheader);
-		if (event && event.detail > 0 && !event[alt.key] && !event[ctrl.key] && !event[shift.key]) {
+		if (event && event.detail > 0 && !event[CONTROL_POMME.alt.key] && !event[CONTROL_POMME.ctrl.key] && !event[CONTROL_POMME.shift.key]) {
 			if (collapse) {
 				for (var i = 0; i < editEntryContent.length; i++) {
 					editEntryContent[i].style.setProperty("display", "none");
@@ -635,7 +632,7 @@ function updateXHRstat(nbr) {
 	}
 	stat.style.setProperty("display", nbr > 0 ? "block" : "none");
 }
-function submitShiftKey(event) { submitShift = event[shift.key]; }
+function submitShiftKey(event) { submitShift = event[CONTROL_POMME.shift.key]; }
 function preventDefault(node, eventName) { node.addEventListener(eventName, function(event) { event.preventDefault(); }, false); }
 function spreadBackgroundColour(event) {
 	if (
