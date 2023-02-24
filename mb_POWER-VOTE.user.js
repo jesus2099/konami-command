@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2023.2.23
+// @version      2023.2.24
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -313,7 +313,7 @@ if (editform) {
 				collexpa.style.setProperty("cursor", "pointer");
 				collexpa.style.setProperty("font-size", "2em");
 				preventDefault(collexpa, "mousedown");
-				collexpa.setAttribute("title", "collapse same EDITOR edits: " + CONTROL_POMME.ctrl.label.toUpperCase() + "click\n\ncollapse same TYPE edits: " + CONTROL_POMME.alt.label.toUpperCase() + "click\n\ncollapse " + (collexpa.classList.contains("autoedit") ? "auto" : "same VOTED ") + "edits: " + CONTROL_POMME.ctrl.label.toUpperCase() + CONTROL_POMME.alt.label.toUpperCase() + "click\n\ncollapse ALL edits: " + CONTROL_POMME.shift.label.toUpperCase() + "click");
+				collexpa.setAttribute("title", "collapse same EDITOR edits: " + CONTROL_POMME.ctrl.label.toUpperCase() + "click\n\ncollapse same TYPE edits: " + CONTROL_POMME.ctrl.label.toUpperCase() + CONTROL_POMME.shift.label.toUpperCase() + "click\n\ncollapse " + (collexpa.classList.contains("autoedit") ? "auto" : "same VOTED ") + "edits: " + CONTROL_POMME.ctrl.label.toUpperCase() + CONTROL_POMME.alt.label.toUpperCase() + "click\n\ncollapse ALL edits: " + CONTROL_POMME.shift.label.toUpperCase() + "click");
 				collexpa.setAttribute("rel", "collapse");
 				collexpa.addEventListener("click", function(event) {
 					var expand = (this.getAttribute("rel") == "expand");
@@ -326,22 +326,20 @@ if (editform) {
 					var userCSS = "div.edit-header > p.subheader > a[href*='/user/']";
 					var voteCSS = "div.edit-list > div.edit-actions > div.voteopts input[type='radio']:checked";
 					var autoedit = false;
-					if (!event[CONTROL_POMME.shift.key]) {
-						if (event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key]) {
-							if (this.classList.contains("autoedit")) autoedit = true;
-							else {
-								vote = editheader.parentNode.querySelector(voteCSS);
-								if (vote) vote = vote.getAttribute("value");
-							}
-						} else if (event[CONTROL_POMME.alt.key]) {
-							var edittype = editheader.getAttribute("class").match(/\W([a-z-]+)$/);
-							if (edittype) {
-								editheadersel += "." + edittype[1];
-							}
-						} else if (event[CONTROL_POMME.ctrl.key]) {
-							if ((editor = editheader.querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/))) {
-								editor = editor[1];
-							}
+					if (event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key]) {
+						if (this.classList.contains("autoedit")) autoedit = true;
+						else {
+							vote = editheader.parentNode.querySelector(voteCSS);
+							if (vote) vote = vote.getAttribute("value");
+						}
+					} else if (event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key]) {
+						var edittype = editheader.getAttribute("class").match(/\W([a-z-]+)$/);
+						if (edittype) {
+							editheadersel += "." + edittype[1];
+						}
+					} else if (event[CONTROL_POMME.ctrl.key]) {
+						if ((editor = editheader.querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/))) {
+							editor = editor[1];
 						}
 					}
 					if (event[CONTROL_POMME.alt.key] || event[CONTROL_POMME.ctrl.key] || event[CONTROL_POMME.shift.key]) {
