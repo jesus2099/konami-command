@@ -592,27 +592,14 @@ function disable(cont, dis) {
 function ninja(event, edit, collapse, specificClassName) {
 	disable(edit, collapse);
 	var ninjaClassName = specificClassName ? specificClassName : "ninja";
-	if (collapse != null) {
+	if (collapse !== null) {
 		var allbutheader = "div.edit-actions, div.edit-notes, div.edit-details";
 		var editEntryContent = specificClassName ? [edit] : edit.querySelectorAll(allbutheader);
-		if (event && event.detail > 0 && !event[CONTROL_POMME.alt.key] && !event[CONTROL_POMME.ctrl.key] && !event[CONTROL_POMME.shift.key]) {
-			if (collapse) {
-				for (var i = 0; i < editEntryContent.length; i++) {
-					editEntryContent[i].style.setProperty("display", "none");
-				}
-			} else {
-				for (var i = 0; i < editEntryContent.length; i++) {
-					editEntryContent[i].classList.remove(userjs + "ninja");
-					editEntryContent[i].style.setProperty("display", "block");
-				}
-			}
-		} else {
-			for (var i = 0; i < editEntryContent.length; i++) {
-				editEntryContent[i].style.setProperty("display", collapse ? "none" : "");
-			}
-			if (collapse) edit.classList.add(userjs + ninjaClassName);
-			else edit.classList.remove(userjs + ninjaClassName);
+		for (var i = 0; i < editEntryContent.length; i++) {
+			editEntryContent[i].style.setProperty("display", collapse ? "none" : "");
 		}
+		if (collapse) edit.classList.add(userjs + ninjaClassName);
+		else edit.classList.remove(userjs + ninjaClassName);
 	} else return edit.classList.contains(userjs + ninjaClassName);
 }
 function updateXHRstat(nbr) {
