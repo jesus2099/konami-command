@@ -22,7 +22,8 @@ From https://github.com/jesus2099/konami-command/issues/735#issuecomment-1353186
 - Use the **Option** modifier sparingly [¹]
   This is called **Alt** outside Mac
   Then let's call it _modifier key 3_ (**MK3**)
-- Don't use Ctrl+Alt combinations (MK1+MK3) [³]
+- Don't use Ctrl+Alt combinations with key (MK1+MK3), which makes AltGr on Windows [³]
+  OK for Ctrl+Alt+click, though, even on Linux where it works, unlike Alt+click
 - As much as possible, avoid using the **Control** key as a modifier [¹]
   I will also avoid using the **Windows** key, as it is not consistently supported by browsers
 - List modifier keys in the correct order
