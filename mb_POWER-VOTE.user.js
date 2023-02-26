@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2023.2.24
+// @version      2023.2.26
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -34,7 +34,6 @@ var showbottom = true;
 var border = "thin dashed red"; // leave "" for defaults
 var submitButtonOnTopToo = true;
 var onlySubmitTabIndexed = true; // hit tab after typed text or voted directly goes to a submit button
-var scrollToEdits = false; // will never get in the way if you have scrolled down yourself
 var rangeclick = true; // multiple votes by clicking first vote then shift-clicking last radio in a range
 var collapseEdits = true;
 var voteColours = true;
@@ -48,6 +47,7 @@ j2css.insertRule("tr.rename-artist-credits." + userjs + "yes > th { vertical-ali
 j2css.insertRule("tr.rename-artist-credits." + userjs + "yes > td { color: #f00; font-weight: bolder; font-size: 2em; text-shadow: 1px 1px 0 #663; text-transform: uppercase; }", 0);
 j2css.insertRule("/*div#content >*/ form[action='/search/edits'] span." + userjs + "-permalink { background-color: #ffc; }", 0);
 j2css.insertRule("/*div#content >*/ form[action='/search/edits'] span." + userjs + "-permalink[data-gid=''] { font-style: italic; }", 0);
+// Hide automod “Vote on all edits” feature, because POWER VOTE is better
 if (showtop || submitButtonOnTopToo) {
 	j2css.insertRule("div.overall-vote { display: none; }", 0);
 }
@@ -96,6 +96,7 @@ var texts = {
 		vote_all: " // Stem op alle niet-gestemde wijzigingen (" + CONTROL_POMME.shift.label + "klik voor alles) → ",
 	},
 };
+// Search form: Add permalinks to searched entities (all except recordings, because of MBS-12560)
 if (search_form) {
 	(new MutationObserver(function(mutations, observer) {
 		for (var m = 0; m < mutations.length; m++) {
@@ -119,7 +120,7 @@ if (search_form) {
 				var gid = span_autocomplete.querySelector("input[type='hidden'].gid").value;
 				var id = span_autocomplete.querySelector("input[type='hidden'].id").value;
 				var name = span_autocomplete.querySelector("input.name.ui-autocomplete-input.lookup-performed").value;
-				if (type && (gid || id) && name && type[1] != "recording") { // TODO: remove recording exlusion when MBS bug is fixed #703
+				if (type && (gid || id) && name && type[1] != "recording") { // TODO: remove recording exlusion when MBS bug is fixed #703 https://tickets.metabrainz.org/browse/MBS-12560
 					type = type[1];
 					if (type == "editor") {
 						type = "user";
@@ -172,7 +173,7 @@ if (search_form) {
 								}
 							});
 							xhr.addEventListener("load", function(event) {
-								// Reached only if not redirected to MBID (bug with work entity type)
+								// Reached only if not redirected to MBID (bug with work entity type) https://tickets.metabrainz.org/browse/MBS-12562
 								var MBID = this.responseText.match(new RegExp("<h1>.+\\b(" + str_regex_gid + ")\\b"));
 								if (MBID) {
 									this.updateGid(MBID[1]);
@@ -195,6 +196,7 @@ if (search_form) {
 		}
 	}, 666);
 }
+// Edit list
 if (editform) {
 	var radios = [];
 	var radiosafe = [];
@@ -221,9 +223,7 @@ if (editform) {
 			this.submit();
 		}
 	}, false);
-	if ((inputs = document.querySelector("div#content div.overall-vote"))) {
-		removeNode(inputs);
-	}
+	// Warn of destructive “Rename artist credits: Yes” artist merges, big visible red “YES”
 	for (let rac = editform.querySelectorAll("tr.rename-artist-credits > td"), r = 0; r < rac.length; r++) {
 		if (rac[r].textContent.match(/jah?|yes|s[íì]|oui|voor|kyllä|ναι|はい/i)) {
 			rac[r].parentNode.classList.add(userjs + "yes");
@@ -248,19 +248,39 @@ if (editform) {
 		}
 	}, true);
 	inputs = editform.querySelectorAll("div.voteopts input[type='radio']");
+	// Apply visible vote colours on changed votes
 	if (voteColours) {
-		editform.addEventListener("change", spreadBackgroundColour);
+		editform.addEventListener("change", function(event) {
+			if (
+				event.target !== event.currentTarget
+				&& event.target.tagName == "INPUT"
+				&& event.target.getAttribute("type") == "radio"
+				&& event.target.getAttribute("name").match(/^enter-vote\.vote\.\d+\.vote$/)
+			) {
+				setTimeout(function() {
+					var actions = getParent(this, "div", "edit-actions");
+					if (this.value != -2) {
+						actions.style.setProperty("background-color", FF ? FF[this.value] : self.getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color"));
+					} else {
+						actions.style.removeProperty("background-color");
+					}
+				}.bind(event.target), 0);
+				event.stopPropagation();
+			}
+		});
 	}
 	for (let i = 0; i < inputs.length; i++) {
-		if (onlySubmitTabIndexed) { inputs[i].setAttribute("tabindex", "-1"); }
+		if (onlySubmitTabIndexed) { inputs[i].setAttribute("tabindex", "-1"); } // remove keyboard navigation from vote radio buttons (good idea?)
 		radios.push(inputs[i]);
+		// Apply visible vote colours on loaded edits
 		if (voteColours && inputs[i].checked && inputs[i].value != -2) {
 			setTimeout(function() {
 				sendEvent(this, "change");
 			}.bind(inputs[i]), 0);
 		}
+		// Double click to vote single edits
 		var labinput = getParent(inputs[i], "label") || inputs[i];
-		preventDefault(labinput, "mousedown");
+		preventDefault(labinput, "mousedown"); // TODO: replace with user-select: none or something like that
 		labinput.setAttribute("title", texts[lang].double_click_to_vote);
 		labinput.addEventListener("dblclick", function(event) {
 			var edit = this.closest("div.edit-list");
@@ -270,6 +290,7 @@ if (editform) {
 				queueVote(edit, editId.value, vote);
 			}
 		});
+		// Range click
 		labinput.addEventListener("click", function(event) {
 			var rad = this.querySelector("input[type='radio']");
 			if (rangeclick && (rad || this)) {
@@ -285,6 +306,7 @@ if (editform) {
 		}, false);
 		if (inputs[i].checked) { radiosafe.push(inputs[i]); }
 	}
+	// Display global vote bar when more than 1 votable edit
 	if (radios.length > 4) {
 		// init localised vote texts directly from MBS page
 		for (var v = 0, votes = ["yes", "no", "abstain", "none"]; v < votes.length; v++) {
@@ -300,6 +322,7 @@ if (editform) {
 		submitClone = editform.insertBefore(getParent(submitButton, "div", "row").cloneNode(true), editform.firstChild).querySelector("button[type='submit']");
 		submitClone.addEventListener("click", submitShiftKey, false);
 	}
+	// (mass) collapse edit toggles
 	if (collapseEdits) {
 		var edits = editform.querySelectorAll("div.edit-list");
 		for (let ed = 0; ed < edits.length; ed++) {
@@ -360,6 +383,7 @@ if (editform) {
 			}
 		}
 	}
+	// If user started scrolling: scroll the page down of the height of inserted top buttons and toolbar, to avoid scroll jumps
 	if (self.pageYOffset > 0) {
 		var cs, offset = 0;
 		if (submitClone && (cs = self.getComputedStyle(getParent(submitClone, "div", "row")))) {
@@ -373,33 +397,6 @@ if (editform) {
 		if (offset != 0) {
 			self.scrollTo(0, self.pageYOffset + offset);
 		}
-	} else if (scrollToEdits) {
-		var foundcount = document.querySelector("div#page div.search-toggle > p > strong");
-		var navpages = document.querySelector("div#edits > p.pageselector > em");
-		var addedStuff;
-		if (navpages) {
-			navpages.appendChild(document.createTextNode(" — "));
-			addedStuff = navpages.appendChild(foundcount.cloneNode(true));
-		} else if (submitClone) {
-			addedStuff = getParent(submitClone, "div", "row").appendChild(foundcount.cloneNode(true));
-			addedStuff.style.setProperty("float", "left");
-		} else {
-			addedStuff = editform.insertBefore(getParent(foundcount, "div", "search-toggle").cloneNode(true), editform.firstChild);
-		}
-		removeNode(getParent(foundcount, "div", "search-toggle"));
-		var artistlnk = document.getElementsByClassName("artistheader");
-		if (addedStuff && artistlnk && artistlnk[0] && artistlnk[0].getElementsByTagName("a") && artistlnk[0].getElementsByTagName("a")[0]) {
-			addedStuff.appendChild(document.createTextNode(" for "));
-			artistlnk = artistlnk[0].getElementsByTagName("a")[0].cloneNode(true);
-			addedStuff.appendChild(artistlnk);
-			artistlnk.style.setProperty("border", "0");
-			artistlnk.style.setProperty("padding", "0");
-			artistlnk.style.setProperty("margin", "0");
-			artistlnk.style.setProperty("font-size", "1.2em");
-			artistlnk.style.setProperty("font-weight", "normal");
-			artistlnk.style.setProperty("color", "black");
-		}
-		self.scrollTo(0, findPos(document.getElementById("edits")).y - self.getComputedStyle(document.getElementById("header-menu")).getPropertyValue("height").match(/\d+/));
 	}
 }
 function queueApprove(edit, editId) {
@@ -547,7 +544,7 @@ function shortcut(vote, label) {
 		s: {float: "none", margin: FF ? "0 3px 0 0" : "0 3px", padding: FF ? "0 2px" : "0 3px"},
 		e: {click: function(event) { rangeVote(event, vote); }}
 	});
-	if (onlySubmitTabIndexed) { button.setAttribute("tabindex", "-1"); }
+	if (onlySubmitTabIndexed) { button.setAttribute("tabindex", "-1"); } // remove keyboard navigation from mass vote buttons (good idea?)
 	return button;
 }
 function rangeVote(event, vote, min, max) {
@@ -566,16 +563,6 @@ function rangeVote(event, vote, min, max) {
 function notVotedYet(radiox) {
 	return getParent(radiox, "div", "voteopts").querySelector("input[type='radio'][value='-2']").checked;
 }
-function findPos(obj) { /* http://www.quirksmode.org/js/findpos.html */
-	var curleft = 0, curtop = 0;
-	if (obj.offsetParent) {
-		do {
-			curleft += obj.offsetLeft;
-			curtop += obj.offsetTop;
-		} while ((obj = obj.offsetParent));
-	}
-	return {"x": curleft, "y": curtop};
-}
 function disable(cont, dis) {
 	var inputs = cont.querySelectorAll("input, select, textarea, button");
 	if (inputs.length > 0) {
@@ -590,9 +577,9 @@ function disable(cont, dis) {
 	} else { return false; }
 }
 function ninja(event, edit, collapse, specificClassName) {
-	disable(edit, collapse);
 	var ninjaClassName = specificClassName ? specificClassName : "ninja";
 	if (collapse !== null) {
+		disable(edit, collapse);
 		var allbutheader = "div.edit-actions, div.edit-notes, div.edit-details";
 		var editEntryContent = specificClassName ? [edit] : edit.querySelectorAll(allbutheader);
 		for (var i = 0; i < editEntryContent.length; i++) {
@@ -619,21 +606,3 @@ function updateXHRstat(nbr) {
 }
 function submitShiftKey(event) { submitShift = event[CONTROL_POMME.shift.key]; }
 function preventDefault(node, eventName) { node.addEventListener(eventName, function(event) { event.preventDefault(); }, false); }
-function spreadBackgroundColour(event) {
-	if (
-		event.target !== event.currentTarget
-		&& event.target.tagName == "INPUT"
-		&& event.target.getAttribute("type") == "radio"
-		&& event.target.getAttribute("name").match(/^enter-vote\.vote\.\d+\.vote$/)
-	) {
-		setTimeout(function() {
-			var actions = getParent(this, "div", "edit-actions");
-			if (this.value != -2) {
-				actions.style.setProperty("background-color", FF ? FF[this.value] : self.getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color"));
-			} else {
-				actions.style.removeProperty("background-color");
-			}
-		}.bind(event.target), 0);
-		event.stopPropagation();
-	}
-}
