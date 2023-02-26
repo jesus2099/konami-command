@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2023.2.26
+// @version      2023.2.27
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -578,7 +578,7 @@ function disable(cont, dis) {
 }
 function ninja(event, edit, collapse, specificClassName) {
 	var ninjaClassName = specificClassName ? specificClassName : "ninja";
-	if (collapse !== null) {
+	if (typeof collapse != "undefined") {
 		disable(edit, collapse);
 		var allbutheader = "div.edit-actions, div.edit-notes, div.edit-details";
 		var editEntryContent = specificClassName ? [edit] : edit.querySelectorAll(allbutheader);
