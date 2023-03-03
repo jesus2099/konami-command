@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2023.2.19.33
-// @description  musicbrainz.org + acoustid.org: Remember last edit notes and dates
+// @version      2023.3.3
+// @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_ELEPHANT-EDITOR.user.js
@@ -44,10 +44,8 @@
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 var textLabels = ["n-1", "n-2", "n-3", "n-4", "n-5", "n-6", "n-7", "n-8", "n-9", "n-10"]; /* maximum 10 labels empty [] will skip buttons */
 var delLabel = "×";
-var copyDateLabels = ["↓", "↑", "copy date"];
 var setPrevNoteOnLoad = true; /* "true" will restore last edit note on load (user can choose text with buttons in either case) */
 var setPrevNoteOnEditPageLoad = false; /* "true" can be troublesome if you just want to vote, believe me */
-var setPrevDateOnLoad = false; /* "true" can be troublesome when you don’t need date any more and you forget to clear it */
 /* funky colours */
 var cOK = "greenyellow";
 // var cNG = "pink";
@@ -64,8 +62,6 @@ var save = !localStorage.getItem(userjs + "forget") && (editpage || !editsearchp
 var content = document.querySelector(mb ? "#page" : "div.content");
 var savedHeight = localStorage.getItem(userjs + "_savedHeight");
 var notetext;
-var reldates = [];
-var xdate = [];
 var submitbtn;
 wait_for_elements((mb ? "#page" : "div.content") + " textarea" + (mb ? ".edit-note, textarea#edit-note-text" : ""), init);
 function init(edit_notes) {
@@ -74,8 +70,6 @@ function init(edit_notes) {
 		if (acoustid) {
 			notetext.style.setProperty("height", "8em");
 			notetext.style.setProperty("width", "100%");
-		} else {
-			reldates = content.querySelectorAll("span.partial-date");
 		}
 		if (savedHeight) {
 			notetext.style.setProperty("height", savedHeight + "px");
@@ -92,22 +86,6 @@ function init(edit_notes) {
 	} else { notetext = false; }
 	submitbtn = content.querySelector(mb ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
 	if (re) submitbtn = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
-	if (reldates.length == 2) {
-		xdate = [
-			[
-				"jesus2099userjs::last_editbegindate",
-				reldates[0].querySelector("input[placeholder='YYYY']"),
-				reldates[0].querySelector("input[placeholder='MM']"),
-				reldates[0].querySelector("input[placeholder='DD']")
-			],
-			[
-				"jesus2099userjs::last_editenddate",
-				reldates[1].querySelector("input[placeholder='YYYY']"),
-				reldates[1].querySelector("input[placeholder='MM']"),
-				reldates[1].querySelector("input[placeholder='DD']")
-			]
-		];
-	}
 	if (notetext) {
 		if (mb) {
 			var carcan = getParent(notetext, "div", "half-width");
@@ -147,61 +125,12 @@ function init(edit_notes) {
 			buttons.appendChild(butt);
 			buttons.appendChild(document.createTextNode(" "));
 		}
-		buttons.appendChild(createClearButtor("notetext"));
+		buttons.appendChild(createClearButtor());
 		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
 		notetext.parentNode.insertBefore(buttons, notetext);
 		let lastnotetext = localStorage.getItem(notetextStorage + "00");
 		if (save && !editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
 			set_react_value(notetext, lastnotetext);
-		}
-		if (reldates.length == 2) {
-			createClearButtor("dates");
-			/* date memories */
-			for (var ixd = 0; ixd < xdate.length; ixd++) {
-				var lastdatey = localStorage.getItem(xdate[ixd][0] + "_y");
-				var lastdatem = localStorage.getItem(xdate[ixd][0] + "_m");
-				var lastdated = localStorage.getItem(xdate[ixd][0] + "_d");
-				let butt = createButtor(textLabels[0]);
-				butt.setAttribute("id", xdate[ixd][0]);
-				if (!lastdatey) {
-					butt.setAttribute("disabled", "true");
-					butt.style.setProperty("opacity", ".5");
-				} else {
-					butt.setAttribute("title", lastdatey + "-" + lastdatem + "-" + lastdated);
-					butt.setAttribute("value", butt.getAttribute("title").replace(/-null/g, ""));
-					butt.addEventListener("click", function(event) {
-						var xdymd = this.getAttribute("title").match(/^(.*)-(.*)-(.*)$/);
-						for (var iixd = 0, acts = ["YYYY", "MM", "DD"]; iixd < 3; iixd++) {
-							var input = this.parentNode.querySelector("input[placeholder='" + acts[iixd] + "']");
-							set_react_value(input, xdymd[iixd + 1].match(/^\d+$/));
-							if (iixd == 0) focusYYYY(input);
-						}
-						if (event.shiftKey) {
-							sendEvent(this.parentNode.getElementsByTagName("input")[3], "click");
-						}
-					}, false); // onclick
-				}
-				xdate[ixd][1].parentNode.setAttribute("title", "shift+click to change both dates at once");
-				addAfter(butt, xdate[ixd][3]);
-				addAfter(document.createTextNode(" "), xdate[ixd][3]);
-				if (setPrevDateOnLoad && localStorage.getItem(xdate[ixd][0]) == "1") {
-					sendEvent(document.getElementById(xdate[ixd][0]), "click");
-				}
-			}
-			/* copy dates */
-			for (var icd = 0; icd < 2; icd++) {
-				let buttcd = createButtor(copyDateLabels[icd]);
-				buttcd.setAttribute("title", copyDateLabels[2]);
-				buttcd.addEventListener("click", function(event) {
-					var src = copyDateLabels.indexOf(this.getAttribute("value"));
-					for (var icdymd = 1; icdymd < 4; icdymd++) {
-						set_react_value(xdate[src == 1 ? 0 : 1][icdymd], xdate[src][icdymd].value);
-					}
-					focusYYYY(xdate[src][1]);
-				}, false); // onclick
-				addAfter(buttcd, xdate[icd][3]);
-				addAfter(document.createTextNode(" "), xdate[icd][3]);
-			}
 		}
 	}
 	if (self.location.href.match(/edit-relationships$/)) {
@@ -230,30 +159,6 @@ function saveNote() {
 				localStorage.setItem(notetextStorage + "00", thisnotetext);
 			}
 		}
-		if (reldates.length == 2) {
-			for (var ixd = 0; ixd < xdate.length; ixd++) {
-				var ndy = xdate[ixd][1].value;
-				var ndm = xdate[ixd][2].value;
-				var ndd = xdate[ixd][3].value;
-				if (ndy.match(/^\d{4}$/)) {
-					localStorage.setItem(xdate[ixd][0], "1");
-					localStorage.setItem(xdate[ixd][0] + "_y", ndy);
-					if (ndm.match(/^\d{1,2}$/)) {
-						localStorage.setItem(xdate[ixd][0] + "_m", ndm);
-						if (ndd.match(/^\d{1,2}$/)) {
-							localStorage.setItem(xdate[ixd][0] + "_d", ndd);
-						} else {
-							localStorage.removeItem(xdate[ixd][0] + "_d");
-						}
-					} else {
-						localStorage.removeItem(xdate[ixd][0] + "_m");
-						localStorage.removeItem(xdate[ixd][0] + "_d");
-					}
-				} else if (ndy.trim() == "") {
-					localStorage.setItem(xdate[ixd][0], "0");
-				}
-			}
-		}
 	}
 }
 function createButtor(label, width) {
@@ -261,45 +166,16 @@ function createButtor(label, width) {
 	if (width) { butt.style.setProperty("width", width); }
 	return butt;
 }
-function createClearButtor(input) {
-	let butt;
-	switch (input) {
-		case "notetext":
-			butt = createButtor(delLabel, "25px");
-			butt.addEventListener("click", function(event) {
-				set_react_value(notetext, "");
-				notetext.focus();
-				if (event.shiftKey) { sendEvent(submitbtn, "click"); }
-			}, false); // onclick
-			butt.style.setProperty("color", "red");
-			butt.style.setProperty("background-color", cWARN);
-			return butt;
-			// break;
-		case "dates":
-			for (var i = 0; i < 2; i++) {
-				butt = createButtor(delLabel, "25px");
-				butt.setAttribute("id", userjs + "deldate" + i);
-				butt.addEventListener("click", function(event) {
-					var id = this.getAttribute("id").charAt((userjs + "deldate").length);
-					for (var nii = 1; nii < 4; nii++) {
-						set_react_value(xdate[id][nii], "");
-					}
-					if (event.shiftKey) { sendEvent(document.getElementById(userjs + "deldate" + (id == 0 ? 1 : 0)), "click"); }
-					focusYYYY(xdate[id][1]);
-					event.cancelBubble = true;
-					if (event.stopPropagation) event.stopPropagation();
-				}, false); // onclick
-				addAfter(butt, xdate[i][3]);
-				addAfter(document.createTextNode(" "), xdate[i][3]);
-			}
-			break;
-	}
-}
-function focusYYYY(input) {
-	if (input.style.getPropertyValue("display") == "none" && input.nextSibling.getAttribute("placeholder") == "YYY+") // link to EASY_DATE
-		input.nextSibling.focus();
-	else
-		input.focus();
+function createClearButtor() {
+	let butt = createButtor(delLabel, "25px");
+	butt.addEventListener("click", function(event) {
+		set_react_value(notetext, "");
+		notetext.focus();
+		if (event.shiftKey) { sendEvent(submitbtn, "click"); }
+	}, false); // onclick
+	butt.style.setProperty("color", "red");
+	butt.style.setProperty("background-color", cWARN);
+	return butt;
 }
 function wait_for_elements(selector, callback) {
 	var wait_for_elements_interval_id = setInterval(function() {
