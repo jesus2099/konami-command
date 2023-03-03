@@ -24,6 +24,7 @@ globals:
  createTag:           readonly
  disableInputs:       readonly
  enableInputs:        readonly
+ force_value:         readonly
  getParent:           readonly
  getSibling:          readonly
  removeChildren:      readonly
