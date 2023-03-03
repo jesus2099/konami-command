@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2023.3.3
+// @version      2023.3.3.1040
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -596,11 +596,20 @@ function EASY_DATE_init() {
 			), years[y]);
 		years[y].classList.add(userjs.id + "easydate");
 		years[y].style.setProperty("display", "none");
-		years[y].addEventListener("change", function(event) {
-			if (this.nextSibling.value != this.value) {
-				this.nextSibling.value = this.value;
+		(new MutationObserver(function(mutations, observer) {
+			// copy YYYY value to YYY+ when it is changed by MBS
+			for (var m = 0; m < mutations.length; m++) {
+				if (
+					mutations[m].type === "attributes"
+					&&
+					mutations[m].target.matches("input[type='text'][placeholder='YYYY'].partial-date-year." + userjs.id + "easydate")
+				) {
+					if (mutations[m].target.nextSibling.value !== mutations[m].target.value) {
+						mutations[m].target.nextSibling.value = mutations[m].target.value;
+					}
+				}
 			}
-		}, false);
+		})).observe(years[y], {attributes: true, attributeFilter: ["value"]});
 		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_cloneDateHotkey);
 		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_deleteDatesHotkey);
 		years[y].parentNode.querySelector("input[placeholder='DD']").addEventListener("keydown", EASY_DATE_cloneDateHotkey);
@@ -622,8 +631,7 @@ function EASY_DATE_cloneDate(current, hotkey) {
 		if (!hotkey && !downwards) {
 			return;
 		}
-		inps[downwards ? 1 : 0].value = inps[downwards ? 0 : 1].value;
-		sendEvent(inps[downwards ? 1 : 0], "change");
+		set_react_value(inps[downwards ? 1 : 0], inps[downwards ? 0 : 1].value);
 	}
 }
 function EASY_DATE_deleteDatesHotkey(event) {
@@ -636,15 +644,14 @@ function EASY_DATE_deleteDatesHotkey(event) {
 function EASY_DATE_deleteDates(current) {
 	var ph = ["YYYY", "MM", "DD"];
 	for (let p = 0; p < ph.length; p++) {
-		var inps = current.parentNode.parentNode.parentNode.querySelectorAll("input[placeholder='" + ph[p] + "']");
+		var inps = current.closest("table.relationship-details > tbody").querySelectorAll("input[placeholder='" + ph[p] + "']");
 		for (let i = 0; i < inps.length; i++) {
-			inps[i].value = "";
-			sendEvent(inps[i], "change");
+			set_react_value(inps[i], "");
 		}
-		var endedCheckbox = getParent(current, "tbody").querySelector("input[type='checkbox'][data-bind^='checked: relationship().ended']");
-		if (endedCheckbox.checked == true) {
-			endedCheckbox.click();
-		}
+	}
+	var endedCheckbox = current.closest("table.relationship-details > tbody").querySelector("input[id='id-period.ended'][type='checkbox']");
+	if (endedCheckbox.checked) {
+		endedCheckbox.click();
 	}
 }
 function EASY_DATE_nextField(event) {
