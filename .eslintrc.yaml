@@ -12,6 +12,8 @@ globals:
 # MBS
  __MB__:              readonly
  MB:                  readonly
+# lib/CONTROL-POMME.js
+ CONTROL_POMME:       readonly
 # lib/COOL-BUBBLES.js
  coolBubble:          readonly
 # lib/MB-JUNK-SHOP.js
