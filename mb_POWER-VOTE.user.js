@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2023.2.27
+// @version      2023.3.9
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -61,6 +61,7 @@ var texts = {
 		editing_history: "Bearbeitungshistorie",
 		open_edits: "Offene Bearbeitungen",
 		reset_votes: "Stimmen zurücksetzen",
+		show_form: "Form zeigen",
 		vote_all: " // Über alle nicht abgestimmten Änderungen abstimmen (shift+Klick für alle) → ",
 	},
 	en: {
@@ -69,6 +70,7 @@ var texts = {
 		editing_history: "Editing history",
 		open_edits: "Open edits",
 		reset_votes: "Reset votes",
+		show_form: "Show form",
 		vote_all: " // Vote on all unvoted edits (" + CONTROL_POMME.shift.label + "click for all) → ",
 	},
 	fr: {
@@ -77,6 +79,7 @@ var texts = {
 		editing_history: "Historique des modifications",
 		open_edits: "Modifications en attente",
 		reset_votes: "Réinitialiser les votes",
+		show_form: "Afficher le formulaire",
 		vote_all: " // Voter pour toutes les modifications non votées (" + CONTROL_POMME.shift.label + "clic pour toutes) → ",
 	},
 	it: {
@@ -85,6 +88,7 @@ var texts = {
 		editing_history: "Cronologia modifiche",
 		open_edits: "Modifiche in corso",
 		reset_votes: "Reimposta voti",
+		show_form: "Mostra modulo",
 		vote_all: " // Vota per tutte le modifiche non votate (" + CONTROL_POMME.shift.label + "clic per tutte) → ",
 	},
 	nl: {
@@ -93,9 +97,26 @@ var texts = {
 		editing_history: "Alle bewerkingen",
 		open_edits: "Open bewerkingen",
 		reset_votes: "Stemmen terugzetten",
+		show_form: "Vorm tonen",
 		vote_all: " // Stem op alle niet-gestemde wijzigingen (" + CONTROL_POMME.shift.label + "klik voor alles) → ",
 	},
 };
+// Hide huge edit search form that pushes results off screen
+if (
+	search_form
+	&& location.search // not initial blank edit search form
+	&& !location.search.match(/\bform_only=yes\b/) // not form only after Refine click
+	&& document.querySelectorAll("#content div#edits > form div.edit-list").length > 0 // has 1+ results
+) {
+	search_form.style.setProperty("display", "none");
+	document.querySelector("#content > h1").appendChild(createTag("fragment", {}, [
+		" ",
+		createTag("button", {a: {title: GM_info.script.name}, s: {background: "#fcf", cursor: "pointer"}, e: {click: function(event) {
+			search_form.style.setProperty("display", "revert");
+			removeNode(event.target);
+		}}}, texts[lang].show_form)
+	]));
+}
 // Search form: Add permalinks to searched entities (all except recordings, because of MBS-12560)
 if (search_form) {
 	(new MutationObserver(function(mutations, observer) {
