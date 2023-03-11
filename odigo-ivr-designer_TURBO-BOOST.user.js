@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2023.2.15
+// @version      2023.3.11
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Select first application and PROD, Select current version, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Highlight modal table rows, Emphasise reset and upgrade buttons, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -121,6 +121,23 @@ switch (self.location.pathname) {
 				}
 			}
 		}, 666);
+
+		// Non-moving and bigger navigation arrows for tables
+		var release_paginate = document.querySelector("div[ng-show='showReleaseTable'] > div.table-responsive > table ~ div.text-center > div#table_paginate");
+		if (release_paginate) {
+			release_paginate.parentNode.parentNode.parentNode.parentNode.insertBefore(
+				createTag("div", {s: {clear: "both", fontSize: "2em"}}, [
+					createTag("a", {e: {click: function(event) { release_paginate.querySelector("a#table_first").click(); }}}, "⏮"),
+					" ",
+					createTag("a", {e: {click: function(event) { release_paginate.querySelector("a#table_previous").click(); }}}, "◀"),
+					" ",
+					createTag("a", {e: {click: function(event) { release_paginate.querySelector("a#table_next").click(); }}}, "▶"),
+					" ",
+					createTag("a", {e: {click: function(event) { release_paginate.querySelector("a#table_last").click(); }}}, "⏭")
+				]),
+				release_paginate.parentNode.parentNode.parentNode
+			);
+		}
 
 		// Auto stretch Release table cells DESCRIPTION and select it for easy copy
 		css.insertRule("div#main-container div[ng-show='showReleaseTable'] table > tbody > tr > td:nth-child(2) > p { white-space: unset; user-select: all; cursor: pointer; }", 0);
