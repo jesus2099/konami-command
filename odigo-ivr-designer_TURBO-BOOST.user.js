@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2023.3.11
+// @version      2023.3.15
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Select first application and PROD, Select current version, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Highlight modal table rows, Emphasise reset and upgrade buttons, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -74,31 +74,27 @@ switch (self.location.pathname) {
 			}
 		}, 1000);
 
-		// Select first application and PROD
+		// Auto-select deployed releases (versions)
 		setInterval(function() {
-			// Select first application (only once)
-			var first_application = document.querySelector("div#main-container table#applications > tbody > tr > td:last-of-type > input[type='checkbox']");
-			if (first_application && !first_application.classList.contains("jesus2099") && !first_application.checked) {
-				first_application.classList.add("jesus2099");
-				var active_element = document.activeElement;
-				first_application.click();
-				active_element.focus();
+			// Select searched application (when only one application in the list)
+			var applications = document.querySelectorAll("div#main-container table#applications > tbody > tr > td:last-of-type > input[type='checkbox']");
+			if (applications.length === 1 && !applications[0].classList.contains("jesus2099") && !applications[0].checked) {
+				applications[0].classList.add("jesus2099"); // prevent doing this more than once
+				click_keeping_current_focus(applications[0]);
 			}
-			// Select PROD (only once)
-			var service, services = document.querySelectorAll("div#main-container table#services > tbody > tr:not(.jesus2099) > td:first-of-type > a.ng-binding[ng-click^='getservice']");
+			// Select PROD when an application is selected
+			var service, services = document.querySelectorAll("div#main-container table#services > tbody > tr > td:first-of-type > a.ng-binding[ng-click^='getservice']");
 			for (var s = 0; s < services.length; s++) {
-				services[s].parentNode.parentNode.classList.add("jesus2099");
-				if (services[s] && services[s].textContent.trim() == "PROD") {
+				if ((services.length === 1 || services[s] && services[s].textContent.trim().match(/^prod(uction)?$/i)) && !services[s].classList.contains("jesus2099")) {
+					services[s].classList.add("jesus2099");
 					var service = services[s].parentNode.parentNode.querySelector("input[type='checkbox']");
 					if (service && !service.checked) {
-						var active_element = document.activeElement;
-						service.click();
-						active_element.focus();
+						click_keeping_current_focus(service);
 					}
 					break;
 				}
 			}
-			// Select current version/release (only once)
+			// Select current release (version) when a service (environment) is selected
 			var current_service = document.querySelector("div#main-container table#services > tbody > tr > td:last-of-type > input[type='checkbox']:checked");
 			if (current_service) {
 				var current_release = current_service.parentNode.parentNode.querySelector("div#main-container table#services > tbody > tr > td:nth-of-type(7)");
@@ -111,9 +107,7 @@ switch (self.location.pathname) {
 						if (releases[r] && releases[r].textContent.trim() == current_release) {
 							var release = releases[r].parentNode.parentNode.querySelector("input[type='checkbox']");
 							if (release && !release.checked) {
-								var active_element = document.activeElement;
-								release.click();
-								active_element.focus();
+								click_keeping_current_focus(release);
 							}
 							break;
 						}
@@ -279,4 +273,10 @@ function double_click_actions(_shortcuts) {
 			});
 		}
 	}
+}
+
+function click_keeping_current_focus(element) {
+	var active_element = document.activeElement;
+	element.click();
+	active_element.focus();
 }
