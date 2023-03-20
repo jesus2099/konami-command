@@ -175,8 +175,7 @@ var whitelistSearchLinks = {
 				},
 				folk: {
 					title: {
-						de: "Traditionelle",
-						en: "Traditional",
+						"en de": "Traditional",
 						fr: "Traditionnelle",
 						nl: "Traditionele"
 					},
