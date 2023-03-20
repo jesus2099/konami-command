@@ -276,8 +276,7 @@ var whitelistSearchLinks = {
 				},
 				soundtrack: {
 					title: {
-						de: "Audiospur",
-						en: "Soundtrack",
+						"de en": "Soundtrack",
 						fr: "Bande son",
 						nl: "Geluidsspoor"
 					},
