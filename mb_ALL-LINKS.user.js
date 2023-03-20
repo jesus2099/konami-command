@@ -114,7 +114,7 @@ var whitelistSearchLinks = {
 	items: {
 		genreDBs: {
 			title: {
-				de: "Pro Genre",
+				de: "Nach Genre",
 				en: "By genre",
 				fr: "Par genre",
 				nl: "Per Genre"
