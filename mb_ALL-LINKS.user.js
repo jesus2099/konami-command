@@ -131,14 +131,14 @@ var whitelistSearchLinks = {
 						// Skipped "Brahms" which has a search dropdown but no search page
 						// Skipped "Classical Archives" which have an internal JSON search API only
 						"DRAM": [
-							"http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&dram-search[q]=%release-group-name%&dram-search[t]=album",
-							"http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&dram-search[q]=%release-name%&dram-search[t]=album",
-							"http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&dram-search[q]=%work-name%&dram-search[t]=work",
-							"http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&dram-search[q]=%recording-name%&dram-search[t]=track",
+							"http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%release-group-name%&dram-search[t]=album",
+							"http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%release-name%&dram-search[t]=album",
+							"http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%work-name%&dram-search[t]=work",
+							"http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%recording-name%&dram-search[t]=track",
 						],
-						"DRAM (composers)": "http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&dram-search[q]=%artist-name%&dram-search[t]=composer",
-						"DRAM (performers)": "http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&dram-search[q]=%artist-name%&dram-search[t]=performer",
-						"DRAM (ensembles)": "http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&dram-search[q]=%artist-name%&dram-search[t]=ensemble",
+						"DRAM (composers)": "http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%artist-name%&dram-search[t]=composer",
+						"DRAM (performers)": "http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%artist-name%&dram-search[t]=performer",
+						"DRAM (ensembles)": "http://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%artist-name%&dram-search[t]=ensemble",
 						"Operabase (composers)": {
 							"bg cs da de el en es eu fi fr ga hu is it lt lv ja ko mt nl no pl ro ru sk sl sv zh": "https://www.operabase.com/composers/search/%language%?query=%artist-name%"
 						},
@@ -190,9 +190,9 @@ var whitelistSearchLinks = {
 							"https://www.irishtune.info/search.php?lookfor=string&term=%work-name%&type=any"
 						],
 						"Mainly Norfolk": [
-							"http://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/records/search.php&album=%release-group-name%",
-							"http://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/records/search.php&album=%release-name%",
-							"http://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/songs/search.php&song=%work-name%",
+							"http://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/records/search.php&_method=post&album=%release-group-name%",
+							"http://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/records/search.php&_method=post&album=%release-name%",
+							"http://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/songs/search.php&_method=post&song=%work-name%",
 						],
 						// Skipped "The Dance Gypsy" which is down since February 2022
 						"The Session": [
