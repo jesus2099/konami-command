@@ -61,7 +61,7 @@ var texts = {
 		editing_history: "Bearbeitungshistorie",
 		open_edits: "Offene Bearbeitungen",
 		reset_votes: "Stimmen zurücksetzen",
-		show_form: "Form zeigen",
+		show_form: "Formular zeigen",
 		vote_all: " // Über alle nicht abgestimmten Änderungen abstimmen (shift+Klick für alle) → ",
 	},
 	en: {
