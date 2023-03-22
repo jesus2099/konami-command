@@ -234,9 +234,7 @@ var whitelistSearchLinks = {
 								"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/albums.php?l=%language%&search=%release-name%"
 							},
 						],
-						"Spirit of Metal (bands)": {
-							"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/bands.php?l=%language%&search=%artist-name%"
-						},
+						"Spirit of Metal (bands)": "https://www.spirit-of-metal.com/liste_groupe.php?recherche_groupe=%artist-name%",
 						"Spirit of Metal (other artists)": {
 							"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/artists.php?l=%language%&search=%artist-name%"
 						}
@@ -265,9 +263,7 @@ var whitelistSearchLinks = {
 								"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/albums.php?l=%language%&search=%release-name%"
 							},
 						],
-						"Spirit of Rock (bands)": {
-							"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/bands.php?l=%language%&search=%artist-name%"
-						},
+						"Spirit of Rock (bands)": "https://www.spirit-of-rock.com/liste_groupe.php?recherche_groupe=%artist-name%",
 						"Spirit of Rock (other artists)": {
 							"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/artists.php?l=%language%&search=%artist-name%"
 						}
