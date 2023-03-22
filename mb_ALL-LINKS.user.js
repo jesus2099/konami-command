@@ -112,6 +112,221 @@ var whitelistSearchLinks = {
 		nl: "Zoeken in de witte lijst"
 	},
 	items: {
+		genreDBs: {
+			title: {
+				de: "Nach Genre",
+				en: "By genre",
+				fr: "Par genre",
+				nl: "Per Genre"
+			},
+			items: {
+				classical: {
+					title: {
+						de: "Klassik",
+						en: "Classical",
+						fr: "Classique",
+						nl: "Klassiek"
+					},
+					items: {
+						// Skipped "Brahms" which has a search dropdown but no search page
+						// Skipped "Classical Archives" which have an internal JSON search API only
+						"DRAM": [
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%release-group-name%&dram-search[t]=album",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%release-name%&dram-search[t]=album",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%work-name%&dram-search[t]=work",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%recording-name%&dram-search[t]=track",
+						],
+						"DRAM (composers)": "https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%artist-name%&dram-search[t]=composer",
+						"DRAM (performers)": "https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%artist-name%&dram-search[t]=performer",
+						"DRAM (ensembles)": "https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%artist-name%&dram-search[t]=ensemble",
+						"Operabase (composers)": {
+							"bg cs da de el en es eu fi fr ga hu is it lt lv ja ko mt nl no pl ro ru sk sl sv zh": "https://www.operabase.com/composers/search/%language%?query=%artist-name%"
+						},
+						"Operabase (other artists)": {
+							"bg cs da de el en es eu fi fr ga hu is it lt lv ja ko mt nl no pl ro ru sk sl sv zh": "https://www.operabase.com/artists/search/%language%?query=%artist-name%"
+						},
+						"Operabase (festivals)": {
+							"bg cs da de el en es eu fi fr ga hu is it lt lv ja ko mt nl no pl ro ru sk sl sv zh": "https://www.operabase.com/festivals/search/%language%?query=%event-name%"
+						},
+						"Operabase (venues)": {
+							"bg cs da de el en es eu fi fr ga hu is it lt lv ja ko mt nl no pl ro ru sk sl sv zh": "https://www.operabase.com/venues/search/%language%?query=%place-name%"
+						},
+						// Skipped "Operadis" which has no search engine online
+						// Skipped "Overture/Doremus" which have a currently broken search engine
+					}
+				},
+				electronic: {
+					title: {
+						de: "Elektronik",
+						en: "Eletronic",
+						fr: "Électronique",
+						nl: "Elektronisch"
+					},
+					items: {
+						"PsyDB": [
+							"https://www.psydb.net/search?q=%artist-name%",
+							"https://www.psydb.net/search?q=%label-name%",
+							"https://www.psydb.net/search?q=%release-group-name%",
+							"https://www.psydb.net/search?q=%release-name%",
+						],
+						// Skipped "Resident Advisor" which has a search dropdown but no search page
+						// Skipped "RollDaBeats" which is down since December 2022
+					}
+				},
+				folk: {
+					title: {
+						"en de": "Traditional",
+						fr: "Traditionnelle",
+						nl: "Traditionele"
+					},
+					items: {
+						"Cape Breton Fiddle Recordings": [
+							"https://www.cbfiddle.com/rx/tunesearch.cgi?search=%work-name%"
+						],
+						// Skipped "DanceDB" which has no free text search
+						"Irish Traditional Music Tunes": [
+							"https://www.irishtune.info/album-search.php?value=%release-group-name%&form=title",
+							"https://www.irishtune.info/album-search.php?value=%release-name%&form=title",
+							"https://www.irishtune.info/search.php?lookfor=string&term=%work-name%&type=any"
+						],
+						"Mainly Norfolk": [
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/records/search.php&_method=post&album=%release-group-name%",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/records/search.php&_method=post&album=%release-name%",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/songs/search.php&_method=post&song=%work-name%",
+						],
+						// Skipped "The Dance Gypsy" which is down since February 2022
+						"The Session": [
+							"https://thesession.org/recordings/search?q=%release-group-name%",
+							"https://thesession.org/recordings/search?q=%release-name%",
+							"https://thesession.org/tunes/search?q=%work-name%"
+						],
+						"The Traditional Tune Archive": [
+							"https://tunearch.org/wiki/Special:Search?search=%artist-name%&fulltext=Dig+deeper&ns844=1&ns3002=1",
+							"https://tunearch.org/wiki/Special:Search?search=%work-name%&fulltext=Dig+deeper"
+						]
+					}
+				},
+				// Skipped "Jazz Music Archives" which have a search dropdown but no search page
+				metal: {
+					title: {
+						"de en nl": "Metal",
+						fr: "Métal"
+					},
+					items: {
+						"Metal-Archives": [
+							"https://www.metal-archives.com/search?searchString=%label-name%&type=label_name",
+							"https://www.metal-archives.com/search?searchString=%release-group-name%&type=album_title",
+							"https://www.metal-archives.com/search?searchString=%release-name%&type=album_title"
+						],
+						"Metal-Archives (aliases)": "https://www.metal-archives.com/search?searchString=%artist-name%&type=artist_alias",
+						"Metal-Archives (bands)": "https://www.metal-archives.com/search?searchString=%artist-name%&type=band_name",
+						"Spirit of Metal": [
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/labels.php?l=%language%&search=%label-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/places.php?l=%language%&search=%place-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/albums.php?l=%language%&search=%release-group-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/albums.php?l=%language%&search=%release-name%"
+							},
+						],
+						"Spirit of Metal (bands)": "https://www.spirit-of-metal.com/liste_groupe.php?recherche_groupe=%artist-name%",
+						"Spirit of Metal (other artists)": {
+							"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/artists.php?l=%language%&search=%artist-name%"
+						}
+					}
+				},
+				rock: {
+					title: "Rock",
+					items: {
+						"Prog Archives": [
+							"http://www.progarchives.com/google-search-results.asp?cx=artists&q=%artist-name%",
+							"http://www.progarchives.com/google-search-results.asp?cx=artists&q=%release-group-name%"
+						],
+						"Prog Archives (by barcode)": "http://www.progarchives.com/google-search-results.asp?cx=artists&q=%release-barcode%",
+						"Prog Archives (by name)": "http://www.progarchives.com/google-search-results.asp?cx=artists&q=%release-name%",
+						"Spirit of Rock": [
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/labels.php?l=%language%&search=%label-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/places.php?l=%language%&search=%place-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/albums.php?l=%language%&search=%release-group-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/albums.php?l=%language%&search=%release-name%"
+							},
+						],
+						"Spirit of Rock (bands)": "https://www.spirit-of-rock.com/liste_groupe.php?recherche_groupe=%artist-name%",
+						"Spirit of Rock (other artists)": {
+							"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/artists.php?l=%language%&search=%artist-name%"
+						}
+					}
+				},
+				soundtrack: {
+					title: {
+						"de en": "Soundtrack",
+						fr: "Bande son",
+						nl: "Geluidsspoor"
+					},
+					items: {
+						"OverClock ReMix": [
+							"https://ocremix.org/site-search/?q=%artist-name%",
+							"https://ocremix.org/site-search/?q=%label-name%",
+							"https://ocremix.org/site-search/?q=%recording-name%",
+							"https://ocremix.org/site-search/?q=%release-group-name%",
+							"https://ocremix.org/site-search/?q=%release-name%",
+							"https://ocremix.org/site-search/?q=%work-name%"
+						],
+						"SoundtrackCollector": [
+							"https://www.soundtrackcollector.com/catalog/search.php?searchon=composer&searchtext=%artist-name%",
+							"https://www.soundtrackcollector.com/catalog/search.php?searchon=track&searchtext=%recording-name%",
+							"https://www.soundtrackcollector.com/catalog/search.php?searchon=title&searchtext=%release-group-name%",
+							"https://www.soundtrackcollector.com/catalog/search.php?searchon=soundtrack&searchtext=%work-name%",
+						],
+						"SoundtrackCollector (by barcode)": "https://www.soundtrackcollector.com/catalog/search.php?searchon=labelnr&searchtext=%release-barcode%",
+						"SoundtrackCollector (by name)": "https://www.soundtrackcollector.com/catalog/search.php?searchon=title&searchtext=%release-name%"
+					}
+					// Skipped "Videogam.in" which is down since 2016/2017
+				},
+				theatre: {
+					title: {
+						de: "Theater",
+						en: "Theatre",
+						fr: "Théâtre",
+						nl: "Theater"
+					},
+					items: {
+						"CastAlbums.org": [
+							"https://castalbums.org/search/?search=%artist-name%&type=People",
+							"https://castalbums.org/search/?search=%release-group-name%&type=Recordings",
+							"https://castalbums.org/search/?search=%release-name%&type=Recordings"
+						],
+						"CastAlbums.org (songs)": "https://castalbums.org/search/?search=%work-name%&type=Songs",
+						"CastAlbums.org (shows)": "https://castalbums.org/search/?search=%work-name%&type=Shows",
+						// Skipped "IBDb" which search has a hidden request verification token input
+						"IOBDb": [
+							"http://www.iobdb.com/Search?searchText=%artist-name%&searchDomain=CreditableEntity",
+							"http://www.iobdb.com/Search?searchText=%label-name%&searchDomain=CreditableEntity",
+							"http://www.iobdb.com/Search?searchText=%place-name%&searchDomain=Theatre",
+							"http://www.iobdb.com/Search?searchText=%work-name%&searchDomain=Any"
+						],
+						"Theatricalia": [
+							"https://theatricalia.com/search?q=%artist-name%",
+							"https://theatricalia.com/search?q=%label-name%",
+							"https://theatricalia.com/search?q=%place-name%",
+							"https://theatricalia.com/search?q=%work-name%"
+						]
+					}
+				},
+			}
+		},
 		lyricsDBs: {
 			title: {
 				de: "Liedtext",
