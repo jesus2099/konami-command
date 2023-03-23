@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2023.3.3.1224
+// @version      2023.3.23
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -11,7 +11,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2010-09-09; https://web.archive.org/web/20140328200933/userscripts.org/scripts/show/85790 / https://web.archive.org/web/20141011084019/userscripts-mirror.org/scripts/show/85790 / see topic GÓ GÓ AMÍGO
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://github.com/jesus2099/konami-command/raw/179afa0247cb65ff9e3b4110949273972b5bbf28/lib/SUPER.js?version=2023.3.3.1224
+// @require      https://github.com/jesus2099/konami-command/raw/f5b4bdb4f7ce1fedbc6c14b784425c2645b03a85/lib/SUPER.js?version=2023.3.23
 // @grant        none
 // @match        *://*.musicbrainz.org/*
 // @exclude      *://blog.musicbrainz.org/*
@@ -1303,9 +1303,13 @@ if (j2sets.STATIC_MENU && mmenu) {
 	self.addEventListener("load", smenu, false);
 	self.addEventListener("resize", smenu, false);
 	self.addEventListener("scroll", smenu, false);
+	mmenu.addEventListener("click", function(event) {
+		scrollTo(0, 0);
+	});
 }
 function smenu(event) {
 	if (document.body.scrollTop + document.documentElement.scrollTop > 0) {
+		mmenu.style.setProperty("cursor", "pointer");
 		mmenu.style.setProperty("position", "fixed");
 		mmenu.style.setProperty("top", "0px");
 		var computedWidth = self.getComputedStyle(mmenu.parentNode).getPropertyValue("width").match(/\d+/)[0];
@@ -1323,6 +1327,7 @@ function smenu(event) {
 			mmenu.querySelector("div > div.r").style.setProperty("display", "none");
 		} catch (error) {}
 	} else {
+		mmenu.style.removeProperty("cursor");
 		mmenu.style.removeProperty("position");
 		mmenu.style.removeProperty("top");
 		mmenu.style.removeProperty("width");
