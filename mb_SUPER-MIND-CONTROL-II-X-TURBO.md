@@ -154,7 +154,7 @@ Now also works in details lists and dynamically added content.
 
 ### STATIC_MENU
 
-Makes the main MB menu always there when you need it (without scrolling top).
+Makes the main MB menu always visible (and can be clicked to scroll to top).
 
 ### SLOW_DOWN_RETRY
 
