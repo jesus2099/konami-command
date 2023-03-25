@@ -322,7 +322,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						td.setAttribute("colspan", "3");
 						td.style.setProperty("text-align", "center");
 						td.style.setProperty("background-image", "/eJwid/img/kokoronelogo_A-2out.jpg");
-						summary += "※ '''JASRAC work importer''' (" + userjs.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account\n" + workLookupURL("nextone", "code", sakuhinCode) + " ← another mirror";
+						summary += "※ '''JASRAC work importer''' (" + userjs.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account\n" /* + workLookupURL("nextone", "code", sakuhinCode) + " ← another mirror" */ ;
 						td.appendChild(document.createTextNode("click to select → "));
 						var ta = createTag("textarea", {a: {name: "tsummary"}}, summary);
 						ta.setAttribute("id", ta.getAttribute("name"));
