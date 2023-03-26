@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森-NexTone links + MB back search links
-// @version      2023.2.22
+// @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
+// @version      2023.2.27
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -322,7 +322,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						td.setAttribute("colspan", "3");
 						td.style.setProperty("text-align", "center");
 						td.style.setProperty("background-image", "/eJwid/img/kokoronelogo_A-2out.jpg");
-						summary += "※ '''JASRAC work importer''' (" + userjs.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account\n" + workLookupURL("nextone", "code", sakuhinCode) + " ← another mirror";
+						summary += "※ '''JASRAC work importer''' (" + userjs.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account\n";
 						td.appendChild(document.createTextNode("click to select → "));
 						var ta = createTag("textarea", {a: {name: "tsummary"}}, summary);
 						ta.setAttribute("id", ta.getAttribute("name"));
@@ -394,7 +394,6 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						sakuhin.parentNode.appendChild(document.createTextNode("）"));
 				/* -- vv ------ sakuhin links ------ vv -- */
 						addAfter(document.createElement("sup"), sakuhin).appendChild(createA("MB", workLookupURL("mb", "name", workName), "Search this work name in MusicBrainz"));
-						addAfter(document.createElement("sup"), sakuhin).appendChild(createA("NT", workLookupURL("nextone", "name", workName), "Search this work name in NexTone"));
 						addAfter(document.createElement("sup"), sakuhin).appendChild(mincSearch("title", workName, "MF")).style.setProperty("text-decoration", "underline");
 						addAfter(document.createTextNode(" "), sakuhin);
 				/* -- vv ------ sakuhin code links ------ vv -- */
@@ -403,7 +402,6 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						span.appendChild(document.createTextNode(" "));
 						var suppo = span.appendChild(document.createElement("sup"));
 						suppo.appendChild(createA("MF", workLookupURL("minc", "code", sakuhinCode), "This work in 音楽の森 music FOREST"));
-						suppo.appendChild(createA("NT", workLookupURL("nextone", "code", sakuhinCode), "This work in NexTone"));
 						suppo.appendChild(createA("MB", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"));
 						span.appendChild(document.createTextNode(" "));
 						span.appendChild(document.createTextNode(workName));
@@ -439,7 +437,6 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			var sakuhinmei = document.querySelector("span[id$='_lbl_jas_nt_sakuhinnm']");
 			sakuhinCode = document.querySelector("span[id$='_jas_sakucd']");
 			var iswccode = document.querySelector("span[id$='_lbl_jas_nt_iswc']");
-			// var nextonecode = document.querySelector("span[id$='_nt_sakucd']");
 			if (sakuhinmei && sakuhinCode && iswccode) {
 				sakuhinmei = getParent(sakuhinmei, "td");
 				var sakuhinmei_v = sakuhinmei.textContent;
@@ -453,10 +450,8 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				jwSubmit.setAttribute("title", "Search this work name in JASRAC");
 				jwSubmit.style.setProperty("text-decoration", "underline");
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(jwForm);
-				// insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("NT", workLookupURL("nextone", "name", sakuhinmei_v), "Search this work name in NexTone"));
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinmei.firstChild).appendChild(createA("MB", workLookupURL("mb", "name", sakuhinmei_v), "Search this work name in MusicBrainz"));
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinCode.firstChild).appendChild(createA("JW", workLookupURL("jasrac", "code", sakuhinCode_v), "Go to this work in JASRAC"));
-				// insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinCode.firstChild).appendChild(createA("NT", workLookupURL("nextone", "code", sakuhinCode_v), "Go to this work in NexTone"));
 				insertBefore(createTag("sup", {s: {float: "right"}}), sakuhinCode.firstChild).appendChild(createA("MB", workLookupURL("mb", "code", sakuhinCode_v), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"));
 				if (iswccode_v) {
 					iswccode_v += "";
@@ -476,7 +471,6 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					}
 					addAfter(createA("MB", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"), prec);
 					addAfter(createA("JW", workLookupURL("jasrac", "code", sakuhinCode), "Go to this work in JASRAC"), prec);
-					addAfter(createA("NT", workLookupURL("nextone", "code", sakuhinCode), "Go to this work in NexTone"), prec);
 				}
 			}
 			break;
@@ -526,7 +520,6 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 							// add only one set of searches per JASRAC work code
 							getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "jasrac no-favicon", ref: ddcode}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, "JASRAC — " + ddcode)));
 							getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "minc no-favicon"}, ref: ddcode}, createTag("a", {a: {href: workLookupURL("minc", "code", ddcode)}, s: {background: background}}, "音楽の森 — " + ddcode)));
-							getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "nextone no-favicon"}, ref: ddcode}, createTag("a", {a: {href: workLookupURL("nextone", "code", ddcode)}, s: {background: background}}, "NexTone — " + ddcode)));
 						}
 						jasracIDs[i].classList.add(userjs.id);
 					}
@@ -541,13 +534,6 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				var title = document.querySelector("h1 a").textContent.trim();
 				getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "jasrac no-favicon"}}, jasracSearch("title", title)));
 				getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "minc no-favicon"}}, mincSearch("title", title)));
-				getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "nextone no-favicon"}}, createTag("a", {a: {href: workLookupURL("nextone", "name", title)}, s: {background: background}}, "NexTone — " + title)));
-				/* -- vv ------ NexTone work ID permalink ------ vv -- */
-				var NexToneIDs = document.querySelectorAll("div#sidebar > dl.properties > dd.work-attribute-nex-tone-id");
-				for (let i = 0; i < NexToneIDs.length; i++) {
-					var ntid = NexToneIDs[i].textContent.trim();
-					replaceElement(createTag("a", {a: {href: workLookupURL("nextone", "code", ntid)}, s: {background: background}}, ntid), NexToneIDs[i].firstChild);
-				}
 			}
 			break;
 		case "work/edit":
@@ -1077,11 +1063,6 @@ function workLookupURL(db, type, q) {
 				case "code": return "https://search.minc.or.jp/music/list/?tr=%q%&type=search-form-sakuhin&match=1".replace(/%q%/, q);
 			}
 			break;
-		case "nextone":
-			switch (type) {
-				case "name": return "https://search.nex-tone.co.jp/result?freeWord=" + q;
-				case "code": return "https://search.nex-tone.co.jp/result?pieceCd=" + q;
-			}
 	}
 }
 function aliasTable(add, clear) {
