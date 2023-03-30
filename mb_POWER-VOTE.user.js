@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2023.3.23
+// @version      2023.3.31
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -23,6 +23,7 @@
 "use strict";
 var userjs = "jesus2099userjs57765";
 var editform = document.querySelector("div#edits > form");
+var edit_list = document.querySelectorAll("div#edits > form > div.edit-list");
 var search_form = document.querySelector("div#content > form[action='/search/edits']");
 var j2css = document.createElement("style");
 j2css.setAttribute("type", "text/css");
@@ -60,6 +61,8 @@ var texts = {
 		edit: "Bearbeiten",
 		editing_history: "Bearbeitungshistorie",
 		open_edits: "Offene Bearbeitungen",
+		order_newest_first: "die neuesten zuerst",
+		order_oldest_first: "die ältesten zuerst",
 		reset_votes: "Stimmen zurücksetzen",
 		show_form: "Formular zeigen",
 		vote_all: " // Über alle nicht abgestimmten Änderungen abstimmen (shift+Klick für alle) → ",
@@ -69,6 +72,8 @@ var texts = {
 		edit: "Edit",
 		editing_history: "Editing history",
 		open_edits: "Open edits",
+		order_newest_first: "newest first",
+		order_oldest_first: "oldest first",
 		reset_votes: "Reset votes",
 		show_form: "Show form",
 		vote_all: " // Vote on all unvoted edits (" + CONTROL_POMME.shift.label + "click for all) → ",
@@ -78,6 +83,8 @@ var texts = {
 		edit: "Modifier",
 		editing_history: "Historique des modifications",
 		open_edits: "Modifications en attente",
+		order_newest_first: "les plus récents en premier",
+		order_oldest_first: "les plus anciens en premier",
 		reset_votes: "Réinitialiser les votes",
 		show_form: "Afficher le formulaire",
 		vote_all: " // Voter pour toutes les modifications non votées (" + CONTROL_POMME.shift.label + "clic pour toutes) → ",
@@ -87,6 +94,8 @@ var texts = {
 		edit: "Modifica",
 		editing_history: "Cronologia modifiche",
 		open_edits: "Modifiche in corso",
+		order_newest_first: "prima le più recenti",
+		order_oldest_first: "prima le più vecchie",
 		reset_votes: "Reimposta voti",
 		show_form: "Mostra modulo",
 		vote_all: " // Vota per tutte le modifiche non votate (" + CONTROL_POMME.shift.label + "clic per tutte) → ",
@@ -96,17 +105,43 @@ var texts = {
 		edit: "Bewerken",
 		editing_history: "Alle bewerkingen",
 		open_edits: "Open bewerkingen",
+		order_newest_first: "nieuwste eerst",
+		order_oldest_first: "oudste eerst",
 		reset_votes: "Stemmen terugzetten",
 		show_form: "Vorm tonen",
 		vote_all: " // Stem op alle niet-gestemde wijzigingen (" + CONTROL_POMME.shift.label + "klik voor alles) → ",
 	},
 };
+// Remind sort order in Search for Edits title
+if (edit_list.length > 1) {
+	var order;
+	if (search_form) {
+		order = document.querySelector("div#content form#edit-search select[name='order']").selectedOptions[0].label;
+	} else {
+		if (
+			edit_list[0].querySelector("div.edit-list > div.edit-header > h2 > a[href*='/edit/']").getAttribute("href").match(/\d+$/)[0]
+			>
+			edit_list[1].querySelector("div.edit-list > div.edit-header > h2 > a[href*='/edit/']").getAttribute("href").match(/\d+$/)[0]
+		) {
+			order = texts[lang].order_newest_first;
+		} else {
+			order = texts[lang].order_oldest_first;
+		}
+
+	}
+	if (order) {
+		document.querySelector("#content h1, #content > h2").appendChild(createTag("small", {}, [
+			" (",
+			createTag("span", {s: {background: "#ffc"}}, order),
+		")"]));
+	}
+}
 // Hide huge edit search form that pushes results off screen
 if (
 	search_form
 	&& location.search // not initial blank edit search form
 	&& !location.search.match(/\bform_only=yes\b/) // not form only after Refine click
-	&& document.querySelectorAll("#content div#edits > form div.edit-list").length > 0 // has 1+ results
+	&& edit_list.length > 0 // has 1+ results
 ) {
 	j2css.insertRule("div#content." + userjs + "-hide-form > p:nth-of-type(1), div#content." + userjs + "-hide-form > p:nth-of-type(2), div#content." + userjs + "-hide-form > form#edit-search { display: none; }", 0);
 	search_form.parentNode.classList.add(userjs + "-hide-form");
@@ -346,10 +381,9 @@ if (editform) {
 	}
 	// (mass) collapse edit toggles
 	if (collapseEdits) {
-		var edits = editform.querySelectorAll("div.edit-list");
-		for (let ed = 0; ed < edits.length; ed++) {
-			if (edits[ed].querySelector("div.edit-description")) {
-				var eheader = edits[ed].querySelector("div.edit-header");
+		for (let ed = 0; ed < edit_list.length; ed++) {
+			if (edit_list[ed].querySelector("div.edit-description")) {
+				var eheader = edit_list[ed].querySelector("div.edit-header");
 				var collexp = document.createElement("div");
 				var collexpa = collexp.appendChild(document.createElement("a").appendChild(document.createTextNode(collapse[0])).parentNode);
 				collexp.style.setProperty("float", "right");
