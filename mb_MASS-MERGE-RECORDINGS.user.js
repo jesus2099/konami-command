@@ -146,7 +146,7 @@ function mergeRecsStep(_step) {
 			var targetID = parseInt(to.value, 10);
 			var sourceID = parseInt(from.value, 10);
 			if (sourceID > targetID) {
-				paramsup += "👍 '''Targetting oldest [MBID]''' (" + format(to.value) + " ← " + format(from.value) + ")" + "\n";
+				paramsup += "👍 '''Targeting oldest [MBID]''' (" + format(to.value) + " ← " + format(from.value) + ")" + "\n";
 			}
 			var locTrack = localRelease.tracks[recid2trackIndex.local[swap.value == "no" ? to.value : from.value]];
 			var remTrack = remoteRelease.tracks[recid2trackIndex.remote[swap.value == "no" ? from.value : to.value]];
