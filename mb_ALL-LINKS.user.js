@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2022.12.6
+// @version      2023.4.7
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @compatible   vivaldi(2.11.1811.33)+violentmonkey my setup
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -587,7 +587,7 @@ var additionalSearchLinks = {
 						en: "Japan"
 					},
 					items: {
-						"音楽の森（アーティスト）": "//search.minc.or.jp/artist/list/?nm=%artist-name%",
+						"音楽の森（アーティスト・作家検索）": "//search.minc.or.jp/artist/list/?nm=%artist-name%",
 						"音楽の森（CD商品検索）": [
 							"//search.minc.or.jp/product/list/?tl=%release-group-name%&ta=%release-group-artist-credit%&type=search-form-title&match=2",
 							"//search.minc.or.jp/product/list/?tl=%release-name%&ta=%release-artist-credit%&type=search-form-title&match=2",
