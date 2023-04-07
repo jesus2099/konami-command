@@ -398,18 +398,16 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						addAfter(document.createTextNode(" "), sakuhin);
 				/* -- vv ------ sakuhin code links ------ vv -- */
 						var span = document.createElement("span");
-						span.appendChild(document.createTextNode(sakuhinCode));
+						span.appendChild(createA(sakuhinCode, workLookupURL("minc", "code", sakuhinCode), "This work in 音楽の森 music FOREST"));
 						span.appendChild(document.createTextNode(" "));
 						var suppo = span.appendChild(document.createElement("sup"));
-						suppo.appendChild(createA("MF", workLookupURL("minc", "code", sakuhinCode), "This work in 音楽の森 music FOREST"));
 						suppo.appendChild(createA("MB", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"));
 						span.appendChild(document.createTextNode(" "));
 						span.appendChild(document.createTextNode(workName));
 						sakuhin = replaceElement(span, sakuhin); // TODO replaceChild returns sakuhin already (removed element), no ?
 				/* -- vv ------ iswc links ------ vv -- */
 						if (iswc) {
-							addAfter(createTag("sup", {}, createA("MB", workLookupURL("mb", "iswc", iswc.value), "Search this ISWC in MusicBrainz")), iswc.node);
-							addAfter(document.createTextNode(" "), iswc.node);
+							replaceElement(createA(iswc.value, workLookupURL("mb", "iswc", iswc.value), "Search this ISWC in MusicBrainz"), iswc.node);
 						}
 				/* -- vv ------ Select music release rights, like CD, etc. ------ vv -- */
 						// try 複製 then any then fallback on 複製 even if red
