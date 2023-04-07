@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2021.10.24
+// @version      2022.12.6
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @compatible   vivaldi(2.11.1811.33)+violentmonkey my setup
 // @compatible   firefox(64.0)+greasemonkey          tested sometimes
@@ -11,7 +11,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-08-02; http://userscripts-mirror.org/scripts/show/108889
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://greasyfork.org/scripts/10888-super/code/SUPER.js?version=263111&v=2018.3.14
+// @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @match        *://*.mbsandbox.org/area/*
 // @match        *://*.mbsandbox.org/artist/*
@@ -112,6 +112,221 @@ var whitelistSearchLinks = {
 		nl: "Zoeken in de witte lijst"
 	},
 	items: {
+		genreDBs: {
+			title: {
+				de: "Nach Genre",
+				en: "By genre",
+				fr: "Par genre",
+				nl: "Per Genre"
+			},
+			items: {
+				classical: {
+					title: {
+						de: "Klassik",
+						en: "Classical",
+						fr: "Classique",
+						nl: "Klassiek"
+					},
+					items: {
+						// Skipped "Brahms" which has a search dropdown but no search page
+						// Skipped "Classical Archives" which have an internal JSON search API only
+						"DRAM": [
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%release-group-name%&dram-search[t]=album",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%release-name%&dram-search[t]=album",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%work-name%&dram-search[t]=work",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%recording-name%&dram-search[t]=track",
+						],
+						"DRAM (composers)": "https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%artist-name%&dram-search[t]=composer",
+						"DRAM (performers)": "https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%artist-name%&dram-search[t]=performer",
+						"DRAM (ensembles)": "https://jesus2099.gitlab.io/forward-request.html?_action=https://www.dramonline.org/search&_method=post&dram-search[q]=%artist-name%&dram-search[t]=ensemble",
+						"Operabase (composers)": {
+							"bg cs da de el en es eu fi fr ga hu is it lt lv ja ko mt nl no pl ro ru sk sl sv zh": "https://www.operabase.com/composers/search/%language%?query=%artist-name%"
+						},
+						"Operabase (other artists)": {
+							"bg cs da de el en es eu fi fr ga hu is it lt lv ja ko mt nl no pl ro ru sk sl sv zh": "https://www.operabase.com/artists/search/%language%?query=%artist-name%"
+						},
+						"Operabase (festivals)": {
+							"bg cs da de el en es eu fi fr ga hu is it lt lv ja ko mt nl no pl ro ru sk sl sv zh": "https://www.operabase.com/festivals/search/%language%?query=%event-name%"
+						},
+						"Operabase (venues)": {
+							"bg cs da de el en es eu fi fr ga hu is it lt lv ja ko mt nl no pl ro ru sk sl sv zh": "https://www.operabase.com/venues/search/%language%?query=%place-name%"
+						},
+						// Skipped "Operadis" which has no search engine online
+						// Skipped "Overture/Doremus" which have a currently broken search engine
+					}
+				},
+				electronic: {
+					title: {
+						de: "Elektronik",
+						en: "Eletronic",
+						fr: "Électronique",
+						nl: "Elektronisch"
+					},
+					items: {
+						"PsyDB": [
+							"https://www.psydb.net/search?q=%artist-name%",
+							"https://www.psydb.net/search?q=%label-name%",
+							"https://www.psydb.net/search?q=%release-group-name%",
+							"https://www.psydb.net/search?q=%release-name%",
+						],
+						// Skipped "Resident Advisor" which has a search dropdown but no search page
+						// Skipped "RollDaBeats" which is down since December 2022
+					}
+				},
+				folk: {
+					title: {
+						"en de": "Traditional",
+						fr: "Traditionnelle",
+						nl: "Traditionele"
+					},
+					items: {
+						"Cape Breton Fiddle Recordings": [
+							"https://www.cbfiddle.com/rx/tunesearch.cgi?search=%work-name%"
+						],
+						// Skipped "DanceDB" which has no free text search
+						"Irish Traditional Music Tunes": [
+							"https://www.irishtune.info/album-search.php?value=%release-group-name%&form=title",
+							"https://www.irishtune.info/album-search.php?value=%release-name%&form=title",
+							"https://www.irishtune.info/search.php?lookfor=string&term=%work-name%&type=any"
+						],
+						"Mainly Norfolk": [
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/records/search.php&_method=post&album=%release-group-name%",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/records/search.php&_method=post&album=%release-name%",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/songs/search.php&_method=post&song=%work-name%",
+						],
+						// Skipped "The Dance Gypsy" which is down since February 2022
+						"The Session": [
+							"https://thesession.org/recordings/search?q=%release-group-name%",
+							"https://thesession.org/recordings/search?q=%release-name%",
+							"https://thesession.org/tunes/search?q=%work-name%"
+						],
+						"The Traditional Tune Archive": [
+							"https://tunearch.org/wiki/Special:Search?search=%artist-name%&fulltext=Dig+deeper&ns844=1&ns3002=1",
+							"https://tunearch.org/wiki/Special:Search?search=%work-name%&fulltext=Dig+deeper"
+						]
+					}
+				},
+				// Skipped "Jazz Music Archives" which have a search dropdown but no search page
+				metal: {
+					title: {
+						"de en nl": "Metal",
+						fr: "Métal"
+					},
+					items: {
+						"Metal-Archives": [
+							"https://www.metal-archives.com/search?searchString=%label-name%&type=label_name",
+							"https://www.metal-archives.com/search?searchString=%release-group-name%&type=album_title",
+							"https://www.metal-archives.com/search?searchString=%release-name%&type=album_title"
+						],
+						"Metal-Archives (aliases)": "https://www.metal-archives.com/search?searchString=%artist-name%&type=artist_alias",
+						"Metal-Archives (bands)": "https://www.metal-archives.com/search?searchString=%artist-name%&type=band_name",
+						"Spirit of Metal": [
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/labels.php?l=%language%&search=%label-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/places.php?l=%language%&search=%place-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/albums.php?l=%language%&search=%release-group-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/albums.php?l=%language%&search=%release-name%"
+							},
+						],
+						"Spirit of Metal (bands)": "https://www.spirit-of-metal.com/liste_groupe.php?recherche_groupe=%artist-name%",
+						"Spirit of Metal (other artists)": {
+							"cn de en es fr pl pt ru": "https://www.spirit-of-metal.com/artists.php?l=%language%&search=%artist-name%"
+						}
+					}
+				},
+				rock: {
+					title: "Rock",
+					items: {
+						"Prog Archives": [
+							"http://www.progarchives.com/google-search-results.asp?cx=artists&q=%artist-name%",
+							"http://www.progarchives.com/google-search-results.asp?cx=artists&q=%release-group-name%"
+						],
+						"Prog Archives (by barcode)": "http://www.progarchives.com/google-search-results.asp?cx=artists&q=%release-barcode%",
+						"Prog Archives (by name)": "http://www.progarchives.com/google-search-results.asp?cx=artists&q=%release-name%",
+						"Spirit of Rock": [
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/labels.php?l=%language%&search=%label-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/places.php?l=%language%&search=%place-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/albums.php?l=%language%&search=%release-group-name%"
+							},
+							{
+								"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/albums.php?l=%language%&search=%release-name%"
+							},
+						],
+						"Spirit of Rock (bands)": "https://www.spirit-of-rock.com/liste_groupe.php?recherche_groupe=%artist-name%",
+						"Spirit of Rock (other artists)": {
+							"cn de en es fr pl pt ru": "https://www.spirit-of-rock.com/artists.php?l=%language%&search=%artist-name%"
+						}
+					}
+				},
+				soundtrack: {
+					title: {
+						"de en": "Soundtrack",
+						fr: "Bande son",
+						nl: "Geluidsspoor"
+					},
+					items: {
+						"OverClock ReMix": [
+							"https://ocremix.org/site-search/?q=%artist-name%",
+							"https://ocremix.org/site-search/?q=%label-name%",
+							"https://ocremix.org/site-search/?q=%recording-name%",
+							"https://ocremix.org/site-search/?q=%release-group-name%",
+							"https://ocremix.org/site-search/?q=%release-name%",
+							"https://ocremix.org/site-search/?q=%work-name%"
+						],
+						"SoundtrackCollector": [
+							"https://www.soundtrackcollector.com/catalog/search.php?searchon=composer&searchtext=%artist-name%",
+							"https://www.soundtrackcollector.com/catalog/search.php?searchon=track&searchtext=%recording-name%",
+							"https://www.soundtrackcollector.com/catalog/search.php?searchon=title&searchtext=%release-group-name%",
+							"https://www.soundtrackcollector.com/catalog/search.php?searchon=soundtrack&searchtext=%work-name%",
+						],
+						"SoundtrackCollector (by barcode)": "https://www.soundtrackcollector.com/catalog/search.php?searchon=labelnr&searchtext=%release-barcode%",
+						"SoundtrackCollector (by name)": "https://www.soundtrackcollector.com/catalog/search.php?searchon=title&searchtext=%release-name%"
+					}
+					// Skipped "Videogam.in" which is down since 2016/2017
+				},
+				theatre: {
+					title: {
+						de: "Theater",
+						en: "Theatre",
+						fr: "Théâtre",
+						nl: "Theater"
+					},
+					items: {
+						"CastAlbums.org": [
+							"https://castalbums.org/search/?search=%artist-name%&type=People",
+							"https://castalbums.org/search/?search=%release-group-name%&type=Recordings",
+							"https://castalbums.org/search/?search=%release-name%&type=Recordings"
+						],
+						"CastAlbums.org (songs)": "https://castalbums.org/search/?search=%work-name%&type=Songs",
+						"CastAlbums.org (shows)": "https://castalbums.org/search/?search=%work-name%&type=Shows",
+						// Skipped "IBDb" which search has a hidden request verification token input
+						"IOBDb": [
+							"http://www.iobdb.com/Search?searchText=%artist-name%&searchDomain=CreditableEntity",
+							"http://www.iobdb.com/Search?searchText=%label-name%&searchDomain=CreditableEntity",
+							"http://www.iobdb.com/Search?searchText=%place-name%&searchDomain=Theatre",
+							"http://www.iobdb.com/Search?searchText=%work-name%&searchDomain=Any"
+						],
+						"Theatricalia": [
+							"https://theatricalia.com/search?q=%artist-name%",
+							"https://theatricalia.com/search?q=%label-name%",
+							"https://theatricalia.com/search?q=%place-name%",
+							"https://theatricalia.com/search?q=%work-name%"
+						]
+					}
+				},
+			}
+		},
 		lyricsDBs: {
 			title: {
 				de: "Liedtext",
@@ -398,80 +613,181 @@ var searchLinks = {items: {
 	web: webSearchLinks
 }};
 var disabledSearchLinks = {};
-var faviconClasses = { // https://github.com/metabrainz/musicbrainz-server/blob/61960dd9ebd5b77c6f1199815160e63b3383437e/lib/MusicBrainz/Server/Entity/URL/Sidebar.pm
-	"amazon":                     "amazon",
-	"allmusic.com":               "allmusic",
-	"animenewsnetwork.com":       "animenewsnetwork",
-	"wikipedia.org":              "wikipedia",
-	"facebook.com":               "facebook",
-	"generasia.com":              "generasia",
-	"last.fm":                    "lastfm",
-	"myspace.com":                "myspace",
-	"twitter.com":                "twitter",
-	"youtube.com":                "youtube",
-	"discogs.com":                "discogs",
-	"secondhandsongs.com":        "secondhandsongs",
-	"songfacts.com":              "songfacts",
-	"soundcloud.com":             "soundcloud",
-	"ibdb.com":                   "ibdb",
-	"imdb.com":                   "imdb",
-	"imslp.org":                  "imslp",
-	"instagram.com":              "instagram",
-	"ester.ee":                   "ester",
-	"worldcat.org":               "worldcat",
-	"45cat.com":                  "fortyfivecat",
-	"rateyourmusic.com":          "rateyourmusic",
-	"rolldabeats.com":            "rolldabeats",
-	"psydb.net":                  "psydb",
-	"metal-archives.com":         "metalarchives",
-	"spirit-of-metal.com":        "spiritofmetal",
-	"theatricalia.com":           "theatricalia",
-	"whosampled.com":             "whosampled",
-	"ocremix.org":                "ocremix",
-	"musik-sammler.de":           "musiksammler",
-	"encyclopedisque.fr":         "encyclopedisque",
-	"nla.gov.au":                 "trove",
-	"rockensdanmarkskort.dk":     "rockensdanmarkskort",
-	"rockinchina.com":            "ric",
-	"rockipedia.no":              "rockipedia",
-	"vgmdb.net":                  "vgmdb",
-	"viaf.org":                   "viaf",
-	"vk.com":                     "vk",
-	"vkdb.jp":                    "vkdb",
-	"dhhu.dk":                    "dhhu",
-	"thesession.org":             "thesession",
-	"plus.google.com":            "googleplus",
-	"openlibrary.org":            "openlibrary",
-	"bandcamp.com":               "bandcamp",
-	"play.google.com":            "googleplay",
-	"itunes.apple.com":           "itunes",
-	"spotify.com":                "spotify",
-	"soundtrackcollector.com":    "stcollector",
-	"wikidata.org":               "wikidata",
-	"lieder.net":                 "lieder",
-	"loudr.fm":                   "loudr",
-	"genius.com":                 "genius",
-	"imvdb.com":                  "imvdb",
-	"residentadvisor.net":        "residentadvisor",
-	"d-nb.info":                  "dnb",
-	"iss.ndl.go.jp":              "ndl",
-	"ci.nii.ac.jp":               "cinii",
-	"finnmusic.net":              "finnmusic",
-	"fono.fi":                    "fonofi",
-	"stage48.net":                "stage48",
-	"tedcrane.com/dancedb":       "dancedb",
-	"finna.fi":                   "finna",
-	"mainlynorfolk.info":         "mainlynorfolk",
-	"bibliotekapiosenki.pl":      "piosenki",
-	"qim.com":                    "quebecinfomusique",
-	"thedancegypsy.com":          "thedancegypsy",
-	"videogam.in":                "videogamin",
-	"spirit-of-rock.com":         "spiritofrock",
-	"tunearch.org":               "tunearch",
-	"castalbums.org":             "castalbums",
-	"smdb.kb.se":                 "smdb",
-	"triplejunearthed.com":       "triplejunearthed",
-	"cdbaby.com":                 "cdbaby",
+var FAVICON_CLASSES = { // from https://github.com/metabrainz/musicbrainz-server/blob/62d70e6e702d2f083bbdfe9f6a6056703a64ed30/root/static/scripts/common/constants.js#L53-L229
+	"45cat.com": "fortyfivecat",
+	"45worlds.com": "fortyfiveworlds",
+	"abc.net.au/triplejunearthed": "triplejunearthed",
+	"adp.library.ucsb.edu": "dahr",
+	"allmusic.com": "allmusic",
+	"animenewsnetwork.com": "animenewsnetwork",
+	"anison.info": "anisongeneration",
+	"archive.org": "archive",
+	"audiomack.com": "audiomack",
+	"baidu.com": "baidu",
+	"bandcamp.com": "bandcamp",
+	"bandsintown.com": "bandsintown",
+	"bbc.co.uk": "bbc",
+	"beatport.com": "beatport",
+	"bibliotekapiosenki.pl": "piosenki",
+	"bigcartel.com": "bigcartel",
+	"bookbrainz.org": "bookbrainz",
+	"books.apple.com": "applebooks",
+	"boomplay.com": "boomplay",
+	"cancioneros.si": "cancioneros",
+	"castalbums.org": "castalbums",
+	"catalogue.bnf.fr": "bnfcatalogue",
+	"cbfiddle.com/rx/": "cbfiddlerx",
+	"ccmixter.org": "ccmixter",
+	"cdjapan.co.jp": "cdjapan",
+	"changetip.com": "changetip",
+	"ci.nii.ac.jp": "cinii",
+	"classicalarchives.com": "classicalarchives",
+	"cpdl.org": "cpdl",
+	"d-nb.info": "dnb",
+	"dailymotion.com": "dailymotion",
+	"deezer.com": "deezer",
+	"dhhu.dk": "dhhu",
+	"directlyrics.com": "directlyrics",
+	"discogs.com": "discogs",
+	"dogmazic.net": "dogmazic",
+	"dramonline.org": "dram",
+	"encyclopedisque.fr": "encyclopedisque",
+	"ester.ee": "ester",
+	"facebook.com": "facebook",
+	"finna.fi": "finna",
+	"finnmusic.net": "finnmusic",
+	"flattr.com": "flattr",
+	"fono.fi": "fonofi",
+	"generasia.com/wiki": "generasia",
+	"genius.com": "genius",
+	"geonames.org": "geonames",
+	"gutenberg.org": "gutenberg",
+	"hoick.jp": "hoick",
+	"ibdb.com": "ibdb",
+	"idref.fr": "idref",
+	"imdb.com": "imdb",
+	"imslp.org": "imslp",
+	"imvdb.com": "imvdb",
+	"indiegogo.com": "indiegogo",
+	"instagram.com": "instagram",
+	"ircam.fr": "ircam",
+	"irishtune.info": "irishtune",
+	"iss.ndl.go.jp": "ndl",
+	"itunes.apple.com": "itunes",
+	"j-lyric.net": "jlyric",
+	"jazzmusicarchives.com": "jazzmusicarchives",
+	"joysound.com": "joysound",
+	"junodownload.com": "junodownload",
+	"kashinavi.com": "kashinavi",
+	"kget.jp": "kget",
+	"kickstarter.com": "kickstarter",
+	"ko-fi.com": "kofi",
+	"laboiteauxparoles.com": "laboiteauxparoles",
+	"lantis.jp": "lantis",
+	"last.fm": "lastfm",
+	"lieder.net": "lieder",
+	"linkedin.com": "linkedin",
+	"livefans.jp": "livefans",
+	"loc.gov": "loc",
+	"loudr.fm": "loudr",
+	"lyric.evesta.jp": "evestalyric",
+	"mainlynorfolk.info": "mainlynorfolk",
+	"melon.com": "melon",
+	"metal-archives.com": "metalarchives",
+	"mixcloud.com": "mixcloud",
+	"mora.jp": "mora",
+	"music.amazon": "amazonmusic",
+	"music.apple.com": "applemusic",
+	"music.bugs.co.kr": "bugs",
+	"music.migu.cn": "migumusic",
+	"music.youtube.com": "youtubemusic",
+	"musicapopular.cl": "musicapopularcl",
+	"musik-sammler.de": "musiksammler",
+	"musixmatch.com": "musixmatch",
+	"musopen.org": "musopen",
+	"muziekweb.nl": "muziekweb",
+	"muzikum.eu": "muzikum",
+	"myspace.com": "myspace",
+	"napster.com": "napster",
+	"nicovideo.jp": "niconicovideo",
+	"nla.gov.au": "trove",
+	"ocremix.org": "ocremix",
+	"offiziellecharts.de": "offiziellecharts",
+	"online-bijbel.nl": "onlinebijbel",
+	"opac.kbr.be": "kbr",
+	"openlibrary.org": "openlibrary",
+	"operabase.com": "operabase",
+	"overture.doremus.org": "overture",
+	"patreon.com": "patreon",
+	"paypal.me": "paypal",
+	"petitlyrics.com": "petitlyrics",
+	"pinterest.com": "pinterest",
+	"progarchives.com": "progarchives",
+	"psydb.net": "psydb",
+	"qim.com": "quebecinfomusique",
+	"qobuz.com": "qobuz",
+	"ra.co": "residentadvisor",
+	"rateyourmusic.com": "rateyourmusic",
+	"recochoku.jp": "recochoku",
+	"reverbnation.com": "reverbnation",
+	"rock.com.ar": "rockcomar",
+	"rockensdanmarkskort.dk": "rockensdanmarkskort",
+	"rockinchina.com": "ric",
+	"rockipedia.no": "rockipedia",
+	"rolldabeats.com": "rolldabeats",
+	"runeberg.org": "runeberg",
+	"saisaibatake.ame-zaiku.com/gakki": "gakki",
+	"saisaibatake.ame-zaiku.com/musical": "gakki",
+	"saisaibatake.ame-zaiku.com/musical_instrument": "gakki",
+	"secondhandsongs.com": "secondhandsongs",
+	"setlist.fm": "setlistfm",
+	"smdb.kb.se": "smdb",
+	"snaccooperative.org": "snac",
+	"songfacts.com": "songfacts",
+	"songkick.com": "songkick",
+	"soundcloud.com": "soundcloud",
+	"spirit-of-metal.com": "spiritofmetal",
+	"spirit-of-rock.com": "spiritofrock",
+	"spotify.com": "spotify",
+	"stage48.net": "stage48",
+	"target.com": "target",
+	"tedcrane.com/DanceDB": "dancedb",
+	"theatricalia.com": "theatricalia",
+	"thedancegypsy.com": "thedancegypsy",
+	"thesession.org": "thesession",
+	"tidal.com": "tidal",
+	"tiktok.com": "tiktok",
+	"tipeee.com": "tipeee",
+	"tobarandualchais.co.uk": "tobar",
+	"touhoudb.com": "touhoudb",
+	"tower.jp": "tower",
+	"traxsource.com": "traxsource",
+	"triplejunearthed.com": "triplejunearthed",
+	"tunearch.org": "tunearch",
+	"twitch.tv": "twitch",
+	"twitter.com": "twitter",
+	"uta-net.com": "utanet",
+	"utaitedb.net": "utaitedb",
+	"utamap.com": "utamap",
+	"utaten.com": "utaten",
+	"vgmdb.net": "vgmdb",
+	"viaf.org": "viaf",
+	"videogam.in": "videogamin",
+	"vimeo.com/ondemand": "vimeoondemand",
+	"vimeo.com": "vimeo",
+	"vk.com": "vk",
+	"vkdb.jp": "vkdb",
+	"vocadb.net": "vocadb",
+	"weibo.com": "weibo",
+	"whosampled.com": "whosampled",
+	"wikidata.org": "wikidata",
+	"wikipedia.org": "wikipedia",
+	"wikisource.org": "wikisource",
+	"worldcat.org": "worldcat",
+	"www.amazon": "amazon",
+	"www.youtube.com": "youtube",
+	"www5.atwiki.jp/hmiku/": "hmikuwiki",
+	"yesasia.com": "yesasia",
 };
 var favicons = {
 	"deezer.com": "https://e-cdns-files.dzcdn.net/cache/images/common/favicon/favicon-16x16.526cde4edf20647be4ee32cdf35c1c13.png",
@@ -991,9 +1307,9 @@ function setFavicon(li, url) {
 	// MusicBrainz cached favicon CSS classes
 	var searchdomain = url.match(/site:([^+]*)\+/);
 	var urldomain = searchdomain ? searchdomain[1] : url.split("/")[2];
-	for (var classdomain in faviconClasses) if (Object.prototype.hasOwnProperty.call(faviconClasses, classdomain)) {
+	for (var classdomain in FAVICON_CLASSES) if (Object.prototype.hasOwnProperty.call(FAVICON_CLASSES, classdomain)) {
 		if (urldomain.match(classdomain)) {
-			favclass = faviconClasses[classdomain];
+			favclass = FAVICON_CLASSES[classdomain];
 			break;
 		}
 	}
