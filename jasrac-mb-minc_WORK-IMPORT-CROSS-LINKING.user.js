@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2023.4.8
+// @version      2023.4.10
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -206,10 +206,11 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 					var work = tables[1];
 					if (true || work) { // quick and dirty patch
 						workName = document.querySelector(".baseinfo--name").textContent.trim();
-						sakuhinCode = document.querySelector(".baseinfo--code strong").textContent;
-						document.title = workName + "　" + sakuhinCode + "　" + document.title;
+						sakuhinCode = document.querySelector(".baseinfo--code strong");
+						sakuhinCode = {node: sakuhinCode, value: sakuhinCode.textContent};
+						document.title = workName + "　" + sakuhinCode.value + "　" + document.title;
 						createWork += encodeURIComponent(fullwidthToHalfwidth(workName)).replace(/%20/g, "+");
-						summary += workName + " (work code '''" + sakuhinCode + "'''/" + sakuhinCode.replace(/-/g, "");
+						summary += workName + " (work code '''" + sakuhinCode.value + "'''/" + sakuhinCode.value.replace(/-/g, "");
 						iswc = document.querySelector(".baseinfo--iswc strong");
 						if (iswc) {
 							iswc = {node: iswc, value: iswc.textContent};
@@ -322,7 +323,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						td.setAttribute("colspan", "3");
 						td.style.setProperty("text-align", "center");
 						td.style.setProperty("background-image", "/eJwid/img/kokoronelogo_A-2out.jpg");
-						summary += "※ '''JASRAC work importer''' (" + userjs.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode) + " ← mirror, requires account\n";
+						summary += "※ '''JASRAC work importer''' (" + userjs.version + ")\n" + workLookupURL("jasrac", "code", sakuhinCode.value) + " ← requires '''JASRAC direct links enabler'''\n" + workLookupURL("minc", "code", sakuhinCode.value) + " ← mirror, requires account\n";
 						td.appendChild(document.createTextNode("click to select → "));
 						var ta = createTag("textarea", {a: {name: "tsummary"}}, summary);
 						ta.setAttribute("id", ta.getAttribute("name"));
@@ -348,8 +349,8 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				/* -- vv ------ Add to MB ------ vv -- */
 						var form = createTag("form", {a: {action: createWork.split("?")[0], method: "post", "accept-charset": "utf-8", title: "PLEASE REVIEW before final submission!"}, s: {display: "inline", background: background}});
 						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.attributes.0.type_id", value: "3"}}));
-						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.attributes.0.value", value: sakuhinCode}}));
-						createWork += "&edit-work.attributes.0.type_id=3&edit-work.attributes.0.value=" + sakuhinCode;
+						form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.attributes.0.value", value: sakuhinCode.value}}));
+						createWork += "&edit-work.attributes.0.type_id=3&edit-work.attributes.0.value=" + sakuhinCode.value;
 						if (iswc) {
 							form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.iswcs.0", value: iswc.value}}));
 							createWork += "&edit-work.iswcs.0=" + iswc.value;
@@ -397,14 +398,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						addAfter(document.createElement("sup"), sakuhin).appendChild(mincSearch("title", workName, "MF")).style.setProperty("text-decoration", "underline");
 						addAfter(document.createTextNode(" "), sakuhin);
 				/* -- vv ------ sakuhin code links ------ vv -- */
-						var span = document.createElement("span");
-						span.appendChild(createA(sakuhinCode, workLookupURL("minc", "code", sakuhinCode), "This work in 音楽の森 music FOREST"));
-						span.appendChild(document.createTextNode(" "));
-						var suppo = span.appendChild(document.createElement("sup"));
-						suppo.appendChild(createA("MB", workLookupURL("mb", "code", sakuhinCode), "Search this work code in MusicBrainz work annotation (#281 / SEARCH-434)"));
-						span.appendChild(document.createTextNode(" "));
-						span.appendChild(document.createTextNode(workName));
-						sakuhin = replaceElement(span, sakuhin); // TODO replaceChild returns sakuhin already (removed element), no ?
+						sakuhinCode.node = replaceChildren(createA(sakuhinCode.value, workLookupURL("minc", "code", sakuhinCode.value), "This work in 音楽の森 music FOREST"), sakuhinCode.node);
 				/* -- vv ------ iswc links ------ vv -- */
 						if (iswc) {
 							replaceElement(createA(iswc.value, workLookupURL("mb", "iswc", iswc.value), "Search this ISWC in MusicBrainz"), iswc.node);
