@@ -340,11 +340,17 @@ var whitelistSearchLinks = {
 					"//genius.com/search?q=%recording-name%",
 					"//genius.com/search?q=%work-name%",
 				],
-				"J-Lyric（歌手名）": "//search2.j-lyric.net/index.php?ka=%artist-name%",
-				"J-Lyric（曲名）": [
-					"//search2.j-lyric.net/index.php?kt=%recording-name%",
-					"//search2.j-lyric.net/index.php?kt=%work-name%",
-				],
+				jlyricArtist: {
+					title: {ja: "J-Lyric（歌手名）"},
+					target: "//search2.j-lyric.net/index.php?ka=%artist-name%",
+				},
+				jlyricSong: {
+					title: {ja: "J-Lyric（曲名）"},
+					target: [
+						"//search2.j-lyric.net/index.php?kt=%recording-name%",
+						"//search2.j-lyric.net/index.php?kt=%work-name%",
+					],
+				},
 				Directlyrics: [
 					"//directlyrics.com/search?q=%artist-name%+inurl%3A-artist.html",
 					"//directlyrics.com/search?q=%work-name%+inurl%3A-lyrics.html"
