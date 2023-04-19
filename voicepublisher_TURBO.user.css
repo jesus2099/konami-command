@@ -1,13 +1,14 @@
 /* ==UserStyle==
 @name           voicepublisher. TURBO
 @namespace      https://github.com/jesus2099/konami-command
-@version        2023.4.12
-@description    Unhide input text fields and selects
+@version        2023.4.19
+@description    Unhide input text fields and selects; Easy scroll Call Details
 @author         jesus2099
 @since          2023-04-12
 ==/UserStyle== */
 
 @-moz-document domain("voicepublisher.net") {
+
 	/* unhide content of select and input fields
 	hidden by percentage widths in @media (min-width: 768px), @media (min-width: 992px), @media (min-width: 1200px) in /assets/application-….css */
 	.col-md-1, .col-sm-2 {
@@ -17,4 +18,11 @@
 	.col-md-1 > input, .col-md-1 > select, .col-sm-2 > input, .col-sm-2 > select {
 		background-color: #fcf;
 	}
+
+	/* easy scroll Call Details */
+	div.modal-dialog > div.modal-content > div.modal-body,
+	div.modal-dialog > div.modal-content > div.modal-body > fieldset.call_route > div {
+		max-height: unset !important;
+	}
+
 }
