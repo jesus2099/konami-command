@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.1.12
+// @version      2023.4.19
 // @description  Download audio folders as zip files; Double click to open call details; Nice call details copy paste with layout
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -11,17 +11,25 @@
 // @since        2022-05-16
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        GM_download
-// @include      /https?:\/\/(allobiz|login|next|nivr)\.voicepublisher\.net\/audio_folders/
-// @include      /https?:\/\/(allobiz|login|next|nivr)\.voicepublisher\.net\/calls/
-// @match        *://next.voicepublisher.net/*
+// @match        *://*.voicepublisher.net/*
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
+
+// PREVENT XHR BROWSING
+// Force normal browsing with pages unload and load as before. Maybe just a temporary work-around for lost filters bug ticket 110337, and user script loading issues #762
+document.addEventListener("click", function (event) {
+	if (event.target.matches("a[href]")) {
+		event.preventDefault();
+		location.assign(event.target.getAttribute("href"));
+	}
+});
 
 /* global I18n */ // eslint no-undef exception
 
 if (location.host.match(/^next\./)) {
 	// next (and only next) crashes on call history when switching applications
+	// TODO: Find another solution, I have this crash bug on nivr as well
 	location.assign(location.href.replace(/\bnext\b/, "nivr"));
 }
 
