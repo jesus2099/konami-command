@@ -43,6 +43,14 @@ css.setAttribute("type", "text/css");
 document.head.appendChild(css);
 css = css.sheet;
 css.insertRule("table.tbl.release-group-list > tbody > tr > td > a[href$='/cover-art'] ~ span.caa-icon { display: none; }", 0);
+// Add CAA icons for recording page releases
+if (location.pathname.match(/^\/recording\//)) {
+	var releases = document.querySelectorAll("tbody > tr > td a[href^='/release/']");
+	for (var r = 0; r < releases.length; r++) {
+		var release = include_span_mp(releases[r]);
+		release.parentNode.insertBefore(createTag("a", {a: {href: releases[r].getAttribute("href") + "/cover-art"}}, createTag("span", {a: {class: "caa-icon " + userjs}})), release);
+	}
+}
 // Add thumbnail in MBS release CAA icons
 var caaIcons = document.querySelectorAll("a[href$='/cover-art'] > span.caa-icon");
 if (caaIcons.length > 0) {
@@ -73,14 +81,10 @@ for (var t = 0; t < types.length; t++) {
 						if (this.status == 200) {
 							var RGCAA = JSON.parse(this.responseText);
 							if (RGCAA.images.length > 0) {
-								var releaseGroupOrSpanMp = this.releaseGroup;
-								if (releaseGroupOrSpanMp.parentNode.matches("span.mp")) {
-									// release group has pending edits, thus, a span.mp parent
-									releaseGroupOrSpanMp = releaseGroupOrSpanMp.parentNode;
-								}
-								// insert small pic after ratings but still before empty CAA icon so that the CSS to hide it still works
+								var releaseGroupOrSpanMp = include_span_mp(this.releaseGroup);
 								var insertPoint = releaseGroupOrSpanMp.parentNode.querySelector("span.caa-icon");
 								if (!insertPoint) {
+									// insert small pic after ratings
 									insertPoint = releaseGroupOrSpanMp;
 								}
 								loadCaaIcon(releaseGroupOrSpanMp.parentNode.insertBefore(
@@ -173,10 +177,18 @@ function loadCaaIcon(caaIcon) {
 	createTag("img", {
 		a: { src: imgurl },
 		e: {
-			load: function(event) {
+			load: function (event) {
 				caaIcon.style.setProperty("background-size", "contain");
 				caaIcon.style.setProperty("background-image", "url(" + this.getAttribute("src") + ")");
+			},
+			error: function (event) {
+				if (caaIcon.classList.contains(userjs)) {
+					removeNode(caaIcon.parentNode);
+				}
 			}
 		}
 	});
+}
+function include_span_mp(element) {
+	return element.parentNode.matches("span.mp") ? element.parentNode : element;
 }
