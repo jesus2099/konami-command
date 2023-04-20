@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.4.19
+// @version      2023.4.20
 // @description  Download audio folders as zip files; Double click to open call details; Nice call details copy paste with layout
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -21,6 +21,7 @@
 document.addEventListener("click", function (event) {
 	if (event.target.matches("a[href]")) {
 		event.preventDefault();
+		event.target.style.setProperty("text-decoration", "overline wavy");
 		location.assign(event.target.getAttribute("href"));
 	}
 });
