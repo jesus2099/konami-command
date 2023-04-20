@@ -82,11 +82,8 @@ for (var t = 0; t < types.length; t++) {
 							var RGCAA = JSON.parse(this.responseText);
 							if (RGCAA.images.length > 0) {
 								var releaseGroupOrSpanMp = include_span_mp(this.releaseGroup);
-								var insertPoint = releaseGroupOrSpanMp.parentNode.querySelector("span.caa-icon");
-								if (!insertPoint) {
-									// insert small pic after ratings
-									insertPoint = releaseGroupOrSpanMp;
-								}
+								// insert small pic after ratings
+								var insertPoint = releaseGroupOrSpanMp.previousSibling && releaseGroupOrSpanMp.previousSibling.matches && releaseGroupOrSpanMp.previousSibling.matches("span.caa-icon") ? releaseGroupOrSpanMp.previousSibling : releaseGroupOrSpanMp;
 								loadCaaIcon(releaseGroupOrSpanMp.parentNode.insertBefore(
 									createTag("a",
 										{a: {
