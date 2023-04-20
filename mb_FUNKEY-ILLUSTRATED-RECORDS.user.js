@@ -14,7 +14,7 @@
 // @grant        none
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/(artist|cdtoc|collection|label|recording|series|tag)\//
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release[-_]group\/.+$/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release([-_]group)?\/.+$/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/merge(\?.*)?$/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\?.+/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\?.*type=(annotation|release(_group)?).*$/
@@ -54,14 +54,15 @@ if (location.pathname.match(/\/(cdtoc|recording)\//)) {
 // Add thumbnail in MBS release CAA icons
 var caaIcons = document.querySelectorAll("a[href$='/cover-art'] > span.caa-icon");
 if (caaIcons.length > 0) {
-	smallpics = false;
+	// TODO: commenting this out might bring regressions: smallpics = false;
 	for (var ci = 0; ci < caaIcons.length; ci++) {
 		loadCaaIcon(caaIcons[ci]);
 	}
 }
 var imgurls = [];
 for (var t = 0; t < types.length; t++) {
-	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/'], div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']");
+	// TODO: rglink smallpic is often broken by React, though
+	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/']:not([href$='/cover-art']), div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']:not([href$='/cover-art']), tr > td > span[class^='rglink'] + a[href^='/" + types[t] + "/']:not([href$='/cover-art'])");
 	var istable, istablechecked, artistcol;
 	for (var a = 0; a < as.length; a++) {
 		var imgurl = as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/(" + GUID + ")$"));
@@ -83,7 +84,15 @@ for (var t = 0; t < types.length; t++) {
 							if (RGCAA.images.length > 0) {
 								var releaseGroupOrSpanMp = include_span_mp(this.releaseGroup);
 								// insert small pic after ratings
-								var insertPoint = releaseGroupOrSpanMp.previousSibling && releaseGroupOrSpanMp.previousSibling.matches && releaseGroupOrSpanMp.previousSibling.matches("span.caa-icon") ? releaseGroupOrSpanMp.previousSibling : releaseGroupOrSpanMp;
+								var insertPoint = releaseGroupOrSpanMp;
+								if (
+									releaseGroupOrSpanMp.previousSibling // is not first element
+									&& releaseGroupOrSpanMp.previousSibling.matches // is not text node
+									&& releaseGroupOrSpanMp.previousSibling.matches("span.caa-icon") // is CAA icon
+								) {
+									// insert before CAA icon to enable its CSS hiding
+									insertPoint = releaseGroupOrSpanMp.previousSibling;
+								}
 								loadCaaIcon(releaseGroupOrSpanMp.parentNode.insertBefore(
 									createTag("a",
 										{a: {
