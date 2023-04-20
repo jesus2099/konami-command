@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2022.9.26.1
+// @version      2023.4.20
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -74,9 +74,14 @@ for (var t = 0; t < types.length; t++) {
 							var RGCAA = JSON.parse(this.responseText);
 							if (RGCAA.images.length > 0) {
 								var releaseGroupOrSpanMp = this.releaseGroup;
-								if (releaseGroupOrSpanMp.parentNode.tagName == "SPAN" && releaseGroupOrSpanMp.parentNode.classList.contains("mp")) {
+								if (releaseGroupOrSpanMp.parentNode.matches("span.mp")) {
 									// release group has pending edits, thus, a span.mp parent
 									releaseGroupOrSpanMp = releaseGroupOrSpanMp.parentNode;
+								}
+								// insert small pic after ratings but still before empty CAA icon so that the CSS to hide it still works
+								var insertPoint = releaseGroupOrSpanMp.parentNode.querySelector("span.caa-icon");
+								if (!insertPoint) {
+									insertPoint = releaseGroupOrSpanMp;
 								}
 								loadCaaIcon(releaseGroupOrSpanMp.parentNode.insertBefore(
 									createTag("a",
@@ -87,7 +92,7 @@ for (var t = 0; t < types.length; t++) {
 										}},
 										createTag("span", {a: {class: "caa-icon " + userjs}})
 									),
-									releaseGroupOrSpanMp.parentNode.firstChild).firstChild
+									insertPoint).firstChild
 								);
 							}
 						} else {
