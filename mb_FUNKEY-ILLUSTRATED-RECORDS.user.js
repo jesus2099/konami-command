@@ -44,7 +44,7 @@ document.head.appendChild(css);
 css = css.sheet;
 css.insertRule("table.tbl.release-group-list > tbody > tr > td > a[href$='/cover-art'] ~ span.caa-icon { display: none; }", 0);
 // Add CAA icons for recording page releases
-if (location.pathname.match(/^\/recording\//)) {
+if (location.pathname.match(/\/(cdtoc|recording)\//)) {
 	var releases = document.querySelectorAll("tbody > tr > td a[href^='/release/']");
 	for (var r = 0; r < releases.length; r++) {
 		var release = include_span_mp(releases[r]);
