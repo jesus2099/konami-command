@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.4.21.1915
+// @version      2023.4.21.2159
 // @description  Download audio folders as zip files; Double click to open call details; Nice call details copy paste with layout
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -38,6 +38,20 @@ var texts = {
 		call_history_crash_bug: GM_info.script.name + " contourne le plantage du changement d’application dans le Call History",
 	}
 }[typeof I18n != "undefined" ? I18n.lang : "en"];
+
+// Work-around “Jumps back to first application” bug: Messages -> Targets -> Application -> Messages (back to first)
+// Remember last visited SVI ID
+var svid = location.search.match(/\bsvid=(\d+)\b/);
+if (svid) {
+	localStorage.setItem(userjs.id + "_last_svid", svid[1]);
+}
+// Force last visited SVI ID if none
+document.addEventListener("mousedown", function (event) {
+	if (event.target.matches("ul.nav:not(.navbar-right) a[href]:not([href*='svid='])")) {
+		event.target.setAttribute("href", event.target.getAttribute("href") + "?svid=" + localStorage.getItem(userjs.id + "_last_svid"));
+	}
+});
+
 
 // Prevent XHR browsing
 // Force normal browsing with pages unload and load as before. Maybe just a temporary work-around for lost filters bug ticket 110337, and user script loading issues #762
