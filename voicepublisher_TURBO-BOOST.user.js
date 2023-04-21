@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.4.21
+// @version      2023.4.21.1133
 // @description  Download audio folders as zip files; Double click to open call details; Nice call details copy paste with layout
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -109,6 +109,11 @@ if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 	});
 	// allow call details nice copy with layout for pasting in document or e-mail
 	waitForElement("div#callDetailsModal div.modal-footer", function(element) {
+		// Ease selection: click anything to select it all
+		element.parentNode.addEventListener("click", function (event) {
+			self.getSelection().selectAllChildren(event.target);
+		});
+		// Copy All button
 		element.appendChild(createTag("button", {a: {class: "btn btn-info"}, e: {click: function (event) {
 			var call_details = document.querySelector("div#callDetailsModal");
 			if (call_details) {
