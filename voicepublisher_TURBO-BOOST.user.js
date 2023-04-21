@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.4.21.1133
+// @version      2023.4.21.1915
 // @description  Download audio folders as zip files; Double click to open call details; Nice call details copy paste with layout
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -16,9 +16,30 @@
 // ==/UserScript==
 "use strict";
 
-var userjs = GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-");
+/* global I18n */ // eslint no-undef exception
 
-// PREVENT XHR BROWSING
+var userjs = {
+	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-"),
+	css: document.createElement("style")
+};
+userjs.css.setAttribute("type", "text/css");
+document.head.appendChild(userjs.css);
+userjs.css = userjs.css.sheet;
+
+var texts = {
+	en: {
+		copy: "Copy",
+		download: "Download ",
+		call_history_crash_bug: GM_info.script.name + " fix to call History change app crash bug",
+	},
+	fr: {
+		copy: "Copier",
+		download: "Télécharger ",
+		call_history_crash_bug: GM_info.script.name + " contourne le plantage du changement d’application dans le Call History",
+	}
+}[typeof I18n != "undefined" ? I18n.lang : "en"];
+
+// Prevent XHR browsing
 // Force normal browsing with pages unload and load as before. Maybe just a temporary work-around for lost filters bug ticket 110337, and user script loading issues #762
 document.addEventListener("click", function (event) {
 	if (event.target.matches("a[href]")) {
@@ -28,23 +49,25 @@ document.addEventListener("click", function (event) {
 	}
 });
 
-/* global I18n */ // eslint no-undef exception
-
 // Work-around Call History change app crash bug
 if (location.pathname == "/calls") {
 	var selected_application = document.querySelector("#select2-chosen-1");
 	if (selected_application) {
 		// STEP 1: Save last clicked application, in case crash happens
 		self.addEventListener("beforeunload", function (event) {
-			localStorage.setItem(userjs + "_last_application", selected_application.textContent);
+			localStorage.setItem(userjs.id + "_last_application", selected_application.textContent);
 		});
 		// STEP 3: Detect crash flag and handle post-crash
-		if (localStorage.getItem(userjs + "_call_history_crash") === "1") {
-			localStorage.removeItem(userjs + "_call_history_crash");
-			replaceChildren(document.createTextNode(localStorage.getItem(userjs + "_last_application")), selected_application);
-			selected_application.parentNode.style.setProperty("background-color", "#fcf");
-			selected_application.parentNode.style.setProperty("text-decoration", "underline dotted");
-			selected_application.setAttribute("title", GM_info.script.name + " retaliated from Call History change app crash bug");
+		if (localStorage.getItem(userjs.id + "_call_history_crash") === "1") {
+			localStorage.removeItem(userjs.id + "_call_history_crash");
+			replaceChildren(document.createTextNode(localStorage.getItem(userjs.id + "_last_application")), selected_application);
+			userjs.css.insertRule("#select2-chosen-1[title] { background-color: #fcf; text-decoration: underline dotted; }", 0);
+			selected_application.setAttribute("title", texts.call_history_crash_bug);
+			(new MutationObserver(function(mutations, observer) {
+				if (mutations[0].target.hasAttribute("title")) {
+					mutations[0].target.removeAttribute("title");
+				}
+			})).observe(selected_application, {childList: true});
 		}
 	} else {
 		// STEP 2: Detect crash, flag and go back
@@ -53,16 +76,13 @@ if (location.pathname == "/calls") {
 			&& document.querySelectorAll("body > div.dialog > div > h1").length === 1
 			&& document.querySelectorAll("body > div.dialog > div + p").length === 1
 		) {
-			localStorage.setItem(userjs + "_call_history_crash", "1");
+			localStorage.setItem(userjs.id + "_call_history_crash", "1");
+			replaceChildren(createTag("h1", {s: {marginTop: "40px"}}, texts.call_history_crash_bug), document.body);
 			history.back();
 		}
 	}
 }
 
-var texts = {
-	copy: {en: "Copy", fr: "Copier"},
-	download: {en: "Download ", fr: "Télécharger "},
-};
 var app;
 if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 	// inside an application audio folder
@@ -75,7 +95,7 @@ if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 	var ExportAllButton = toolbox.querySelector("a.btn[href$='export_all']");
 	var DLButton = createTag("a", {a: {class: "btn btn-default"}, s: {backgroundColor: "#fcf"}, e: {click: function(event) {
 		download(app.id, app.name);
-	}}}, [texts.download[I18n.lang], createTag("b", {s: {color: "black", background: "#fdf", padding: "0 4px"}}, app.name), ".zip"]);
+	}}}, [texts.download, createTag("b", {s: {color: "black", background: "#fdf", padding: "0 4px"}}, app.name), ".zip"]);
 	if (ExportAllButton) {
 		toolbox.replaceChild(DLButton, ExportAllButton);
 	} else {
@@ -88,10 +108,10 @@ if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 			var audioFolderPencils = document.querySelectorAll("div#main_frame table#audio_folders_table > tbody > tr > td.actions > a[href$='/edit']"), p = 0;
 			p < audioFolderPencils.length; p++
 		) {
-			if (!audioFolderPencils[p].parentNode.querySelector("a." + userjs + "_export")) {
+			if (!audioFolderPencils[p].parentNode.querySelector("a." + userjs.id + "_export")) {
 				app = audioFolderPencils[p].parentNode.closest("tr").querySelector("a[href$='/audios']");
 				audioFolderPencils[p].parentNode.insertBefore(
-					createTag("a", {a: {title: texts.download[I18n.lang] + app.textContent.trim() + ".zip", class: userjs + "_export"}, e: {click: function(event) {
+					createTag("a", {a: {title: texts.download + app.textContent.trim() + ".zip", class: userjs.id + "_export"}, e: {click: function(event) {
 						app = event.target.closest("tr").querySelector("a[href$='/audios']");
 						download(app.getAttribute("href").match(/\d+/)[0], app.textContent.trim());
 					}}}, createTag("span", {a: {class: "glyphicon glyphicon-share-alt"}, s: {backgroundColor: "#fcf"}})),
@@ -135,7 +155,7 @@ if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 			getSelection().selectAllChildren(document.querySelector("div#callDetailsModal"));
 			document.execCommand("copy");
 			getSelection().removeAllRanges();
-		}}}, texts.copy[I18n.lang]));
+		}}}, texts.copy));
 	});
 }
 function download(appID, appName) {
@@ -149,10 +169,10 @@ function download(appID, appName) {
 function downloading(event) {
 	if (event) {
 		// callback when loading ends
-		document.body.removeChild(document.querySelector("div#" + userjs + "_loading"));
+		document.body.removeChild(document.querySelector("div#" + userjs.id + "_loading"));
 	} else {
 		// manual call when loading starts
-		document.body.appendChild(createTag("div", {a: {id: userjs + "_loading"}}, [
+		document.body.appendChild(createTag("div", {a: {id: userjs.id + "_loading"}}, [
 			createTag("div", {
 				s: {position: "fixed", background: "#303", opacity: ".2", top: "0px", left: "0px", width: "100%", height: "100%", zIndex: "77"}
 			}),
