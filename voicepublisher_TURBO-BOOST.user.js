@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.4.20
+// @version      2023.4.21
 // @description  Download audio folders as zip files; Double click to open call details; Nice call details copy paste with layout
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -16,6 +16,8 @@
 // ==/UserScript==
 "use strict";
 
+var userjs = GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-");
+
 // PREVENT XHR BROWSING
 // Force normal browsing with pages unload and load as before. Maybe just a temporary work-around for lost filters bug ticket 110337, and user script loading issues #762
 document.addEventListener("click", function (event) {
@@ -28,10 +30,33 @@ document.addEventListener("click", function (event) {
 
 /* global I18n */ // eslint no-undef exception
 
-if (location.host.match(/^next\./)) {
-	// next (and only next) crashes on call history when switching applications
-	// TODO: Find another solution, I have this crash bug on nivr as well
-	location.assign(location.href.replace(/\bnext\b/, "nivr"));
+// Work-around Call History change app crash bug
+if (location.pathname == "/calls") {
+	var selected_application = document.querySelector("#select2-chosen-1");
+	if (selected_application) {
+		// STEP 1: Save last clicked application, in case crash happens
+		self.addEventListener("beforeunload", function (event) {
+			localStorage.setItem(userjs + "_last_application", selected_application.textContent);
+		});
+		// STEP 3: Detect crash flag and handle post-crash
+		if (localStorage.getItem(userjs + "_call_history_crash") === "1") {
+			localStorage.removeItem(userjs + "_call_history_crash");
+			replaceChildren(document.createTextNode(localStorage.getItem(userjs + "_last_application")), selected_application);
+			selected_application.parentNode.style.setProperty("background-color", "#fcf");
+			selected_application.parentNode.style.setProperty("text-decoration", "underline dotted");
+			selected_application.setAttribute("title", GM_info.script.name + " retaliated from Call History change app crash bug");
+		}
+	} else {
+		// STEP 2: Detect crash, flag and go back
+		if (
+			document.body.childNodes.length === 1
+			&& document.querySelectorAll("body > div.dialog > div > h1").length === 1
+			&& document.querySelectorAll("body > div.dialog > div + p").length === 1
+		) {
+			localStorage.setItem(userjs + "_call_history_crash", "1");
+			history.back();
+		}
+	}
 }
 
 var texts = {
@@ -63,10 +88,10 @@ if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 			var audioFolderPencils = document.querySelectorAll("div#main_frame table#audio_folders_table > tbody > tr > td.actions > a[href$='/edit']"), p = 0;
 			p < audioFolderPencils.length; p++
 		) {
-			if (!audioFolderPencils[p].parentNode.querySelector("a.j2export")) {
+			if (!audioFolderPencils[p].parentNode.querySelector("a." + userjs + "_export")) {
 				app = audioFolderPencils[p].parentNode.closest("tr").querySelector("a[href$='/audios']");
 				audioFolderPencils[p].parentNode.insertBefore(
-					createTag("a", {a: {title: texts.download[I18n.lang] + app.textContent.trim() + ".zip", class: "j2export"}, e: {click: function(event) {
+					createTag("a", {a: {title: texts.download[I18n.lang] + app.textContent.trim() + ".zip", class: userjs + "_export"}, e: {click: function(event) {
 						app = event.target.closest("tr").querySelector("a[href$='/audios']");
 						download(app.getAttribute("href").match(/\d+/)[0], app.textContent.trim());
 					}}}, createTag("span", {a: {class: "glyphicon glyphicon-share-alt"}, s: {backgroundColor: "#fcf"}})),
@@ -119,10 +144,10 @@ function download(appID, appName) {
 function downloading(event) {
 	if (event) {
 		// callback when loading ends
-		document.body.removeChild(document.querySelector("div#j2loading"));
+		document.body.removeChild(document.querySelector("div#" + userjs + "_loading"));
 	} else {
 		// manual call when loading starts
-		document.body.appendChild(createTag("div", {a: {id: "j2loading"}}, [
+		document.body.appendChild(createTag("div", {a: {id: userjs + "_loading"}}, [
 			createTag("div", {
 				s: {position: "fixed", background: "#303", opacity: ".2", top: "0px", left: "0px", width: "100%", height: "100%", zIndex: "77"}
 			}),
