@@ -9,8 +9,12 @@
 
 @-moz-document domain("voicepublisher.net") {
 
-	/* unhide content of select and input fields
-	hidden by percentage widths in @media (min-width: 768px), @media (min-width: 992px), @media (min-width: 1200px) in /assets/application-….css */
+	/* --------------------------------------
+	Unhide content of select and input fields
+	-----------------------------------------
+	Otherwise hidden by percentage widths in
+	@media (min-width: 768px), @media (min-width: 992px), @media (min-width: 1200px)
+	in /assets/application-….css */
 	.col-md-1, .col-sm-2 {
 		width: unset;
 	}
@@ -19,7 +23,10 @@
 		background-color: #fcf;
 	}
 
-	/* easy scroll Call Details */
+	/* ---------------------
+	Easy scroll Call Details
+	------------------------
+	Otherwise 2 nested vertical scroll bars, little bit clumsy */
 	div.modal-dialog > div.modal-content > div.modal-body,
 	div.modal-dialog > div.modal-content > div.modal-body > fieldset.call_route > div {
 		max-height: unset !important;

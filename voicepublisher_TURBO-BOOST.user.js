@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.4.21.2159
-// @description  Download audio folders as zip files; Double click to open call details; Nice call details copy paste with layout
+// @version      2023.4.22
+// @description  Work-around 3 bugs; Download whole audio folders as zip files; Call Details improvements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -14,9 +14,8 @@
 // @match        *://*.voicepublisher.net/*
 // @run-at       document-ready
 // ==/UserScript==
-"use strict";
-
 /* global I18n */ // eslint no-undef exception
+"use strict";
 
 var userjs = {
 	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-"),
@@ -39,7 +38,9 @@ var texts = {
 	}
 }[typeof I18n != "undefined" ? I18n.lang : "en"];
 
-// Work-around “Jumps back to first application” bug: Messages -> Targets -> Application -> Messages (back to first)
+// ------------------------------------------------------------------------------------------------------------------------
+// Work-around “Jumps back to first application” bug: Repro: Messages -> Targets -> Application -> Messages (back to first)
+// ------------------------------------------------------------------------------------------------------------------------
 // Remember last visited SVI ID
 var svid = location.search.match(/\bsvid=(\d+)\b/);
 if (svid) {
@@ -48,13 +49,15 @@ if (svid) {
 // Force last visited SVI ID if none
 document.addEventListener("mousedown", function (event) {
 	if (event.target.matches("ul.nav:not(.navbar-right) a[href]:not([href*='svid='])")) {
-		event.target.setAttribute("href", event.target.getAttribute("href") + "?svid=" + localStorage.getItem(userjs.id + "_last_svid"));
+		event.target.setAttribute("href", event.target.getAttribute("href") + (event.target.getAttribute("href").match(/\?/) ? "&" : "?") + "svid=" + localStorage.getItem(userjs.id + "_last_svid"));
+		event.target.style.setProperty("text-decoration", "underline wavy");
 	}
 });
 
 
-// Prevent XHR browsing
-// Force normal browsing with pages unload and load as before. Maybe just a temporary work-around for lost filters bug ticket 110337, and user script loading issues #762
+// ------------------------------------------------------------------------------------------------------------------
+// Prevent XHR browsing: Work-around “Lost filters” bug ticket 110337, and allow this userscript to run properly #762
+// ------------------------------------------------------------------------------------------------------------------
 document.addEventListener("click", function (event) {
 	if (event.target.matches("a[href]")) {
 		event.preventDefault();
@@ -63,7 +66,9 @@ document.addEventListener("click", function (event) {
 	}
 });
 
-// Work-around Call History change app crash bug
+// -----------------------------------------------
+// Work-around “Call History change app crash” bug
+// -----------------------------------------------
 if (location.pathname == "/calls") {
 	var selected_application = document.querySelector("#select2-chosen-1");
 	if (selected_application) {
@@ -97,6 +102,9 @@ if (location.pathname == "/calls") {
 	}
 }
 
+// -----------------------------------------
+// Download whole audio folders as zip files
+// -----------------------------------------
 var app;
 if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 	// inside an application audio folder
@@ -134,7 +142,37 @@ if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 			}
 		}
 	}, 500);
-} else if (location.pathname == "/calls") {
+}
+function download(appID, appName) {
+	downloading();
+	GM_download({
+		url: "/audio_folders/" + appID + "/audios/export_all",
+		name: appName + ".zip",
+		onload: downloading
+	});
+}
+function downloading(event) {
+	if (event) {
+		// callback when loading ends
+		document.body.removeChild(document.querySelector("div#" + userjs.id + "_loading"));
+	} else {
+		// manual call when loading starts
+		document.body.appendChild(createTag("div", {a: {id: userjs.id + "_loading"}}, [
+			createTag("div", {
+				s: {position: "fixed", background: "#303", opacity: ".2", top: "0px", left: "0px", width: "100%", height: "100%", zIndex: "77"}
+			}),
+			createTag("div", {
+				a: {class: "dataTables_processing "},
+				s: {position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textShadow: "0 0 8px white", zIndex: "100"}
+			}, I18n.dataTables.language.loadingRecords)
+		]));
+	}
+}
+
+// -------------------------
+// Call Details improvements
+// -------------------------
+if (location.pathname == "/calls") {
 	// double click call to open call details
 	waitForElement("table#big_data_listings_call_history_listings_table > tbody", function(calls) {
 		calls.addEventListener("dblclick", function(event) {
@@ -171,29 +209,4 @@ if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 			getSelection().removeAllRanges();
 		}}}, texts.copy));
 	});
-}
-function download(appID, appName) {
-	downloading();
-	GM_download({
-		url: "/audio_folders/" + appID + "/audios/export_all",
-		name: appName + ".zip",
-		onload: downloading
-	});
-}
-function downloading(event) {
-	if (event) {
-		// callback when loading ends
-		document.body.removeChild(document.querySelector("div#" + userjs.id + "_loading"));
-	} else {
-		// manual call when loading starts
-		document.body.appendChild(createTag("div", {a: {id: userjs.id + "_loading"}}, [
-			createTag("div", {
-				s: {position: "fixed", background: "#303", opacity: ".2", top: "0px", left: "0px", width: "100%", height: "100%", zIndex: "77"}
-			}),
-			createTag("div", {
-				a: {class: "dataTables_processing "},
-				s: {position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textShadow: "0 0 8px white", zIndex: "100"}
-			}, I18n.dataTables.language.loadingRecords)
-		]));
-	}
 }
