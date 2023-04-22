@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.4.22.957
-// @description  Work-around 3 bugs; Download whole audio folders as zip files; Call Details improvements
+// @version      2023.4.22.1934
+// @description  Work-around 3 bugs; Scroll active folder into view; Download whole audio folders as zip files; Call Details improvements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -19,6 +19,7 @@
 
 var userjs = {
 	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-"),
+	name: GM_info.script.name,
 	css: document.createElement("style")
 };
 userjs.css.setAttribute("type", "text/css");
@@ -29,14 +30,25 @@ var texts = {
 	en: {
 		copy: "Copy",
 		download: "Download ",
-		call_history_crash_bug: GM_info.script.name + " fix to call History change app crash bug",
+		call_history_crash_bug: userjs.name + " fix to call History change app crash bug",
 	},
 	fr: {
 		copy: "Copier",
 		download: "Télécharger ",
-		call_history_crash_bug: GM_info.script.name + " contourne le plantage du changement d’application dans le Call History",
+		call_history_crash_bug: userjs.name + " contourne le plantage du changement d’application dans le Call History",
 	}
 }[typeof I18n != "undefined" ? I18n.lang : "en"];
+
+// ------------------------------
+// Scroll active folder into view
+// ------------------------------
+
+var active_folder = document.querySelector("div.sidebar-content-body > ul > li.active");
+if (active_folder) {
+	userjs.css.insertRule("div.sidebar-content-body > ul > li.active > a { background-color: #fcf; }", 0);
+	active_folder.setAttribute("title", userjs.name + " scrolled this active folder into view");
+	active_folder.scrollIntoView();
+}
 
 // ------------------------------------------------------------------------------------------------------------------------
 // Work-around “Jumps back to first application” bug: Repro: Messages -> Targets -> Application -> Messages (back to first)
