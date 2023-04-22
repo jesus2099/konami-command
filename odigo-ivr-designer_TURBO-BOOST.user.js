@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2023.3.15
+// @version      2023.4.22
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Select first application and PROD, Select current version, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Highlight modal table rows, Emphasise reset and upgrade buttons, Press Escape to close modals, Reveal secret JSON and copy to clipboard
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -83,7 +83,7 @@ switch (self.location.pathname) {
 				click_keeping_current_focus(applications[0]);
 			}
 			// Select PROD when an application is selected
-			var service, services = document.querySelectorAll("div#main-container table#services > tbody > tr > td:first-of-type > a.ng-binding[ng-click^='getservice']");
+			var services = document.querySelectorAll("div#main-container table#services > tbody > tr > td:first-of-type > a.ng-binding[ng-click^='getservice']");
 			for (var s = 0; s < services.length; s++) {
 				if ((services.length === 1 || services[s] && services[s].textContent.trim().match(/^prod(uction)?$/i)) && !services[s].classList.contains("jesus2099")) {
 					services[s].classList.add("jesus2099");
@@ -101,8 +101,8 @@ switch (self.location.pathname) {
 				current_service = current_service.parentNode.parentNode.querySelector("td:first-of-type > a.ng-binding[ng-click^='getservice']");
 				if (current_service && current_release) {
 					current_release = current_service.textContent.trim() + "#" + current_release.textContent.trim();
-					var release, releases = document.querySelectorAll("div#main-container div[ng-show='showReleaseTable'] table > tbody > tr:not(.jesus2099) > td:first-of-type > a.ng-binding[ng-click^='getReleaseDetails']");
-					for (var r = 0; s < releases.length; r++) {
+					var releases = document.querySelectorAll("div#main-container div[ng-show='showReleaseTable'] table > tbody > tr:not(.jesus2099) > td:first-of-type > a.ng-binding[ng-click^='getReleaseDetails']");
+					for (var r = 0; r < releases.length; r++) {
 						releases[r].parentNode.parentNode.classList.add("jesus2099");
 						if (releases[r] && releases[r].textContent.trim() == current_release) {
 							var release = releases[r].parentNode.parentNode.querySelector("input[type='checkbox']");

@@ -66,9 +66,11 @@ rules:
  - global
 
 # Variables - https://eslint.org/docs/rules/#variables
+ block-scoped-var:
+ - warn
  no-unused-vars:
  - error
- - argsIgnorePattern: "^event$"
+ - argsIgnorePattern: "^(event|mutations|observer)$"
 
 # Stylistic-issues - https://eslint.org/docs/rules/#stylistic-issues
  brace-style:
