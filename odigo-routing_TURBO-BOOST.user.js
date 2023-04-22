@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.2.17
+// @version      2023.4.22
 // @description  ENABLE CELL TEXT SELECTION: click to select, middle-click to copy; SHOW CELL CROPPED TEXT; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE; SPOT UNWANTED SPACES
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
@@ -13,6 +13,8 @@
 // @include      /^https?:\/\/[^.]+.odigo.cx\/[^/]+\/ui\/service/
 // @run-at       document-ready
 // ==/UserScript==
+/* global Header */ // eslint no-undef exception
+/* global userLanguagePrefix */ // eslint no-undef exception
 "use strict";
 
 var css = document.createElement("style");
@@ -49,9 +51,9 @@ supportLink.setAttribute("target", "_blank");
 doc.setAttribute("data-title", GM_info.script.description.replace(/:/g, "\n\n‣").replace(/,/g, "\n‣").replace(/; /g, "\n\n"));
 document.body.appendChild(doc);
 function warning(text) {
-		var div = document.createElement("div");
-		div.appendChild(document.createElement("code")).appendChild(document.createTextNode(text));
-		doc.appendChild(div);
+	var div = document.createElement("div");
+	div.appendChild(document.createElement("code")).appendChild(document.createTextNode(text));
+	doc.appendChild(div);
 }
 
 // Increase contrast of unreadable menu headers
