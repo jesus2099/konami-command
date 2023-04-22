@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.4.22
+// @version      2023.4.22.957
 // @description  Work-around 3 bugs; Download whole audio folders as zip files; Call Details improvements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -59,7 +59,7 @@ document.addEventListener("mousedown", function (event) {
 // Prevent XHR browsing: Work-around “Lost filters” bug ticket 110337, and allow this userscript to run properly #762
 // ------------------------------------------------------------------------------------------------------------------
 document.addEventListener("click", function (event) {
-	if (event.target.matches("a[href]")) {
+	if (event.button !== 1 && !event.ctrlKey && !event.shiftKey && event.target.matches("a[href]")) {
 		event.preventDefault();
 		event.target.style.setProperty("text-decoration", "overline wavy");
 		location.assign(event.target.getAttribute("href"));
