@@ -7,6 +7,8 @@
 @since          2023-04-12
 ==/UserStyle== */
 
+/* Customised parts are shown on screen as pink (#ffccff) whenever possible */
+
 @-moz-document domain("voicepublisher.net") {
 
 	/* --------------------------------------
@@ -18,7 +20,6 @@
 	.col-md-1, .col-sm-2 {
 		width: unset;
 	}
-	/* mark as custom */
 	.col-md-1 > input, .col-md-1 > select, .col-sm-2 > input, .col-sm-2 > select {
 		background-color: #fcf;
 	}
@@ -31,12 +32,15 @@
 	div.modal-dialog > div.modal-content > div.modal-body > fieldset.call_route > div {
 		max-height: unset !important;
 	}
+    div.modal-dialog > div.modal-content > div.modal-header {
+        background-color: #fcf;
+    }
 
     /* -------------------------------------
 	Keep reducer always on screen in Reports
 	------------------------------------- */
     div.sidebar.for-reports > div.reducer {
-        background: #fcf;
+        background-color: #fcf;
         left: 196px;
         position: fixed;
         right: unset;
