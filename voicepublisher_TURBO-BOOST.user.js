@@ -50,7 +50,7 @@ if (active_folder) {
 	active_folder.scrollIntoView();
 }
 
-// ------------------------------------------------------------------------------------------------------------------------
+// ticket 110350 ----------------------------------------------------------------------------------------------------------
 // Work-around “Jumps back to first application” bug: Repro: Messages -> Targets -> Application -> Messages (back to first)
 // ------------------------------------------------------------------------------------------------------------------------
 // Remember last visited SVI ID
@@ -67,9 +67,9 @@ document.addEventListener("mousedown", function (event) {
 });
 
 
-// ------------------------------------------------------------------------------------------------------------------
-// Prevent XHR browsing: Work-around “Lost filters” bug ticket 110337, and allow this userscript to run properly #762
-// ------------------------------------------------------------------------------------------------------------------
+// ticket 110337 --------------------------------------------------------------------------------------
+// Prevent XHR browsing: Work-around “Lost filters” bug, and allow this userscript to run properly #762
+// ----------------------------------------------------------------------------------------------------
 document.addEventListener("click", function (event) {
 	if (event.button !== 1 && !event.ctrlKey && !event.shiftKey && event.target.matches("a[href]")) {
 		event.preventDefault();
@@ -78,7 +78,7 @@ document.addEventListener("click", function (event) {
 	}
 });
 
-// -----------------------------------------------
+// ticket 110349 ---------------------------------
 // Work-around “Call History change app crash” bug
 // -----------------------------------------------
 if (location.pathname == "/calls") {
