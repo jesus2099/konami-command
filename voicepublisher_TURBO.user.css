@@ -1,8 +1,8 @@
 /* ==UserStyle==
 @name           voicepublisher. TURBO
 @namespace      https://github.com/jesus2099/konami-command
-@version        2023.4.19
-@description    Unhide input text fields and selects; Easy scroll Call Details
+@version        2023.5.5
+@description    Unhide input text fields and selects; Easy scroll Call Details; Keep reducer always on screen in Reports
 @author         jesus2099
 @since          2023-04-12
 ==/UserStyle== */
@@ -31,5 +31,19 @@
 	div.modal-dialog > div.modal-content > div.modal-body > fieldset.call_route > div {
 		max-height: unset !important;
 	}
+
+    /* -------------------------------------
+	Keep reducer always on screen in Reports
+	------------------------------------- */
+    div.sidebar.for-reports > div.reducer {
+        background: #fcf;
+        left: 196px;
+        position: fixed;
+        right: unset;
+        top: 67px;
+    }
+    div.sidebar.for-reports > div.reducer.closed {
+        left: unset;
+    }
 
 }
