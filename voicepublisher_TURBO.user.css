@@ -32,22 +32,22 @@
 	div.modal-dialog > div.modal-content > div.modal-body > fieldset.call_route > div {
 		max-height: unset !important;
 	}
-    div.modal-dialog > div.modal-content > div.modal-header {
-        background-color: #fcf;
-    }
+	div.modal-dialog > div.modal-content > div.modal-header {
+		background-color: #fcf;
+	}
 
-    /* -------------------------------------
+	/* -------------------------------------
 	Keep reducer always on screen in Reports
 	------------------------------------- */
-    div.sidebar.for-reports > div.reducer {
-        background-color: #fcf;
-        left: 196px;
-        position: fixed;
-        right: unset;
-        top: 67px;
-    }
-    div.sidebar.for-reports > div.reducer.closed {
-        left: unset;
-    }
+	div.sidebar.for-reports > div.reducer {
+		background-color: #fcf;
+		left: 196px;
+		position: fixed;
+		right: unset;
+		top: 67px;
+	}
+	div.sidebar.for-reports > div.reducer.closed {
+		left: unset;
+	}
 
 }
