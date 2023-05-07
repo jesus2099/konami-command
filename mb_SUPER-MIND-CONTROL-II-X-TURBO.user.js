@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2023.3.23.1327
+// @version      2023.5.7
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -523,8 +523,8 @@ if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + 
 j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it\nascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197)\n\nPress “C” to copy current date into the other (begin→end or end→begin)\nPress “D” to delete dates");
 if (j2sets.EASY_DATE && !location.pathname.match(/^\/account\/edit/)) {
 	// React hydrate imposes delay
-	var reactHydratePage = location.pathname.match(/\/(add-alias|alias\/\d+\/edit)$/);
-	if (!reactHydratePage) {
+	userjs.reactHydratePage = location.pathname.match(/\/(add-alias|alias\/\d+\/edit)$/);
+	if (!userjs.reactHydratePage) {
 		EASY_DATE_init();
 	}
 	document.body.addEventListener("DOMNodeInserted", EASY_DATE_calmDOM, false);
@@ -534,7 +534,7 @@ function EASY_DATE_calmDOM() {
 	if (EASY_DATE_calmDOMto) {
 		clearTimeout(EASY_DATE_calmDOMto);
 	}
-	EASY_DATE_calmDOMto = setTimeout(EASY_DATE_init, reactHydratePage ? 1000 : 100);
+	EASY_DATE_calmDOMto = setTimeout(EASY_DATE_init, userjs.reactHydratePage ? 1000 : 100);
 }
 function EASY_DATE_init() {
 	debug("EASY_DATE_init");
@@ -872,7 +872,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			entityID = entityID.getAttribute("href").match(/add-to-merge=(\d+)/)[1];
 			entityName = entityName.textContent;
 			var refine = "/search/edits?conditions.0.operator=%3D&conditions.0.field=" + entityType + "&conditions.0.name=" + encodeURIComponent(entityName) + "&conditions.0.args.0=" + entityID + "&order=desc&combinator=and&negation=0";
-			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link", href: refine}, s: {background: "#ff6"}}, "refine"), ")"]), entityEdits);
+			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link from " + userjs.name, href: refine}, s: {background: "#ff6"}}, "refine"), ")"]), entityEdits);
 			entityEdits.setAttribute("title", "Includes child/related entity edits");
 			var refineEntity = entitySpecificEdits(entityType, refine, "pure+cover+relationship");
 			if (refineEntity) {
