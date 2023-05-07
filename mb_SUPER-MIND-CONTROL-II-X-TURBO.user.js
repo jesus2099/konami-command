@@ -872,7 +872,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 			entityID = entityID.getAttribute("href").match(/add-to-merge=(\d+)/)[1];
 			entityName = entityName.textContent;
 			var refine = "/search/edits?conditions.0.operator=%3D&conditions.0.field=" + entityType + "&conditions.0.name=" + encodeURIComponent(entityName) + "&conditions.0.args.0=" + entityID + "&order=desc&combinator=and&negation=0";
-			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link from " + userjs.name, href: refine}, s: {background: "#ff6"}}, "refine"), ")"]), entityEdits);
+			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link from " + userjs.name, href: refine + "&form_only=yes"}, s: {background: "#ff6"}}, "refine"), ")"]), entityEdits);
 			entityEdits.setAttribute("title", "Includes child/related entity edits");
 			var refineEntity = entitySpecificEdits(entityType, refine, "pure+cover+relationship");
 			if (refineEntity) {
