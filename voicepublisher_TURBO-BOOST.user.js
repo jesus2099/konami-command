@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
 // @version      2023.4.22.1934
-// @description  Work-around 3 bugs; Scroll active folder into view; Download whole audio folders as zip files; Call Details improvements
+// @description  Work-around 3 bugs; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download whole audio folders as zip files; Call Details improvements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -113,6 +113,32 @@ if (location.pathname == "/calls") {
 		}
 	}
 }
+
+
+// ----------------------------------------------------
+// Make versions clickable in Applications (sites) page
+// ----------------------------------------------------
+if (location.pathname.match(/^\/sites/)) {
+	userjs.css.insertRule("table#sites_table > tbody > tr.site > td.string > span.label { cursor: pointer; text-decoration: underline 4px #fcf; }", 0);
+	document.addEventListener("click", function (event) {
+		if (event.target.matches("table#sites_table > tbody > tr.site > td.string > span.label")) {
+			var site = event.target.parentNode.parentNode.getAttribute("id");
+			var status = null;
+			if (event.target.classList.contains("label-success")) {
+				status = "published";
+			} else if (event.target.classList.contains("label-warning")) {
+				status = "tested";
+			}
+			if (site && status) {
+				var version_link = document.querySelector("div.sidebar-content-body > ul.sites > li#" + site + " > ul.site_versions > li.site-version." + status + " > a[href^='/pages?svid=']");
+				if (version_link && version_link.textContent == event.target.textContent) {
+					version_link.click();
+				}
+			}
+		}
+	});
+}
+
 
 // -----------------------------------------
 // Download whole audio folders as zip files
