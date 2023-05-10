@@ -39,6 +39,7 @@ var texts = {
 	}
 }[typeof I18n != "undefined" ? I18n.lang : "en"];
 
+
 // ------------------------------
 // Scroll active folder into view
 // ------------------------------
@@ -49,6 +50,7 @@ if (active_folder) {
 	active_folder.setAttribute("title", userjs.name + " scrolled this active folder into view");
 	active_folder.scrollIntoView();
 }
+
 
 // ticket 110350 ----------------------------------------------------------------------------------------------------------
 // Work-around “Jumps back to first application” bug: Repro: Messages -> Targets -> Application -> Messages (back to first)
@@ -77,6 +79,7 @@ document.addEventListener("click", function (event) {
 		location.assign(event.target.getAttribute("href"));
 	}
 });
+
 
 // ticket 110349 ---------------------------------
 // Work-around “Call History change app crash” bug
@@ -206,6 +209,7 @@ function downloading(event) {
 		]));
 	}
 }
+
 
 // -------------------------
 // Call Details improvements
