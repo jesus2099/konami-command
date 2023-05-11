@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           voicepublisher. TURBO
 @namespace      https://github.com/jesus2099/konami-command
-@version        2023.5.5
+@version        2023.5.11
 @description    Unhide input text fields and selects; Easy scroll Call Details; Keep reducer always on screen in Reports
 @author         jesus2099
 @since          2023-04-12
@@ -28,11 +28,11 @@
 	Easy scroll Call Details
 	------------------------
 	Otherwise 2 nested vertical scroll bars, little bit clumsy */
-	div.modal-dialog > div.modal-content > div.modal-body,
-	div.modal-dialog > div.modal-content > div.modal-body > fieldset.call_route > div {
+	div#callDetailsModal > div.modal-dialog > div.modal-content > div.modal-body,
+	div#callDetailsModal > div.modal-dialog > div.modal-content > div.modal-body > fieldset.call_route > div {
 		max-height: unset !important;
 	}
-	div.modal-dialog > div.modal-content > div.modal-header {
+	div#callDetailsModal > div.modal-dialog > div.modal-content > div.modal-header {
 		background-color: #fcf;
 	}
 
