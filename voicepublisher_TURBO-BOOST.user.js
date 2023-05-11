@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.4.22.1934
+// @version      2023.5.11
 // @description  Work-around 3 bugs; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download whole audio folders as zip files; Call Details improvements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -62,7 +62,7 @@ if (svid) {
 }
 // Force last visited SVI ID if none
 document.addEventListener("mousedown", function (event) {
-	if (event.target.matches("ul.nav:not(.navbar-right) a[href]:not([href*='svid='])")) {
+	if (event.target.matches("div#top-navbar-collapse > ul.nav:not(.navbar-right) a[href]:not([href*='svid='])")) {
 		event.target.setAttribute("href", event.target.getAttribute("href") + (event.target.getAttribute("href").match(/\?/) ? "&" : "?") + "svid=" + localStorage.getItem(userjs.id + "_last_svid"));
 		event.target.style.setProperty("text-decoration", "underline wavy");
 	}
@@ -73,7 +73,7 @@ document.addEventListener("mousedown", function (event) {
 // Prevent XHR browsing: Work-around “Lost filters” bug, and allow this userscript to run properly #762
 // ----------------------------------------------------------------------------------------------------
 document.addEventListener("click", function (event) {
-	if (event.button !== 1 && !event.ctrlKey && !event.shiftKey && event.target.matches("a[href]")) {
+	if (event.button !== 1 && !event.ctrlKey && !event.shiftKey && event.target.matches("a[href]:not([href^='#'])")) {
 		event.preventDefault();
 		event.target.style.setProperty("text-decoration", "overline wavy");
 		location.assign(event.target.getAttribute("href"));
