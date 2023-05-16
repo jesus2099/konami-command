@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.5.12
+// @version      2023.5.16
 // @description  Work-around 3 bugs; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download whole audio folders as zip files; Call Details improvements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -122,7 +122,7 @@ if (location.pathname == "/calls") {
 // Make versions clickable in Applications (sites) page
 // ----------------------------------------------------
 if (location.pathname.match(/^\/sites/)) {
-	userjs.css.insertRule("table#sites_table > tbody > tr.site > td.string > span.label { cursor: pointer; text-decoration: underline 4px #fcf; }", 0);
+	userjs.css.insertRule("table#sites_table > tbody > tr.site > td.string > span.label { cursor: pointer; border-bottom: 2px solid purple; }", 0);
 	document.addEventListener("click", function (event) {
 		if (event.target.matches("table#sites_table > tbody > tr.site > td.string > span.label")) {
 			var site = event.target.parentNode.parentNode.getAttribute("id");
