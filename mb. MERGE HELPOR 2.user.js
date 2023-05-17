@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2022.10.27.1
+// @version      2023.5.17
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -222,7 +222,7 @@ function findUsefulMergeInfo() {
 		}
 		if (mergeType == "release") {
 			/* make the release each medium is from a clickable link */
-			for (let releases = {}, mediums = document.querySelectorAll("input[id$='.release_id'][type='hidden']"), m = 0; m < mediums.length; m++) {
+			for (let releases = {}, mediums = document.querySelectorAll("input[name$='.release_id'][type='hidden']"), m = 0; m < mediums.length; m++) {
 				if (!releases[mediums[m].value]) {
 					releases[mediums[m].value] = {fragment: document.createDocumentFragment()};
 					var releaseCell = getSibling(document.querySelector("form table.tbl > tbody input[type='radio'][name='merge.target'][value='" + mediums[m].value + "']").parentNode, "td");
