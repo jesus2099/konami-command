@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         esrh. FULL YEAR
-// @version      2023.5.26
+// @version      2023.5.26.1248
 // @description  Affiche les congés sur toute l’année
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/esrh_FULL-YEAR
@@ -19,13 +19,14 @@ var full_year_path_match = (location.pathname + location.search).match(new RegEx
 if (full_year_path_match) {
 	var header = document.getElementById("AFTimeEPlanning_textMY");
 	if (header) {
+		// show user when page is loading other year
 		self.addEventListener("beforeunload", function(event) {
 			document.body.style.setProperty("cursor", "progress");
 			document.body.style.setProperty("opacity", ".12");
 		});
+		// display year in main title, clickable to change year
 		header.replaceChild(document.createTextNode(full_year_path_match[1]), header.firstChild);
 		header.style.setProperty("font-size", "1.5em");
-		header.parentNode.style.setProperty("color", "grey");
 		header.style.setProperty("color", "black");
 		header.style.setProperty("cursor", "pointer");
 		header.style.setProperty("border-bottom", "1px solid black");
@@ -39,14 +40,21 @@ if (full_year_path_match) {
 				location.assign(year_calendar_path.replace("%year%", new_year));
 			}
 		});
+		// add previous and next year buttons
+		header.parentNode.style.setProperty("color", "grey");
 		header.parentNode.insertBefore(createTag("fragment", {}, [year_link(parseInt(full_year_path_match[1]) - 1), " << "]), header);
 		header.parentNode.insertBefore(createTag("fragment", {}, [" >> ", year_link(parseInt(full_year_path_match[1]) + 1)]), header.nextSibling);
 	}
 } else if ((location.pathname + location.search).match(/^\/TimeManagFF\/Core\/default\.jsp\?role=[EM]/)) {
 	waitForElement("select#AFTimeEPlanning_newYear", function(new_year) {
+		// add button to open FULL YEAR
 		new_year.closest("th").nextSibling.appendChild(createTag("a", {a: {class: "btn"}, e: {click: function(event) {
 			open(year_calendar_path.replace("%year%", document.querySelector("select#AFTimeEPlanning_newYear").value.trim()));
-		}}}, "VOIR TOUTE L’ANNÉE"));
+		}}}, ["VOIR TOUT ", createTag("span", {a: {class: "year"}}, document.querySelector("select#AFTimeEPlanning_newYear").value)]));
+		// update button label when new year is selected
+		new_year.addEventListener("change", function(event) {
+			replaceChildren(document.createTextNode(new_year.value), new_year.closest("th").nextSibling.querySelector("a.btn > span.year"));
+		})
 	});
 }
 function year_link(year) {
