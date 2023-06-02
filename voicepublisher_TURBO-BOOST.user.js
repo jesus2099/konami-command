@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.5.16
-// @description  Work-around 3 bugs; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download whole audio folders as zip files; Call Details improvements
+// @version      2023.6.2
+// @description  Work-around 2 bugs; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download whole audio folders as zip files; Call Details improvements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -50,23 +50,6 @@ if (active_folder) {
 	active_folder.setAttribute("title", userjs.name + " scrolled this active folder into view");
 	active_folder.scrollIntoView();
 }
-
-
-// ticket 110350 ----------------------------------------------------------------------------------------------------------
-// Work-around “Jumps back to first application” bug: Repro: Messages -> Targets -> Application -> Messages (back to first)
-// ------------------------------------------------------------------------------------------------------------------------
-// Remember last visited SVI ID
-var svid = location.search.match(/\bsvid=(\d+)\b/);
-if (svid) {
-	localStorage.setItem(userjs.id + "_last_svid", svid[1]);
-}
-// Force last visited SVI ID if none
-document.addEventListener("mousedown", function (event) {
-	if (event.target.matches("div#top-navbar-collapse > ul.nav:not(.navbar-right) a[href]:not([href*='svid='])")) {
-		event.target.setAttribute("href", event.target.getAttribute("href") + (event.target.getAttribute("href").match(/\?/) ? "&" : "?") + "svid=" + localStorage.getItem(userjs.id + "_last_svid"));
-		event.target.style.setProperty("text-decoration", "underline wavy");
-	}
-});
 
 
 // ticket 110337 --------------------------------------------------------------------------------------
