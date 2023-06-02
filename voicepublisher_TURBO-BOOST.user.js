@@ -146,6 +146,7 @@ function make_versions_clickable() {
 // Download whole audio folders as zip files
 // -----------------------------------------
 function download_audio_folders() {
+	return; // Many missing audio files for big folders!
 	setTimeout(function() {
 		var app;
 		if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
