@@ -39,51 +39,77 @@ var texts = {
 	}
 }[typeof I18n != "undefined" ? I18n.lang : "en"];
 
+// Handle normal browsing page loads
+scroll_active_folder_into_view();
+workaround_cookie_overflow_bug();
+make_versions_clickable();
+download_audio_folders();
+call_details_improvements();
+// Handle XHR style browsing :-/
+(new MutationObserver(function(mutations, observer) {
+	for (var m = 0; m < mutations.length; m++) {
+		if (mutations[m].type === "childList") {
+			for (var a = 0; a < mutations[m].addedNodes.length; a++) {
+				if (mutations[m].addedNodes[a].matches("body")) {
+					// body removed and re-added
+					scroll_active_folder_into_view();
+					workaround_cookie_overflow_bug();
+					make_versions_clickable();
+					download_audio_folders();
+					call_details_improvements();
+				}
+			}
+		}
+	}
+})).observe(document.querySelector("html"), {childList: true});
 
 // ------------------------------
 // Scroll active folder into view
 // ------------------------------
-
-var active_folder = document.querySelector("div.sidebar-content-body > ul > li.active");
-if (active_folder) {
-	userjs.css.insertRule("div.sidebar-content-body > ul > li.active > a { background-color: #fcf; }", 0);
-	active_folder.setAttribute("title", userjs.name + " scrolled this active folder into view");
-	active_folder.scrollIntoView();
+function scroll_active_folder_into_view() {
+	var active_folder = document.querySelector("div.sidebar-content-body > ul > li.active");
+	if (active_folder) {
+		userjs.css.insertRule("div.sidebar-content-body > ul > li.active > a { background-color: #fcf; }", 0);
+		active_folder.setAttribute("title", userjs.name + " scrolled this active folder into view");
+		active_folder.scrollIntoView();
+	}
 }
 
 
-// ticket 110349 ---------------------------------
-// Work-around “Call History change app crash” bug
-// -----------------------------------------------
-if (location.pathname == "/calls") {
-	var selected_application = document.querySelector("#select2-chosen-1");
-	if (selected_application) {
-		// STEP 1: Save last clicked application, in case crash happens
-		self.addEventListener("beforeunload", function (event) {
-			localStorage.setItem(userjs.id + "_last_application", selected_application.textContent);
-		});
-		// STEP 3: Detect crash flag and handle post-crash
-		if (localStorage.getItem(userjs.id + "_call_history_crash") === "1") {
-			localStorage.removeItem(userjs.id + "_call_history_crash");
-			replaceChildren(document.createTextNode(localStorage.getItem(userjs.id + "_last_application")), selected_application);
-			userjs.css.insertRule("#select2-chosen-1[title] { background-color: #fcf; text-decoration: underline dotted; }", 0);
-			selected_application.setAttribute("title", texts.call_history_crash_bug);
-			(new MutationObserver(function(mutations, observer) {
-				if (mutations[0].target.hasAttribute("title")) {
-					mutations[0].target.removeAttribute("title");
-				}
-			})).observe(selected_application, {childList: true});
-		}
-	} else {
-		// STEP 2: Detect crash, flag and go back
-		if (
-			document.body.childNodes.length === 1
-			&& document.querySelectorAll("body > div.dialog > div > h1").length === 1
-			&& document.querySelectorAll("body > div.dialog > div + p").length === 1
-		) {
-			localStorage.setItem(userjs.id + "_call_history_crash", "1");
-			replaceChildren(createTag("h1", {s: {marginTop: "40px"}}, texts.call_history_crash_bug), document.body);
-			history.back();
+// ticket 110349 -------------------------------------------------------
+// Work-around “Call History change app crash” aka “cookie overflow” bug
+// ---------------------------------------------------------------------
+function workaround_cookie_overflow_bug() {
+	if (location.pathname == "/calls") {
+		var selected_application = document.querySelector("#select2-chosen-1");
+		if (selected_application) {
+			// STEP 1: Save last clicked application, in case crash happens
+			self.addEventListener("beforeunload", function (event) {
+				localStorage.setItem(userjs.id + "_last_application", selected_application.textContent);
+			});
+			// STEP 3: Detect crash flag and handle post-crash
+			if (localStorage.getItem(userjs.id + "_call_history_crash") === "1") {
+				localStorage.removeItem(userjs.id + "_call_history_crash");
+				replaceChildren(document.createTextNode(localStorage.getItem(userjs.id + "_last_application")), selected_application);
+				userjs.css.insertRule("#select2-chosen-1[title] { background-color: #fcf; text-decoration: underline dotted; }", 0);
+				selected_application.setAttribute("title", texts.call_history_crash_bug);
+				(new MutationObserver(function(mutations, observer) {
+					if (mutations[0].target.hasAttribute("title")) {
+						mutations[0].target.removeAttribute("title");
+					}
+				})).observe(selected_application, {childList: true});
+			}
+		} else {
+			// STEP 2: Detect crash, flag and go back
+			if (
+				document.body.childNodes.length === 1
+				&& document.querySelectorAll("body > div.dialog > div > h1").length === 1
+				&& document.querySelectorAll("body > div.dialog > div + p").length === 1
+			) {
+				localStorage.setItem(userjs.id + "_call_history_crash", "1");
+				replaceChildren(createTag("h1", {s: {marginTop: "40px"}}, texts.call_history_crash_bug), document.body);
+				history.back();
+			}
 		}
 	}
 }
@@ -92,68 +118,74 @@ if (location.pathname == "/calls") {
 // ----------------------------------------------------
 // Make versions clickable in Applications (sites) page
 // ----------------------------------------------------
-if (location.pathname.match(/^\/sites/)) {
-	userjs.css.insertRule("table#sites_table > tbody > tr.site > td.string > span.label { cursor: pointer; border-bottom: 2px solid purple; }", 0);
-	document.addEventListener("click", function (event) {
-		if (event.target.matches("table#sites_table > tbody > tr.site > td.string > span.label")) {
-			var site = event.target.parentNode.parentNode.getAttribute("id");
-			var status = null;
-			if (event.target.classList.contains("label-success")) {
-				status = "published";
-			} else if (event.target.classList.contains("label-warning")) {
-				status = "tested";
-			}
-			if (site && status) {
-				var version_link = document.querySelector("div.sidebar-content-body > ul.sites > li#" + site + " > ul.site_versions > li.site-version." + status + " > a[href^='/pages?svid=']");
-				if (version_link && version_link.textContent == event.target.textContent) {
-					version_link.click();
+function make_versions_clickable() {
+	if (location.pathname.match(/^\/sites/)) {
+		userjs.css.insertRule("table#sites_table > tbody > tr.site > td.string > span.label { cursor: pointer; border-bottom: 2px solid purple; }", 0);
+		document.addEventListener("click", function (event) {
+			if (event.target.matches("table#sites_table > tbody > tr.site > td.string > span.label")) {
+				var site = event.target.parentNode.parentNode.getAttribute("id");
+				var status = null;
+				if (event.target.classList.contains("label-success")) {
+					status = "published";
+				} else if (event.target.classList.contains("label-warning")) {
+					status = "tested";
+				}
+				if (site && status) {
+					var version_link = document.querySelector("div.sidebar-content-body > ul.sites > li#" + site + " > ul.site_versions > li.site-version." + status + " > a[href^='/pages?svid=']");
+					if (version_link && version_link.textContent == event.target.textContent) {
+						version_link.click();
+					}
 				}
 			}
-		}
-	});
+		});
+	}
 }
 
 
 // -----------------------------------------
 // Download whole audio folders as zip files
 // -----------------------------------------
-var app;
-if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
-	// inside an application audio folder
-	app = document.querySelector("div.sidebar ul.tree > li.active > a[aria-current='page']");
-	app = {
-		id: app.getAttribute("href").match(/audio_folders\/(\d+)\/audios/)[1],
-		name: app.textContent.trim()
-	};
-	var toolbox = document.querySelector("div#content-sidebar div.title-bar ul.toolbox li.dropdowns_right");
-	var ExportAllButton = toolbox.querySelector("a.btn[href$='export_all']");
-	var DLButton = createTag("a", {a: {class: "btn btn-default"}, s: {backgroundColor: "#fcf"}, e: {click: function(event) {
-		download(app.id, app.name);
-	}}}, [texts.download, createTag("b", {s: {color: "black", background: "#fdf", padding: "0 4px"}}, app.name), ".zip"]);
-	if (ExportAllButton) {
-		toolbox.replaceChild(DLButton, ExportAllButton);
-	} else {
-		toolbox.appendChild(DLButton);
-	}
-} else if (location.pathname == "/audio_folders") {
-	// on the list of application audio folders
-	setInterval(function() {
-		for (
-			var audioFolderPencils = document.querySelectorAll("div#main_frame table#audio_folders_table > tbody > tr > td.actions > a[href$='/edit']"), p = 0;
-			p < audioFolderPencils.length; p++
-		) {
-			if (!audioFolderPencils[p].parentNode.querySelector("a." + userjs.id + "_export")) {
-				app = audioFolderPencils[p].parentNode.closest("tr").querySelector("a[href$='/audios']");
-				audioFolderPencils[p].parentNode.insertBefore(
-					createTag("a", {a: {title: texts.download + app.textContent.trim() + ".zip", class: userjs.id + "_export"}, e: {click: function(event) {
-						app = event.target.closest("tr").querySelector("a[href$='/audios']");
-						download(app.getAttribute("href").match(/\d+/)[0], app.textContent.trim());
-					}}}, createTag("span", {a: {class: "glyphicon glyphicon-share-alt"}, s: {backgroundColor: "#fcf"}})),
-					audioFolderPencils[p]
-				);
+function download_audio_folders() {
+	setTimeout(function() {
+		var app;
+		if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
+			// inside an application audio folder
+			app = document.querySelector("div.sidebar ul.tree > li.active > a[aria-current='page']");
+			app = {
+				id: app.getAttribute("href").match(/audio_folders\/(\d+)\/audios/)[1],
+				name: app.textContent.trim()
+			};
+			var toolbox = document.querySelector("div#content-sidebar div.title-bar ul.toolbox li.dropdowns_right");
+			var ExportAllButton = toolbox.querySelector("a.btn[href$='export_all']");
+			var DLButton = createTag("a", {a: {class: "btn btn-default"}, s: {backgroundColor: "#fcf"}, e: {click: function(event) {
+				download(app.id, app.name);
+			}}}, [texts.download, createTag("b", {s: {color: "black", background: "#fdf", padding: "0 4px"}}, app.name), ".zip"]);
+			if (ExportAllButton) {
+				toolbox.replaceChild(DLButton, ExportAllButton);
+			} else {
+				toolbox.appendChild(DLButton);
 			}
+		} else if (location.pathname == "/audio_folders") {
+			// on the list of application audio folders
+			setInterval(function() {
+				for (
+					var audioFolderPencils = document.querySelectorAll("div#main_frame table#audio_folders_table > tbody > tr > td.actions > a[href$='/edit']"), p = 0;
+					p < audioFolderPencils.length; p++
+				) {
+					if (!audioFolderPencils[p].parentNode.querySelector("a." + userjs.id + "_export")) {
+						app = audioFolderPencils[p].parentNode.closest("tr").querySelector("a[href$='/audios']");
+						audioFolderPencils[p].parentNode.insertBefore(
+							createTag("a", {a: {title: texts.download + app.textContent.trim() + ".zip", class: userjs.id + "_export"}, e: {click: function(event) {
+								app = event.target.closest("tr").querySelector("a[href$='/audios']");
+								download(app.getAttribute("href").match(/\d+/)[0], app.textContent.trim());
+							}}}, createTag("span", {a: {class: "glyphicon glyphicon-share-alt"}, s: {backgroundColor: "#fcf"}})),
+							audioFolderPencils[p]
+						);
+					}
+				}
+			}, 500);
 		}
-	}, 500);
+	}, 666);
 }
 function download(appID, appName) {
 	downloading();
@@ -185,41 +217,43 @@ function downloading(event) {
 // -------------------------
 // Call Details improvements
 // -------------------------
-if (location.pathname == "/calls") {
-	// double click call to open call details
-	waitForElement("table#big_data_listings_call_history_listings_table > tbody", function(calls) {
-		calls.addEventListener("dblclick", function(event) {
-			event.target.closest("tr").querySelector("td.actions i").click();
+function call_details_improvements() {
+	if (location.pathname == "/calls") {
+		// double click call to open call details
+		waitForElement("table#big_data_listings_call_history_listings_table > tbody", function(calls) {
+			calls.addEventListener("dblclick", function(event) {
+				event.target.closest("tr").querySelector("td.actions i").click();
+			});
 		});
-	});
-	// allow call details nice copy with layout for pasting in document or e-mail
-	waitForElement("div#callDetailsModal div.modal-footer", function(element) {
-		// Ease selection: click anything to select it all
-		element.parentNode.addEventListener("click", function (event) {
-			self.getSelection().selectAllChildren(event.target);
-		});
-		// Copy All button
-		element.appendChild(createTag("button", {a: {class: "btn btn-info"}, e: {click: function (event) {
-			var call_details = document.querySelector("div#callDetailsModal");
-			if (call_details) {
-				var call_information = call_details.querySelector("fieldset.call_information");
-				if (!call_information.classList.contains(GM_info.script.author)) {
-					var information_labels = call_details.querySelectorAll("fieldset.call_information div.group > label + span");
-					for (var l = 0; l < information_labels.length; l++) {
-						information_labels[l].insertBefore(document.createTextNode("\u00a0: "), information_labels[l].firstChild);
+		// allow call details nice copy with layout for pasting in document or e-mail
+		waitForElement("div#callDetailsModal div.modal-footer", function(element) {
+			// Ease selection: click anything to select it all
+			element.parentNode.addEventListener("click", function (event) {
+				self.getSelection().selectAllChildren(event.target);
+			});
+			// Copy All button
+			element.appendChild(createTag("button", {a: {class: "btn btn-info"}, e: {click: function (event) {
+				var call_details = document.querySelector("div#callDetailsModal");
+				if (call_details) {
+					var call_information = call_details.querySelector("fieldset.call_information");
+					if (!call_information.classList.contains(GM_info.script.author)) {
+						var information_labels = call_details.querySelectorAll("fieldset.call_information div.group > label + span");
+						for (var l = 0; l < information_labels.length; l++) {
+							information_labels[l].insertBefore(document.createTextNode("\u00a0: "), information_labels[l].firstChild);
+						}
+						var route_items = call_details.querySelectorAll("fieldset.call_route > div > span.item");
+						for (var i = 0; i < route_items.length; i++) {
+							route_items[i].firstChild.replaceChild(document.createTextNode(route_items[i].firstChild.textContent.replace(/[:\s]*$/, "")), route_items[i].firstChild.firstChild);
+							route_items[i].firstChild.nextSibling.insertBefore(document.createTextNode("\u00a0: "), route_items[i].firstChild.nextSibling.firstChild);
+							route_items[i].appendChild(createTag("br"));
+						}
+						call_information.classList.add(GM_info.script.author);
 					}
-					var route_items = call_details.querySelectorAll("fieldset.call_route > div > span.item");
-					for (var i = 0; i < route_items.length; i++) {
-						route_items[i].firstChild.replaceChild(document.createTextNode(route_items[i].firstChild.textContent.replace(/[:\s]*$/, "")), route_items[i].firstChild.firstChild);
-						route_items[i].firstChild.nextSibling.insertBefore(document.createTextNode("\u00a0: "), route_items[i].firstChild.nextSibling.firstChild);
-						route_items[i].appendChild(createTag("br"));
-					}
-					call_information.classList.add(GM_info.script.author);
 				}
-			}
-			getSelection().selectAllChildren(document.querySelector("div#callDetailsModal"));
-			document.execCommand("copy");
-			getSelection().removeAllRanges();
-		}}}, texts.copy));
-	});
+				getSelection().selectAllChildren(document.querySelector("div#callDetailsModal"));
+				document.execCommand("copy");
+				getSelection().removeAllRanges();
+			}}}, texts.copy));
+		});
+	}
 }
