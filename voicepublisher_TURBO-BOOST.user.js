@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
 // @version      2023.6.2
-// @description  Work-around 2 bugs; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download whole audio folders as zip files; Call Details improvements
+// @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download whole audio folders as zip files; Call Details improvements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -50,18 +50,6 @@ if (active_folder) {
 	active_folder.setAttribute("title", userjs.name + " scrolled this active folder into view");
 	active_folder.scrollIntoView();
 }
-
-
-// ticket 110337 --------------------------------------------------------------------------------------
-// Prevent XHR browsing: Work-around “Lost filters” bug, and allow this userscript to run properly #762
-// ----------------------------------------------------------------------------------------------------
-document.addEventListener("click", function (event) {
-	if (event.button !== 1 && !event.ctrlKey && !event.shiftKey && event.target.matches("a[href]:not([href^='#']):not([target]):not([rel]):not([data-method])")) {
-		event.preventDefault();
-		event.target.style.setProperty("text-decoration", "overline wavy");
-		location.assign(event.target.getAttribute("href"));
-	}
-});
 
 
 // ticket 110349 ---------------------------------
