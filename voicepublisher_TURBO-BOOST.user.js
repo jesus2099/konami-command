@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.6.2
+// @version      2023.6.4
 // @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download whole audio folders as zip files; Call Details improvements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -146,10 +146,9 @@ function make_versions_clickable() {
 // Download whole audio folders as zip files
 // -----------------------------------------
 function download_audio_folders() {
-	return; // Many missing audio files for big folders!
 	setTimeout(function() {
 		var app;
-		if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
+		if (false && /* export_all limitation: cannot know if more than 1200 files */ location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 			// inside an application audio folder
 			app = document.querySelector("div.sidebar ul.tree > li.active > a[aria-current='page']");
 			app = {
@@ -173,15 +172,23 @@ function download_audio_folders() {
 					var audioFolderPencils = document.querySelectorAll("div#main_frame table#audio_folders_table > tbody > tr > td.actions > a[href$='/edit']"), p = 0;
 					p < audioFolderPencils.length; p++
 				) {
-					if (!audioFolderPencils[p].parentNode.querySelector("a." + userjs.id + "_export")) {
-						app = audioFolderPencils[p].parentNode.closest("tr").querySelector("a[href$='/audios']");
-						audioFolderPencils[p].parentNode.insertBefore(
-							createTag("a", {a: {title: texts.download + app.textContent.trim() + ".zip", class: userjs.id + "_export"}, e: {click: function(event) {
-								app = event.target.closest("tr").querySelector("a[href$='/audios']");
-								download(app.getAttribute("href").match(/\d+/)[0], app.textContent.trim());
-							}}}, createTag("span", {a: {class: "glyphicon glyphicon-share-alt"}, s: {backgroundColor: "#fcf"}})),
-							audioFolderPencils[p]
-						);
+					var file_count = audioFolderPencils[p].closest("tr").querySelector("tr > td:nth-child(3)");
+					if (
+						file_count
+						&& (file_count = parseInt(file_count.textContent.trim()))
+						&& !isNaN(file_count)
+						&& file_count <= 1200 // 1200 file export_all limitation
+					) {
+						if (!audioFolderPencils[p].parentNode.querySelector("a." + userjs.id + "_export")) {
+							app = audioFolderPencils[p].parentNode.closest("tr").querySelector("a[href$='/audios']");
+							audioFolderPencils[p].parentNode.insertBefore(
+								createTag("a", {a: {title: texts.download + app.textContent.trim() + ".zip", class: userjs.id + "_export"}, e: {click: function(event) {
+									app = event.target.closest("tr").querySelector("a[href$='/audios']");
+									download(app.getAttribute("href").match(/\d+/)[0], app.textContent.trim());
+								}}}, createTag("span", {a: {class: "fa fa-fw fa-download"}, s: {backgroundColor: "#fcf"}})),
+								audioFolderPencils[p]
+							);
+						}
 					}
 				}
 			}, 500);
