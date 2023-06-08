@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2023.1.6
+// @version      2023.6.8
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -37,7 +37,20 @@ if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
 	var highlightColour = "purple";
 	var highlightInEditNotes = false;
-	var skipArtists = "89ad4ac3-39f7-470e-963a-56509c546377"; // put artist GUID separated by space that you want to skip, example here it’s VA
+	var skipArtists = [
+		"89ad4ac3-39f7-470e-963a-56509c546377", // Various Artists
+		"f731ccc4-e22a-43af-a747-64213329e088", // [anonymous]
+		"33cf029c-63b0-41a0-9855-be2a3665fb3b", // [data]
+		"314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc", // [dialogue]
+		"eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61", // [no artist]
+		"a0ef7e1d-44ff-4039-9435-7d5fefdeecc9", // [theatre]
+		"9be7f096-97ec-4615-8957-8d40b5dcbc41", // [traditional]
+		"125ec42a-7229-4250-afc5-e057484327fe", // [unknown]
+	];
+	var skipLabels = [
+		"157afde4-4bf5-4039-8ad2-5a15acc85176", // [no label]
+		"46caaa9e-3e26-49b5-827c-64ccc73c1b07", // [unknown]
+	];
 	var MBWSRate = 999;
 	var MBWSSpeedLimit = 100; // from 1 (only 1 result per request) to 100 (maxium amount of result per request)
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
@@ -536,7 +549,8 @@ function addRemoveEntities(type, _entities, action) {
 			&& stuff[type] // this type is highlighted (initial load)
 			&& typeof stuff[type].rawids == "string" // this type is highlighted (dynamic load)
 			&& stuff[type].rawids.indexOf(entity.id) < 0 // this entity is not yet tracked
-			&& !(type == "artist" && skipArtists.indexOf(entity.id) >= 0) // ignore Various Artists, etc.
+			&& !(type == "artist" && skipArtists.indexOf(entity.id) >= 0) // ignore Various Artists and such
+			&& !(type == "label" && skipLabels.indexOf(entity.id) >= 0) // ignore [no label] and such
 		) {
 			switch (action) {
 				case "add":
