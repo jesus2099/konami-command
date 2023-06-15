@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.6.4
-// @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download whole audio folders as zip files; Call Details improvements
+// @version      2023.6.15
+// @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -142,28 +142,27 @@ function make_versions_clickable() {
 }
 
 
-// -----------------------------------------
-// Download whole audio folders as zip files
-// -----------------------------------------
+// -------------------------------------------------------------------------
+// Download audio folders as named zip files, including from the folder list
+// -------------------------------------------------------------------------
 function download_audio_folders() {
 	setTimeout(function() {
 		var app;
-		if (false && /* export_all limitation: cannot know if more than 1200 files */ location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
+		if (location.pathname.match(/\/audio_folders\/\d+\/audios/)) {
 			// inside an application audio folder
-			app = document.querySelector("div.sidebar ul.tree > li.active > a[aria-current='page']");
-			app = {
-				id: app.getAttribute("href").match(/audio_folders\/(\d+)\/audios/)[1],
-				name: app.textContent.trim()
-			};
-			var toolbox = document.querySelector("div#content-sidebar div.title-bar ul.toolbox li.dropdowns_right");
-			var ExportAllButton = toolbox.querySelector("a.btn[href$='export_all']");
-			var DLButton = createTag("a", {a: {class: "btn btn-default"}, s: {backgroundColor: "#fcf"}, e: {click: function(event) {
-				download(app.id, app.name);
-			}}}, [texts.download, createTag("b", {s: {color: "black", background: "#fdf", padding: "0 4px"}}, app.name), ".zip"]);
+			var ExportAllButton = document.querySelector("div#content-sidebar div.title-bar ul.toolbox li.dropdowns_right > a.btn[href$='export_all']");
 			if (ExportAllButton) {
-				toolbox.replaceChild(DLButton, ExportAllButton);
-			} else {
-				toolbox.appendChild(DLButton);
+				app = document.querySelector("div.sidebar ul.tree > li.active > a[aria-current='page']");
+				app = {
+					id: app.getAttribute("href").match(/audio_folders\/(\d+)\/audios/)[1],
+					name: app.textContent.trim()
+				};
+				replaceChildren(
+					createTag("a", {a: {class: "btn btn-default"}, s: {backgroundColor: "#fcf"}, e: {click: function(event) {
+						download(app.id, app.name);
+					}}}, [texts.download, createTag("b", {s: {color: "black", background: "#fdf", padding: "0 4px"}}, app.name), ".zip"]),
+					ExportAllButton.parentNode
+				);
 			}
 		} else if (location.pathname == "/audio_folders") {
 			// on the list of application audio folders
@@ -177,7 +176,7 @@ function download_audio_folders() {
 						file_count
 						&& (file_count = parseInt(file_count.textContent.trim()))
 						&& !isNaN(file_count)
-						&& file_count <= 1200 // 1200 file export_all limitation
+						&& file_count <= 3088 // file export_all limitation, per ticket 110499
 					) {
 						if (!audioFolderPencils[p].parentNode.querySelector("a." + userjs.id + "_export")) {
 							app = audioFolderPencils[p].parentNode.closest("tr").querySelector("a[href$='/audios']");
