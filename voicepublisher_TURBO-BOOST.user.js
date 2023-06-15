@@ -76,7 +76,7 @@ function scroll_active_folder_into_view() {
 }
 
 
-// ticket 110349 -------------------------------------------------------
+// ticket 110349 workaround --------------------------------------------
 // Work-around “Call History change app crash” aka “cookie overflow” bug
 // ---------------------------------------------------------------------
 function workaround_cookie_overflow_bug() {
@@ -142,7 +142,7 @@ function make_versions_clickable() {
 }
 
 
-// -------------------------------------------------------------------------
+// ticket 110499 bonus -----------------------------------------------------
 // Download audio folders as named zip files, including from the folder list
 // -------------------------------------------------------------------------
 function download_audio_folders() {
