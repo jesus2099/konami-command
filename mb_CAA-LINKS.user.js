@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2022.9.26.1
-// @description  musicbrainz.org: Linkifies cover art edit “Filenames” (as specified in http://musicbrainz.org/edit/42525958)
+// @version      2023.6.17
+// @description  musicbrainz.org: Linkify cover art edit “Filenames” (as specified in https://musicbrainz.org/edit/42525958); Add cool links to cover art tab and archive pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_CAA-LINKS.user.js
@@ -20,6 +20,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+// Linkify cover art file names
 var coverArtFilenames = document.querySelectorAll("table.details[class$='cover-art'] > tbody code");
 for (var filename = 0; filename < coverArtFilenames.length; filename++) {
 	var mbid = coverArtFilenames[filename].textContent.match(/^mbid-([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})-\d+\.\w+$/);
@@ -28,15 +29,6 @@ for (var filename = 0; filename < coverArtFilenames.length; filename++) {
 		a.setAttribute("href", "//archive.org/0/items/mbid-" + mbid[1] + "/" + coverArtFilenames[filename].textContent);
 		a.classList.add("jesus2099CAALink");
 		a.appendChild(coverArtFilenames[filename].parentNode.replaceChild(a, coverArtFilenames[filename]));
-		var linksRow = getParent(coverArtFilenames[filename], "tbody").insertRow(-1);
-		linksRow.appendChild(createTag("th", {}, "Cool links:"));
-		linksRow.appendChild(createTag("td", {}, [
-			createTag("a", {a: {href: "/release/" + mbid[1] + "/cover-art", class: "jesus2099CAALink_skip"}}, "Cover Art tab"),
-			" | ",
-			createTag("a", {a: {href: "//archive.org/details/mbid-" + mbid[1]}}, "Archive release page"),
-			" | ",
-			createTag("a", {a: {href: "//archive.org/download/mbid-" + mbid[1]}}, "Archive file list")
-		]));
 	}
 }
 if (document.getElementsByClassName("jesus2099CAALink").length > 0) {
@@ -80,4 +72,22 @@ function fallbackImageLoader(imgNode, srcs) {
 	});
 	imgNode.setAttribute("alt", srcs[0].match(/[^/]+\.\w+$/));
 	imgNode.setAttribute("src", srcs[0]);
+}
+// Release cover art cool links
+var cover_art_edits = document.querySelectorAll("table.details[class$='cover-art'] > tbody > tr > td a[href^='/release/']");
+for (var caa_edit = 0; caa_edit < cover_art_edits.length; caa_edit++) {
+	var mbid = cover_art_edits[caa_edit].getAttribute("href").match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
+	if (mbid) {
+		mbid = mbid[0];
+		cover_art_edits[caa_edit].closest("tbody").appendChild(createTag("tr", {}, [
+			createTag("th", {}, "Cool links:"),
+			createTag("td", {}, [
+				createTag("a", {a: {href: "/release/" + mbid + "/cover-art", class: "jesus2099CAALink_skip"}}, "Cover Art tab"),
+				" | ",
+				createTag("a", {a: {href: "//archive.org/details/mbid-" + mbid}}, "Archive release page"),
+				" | ",
+				createTag("a", {a: {href: "//archive.org/download/mbid-" + mbid}}, "Archive file list")
+			])
+		]));
+	}
 }
