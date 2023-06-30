@@ -1,10 +1,7 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2023.4.7
+// @version      2023.6.30
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
-// @compatible   vivaldi(2.11.1811.33)+violentmonkey my setup
-// @compatible   firefox(64.0)+greasemonkey          tested sometimes
-// @compatible   chrome+violentmonkey                should be same as vivaldi
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -61,6 +58,7 @@
 const userjs = "jesus2099_all-links";
 const nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; // U+2FA1D is currently out of js range
 var rawLanguages = JSON.parse(localStorage.getItem(userjs + "_languages")) || ["navigator", "musicbrainz"];
+const path_ID_separator = "::::";
 // Available tokens:
 // - for all entity pages: %entity-type% %entity-mbid% %entity-name%
 // - for "that" type entity pages: %that-mbid% %that-name% where "that" is an entity type in the above @include list
@@ -340,17 +338,11 @@ var whitelistSearchLinks = {
 					"//genius.com/search?q=%recording-name%",
 					"//genius.com/search?q=%work-name%",
 				],
-				jlyricArtist: {
-					title: {ja: "J-Lyric（歌手名）"},
-					target: "//search2.j-lyric.net/index.php?ka=%artist-name%",
-				},
-				jlyricSong: {
-					title: {ja: "J-Lyric（曲名）"},
-					target: [
-						"//search2.j-lyric.net/index.php?kt=%recording-name%",
-						"//search2.j-lyric.net/index.php?kt=%work-name%",
-					],
-				},
+				"J-Lyric（歌手名）": "//search2.j-lyric.net/index.php?ka=%artist-name%",
+				"J-Lyric（曲名）": [
+					"//search2.j-lyric.net/index.php?kt=%recording-name%",
+					"//search2.j-lyric.net/index.php?kt=%work-name%",
+				],
 				Directlyrics: [
 					"//directlyrics.com/search?q=%artist-name%+inurl%3A-artist.html",
 					"//directlyrics.com/search?q=%work-name%+inurl%3A-lyrics.html"
@@ -1065,7 +1057,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 	var level = sectionPath.length;
 	var section = pathToItem(sectionPath);
 	var sectionID = pathToID(sectionPath);
-	var sectionTitleNode = createTag("h" + (1 + level), {a: {id: sectionID}}, section.title ? getLocalisedText(section.title) : sectionPath[sectionPath.length - 1]);
+	var sectionTitleNode = createTag("h" + (1 + level), {a: {ref: sectionID}}, section.title ? getLocalisedText(section.title) : sectionPath[sectionPath.length - 1]);
 	if (level === 1) {
 		sectionTitleNode.classList.add(userjs + "_searchLinks");
 		if (parentNode == extlinks.parentNode) {
@@ -1091,7 +1083,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 	if (section !== webSearchLinks) {
 		var sectionCBox = sectionTitleNode.appendChild(
 			createTag("input", {a: {type: "checkbox"}, s: {float: "right", margin: "1px"}, e: {click: function(event) {
-				toggleStorage(this.parentNode.id);
+				toggleStorage(this.parentNode.getAttribute("ref"));
 				this.parentNode.nextElementSibling.classList.toggle("disabled", !this.checked);
 				if (this.parentNode.parentNode.id !== "sidebar") {
 					this.parentNode.parentNode.classList.toggle("disabled", !this.checked);
@@ -1117,7 +1109,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 		var item = section.items[itemKey];
 		var itemPath = sectionPath.concat([itemKey]);
 		var itemID = pathToID(itemPath);
-		var itemNode = createTag("li", {a: {id: itemID}});
+		var itemNode = createTag("li", {a: {ref: itemID}});
 		if (typeof item === "object" && item.items) {
 			hasNothing = false;
 			sectionListNode.appendChild(itemNode);
@@ -1151,7 +1143,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 				var itemCBox = itemNode.appendChild(
 					createTag("input", {a: {type: "checkbox"}, s: {float: "right", margin: "1px"}, e: {click: function(event) {
 						this.parentNode.classList.toggle("disabled", !this.checked);
-						toggleStorage(this.parentNode.id);
+						toggleStorage(this.parentNode.getAttribute("ref"));
 						toggleEmpty(this.parentNode, !this.checked);
 					}}})
 				);
@@ -1268,7 +1260,7 @@ function getLocalisedText(textSet) {
 	return textSet[Object.getOwnPropertyNames(textSet)[0]];
 }
 function idToPath(id) {
-	return id.replace(userjs + "_searchLinks-", "").split("-");
+	return id.replace(userjs + "_searchLinks" + path_ID_separator, "").split(path_ID_separator);
 }
 function loadDisabledSearchLinks() {
 	var loadedSettings = JSON.parse(localStorage.getItem(userjs + "_disabled-search-links")) || {};
@@ -1294,7 +1286,7 @@ function pathToItem(path) {
 function pathToID(path) {
 	var id = userjs + "_searchLinks";
 	for (var i = 0; i < path.length; i++)
-		id = id + "-" + path[i];
+		id = id + path_ID_separator + path[i];
 	return id;
 }
 function replaceAllTokens(string, encode) {
