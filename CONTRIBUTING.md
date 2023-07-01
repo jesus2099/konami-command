@@ -55,8 +55,14 @@ I have set up an `.eslintrc.yaml` ESLint ruleset in this repo.
 You must first install some big heavy packages on your PC.
 Install the so called `npm` package, that might install something called `nodejs`:
 
+#### Linux ####
+
     sudo apt install npm
 
+#### Windows ####
+
+1. Unzip [Windows Binary](https://nodejs.org/en/download) in `%LocalAppData%\Programs\node-…`
+2. Add `%LocalAppData%\Programs\node-…` to your `PATH`
 
 ### Install eslint in each repo ###
 
