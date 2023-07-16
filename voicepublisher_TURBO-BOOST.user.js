@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.6.15
-// @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements
+// @version      2023.7.16
+// @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -45,6 +45,7 @@ workaround_cookie_overflow_bug();
 make_versions_clickable();
 download_audio_folders();
 call_details_improvements();
+pagination_intuitive_scroll();
 // Handle XHR style browsing :-/
 (new MutationObserver(function(mutations, observer) {
 	for (var m = 0; m < mutations.length; m++) {
@@ -57,11 +58,13 @@ call_details_improvements();
 					make_versions_clickable();
 					download_audio_folders();
 					call_details_improvements();
+					pagination_intuitive_scroll();
 				}
 			}
 		}
 	}
 })).observe(document.querySelector("html"), {childList: true});
+
 
 // ------------------------------
 // Scroll active folder into view
@@ -263,4 +266,17 @@ function call_details_improvements() {
 			}}}, texts.copy));
 		});
 	}
+}
+
+
+// ---------------------------
+// Pagination intuitive scroll
+// ---------------------------
+function pagination_intuitive_scroll() {
+	document.addEventListener("click", function(event) {
+		if (event.target.closest("li.paginate_button:not(.disabled)")) {
+			var main_frame = document.querySelector("div:not(.sidebar) > div.resource-list-container div#main_frame");
+			main_frame.scrollTo(0, event.target.closest("li.paginate_button:not(.disabled).previous") ? main_frame.scrollHeight : 0);
+		}
+	});
 }
