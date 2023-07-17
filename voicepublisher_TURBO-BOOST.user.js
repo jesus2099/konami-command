@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.7.16
+// @version      2023.7.17
 // @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -46,6 +46,7 @@ make_versions_clickable();
 download_audio_folders();
 call_details_improvements();
 pagination_intuitive_scroll();
+// all_time_complete_months();
 // Handle XHR style browsing :-/
 (new MutationObserver(function(mutations, observer) {
 	for (var m = 0; m < mutations.length; m++) {
@@ -59,6 +60,7 @@ pagination_intuitive_scroll();
 					download_audio_folders();
 					call_details_improvements();
 					pagination_intuitive_scroll();
+					// all_time_complete_months();
 				}
 			}
 		}
@@ -277,6 +279,38 @@ function pagination_intuitive_scroll() {
 		if (event.target.closest("li.paginate_button:not(.disabled)")) {
 			var main_frame = document.querySelector("div:not(.sidebar) > div.resource-list-container div#main_frame");
 			main_frame.scrollTo(0, event.target.closest("li.paginate_button:not(.disabled).previous") ? main_frame.scrollHeight : 0);
+		}
+	});
+}
+
+
+// --------------------------------------
+// Stats: All time (only complete months)
+// --------------------------------------
+function all_time_complete_months() {
+	waitForElement("span.easepick-wrapper", function(_date_picker) {
+		var date_picker = _date_picker.shadowRoot;
+		if (date_picker) {
+			var all_time_preset = date_picker.querySelector("button.preset-button[data-start][data-end]:last-of-type");
+			if (all_time_preset) {
+				var start = new Date(parseInt(all_time_preset.dataset.start));
+				if (start.getUTCDate() !== 1) {
+					start = new Date(start.getUTCFullYear(), start.getUTCMonth());
+				}
+				var end = new Date(parseInt(all_time_preset.dataset.end));
+				if (end.getUTCMonth() ===  new Date(parseInt(all_time_preset.dataset.end) + 60 * 1000).getUTCMonth()) {
+					end = new Date(new Date(end.getUTCFullYear(), end.getUTCMonth() + 1) - 1);
+				}
+				// Shadow DOM manipulation is currently not possible: https://github.com/violentmonkey/violentmonkey/issues/1852
+				// TODO: Finish this if it becomes possible
+				// all_time_preset.dataset.start = start;
+				// all_time_preset.dataset.end = end;
+				// all_time_preset.appendChild(document.createTextNode(" " + start));
+				// addAfter(createTag("a", {}, start + " - " + end), all_time_preset);
+				// date_picker.innerHTML = date_picker.innerHTML.replace(">All time</button>", ">All time</button>" +
+				// 	'<button class="preset-button unit" data-start="' + start.getTime() + '" data-end="' + /*end.getTime()*/ 1690840700000 + '">All time (fullmonths)</button>'
+				// );
+			}
 		}
 	});
 }
