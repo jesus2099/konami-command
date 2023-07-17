@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.7.17
+// @version      2023.7.18
 // @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -125,8 +125,7 @@ function workaround_cookie_overflow_bug() {
 // ----------------------------------------------------
 function make_versions_clickable() {
 	if (location.pathname.match(/^\/sites/)) {
-		userjs.css.insertRule("table#sites_table > tbody > tr.site > td.string > span.label { cursor: pointer; border-bottom: 2px solid purple; }", 0);
-		document.addEventListener("click", function (event) {
+		document.addEventListener("mouseover", function (event) {
 			if (event.target.matches("table#sites_table > tbody > tr.site > td.string > span.label")) {
 				var site = event.target.parentNode.parentNode.getAttribute("id");
 				var status = null;
@@ -138,7 +137,7 @@ function make_versions_clickable() {
 				if (site && status) {
 					var version_link = document.querySelector("div.sidebar-content-body > ul.sites > li#" + site + " > ul.site_versions > li.site-version." + status + " > a[href^='/pages?svid=']");
 					if (version_link && version_link.textContent == event.target.textContent) {
-						version_link.click();
+						event.target.parentNode.replaceChild(createTag("a", {a: {href: version_link.getAttribute("href")}}, event.target.cloneNode(true)), event.target);
 					}
 				}
 			}
