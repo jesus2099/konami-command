@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.7.18
+// @version      2023.7.18.132
 // @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -137,7 +137,7 @@ function make_versions_clickable() {
 				if (site && status) {
 					var version_link = document.querySelector("div.sidebar-content-body > ul.sites > li#" + site + " > ul.site_versions > li.site-version." + status + " > a[href^='/pages?svid=']");
 					if (version_link && version_link.textContent == event.target.textContent) {
-						event.target.parentNode.replaceChild(createTag("a", {a: {href: version_link.getAttribute("href")}}, event.target.cloneNode(true)), event.target);
+						event.target.parentNode.replaceChild(createTag("a", {a: {href: version_link.getAttribute("href"), title: event.target.getAttribute("title"), class: event.target.getAttribute("class"), dataSort: event.target.getAttribute("data-sort")}}, event.target.textContent), event.target);
 					}
 				}
 			}
