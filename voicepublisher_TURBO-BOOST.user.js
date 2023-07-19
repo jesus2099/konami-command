@@ -89,12 +89,14 @@ function workaround_cookie_overflow_bug() {
 		var selected_application = document.querySelector("#select2-chosen-1");
 		if (selected_application) {
 			// STEP 1: Save last clicked application, in case crash happens
+			// TODO: Since AJAX loading I now also need to save from and to dates
 			self.addEventListener("beforeunload", function (event) {
 				localStorage.setItem(userjs.id + "_last_application", selected_application.textContent);
 			});
 			// STEP 3: Detect crash flag and handle post-crash
 			if (localStorage.getItem(userjs.id + "_call_history_crash") === "1") {
 				localStorage.removeItem(userjs.id + "_call_history_crash");
+				// TODO: Since AJAX loading I now also need to restore from and to dates
 				replaceChildren(document.createTextNode(localStorage.getItem(userjs.id + "_last_application")), selected_application);
 				userjs.css.insertRule("#select2-chosen-1[title] { background-color: #fcf; text-decoration: underline dotted; }", 0);
 				selected_application.setAttribute("title", texts.call_history_crash_bug);
@@ -286,7 +288,7 @@ function pagination_intuitive_scroll() {
 // --------------------------------------
 // Stats: All time (only complete months)
 // --------------------------------------
-function all_time_complete_months() {
+function all_time_complete_months_old_good_except_readonly_shadow_root() {
 	waitForElement("span.easepick-wrapper", function(_date_picker) {
 		var date_picker = _date_picker.shadowRoot;
 		if (date_picker) {
@@ -312,4 +314,21 @@ function all_time_complete_months() {
 			}
 		}
 	});
+}
+function all_time_complete_months_new_bad() {
+	var date_picker = document.querySelector("form#datebar-form div#datepicker");
+	addAfter(createTag("a", {a: {class: "btn btn-default"}, s: {backgroundColor: "#fcf"}, e: {click: function(event) {
+		var min_date = new Date(date_picker.getAttribute("data-datepicker-min-date-value"));
+		if (min_date.getUTCDate() !== 1) {
+			min_date = new Date(min_date.getUTCFullYear(), min_date.getUTCMonth() + 1);
+		}
+		console.log(min_date);
+		date_picker.setAttribute("data-datepicker-date-from-value", "2022-08-01 00:00:00");
+		var max_date = new Date(date_picker.getAttribute("data-datepicker-max-date-value"));
+		if (max_date.getUTCMonth() ===  new Date(max_date + 60 * 1000).getUTCMonth()) {
+			max_date = new Date(new Date(max_date.getUTCFullYear(), max_date.getUTCMonth()) - 1);
+		}
+		console.log(max_date);
+		date_picker.setAttribute("data-datepicker-date-to-value", "2023-06-30 23:59:59");
+	}}}, "Full months"), date_picker);
 }
