@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.7.19
+// @version      2023.7.19.2050
 // @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to application codes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -28,11 +28,13 @@ userjs.css = userjs.css.sheet;
 
 var texts = {
 	en: {
+		application_codes: "Application codes",
 		copy: "Copy",
 		download: "Download ",
 		call_history_crash_bug: userjs.name + " fix to call History change app crash bug",
 	},
 	fr: {
+		application_codes: "Codes d’application",
 		copy: "Copier",
 		download: "Télécharger ",
 		call_history_crash_bug: userjs.name + " contourne le plantage du changement d’application dans le Call History",
@@ -341,21 +343,17 @@ function all_time_complete_months_new_bad() {
 // -----------------------------
 function go_to_application_codes() {
 	var hash = "application_codes";
-	var first_nav = document.querySelector("nav#topbar ul.nav li");
-	userjs.css.insertRule("nav#topbar ul.nav li." + hash + ":not(.active) a { color: #fcf; }", 0);
-	if (first_nav) {
+	var next_menu_item = document.querySelector("nav#topbar li.dropdown-profile > ul.dropdown-menu > li.divider");
+	userjs.css.insertRule("nav#topbar ul.nav li." + hash + " a { color: purple; }", 0);
+	userjs.css.insertRule("nav#topbar ul.nav li." + hash + " a:hover { background-color: #fcf; }", 0);
+	if (next_menu_item) {
 		var pre_production = document.querySelector("div.sidebar-content-body > ul > li#site_7865 > ul.site_versions > li.site-version.published > a");
 		pre_production = pre_production ? pre_production.getAttribute("href").match(/svid=(\d+)/)[1] : "63113";
-		first_nav.parentNode.insertBefore(createTag("li", {a: {class: hash}}, createTag("a", {a: {title: "Application codes", href: "/pages/list?svid=" + pre_production + "#" + hash}}, "🕿")), first_nav);
+		next_menu_item.parentNode.insertBefore(createTag("li", {a: {class: hash}}, createTag("a", {a: {href: "/pages/list?svid=" + pre_production + "?rand=" + Math.random().toString().replace(/\D/, "") + "#" + hash}}, texts.application_codes)), next_menu_item);
 	}
 	if (location.hash == "#" + hash) {
-		var active_tab = document.querySelector("nav#topbar ul.nav li.active");
-		if (active_tab) {
-			active_tab.classList.remove("active");
-		}
-		document.querySelector("nav#topbar ul.nav li." + hash).classList.add("active");
-		console.log(document.querySelector("nav#topbar ul.nav li." + hash));
 		if (location.pathname == "/pages/list") {
+			document.body.style.setProperty("opacity", ".123", "important");
 			waitForElement("div#pages_table_filter span.dataTable-filter-clear", function(clear_button) { clear_button.click(); });
 			waitForElement("tr[id^='voicexml_page_'] > td.actions > a[rel='edit']", function(edit_button) { location.replace(edit_button.getAttribute("href") + "#" + hash); });
 		}
