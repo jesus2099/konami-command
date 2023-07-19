@@ -50,6 +50,7 @@ call_details_improvements();
 pagination_intuitive_scroll();
 // all_time_complete_months();
 go_to_application_codes();
+show_script_is_running();
 // Handle XHR style browsing :-/
 (new MutationObserver(function(mutations, observer) {
 	for (var m = 0; m < mutations.length; m++) {
@@ -70,6 +71,16 @@ go_to_application_codes();
 		}
 	}
 })).observe(document.querySelector("html"), {childList: true});
+
+
+function show_script_is_running() {
+	var avatar = document.querySelector("nav#topbar div.user-dropdown > span.avatar > span.initials");
+	if (avatar) {
+		userjs.css.insertRule("nav#topbar div.user-dropdown > span.avatar > span.initials { color: black !important; background-color: #fcf !important; }", 0);
+		userjs.css.insertRule("nav#topbar div.user-dropdown > span.avatar { background-color: purple !important; }", 0);
+		avatar.parentNode.parentNode.setAttribute("title", userjs.name + " version " + GM_info.script.version + " is running…");
+	}
+}
 
 
 // ------------------------------
