@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.7.18.132
-// @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll
+// @version      2023.7.19
+// @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to application codes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -47,6 +47,7 @@ download_audio_folders();
 call_details_improvements();
 pagination_intuitive_scroll();
 // all_time_complete_months();
+go_to_application_codes();
 // Handle XHR style browsing :-/
 (new MutationObserver(function(mutations, observer) {
 	for (var m = 0; m < mutations.length; m++) {
@@ -61,6 +62,7 @@ pagination_intuitive_scroll();
 					call_details_improvements();
 					pagination_intuitive_scroll();
 					// all_time_complete_months();
+					go_to_application_codes();
 				}
 			}
 		}
@@ -331,4 +333,31 @@ function all_time_complete_months_new_bad() {
 		console.log(max_date);
 		date_picker.setAttribute("data-datepicker-date-to-value", "2023-06-30 23:59:59");
 	}}}, "Full months"), date_picker);
+}
+
+
+// -----------------------------
+// Shortcut to application codes
+// -----------------------------
+function go_to_application_codes() {
+	var hash = "application_codes";
+	var first_nav = document.querySelector("nav#topbar ul.nav li");
+	userjs.css.insertRule("nav#topbar ul.nav li." + hash + ":not(.active) a { color: #fcf; }", 0);
+	if (first_nav) {
+		var pre_production = document.querySelector("div.sidebar-content-body > ul > li#site_7865 > ul.site_versions > li.site-version.published > a");
+		pre_production = pre_production ? pre_production.getAttribute("href").match(/svid=(\d+)/)[1] : "63113";
+		first_nav.parentNode.insertBefore(createTag("li", {a: {class: hash}}, createTag("a", {a: {title: "Application codes", href: "/pages/list?svid=" + pre_production + "#" + hash}}, "🕿")), first_nav);
+	}
+	if (location.hash == "#" + hash) {
+		var active_tab = document.querySelector("nav#topbar ul.nav li.active");
+		if (active_tab) {
+			active_tab.classList.remove("active");
+		}
+		document.querySelector("nav#topbar ul.nav li." + hash).classList.add("active");
+		console.log(document.querySelector("nav#topbar ul.nav li." + hash));
+		if (location.pathname == "/pages/list") {
+			waitForElement("div#pages_table_filter span.dataTable-filter-clear", function(clear_button) { clear_button.click(); });
+			waitForElement("tr[id^='voicexml_page_'] > td.actions > a[rel='edit']", function(edit_button) { location.replace(edit_button.getAttribute("href") + "#" + hash); });
+		}
+	}
 }
