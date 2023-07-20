@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2023.7.1
+// @version      2023.7.20
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
@@ -1327,7 +1327,10 @@ function setFavicon(li, url) {
 		} else {
 			// arbitrary /favicon.ico load try out
 			if (guessOtherFavicons && !favurlfound) {
-				favurlfound = url.match(/(\/\/[^/]+)\//)[1] + "/favicon.ico";
+				favurlfound = url.match(/^(?:https?:)?(\/\/[^/]+)\/(?:.+_action=https?:(\/\/[^/]+)\/)?/);
+				if (favurlfound) {
+					favurlfound = (favurlfound[1] != "//jesus2099.gitlab.io" ? favurlfound[1] : favurlfound[2]) + "/favicon.ico";
+				}
 			}
 			var ifit = favicontry.length;
 			favicontry[ifit] = new Image();
