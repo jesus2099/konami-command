@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.7.19.2050
+// @version      2023.7.20
 // @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to application codes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -362,11 +362,9 @@ function go_to_application_codes() {
 		pre_production = pre_production ? pre_production.getAttribute("href").match(/svid=(\d+)/)[1] : "63113";
 		next_menu_item.parentNode.insertBefore(createTag("li", {a: {class: hash}}, createTag("a", {a: {href: "/pages/list?svid=" + pre_production + "?rand=" + Math.random().toString().replace(/\D/, "") + "#" + hash}}, texts.application_codes)), next_menu_item);
 	}
-	if (location.hash == "#" + hash) {
-		if (location.pathname == "/pages/list") {
-			document.body.style.setProperty("opacity", ".123", "important");
-			waitForElement("div#pages_table_filter span.dataTable-filter-clear", function(clear_button) { clear_button.click(); });
-			waitForElement("tr[id^='voicexml_page_'] > td.actions > a[rel='edit']", function(edit_button) { location.replace(edit_button.getAttribute("href") + "#" + hash); });
-		}
+	if (location.pathname == "/pages/list" && location.hash == "#" + hash) {
+		downloading();
+		waitForElement("div#pages_table_filter span.dataTable-filter-clear", function(clear_button) { clear_button.click(); });
+		waitForElement("tr[id^='voicexml_page_'] > td.actions > a[rel='edit']", function(edit_button) { edit_button.click(); });
 	}
 }
