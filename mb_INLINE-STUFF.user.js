@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2022.9.26.1
+// @version      2023.7.20
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -423,8 +423,9 @@ function idCount(type, count) {
 	if (!idCountZone) {
 		idCountZone = document.querySelector("div#sidebar > dl.properties").appendChild(document.createElement("div"));
 		idCountZone.setAttribute("id", userjs + "idcountzone");
+		idCountZone.style.setProperty("background", "#fef");
 		idCountZone.style.setProperty("border", "1px dashed silver");
-		idCountZone.appendChild(createTag("fragment", {}, [createTag("h3", {}, "INLINE STUFF"), createTag("p", {}, GM_info.script.version)]));
+		idCountZone.setAttribute("title", GM_info.script.name + " version " + GM_info.script.version);
 		idCountZone.appendChild(createTag("dd", {}, createTag("label", {}, [
 			createTag("input", {a: {type: "checkbox", ref: "recdis"}, e: {click: function(event) {
 				var content = document.querySelector("div#content");
