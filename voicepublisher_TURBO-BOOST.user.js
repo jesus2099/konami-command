@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.7.20
-// @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to application codes
+// @version      2023.7.21
+// @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -28,7 +28,7 @@ userjs.css = userjs.css.sheet;
 
 var texts = {
 	en: {
-		application_codes: "Application codes",
+		application_codes: "Application Codes",
 		copy: "Copy",
 		download: "Download ",
 		call_history_crash_bug: userjs.name + " fix to call History change app crash bug",
@@ -350,7 +350,7 @@ function all_time_complete_months_new_bad() {
 
 
 // -----------------------------
-// Shortcut to application codes
+// Shortcut to Application Codes
 // -----------------------------
 function go_to_application_codes() {
 	var hash = "application_codes";
@@ -365,6 +365,6 @@ function go_to_application_codes() {
 	if (location.pathname == "/pages/list" && location.hash == "#" + hash) {
 		downloading();
 		waitForElement("div#pages_table_filter span.dataTable-filter-clear", function(clear_button) { clear_button.click(); });
-		waitForElement("tr[id^='voicexml_page_'] > td.actions > a[rel='edit']", function(edit_button) { edit_button.click(); });
+		waitForElement("tr[id^='voicexml_page_'] > td.actions > a[rel='edit']", function(edit_button) { location.replace(edit_button.getAttribute("href")); });
 	}
 }
