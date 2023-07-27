@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2023.7.23
+// @version      2023.7.27
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/issues/488
@@ -601,9 +601,8 @@ var additionalSearchLinks = {
 							"//search.minc.or.jp/product/list/?tl=%release-group-name%&ta=%release-group-artist-credit%&type=search-form-title&match=2",
 							"//search.minc.or.jp/product/list/?tl=%release-name%&ta=%release-artist-credit%&type=search-form-title&match=2",
 						],
-						// TODO: Add %release-catalogue-number% (or %release-catno%, it used to be %catnum% and %catnum2%) support back https://github.com/jesus2099/konami-command/issues/45
+						// TODO: Add token replacement in link labels before using all catalogue numbers (here only the first catalogue number is used)
 						"音楽の森（CD商品検索：品番）": "//search.minc.or.jp/product/list/?dn=%release-catalogue-number%&type=search-form-diskno",
-
 					}
 				}
 			}
@@ -871,6 +870,10 @@ function main() {
 					let barcodeNode = document.querySelector("#sidebar .barcode");
 					if (barcodeNode) {
 						tokenValues["%release-barcode%"] = barcodeNode.textContent;
+					}
+					let catnoNode = document.querySelector("#sidebar .catalog-number");
+					if (catnoNode) {
+						tokenValues["%release-catalogue-number%"] = catnoNode.textContent;
 					}
 				} else if (entityType == "url") {
 					delete tokenValues["%entity-name%"];
