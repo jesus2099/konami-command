@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2023.7.20
+// @version      2023.8.1
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -69,70 +69,73 @@ css.insertRule("div#content." + userjs + "hide-recdis table.tbl.medium span." + 
 if (pagecat) {
 	switch (pagecat) {
 		case "release":
-			// CAA tab / Add link
-			var CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']");
-			if (CAAtab && CAAtab.textContent.match(/\(0\)$/)) {
-				CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
-				CAAtab.style.setProperty("background-color", "#FF6");
-				CAAtab.replaceChild(document.createTextNode("Add Cover Art"), CAAtab.firstChild);
-			}
-			// Tracklist stuff
-			css.insertRule("a[" + userjs + "recname] { text-shadow: 1px 2px 2px #999; color: maroon }", 0);
-			if (contractFingerPrints) {
-				css.insertRule("div.ars[class^='ars AcoustID'] code { display: inline-block; overflow-x: hidden; vertical-align: bottom; width: 6ch}", 0);
-			}
-			if (pageMbid && (tracksHtml = document.querySelectorAll("div#content table.tbl.medium > tbody > tr[id]:not(.subh)")).length > 0) {
-				if (recUseInRelationshipLink || recAddToMergeLink) {
-					for (var ith = 0; ith < tracksHtml.length; ith++) {
-						var toolzone = tracksHtml[ith].querySelector("td.treleases");
-						if (toolzone) {
-							toolzone = toolzone.appendChild(document.createElement("div"));
-							toolzone.className = userjs + "toolzone";
-							toolzone.style.setProperty("display", "none");
-							var rec = tracksHtml[ith].querySelector(css_recording);
-							if (recUseInRelationshipLink && rec) {
-								toolzone.appendChild(createA(recUseInRelationshipLink, rec.getAttribute("href") + "/relate", "Use this recording in a relationship…"));
+			// React hydrate clumsy workaround
+			setTimeout(function() {
+				// CAA tab / Add link
+				var CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']");
+				if (CAAtab && CAAtab.textContent.match(/\(0\)$/)) {
+					CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
+					CAAtab.style.setProperty("background-color", "#FF6");
+					CAAtab.replaceChild(document.createTextNode("Add Cover Art"), CAAtab.firstChild);
+				}
+				// Tracklist stuff
+				css.insertRule("a[" + userjs + "recname] { text-shadow: 1px 2px 2px #999; color: maroon }", 0);
+				if (contractFingerPrints) {
+					css.insertRule("div.ars[class^='ars AcoustID'] code { display: inline-block; overflow-x: hidden; vertical-align: bottom; width: 6ch}", 0);
+				}
+				if (pageMbid && (tracksHtml = document.querySelectorAll("div#content table.tbl.medium > tbody > tr[id]:not(.subh)")).length > 0) {
+					if (recUseInRelationshipLink || recAddToMergeLink) {
+						for (var ith = 0; ith < tracksHtml.length; ith++) {
+							var toolzone = tracksHtml[ith].querySelector("td.treleases");
+							if (toolzone) {
+								toolzone = toolzone.appendChild(document.createElement("div"));
+								toolzone.className = userjs + "toolzone";
+								toolzone.style.setProperty("display", "none");
+								var rec = tracksHtml[ith].querySelector(css_recording);
+								if (recUseInRelationshipLink && rec) {
+									toolzone.appendChild(createA(recUseInRelationshipLink, rec.getAttribute("href") + "/relate", "Use this recording in a relationship…"));
+								}
+								var rat = tracksHtml[ith].querySelector("span.star-rating a.set-rating");
+								if (recAddToMergeLink && rat) {
+									if (recUseInRelationshipLink) { toolzone.appendChild(document.createElement("br")); }
+									toolzone.appendChild(createA(recAddToMergeLink, "/recording/merge_queue?add-to-merge=" + rat.getAttribute("href").match(/id=([0-9]+)/)[1], "Merge this recording…"));
+								}
+								toolzone = toolzone.parentNode.appendChild(document.createElement("div"));
+								toolzone.className = userjs + "editbutt";
+								toolzone.style.setProperty("display", "none");
+								toolzone.appendChild(createA("Edit", rec.getAttribute("href") + "/edit", "Edit this recording"));
+								toolzone = toolzone.parentNode.appendChild(document.createElement("div"));
+								toolzone.className = userjs + "openEdits";
+								toolzone.style.setProperty("display", "none");
+								toolzone.appendChild(createA("Open", rec.getAttribute("href") + "/open_edits", "Recording open edits"));
+								toolzone.appendChild(document.createTextNode(" "));
+								toolzone.appendChild(createA("edits", rec.getAttribute("href") + "/edits", "Recording edit history"));
 							}
-							var rat = tracksHtml[ith].querySelector("span.star-rating a.set-rating");
-							if (recAddToMergeLink && rat) {
-								if (recUseInRelationshipLink) { toolzone.appendChild(document.createElement("br")); }
-								toolzone.appendChild(createA(recAddToMergeLink, "/recording/merge_queue?add-to-merge=" + rat.getAttribute("href").match(/id=([0-9]+)/)[1], "Merge this recording…"));
-							}
-							toolzone = toolzone.parentNode.appendChild(document.createElement("div"));
-							toolzone.className = userjs + "editbutt";
-							toolzone.style.setProperty("display", "none");
-							toolzone.appendChild(createA("Edit", rec.getAttribute("href") + "/edit", "Edit this recording"));
-							toolzone = toolzone.parentNode.appendChild(document.createElement("div"));
-							toolzone.className = userjs + "openEdits";
-							toolzone.style.setProperty("display", "none");
-							toolzone.appendChild(createA("Open", rec.getAttribute("href") + "/open_edits", "Recording open edits"));
-							toolzone.appendChild(document.createTextNode(" "));
-							toolzone.appendChild(createA("edits", rec.getAttribute("href") + "/edits", "Recording edit history"));
-						}
-						var works = tracksHtml[ith].querySelectorAll(css_work);
-						if (works) {
-							for (var w = 0; w < works.length; w++) {
-								var workid = works[w].getAttribute("href").match(new RegExp("/work/(" + str_GUID + ")$"));
-								if (workid) {
-									if (!shownworks[workid[1]]) {
-										shownworks[workid[1]] = 0;
-										shownworks.count++;
+							var works = tracksHtml[ith].querySelectorAll(css_work);
+							if (works) {
+								for (var w = 0; w < works.length; w++) {
+									var workid = works[w].getAttribute("href").match(new RegExp("/work/(" + str_GUID + ")$"));
+									if (workid) {
+										if (!shownworks[workid[1]]) {
+											shownworks[workid[1]] = 0;
+											shownworks.count++;
+										}
+										shownworks[workid[1]]++;
 									}
-									shownworks[workid[1]]++;
 								}
 							}
 						}
 					}
+					idCount("Track", tracksHtml.length);
+					if (shownworks.count > 0) { idCount("Work", shownworks.count); }
+					let xhr = new XMLHttpRequest();
+					xhr.onreadystatechange = isrcFish;
+					coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow release…");
+					xhr.open("GET", MBS + releasewsURL.replace(/%s/, pageMbid), true);
+					xhr.overrideMimeType("text/xml");
+					xhr.send(null);
 				}
-				idCount("Track", tracksHtml.length);
-				if (shownworks.count > 0) { idCount("Work", shownworks.count); }
-				let xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = isrcFish;
-				coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow release…");
-				xhr.open("GET", MBS + releasewsURL.replace(/%s/, pageMbid), true);
-				xhr.overrideMimeType("text/xml");
-				xhr.send(null);
-			}
+			}, 1000);
 			break;
 		case "isrc":
 			if (formatISRC) {

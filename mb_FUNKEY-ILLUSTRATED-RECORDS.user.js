@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2023.4.20
+// @version      2023.8.1
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -23,7 +23,7 @@
 // @exclude      *.org/*/*/edit
 // @exclude      *.org/*/*/edit?*
 // @exclude      *.org/cdtoc/remove*
-// @run-at       document-end
+// @run-at       document-idle
 // ==/UserScript==
 "use strict";
 
@@ -59,93 +59,97 @@ if (caaIcons.length > 0) {
 		loadCaaIcon(caaIcons[ci]);
 	}
 }
-var imgurls = [];
-for (var t = 0; t < types.length; t++) {
-	// TODO: rglink smallpic is often broken by React, though
-	var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/']:not([href$='/cover-art']), div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']:not([href$='/cover-art']), tr > td > span[class^='rglink'] + a[href^='/" + types[t] + "/']:not([href$='/cover-art'])");
-	var istable, istablechecked, artistcol;
-	for (var a = 0; a < as.length; a++) {
-		var imgurl = as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/(" + GUID + ")$"));
-		if (imgurl) {
-			imgurl = "//coverartarchive.org/" + types[t] + "/" + imgurl[1] + "/front";
-			if (!istablechecked) {
-				istable = getParent(as[0], "table");
-				if (istable) { artistcol = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
-				istablechecked = true;
-			}
-// SMALL PICS
-// ----------
-			if (smallpics && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
-				if (types[t] == "release-group") {
-					var CAALoader = new XMLHttpRequest();
-					CAALoader.addEventListener("load", function(event) {
-						if (this.status == 200) {
-							var RGCAA = JSON.parse(this.responseText);
-							if (RGCAA.images.length > 0) {
-								var releaseGroupOrSpanMp = include_span_mp(this.releaseGroup);
-								// insert small pic after ratings
-								var insertPoint = releaseGroupOrSpanMp;
-								if (
-									releaseGroupOrSpanMp.previousSibling // is not first element
-									&& releaseGroupOrSpanMp.previousSibling.matches // is not text node
-									&& releaseGroupOrSpanMp.previousSibling.matches("span.caa-icon") // is CAA icon
-								) {
-									// insert before CAA icon to enable its CSS hiding
-									insertPoint = releaseGroupOrSpanMp.previousSibling;
-								}
-								loadCaaIcon(releaseGroupOrSpanMp.parentNode.insertBefore(
-									createTag("a",
-										{a: {
-											href: RGCAA.release + "/cover-art",
-											ref: this.releaseGroup.getAttribute("href"),
-											title: RGCAA.images.length + " image" + (RGCAA.images.length != 1 ? "s" : "") + " found in this release"
-										}},
-										createTag("span", {a: {class: "caa-icon " + userjs}})
-									),
-									insertPoint).firstChild
-								);
-							}
-						} else {
-							console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
-						}
-					});
-					CAALoader.addEventListener("error", function(event) {
-						console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
-					});
-					CAALoader.releaseGroup = as[a];
-					CAALoader.open("GET", "https://coverartarchive.org" + as[a].getAttribute("href").match(new RegExp("/release-group/" + GUID)), true);
-					CAALoader.send(null);
+// React hydrate imposes delay
+var reactHydratePage = location.pathname.match(/^\/release\//);
+setTimeout(function() {
+	var imgurls = [];
+	for (var t = 0; t < types.length; t++) {
+		// TODO: rglink smallpic is often broken by React, though
+		var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/']:not([href$='/cover-art']), div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']:not([href$='/cover-art']), tr > td > span[class^='rglink'] + a[href^='/" + types[t] + "/']:not([href$='/cover-art'])");
+		var istable, istablechecked, artistcol;
+		for (var a = 0; a < as.length; a++) {
+			var imgurl = as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/(" + GUID + ")$"));
+			if (imgurl) {
+				imgurl = "//coverartarchive.org/" + types[t] + "/" + imgurl[1] + "/front";
+				if (!istablechecked) {
+					istable = getParent(as[0], "table");
+					if (istable) { artistcol = document.evaluate(".//thead/tr/th[contains(./text(), 'Artist') or contains(./a/text(), 'Artist')]", istable, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 1; }
+					istablechecked = true;
 				}
-			}
-			// TODO: I think there is no longer any UL LI, now only TABLE TR, I guess but not sure...
-			var box = getParent(as[a], "table") || getParent(as[a], "ul");
-			box.addEventListener("mouseover", updateBig);
-			box.addEventListener("mouseout", updateBig);
-// BIG PICS
-// --------
-			if (bigpics && (box = box.previousSibling && box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
-				if (!self.location.pathname.match(/\/recordings/) || self.location.pathname.match(/\/recordings/) && imgurls.indexOf(imgurl) < 0) {
-					var artisttd = artistcol && getSibling(getParent(as[a], "td"), "td");
-					// textContent is faster but shows <script> content. artisttd contains React? <script> when pending AC edits. https://kellegous.com/j/2013/02/27/innertext-vs-textcontent/
-					box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\n" + artisttd.innerText.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
-						"⌛",
-						createTag("img", {
-							a: {src: imgurl + "-250", alt: as[a].textContent},
-							s: {verticalAlign: "middle", display: "none", maxHeight: "125px", boxShadow: "1px 1px 4px black"},
-							e: {
-								load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); },
-								error: function(event) { removeNode(this.parentNode); },
-								mouseover: updateA,
-								mouseout: updateA
+				// SMALL PICS
+				// ----------
+				if (smallpics && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
+					if (types[t] == "release-group") {
+						var CAALoader = new XMLHttpRequest();
+						CAALoader.addEventListener("load", function(event) {
+							if (this.status == 200) {
+								var RGCAA = JSON.parse(this.responseText);
+								if (RGCAA.images.length > 0) {
+									var releaseGroupOrSpanMp = include_span_mp(this.releaseGroup);
+									// insert small pic after ratings
+									var insertPoint = releaseGroupOrSpanMp;
+									if (
+										releaseGroupOrSpanMp.previousSibling // is not first element
+										&& releaseGroupOrSpanMp.previousSibling.matches // is not text node
+										&& releaseGroupOrSpanMp.previousSibling.matches("span.caa-icon") // is CAA icon
+									) {
+										// insert before CAA icon to enable its CSS hiding
+										insertPoint = releaseGroupOrSpanMp.previousSibling;
+									}
+									loadCaaIcon(releaseGroupOrSpanMp.parentNode.insertBefore(
+										createTag("a",
+											{a: {
+												href: RGCAA.release + "/cover-art",
+												ref: this.releaseGroup.getAttribute("href"),
+												title: RGCAA.images.length + " image" + (RGCAA.images.length != 1 ? "s" : "") + " found in this release"
+											}},
+											createTag("span", {a: {class: "caa-icon " + userjs}})
+										),
+										insertPoint).firstChild
+									);
+								}
+							} else {
+								console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
 							}
-						})
-					]));
-					imgurls.push(imgurl);
+						});
+						CAALoader.addEventListener("error", function(event) {
+							console.log("Error " + this.status + " (" + this.statusText + ") for " + this.releaseGroup);
+						});
+						CAALoader.releaseGroup = as[a];
+						CAALoader.open("GET", "https://coverartarchive.org" + as[a].getAttribute("href").match(new RegExp("/release-group/" + GUID)), true);
+						CAALoader.send(null);
+					}
+				}
+				// TODO: I think there is no longer any UL LI, now only TABLE TR, I guess but not sure...
+				var box = getParent(as[a], "table") || getParent(as[a], "ul");
+				box.addEventListener("mouseover", updateBig);
+				box.addEventListener("mouseout", updateBig);
+				// BIG PICS
+				// --------
+				if (bigpics && (box = box.previousSibling && box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
+					if (!self.location.pathname.match(/\/recordings/) || self.location.pathname.match(/\/recordings/) && imgurls.indexOf(imgurl) < 0) {
+						var artisttd = artistcol && getSibling(getParent(as[a], "td"), "td");
+						// textContent is faster but shows <script> content. artisttd contains React? <script> when pending AC edits. https://kellegous.com/j/2013/02/27/innertext-vs-textcontent/
+						box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\n" + artisttd.innerText.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
+							"⌛",
+							createTag("img", {
+								a: {src: imgurl + "-250", alt: as[a].textContent},
+								s: {verticalAlign: "middle", display: "none", maxHeight: "125px", boxShadow: "1px 1px 4px black"},
+								e: {
+									load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); },
+									error: function(event) { removeNode(this.parentNode); },
+									mouseover: updateA,
+									mouseout: updateA
+								}
+							})
+						]));
+						imgurls.push(imgurl);
+					}
 				}
 			}
 		}
 	}
-}
+}, reactHydratePage ? 1000 : 10);
 
 function updateA(event) {
 	var ah = this.parentNode.getAttribute("href");
