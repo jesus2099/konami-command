@@ -513,7 +513,6 @@ var whitelistSearchLinks = {
 						"de es fr it ja pl pt ru sv tr zh": "//last.fm/%language%/search?q=%artist-name%"
 					}
 				},
-				"BBC Music": "http://www.bbc.co.uk/music/artists/%artist-mbid%",
 				"Rate Your Music": [
 					"//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%",
 					"//rateyourmusic.com/search?searchtype=b&searchterm=%label-name%",
