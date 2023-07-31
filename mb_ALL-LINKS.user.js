@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2023.7.27
+// @version      2023.7.31
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/issues/488
@@ -500,8 +500,7 @@ var whitelistSearchLinks = {
 					// "//imvdb.com/search?search_term=%recording-name% %recording-artist-credit%",
 					"//imvdb.com/search?search_term=%work-name%"
 				],
-				// TODO: ISNI: "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
-				ISNI: "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
+				ISNI: "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 				VIAF: "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
 				"Last.fm (MBID)": {
 					"en": "//last.fm/mbid/%artist-mbid%",
@@ -534,14 +533,14 @@ var whitelistSearchLinks = {
 					"//www.whosampled.com/search/tracks/?q=%work-name%"
 				],
 				BookBrainz: [
-					"//bookbrainz.org/search?q=%artist-name%&type=author",
-					"//bookbrainz.org/search?q=%release-name%&type=edition",
-					"//bookbrainz.org/search?q=%release-group-name%&type=edition_group",
-					"//bookbrainz.org/search?q=%label-name%&type=publisher",
-					"//bookbrainz.org/search?q=%series-name%&type=series",
-					"//bookbrainz.org/search?q=%work-name%&type=work"
+					"//bookbrainz.org/search?type=author&q=%artist-name%",
+					"//bookbrainz.org/search?type=edition&q=%release-name%",
+					"//bookbrainz.org/search?type=edition_group&q=%release-group-name%",
+					"//bookbrainz.org/search?type=publisher&q=%label-name%",
+					"//bookbrainz.org/search?type=series&q=%series-name%",
+					"//bookbrainz.org/search?type=work&q=%work-name%"
 				],
-				"BookBrainz (all entities)":  "//bookbrainz.org/search?q=%entity-name%&type=all_entities",
+				"BookBrainz (all entities)":  "//bookbrainz.org/search?type=all_entities&q=%entity-name%",
 				Wikidata: "//www.wikidata.org/w?search=%entity-name%",
 				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+intitle%3A%22%entity-name%%22",
 				LocalWikipedia: {
