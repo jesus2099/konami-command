@@ -533,14 +533,14 @@ var whitelistSearchLinks = {
 					"//www.whosampled.com/search/tracks/?q=%work-name%"
 				],
 				BookBrainz: [
-					"//bookbrainz.org/search?q=%artist-name%&type=author",
-					"//bookbrainz.org/search?q=%release-name%&type=edition",
-					"//bookbrainz.org/search?q=%release-group-name%&type=edition_group",
-					"//bookbrainz.org/search?q=%label-name%&type=publisher",
-					"//bookbrainz.org/search?q=%series-name%&type=series",
-					"//bookbrainz.org/search?q=%work-name%&type=work"
+					"//bookbrainz.org/search?type=author&q=%artist-name%",
+					"//bookbrainz.org/search?type=edition&q=%release-name%",
+					"//bookbrainz.org/search?type=edition_group&q=%release-group-name%",
+					"//bookbrainz.org/search?type=publisher&q=%label-name%",
+					"//bookbrainz.org/search?type=series&q=%series-name%",
+					"//bookbrainz.org/search?type=work&q=%work-name%"
 				],
-				"BookBrainz (all entities)":  "//bookbrainz.org/search?q=%entity-name%&type=all_entities",
+				"BookBrainz (all entities)":  "//bookbrainz.org/search?type=all_entities&q=%entity-name%",
 				Wikidata: "//www.wikidata.org/w?search=%entity-name%",
 				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+intitle%3A%22%entity-name%%22",
 				LocalWikipedia: {
