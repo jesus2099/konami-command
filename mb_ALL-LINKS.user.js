@@ -500,7 +500,6 @@ var whitelistSearchLinks = {
 					// "//imvdb.com/search?search_term=%recording-name% %recording-artist-credit%",
 					"//imvdb.com/search?search_term=%work-name%"
 				],
-				// TODO: ISNI: "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 				ISNI: "http://isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 				VIAF: "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
 				"Last.fm (MBID)": {
