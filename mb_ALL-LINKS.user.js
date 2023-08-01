@@ -505,6 +505,7 @@ var whitelistSearchLinks = {
 				],
 				"Discogs (barcode)":  "//www.discogs.com/%language%/search/?q=%release-barcode%&type=release",
 				MusicMoz: "//musicmoz.org/search/search.cgi?search=%entity-name%",
+				"Dynamic Range DB": "//dr.loudness-war.info/?artist=%release-artist-credit%&album=%release-name%",
 				GeoNames: [
 					"http://www.geonames.org/search.html?q=%area-name%",
 					"http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"
