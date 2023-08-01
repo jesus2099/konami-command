@@ -561,6 +561,11 @@ var whitelistSearchLinks = {
 					"//bookbrainz.org/search?type=work&q=%work-name%"
 				],
 				"BookBrainz (all entities)":  "//bookbrainz.org/search?type=all_entities&q=%entity-name%",
+				"Open Library": [
+					"//openlibrary.org/search/authors?q=%artist-name%",
+					"//openlibrary.org/search?mode=everything&q=%work-name%",
+					"//openlibrary.org/search?mode=everything&q=%release-name%"
+				],
 				Wikidata: "//www.wikidata.org/w?search=%entity-name%",
 				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+intitle%3A%22%entity-name%%22",
 				LocalWikipedia: {
