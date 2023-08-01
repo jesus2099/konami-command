@@ -485,6 +485,23 @@ var whitelistSearchLinks = {
 							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%work-name%"
 						]
 					}
+				},
+				SE: {
+					title: {
+						de: "Schweden",
+						en: "Sweden",
+						fr: "Suède",
+						ja: "スウェーデン",
+						nl: "Zweden",
+						sv: "Sverige"
+					},
+					items: {
+						"Svensk Mediedatabas (SMDB)": [
+							"//smdb.kb.se/catalog/search?q=namn%3A%28%artist-family-name-first%%29",
+							"//smdb.kb.se/catalog/search?q=%release-name%",
+						],
+						"Svensk Mediedatabas (cat. no.)": "//smdb.kb.se/catalog/search?q=%release-catalogue-number%",
+					}
 				}
 			}
 		},
