@@ -566,6 +566,11 @@ var whitelistSearchLinks = {
 					"//openlibrary.org/search?mode=everything&q=%work-name%",
 					"//openlibrary.org/search?mode=everything&q=%release-name%"
 				],
+				LibraryThing: [
+					"//www.librarything.com/search.php?searchtype=authorname&search=%artist-name%",
+					"//www.librarything.com/search.php?searchtype=newwork_titles&search=%work-name%",
+					"//www.librarything.com/search.php?searchtype=nseries&search=%series-name%"
+				],
 				Wikidata: "//www.wikidata.org/w?search=%entity-name%",
 				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+intitle%3A%22%entity-name%%22",
 				LocalWikipedia: {
