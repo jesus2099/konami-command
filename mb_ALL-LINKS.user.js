@@ -325,6 +325,44 @@ var whitelistSearchLinks = {
 						]
 					}
 				},
+				literature: {
+					title: {
+						en: "Literature",
+					},
+					items: {
+						BookBrainz: [
+							"//bookbrainz.org/search?type=author&q=%artist-name%",
+							"//bookbrainz.org/search?type=edition&q=%release-name%",
+							"//bookbrainz.org/search?type=edition_group&q=%release-group-name%",
+							"//bookbrainz.org/search?type=publisher&q=%label-name%",
+							"//bookbrainz.org/search?type=series&q=%series-name%",
+							"//bookbrainz.org/search?type=work&q=%work-name%"
+						],
+						"BookBrainz (all entities)":  "//bookbrainz.org/search?type=all_entities&q=%entity-name%",
+						"Open Library": [
+							"//openlibrary.org/search/authors?q=%artist-name%",
+							"//openlibrary.org/search?mode=everything&q=%work-name%",
+							"//openlibrary.org/search?mode=everything&q=%release-name%"
+						],
+						LibraryThing: [
+							"//www.librarything.com/search.php?searchtype=authorname&search=%artist-name%",
+							"//www.librarything.com/search.php?searchtype=newwork_titles&search=%work-name%",
+							"//www.librarything.com/search.php?searchtype=nseries&search=%series-name%"
+						],
+						Goodreads: [
+							"//www.goodreads.com/search?utf8=%E2%9C%93&search_type=books&search%5Bfield%5D=author&q=%artist-name%",
+							"//www.goodreads.com/search?utf8=%E2%9C%93&search_type=books&search%5Bfield%5D=title&q=%release-name%",
+							"//www.goodreads.com/search?utf8=%E2%9C%93&search_type=books&search%5Bfield%5D=title&q=%work-name%",
+							"//www.goodreads.com/search?q=%series-name%"
+						],
+						// TODO?: Search on first name + last name:
+						// ORCID: "//orcid.org/orcid-search/search?firstName=%artist-first-name%&lastName=%artist-last-name%&otherFields=true",
+						ORCID: "https://orcid.org/orcid-search/search?searchQuery=%artist-name%",
+						"LibriVox (author)": "https://librivox.org/search?search_form=advanced&author=%artist-name%",
+						"LibriVox (reader)": "https://librivox.org/search?search_form=advanced&reader=%artist-name%",
+						LibriVox: "https://librivox.org/search?search_form=advanced&title=%release-name%"
+					}
+				}
 			}
 		},
 		lyricsDBs: {
@@ -552,37 +590,6 @@ var whitelistSearchLinks = {
 					"//www.whosampled.com/search/tracks/?q=%recording-name%",
 					"//www.whosampled.com/search/tracks/?q=%work-name%"
 				],
-				BookBrainz: [
-					"//bookbrainz.org/search?type=author&q=%artist-name%",
-					"//bookbrainz.org/search?type=edition&q=%release-name%",
-					"//bookbrainz.org/search?type=edition_group&q=%release-group-name%",
-					"//bookbrainz.org/search?type=publisher&q=%label-name%",
-					"//bookbrainz.org/search?type=series&q=%series-name%",
-					"//bookbrainz.org/search?type=work&q=%work-name%"
-				],
-				"BookBrainz (all entities)":  "//bookbrainz.org/search?type=all_entities&q=%entity-name%",
-				"Open Library": [
-					"//openlibrary.org/search/authors?q=%artist-name%",
-					"//openlibrary.org/search?mode=everything&q=%work-name%",
-					"//openlibrary.org/search?mode=everything&q=%release-name%"
-				],
-				LibraryThing: [
-					"//www.librarything.com/search.php?searchtype=authorname&search=%artist-name%",
-					"//www.librarything.com/search.php?searchtype=newwork_titles&search=%work-name%",
-					"//www.librarything.com/search.php?searchtype=nseries&search=%series-name%"
-				],
-				Goodreads: [
-					"//www.goodreads.com/search?utf8=%E2%9C%93&search_type=books&search%5Bfield%5D=author&q=%artist-name%",
-					"//www.goodreads.com/search?utf8=%E2%9C%93&search_type=books&search%5Bfield%5D=title&q=%release-name%",
-					"//www.goodreads.com/search?utf8=%E2%9C%93&search_type=books&search%5Bfield%5D=title&q=%work-name%",
-					"//www.goodreads.com/search?q=%series-name%"
-				],
-				// TODO?: Search on first name + last name:
-				// ORCID: "//orcid.org/orcid-search/search?firstName=%artist-first-name%&lastName=%artist-last-name%&otherFields=true",
-				ORCID: "https://orcid.org/orcid-search/search?searchQuery=%artist-name%",
-				"LibriVox (author)": "https://librivox.org/search?search_form=advanced&author=%artist-name%",
-				"LibriVox (reader)": "https://librivox.org/search?search_form=advanced&reader=%artist-name%",
-				LibriVox: "https://librivox.org/search?search_form=advanced&title=%release-name%",
 				Wikidata: "//www.wikidata.org/w?search=%entity-name%",
 				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+intitle%3A%22%entity-name%%22",
 				LocalWikipedia: {
