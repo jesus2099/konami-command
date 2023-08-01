@@ -430,6 +430,23 @@ var whitelistSearchLinks = {
 							"http://jesus2099.gitlab.io/forward-request.html?_action=http://quebecinfomusique.com/albums/albums.asp&_accept-charset=ISO-8859-1&search=%release-group-name%",
 						]
 					}
+				},
+				NL: {
+					title: {
+						de: "Niederlande",
+						en: "Netherlands",
+						fr: "Pays-Bas",
+						ja: "オランダ",
+						nl: "Nederland"
+					},
+					items: {
+						"Muziekweb": [
+							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%artist-name%",
+							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%label-name%",
+							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%release-name%",
+							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%work-name%"
+						]
+					}
 				}
 			}
 		},
