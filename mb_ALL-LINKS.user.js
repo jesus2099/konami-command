@@ -510,6 +510,7 @@ var whitelistSearchLinks = {
 					"http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"
 				],
 				IMDb: "//www.imdb.com/find?q=%artist-name%&s=nm",
+				TMDB: "//www.themoviedb.org/search/person?query=%artist-name%",
 				IMVDb: [
 					"//imvdb.com/search?search_term=%artist-name%",
 					"//imvdb.com/search?search_term=%label-name%",
