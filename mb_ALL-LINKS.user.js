@@ -580,6 +580,9 @@ var whitelistSearchLinks = {
 				// TODO?: Search on first name + last name:
 				// ORCID: "//orcid.org/orcid-search/search?firstName=%artist-first-name%&lastName=%artist-last-name%&otherFields=true",
 				ORCID: "https://orcid.org/orcid-search/search?searchQuery=%artist-name%",
+				"LibriVox (author)": "https://librivox.org/search?search_form=advanced&author=%artist-name%",
+				"LibriVox (reader)": "https://librivox.org/search?search_form=advanced&reader=%artist-name%",
+				LibriVox: "https://librivox.org/search?search_form=advanced&title=%release-name%",
 				Wikidata: "//www.wikidata.org/w?search=%entity-name%",
 				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+intitle%3A%22%entity-name%%22",
 				LocalWikipedia: {
