@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2023.7.31.2155
+// @version      2023.8.1
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/issues/488
@@ -325,6 +325,44 @@ var whitelistSearchLinks = {
 						]
 					}
 				},
+				literature: {
+					title: {
+						en: "Literature",
+					},
+					items: {
+						BookBrainz: [
+							"//bookbrainz.org/search?type=author&q=%artist-name%",
+							"//bookbrainz.org/search?type=edition&q=%release-name%",
+							"//bookbrainz.org/search?type=edition_group&q=%release-group-name%",
+							"//bookbrainz.org/search?type=publisher&q=%label-name%",
+							"//bookbrainz.org/search?type=series&q=%series-name%",
+							"//bookbrainz.org/search?type=work&q=%work-name%"
+						],
+						"BookBrainz (all entities)":  "//bookbrainz.org/search?type=all_entities&q=%entity-name%",
+						"Open Library": [
+							"//openlibrary.org/search/authors?q=%artist-name%",
+							"//openlibrary.org/search?mode=everything&q=%work-name%",
+							"//openlibrary.org/search?mode=everything&q=%release-name%"
+						],
+						LibraryThing: [
+							"//www.librarything.com/search.php?searchtype=authorname&search=%artist-name%",
+							"//www.librarything.com/search.php?searchtype=newwork_titles&search=%work-name%",
+							"//www.librarything.com/search.php?searchtype=nseries&search=%series-name%"
+						],
+						Goodreads: [
+							"//www.goodreads.com/search?utf8=%E2%9C%93&search_type=books&search%5Bfield%5D=author&q=%artist-name%",
+							"//www.goodreads.com/search?utf8=%E2%9C%93&search_type=books&search%5Bfield%5D=title&q=%release-name%",
+							"//www.goodreads.com/search?utf8=%E2%9C%93&search_type=books&search%5Bfield%5D=title&q=%work-name%",
+							"//www.goodreads.com/search?q=%series-name%"
+						],
+						// TODO?: Search on first name + last name:
+						// ORCID: "//orcid.org/orcid-search/search?firstName=%artist-first-name%&lastName=%artist-last-name%&otherFields=true",
+						ORCID: "https://orcid.org/orcid-search/search?searchQuery=%artist-name%",
+						"LibriVox (author)": "https://librivox.org/search?search_form=advanced&author=%artist-name%",
+						"LibriVox (reader)": "https://librivox.org/search?search_form=advanced&reader=%artist-name%",
+						LibriVox: "https://librivox.org/search?search_form=advanced&title=%release-name%"
+					}
+				}
 			}
 		},
 		lyricsDBs: {
@@ -430,6 +468,40 @@ var whitelistSearchLinks = {
 							"http://jesus2099.gitlab.io/forward-request.html?_action=http://quebecinfomusique.com/albums/albums.asp&_accept-charset=ISO-8859-1&search=%release-group-name%",
 						]
 					}
+				},
+				NL: {
+					title: {
+						de: "Niederlande",
+						en: "Netherlands",
+						fr: "Pays-Bas",
+						ja: "オランダ",
+						nl: "Nederland"
+					},
+					items: {
+						"Muziekweb": [
+							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%artist-name%",
+							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%label-name%",
+							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%release-name%",
+							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%work-name%"
+						]
+					}
+				},
+				SE: {
+					title: {
+						de: "Schweden",
+						en: "Sweden",
+						fr: "Suède",
+						ja: "スウェーデン",
+						nl: "Zweden",
+						sv: "Sverige"
+					},
+					items: {
+						"Svensk Mediedatabas (SMDB)": [
+							"//smdb.kb.se/catalog/search?q=namn%3A%28%artist-family-name-first%%29",
+							"//smdb.kb.se/catalog/search?q=%release-name%",
+						],
+						"Svensk Mediedatabas (cat. no.)": "//smdb.kb.se/catalog/search?q=%release-catalogue-number%",
+					}
 				}
 			}
 		},
@@ -487,11 +559,14 @@ var whitelistSearchLinks = {
 					"//www.discogs.com/%language%/search?title=%release-group-name%&artist=%release-group-artist-credit%&type=release"
 				],
 				"Discogs (barcode)":  "//www.discogs.com/%language%/search/?q=%release-barcode%&type=release",
+				MusicMoz: "//musicmoz.org/search/search.cgi?search=%entity-name%",
+				"Dynamic Range DB": "//dr.loudness-war.info/?artist=%release-artist-credit%&album=%release-name%",
 				GeoNames: [
 					"http://www.geonames.org/search.html?q=%area-name%",
 					"http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"
 				],
 				IMDb: "//www.imdb.com/find?q=%artist-name%&s=nm",
+				TMDB: "//www.themoviedb.org/search/person?query=%artist-name%",
 				IMVDb: [
 					"//imvdb.com/search?search_term=%artist-name%",
 					"//imvdb.com/search?search_term=%label-name%",
@@ -531,15 +606,6 @@ var whitelistSearchLinks = {
 					"//www.whosampled.com/search/tracks/?q=%recording-name%",
 					"//www.whosampled.com/search/tracks/?q=%work-name%"
 				],
-				BookBrainz: [
-					"//bookbrainz.org/search?type=author&q=%artist-name%",
-					"//bookbrainz.org/search?type=edition&q=%release-name%",
-					"//bookbrainz.org/search?type=edition_group&q=%release-group-name%",
-					"//bookbrainz.org/search?type=publisher&q=%label-name%",
-					"//bookbrainz.org/search?type=series&q=%series-name%",
-					"//bookbrainz.org/search?type=work&q=%work-name%"
-				],
-				"BookBrainz (all entities)":  "//bookbrainz.org/search?type=all_entities&q=%entity-name%",
 				Wikidata: "//www.wikidata.org/w?search=%entity-name%",
 				Wikipedia: "//duckduckgo.com/?q=site:wikipedia.org+intitle%3A%22%entity-name%%22",
 				LocalWikipedia: {
