@@ -500,7 +500,7 @@ var whitelistSearchLinks = {
 					// "//imvdb.com/search?search_term=%recording-name% %recording-artist-credit%",
 					"//imvdb.com/search?search_term=%work-name%"
 				],
-				ISNI: "//isni.oclc.nl/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
+				ISNI: "//isni.oclc.org/xslt/CMD?ACT=SRCHA&IKT=8006&TRM=%artist-name%",
 				VIAF: "//viaf.org/viaf/search?query=local.names+all+%22%artist-name%%22",
 				"Last.fm (MBID)": {
 					"en": "//last.fm/mbid/%artist-mbid%",
@@ -513,7 +513,6 @@ var whitelistSearchLinks = {
 						"de es fr it ja pl pt ru sv tr zh": "//last.fm/%language%/search?q=%artist-name%"
 					}
 				},
-				"BBC Music": "http://www.bbc.co.uk/music/artists/%artist-mbid%",
 				"Rate Your Music": [
 					"//rateyourmusic.com/search?searchtype=a&searchterm=%artist-name%",
 					"//rateyourmusic.com/search?searchtype=b&searchterm=%label-name%",
