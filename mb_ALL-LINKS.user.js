@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2023.8.1
+// @version      2023.8.6
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/issues/488
@@ -328,6 +328,8 @@ var whitelistSearchLinks = {
 				literature: {
 					title: {
 						en: "Literature",
+						fr: "Littérature",
+						ja: "文学",
 					},
 					items: {
 						BookBrainz: [
@@ -561,6 +563,18 @@ var whitelistSearchLinks = {
 				"Discogs (barcode)":  "//www.discogs.com/%language%/search/?q=%release-barcode%&type=release",
 				MusicMoz: "//musicmoz.org/search/search.cgi?search=%entity-name%",
 				"Dynamic Range DB": "//dr.loudness-war.info/?artist=%release-artist-credit%&album=%release-name%",
+				GnuDb: [
+					"//gnudb.org/album/%release-group-name%",
+					"//gnudb.org/album/%release-name%",
+					"//gnudb.org/artist/%artist-name%",
+					"//gnudb.org/search/%release-artist-credit%+%release-name%",
+					"//gnudb.org/search/%release-group-artist-credit%+%release-group-name%",
+					"//gnudb.org/song/%recording-name%",
+					"//gnudb.org/song/%work-name%",
+				],
+				"GnuDb (abc)": [
+					"//gnudb.org/artist/%artist-latin-script-name%",
+				],
 				GeoNames: [
 					"http://www.geonames.org/search.html?q=%area-name%",
 					"http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"
