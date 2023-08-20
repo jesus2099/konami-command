@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2023.5.17
+// @version      2023.8.20
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -117,8 +117,9 @@ function findUsefulMergeInfo() {
 				editNote.style.removeProperty("background-color");
 				editNote.value = editNote.value.replace(/\u00a0—\u00a0[\r\n]{1,2}Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_ELEPHANT-EDITOR.user.js
 				if (editNote && editNote.value && !MB_is_invalid_edit_note(editNote.value)) {
-					if (editNote.nextSibling.matches("p.error." + userjs)) {
-						editNote.parentNode.removeChild(editNote.nextSibling);
+					var edit_note_error = editNote.parentNode.querySelector("p.error.invalid." + userjs);
+					if (edit_note_error) {
+						removeNode(edit_note_error);
 					}
 					var mergeTargets = mergeForm.querySelectorAll("form table.tbl > tbody input[type='radio'][name='merge.target']");
 					var mergeTarget;
@@ -149,11 +150,11 @@ function findUsefulMergeInfo() {
 						editNote.value = (editNote.value ? editNote.value + "\n\u00a0—\u00a0\n" : "") + "Merging into oldest [MBID] (" + mergeTargets + ").";
 					}
 				} else {
-					if (!editNote.nextSibling.matches("p.error." + userjs)) {
+					if (!editNote.parentNode.querySelector("p.error.invalid." + userjs)) {
 						if (mergeType == "recording") {
 							editNote.parentNode.insertBefore(createTag("p", {a: {class: "error"}}, "Merging recordings is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\n\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc."), editNote);
 						}
-						addAfter(createTag("p", {a: {class: "error " + userjs}}, MB_text("invalid_edit_note")), editNote);
+						addAfter(createTag("p", {a: {class: "error invalid " + userjs}}, MB_text("invalid_edit_note")), editNote);
 					}
 					editNote.style.setProperty("background-color", "pink");
 					return stop(event);
