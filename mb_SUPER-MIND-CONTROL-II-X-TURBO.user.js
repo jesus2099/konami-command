@@ -860,8 +860,8 @@ j2setting("COOL_SEARCH_LINKS", true, true, "additional “refine this search” 
 if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/search\/edits/)) {
 	debug("COOL_SEARCH_LINKS");
 	var baseURL = self.location.pathname.match(new RegExp("^/([^/]+)/(" + stre_GUID + ")"));
-	var editSearch = self.location.pathname.match(/(?:(?:(open)_)?edits|edits\/(accepted|applied|autoedits|cancelled|failed|open|rejected))\/?$/);
-	if (baseURL && !editSearch) {
+	var is_edit_search = self.location.pathname.match(/((open_)?edits|edits\/(accepted|applied|autoedits|cancelled|failed|open|rejected))\/?$/);
+	if (baseURL && !is_edit_search) {
 		// Entity page
 		var entityType = baseURL[1].replace(/-/, "_");
 		var entityName = document.querySelector("div#content h1 a");
@@ -923,7 +923,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !self.location.pathname.match(/^\/sea
 		}
 	} else {
 		var searchHelp = document.querySelector("table.search-help > tbody");
-		if (searchHelp && editSearch) {
+		if (searchHelp && is_edit_search) {
 			var refines = document.createElement("td");
 			var refine;
 			var notme = "&conditions.2099.field=editor&conditions.2099.operator=%21%3D&conditions.2099.name=%myName%&conditions.2099.args.0=%myID%";
