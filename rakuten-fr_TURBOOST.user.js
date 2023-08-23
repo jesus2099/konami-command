@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         rakuten (fr). TURBOOST
-// @version      2023.8.23
+// @version      2023.8.23.1833
 // @description  Affiche toutes les annonces et totalement, sur le site Rakuten France (version Priceminister)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/rakuten-fr_TURBOOST
@@ -17,9 +17,9 @@ var interval_delay = 500;
 var stop_after_x = 5 /* seconds */ * (1000 / interval_delay);
 var i = setInterval(function() {
 	var click_these = document.querySelectorAll(
-		"a.dispMore:not(.uiHide)#advertPaginationBtn,"
-		+ "div.linkCollaps > span.iconCollaps.svg-icon-chevron-down, "
-		+ "div.sellerComment > div#advertDescriptionShowPartial.edito:not([style='display: none;']) > span"
+		"a.dispMore:not(.uiHide)#advertPaginationBtn," // Charge toutes les annonces
+		+ "div.linkCollaps > span.iconCollaps.svg-icon-chevron-down, " // Ouvre toutes les descriptions
+		+ "div.sellerComment > div#advertDescriptionShowPartial.edito:not([style='display: none;']) > span" // Déplie toutes les descriptions longues
 	);
 	if (click_these.length > 0) {
 		for (var c = 0; c < click_these.length; c++) {
