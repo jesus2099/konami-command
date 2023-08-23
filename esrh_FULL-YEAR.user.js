@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         esrh. FULL YEAR
-// @version      2023.5.27.132
+// @version      2023.8.23
 // @description  Affiche les congés sur toute l’année
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/esrh_FULL-YEAR
@@ -32,6 +32,7 @@ if (full_year_path_match) {
 			userjs.css.insertRule("body#popup { cursor: progress; opacity: .12; }", 0);
 		});
 		// cleanup page, display year in main title, clickable to change year
+		document.title = "Congés " + full_year_path_match[1];
 		userjs.css.insertRule("body#popup > div#popup_container > div:not(#contenu) { display: none; }", 0);
 		userjs.css.insertRule("span#AFTimeEPlanning_textMY { border-bottom: 1px solid black; color: #303; cursor: pointer; font-size: 1.5em; }", 0);
 		header.closest("tr").style.setProperty("background-color", "#fef");
