@@ -56,7 +56,7 @@ setInterval(function() {
 		icon = icon.querySelector(host.css.icon);
 		if (icon) {
 			var install = document.createElement("a");
-			install.appendChild(getInstallIcon(host.files[f].getAttribute("href").match(/(\.[^.]+){2}$/)[0]));
+			install.appendChild(getInstallIcon(host.files[f].getAttribute("href").match(new RegExp(supportedFileTypes.join("|").replace(/\./g, "\\.")))[0]));
 			install.className = icon.className;
 			install.setAttribute("title", "Install “" + (host.files[f].getAttribute("title") || host.files[f].getAttribute("href")) + "”");
 			var absolute_pathname = host.files[f].getAttribute("href");
