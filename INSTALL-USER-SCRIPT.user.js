@@ -25,7 +25,6 @@ var host = {
 			icon: "svg[width='24'][height='24']",
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/src\//, replace: "$1/raw/" },
-		dumbMode: true,
 	},
 	"github.com": {
 		css: {
@@ -34,7 +33,6 @@ var host = {
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
 		iconParentLevel: 3,
-		dumbMode: true,
 	},
 	"gitlab.com": {
 		css: {
@@ -42,19 +40,12 @@ var host = {
 			icon: "span > svg.file-icon",
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
-		dumbMode: true,
 	},
 };
 var installIcons = {};
-host = host[self.location.host];
+host = host[location.host];
 host.css.files = supportedFileTypes.map(function(fileType) { return host.css.files.replace(/%fileType%/g, fileType) + ":not(.j2installUserScript)"; }).join(", ");
-if (host.dumbMode) {
-	setInterval(changeStuff, 1000);
-} else {
-	jQuery(document).on("pjax:end", changeStuff); /* https://github.com/defunkt/jquery-pjax#events */
-}
-changeStuff();
-function changeStuff() {
+setInterval(function() {
 	host.files = document.querySelectorAll(host.css.files);
 	for (var f = 0; f < host.files.length; f++) {
 		host.files[f].classList.add("j2installUserScript");
@@ -87,7 +78,7 @@ function changeStuff() {
 			}
 		}
 	}
-}
+}, 1000);
 function getInstallIcon(fileExtension) {
 	var iconURL =
 		fileExtension == ".user.js"
