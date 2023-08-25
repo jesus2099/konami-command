@@ -11,10 +11,10 @@
 // @since        2014-11-14
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @grant        none
-// @include      https://bitbucket.org/*
-// @include      https://github.com/*
-// @include      https://gitlab.com/*
-// @run-at       document-end
+// @match        *://bitbucket.org/*
+// @match        *://github.com/*
+// @match        *://gitlab.com/*
+// @run-at       document-idle
 // ==/UserScript==
 "use strict";
 var supportedFileTypes = [".user.js", ".uc.js", ".uc.xul", ".user.css"];
