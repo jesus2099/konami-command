@@ -57,7 +57,6 @@ setInterval(function() {
 		if (icon) {
 			var install = document.createElement("a");
 			install.appendChild(getInstallIcon(host.files[f].getAttribute("href").match(new RegExp(supportedFileTypes.join("|").replace(/\./g, "\\.")))[0]));
-			install.className = icon.className;
 			install.setAttribute("title", "Install “" + (host.files[f].getAttribute("title") || host.files[f].getAttribute("href")) + "”");
 			var absolute_pathname = host.files[f].getAttribute("href");
 			absolute_pathname = (absolute_pathname.match(/^\//) ? absolute_pathname : location.pathname + absolute_pathname).replace(host.href.match, host.href.replace);
@@ -93,8 +92,8 @@ function getInstallIcon(fileExtension) {
 	if (!installIcons[fileExtension]) {
 		installIcons[fileExtension] = document.createElement("img");
 		installIcons[fileExtension].setAttribute("src", iconURL);
-		installIcons[fileExtension].setAttribute("width", 16);
-		installIcons[fileExtension].setAttribute("height", 16);
+		installIcons[fileExtension].setAttribute("width", 24);
+		installIcons[fileExtension].setAttribute("height", 24);
 	}
 	return installIcons[fileExtension].cloneNode(false);
 }
