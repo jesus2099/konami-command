@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2021.5.20.1014
+// @version      2023.8.25
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user css/js auto‐update, even if the script author has not set @downloadURL and @updateURL.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
@@ -21,12 +21,11 @@ var supportedFileTypes = [".user.js", ".uc.js", ".uc.xul", ".user.css"];
 var host = {
 	"bitbucket.org": {
 		css: {
-			files: "table tbody td a[href*='%fileType%']",
+			files: "table tbody td a[href$='%fileType%']",
 			icon: "svg[width='24'][height='24']",
 			newIcon: "aui-icon aui-icon-small aui-iconfont-devtools-clone", /* https://docs.atlassian.com/aui/5.5.1/docs/icons.html */
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/src\//, replace: "$1/raw/" },
-		unnestIcon: true,
 		dumbMode: true,
 	},
 	"github.com": {
@@ -75,10 +74,9 @@ function changeStuff() {
 				install.className = icon.className;
 			}
 			install.setAttribute("title", "Install “" + (host.files[f].getAttribute("title") || host.files[f].getAttribute("href")) + "”");
-			install.setAttribute("href", host.files[f].getAttribute("href").replace(host.href.match, host.href.replace));
-			if (install.getAttribute("href").match(/%from-pathname%/) && host.hrefFromPathname) {
-				install.setAttribute("href", install.getAttribute("href").replace(/%from-pathname%/, self.location.pathname.match(host.hrefFromPathname)[1]));
-			}
+			var absolute_pathname = host.files[f].getAttribute("href");
+			absolute_pathname = (absolute_pathname.match(/^\//) ? absolute_pathname : location.pathname + absolute_pathname).replace(host.href.match, host.href.replace);
+			install.setAttribute("href", absolute_pathname);
 			install.style.setProperty("color", "green");
 			install.addEventListener("click", function(e) {
 				e.cancelBubble = true;
