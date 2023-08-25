@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2023.8.25
+// @version      2023.8.26
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user css/js auto‐update, even if the script author has not set @downloadURL and @updateURL.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
@@ -28,11 +28,12 @@ var host = {
 	},
 	"github.com": {
 		css: {
-			files: ".js-details-container .js-navigation-item div:nth-child(2) a.js-navigation-open[title$='%fileType%']",
-			icon: ".js-navigation-item div:nth-child(1) svg.octicon.octicon-file",
+			files: ".js-details-container div[role='row'].js-navigation-item > div:nth-child(2) a[title$='%fileType%'].js-navigation-open",
+			icon: "div[role='row'].js-navigation-item > div:nth-child(1) > svg.octicon.octicon-file",
+			disable_for_touch: "div[role='row'].js-navigation-item > a[style*='opacity:0'].position-absolute",
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
-		iconParentLevel: 3,
+		common_parent_level: 3,
 	},
 	"gitlab.com": {
 		css: {
@@ -42,6 +43,7 @@ var host = {
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
 	},
 };
+var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
 var installIcons = {};
 host = host[location.host];
 host.css.files = supportedFileTypes.map(function(fileType) { return host.css.files.replace(/%fileType%/g, fileType) + ":not(.j2installUserScript)"; }).join(", ");
@@ -49,11 +51,11 @@ setInterval(function() {
 	host.files = document.querySelectorAll(host.css.files);
 	for (var f = 0; f < host.files.length; f++) {
 		host.files[f].classList.add("j2installUserScript");
-		var icon = host.files[f];
-		if (host.iconParentLevel) for (var p = 0; p < host.iconParentLevel; p++) {
-			icon = icon.parentNode;
+		var parent = host.files[f];
+		if (host.common_parent_level) for (var p = 0; p < host.common_parent_level; p++) {
+			parent = parent.parentNode;
 		}
-		icon = icon.querySelector(host.css.icon);
+		var icon = parent.querySelector(host.css.icon);
 		if (icon) {
 			var install = document.createElement("a");
 			install.appendChild(getInstallIcon(host.files[f].getAttribute("href").match(new RegExp(supportedFileTypes.join("|").replace(/\./g, "\\.")))[0]));
@@ -75,6 +77,9 @@ setInterval(function() {
 			} else {
 				icon.parentNode.replaceChild(install, icon);
 			}
+			if (IS_TOUCH_SCREEN && host.css.disable_for_touch) {
+				parent.querySelector(host.css.disable_for_touch).style.setProperty("visibility", "hidden");
+			}
 		}
 	}
 }, 1000);
@@ -92,8 +97,8 @@ function getInstallIcon(fileExtension) {
 	if (!installIcons[fileExtension]) {
 		installIcons[fileExtension] = document.createElement("img");
 		installIcons[fileExtension].setAttribute("src", iconURL);
-		installIcons[fileExtension].setAttribute("width", 24);
-		installIcons[fileExtension].setAttribute("height", 24);
+		installIcons[fileExtension].setAttribute("width", IS_TOUCH_SCREEN ? 24 : 16);
+		installIcons[fileExtension].setAttribute("height", IS_TOUCH_SCREEN ? 24 : 16);
 	}
 	return installIcons[fileExtension].cloneNode(false);
 }
