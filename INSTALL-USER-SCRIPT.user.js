@@ -23,7 +23,6 @@ var host = {
 		css: {
 			files: "table tbody td a[href$='%fileType%']",
 			icon: "svg[width='24'][height='24']",
-			newIcon: "aui-icon aui-icon-small aui-iconfont-devtools-clone", /* https://docs.atlassian.com/aui/5.5.1/docs/icons.html */
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/src\//, replace: "$1/raw/" },
 		dumbMode: true,
@@ -32,7 +31,6 @@ var host = {
 		css: {
 			files: ".js-details-container .js-navigation-item div:nth-child(2) a.js-navigation-open[title$='%fileType%']",
 			icon: ".js-navigation-item div:nth-child(1) svg.octicon.octicon-file",
-			/* // TODO: find why a.octicon.octicon-cloud-download does not show icon any more // newIcon: "octicon octicon-cloud-download", /* https://octicons.github.com */
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
 		iconParentLevel: 3,
@@ -67,12 +65,8 @@ function changeStuff() {
 		icon = icon.querySelector(host.css.icon);
 		if (icon) {
 			var install = document.createElement("a");
-			if (host.css.newIcon) {
-				install.className = host.css.newIcon;
-			} else {
-				install.appendChild(getInstallIcon(host.files[f].getAttribute("href").match(/(\.[^.]+){2}$/)[0]));
-				install.className = icon.className;
-			}
+			install.appendChild(getInstallIcon(host.files[f].getAttribute("href").match(/(\.[^.]+){2}$/)[0]));
+			install.className = icon.className;
 			install.setAttribute("title", "Install “" + (host.files[f].getAttribute("title") || host.files[f].getAttribute("href")) + "”");
 			var absolute_pathname = host.files[f].getAttribute("href");
 			absolute_pathname = (absolute_pathname.match(/^\//) ? absolute_pathname : location.pathname + absolute_pathname).replace(host.href.match, host.href.replace);
