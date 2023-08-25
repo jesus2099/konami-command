@@ -36,7 +36,7 @@ var host = {
 	},
 	"gitlab.com": {
 		css: {
-			files: "table.tree-table tbody td.tree-item-file-name a[href$='%fileType%']",
+			files: "table.tree-table tbody td.tree-item-file-name a[href*='%fileType%']",
 			icon: "span > svg.file-icon",
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
