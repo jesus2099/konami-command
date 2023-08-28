@@ -44,7 +44,6 @@ var host = {
 	},
 };
 var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
-var installIcons = {};
 host = host[location.host];
 host.css.files = supportedFileTypes.map(function(fileType) { return host.css.files.replace(/%fileType%/g, fileType) + ":not(.j2installUserScript)"; }).join(", ");
 setInterval(function() {
@@ -84,24 +83,14 @@ setInterval(function() {
 	}
 }, 1000);
 function getInstallIcon(fileExtension) {
-	var iconURL;
+	var icon = "💾";
 	switch (fileExtension) {
 		case ".user.js":
-			iconURL = "https://github.com/greasemonkey/greasemonkey/raw/bdf1a51cc4ad2ad2482d11efb9e80d3439d66731/skin/icon.svg?sanitize=true";
+			icon = "🐵";
 			break;
 		case ".user.css":
-			iconURL = "https://github.com/openstyles/stylus/raw/c2e83fb3c4dc4d980e07c5ce92e9250af3eb5609/images/icon/16.png";
+			icon = "🧾";
 			break;
 	}
-	if (iconURL !== undefined) {
-		if (!installIcons[fileExtension]) {
-			installIcons[fileExtension] = document.createElement("img");
-			installIcons[fileExtension].setAttribute("src", iconURL);
-			installIcons[fileExtension].setAttribute("width", IS_TOUCH_SCREEN ? 24 : 16);
-			installIcons[fileExtension].setAttribute("height", IS_TOUCH_SCREEN ? 24 : 16);
-		}
-		return installIcons[fileExtension].cloneNode(false);
-	} else {
-		return document.createTextNode("💾");
-	}
+	return document.createTextNode(icon);
 }
