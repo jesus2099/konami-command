@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2023.8.26
+// @version      2023.8.28
 // @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user css/js auto‐update, even if the script author has not set @downloadURL and @updateURL.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
@@ -84,21 +84,24 @@ setInterval(function() {
 	}
 }, 1000);
 function getInstallIcon(fileExtension) {
-	var iconURL =
-		fileExtension == ".user.js"
-			? GM_info.scriptHandler == "Violentmonkey"
-				? "https://github.com/violentmonkey/violentmonkey/raw/8a319d0312004ef827efbf34c56e0f66602726cf/src/resources/icon.svg?sanitize=true"
-				: GM_info.scriptHandler == "Tampermonkey"
-					? "https://github.com/Tampermonkey/tampermonkey/raw/07f668cd1cabb2939220045839dec4d95d2db0c8/images/licon.png"
-					: "https://github.com/greasemonkey/greasemonkey/raw/bdf1a51cc4ad2ad2482d11efb9e80d3439d66731/skin/icon.svg?sanitize=true"
-			: fileExtension == ".user.css"
-				? "https://github.com/openstyles/stylus/raw/c2e83fb3c4dc4d980e07c5ce92e9250af3eb5609/images/icon/16.png"
-				: GM_info.script.icon;
-	if (!installIcons[fileExtension]) {
-		installIcons[fileExtension] = document.createElement("img");
-		installIcons[fileExtension].setAttribute("src", iconURL);
-		installIcons[fileExtension].setAttribute("width", IS_TOUCH_SCREEN ? 24 : 16);
-		installIcons[fileExtension].setAttribute("height", IS_TOUCH_SCREEN ? 24 : 16);
+	var iconURL;
+	switch (fileExtension) {
+		case ".user.js":
+			iconURL = "https://github.com/greasemonkey/greasemonkey/raw/bdf1a51cc4ad2ad2482d11efb9e80d3439d66731/skin/icon.svg?sanitize=true";
+			break;
+		case ".user.css":
+			iconURL = "https://github.com/openstyles/stylus/raw/c2e83fb3c4dc4d980e07c5ce92e9250af3eb5609/images/icon/16.png";
+			break;
 	}
-	return installIcons[fileExtension].cloneNode(false);
+	if (iconURL !== undefined) {
+		if (!installIcons[fileExtension]) {
+			installIcons[fileExtension] = document.createElement("img");
+			installIcons[fileExtension].setAttribute("src", iconURL);
+			installIcons[fileExtension].setAttribute("width", IS_TOUCH_SCREEN ? 24 : 16);
+			installIcons[fileExtension].setAttribute("height", IS_TOUCH_SCREEN ? 24 : 16);
+		}
+		return installIcons[fileExtension].cloneNode(false);
+	} else {
+		return document.createTextNode("💾");
+	}
 }
