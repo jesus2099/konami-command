@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
 // @version      2023.8.28
-// @description  bitbucket.org, github.com, gitlab.com: Convenient direct “raw” download links (leftmost file icon) to “Install” user scripts and user styles from file lists. This will also allow user css/js auto‐update, even if the script author has not set @downloadURL and @updateURL.
+// @description  bitbucket.org, github.com, gitlab.com: Install links for userscripts and userstyles
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/INSTALL-USER-SCRIPT.user.js
@@ -10,6 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2014-11-14
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
+// @require      https://github.com/jesus2099/konami-command/raw/0cc6cdbba2933c0eadc75632e8abac44c34b2188/lib/SUPER.js?version=2023.3.23
 // @grant        none
 // @match        *://bitbucket.org/*
 // @match        *://github.com/*
@@ -47,6 +48,8 @@ var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 
 host = host[location.host];
 host.css.files = supportedFileTypes.map(function(fileType) { return host.css.files.replace(/%fileType%/g, fileType) + ":not(.j2installUserScript)"; }).join(", ");
 setInterval(function() {
+	var file_path, file_extension;
+	// file list
 	host.files = document.querySelectorAll(host.css.files);
 	for (var f = 0; f < host.files.length; f++) {
 		host.files[f].classList.add("j2installUserScript");
@@ -56,41 +59,63 @@ setInterval(function() {
 		}
 		var icon = parent.querySelector(host.css.icon);
 		if (icon) {
-			var install = document.createElement("a");
-			install.appendChild(getInstallIcon(host.files[f].getAttribute("href").match(new RegExp(supportedFileTypes.join("|").replace(/\./g, "\\.")))[0]));
-			install.setAttribute("title", "Install “" + (host.files[f].getAttribute("title") || host.files[f].getAttribute("href")) + "”");
-			var absolute_pathname = host.files[f].getAttribute("href");
-			absolute_pathname = (absolute_pathname.match(/^\//) ? absolute_pathname : location.pathname + absolute_pathname).replace(host.href.match, host.href.replace);
-			install.setAttribute("href", absolute_pathname);
-			install.style.setProperty("color", "green");
-			install.addEventListener("click", function(e) {
-				e.cancelBubble = true;
-				if (e.stopPropagation) {
-					e.stopPropagation();
-				}
-				return false;
-			});
-			if (host.unnestIcon) {
-				host.files[f].parentNode.insertBefore(install, host.files[f]);
-				icon.parentNode.removeChild(icon);
-			} else {
-				icon.parentNode.replaceChild(install, icon);
-			}
+			file_path = host.files[f].getAttribute("href");
+			var install_link = get_basic_install_link(file_path, get_file_supported_extension(file_path));
+			install_link.setAttribute("title", "Install “" + (host.files[f].getAttribute("title") || file_path) + "”");
+			// Bitbucket and GitLab
+			install_link.addEventListener("click", function(event) { event.cancelBubble = true; });
+			icon.parentNode.replaceChild(install_link, icon);
 			if (IS_TOUCH_SCREEN && host.css.disable_for_touch) {
+				// GitHub
 				parent.querySelector(host.css.disable_for_touch).style.setProperty("visibility", "hidden");
 			}
 		}
 	}
+	// file view
+	// TODO: GitHub only: Add support for Bitbucket and GitLab
+	var file_view_buttons = document.querySelector("react-app[app-name='react-code-view'][initial-path] main ul[aria-label='File view']:not(.j2installUserScript)");
+	if (file_view_buttons) {
+		file_view_buttons.classList.add("j2installUserScript");
+		file_path = file_view_buttons.closest("react-app[app-name='react-code-view'][initial-path]").getAttribute("initial-path");
+		file_extension = get_file_supported_extension(file_path);
+		if (file_extension) {
+			var install_button = get_basic_install_link(file_path, file_extension);
+			install_button.appendChild(document.createTextNode("\u00a0Install"));
+			install_button.classList.add("btn");
+			install_button.style.setProperty("background-color", "#fcf");
+			addAfter(install_button, file_view_buttons);
+		}
+	}
 }, 1000);
-function getInstallIcon(fileExtension) {
-	var icon = "💾";
-	switch (fileExtension) {
+function get_install_icon(file_extension) {
+	var icon = "";
+	switch (file_extension) {
 		case ".user.js":
 			icon = "🐵";
 			break;
 		case ".user.css":
 			icon = "🧾";
 			break;
+		default:
+			icon = "💾";
 	}
-	return document.createTextNode(icon);
+	return icon;
+}
+function get_install_path(file_path) {
+	return (file_path.match(/^\//) ? file_path : location.pathname + file_path).replace(host.href.match, host.href.replace);
+}
+function get_file_supported_extension(file_path) {
+	var file_extention = file_path.match(new RegExp(supportedFileTypes.join("|").replace(/\./g, "\\.")));
+	if (file_extention) {
+		return file_extention[0];
+	} else {
+		return "";
+	}
+}
+function get_basic_install_link(file_path, file_extension) {
+	var basic_install_link = createTag("a", {a: {href: get_install_path(file_path)}}, get_install_icon(file_extension));
+	if (file_extension == ".user.css") {
+		basic_install_link.setAttribute("target", "_blank");
+	}
+	return basic_install_link;
 }
