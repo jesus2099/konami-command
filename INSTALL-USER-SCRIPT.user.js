@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2023.8.28
+// @version      2023.8.30
 // @description  bitbucket.org, github.com, gitlab.com: Install links for userscripts and userstyles
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
@@ -73,17 +73,25 @@ setInterval(function() {
 	}
 	// file view
 	// TODO: GitHub only: Add support for Bitbucket and GitLab
-	var file_view_buttons = document.querySelector("react-app[app-name='react-code-view'][initial-path] main ul[aria-label='File view']:not(.j2installUserScript)");
+	var file_view_buttons = document.querySelector("react-app[app-name='react-code-view'][initial-path] main ul[aria-label='File view']");
 	if (file_view_buttons) {
-		file_view_buttons.classList.add("j2installUserScript");
-		file_path = file_view_buttons.closest("react-app[app-name='react-code-view'][initial-path]").getAttribute("initial-path");
+		var existing_button = file_view_buttons.parentNode.querySelector("a.j2installLink");
+		file_path = location.pathname;
 		file_extension = get_file_supported_extension(file_path);
 		if (file_extension) {
-			var install_button = get_basic_install_link(file_path, file_extension);
-			install_button.appendChild(document.createTextNode("\u00a0Install"));
-			install_button.classList.add("btn");
-			install_button.style.setProperty("background-color", "#fcf");
-			addAfter(install_button, file_view_buttons);
+			if (!existing_button || get_install_path(file_path) !== existing_button.getAttribute("href")) {
+				var install_button = get_basic_install_link(file_path, file_extension);
+				install_button.appendChild(document.createTextNode("\u00a0Install"));
+				install_button.classList.add("btn");
+				install_button.style.setProperty("background-color", "#fcf");
+				if (existing_button) {
+					existing_button.parentNode.replaceChild(install_button, existing_button);
+				} else {
+					addAfter(install_button, file_view_buttons);
+				}
+			}
+		} else if (existing_button) {
+			existing_button.parentNode.removeChild(existing_button);
 		}
 	}
 }, 1000);
@@ -113,7 +121,7 @@ function get_file_supported_extension(file_path) {
 	}
 }
 function get_basic_install_link(file_path, file_extension) {
-	var basic_install_link = createTag("a", {a: {href: get_install_path(file_path)}}, get_install_icon(file_extension));
+	var basic_install_link = createTag("a", {a: {href: get_install_path(file_path), class: "j2installLink"}}, get_install_icon(file_extension));
 	if (file_extension == ".user.css") {
 		basic_install_link.setAttribute("target", "_blank");
 	}
