@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         rakuten (fr). TURBOOST
-// @version      2023.8.23.1833
+// @version      2023.9.3
 // @description  Affiche toutes les annonces et totalement, sur le site Rakuten France (version Priceminister)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/rakuten-fr_TURBOOST
@@ -9,6 +9,7 @@
 // @licence      CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2023-08-22; 2022 as bookmarklet
+// @match        *://fr.shopping.rakuten.com/mfp/*
 // @match        *://fr.shopping.rakuten.com/offer/buy/*/*.html
 // @run-at       document-idle
 // ==/UserScript==
