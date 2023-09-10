@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2023.4.22
-// @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Select first application and PROD, Select current version, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Highlight modal table rows, Emphasise reset and upgrade buttons, Press Escape to close modals, Reveal secret JSON and copy to clipboard
+// @version      2023.9.10
+// @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Select first application and PROD, Select current version, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Highlight modal table rows, Emphasise reset and upgrade buttons, Press Escape to close modals, Reveal secret JSON and copy to clipboard, Fix "replace by version" form, Prevent "Enter key crashes modals" bug
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-ivr-designer_TURBO-BOOST.user.js
@@ -201,6 +201,26 @@ switch (self.location.pathname) {
 			}
 		});
 
+		// Fix "replace by version" form
+		document.addEventListener("keydown", function(event) {
+			if (event.target.matches("div#popin_replace.modal form#replace-form #inputReplaceValue")) {
+				if (event.key == "Enter") {
+					var confirm = event.target.closest("form#replace-form").querySelector("div.modal-footer span#confirmReplace");
+					if (confirm) {
+						confirm.style.setProperty("opacity", ".3");
+						event.target.blur();
+						setTimeout(function() { confirm.click(); }, 100);
+					}
+					// Prevent Odigo IVRD bug: Enter key crashes modals
+					return stop(event);
+				} else {
+					var radio = event.target.closest("div#formSelectReplace").querySelector("input[type='radio'][name='uploadTypeReplace']");
+					if (radio.checked === false) {
+						radio.click();
+					}
+				}
+			}
+		});
 		// Improvement daemon
 		setInterval(function() {
 			var treeViewButton = document.querySelector("div#arborescence a.tree-view");
