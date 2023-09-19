@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2023.9.9
-// @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / CHECK_ALL_SUBSCRIPTIONS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
+// @version      2023.9.19
+// @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
@@ -498,24 +498,6 @@ function writeStat(statsCell, stat, total) {
 }
 function percentage(p, c) {
 	return (c == 0 ? 0 : Math.round(10000 * p / c / 100)) + "%";
-}
-// =================================================================== MOUSE+
-// ## CHECK_ALL_SUBSCRIPTIONS ##
-// ==========================================================================
-j2setting("CHECK_ALL_SUBSCRIPTIONS", true, true, "adds a “check all” checkbox on subscriptions pages (MBS-3629)");
-if (j2sets.CHECK_ALL_SUBSCRIPTIONS && self.location.href.match(new RegExp("^" + MBS + "/user/[^/]+/subscriptions/.+$"))) {
-	var cbs = document.querySelectorAll("div#page > form > table.tbl > tbody > tr > td > input[type='checkbox']");
-	var ths = document.querySelector("div#page > form > table.tbl > thead > tr > th");
-	if (ths && !ths.hasChildNodes() && cbs && cbs.length > 0) {
-		debug("CHECK_ALL_SUBSCRIPTIONS");
-		ths.appendChild(createTag("input", {a: {type: "checkbox"}, e: {click: function(event) {
-			for (let icb = 0; icb < cbs.length; icb++) {
-				if (cbs[icb].checked != this.checked) {
-					cbs[icb].click();
-				}
-			}
-		}}}));
-	}
 }
 // =============================================================== KEYBOARD+
 // ## EASY_DATE ## basic paste-a-date!-like (https://web.archive.org/web/20131112023543/userscripts.org/scripts/show/121217)
