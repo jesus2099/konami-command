@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         odigo routing. TURBO BOOST
-// @version      2023.4.22
-// @description  ENABLE CELL TEXT SELECTION: click to select, middle-click to copy; SHOW CELL CROPPED TEXT; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE; SPOT UNWANTED SPACES
+// @version      2023.9.21
+// @description  ENABLE CELL TEXT SELECTION: click to select, middle-click to copy; SHOW CELL CROPPED TEXT TOOLTIPS; LINKIFY MENU ITEMS: to allow open in other tab; DOUBLE CLICK ROW TO VIEW ITEM: with Ctrl key for new background tab, with Shift key for new foreground tab, with Alt key to edit instead of view; PENCIL AND EYE ICONS: Ctrl + click for new background tab, middle-click for new background tab, Shift + click for new foreground tab; EDIT/VIEW PAGE TOGGLE; SPOT UNWANTED SPACES
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-routing_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/odigo-routing_TURBO-BOOST.user.js
@@ -127,8 +127,6 @@ document.body.addEventListener("mouseover", function(event) {
 		css.insertRule(".x-tip { background-color: " + lightBgColour + "; }", 0);
 	}
 });
-// expand cell to show text only on click
-css.insertRule("tbody td:active div[unselectable='on'] { white-space: unset; word-break: break-all; }", 0);
 
 // Double-click row to view (+Alt to edit) à la Mandora
 document.body.addEventListener("dblclick", function(event) {
