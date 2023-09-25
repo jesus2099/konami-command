@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2023.9.9
+// @version      2023.9.25
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/issues/488
@@ -569,8 +569,6 @@ var whitelistSearchLinks = {
 				MusicMoz: "//musicmoz.org/search/search.cgi?search=%entity-name%",
 				"Dynamic Range DB": "//dr.loudness-war.info/?artist=%release-artist-credit%&album=%release-name%",
 				GnuDb: [
-					"//gnudb.org/album/%release-group-name%",
-					"//gnudb.org/album/%release-name%",
 					"//gnudb.org/artist/%artist-name%",
 					"//gnudb.org/search/%release-artist-credit%+%release-name%",
 					"//gnudb.org/search/%release-group-artist-credit%+%release-group-name%",
