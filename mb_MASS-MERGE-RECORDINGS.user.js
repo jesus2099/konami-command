@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2023.5.7
+// @version      2023.9.25
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -45,7 +45,7 @@ var mergeQueue = []; // contains next mergeButts
 var sregex_MBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var regex_MBID = new RegExp(sregex_MBID, "i");
 var css_track = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
-var css_track_ac = "td:not([class])";
+var css_track_ac = "td:not(.pos):not(.title):not(.rating):not(treleases)";
 var css_collapsed_medium = "div#content table.tbl.medium > thead > tr > th > a.expand-medium > span.expand-triangle";
 var sregex_title = ".+?[„“«‘] ?(.+) ?[“”»’] \\S+ (.+?) - MusicBrainz";
 var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
@@ -692,7 +692,7 @@ function loadReleasePage() {
 							var current_track = {
 								number: current_medium + trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
 								name: HTMLToText(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
-								artistCredit: trackRows[t].match(/<td>/g) && trackRows[t].match(/<td>/g).length === 1 ? trackRows[t].match(/[\s\S]*<td>([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : releaseAC[1],
+								artistCredit: trackRows[t].match(/<td class="wrap-anywhere">/g) && trackRows[t].match(/<td class="wrap-anywhere">/g).length === 1 ? trackRows[t].match(/[\s\S]*<td class="wrap-anywhere">([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : releaseAC[1],
 								length: trackLength,
 								recording: {
 									rowid: recIDs[t],
