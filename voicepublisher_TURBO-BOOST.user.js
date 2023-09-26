@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
 // @version      2023.7.21
-// @description  Work-around 1 bug; Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes
+// @description  Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -31,19 +31,16 @@ var texts = {
 		application_codes: "Application Codes",
 		copy: "Copy",
 		download: "Download ",
-		call_history_crash_bug: userjs.name + " fix to call History change app crash bug",
 	},
 	fr: {
 		application_codes: "Codes d’application",
 		copy: "Copier",
 		download: "Télécharger ",
-		call_history_crash_bug: userjs.name + " contourne le plantage du changement d’application dans le Call History",
 	}
 }[typeof I18n != "undefined" ? I18n.lang : "en"];
 
 // Handle normal browsing page loads
 scroll_active_folder_into_view();
-workaround_cookie_overflow_bug();
 make_versions_clickable();
 download_audio_folders();
 call_details_improvements();
@@ -59,7 +56,6 @@ show_script_is_running();
 				if (mutations[m].addedNodes[a].matches("body")) {
 					// body removed and re-added
 					scroll_active_folder_into_view();
-					workaround_cookie_overflow_bug();
 					make_versions_clickable();
 					download_audio_folders();
 					call_details_improvements();
@@ -92,47 +88,6 @@ function scroll_active_folder_into_view() {
 		userjs.css.insertRule("div.sidebar-content-body > ul > li.active > a { background-color: #fcf; }", 0);
 		active_folder.setAttribute("title", userjs.name + " scrolled this active folder into view");
 		active_folder.scrollIntoView();
-	}
-}
-
-
-// ticket 110349 workaround --------------------------------------------
-// Work-around “Call History change app crash” aka “cookie overflow” bug
-// ---------------------------------------------------------------------
-function workaround_cookie_overflow_bug() {
-	if (location.pathname == "/calls") {
-		var selected_application = document.querySelector("#select2-chosen-1");
-		if (selected_application) {
-			// STEP 1: Save last clicked application, in case crash happens
-			// TODO: Since AJAX loading I now also need to save from and to dates
-			self.addEventListener("beforeunload", function (event) {
-				localStorage.setItem(userjs.id + "_last_application", selected_application.textContent);
-			});
-			// STEP 3: Detect crash flag and handle post-crash
-			if (localStorage.getItem(userjs.id + "_call_history_crash") === "1") {
-				localStorage.removeItem(userjs.id + "_call_history_crash");
-				// TODO: Since AJAX loading I now also need to restore from and to dates
-				replaceChildren(document.createTextNode(localStorage.getItem(userjs.id + "_last_application")), selected_application);
-				userjs.css.insertRule("#select2-chosen-1[title] { background-color: #fcf; text-decoration: underline dotted; }", 0);
-				selected_application.setAttribute("title", texts.call_history_crash_bug);
-				(new MutationObserver(function(mutations, observer) {
-					if (mutations[0].target.hasAttribute("title")) {
-						mutations[0].target.removeAttribute("title");
-					}
-				})).observe(selected_application, {childList: true});
-			}
-		} else {
-			// STEP 2: Detect crash, flag and go back
-			if (
-				document.body.childNodes.length === 1
-				&& document.querySelectorAll("body > div.dialog > div > h1").length === 1
-				&& document.querySelectorAll("body > div.dialog > div + p").length === 1
-			) {
-				localStorage.setItem(userjs.id + "_call_history_crash", "1");
-				replaceChildren(createTag("h1", {s: {marginTop: "40px"}}, texts.call_history_crash_bug), document.body);
-				history.back();
-			}
-		}
 	}
 }
 
