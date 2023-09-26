@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.7.21
-// @description  Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes
+// @version      2023.9.26
+// @description  Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes; Show current page title in window/tab title
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -48,6 +48,7 @@ pagination_intuitive_scroll();
 // all_time_complete_months();
 go_to_application_codes();
 show_script_is_running();
+set_window_title();
 // Handle XHR style browsing :-/
 (new MutationObserver(function(mutations, observer) {
 	for (var m = 0; m < mutations.length; m++) {
@@ -62,6 +63,7 @@ show_script_is_running();
 					pagination_intuitive_scroll();
 					// all_time_complete_months();
 					go_to_application_codes();
+					set_window_title();
 				}
 			}
 		}
@@ -321,5 +323,19 @@ function go_to_application_codes() {
 		downloading();
 		waitForElement("div#pages_table_filter span.dataTable-filter-clear", function(clear_button) { clear_button.click(); });
 		waitForElement("tr[id^='voicexml_page_'] > td.actions > a[rel='edit']", function(edit_button) { location.replace(edit_button.getAttribute("href")); });
+	}
+}
+
+
+// -------------------------------------------
+// Show current page title in window/tab title
+// -------------------------------------------
+function set_window_title() {
+	var page_title = document.querySelector("#title-bar-element-bd > ul > li:last-of-type > a");
+	if (page_title) {
+		var site = page_title.parentNode.parentNode.querySelector("li > a[href^='/sites/']");
+		var version = page_title.parentNode.parentNode.querySelector("li > a[href^='/pages?svid=']");
+		var window_title = page_title.textContent + (site ? " (" + site.textContent + (version ? ": " + version.textContent : "") + ")" : "");
+		setTimeout(function() { document.title = window_title + " - " + document.title; }, 123);
 	}
 }
