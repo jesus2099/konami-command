@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.9.26
+// @version      2023.9.27
 // @description  Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes; Show current page title in window/tab title
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -331,11 +331,11 @@ function go_to_application_codes() {
 // Show current page title in window/tab title
 // -------------------------------------------
 function set_window_title() {
-	var page_title = document.querySelector("#title-bar-element-bd > ul > li:last-of-type > a");
+	var page_title = document.querySelector("ul.bdcrumbs > li:last-of-type > a");
 	if (page_title) {
 		var site = page_title.parentNode.parentNode.querySelector("li > a[href^='/sites/']");
 		var version = page_title.parentNode.parentNode.querySelector("li > a[href^='/pages?svid=']");
-		var window_title = page_title.textContent + (site ? " (" + site.textContent + (version ? ": " + version.textContent : "") + ")" : "");
+		var window_title = page_title.textContent + (site ? " - " + site.textContent + (version ? " “" + version.textContent + "”" : "") : "");
 		setTimeout(function() { document.title = window_title + " - " + document.title; }, 123);
 	}
 }
