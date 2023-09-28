@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           mb. HIDE RELEASE LABELS
 @namespace      https://github.com/jesus2099/konami-command
-@version        2023.9.28
+@version        2023.9.28.2306
 @description    Like the title says
 @author         jesus2099
 @since          2023-09-27
@@ -23,6 +23,12 @@
     #release-editor label[for^='label-'],
     #release-editor input[id^='label-'],
     #release-editor input[id^='label-'] + img.search {
+        display: none;
+    }
+}
+
+@-moz-document regexp("https?://(\w\.)?musicbrainz.org/recording/.+") {
+    #content table.tbl tr > *:nth-child(9) {
         display: none;
     }
 }
