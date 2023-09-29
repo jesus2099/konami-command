@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2023.6.8
+// @version      2023.9.29
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -97,7 +97,7 @@ if (cat) {
 				}
 			}
 		}
-		if (mainReleasePage) {
+		/* if (mainReleasePage) { // TODO: Feature hidden as long as it is not working (will not add any elements of releases already partially highlighted)
 			var lili = document.querySelector("div#sidebar > h2.collections ~ ul.links");
 			if (lili) {
 				var buttxt = " this release to your local collection highlighter,\nwithout changing its status among you MB collection(s)";
@@ -107,7 +107,7 @@ if (cat) {
 				lili.appendChild(document.createTextNode(" / "));
 				collectionUpdater(lili.appendChild(createA("OFF", self.location.href, "Remove" + buttxt.replace(" to ", " from "), true)), "remove");
 			}
-		}
+		} */
 	}
 	if (cat == "collections") {
 // ############################################################################
