@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2023.9.25
+// @version      2023.10.2
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/issues/488
@@ -949,7 +949,7 @@ function main() {
 					}
 				} else if (entityType === "release") {
 					let barcodeNode = document.querySelector("#sidebar .barcode");
-					if (barcodeNode) {
+					if (barcodeNode && barcodeNode.textContent.match(/^\d+$/)) {
 						tokenValues["%release-barcode%"] = barcodeNode.textContent;
 					}
 					let catnoNode = document.querySelector("#sidebar .catalog-number");
