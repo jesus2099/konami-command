@@ -81,22 +81,27 @@ var webSearchLinks = {
 	items: {
 		webPageSearch: {
 			title: {en: "Web pages", de: "Webseiten", fr: "Pages Web", nl: "Webpagina’s"},
-			target: "//duckduckgo.com/?q=%entity-name%"
-		},
-		webPageSearchPlusQuotes: {
-			title: {en: "Web pages (exact)", de: "Webseiten (genaue)", fr: "Pages Web (exacte)", nl: "Webpagina’s (exacten)"},
 			target: [
-				"//duckduckgo.com/?q=%2B%22%entity-name%%22",
-				"//duckduckgo.com/?q=%2B%22%url-target%%22"
+				"//duckduckgo.com/?q=%release-group-artist-credit%+%release-group-name%",
+				"//duckduckgo.com/?q=%release-artist-credit%+%release-name%",
+				"//duckduckgo.com/?q=%entity-name%"
 			]
 		},
 		imageSearch: {
 			title: {en: "Images", de: "Bilder", fr: "Images", nl: "Afbeeldingen"},
-			target: "//duckduckgo.com/?q=%entity-name%+!i"
+			target: [
+				"//duckduckgo.com/?q=%release-group-artist-credit%+%release-group-name%+!i",
+				"//duckduckgo.com/?q=%release-artist-credit%+%release-name%+!i",
+				"//duckduckgo.com/?q=%entity-name%+!i"
+			]
 		},
 		videoSearch: {
 			title: {en: "Videos", de: "Videos", fr: "Vidéos", nl: "Video’s"},
-			target: "//duckduckgo.com/?q=%entity-name%+!v"
+			target: [
+				"//duckduckgo.com/?q=%release-group-artist-credit%+%release-group-name%+!v",
+				"//duckduckgo.com/?q=%release-artist-credit%+%release-name%+!v",
+				"//duckduckgo.com/?q=%entity-name%+!v"
+			]
 		},
 		waybackMachineHistory: {
 			title: {en: "Archive history", de: "Archivgeschichte", fr: "Versions archivées", nl: "Archiefgeschiedenis"},
@@ -416,6 +421,8 @@ var whitelistSearchLinks = {
 						en: "Japan"
 					},
 					items: {
+						"Amazon JP (cat)": "//amazon.jp/s/?url=search-alias%3Dpopular&field-keywords=%release-catalogue-number%",
+						"Amazon JP (bars)": "//amazon.jp/s/?url=search-alias%3Dpopular&field-keywords=%release-barcode%",
 						VGMdb: [
 							"//vgmdb.net/search?type=artist&q=%artist-name%",
 							"//vgmdb.net/search?type=album&q=%release-group-name%",
@@ -677,6 +684,9 @@ var additionalSearchLinks = {
 						en: "Japan"
 					},
 					items: {
+						"CDJournal" : "//jesus2099.gitlab.io/forward-request.html?_accept-charset=EUC-JP&_action=//www.cdjournal.com/search/do/&k=%release-name%&target=cd",
+						"Joshin web (cat)": "//joshinweb.jp/cdshops/Dps?KEY=RECODE&FM=0&KEYWORD=%release-catalogue-number%",
+						"Joshin web (bars)": "//joshinweb.jp/dp/%release-barcode%.html",
 						"音楽の森（アーティスト・作家検索）": "//search.minc.or.jp/artist/list/?nm=%artist-name%",
 						"音楽の森（CD商品検索）": [
 							"//search.minc.or.jp/product/list/?tl=%release-group-name%&ta=%release-group-artist-credit%&type=search-form-title&match=2",
