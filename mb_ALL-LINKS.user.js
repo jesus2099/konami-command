@@ -686,7 +686,7 @@ var additionalSearchLinks = {
 					items: {
 						"CDJournal" : "//jesus2099.gitlab.io/forward-request.html?_accept-charset=EUC-JP&_action=//www.cdjournal.com/search/do/&k=%release-name%&target=cd",
 						"Joshin web (cat)": "//joshinweb.jp/cdshops/Dps?KEY=RECODE&FM=0&KEYWORD=%release-catalogue-number%",
-						"Joshin web (bars)": "//joshinweb.jp/dp/%release-barcode%.html",
+						"Joshin web (barcode)": "//joshinweb.jp/dp/%release-barcode%.html",
 						"音楽の森（アーティスト・作家検索）": "//search.minc.or.jp/artist/list/?nm=%artist-name%",
 						"音楽の森（CD商品検索）": [
 							"//search.minc.or.jp/product/list/?tl=%release-group-name%&ta=%release-group-artist-credit%&type=search-form-title&match=2",
@@ -980,8 +980,9 @@ function main() {
 			}
 			extlinks = sidebar.querySelector("h2.external-links + ul.external_links");
 			if (!extlinks) {
-				extlinks = addAfter(createTag("ul", {a: {class: "external_links"}}, createTag("li", {}, "No white‐listed links yet.")), sidebar.querySelector("div.sidebar-tags"));
-				addAfter(createTag("h2", {a: {class: "external-links"}}, "External links"), sidebar.querySelector("div.sidebar-tags"));
+				var previous = sidebar.querySelector("div.sidebar-tags") || sidebar.querySelector("p.lastupdate")
+				extlinks = addAfter(createTag("ul", {a: {class: "external_links"}}, createTag("li", {}, "No white‐listed links yet.")), previous);
+				addAfter(createTag("h2", {a: {class: "external-links"}}, "External links"), previous);
 			}
 			var editingBlock = sidebar.querySelector("h2.editing + ul.links");
 			if (editingBlock) {
@@ -1401,7 +1402,7 @@ function replaceAllTokens(string, encode) {
 		if (!Object.prototype.hasOwnProperty.call(tokenValues, token)) {
 			return false;
 		}
-		string = string.replace(token, encode ? encodeURIComponent(tokenValues[token]) : tokenValues[token]);
+		string = string.replace(token, encode && token != "%url-target%" ? encodeURIComponent(tokenValues[token]) : tokenValues[token]);
 	}
 	return string;
 }
