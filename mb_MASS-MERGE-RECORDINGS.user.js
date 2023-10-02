@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2023.9.25
+// @version      2023.10.2
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -45,7 +45,7 @@ var mergeQueue = []; // contains next mergeButts
 var sregex_MBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var regex_MBID = new RegExp(sregex_MBID, "i");
 var css_track = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
-var css_track_ac = "td:not(.pos):not(.title):not(.rating):not(treleases)";
+var css_track_ac = "td:not(.pos):not(.title):not(.rating):not(.treleases)";
 var css_collapsed_medium = "div#content table.tbl.medium > thead > tr > th > a.expand-medium > span.expand-triangle";
 var sregex_title = ".+?[„“«‘] ?(.+) ?[“”»’] \\S+ (.+?) - MusicBrainz";
 var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
