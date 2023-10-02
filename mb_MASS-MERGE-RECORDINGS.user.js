@@ -666,6 +666,9 @@ function loadReleasePage() {
 					if (remoteRelease.disc) {
 						mbidInfo.appendChild(createTag("fragment", null, [" (", createA(remoteRelease.disc.substr(1).replace(/\//, "\u00a0"), "/release/" + remoteRelease.id + remoteRelease.disc + "#" + remoteRelease.disc.replace(/\//g, "")),  "/" + discount + ")"]));
 					}
+					if (remoteRelease["release-group"] === localRelease["release-group"]) {
+						mbidInfo.appendChild(document.createTextNode(" (same release group)"));
+					}
 				}
 				remoteRelease.tracks = [];
 				for (var m = 0; m < mediums.length; m++) {
