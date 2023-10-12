@@ -48,6 +48,7 @@ j2css.insertRule("tr.rename-artist-credits." + userjs + "yes > th { vertical-ali
 j2css.insertRule("tr.rename-artist-credits." + userjs + "yes > td { color: #f00; font-weight: bolder; font-size: 2em; text-shadow: 1px 1px 0 #663; text-transform: uppercase; }", 0);
 j2css.insertRule("/*div#content >*/ form[action='/search/edits'] span." + userjs + "-permalink { background-color: #ffc; }", 0);
 j2css.insertRule("/*div#content >*/ form[action='/search/edits'] span." + userjs + "-permalink[data-gid=''] { font-style: italic; }", 0);
+j2css.insertRule("form[action='/edit/enter_votes'] div.voteopts > div.vote > label { user-select: none; }", 0);
 // Hide automod “Vote on all edits” feature, because POWER VOTE is better
 if (showtop || submitButtonOnTopToo) {
 	j2css.insertRule("div.overall-vote { display: none; }", 0);
@@ -345,7 +346,6 @@ if (editform) {
 		}
 		// Double click to vote single edits
 		var labinput = getParent(inputs[i], "label") || inputs[i];
-		preventDefault(labinput, "mousedown"); // TODO: replace with user-select: none or something like that
 		labinput.setAttribute("title", texts[lang].double_click_to_vote);
 		labinput.addEventListener("dblclick", function(event) {
 			var edit = this.closest("div.edit-list");
