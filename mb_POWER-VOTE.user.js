@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2023.8.22
+// @version      2023.10.13
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -150,8 +150,16 @@ if (
 		createTag("button", {a: {title: GM_info.script.name}, s: {background: "#fcf", cursor: "pointer"}, e: {click: function(event) {
 			search_form.parentNode.classList.remove(userjs + "-hide-form");
 			removeNode(event.target);
+			scroll_to_first_selected_options();
 		}, mouseover: function(event) { event.target.click(); }}}, texts[lang].show_form)
 	]));
+} else {
+	var visible_form_waiter = setInterval(function() {
+		if (!search_form.querySelector("span.field[style*='display: none']")) {
+			clearInterval(visible_form_waiter);
+			scroll_to_first_selected_options();
+		}
+	}, 234);
 }
 // Search form: Add permalinks to searched entities (all except recordings, because of MBS-12560)
 if (search_form) {
@@ -662,3 +670,18 @@ function updateXHRstat(nbr) {
 }
 function submitShiftKey(event) { submitShift = event[CONTROL_POMME.shift.key]; }
 function preventDefault(node, eventName) { node.addEventListener(eventName, function(event) { event.preventDefault(); }, false); }
+function scroll_to_first_selected_options() {
+	// Scroll multi select to make first selected option visible
+	var multiselects = search_form.querySelectorAll("select[multiple]");
+	for (var s = 0; s < multiselects.length; s++) {
+		var multiselect_size = multiselects[s].getAttribute("size");
+		if (multiselect_size < multiselects[s].options.length) {
+			var first_selected_option = multiselects[s].querySelector("option[selected]");
+			if (first_selected_option && first_selected_option.index >= multiselect_size) {
+				var original_scroll = {x: scrollX, y: scrollY};
+				first_selected_option.scrollIntoView({block: "center", behavior: "instant"});
+				scroll(original_scroll.x, original_scroll.y);
+			}
+		}
+	}
+}
