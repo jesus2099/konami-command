@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2023.4.10
-// @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽の森 / ongakunomori / music forest / minc / magic db and back to MB
+// @version      2023.10.13
+// @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽権利情報検索ナビ (ex-音楽の森 aka MINC and Music Forest) and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING.user.js
@@ -398,7 +398,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 						addAfter(document.createElement("sup"), sakuhin).appendChild(mincSearch("title", workName, "MF")).style.setProperty("text-decoration", "underline");
 						addAfter(document.createTextNode(" "), sakuhin);
 				/* -- vv ------ sakuhin code links ------ vv -- */
-						sakuhinCode.node = replaceChildren(createA(sakuhinCode.value, workLookupURL("minc", "code", sakuhinCode.value), "This work in 音楽の森 music FOREST"), sakuhinCode.node);
+						sakuhinCode.node = replaceChildren(createA(sakuhinCode.value, workLookupURL("minc", "code", sakuhinCode.value), "This work in MINC"), sakuhinCode.node);
 				/* -- vv ------ iswc links ------ vv -- */
 						if (iswc) {
 							replaceElement(createA(iswc.value, workLookupURL("mb", "iswc", iswc.value), "Search this ISWC in MusicBrainz"), iswc.node);
@@ -469,12 +469,12 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			if (getExtLinks()) {
 				/* -- vv ------ JASRAC + ongakunomori sakuhin code link ------ vv -- */
 				// var codes = new RegExp(reAnnotCode, "ig")
-				setInterval(function() {
-					// React hydrate in work attributes requires such daemon
-					// retrieve collapsed JASRAC codes (when there are too many work attributes)
-					var attributes = document.querySelector("h2.work-attributes + script[type='application/json']");
-					if (attributes && attributes.textContent) {
-						attributes = JSON.parse(attributes.textContent).attributes;
+				var attributes = document.querySelector("h2.work-attributes + script[type='application/json']");
+				if (attributes && attributes.textContent) {
+					attributes = JSON.parse(attributes.textContent).attributes;
+					setInterval(function() {
+						// React hydrate in work attributes requires such daemon
+						// retrieve collapsed JASRAC codes (when there are too many work attributes)
 						var attributeList = document.querySelector("div#sidebar dl.work-attributes");
 						var codes = [];
 						for (var a = 0; a < attributes.length; a++) {
@@ -502,19 +502,25 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 								}
 							}
 						}
-					}
-					var jasracIDs = document.querySelectorAll("div#sidebar dl.work-attributes > dd.work-attribute-jasrac-id:not(." + userjs.id + ")");
-					for (let i = 0; i < jasracIDs.length; i++) {
-						var ddcode = jasracIDs[i].textContent.trim();
-						replaceElement(createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, ddcode), jasracIDs[i].firstChild);
-						if (!getExtLinks().querySelector("li." + userjs.id + "jasrac[ref='" + ddcode + "']")) {
-							// add only one set of searches per JASRAC work code
-							getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "jasrac no-favicon", ref: ddcode}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, "JASRAC — " + ddcode)));
-							getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "minc no-favicon"}, ref: ddcode}, createTag("a", {a: {href: workLookupURL("minc", "code", ddcode)}, s: {background: background}}, "音楽の森 — " + ddcode)));
+						var jasracIDs = document.querySelectorAll("div#sidebar dl.work-attributes > dd.work-attribute-jasrac-id:not(." + userjs.id + ")");
+						for (let i = 0; i < jasracIDs.length; i++) {
+							var ddcode = jasracIDs[i].textContent.trim();
+							replaceElement(createTag("a", {a: {href: workLookupURL("jasrac", "code", ddcode)}, s: {background: background}}, ddcode), jasracIDs[i].firstChild);
+							jasracIDs[i].classList.add(userjs.id);
 						}
-						jasracIDs[i].classList.add(userjs.id);
+					}, 1000);
+					for (var a = 0; a < attributes.length; a++) {
+						switch (attributes[a].typeID) {
+							case 3:
+								getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "jasrac no-favicon", ref: attributes[a].value}}, createTag("a", {a: {href: workLookupURL("jasrac", "code", attributes[a].value)}, s: {background: background}}, "JASRAC — " + attributes[a].value)));
+								getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "minc no-favicon"}, ref: attributes[a].value}, createTag("a", {a: {href: workLookupURL("minc", "code", attributes[a].value)}, s: {background: background}}, "MINC — " + attributes[a].value)));
+								break;
+							case 33:
+								getExtLinks().appendChild(createTag("li", {a: {class: userjs.id + "minc no-favicon"}, ref: attributes[a].value}, createTag("a", {a: {href: workLookupURL("minc", "NexTone", attributes[a].value)}, s: {background: background}}, "MINC — " + attributes[a].value)));
+								break;
+						}
 					}
-				}, 1000);
+				}
 				/* -- vv ------ JASRAC ISWC link ------ vv -- */
 				var iswcs = document.querySelectorAll("div#sidebar > dl.properties > dd.iswc > a[href*='/iswc/'] code");
 				for (let iswc = 0; iswc < iswcs.length; iswc++) {
@@ -968,12 +974,12 @@ function jasracSearch(type, query) {
 	}
 	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "IN_DEFAULT_SEARCH_WORKS_NAIGAI", value: "0"}}));
 	formJASRAC.appendChild(createTag("input", {a: {type: "hidden", name: "RESULT_CURRENT_PAGE", value: "1"}}));
-	formJASRAC.appendChild(createCoolSubmit("JASRAC — " + query));
+	formJASRAC.appendChild(createCoolSubmit("JASRAC — " + query)).setAttribute("title", formJASRAC.getAttribute("action") + "…");
 	return formJASRAC;
 }
 // form charset trick to allow query from MS932 JASRAC site (and any other sites) to utf-8 MINC site
 function mincSearch(type, query, label) {
-	var formMINC = createTag("form", {a: {action: "https://search.minc.or.jp/music/list/", method: "get", "accept-charset": "utf-8"}, s: {display: "inline", background: background}});
+	var formMINC = createTag("form", {a: {action: "https://www.minc.or.jp/music/list/", method: "get", "accept-charset": "utf-8"}, s: {display: "inline", background: background}});
 	switch (type) {
 		case "title":
 			if (!maybeJapanese(query)) {
@@ -985,7 +991,7 @@ function mincSearch(type, query, label) {
 			formMINC.appendChild(createTag("input", {a: {type: "hidden", name: "match", value: "1"}}));
 			break;
 	}
-	formMINC.appendChild(createCoolSubmit(label ? label : "音楽の森 — " + query));
+	formMINC.appendChild(createCoolSubmit(label ? label : "MINC — " + query)).setAttribute("title", formMINC.getAttribute("action") + "…");
 	return formMINC;
 }
 function removeLeadingArticle(title) {
@@ -1051,7 +1057,8 @@ function workLookupURL(db, type, q) {
 			break;
 		case "minc":
 			switch (type) {
-				case "code": return "https://search.minc.or.jp/music/list/?tr=%q%&type=search-form-sakuhin&match=1".replace(/%q%/, q);
+				case "code": return "https://www.minc.or.jp/music/list/?tr=%q%&type=search-form-sakuhin&match=1".replace(/%q%/, q);
+				case "NexTone": return "https://www.minc.or.jp/music/list/?tr=%q%&type=search-form-sakuhin&match=2".replace(/%q%/, q);
 			}
 			break;
 	}
