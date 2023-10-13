@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2023.10.2
+// @version      2023.10.13
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/issues/488
@@ -687,13 +687,13 @@ var additionalSearchLinks = {
 						"CDJournal" : "//jesus2099.gitlab.io/forward-request.html?_accept-charset=EUC-JP&_action=//www.cdjournal.com/search/do/&k=%release-name%&target=cd",
 						"Joshin web (cat)": "//joshinweb.jp/cdshops/Dps?KEY=RECODE&FM=0&KEYWORD=%release-catalogue-number%",
 						"Joshin web (barcode)": "//joshinweb.jp/dp/%release-barcode%.html",
-						"音楽の森（アーティスト・作家検索）": "//search.minc.or.jp/artist/list/?nm=%artist-name%",
-						"音楽の森（CD商品検索）": [
-							"//search.minc.or.jp/product/list/?tl=%release-group-name%&ta=%release-group-artist-credit%&type=search-form-title&match=2",
-							"//search.minc.or.jp/product/list/?tl=%release-name%&ta=%release-artist-credit%&type=search-form-title&match=2",
+						"MINC（アーティスト名・作家名）": "//www.minc.or.jp/artist/list/?nm=%artist-name%",
+						"MINC（CD商品タイトル）": [
+							"//www.minc.or.jp/product/list/?tl=%release-group-name%&ta=%release-group-artist-credit%&type=search-form-title&match=2",
+							"//www.minc.or.jp/product/list/?tl=%release-name%&ta=%release-artist-credit%&type=search-form-title&match=2",
 						],
 						// TODO: Add token replacement in link labels before using all catalogue numbers (here only the first catalogue number is used)
-						"音楽の森（CD商品検索：品番）": "//search.minc.or.jp/product/list/?dn=%release-catalogue-number%&type=search-form-diskno",
+						"MINC（品番/POS）": "//www.minc.or.jp/product/list/?dn=%release-catalogue-number%&type=search-form-diskno",
 					}
 				}
 			}
