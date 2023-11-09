@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         jira. TURBO BOOST
-// @version      2022.9.6
-// @description  Toggle/switch quick filters (Ctrl for native additive behaviour)
+// @version      2023.11.9
+// @description  Fast toggle/switch quick filters (Ctrl for native additive behaviour)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jira_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/jira_TURBO-BOOST.user.js
@@ -19,7 +19,8 @@ if (document.body.matches("body#jira")) {
 	document.head.appendChild(css);
 	css = css.sheet;
 	css.insertRule("div#content main#main dl[id^='js-'][id$='-quickfilters']:after { content: ' (click to switch / Ctrl to add) '; background-color: #ffc; }", 0);
-	css.insertRule("div#content main#main dl[id^='js-'][id$='-quickfilters']:hover { background-color: #fef; }", 0);
+	css.insertRule("div#content main#main dl[id^='js-'][id$='-quickfilters']:not([aria-expanded='true']):hover { height: initial; padding-right: initial !important; background-color: #fef; }", 0);
+	css.insertRule("div#content main#main dl[id^='js-'][id$='-quickfilters']:not([aria-expanded='true']):hover > dd.ghx-quickfilter-trigger { display: none; }", 0);
 	document.body.addEventListener("click", function(event) {
 		if (!event.ctrlKey && !event.shiftKey && event.target.matches("div#content main#main dl[id^='js-'][id$='-quickfilters'] > dd > a.js-quickfilter-button[data-filter-id].ghx-active")) {
 			var active_quick_filters = document.querySelectorAll("div#content main#main dl[id^='js-'][id$='-quickfilters'] > dd > a.js-quickfilter-button[data-filter-id].ghx-active");
