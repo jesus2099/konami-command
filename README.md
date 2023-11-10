@@ -1,4 +1,4 @@
-﻿
+
 ↑ ↑ ↓ ↓ ← → ← → B A
 ===================
 
@@ -87,6 +87,7 @@ the short [contributing guidelines](CONTRIBUTING.md).
 
 ※ Here are some links to help you find more MusicBrainz userscripts:
 
+- https://musicbrainz.org/doc/Guides/Userscripts
 - https://github.com/search?q=topic%3Amusicbrainz+topic%3Auserscripts
 - https://github.com/search?l=JavaScript&o=desc&q=%22%3D%3DUserScript%3D%3D%22+MusicBrainz&s=indexed&type=Code
 - https://gist.github.com/search?l=JavaScript&o=desc&q=%22%3D%3DUserScript%3D%3D%22+MusicBrainz&s=stars
@@ -98,4 +99,4 @@ the short [contributing guidelines](CONTRIBUTING.md).
 
 © [2007.7.18 – 2014.5](https://web.archive.org/web/20131108065418/userscripts.org/users/31010/scripts) jesus2099
 
-© [2014.5.23](https://github.com/jesus2099/konami-command/commit/31582dcb5d658e0bd273d2278ff26958bf1de0fa) – 2022 jesus2099
+© [2014.5.23](https://github.com/jesus2099/konami-command/commit/31582dcb5d658e0bd273d2278ff26958bf1de0fa) – 2023 jesus2099
