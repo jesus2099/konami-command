@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2023.10.13
+// @version      2023.11.15
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -33,7 +33,6 @@ j2css = j2css.sheet;
 var showtop = true;
 var showbottom = true;
 var border = "thin dashed red"; // leave "" for defaults
-var submitButtonOnTopToo = true;
 var onlySubmitTabIndexed = true; // hit tab after typed text or voted directly goes to a submit button
 var rangeclick = true; // multiple votes by clicking first vote then shift-clicking last radio in a range
 var collapseEdits = true;
@@ -50,7 +49,7 @@ j2css.insertRule("/*div#content >*/ form[action='/search/edits'] span." + userjs
 j2css.insertRule("/*div#content >*/ form[action='/search/edits'] span." + userjs + "-permalink[data-gid=''] { font-style: italic; }", 0);
 j2css.insertRule("form[action='/edit/enter_votes'] div.voteopts > div.vote > label { user-select: none; }", 0);
 // Hide automod “Vote on all edits” feature, because POWER VOTE is better
-if (showtop || submitButtonOnTopToo) {
+if (showtop) {
 	j2css.insertRule("div.overall-vote { display: none; }", 0);
 }
 // localisation
@@ -377,16 +376,12 @@ if (editform) {
 		for (var v = 0, votes = ["yes", "no", "abstain", "none"]; v < votes.length; v++) {
 			texts[lang][votes[v]] = radios[v].closest("label").textContent;
 		}
-		if (showtop) { showtop = editform.insertBefore(shortcutsRow(), editform.firstChild); }
+		if (showtop) { showtop = editform.insertBefore(shortcutsRow(), editform.firstChild.nextSibling); }
 		if (showbottom) { showbottom = editform.insertBefore(shortcutsRow(), editform.lastChild.previousSibling); }
 	}
 	submitButton = editform.querySelector("div.row > span.buttons > button");
 	submitButton.addEventListener("click", submitShiftKey, false);
 	submitButton.setAttribute("title", CONTROL_POMME.shift.label + "click for background voting of selected edits");
-	if (submitButtonOnTopToo) {
-		submitClone = editform.insertBefore(getParent(submitButton, "div", "row").cloneNode(true), editform.firstChild).querySelector("button[type='submit']");
-		submitClone.addEventListener("click", submitShiftKey, false);
-	}
 	// (mass) collapse edit toggles
 	if (collapseEdits) {
 		for (let ed = 0; ed < edit_list.length; ed++) {
