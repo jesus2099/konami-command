@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2023.8.30
+// @version      2023.11.29
 // @description  bitbucket.org, github.com, gitlab.com: Install links for userscripts and userstyles
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
@@ -29,12 +29,15 @@ var host = {
 	},
 	"github.com": {
 		css: {
-			files: ".js-details-container div[role='row'].js-navigation-item > div:nth-child(2) a[title$='%fileType%'].js-navigation-open",
-			icon: "div[role='row'].js-navigation-item > div:nth-child(1) > svg.octicon.octicon-file",
+			files: ".js-details-container div[role='row'].js-navigation-item > div:nth-child(2) a[title$='%fileType%'].js-navigation-open, "
+				+ "table[aria-labelledby='folders-and-files'] > tbody > tr > td > div.react-directory-filename-column a[href$='%fileType%'].Link--primary",
+			icon: "svg.octicon.octicon-file, "
+				+ "div.react-directory-filename-column > svg",
+			icon_parent: ".js-details-container div[role='row'].js-navigation-item, "
+				+ "table[aria-labelledby='folders-and-files'] > tbody > tr > td",
 			disable_for_touch: "div[role='row'].js-navigation-item > a[style*='opacity:0'].position-absolute",
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
-		common_parent_level: 3,
 	},
 	"gitlab.com": {
 		css: {
@@ -54,8 +57,8 @@ setInterval(function() {
 	for (var f = 0; f < host.files.length; f++) {
 		host.files[f].classList.add("j2installUserScript");
 		var parent = host.files[f];
-		if (host.common_parent_level) for (var p = 0; p < host.common_parent_level; p++) {
-			parent = parent.parentNode;
+		if (host.css.icon_parent) {
+			parent = parent.closest(host.css.icon_parent);
 		}
 		var icon = parent.querySelector(host.css.icon);
 		if (icon) {
