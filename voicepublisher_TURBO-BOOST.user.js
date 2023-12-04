@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.9.27
-// @description  Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes; Show current page title in window/tab title
+// @version      2023.12.3
+// @description  Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes; Show current page title in window/tab title; Copy welcome audio duration in Fetch
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -30,12 +30,18 @@ var texts = {
 	en: {
 		application_codes: "Application Codes",
 		copy: "Copy",
+		copy_duration: "Copy duration",
 		download: "Download ",
+		enter_to_submit: "Press Enter to submit",
+		no_changes: "No changes",
 	},
 	fr: {
 		application_codes: "Codes d’application",
 		copy: "Copier",
+		copy_duration: "Copier la durée",
 		download: "Télécharger ",
+		enter_to_submit: "Appuyez sur Entrée pour valider",
+		no_changes: "Aucun changement",
 	}
 }[typeof I18n != "undefined" ? I18n.lang : "en"];
 
@@ -49,6 +55,7 @@ pagination_intuitive_scroll();
 go_to_application_codes();
 show_script_is_running();
 set_window_title();
+copy_audio_duration();
 // Handle XHR style browsing :-/
 (new MutationObserver(function(mutations, observer) {
 	for (var m = 0; m < mutations.length; m++) {
@@ -64,6 +71,7 @@ set_window_title();
 					// all_time_complete_months();
 					go_to_application_codes();
 					set_window_title();
+					copy_audio_duration();
 				}
 			}
 		}
@@ -337,5 +345,51 @@ function set_window_title() {
 		var version = page_title.parentNode.parentNode.querySelector("li > a[href^='/pages?svid=']");
 		var window_title = page_title.textContent + (site ? " - " + site.textContent + (version ? " “" + version.textContent + "”" : "") : "");
 		setTimeout(function() { document.title = window_title + " - " + document.title; }, 123);
+	}
+}
+
+
+// --------------------------------------------------------------------
+// Copy welcome audio duration in Fetch Audio Minimum and Fetch Timeout
+// --------------------------------------------------------------------
+function copy_audio_duration() {
+	if (location.pathname.match(/^\/connector_pages\/\d+\/edit$/)) {
+		var page_name = document.querySelector("input#connector_page_name");
+		var connector_page_audio = document.querySelector(".connector_page_audio");
+		var audio_duration = document.querySelector(".connector_page_audio .audio-duration");
+		var fetch_audio_delay = document.querySelector("input#connector_page_audio_time_before");
+		var fetch_audio_minimum = document.querySelector("input#connector_page_audio_time_min");
+		var fetch_timeout = document.querySelector("input#connector_page_fetchtimeout");
+		if (
+			page_name && page_name.value.match(/^w_welcome_identification_..$/)
+			&& audio_duration && audio_duration.textContent.match(/(\d)+s/) && (audio_duration = parseInt(audio_duration.textContent.match(/(\d)+s/)[1]))
+			&& fetch_audio_delay
+			&& fetch_audio_minimum
+			&& fetch_timeout
+		) {
+			connector_page_audio.appendChild(createTag("a", {s: {background: "#ffc"}, e: {click: function(event) {
+				var changes = 0;
+				var new_value = 10;
+				if (parseInt(fetch_audio_delay.value) !== new_value) {
+					fetch_audio_delay.parentNode.insertBefore(createTag("span", {s: {background: "#ffc", textDecoration: "line-through"}}, fetch_audio_delay.value), fetch_audio_delay);
+					fetch_audio_delay.value = new_value;
+					changes += 1;
+				}
+				new_value = audio_duration * 1000;
+				if (parseInt(fetch_audio_minimum.value) !== new_value) {
+					fetch_audio_minimum.parentNode.insertBefore(createTag("span", {s: {background: "#ffc", textDecoration: "line-through"}}, fetch_audio_minimum.value), fetch_audio_minimum);
+					fetch_audio_minimum.value = new_value;
+					changes += 1;
+				}
+				new_value = parseInt(fetch_audio_minimum.value) + 4000;
+				if (parseInt(fetch_timeout.value) !== new_value) {
+					fetch_timeout.parentNode.insertBefore(createTag("span", {s: {background: "#ffc", textDecoration: "line-through"}}, fetch_timeout.value), fetch_timeout);
+					fetch_timeout.value = parseInt(fetch_audio_minimum.value) + 4000;
+					changes += 1;
+				}
+				fetch_timeout.focus();
+				fetch_timeout.parentNode.appendChild(createTag("div", {s: {background: "#ffc"}}, changes > 0 ? texts.enter_to_submit : texts.no_changes));
+			}}}, texts.copy_duration));
+		}
 	}
 }
