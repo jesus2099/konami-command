@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.12.3
+// @version      2023.12.4
 // @description  Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes; Show current page title in window/tab title; Copy welcome audio duration in Fetch
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -93,11 +93,16 @@ function show_script_is_running() {
 // Scroll active folder into view
 // ------------------------------
 function scroll_active_folder_into_view() {
-	var active_folder = document.querySelector("div.sidebar-content-body > ul > li.active");
+	var active_folder = document.querySelector("div.sidebar-content-body ul > li.active:not(.default)");
 	if (active_folder) {
-		userjs.css.insertRule("div.sidebar-content-body > ul > li.active > a { background-color: #fcf; }", 0);
+		userjs.css.insertRule("div.sidebar-content-body ul > li.active:not(.default) > a { background-color: #fcf; }", 0);
+		userjs.css.insertRule("div.sidebar-content-body ul > li.manageable.active:not(.default) > a { background-color: #ccc; }", 0);
+		userjs.css.insertRule("div.sidebar-content-body ul > li.tested.active:not(.default) > a { background-color: #ffc; }", 0);
+		userjs.css.insertRule("div.sidebar-content-body ul > li.published.active:not(.default) > a { background-color: #cfc; }", 0);
 		active_folder.setAttribute("title", userjs.name + " scrolled this active folder into view");
-		active_folder.scrollIntoView();
+		var sidebar_header_height = document.querySelector("div.sidebar-content-header");
+		sidebar_header_height = sidebar_header_height ? sidebar_header_height.offsetHeight : 0;
+		active_folder.closest("div.sidebar-content-body").scrollTo({top: active_folder.offsetTop - sidebar_header_height, behavior: "smooth"});
 	}
 }
 
