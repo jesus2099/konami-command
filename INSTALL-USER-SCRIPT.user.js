@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2023.11.29
+// @version      2023.12.5
 // @description  bitbucket.org, github.com, gitlab.com: Install links for userscripts and userstyles
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
@@ -70,7 +70,12 @@ setInterval(function() {
 			icon.parentNode.replaceChild(install_link, icon);
 			if (IS_TOUCH_SCREEN && host.css.disable_for_touch) {
 				// GitHub
-				parent.querySelector(host.css.disable_for_touch).style.setProperty("visibility", "hidden");
+				var disable_for_touch = parent.querySelector(host.css.disable_for_touch);
+				if (disable_for_touch) {
+					disable_for_touch.style.setProperty("visibility", "hidden");
+				} else {
+					console.log("disable_for_touch not needed");
+				}
 			}
 		}
 	}
