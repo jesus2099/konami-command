@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2023.10.13
+// @version      2023.12.10
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽権利情報検索ナビ (ex-音楽の森 aka MINC and Music Forest) and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -195,7 +195,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 	let sakuhinCode, sakuhin;
 	switch (pagecat) {
 		case "jasrac":
-			waitForElement("div.management a[href='#tab-00-01']", function() { // quick and dirty patch
+			waitForElement("#management-tabs", function() { // quick and dirty patch
 				var workName;
 				var iswc;
 				var summary = "";
@@ -404,14 +404,14 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 							replaceElement(createA(iswc.value, workLookupURL("mb", "iswc", iswc.value), "Search this ISWC in MusicBrainz"), iswc.node);
 						}
 				/* -- vv ------ Select music release rights, like CD, etc. ------ vv -- */
-						// try 複製 then any then fallback on 複製 even if red
+						// try 複製 then any then fallback on 複製 even if red, and some works like 000-0314-0 even have none
 						(
 							document.querySelector("div.management a[href^='#tab-00-']:not(.red)")
-							|| document.querySelector("div.management a[href^='#tab-99-']:not(.red)")
-							|| document.querySelector("div.management a[href^='#tab-00-']")
-						).click();
+							?? document.querySelector("div.management a[href^='#tab-99-']:not(.red)")
+							?? document.querySelector("div.management a[href^='#tab-00-']")
+						)?.click();
 				/* -- vv ------ Open performers section ------ vv -- */
-						document.querySelector("section[data-role='artist'] a.btn-acd.close").click();
+						document.querySelector("section[data-role='artist'] a.btn-acd.close")?.click();
 					}
 				}
 			}); // quick and dirty patch
