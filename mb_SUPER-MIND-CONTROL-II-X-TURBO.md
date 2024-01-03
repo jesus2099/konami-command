@@ -40,6 +40,7 @@ Content
   1. [LAST_SEEN_EDIT](#last_seen_edit)
   1. [RADIO_DOUBLE_CLICK_SUBMIT](#radio_double_click_submit) ← <del>[RADIO DOUBLE‐CLICK SUBMIT][USO-135557]</del>
   1. [RATINGS_ON_TOP](#ratings_on_top)
+  1. [RECORDING_LENGTH_COLUMN](#recording_length_column)
   1. [RELEASE_CLONER](#release_cloner)
   1. [ROW_HIGHLIGHTER](#row_highlighter)
   1. [SERVER_SWITCH](#server_switch) ← <del>[ngs/test/classic musicbrainz switcher][USO-103422]</del>
@@ -131,6 +132,15 @@ This leaves vote buttons out to [POWER VOTE][USO-57765] script.
 (default off)
 
 Show (5 stars) ratings at the top of the sidebar (below the image per default).
+
+
+### RECORDING_LENGTH_COLUMN
+
+Displays Recording Length in milliseconds in following pages:
+
+- Artist Relationships
+- Place Performances
+- Work (similar to Loujine’s script)
 
 
 ### RELEASE_CLONER
