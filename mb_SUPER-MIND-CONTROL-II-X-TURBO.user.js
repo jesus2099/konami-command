@@ -1504,7 +1504,10 @@ if (enttype) {
 					if (recordingLengthFound || releaseEventFound) {
 						// column headers
 						if (recordingLengthFound) {
-							relationshipTable.querySelector("thead > tr").appendChild(createTag("th", {a: {title: userjs.name, class: "treleases"}, s: {textShadow: "0 0 2px yellow"}}, "Length"));
+						 	var length_header = relationshipTable.querySelector("thead > tr").lastChild;
+						 	length_header.style.setProperty("text-shadow", "0 0 2px yellow");
+						 	length_header.classList.add("treleases");
+						 	length_header.setAttribute("title", userjs.name);
 						}
 						if (releaseEventFound) {
 							relationshipTable.querySelector("thead > tr").insertBefore(createTag("th", {a: {title: userjs.name, class: userjs.id + "releaseEvents"}, s: {textShadow: "0 0 2px yellow"}}, "Release events"), relationshipTable.querySelector("thead > tr > th:nth-child(2)"));
@@ -1513,12 +1516,6 @@ if (enttype) {
 						for (let r = 0; r < rows.length; r++) {
 							if (rows[r].classList.contains("subh")) {
 								// sub title row
-								if (recordingLengthFound) {
-									var lastHeader = rows[r].querySelector("tr.subh > th + th[colspan]");
-									if (lastHeader) {
-										lastHeader.setAttribute("colspan", parseInt(lastHeader.getAttribute("colspan"), 10) + 1);
-									}
-								}
 								if (releaseEventFound) {
 									var secondHeader = rows[r].querySelector("tr.subh > th:nth-child(2)");
 									if (secondHeader) {
@@ -1528,12 +1525,14 @@ if (enttype) {
 							} else {
 								// normal data row
 								if (recordingLengthFound) {
-									let newCell = createTag("td", {a: {class: "treleases"}, s: {textAlign: "right"}});
+									var length_cell = rows[r].lastChild
+									length_cell.style.setProperty("text-align", "right");
+									length_cell.classList.add("treleases");
+									length_cell.setAttribute("title", userjs.name);
 									var recordingID = rows[r].querySelector("a[href*='/recording/']");
 									if (recordingID && (recordingID = recordingID.getAttribute("href").match(re_GUID)[0])) {
-										newCell.appendChild(document.createTextNode(recordingLengths[recordingID] ? time(recordingLengths[recordingID]) : "?:??"));
+										replaceChildren(document.createTextNode(recordingLengths[recordingID] ? time(recordingLengths[recordingID]) : "?:??"), length_cell);
 									}
-									rows[r].appendChild(newCell);
 								}
 								if (releaseEventFound) {
 									var secondCell = rows[r].querySelector("tr:not(.subh) > td:nth-child(2)");
