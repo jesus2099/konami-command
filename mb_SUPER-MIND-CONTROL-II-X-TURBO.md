@@ -42,6 +42,7 @@ Content
   1. [RATINGS_ON_TOP](#ratings_on_top)
   1. [RECORDING_LENGTH_COLUMN](#recording_length_column)
   1. [RELEASE_CLONER](#release_cloner)
+  1. [RELEASE_EVENT_COLUMN](#release_event_column)
   1. [ROW_HIGHLIGHTER](#row_highlighter)
   1. [SERVER_SWITCH](#server_switch) ← <del>[ngs/test/classic musicbrainz switcher][USO-103422]</del>
   1. [SLOW_DOWN_RETRY](#slow_down_retry)
@@ -148,6 +149,11 @@ Displays Recording Length in milliseconds in following pages:
 Clone (copy/paste) release(s): open Musicbrainz **Editing** menu to find this
 **duplication tool** (there’s also a huge workaround to [MBS-6549] that I must
 remember to remove when this ticket is fixed).
+
+
+### RELEASE_EVENT_COLUMN
+
+Displays release dates in label relationships page. https://github.com/jesus2099/konami-command/issues/132
 
 
 ### ROW_HIGHLIGHTER
