@@ -1530,8 +1530,8 @@ if (enttype) {
 								if (recordingLengthFound) {
 									let newCell = createTag("td", {a: {class: "treleases"}, s: {textAlign: "right"}});
 									var recordingID = rows[r].querySelector("a[href*='/recording/']");
-									if (recordingID && (recordingID = recordingID.getAttribute("href").match(re_GUID)[0]) && recordingLengths[recordingID]) {
-										newCell.appendChild(document.createTextNode(time(recordingLengths[recordingID])));
+									if (recordingID && (recordingID = recordingID.getAttribute("href").match(re_GUID)[0])) {
+										newCell.appendChild(document.createTextNode(recordingLengths[recordingID] ? time(recordingLengths[recordingID]) : "?:??"));
 									}
 									rows[r].appendChild(newCell);
 								}
