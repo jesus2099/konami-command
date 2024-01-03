@@ -1,9 +1,7 @@
 mb. SUPER MIND CONTROL Ⅱ X TURBO
 ================================
 
-Some [musicbrainz.org](https://musicbrainz.org) power‐ups (beta too).
-
-:gem: updated [**TAG_TOOLS**](#tag_tools) suppert !
+Some [MusicBrainz.org](https://musicbrainz.org) power‐ups (beta too).
 
 - **Install** from [GitHub]
 - [Change logs]
@@ -15,15 +13,16 @@ Requirements
 
 This user script requires one of these browsers:
 
-- [Firefox] on Linux and Windows as well as Android (FF version 68) (**my choice**)
-- [Vivaldi] (**my other choice**)
+- [Vivaldi] (**my choice**)
+- [Kiwi] on Android (**my choice**)
+- [Firefox]
 - [Chromium] or [Chrome]
 
 In which you need one of these add-ons/extensions, to install and run:
 
-- [Greasemonkey] (**the pioneer**)
-- [Tampermonkey]
 - [Violentmonkey] (**my choice**)
+- [Greasemonkey] (**the pioneer**)
+- [Tampermonkey] (**not** open source)
 
 
 Content
@@ -32,24 +31,25 @@ Content
 1. [Requirements](#requirements)
 1. [Installation](#installation)
 1. [Settings](#settings)
-  1. [RELEASE_CLONER](#release_cloner)
-  1. [RADIO_DOUBLE_CLICK_SUBMIT](#radio_double_click_submit) ← <del>[RADIO DOUBLE‐CLICK SUBMIT][USO-135557]</del>
+  1. [CENTER_FLAGS](#center_flags)
   1. [CONTROL_ENTER_SUBMIT](#control_enter_submit)
-  1. [TRACKLIST_TOOLS](#tracklist_tools) ← <del>ex‐TRACK_LENGTH_PARSER + fixed [search→replace][GIST-8580947]</del>
-  1. [LAST_SEEN_EDIT](#last_seen_edit)
   1. [COOL_SEARCH_LINKS](#cool_search_links)
   1. [COPY_TOC](#copy_toc) ← <del>[re‐lookup DiscID][USO-104480]</del>
-  1. [SERVER_SWITCH](#server_switch) ← <del>[ngs/test/classic musicbrainz switcher][USO-103422]</del>
-  1. [TAG_TOOLS](#tag_tools)
-  1. [USER_STATS](#user_stats)
   1. [EASY_DATE](#easy_date) ← [Kejo feature request][USO-193018], very basic [paste‐a‐date!][USO-121217]‐like ([MBS-1197])
-  1. [ROW_HIGHLIGHTER](#row_highlighter)
-  1. [STATIC_MENU](#static_menu) ← <del>STATIC MENU</del>
-  1. [SLOW_DOWN_RETRY](#slow_down_retry)
-  1. [CENTER_FLAGS](#center_flags)
-  1. [RATINGS_ON_TOP](#ratings_on_top)
-  1. [SPOT_AC, SPOT_CAA and WARN_NEW_WINDOW](#spot_ac-spot_caa-and-warn_new_window)
   1. [HIDE_RATINGS](#hide_ratings)
+  1. [LAST_SEEN_EDIT](#last_seen_edit)
+  1. [RADIO_DOUBLE_CLICK_SUBMIT](#radio_double_click_submit) ← <del>[RADIO DOUBLE‐CLICK SUBMIT][USO-135557]</del>
+  1. [RATINGS_ON_TOP](#ratings_on_top)
+  1. [RELEASE_CLONER](#release_cloner)
+  1. [ROW_HIGHLIGHTER](#row_highlighter)
+  1. [SERVER_SWITCH](#server_switch) ← <del>[ngs/test/classic musicbrainz switcher][USO-103422]</del>
+  1. [SLOW_DOWN_RETRY](#slow_down_retry)
+  1. [SPOT_AC, SPOT_CAA and WARN_NEW_WINDOW](#spot_ac-spot_caa-and-warn_new_window)
+  1. [STATIC_MENU](#static_menu) ← <del>STATIC MENU</del>
+  1. [TAG_TOOLS](#tag_tools)
+  1. [TRACKLIST_TOOLS](#tracklist_tools) ← <del>ex‐TRACK_LENGTH_PARSER + fixed [search→replace][GIST-8580947]</del>
+  1. [UNLINK_ENTITY_HEADER](#unlink_entity_header)
+  1. [USER_STATS](#user_stats)
 
 
 Settings
@@ -71,40 +71,14 @@ This is now world acclaimed ground breaking features
 ---
 
 
-### RELEASE_CLONER
+### CENTER_FLAGS
 
-Clone (copy/paste) release(s): open Musicbrainz **Editing** menu to find this
-**duplication tool** (there’s also a huge workaround to [MBS-6549] that I must
-remember to remove when this ticket is fixed).
-
-
-### RADIO_DOUBLE_CLICK_SUBMIT
-
-Submit forms when double clicking any of its radio buttons ([MBS-3229]).
-This leaves vote buttons out to [POWER VOTE][USO-57765] script.
+Vertically center flags (which are otherwise slightly mis‐centered).
 
 
 ### CONTROL_ENTER_SUBMIT
 
 Submits forms when you hit CTRL+ENTER in a text area.
-
-
-### TRACKLIST_TOOLS
-
-* **Search replace** text in tracklists.
-* Fed up of typing all track times by hands even if you have them as a text
-  somewhere? Me too. This is fixed with **Parse track lengths**.
-* (Mass) **remove recording relationships** and **Set selected works date**
-  in relationship editor.
-
-
-### LAST_SEEN_EDIT
-
-(default off)
-
-it shows you what edits you have already seen (reviewed) on entities
-edit histories, yeah man. only save states when looking at all edits
-(not only open) of entity.
 
 
 ### COOL_SEARCH_LINKS
@@ -121,30 +95,6 @@ link next to the CD TOC on a [Disc ID](https://musicbrainz.org/cdtoc/1ddfodmV5l
 page, so you can copy the Disc ID to another edition release.
 
 
-### SERVER_SWITCH
-
-You can switch between various MusicBrainz servers (you can edit the list
-of servers for mbsandbox.org).
-
-
-### TAG_TOOLS
-
-![three situations WOW][l0zO9nk]
-
-On tag page: Allows to jump from your (or other’s) tags and everyone’s
-tags and vice versa with only the magic of one click.
-
-On all pages (sidebar): Your own tags stand out and all of them are displayed
-(not only your first 5 tags).
-
-
-### USER_STATS
-
-[![Freso stats][KvC7dX6]](https://musicbrainz.org/user/Freso)
-
-Adds more stats and vote search links to user pages.
-
-
 ### EASY_DATE
 
 (default off)
@@ -154,15 +104,52 @@ Paste full dates (YYYY-MM-DD or D.M.YYYY) in that new YYY+ field and it will fil
 Press “c” key to copy current date into the other (begin→end or end→begin).
 
 
+### HIDE_RATINGS
+
+(default off)
+
+Hide those cute little stars and everything related to ratings in MB.
+
+
+### LAST_SEEN_EDIT
+
+(default off)
+
+it shows you what edits you have already seen (reviewed) on entities
+edit histories, yeah man. only save states when looking at all edits
+(not only open) of entity.
+
+
+### RADIO_DOUBLE_CLICK_SUBMIT
+
+Submit forms when double clicking any of its radio buttons ([MBS-3229]).
+This leaves vote buttons out to [POWER VOTE][USO-57765] script.
+
+
+### RATINGS_ON_TOP
+
+(default off)
+
+Show (5 stars) ratings at the top of the sidebar (below the image per default).
+
+
+### RELEASE_CLONER
+
+Clone (copy/paste) release(s): open Musicbrainz **Editing** menu to find this
+**duplication tool** (there’s also a huge workaround to [MBS-6549] that I must
+remember to remove when this ticket is fixed).
+
+
 ### ROW_HIGHLIGHTER
 
 Evolution of brianfreud’s [MusicBrainz row highlighter][USO-118008].
 Now also works in details lists and dynamically added content.
 
 
-### STATIC_MENU
+### SERVER_SWITCH
 
-Makes the main MB menu always visible (and can be clicked to scroll to top).
+You can switch between various MusicBrainz servers (you can edit the list
+of servers for mbsandbox.org).
 
 
 ### SLOW_DOWN_RETRY
@@ -176,28 +163,34 @@ There is now a frequent `read timeout` search error.
 This module will retry those as well (and obviously faster than above case).
 
 
-### CENTER_FLAGS
-
-Vertically center flags (which are otherwise slightly mis‐centered).
-
-
-### RATINGS_ON_TOP
-
-(default off)
-
-Show (5 stars) ratings at the top of the sidebar (below the image per default).
-
-
 ### SPOT_AC, SPOT_CAA and WARN_NEW_WINDOW
 
 Various user CSS (cf. settings for description).
 
 
-### HIDE_RATINGS
+### STATIC_MENU
 
-(default off)
+Makes the main MB menu always visible (and can be clicked to scroll to top).
 
-Hide those cute little stars and everything related to ratings in MB.
+
+### TAG_TOOLS
+
+![three situations WOW][l0zO9nk]
+
+On tag page: Allows to jump from your (or other’s) tags and everyone’s
+tags and vice versa with only the magic of one click.
+
+On all pages (sidebar): Your own tags stand out and all of them are displayed
+(not only your first 5 tags).
+
+
+### TRACKLIST_TOOLS
+
+* **Search replace** text in tracklists.
+* Fed up of typing all track times by hands even if you have them as a text
+  somewhere? Me too. This is fixed with **Parse track lengths**.
+* (Mass) **remove recording relationships** and **Set selected works date**
+  in relationship editor.
 
 
 ### UNLINK_ENTITY_HEADER
@@ -205,6 +198,14 @@ Hide those cute little stars and everything related to ratings in MB.
 (default off)
 
 Remove links from page headers (for easier mouse select and copy).
+
+
+### USER_STATS
+
+[![Freso stats][KvC7dX6]](https://musicbrainz.org/user/Freso)
+
+Adds more stats and vote search links to user pages.
+
 
 ---
 
@@ -229,6 +230,7 @@ to the :trophy: **OMFG GOLDEN WORLD CHOMPIONSHIP BLACK BELT AWARD 2011**
 [chromium]: https://download-chromium.appspot.com
 [firefox]: https://mozilla.org/firefox
 [greasemonkey]: https://www.greasespot.net
+[kiwi]: https://kiwibrowser.com
 [tampermonkey]: https://github.com/Tampermonkey/tampermonkey
 [violentmonkey]: https://github.com/violentmonkey/violentmonkey
 [vivaldi]: https://vivaldi.com
