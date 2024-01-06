@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2023.3.3
+// @version      2024.1.6
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -85,7 +85,8 @@ function init(edit_notes) {
 		});
 	} else { notetext = false; }
 	submitbtn = content.querySelector(mb ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
-	if (re) submitbtn = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
+	if (submitbtn === null && re) submitbtn = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
+	if (submitbtn === null && location.href.match(/edit-relationships$/)) submitbtn = document.querySelector("div#content.rel-editor form > div.row.no-label.buttons > button.submit.positive[type='submit']");
 	if (notetext) {
 		if (mb) {
 			var carcan = getParent(notetext, "div", "half-width");
@@ -133,13 +134,11 @@ function init(edit_notes) {
 			set_react_value(notetext, lastnotetext);
 		}
 	}
-	if (self.location.href.match(/edit-relationships$/)) {
-		var sub = document.querySelector("div#content.rel-editor > form > div.row.no-label.buttons > button.submit.positive[type='submit']");
-		if (sub) {
-			sub.addEventListener("click", saveNote, false);
-		}
-	} else if (re) {
+	if (submitbtn !== null) {
 		submitbtn.addEventListener("click", saveNote, false);
+		submitbtn.insertBefore(document.createTextNode("🐘 "), submitbtn.firstChild);
+	} else if (!editsearchpage) {
+		alert("Error: ELEPHANT did not find submit button and cannot save edit note.");
 	}
 }
 function saveNote() {
