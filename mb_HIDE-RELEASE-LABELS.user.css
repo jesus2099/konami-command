@@ -1,34 +1,34 @@
 /* ==UserStyle==
 @name           mb. HIDE RELEASE LABELS
 @namespace      https://github.com/jesus2099/konami-command
-@version        2023.9.29
+@version        2024.1.6
 @description    Like the title says
 @author         jesus2099
 @since          2023-09-27
 ==/UserStyle== */
 
 @-moz-document regexp("https?://(\w\.)?musicbrainz.org/release-group/.+"), regexp("https?://(\w\.)?musicbrainz.org/(area|artist)/[^/]+/releases\b.*") {
-    #content table.tbl tr > *:nth-child(7) {
+    #content table.tbl:not(:hover) tr > *:nth-child(7) {
         display: none;
     }
 }
 
 @-moz-document regexp("https?://(\w\.)?musicbrainz.org/search\?.*type=release\b.*") {
-    #content table.tbl tr > *:nth-child(6) {
+    #content table.tbl:not(:hover) tr > *:nth-child(6) {
         display: none;
     }
 }
 
 @-moz-document regexp("https?://(\w\.)?musicbrainz.org/release/[^/]+/edit"), regexp("https?://(\w\.)?musicbrainz.org/release/add.*") {
-    #release-editor label[for^='label-'],
-    #release-editor input[id^='label-'],
-    #release-editor input[id^='label-'] + img.search {
+    #release-editor fieldset:not([class]):not(:hover) label[for^='label-'],
+    #release-editor fieldset:not([class]):not(:hover) input[id^='label-'],
+    #release-editor fieldset:not([class]):not(:hover) input[id^='label-'] + img.search {
         display: none;
     }
 }
 
 @-moz-document regexp("https?://(\w\.)?musicbrainz.org/recording/.+") {
-    #content table.tbl tr > *:nth-child(9) {
+    #content table.tbl:not(:hover) tr > *:nth-child(9) {
         display: none;
     }
 }
@@ -44,8 +44,8 @@
         line-height: initial;
         text-indent: 0;
     }
-    #sidebar > h2.labels + ul.links > li a[href^='/label/'],
-    #sidebar > h2.labels + ul.links > li br {
+    #sidebar > h2.labels + ul.links > li:not(:hover) a[href^='/label/'],
+    #sidebar > h2.labels + ul.links > li:not(:hover) br {
         display: none;
     }
 }
