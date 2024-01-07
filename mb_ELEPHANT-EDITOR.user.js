@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2024.1.6
+// @version      2024.1.7.2359
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -138,7 +138,7 @@ function init(edit_notes) {
 		submitbtn.addEventListener("click", saveNote, false);
 		submitbtn.insertBefore(document.createTextNode("🐘 "), submitbtn.firstChild);
 	} else if (!editsearchpage) {
-		alert("Error: ELEPHANT did not find submit button and cannot save edit note.");
+		// alert("Error: ELEPHANT did not find submit button and cannot save edit note.");
 	}
 }
 function saveNote() {
