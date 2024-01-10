@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2023.10.15
+// @version      2024.1.10
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -56,13 +56,14 @@ const path_ID_separator = "::::";
 // - for release entity pages: %release-barcode%
 // - for url entity pages: %url-target% (while %entity-name% and %url-name% are deliberately ignored)
 const hiddenLinks = {
+	de: "Versteckte Links",
 	en: "Hidden links",
 	fr: "Liens cachés"
 };
 var webSearchLinks = {
 	title: {
 		en: "Search the web",
-		de: "Durchsuchen das Web",
+		de: "Web durchsuchen",
 		fr: "Chercher sur le Web",
 		nl: "Zoeken op het Web"
 	},
@@ -92,14 +93,14 @@ var webSearchLinks = {
 			]
 		},
 		waybackMachineHistory: {
-			title: {en: "Archive history", de: "Archivgeschichte", fr: "Versions archivées", nl: "Archiefgeschiedenis"},
+			title: {en: "Archive history", de: "Archivierte Versionen", fr: "Versions archivées", nl: "Archiefgeschiedenis"},
 			target: "//web.archive.org/web/*/%url-target%"
 		}
 	}
 };
 var whitelistSearchLinks = {
 	title: {
-		de: "Durchsuchen in die weiße Liste",
+		de: "Whitelist durchsuchen",
 		en: "Search in the whitelist",
 		fr: "Sites autorisés",
 		nl: "Zoeken in de witte lijst"
@@ -320,6 +321,7 @@ var whitelistSearchLinks = {
 				},
 				literature: {
 					title: {
+						de: "Literatur",
 						en: "Literature",
 						fr: "Littérature",
 						ja: "文学",
@@ -397,7 +399,7 @@ var whitelistSearchLinks = {
 		},
 		regionalDBs: {
 			title: {
-				de: "Pro Gebiet",
+				de: "Nach Gebiet",
 				en: "By area",
 				fr: "Par région",
 				nl: "Per Gebied"
@@ -523,6 +525,7 @@ var whitelistSearchLinks = {
 		},
 		socialNetworks: {
 			title: {
+				de: "Soziale Netzwerke",
 				fr: "Réseaux sociaux",
 				en: "Social networks"
 			},
@@ -630,7 +633,7 @@ var whitelistSearchLinks = {
 };
 var additionalSearchLinks = {
 	title: {
-		de: "Durchsuchen noch mehr",
+		de: "Weiter suchen",
 		en: "Search further",
 		fr: "Chercher plus loin",
 		nl: "Zoeken verder naar"
@@ -638,7 +641,7 @@ var additionalSearchLinks = {
 	items: {
 		regionalDBs: {
 			title: {
-				de: "Pro Gebiet",
+				de: "Nach Gebiet",
 				en: "By area",
 				fr: "Par région",
 				nl: "Per Gebied"
