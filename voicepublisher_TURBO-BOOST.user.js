@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2023.12.4
-// @description  Scroll active folder into view; Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes; Show current page title in window/tab title; Copy welcome audio duration in Fetch
+// @version      2024.1.19
+// @description  Scroll active folder into view; Collapse/expand all sites (ctrl+click); Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes; Show current page title in window/tab title; Copy welcome audio duration in Fetch
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/voicepublisher_TURBO-BOOST.user.js
@@ -47,6 +47,7 @@ var texts = {
 
 // Handle normal browsing page loads
 scroll_active_folder_into_view();
+collapse_expand_all_sites();
 make_versions_clickable();
 download_audio_folders();
 call_details_improvements();
@@ -64,6 +65,7 @@ copy_audio_duration();
 				if (mutations[m].addedNodes[a].matches("body")) {
 					// body removed and re-added
 					scroll_active_folder_into_view();
+					collapse_expand_all_sites();
 					make_versions_clickable();
 					download_audio_folders();
 					call_details_improvements();
@@ -106,6 +108,38 @@ function scroll_active_folder_into_view() {
 	}
 }
 
+
+// --------------------------------------------------
+// Collapse/expand all sites (ctrl+click)
+// Unfortunately it does not seem to always work well
+// Sometimes some sites remain closed
+// --------------------------------------------------
+
+function collapse_expand_all_sites() {
+	document.addEventListener("mousedown", function(event) {
+		if (event.ctrlKey && event.target.matches(".sidebar .sidebar-content-body > ul.sites > li.site > a.tree-item > span.expand")) {
+			var site_selector;
+			var old_class;
+			var new_class;
+			if (event.target.closest("li.site").classList.contains("open-site")) {
+				site_selector = ".open-site";
+				old_class = "open-site";
+				new_class = "closed-site";
+			} else {
+				site_selector = ":not(.open-site)";
+				old_class = "closed-site";
+				new_class = "open-site";
+			}
+			var all_same_state_sites = event.target.closest(".sidebar .sidebar-content-body > ul.sites").querySelectorAll("li.site" + site_selector);
+			for (var s = 0; s < all_same_state_sites.length; s++) {
+				if (all_same_state_sites[s] !== event.target.closest("li.site")) {
+					all_same_state_sites[s].classList.remove(old_class);
+					all_same_state_sites[s].classList.add(new_class);
+				}
+			}
+		}
+	});
+}
 
 // ----------------------------------------------------
 // Make versions clickable in Applications (sites) page
