@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.1.3
+// @version      2024.1.27
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1421,37 +1421,40 @@ if (enttype) {
 			}}}, [userjs.icon.cloneNode(false), " Remove recording relationships ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 			/* :::: MASS SET WORKS’ RECORDING DATES :::: */
 			j2superturbo.menu.addItem(createTag("a", {e: {click: function(event) {
-				var checkedRelationships = {
-					checkBoxes: document.querySelectorAll("#tracklist tr.track td.works div.ar input[type='checkbox']:checked")
-				};
-				for (let cb = 0; cb < checkedRelationships.checkBoxes.length; cb++) {
-					var recordingGid = getParent(checkedRelationships.checkBoxes[cb], "tr", "track").querySelector("td.recording a[href^='/recording/']").getAttribute("href").match(re_GUID)[0];
-					var workGid = getParent(checkedRelationships.checkBoxes[cb], "div", "ar").querySelector("a[href^='/work/']").getAttribute("href").match(re_GUID)[0];
-					checkedRelationships[recordingGid + "-" + workGid] = true;
-				}
-				if (checkedRelationships.checkBoxes.length > 0) {
+				var selected_recordings = MB.relationshipEditor.state.selectedRecordings;
+				if (selected_recordings.size > 0) {
 					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
 					if (date) {
 						if ((date = date.match(new RegExp(re_date.ISO + "(?:.+" + re_date.ISO + ")?")))) {
-							MB.relationshipEditor.UI.checkedWorks().forEach(function(work) {
-								work.relationships().forEach(function(relationship) {
-									if (
-										relationship.entityTypes == "recording-work"
-										&& checkedRelationships[relationship.entities.saved[0].gid + "-" + relationship.entities.saved[1].gid]
-									) {
-										relationship.begin_date.year(date[2]);
-										relationship.begin_date.month(date[3]);
-										relationship.begin_date.day(date[4]);
-										relationship.end_date.year(date[5] ? date[6] : date[2]);
-										relationship.end_date.month(date[5] ? date[7] : date[3]);
-										relationship.end_date.day(date[5] ? date[8] : date[4]);
-									}
-								});
-							});
+							set_recording_date(selected_recordings, date);
+							if (selected_recordings.left) browse_states(selected_recordings, "left", date);
+							if (selected_recordings.right) browse_states(selected_recordings, "right", date);
 						} else { alert("Wrong date format"); }
 					}
 				}
 			}}}, [userjs.icon.cloneNode(false), " Set selected works’ recording dates ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
+		}
+		function set_recording_date(recording_state, date) {
+			for (var r = 0; r < recording_state.value.relationships.length; r++) {
+				if (recording_state.value.relationships[r].linkTypeID == 278) {
+					recording_state.value.relationships[r].begin_date = {
+						year: date[2],
+						month: date[3],
+						day: date[4]
+					};
+					recording_state.value.relationships[r].end_date = {
+						year: date[5] ? date[6] : date[2],
+						month: date[5] ? date[7] : date[3],
+						day: date[5] ? date[8] : date[4]
+					};
+				}
+			}
+		}
+		function browse_states(recording_state, direction, date) {
+			set_recording_date(recording_state[direction], date);
+			if (recording_state[direction]) {
+				browse_states(recording_state[direction], direction, date);
+			}
 		}
 	}
 	// ================================================================ DISPLAY-
