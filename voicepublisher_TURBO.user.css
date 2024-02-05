@@ -1,8 +1,8 @@
 /* ==UserStyle==
 @name           voicepublisher. TURBO
 @namespace      https://github.com/jesus2099/konami-command
-@version        2023.5.11
-@description    Unhide input text fields and selects; Easy scroll Call Details; Keep reducer always on screen in Reports
+@version        2024.2.6
+@description    Unhide input text fields and selects; Easy scroll Call Details; Keep reducer always on screen in Reports; Handy version hover colours
 @author         jesus2099
 @since          2023-04-12
 ==/UserStyle== */
@@ -50,4 +50,13 @@
 		left: unset;
 	}
 
+    /* ------------------------
+    Handy version hover colours
+    ------------------------ */
+    div.sidebar .sidebar-content li.tested a:hover {
+        background-color: #fc6;
+    }
+    div.sidebar .sidebar-content li.published a:hover {
+        background-color: #cfc;
+    }
 }

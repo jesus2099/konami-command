@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         voicepublisher. TURBO BOOST
-// @version      2024.1.19
+// @version      2024.2.6
 // @description  Scroll active folder into view; Collapse/expand all sites (ctrl+click); Make versions clickable in Applications (sites) page; Download audio folders as named zip files; Call Details improvements; Pagination intuitive scroll; Shortcut to Application Codes; Show current page title in window/tab title; Copy welcome audio duration in Fetch
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/voicepublisher_TURBO-BOOST
@@ -99,7 +99,7 @@ function scroll_active_folder_into_view() {
 	if (active_folder) {
 		userjs.css.insertRule("div.sidebar-content-body ul > li.active:not(.default) > a { background-color: #fcf; }", 0);
 		userjs.css.insertRule("div.sidebar-content-body ul > li.manageable.active:not(.default) > a { background-color: #ccc; }", 0);
-		userjs.css.insertRule("div.sidebar-content-body ul > li.tested.active:not(.default) > a { background-color: #ffc; }", 0);
+		userjs.css.insertRule("div.sidebar-content-body ul > li.tested.active:not(.default) > a { background-color: #fc6; }", 0);
 		userjs.css.insertRule("div.sidebar-content-body ul > li.published.active:not(.default) > a { background-color: #cfc; }", 0);
 		active_folder.setAttribute("title", userjs.name + " scrolled this active folder into view");
 		var sidebar_header_height = document.querySelector("div.sidebar-content-header");
