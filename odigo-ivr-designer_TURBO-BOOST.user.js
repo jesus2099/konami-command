@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         odigo ivr designer. TURBO BOOST
-// @version      2023.9.10
+// @version      2024.2.13
 // @description  APPLICATION LIST: Focus search, Click to select row, Double-click to open application logs and versions, Show full release description and click for easy copy, Select first application and PROD, Select current version, Hide empty release user column, Show deploy status in tab title; APPLICATION: Focus search, Open List View tables by default, Auto stretch narrow tables and modals, Highlight modal table rows, Emphasise reset and upgrade buttons, Press Escape to close modals, Reveal secret JSON and copy to clipboard, Fix "replace by version" form, Prevent "Enter key crashes modals" bug
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/odigo-ivr-designer_TURBO-BOOST
@@ -22,8 +22,9 @@ var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
 css = css.sheet;
-var lightBgColour = "#fcf";
 var darkBgColour = "purple";
+var lightBgColour = "#fcf";
+var lighterBgColour = "#fef";
 
 // Show script badge and help tooltip
 css.insertRule("span.badge." + GM_info.script.author + " { background-color: " + lightBgColour + "; color: black; cursor: help; position: fixed; top: 3px; right: 3px; box-shadow: inset 1px 1px 3px " + darkBgColour + "; z-index: 1035; }", 0);
@@ -159,7 +160,7 @@ switch (self.location.pathname) {
 		css.insertRule("div#main-container div#modBuilder-form-table-table, div#main-container div#modBuilder-form-table-table div.wtHolder { height: fit-content !important; }", 0);
 
 		// Highlight modal table rows
-		css.insertRule("div#main-container div.modal-body table.htCore > tbody > tr:hover > td { background-color: " + lightBgColour + " !important; }", 0);
+		css.insertRule("div#main-container div.modal-body table.htCore > tbody > tr:hover > td { background-color: " + lighterBgColour + " !important; }", 0);
 
 		// Highlight most important item in filter selection
 		css.insertRule([
@@ -255,7 +256,8 @@ switch (self.location.pathname) {
 
 function select_row() {
 	// Custom highlight colour
-	css.insertRule(".table-hover > tbody > tr:hover > td, .table > tbody > tr > td.rowselect { background-color: " + lightBgColour + " !important; }", 0);
+	css.insertRule(".table-hover > tbody > tr:hover > td { background-color: " + lighterBgColour, 0);
+	css.insertRule(".table > tbody > tr > td.rowselect { background-color: " + lightBgColour + " !important; }", 0);
 	css.insertRule(".table > tbody > tr > td.rowselect > * { color: black; }", 0);
 
 	// Click to select row checkbox
