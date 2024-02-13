@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2022.9.26.1
+// @version      2024.2.13
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
@@ -221,7 +221,7 @@ function updateLink(obj, details) {
 				}
 			}
 			if (details.paginated) {
-				ul.appendChild(createTag("li", {}, ["And ", createTag("span", {a: {class: "mp"}}, (details.editCount - details.types.length) + " older edit" + (details.editCount == (details.types.length + 1) ? "" : "s")), "…"]));
+				ul.appendChild(createTag("li", {}, ["And ", createTag("a", {a: {class: "mp", href: obj.openedits.getAttribute("href") + "?page=2"}}, (details.editCount - details.types.length) + " older edit" + (details.editCount == (details.types.length + 1) ? "" : "s")), "…"]));
 			}
 			var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
 			if (titarray.length > 1) {
