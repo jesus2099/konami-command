@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2024.2.13
+// @version      2024.2.15
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
@@ -209,7 +209,7 @@ function updateLink(obj, details) {
 			var expanded = "▼";
 			var collapsed = "◀";
 			var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
-			var ul = createTag("ul", {a: {class: SCRIPT_KEY + "EditList"}, s: {display: expandEditLists ? "block" : "none", opacity: ".5"}});
+			var ul = createTag("ul", {a: {class: SCRIPT_KEY + "EditList"}, s: {display: expandEditLists ? "block" : "none", opacity: ".8"}});
 			for (var e = 0; e < titarray.length; e++) {
 				var edit1type2editor3count = titarray[e].match(/^(?:- )?([^(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
 				var editLi = ul.appendChild(createTag("li", {}, createTag("span", {a: {class: "mp"}}, edit1type2editor3count[1] + (edit1type2editor3count[3] ? " ×" + edit1type2editor3count[3] : ""))));
@@ -221,7 +221,7 @@ function updateLink(obj, details) {
 				}
 			}
 			if (details.paginated) {
-				ul.appendChild(createTag("li", {}, ["And ", createTag("a", {a: {class: "mp", href: obj.openedits.getAttribute("href") + "?page=2"}}, (details.editCount - details.types.length) + " older edit" + (details.editCount == (details.types.length + 1) ? "" : "s")), "…"]));
+				ul.appendChild(createTag("li", {}, ["And ", createTag("span", {a: {class: "mp"}}, createTag("a", {a: {href: obj.openedits.getAttribute("href") + "?page=2"}}, (details.editCount - details.types.length) + " older edit" + (details.editCount == (details.types.length + 1) ? "" : "s"))), "…"]));
 			}
 			var help = createTag("span", {a: {class: SCRIPT_KEY + "Help"}, s: {display: expandEditLists ? "inline" : "none"}});
 			if (titarray.length > 1) {
