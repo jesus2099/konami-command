@@ -43,6 +43,11 @@ if (bigpics) {
 		bigpics = false;
 	}
 }
+if (smallpics) {
+	if (location.pathname.match(/^\/search\/edits|(open_)?edits$/)) {
+		smallpics = false;
+	}
+}
 
 // Hide MBS-11059 release group CAA icon, once my linked and thumbnailed CAA icon is loading
 var css = document.createElement("style");
@@ -84,7 +89,7 @@ setTimeout(function() {
 				}
 				// SMALL PICS
 				// ----------
-				if (smallpics && !self.location.pathname.match(/(open_)?edits$/) && !self.location.pathname.match(/^\/search\/edits/)) {
+				if (smallpics) {
 					if (types[t] == "release-group") {
 						var CAALoader = new XMLHttpRequest();
 						CAALoader.addEventListener("load", function(event) {
