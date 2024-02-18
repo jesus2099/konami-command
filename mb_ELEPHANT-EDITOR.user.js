@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2024.1.7.2359
+// @version      2024.2.18
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -10,7 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-01-13; https://web.archive.org/web/20131103163403/userscripts.org/scripts/show/94629 / https://web.archive.org/web/20141011084017/userscripts-mirror.org/scripts/show/94629
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://github.com/jesus2099/konami-command/raw/0cbc1a2a5da75b123536b5451ed87f973c74a54a/lib/SUPER.js?version=2023.2.19
+// @require      https://github.com/jesus2099/konami-command/raw/f5b4bdb4f7ce1fedbc6c14b784425c2645b03a85/lib/SUPER.js?version=2023.3.23
 // @grant        none
 // @match        *://*.musicbrainz.org/*/add-alias
 // @match        *://*.musicbrainz.org/*/change-quality
@@ -118,7 +118,7 @@ function init(edit_notes) {
 				butt.setAttribute("title", lastnotetext);
 				butt.setAttribute("value", lastnotetext.replace(/(http:\/\/|https:\/\/|www\.|[\n\r])/gi, "").substr(0, 6));
 				butt.addEventListener("click", function(event) {
-					set_react_value(notetext, this.getAttribute("title"));
+					force_value(notetext, this.getAttribute("title"));
 					notetext.focus();
 					if (event.shiftKey) { sendEvent(submitbtn, "click"); }
 				}, false); // onclick
@@ -131,7 +131,7 @@ function init(edit_notes) {
 		notetext.parentNode.insertBefore(buttons, notetext);
 		let lastnotetext = localStorage.getItem(notetextStorage + "00");
 		if (save && !editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
-			set_react_value(notetext, lastnotetext);
+			force_value(notetext, lastnotetext);
 		}
 	}
 	if (submitbtn !== null) {
@@ -168,7 +168,7 @@ function createButtor(label, width) {
 function createClearButtor() {
 	let butt = createButtor(delLabel, "25px");
 	butt.addEventListener("click", function(event) {
-		set_react_value(notetext, "");
+		force_value(notetext, "");
 		notetext.focus();
 		if (event.shiftKey) { sendEvent(submitbtn, "click"); }
 	}, false); // onclick
