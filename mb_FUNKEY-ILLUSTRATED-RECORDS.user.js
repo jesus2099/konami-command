@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2023.8.1
+// @version      2024.2.18
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -37,6 +37,13 @@ let userjs = "jesus2099userjs154481"; // linked in mb. MERGE HELPOR 2, mb_HIDE-D
 let types = ["release-group", "release"];
 let GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 
+// Exclusions
+if (bigpics) {
+	if (location.pathname.match(/^\/artist\/[^/]+\/(recordings|relationship)|^\/recording/)) {
+		bigpics = false;
+	}
+}
+
 // Hide MBS-11059 release group CAA icon, once my linked and thumbnailed CAA icon is loading
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
@@ -62,7 +69,6 @@ if (caaIcons.length > 0) {
 // React hydrate imposes delay
 var reactHydratePage = location.pathname.match(/^\/release\//);
 setTimeout(function() {
-	var imgurls = [];
 	for (var t = 0; t < types.length; t++) {
 		// TODO: rglink smallpic is often broken by React, though
 		var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/']:not([href$='/cover-art']), div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']:not([href$='/cover-art']), tr > td > span[class^='rglink'] + a[href^='/" + types[t] + "/']:not([href$='/cover-art'])");
@@ -127,24 +133,21 @@ setTimeout(function() {
 				// BIG PICS
 				// --------
 				if (bigpics && (box = box.previousSibling && box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
-					if (!self.location.pathname.match(/\/recordings/) || self.location.pathname.match(/\/recordings/) && imgurls.indexOf(imgurl) < 0) {
-						var artisttd = artistcol && getSibling(getParent(as[a], "td"), "td");
-						// textContent is faster but shows <script> content. artisttd contains React? <script> when pending AC edits. https://kellegous.com/j/2013/02/27/innertext-vs-textcontent/
-						box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\n" + artisttd.innerText.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
-							"⌛",
-							createTag("img", {
-								a: {src: imgurl + "-250", alt: as[a].textContent},
-								s: {verticalAlign: "middle", display: "none", maxHeight: "125px", boxShadow: "1px 1px 4px black"},
-								e: {
-									load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); },
-									error: function(event) { removeNode(this.parentNode); },
-									mouseover: updateA,
-									mouseout: updateA
-								}
-							})
-						]));
-						imgurls.push(imgurl);
-					}
+					var artisttd = artistcol && getSibling(getParent(as[a], "td"), "td");
+					// textContent is faster but shows <script> content. artisttd contains React? <script> when pending AC edits. https://kellegous.com/j/2013/02/27/innertext-vs-textcontent/
+					box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\n" + artisttd.innerText.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
+						"⌛",
+						createTag("img", {
+							a: {src: imgurl + "-250", alt: as[a].textContent},
+							s: {verticalAlign: "middle", display: "none", maxHeight: "125px", boxShadow: "1px 1px 4px black"},
+							e: {
+								load: function(event) { removeNode(this.parentNode.firstChild); this.style.setProperty("display", "inline"); },
+								error: function(event) { removeNode(this.parentNode); },
+								mouseover: updateA,
+								mouseout: updateA
+							}
+						})
+					]));
 				}
 			}
 		}
