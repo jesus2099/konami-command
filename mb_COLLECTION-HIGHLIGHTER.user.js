@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2023.9.29
+// @version      2024.2.25
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -240,7 +240,7 @@ if (cat) {
 function findOwnedStuff() {
 	// Annotation link trim spaces and protocol + "//" + host
 	for (let annotationLinks = document.querySelectorAll("div#content div.annotation a, div#content div.annotation-preview a"), l = 0; l < annotationLinks.length; l++) {
-		annotationLinks[l].setAttribute("href", annotationLinks[l].getAttribute("href").trim().replace(/^((https?:)?\/\/(\w+\.)?musicbrainz\.org)\//, "/"));
+		annotationLinks[l].setAttribute("href", annotationLinks[l].getAttribute("href").trim().replace(/^((https?:)?\/\/((beta|test)\.)?musicbrainz\.org)\//, "/"));
 	}
 	for (let stu = 0; stu < collectedStuff.length; stu++) {
 		var cstuff = collectedStuff[stu];
