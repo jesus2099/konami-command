@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2023.12.10
+// @version      2024.2.27
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽権利情報検索ナビ (ex-音楽の森 aka MINC and Music Forest) and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -13,8 +13,7 @@
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @match        *://*.musicbrainz.org/work/*
-// @include      /https?:\/\/search\.minc\.or\.jp\/(music|product|saku)\/list/
-// @match        *://www.minc.gr.jp/db/*
+// @include      /https?:\/\/www\.minc\.or\.jp\/(product\/list|saku\/detail)/
 // @match        *://www2.jasrac.or.jp/eJwid/main?trxID=*WORKS_CD=*
 // @exclude      *.org/work/*/*edits*
 // @run-at       document-end
@@ -418,7 +417,13 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			break;
 		case "minc":
 			setInterval(function() {
-				var workIDCells = document.querySelectorAll("tbody td[data-th='JASRAC作品コード']:not(." + userjs.id + ")");
+				var workIDCells = document.querySelectorAll(
+					// product list page
+					"tbody td[data-th='JASRAC作品コード']:not(." + userjs.id + "),"
+					// saku detail page
+					+ "div#summary-area > div.management > h5 > a.internal_link[href='#jasrac'] + p > span + span:not(." + userjs.id + "),"
+					+ "div#jasrac-area > table > tbody > tr:nth-of-type(2) > th + td:not(." + userjs.id + ")"
+				);
 				for (var w = 0; w < workIDCells.length; w++) {
 					workIDCells[w].classList.add(userjs.id);
 					var sakuhinCode = workIDCells[w].firstChild.textContent.trim();
