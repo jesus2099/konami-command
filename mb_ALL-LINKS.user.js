@@ -566,16 +566,6 @@ var whitelistSearchLinks = {
 				"Discogs (barcode)":  "//www.discogs.com/%language%/search/?q=%release-barcode%&type=release",
 				MusicMoz: "//musicmoz.org/search/search.cgi?search=%entity-name%",
 				"Dynamic Range DB": "//dr.loudness-war.info/?artist=%release-artist-credit%&album=%release-name%",
-				GnuDb: [
-					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%artist-name%%22&mode=artist",
-					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%release-artist-credit%%22%20%22%release-name%%22",
-					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%release-group-artist-credit%%22%20%22%release-group-name%%22",
-					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%recording-name%%22&mode=song",
-					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%work-name%%22&mode=song",
-				],
-				"GnuDb (abc)": [
-					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%artist-latin-script-name%%22&mode=artist",
-				],
 				GeoNames: [
 					"http://www.geonames.org/search.html?q=%area-name%",
 					"http://www.geonames.org/advanced-search.html?q=%place-name%&featureClass=S"
@@ -698,6 +688,26 @@ var additionalSearchLinks = {
 			title: "ISRC",
 			items: {
 				IFPI: "https://isrcsearch.ifpi.org/#!/search?upcCode=%release-barcode%&tab=lookup&showReleases&start=0&number=100",
+			}
+		},
+		otherDBs: {
+			title: {
+				de: "Andere Datenbanken",
+				en: "Other databases",
+				fr: "Autres bases de données",
+				nl: "Andere databases"
+			},
+			items: {
+				GnuDb: [
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%artist-name%%22&mode=artist",
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%release-artist-credit%%22%20%22%release-name%%22",
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%release-group-artist-credit%%22%20%22%release-group-name%%22",
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%recording-name%%22&mode=song",
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%work-name%%22&mode=song",
+				],
+				"GnuDb (abc)": [
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%artist-latin-script-name%%22&mode=artist",
+				],
 			}
 		}
 	}
