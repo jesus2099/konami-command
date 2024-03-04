@@ -567,14 +567,14 @@ var whitelistSearchLinks = {
 				MusicMoz: "//musicmoz.org/search/search.cgi?search=%entity-name%",
 				"Dynamic Range DB": "//dr.loudness-war.info/?artist=%release-artist-credit%&album=%release-name%",
 				GnuDb: [
-					"//gnudb.org/artist/%artist-name%",
-					"//gnudb.org/search/%release-artist-credit%+%release-name%",
-					"//gnudb.org/search/%release-group-artist-credit%+%release-group-name%",
-					"//gnudb.org/song/%recording-name%",
-					"//gnudb.org/song/%work-name%",
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%artist-name%%22&mode=artist",
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%release-artist-credit%%22%20%22%release-name%%22",
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%release-group-artist-credit%%22%20%22%release-group-name%%22",
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%recording-name%%22&mode=song",
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%work-name%%22&mode=song",
 				],
 				"GnuDb (abc)": [
-					"//gnudb.org/artist/%artist-latin-script-name%",
+					"//jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search/&_method=post&cmd=search&words=%22%artist-latin-script-name%%22&mode=artist",
 				],
 				GeoNames: [
 					"http://www.geonames.org/search.html?q=%area-name%",
