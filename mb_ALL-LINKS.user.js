@@ -989,7 +989,7 @@ function main() {
 			}
 			extlinks = sidebar.querySelector("h2.external-links + ul.external_links");
 			if (!extlinks) {
-				var previous = sidebar.querySelector("div.sidebar-tags") || sidebar.querySelector("p.lastupdate")
+				var previous = sidebar.querySelector("div.sidebar-tags") || sidebar.querySelector("p.lastupdate");
 				extlinks = addAfter(createTag("ul", {a: {class: "external_links"}}, createTag("li", {}, "No white‐listed links yet.")), previous);
 				addAfter(createTag("h2", {a: {class: "external-links"}}, "External links"), previous);
 			}
