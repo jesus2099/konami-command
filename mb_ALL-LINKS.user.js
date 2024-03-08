@@ -1612,7 +1612,7 @@ function parseLanguages(inputLanguages) {
 function parseArtistCredit(subheader) {
 	var artistCredit = "";
 	for (var i = 0, acStarted = false; i < subheader.childNodes.length && !(subheader.childNodes[i].nodeType === Node.ELEMENT_NODE && subheader.childNodes[i].tagName === "SPAN" && subheader.childNodes[i].classList.contains("small")); i++) {
-		if (!acStarted && subheader.childNodes[i].nodeType === Node.ELEMENT_NODE && subheader.childNodes[i].tagName === "A") {
+		if (!acStarted && subheader.childNodes[i].nodeType === Node.ELEMENT_NODE && (subheader.childNodes[i].matches("a[href^='/artist/']") || subheader.childNodes[i].querySelector("a[href^='/artist/']"))) {
 			acStarted = true;
 		}
 		if (acStarted) {
