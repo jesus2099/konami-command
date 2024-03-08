@@ -955,7 +955,6 @@ function main() {
 					artistsortname = tokenValues["%artist-sort-name%"] = artistsortname ? artistsortname.textContent : artistname;
 					if (!artistname.match(nonLatinName)) {
 						tokenValues["%artist-family-name-first%"] = artistsortname;
-						tokenValues["%artist-latin-script-name%"] = artistname;
 					} else {
 						var tmpsn = artistsortname.split(",");
 						for (var isn = tmpsn.length - 1; isn >= 0; isn--) {
