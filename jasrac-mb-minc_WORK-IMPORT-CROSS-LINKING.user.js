@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2024.2.27
+// @version      2024.3.14
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽権利情報検索ナビ (ex-音楽の森 aka MINC and Music Forest) and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -10,6 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-01-14; https://web.archive.org/web/20131103163356/userscripts.org/scripts/show/94676 / https://web.archive.org/web/20141011084012/userscripts-mirror.org/scripts/show/94676
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
+// @require      https://github.com/jesus2099/konami-command/raw/84cae2328f2dca0bc750e0961d669005771f16b8/lib/CONTROL-POMME.js?version=2024.3.14
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @match        *://*.musicbrainz.org/work/*
@@ -1227,13 +1228,12 @@ function createA(text, link, title, tgt) {
 function createCoolSubmit(txt) {
 	var a = createA(txt, function(event) {
 		if (event.button == 0) {
-			// lame browsers ;)
-			if (typeof opera == "undefined") {
-				if (event.shiftKey) {
-					this.parentNode.setAttribute("target", "_blank");
-				} else if (event.ctrlKey) {
-					this.parentNode.setAttribute("target", weirdobg());
-				}
+			if (CONTROL_POMME.new_tab_mod_keys(event)) {
+				this.parentNode.setAttribute("target", "_blank");
+			} else if (CONTROL_POMME.new_bg_tab_mod_keys(event)) {
+				this.parentNode.setAttribute("target", weirdobg());
+			} else {
+				this.parentNode.setAttribute("target", "_self");
 			}
 			this.parentNode.submit();
 		}
