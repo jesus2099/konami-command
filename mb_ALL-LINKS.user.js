@@ -671,9 +671,6 @@ var additionalSearchLinks = {
 							"//jesus2099.gitlab.io/forward-request.html?_accept-charset=EUC-JP&_action=//www.cdjournal.com/search/do/&k=%release-name%&target=cd",
 						],
 						JASRAC: "//jesus2099.gitlab.io/forward-request.html?_accept-charset=Shift_JIS&_method=post&_action=//www2.jasrac.or.jp/eJwid/main%3FtrxID%3DA00401-3%23result&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_WORKS_TITLE_NAME1=%recording-name%&IN_WORKS_TITLE_CONDITION=1&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1",
-						"Joshin web (cat)": "//joshinweb.jp/cdshops/Dps?KEY=RECODE&FM=0&KEYWORD=%release-catalogue-number%",
-						"Joshin web (barcode)": "//joshinweb.jp/dp/%release-barcode%.html",
-						"ヨドバシカメラ": "//www.yodobashi.com/category/91139/?word=%release-catalogue-number%",
 						"MINC（アーティスト名・作家名）": "//www.minc.or.jp/artist/list/?nm=%artist-name%",
 						"MINC（CD商品タイトル）": [
 							"//www.minc.or.jp/product/list/?tl=%release-group-name%&ta=%release-group-artist-credit%&type=search-form-title&match=2",
@@ -681,6 +678,13 @@ var additionalSearchLinks = {
 						],
 						// TODO: Add token replacement in link labels before using all catalogue numbers (here only the first catalogue number is used)
 						"MINC（品番/POS）": "//www.minc.or.jp/product/list/?dn=%release-catalogue-number%&type=search-form-diskno",
+						"mercari (CD)": [
+							"//jp.mercari.com/search?keyword=%release-artist-credit%+%release-name%&t1_category_id=5&category_id=75",
+							"//jp.mercari.com/search?keyword=%release-group-artist-credit%+%release-group-name%&t1_category_id=5&category_id=75",
+						],
+						"Joshin web (cat)": "//joshinweb.jp/cdshops/Dps?KEY=RECODE&FM=0&KEYWORD=%release-catalogue-number%",
+						"Joshin web (barcode)": "//joshinweb.jp/dp/%release-barcode%.html",
+						"ヨドバシカメラ (cat)": "//www.yodobashi.com/category/91139/?word=%release-catalogue-number%",
 					}
 				}
 			}
