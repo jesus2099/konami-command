@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2022.9.26.1
-// @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search or an other collection
+// @version      2024.3.23
+// @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search, an other collection, or a tag
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HYPER-MOULINETTE
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_HYPER-MOULINETTE.user.js
@@ -29,6 +29,7 @@ var target, method, source, client, loaders = [];
 var crawlType = {
 	"^/collection/": "div#page table.tbl tbody a[href*='/release/']",
 	"^/search/edits": "div.edit-details a[href*='/release/']",
+	"/tag/[^/]+/release\\?page=\\d+$": "a[href^='/release/']",
 };
 var genuineTitle = document.title;
 // ==========================================================================
@@ -58,6 +59,9 @@ function mouli() {
 	if (target && method.match(/^(put|delete)$/i) && source) {
 		localStorage.setItem(userjs.id + "_" + method + "-source", source);
 		source = source.replace(/^(https?:\/\/[^/]+)?(\/.+)/, "$2");
+		if (source.match(/\/tag\/[^/]+/)) {
+			source = source.replace(/(^.*\/tag\/[^/]+).*/, "$1/release");
+		}
 		modal(createTag("h3", {}, [createTag("a", {a: {href: GM_info.script.namespace, target: "_blank"}}, userjs.name), " ", createTag("b", {}, GM_info.script.version), " (reload this page to abort)"]));
 		if (source.match(/^\/search\/edits/)) {
 			modal(createTag("p", {}, "(loading first page of an edit search is always long)"));
@@ -86,10 +90,18 @@ function loadForExtract(page) {
 			if (releases.length > 0) {
 				var url = "/ws/2/collection/" + target + "/releases/";
 				var cont = modal(createTag("table"));
+				var first = true;
 				for (var r = 0; r < releases.length; r++) {
 					var guid = releases[r].getAttribute("href").match(re_GUID);
-					cont.appendChild(createTag("tr", {}, [createTag("th", {s: {paddingRight: "6px"}}, (r + 1) + "."), createTag("td", {s: {padding: "0px"}}, createTag("img", {a: {src: "http://coverartarchive.org/release/" + guid + "/front-250", alt: ""}, s: {margin: "0px", maxHeight: "16px", maxWidth: "16px", boxShadow: "1px 1px 2px black"}, e: {error: function() { this.parentNode.removeChild(this); }}})), createTag("td", {s: {paddingLeft: "6px"}}, createTag("a", {a: {href: releases[r].getAttribute("href"), target: "_blank"}}, releases[r].textContent))]));
-					url += (r == 0 ? "" : ";") + guid;
+					if (guid) {
+						cont.appendChild(createTag("tr", {}, [createTag("th", {s: {paddingRight: "6px"}}, (r + 1) + "."), createTag("td", {s: {padding: "0px"}}, createTag("img", {a: {src: "http://coverartarchive.org/release/" + guid + "/front-250", alt: ""}, s: {margin: "0px", maxHeight: "16px", maxWidth: "16px", boxShadow: "1px 1px 2px black"}, e: {error: function() { this.parentNode.removeChild(this); }}})), createTag("td", {s: {paddingLeft: "6px"}}, createTag("a", {a: {href: releases[r].getAttribute("href"), target: "_blank"}}, releases[r].textContent))]));
+						if (!first) {
+							url += ";";
+						} else {
+							first = false;
+						}
+						url += guid;
+					}
 				}
 				requestForAction(method, url + "?client=" + client);
 			}
