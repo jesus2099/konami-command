@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2023.6.17
+// @version      2024.4.11
 // @description  musicbrainz.org: Linkify cover art edit “Filenames” (as specified in https://musicbrainz.org/edit/42525958); Add cool links to cover art tab and archive pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
@@ -20,10 +20,11 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+var mbid;
 // Linkify cover art file names
 var coverArtFilenames = document.querySelectorAll("table.details[class$='cover-art'] > tbody code");
 for (var filename = 0; filename < coverArtFilenames.length; filename++) {
-	var mbid = coverArtFilenames[filename].textContent.match(/^mbid-([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})-\d+\.\w+$/);
+	mbid = coverArtFilenames[filename].textContent.match(/^mbid-([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})-\d+\.\w+$/);
 	if (mbid) {
 		var a = document.createElement("a");
 		a.setAttribute("href", "//archive.org/0/items/mbid-" + mbid[1] + "/" + coverArtFilenames[filename].textContent);
@@ -76,7 +77,7 @@ function fallbackImageLoader(imgNode, srcs) {
 // Release cover art cool links
 var cover_art_edits = document.querySelectorAll("table.details[class$='cover-art'] > tbody > tr > td a[href^='/release/']");
 for (var caa_edit = 0; caa_edit < cover_art_edits.length; caa_edit++) {
-	var mbid = cover_art_edits[caa_edit].getAttribute("href").match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
+	mbid = cover_art_edits[caa_edit].getAttribute("href").match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
 	if (mbid) {
 		mbid = mbid[0];
 		cover_art_edits[caa_edit].closest("tbody").appendChild(createTag("tr", {}, [
