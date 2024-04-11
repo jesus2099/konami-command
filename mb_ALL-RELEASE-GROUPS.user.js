@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL RELEASE GROUPS
-// @version      2024.4.11.1730
+// @version      2024.4.11.1750
 // @description  Artist overview page (discography): Show all release groups by default, then you can filter out bootlegs to show only official release groups (instead of the opposite default)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-RELEASE-GROUPS
@@ -15,7 +15,7 @@
 // @run-at       document-start
 // ==/UserScript==
 "use strict";
-var regex_mb_host = "(?:(?:beta|test)\.)?musicbrainz\.(?:eu|org)";
+var regex_mb_host = "(?:(?:beta|test)\\.)?musicbrainz\\.(?:eu|org)";
 document.addEventListener("mousedown", function(event) {
 	var link = event.target || event.srcElement;
 	if (link && link.nodeType === Node.ELEMENT_NODE) {
@@ -27,7 +27,7 @@ document.addEventListener("mousedown", function(event) {
 				if (
 					href_match
 					&& (
-						location.host.match(new RegExp("^https?://" + regex_mb_host + "$")) && href_match[2]
+						location.host.match(new RegExp("^" + regex_mb_host + "$")) && href_match[2]
 						|| href_match[1] && href_match[2]
 					)
 				) {
