@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2023.11.15
+// @version      2024.4.11
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -136,33 +136,32 @@ if (edit_list.length > 1) {
 		")"]));
 	}
 }
-// Hide huge edit search form that pushes results off screen
-if (
-	search_form
-	&& location.search // not initial blank edit search form
-	&& !location.search.match(/\bform_only=yes\b/) // not form only after Refine click
-	&& edit_list.length > 0 // has 1+ results
-) {
-	j2css.insertRule("div#content." + userjs + "-hide-form > p:nth-of-type(1), div#content." + userjs + "-hide-form > p:nth-of-type(2), div#content." + userjs + "-hide-form > form#edit-search { display: none; }", 0);
-	search_form.parentNode.classList.add(userjs + "-hide-form");
-	document.querySelector("#content > h1").appendChild(createTag("fragment", {}, [
-		" ",
-		createTag("button", {a: {title: GM_info.script.name}, s: {background: "#fcf", cursor: "pointer"}, e: {click: function(event) {
-			search_form.parentNode.classList.remove(userjs + "-hide-form");
-			removeNode(event.target);
-			scroll_to_first_selected_options();
-		}, mouseover: function(event) { event.target.click(); }}}, texts[lang].show_form)
-	]));
-} else {
-	var visible_form_waiter = setInterval(function() {
-		if (!search_form.querySelector("span.field[style*='display: none']")) {
-			clearInterval(visible_form_waiter);
-			scroll_to_first_selected_options();
-		}
-	}, 234);
-}
-// Search form: Add permalinks to searched entities (all except recordings, because of MBS-12560)
 if (search_form) {
+	// Hide huge edit search form that pushes results off screen
+	if (
+		location.search // not initial blank edit search form
+		&& !location.search.match(/\bform_only=yes\b/) // not form only after Refine click
+		&& edit_list.length > 0 // has 1+ results
+	) {
+		j2css.insertRule("div#content." + userjs + "-hide-form > p:nth-of-type(1), div#content." + userjs + "-hide-form > p:nth-of-type(2), div#content." + userjs + "-hide-form > form#edit-search { display: none; }", 0);
+		search_form.parentNode.classList.add(userjs + "-hide-form");
+		document.querySelector("#content > h1").appendChild(createTag("fragment", {}, [
+			" ",
+			createTag("button", {a: {title: GM_info.script.name}, s: {background: "#fcf", cursor: "pointer"}, e: {click: function(event) {
+				search_form.parentNode.classList.remove(userjs + "-hide-form");
+				removeNode(event.target);
+				scroll_to_first_selected_options();
+			}, mouseover: function(event) { event.target.click(); }}}, texts[lang].show_form)
+		]));
+	} else {
+		var visible_form_waiter = setInterval(function() {
+			if (!search_form.querySelector("span.field[style*='display: none']")) {
+				clearInterval(visible_form_waiter);
+				scroll_to_first_selected_options();
+			}
+		}, 234);
+	}
+	// Search form: Add permalinks to searched entities (all except recordings, because of MBS-12560)
 	(new MutationObserver(function(mutations, observer) {
 		for (var m = 0; m < mutations.length; m++) {
 			var span_autocomplete;
