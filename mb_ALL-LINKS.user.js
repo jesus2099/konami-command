@@ -379,10 +379,6 @@ var whitelistSearchLinks = {
 				"J-Lyric（曲名）": [
 					"//j-lyric.net/index.php?kt=%recording-name%",
 					"//j-lyric.net/index.php?kt=%work-name%",
-				],
-				Directlyrics: [
-					"//directlyrics.com/search?q=%artist-name%+inurl%3A-artist.html",
-					"//directlyrics.com/search?q=%work-name%+inurl%3A-lyrics.html"
 				]
 			}
 		},
@@ -761,7 +757,6 @@ var FAVICON_CLASSES = { // from https://github.com/metabrainz/musicbrainz-server
 	"dailymotion.com": "dailymotion",
 	"deezer.com": "deezer",
 	"dhhu.dk": "dhhu",
-	"directlyrics.com": "directlyrics",
 	"discogs.com": "discogs",
 	"dogmazic.net": "dogmazic",
 	"dramonline.org": "dram",
