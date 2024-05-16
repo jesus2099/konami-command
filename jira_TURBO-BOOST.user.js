@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         jira. TURBO BOOST
-// @version      2023.11.9
+// @version      2024.5.16
 // @description  Fast toggle/switch quick filters (Ctrl for native additive behaviour)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jira_TURBO-BOOST
@@ -10,6 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2022-09-04
 // @grant        none
+// @include      /^https?:\/\//
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

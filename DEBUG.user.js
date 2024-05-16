@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         DEBUG
-// @version      2022.12.11
+// @version      2024.5.16
 // @description  Event and context info
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/DEBUG
@@ -10,6 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2022-12-10
 // @grant        none
+// @include      /^https?:\/\//
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
