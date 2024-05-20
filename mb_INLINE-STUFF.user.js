@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2023.8.1
+// @version      2024.5.20
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -300,6 +300,7 @@ function isrcFish() {
 				var aRec = tracksHtml[i].querySelector(css_recording);
 				if (aRec) {
 					var mbid = aRec.getAttribute("href").match(re_GUID);
+					if (mbid) { mbid = mbid[0]; }
 					var trackTitleCell = tracksHtml[i].querySelector("td:not(.pos):not(.video)");
 					if (isrcNet[mbid].length > 0) {
 						insertBeforeARS(trackTitleCell, createStuffFragment("ISRC", isrcNet[mbid], shownisrcs, isrcURL, null, mbid));
@@ -365,7 +366,7 @@ function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid
 			a.addEventListener("mouseout", function(event) { this.firstChild.style.setProperty("text-decoration", "line-through"); this.firstChild.style.setProperty("opacity", ".2"); }, false);
 		}
 		td.appendChild(a);
-		if (!adisabled) {
+		if (stufftype == "ISRC" || !adisabled) {
 			if (shownstuffs[stuff]) {
 				var bgColour = dupeColour;
 				if (recid && shownstuffs[stuff]["recid"] == recid) {
