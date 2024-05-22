@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2023.10.13
+// @version      2024.5.23
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -948,13 +948,15 @@ function prepareLocalRelease() {
 	setTimeout(loadingAllMediums, 10);
 }
 function loadingAllMediums() {
-	if (document.querySelector("div#content table.tbl.medium > tbody .loading-message")) {
+	var loadingMessage = document.querySelector("h1.loading-" + userjs.id);
+	var loading_things = document.querySelectorAll("div#content table.tbl.medium > tbody .loading-message").length;
+	if (loading_things > 0 && loadingMessage.textContent.match(/MEDIUMS?…$/)) {
+		loadingMessage.replaceChild(document.createTextNode("LOADING " + loading_things + " MEDIUM" + (loading_things !== 1 ? "S" : "") + "…"), loadingMessage.firstChild);
 		setTimeout(loadingAllMediums, 200);
 	} else {
 		var loadTracks = document.querySelector("div#content table.tbl.medium > tbody a.load-tracks");
 		if (loadTracks) {
-			var loadingMessage = document.querySelector("h1.loading-" + userjs.id);
-			if (loadingMessage.textContent.match(/MEDIUMS…$/)) {
+			if (loadingMessage.textContent.match(/MEDIUMS?…$/)) {
 				loadingMessage.replaceChild(document.createTextNode("LOADING ALL TRACKS"), loadingMessage.firstChild);
 			} else {
 				loadingMessage.appendChild(document.createTextNode("."));
