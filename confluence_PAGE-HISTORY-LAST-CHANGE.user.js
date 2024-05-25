@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         confluence. PAGE HISTORY LAST CHANGE
-// @version      2016.4.8.2099
-// @description  Atlassian Confluence wiki: pre-selects last change for one click comparison
+// @version      2024.5.26
+// @description  ☠ OBSOLETE ☠ This userscript is abandonned and will be removed soon ☠ Atlassian Confluence wiki (not atlassian.net cloud): pre-selects last change for one click comparison
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/confluence_PAGE-HISTORY-LAST-CHANGE
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/confluence_PAGE-HISTORY-LAST-CHANGE.user.js
@@ -15,7 +15,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-if (self.location.pathname.match(/^\/pages\/viewpreviousversions.action$/) && self.location.search.match(/^\?pageId=\d+$/)) {
+if (location.pathname.match(/^\/pages\/viewpreviousversions.action$/) && location.search.match(/^\?pageId=\d+$/)) {
 	var versions = document.querySelectorAll("table#page-history-container input[type='checkbox'][name='selectedPageVersions']");
 	if (versions.length > 1) {
 		versions[0].checked = true;
