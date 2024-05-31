@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2023.1.3
+// @version      2024.5.31
 // @description  musicbrainz.org: MOUSE-LESS EDITING ! Cleverly focuses fields in various musicbrainz edit pages and allows keyboard selection of relationship types as well as some release editor keyboard navigation performance features
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_AUTO-FOCUS-KEYBOARD-SELECT
@@ -24,6 +24,7 @@
 // @match        *://*.musicbrainz.org/cdtoc/move*
 // @match        *://*.musicbrainz.org/cdtoc/remove*
 // @match        *://*.musicbrainz.org/edit/*/cancel*
+// @match        *://*.musicbrainz.org/edit-note/*/modify
 // @match        *://*.musicbrainz.org/isrc/delete*
 // @match        *://*.musicbrainz.org/label/*/edit
 // @match        *://*.musicbrainz.org/label/create
@@ -191,7 +192,7 @@ function mostCleverInputToFocus() {
 			i = document.querySelector("input[id='id-add-iswc.iswc']");
 			break;
 	}
-	return i ? i : document.querySelector("textarea[id$='edit_note']");
+	return i ? i : document.querySelector("textarea[id*='edit_note'], textarea[id*='edit-note']");
 }
 if (autoFocus) {
 	var input = mostCleverInputToFocus();
