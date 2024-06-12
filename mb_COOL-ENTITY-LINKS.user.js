@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2022.11.4
+// @version      2024.6.13
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COOL-ENTITY-LINKS
@@ -39,6 +39,8 @@ var entities = {
 	"classic.edit": {path: "/show/edit/?editid=", id: "[0-9]+", label: "edit\u00a0#%id%"},
 	"classic.user": {path: "/show/user/?username=", id: "[^/]+"},
 	edit: {path: "/edit/", id: "[0-9]+", label: "#%id%"},
+	event: {path: "/event/", icon: "event.svg"},
+	instrument: {path: "/instrument/", icon: "instrument.svg"},
 	label: {path: "/label/", icon: "label.svg"},
 	place: {path: "/place/", icon: "place.svg"},
 	recording: {path: "/recording/", icon: "recording.svg"},
