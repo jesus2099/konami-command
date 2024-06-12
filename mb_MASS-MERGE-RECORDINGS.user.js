@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.5.23
+// @version      2024.6.13
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -424,7 +424,7 @@ function massMergeGUI() {
 		createTag("h2", {}, userjs.name),
 		createTag("p", {}, "version " + userjs.version),
 		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", createTag("kbd", {}, "CTRL"), " + ", createTag("kbd", {}, "SHIFT"), "+", createTag("kbd", {}, "M")]),
-		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release", createTag("span", {a: {"class": "remote-release-link"}}), ":"]),
+		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release: ", createTag("span", {a: {"class": "remote-release-link"}})]),
 	]);
 	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", userjs.name + " remote release URL"));
 	mergeStatus.style.setProperty("width", "100%");
@@ -654,15 +654,16 @@ function loadReleasePage() {
 				remoteRelease.title = HTMLToText(rtitle[1]);
 				remoteRelease.looseTitle = looseTitle(remoteRelease.title);
 				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
-				if (remoteRelease.comment) remoteRelease.comment = " (" + HTMLToText(remoteRelease.comment[1]) + ")"; else remoteRelease.comment = "";
 				remoteRelease.ac = rtitle[2];
 				removeChildren(mbidInfo);
 				if (remoteRelease.id == localRelease.id) {
 					mbidInfo.appendChild(document.createTextNode(" (same" + (remoteRelease.disc ? ", " + remoteRelease.disc.substr(1).replace(/\//, "\u00a0") + "/" + discount : "") + ")"));
 				} else {
-					mbidInfo.appendChild(document.createTextNode(" “"));
 					mbidInfo.appendChild(createA(remoteRelease.title, "/release/" + remoteRelease.id));
-					mbidInfo.appendChild(document.createTextNode("”" + remoteRelease.comment));
+					if (remoteRelease.comment) {
+						mbidInfo.appendChild(document.createTextNode(" "));
+						mbidInfo.appendChild(createTag("span", {a: {class: "comment"}}, "(" + HTMLToText(remoteRelease.comment[1]) + ")"));
+					}
 					if (remoteRelease.disc) {
 						mbidInfo.appendChild(createTag("fragment", null, [" (", createA(remoteRelease.disc.substr(1).replace(/\//, "\u00a0"), "/release/" + remoteRelease.id + remoteRelease.disc + "#" + remoteRelease.disc.replace(/\//g, "")),  "/" + discount + ")"]));
 					}

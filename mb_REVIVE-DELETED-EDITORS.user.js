@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2024.1.4
+// @version      2024.6.13
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -190,14 +190,18 @@ for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, ed
 						as[a].setAttribute("title", editors[editor].title);
 						as[a].classList.add("tooltip");
 						var moreInfo = document.createDocumentFragment();
-						moreInfo.appendChild(document.createTextNode(" ("));
+						moreInfo.appendChild(document.createTextNode("("));
 						if (editors[editor].comment) {
 							moreInfo.appendChild(document.createElement("b")).appendChild(document.createTextNode(editors[editor].comment));
 							moreInfo.appendChild(document.createTextNode(", "));
 						}
 						moreInfo.appendChild(document.createTextNode(editors[editor].duration + " " + editors[editor].shortend + ")"));
 						moreInfo.normalize();
-						addAfter(moreInfo, as[a]);
+						var comment = document.createElement("span");
+						comment.classList.add("comment");
+						comment.appendChild(moreInfo);
+						addAfter(comment, as[a]);
+						addAfter(document.createTextNode(" "), as[a]);
 						break;
 					}
 				}

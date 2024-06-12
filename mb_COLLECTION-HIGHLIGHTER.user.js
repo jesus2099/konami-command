@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2024.2.25
+// @version      2024.6.13
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -414,9 +414,9 @@ function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add
 function browseReleases(releases, action, offset, releaseCount) {
 	for (var r = 0; r < releases.length; r++) {
 		var country = releases[r].country ? createTag("span", {a: {class: "flag flag-" + releases[r].country}}) : "";
-		var disambiguation = releases[r].disambiguation ? " (" + releases[r].disambiguation + ")" : "";
+		var disambiguation = releases[r].disambiguation ? createTag("span", {a: {class: "comment"}}, "(" + releases[r].disambiguation + ")") : "";
 		if (!lowMemory) {
-			modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toLocaleString(lang).padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
+			modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toLocaleString(lang).padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), " ", disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
 		} else {
 			modal(true, "", 0, {text: "releases", current: offset + r + 1, total: releaseCount});
 		}
