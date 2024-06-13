@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.6.13
+// @version      2024.6.13.205
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -662,7 +662,11 @@ function loadReleasePage() {
 					mbidInfo.appendChild(createA(remoteRelease.title, "/release/" + remoteRelease.id));
 					if (remoteRelease.comment) {
 						mbidInfo.appendChild(document.createTextNode(" "));
-						mbidInfo.appendChild(createTag("span", {a: {class: "comment"}}, "(" + HTMLToText(remoteRelease.comment[1]) + ")"));
+						remoteRelease.comment = "(" + HTMLToText(remoteRelease.comment[1]) + ")";
+						mbidInfo.appendChild(createTag("span", {a: {class: "comment"}}, remoteRelease.comment));
+						remoteRelease.comment = " " + remoteRelease.comment;
+					} else {
+						remoteRelease.comment = "";
 					}
 					if (remoteRelease.disc) {
 						mbidInfo.appendChild(createTag("fragment", null, [" (", createA(remoteRelease.disc.substr(1).replace(/\//, "\u00a0"), "/release/" + remoteRelease.id + remoteRelease.disc + "#" + remoteRelease.disc.replace(/\//g, "")),  "/" + discount + ")"]));
