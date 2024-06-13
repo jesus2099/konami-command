@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2024.6.13
+// @version      2024.6.13.2308
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COOL-ENTITY-LINKS
@@ -33,6 +33,7 @@ var userjs = "jesus2099userjs131731";
 var GUIDi = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var entities = {
 	acoustid: {fullpath: "//acoustid.org/track/"},
+	area: {path: "/area/", icon: "area.svg"},
 	artist: {path: "/artist/", icon: "artist.svg"},
 	bug: {fullpath: "//bugs.musicbrainz.org/ticket/", id: "[0-9]+", label: "#%id%", replace: [/^(https?:)\/\/bugs/, "https://web.archive.org/web/2017/bugs"]},
 	cdtoc: {path: "/cdtoc/", icon: "release.svg", id: "[A-Za-z0-9_\\.]+-"},
