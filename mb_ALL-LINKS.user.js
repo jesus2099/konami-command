@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2024.3.14
+// @version      2024.6.28
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -161,7 +161,7 @@ var whitelistSearchLinks = {
 							"https://www.psydb.net/search?q=%artist-name%",
 							"https://www.psydb.net/search?q=%label-name%",
 							"https://www.psydb.net/search?q=%release-group-name%",
-							"https://www.psydb.net/search?q=%release-name%",
+							"https://www.psydb.net/search?q=%release-name%"
 						],
 						// Skipped "Resident Advisor" which has a search dropdown but no search page
 						// Skipped "RollDaBeats" which is down since December 2022
@@ -175,27 +175,32 @@ var whitelistSearchLinks = {
 					},
 					items: {
 						"Cape Breton Fiddle Recordings": [
+							"https://www.cbfiddle.com/rx/tunesearch.cgi?search=%recording&-name%",
 							"https://www.cbfiddle.com/rx/tunesearch.cgi?search=%work-name%"
 						],
 						// Skipped "DanceDB" which has no free text search
 						"Irish Traditional Music Tunes": [
 							"https://www.irishtune.info/album-search.php?value=%release-group-name%&form=title",
 							"https://www.irishtune.info/album-search.php?value=%release-name%&form=title",
+							"https://www.irishtune.info/search.php?lookfor=string&term=%recording-name%&type=any",
 							"https://www.irishtune.info/search.php?lookfor=string&term=%work-name%&type=any"
 						],
 						"Mainly Norfolk": [
 							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/records/search.php&_method=post&album=%release-group-name%",
 							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/records/search.php&_method=post&album=%release-name%",
-							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/songs/search.php&_method=post&song=%work-name%",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/songs/search.php&_method=post&song=%recording-name%",
+							"https://jesus2099.gitlab.io/forward-request.html?_action=https://mainlynorfolk.info/folk/songs/search.php&_method=post&song=%work-name%"
 						],
 						// Skipped "The Dance Gypsy" which is down since February 2022
 						"The Session": [
 							"https://thesession.org/recordings/search?q=%release-group-name%",
 							"https://thesession.org/recordings/search?q=%release-name%",
+							"https://thesession.org/tunes/search?q=%recording-name%",
 							"https://thesession.org/tunes/search?q=%work-name%"
 						],
 						"The Traditional Tune Archive": [
 							"https://tunearch.org/wiki/Special:Search?search=%artist-name%&fulltext=Dig+deeper&ns844=1&ns3002=1",
+							"https://tunearch.org/wiki/Special:Search?search=%recording-name%&fulltext=Dig+deeper",
 							"https://tunearch.org/wiki/Special:Search?search=%work-name%&fulltext=Dig+deeper"
 						]
 					}
@@ -302,19 +307,24 @@ var whitelistSearchLinks = {
 							"https://castalbums.org/search/?search=%release-group-name%&type=Recordings",
 							"https://castalbums.org/search/?search=%release-name%&type=Recordings"
 						],
-						"CastAlbums.org (songs)": "https://castalbums.org/search/?search=%work-name%&type=Songs",
+						"CastAlbums.org (songs)": [
+							"https://castalbums.org/search/?search=%recording-name%&type=Songs",
+							"https://castalbums.org/search/?search=%work-name%&type=Songs"
+						],
 						"CastAlbums.org (shows)": "https://castalbums.org/search/?search=%work-name%&type=Shows",
 						// Skipped "IBDb" which search has a hidden request verification token input
 						"IOBDb": [
 							"http://www.iobdb.com/Search?searchText=%artist-name%&searchDomain=CreditableEntity",
 							"http://www.iobdb.com/Search?searchText=%label-name%&searchDomain=CreditableEntity",
 							"http://www.iobdb.com/Search?searchText=%place-name%&searchDomain=Theatre",
+							"http://www.iobdb.com/Search?searchText=%recording-name%&searchDomain=Any",
 							"http://www.iobdb.com/Search?searchText=%work-name%&searchDomain=Any"
 						],
 						"Theatricalia": [
 							"https://theatricalia.com/search?q=%artist-name%",
 							"https://theatricalia.com/search?q=%label-name%",
 							"https://theatricalia.com/search?q=%place-name%",
+							"https://theatricalia.com/search?q=%recording-name%",
 							"https://theatricalia.com/search?q=%work-name%"
 						]
 					}
@@ -373,12 +383,12 @@ var whitelistSearchLinks = {
 				Genius: [
 					"//genius.com/search?q=%artist-latin-script-name%",
 					"//genius.com/search?q=%recording-name%",
-					"//genius.com/search?q=%work-name%",
+					"//genius.com/search?q=%work-name%"
 				],
 				"J-Lyric（歌手名）": "//j-lyric.net/index.php?ka=%artist-name%",
 				"J-Lyric（曲名）": [
 					"//j-lyric.net/index.php?kt=%recording-name%",
-					"//j-lyric.net/index.php?kt=%work-name%",
+					"//j-lyric.net/index.php?kt=%work-name%"
 				]
 			}
 		},
@@ -482,6 +492,7 @@ var whitelistSearchLinks = {
 							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%artist-name%",
 							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%label-name%",
 							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%release-name%",
+							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%recording-name%",
 							"https://www.muziekweb.nl/en/Muziekweb/Cat/SingleSearch/Search?q=%work-name%"
 						]
 					}
@@ -645,6 +656,9 @@ var additionalSearchLinks = {
 							{
 								fr: "//repertoire.sacem.fr/resultats?filters=titles&query=%work-name%#searchBtn",
 								"de en nl": "//repertoire.sacem.fr/en/results?filters=titles&query=%work-name%#searchBtn"
+							}, {
+								fr: "//repertoire.sacem.fr/resultats?filters=titles&query=%recording-name%#searchBtn",
+								"de en nl": "//repertoire.sacem.fr/en/results?filters=titles&query=%recording-name%#searchBtn"
 							}, {
 								fr: "//repertoire.sacem.fr/resultats?filters=parties&query=%artist-name%#searchBtn",
 								"de en nl": "//repertoire.sacem.fr/en/results?filters=parties&query=%artist-name%#searchBtn"
