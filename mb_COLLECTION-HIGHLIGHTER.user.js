@@ -440,9 +440,17 @@ function browseReleases(releases, action, offset, releaseCount) {
 					|| releases[r]["release-group"].relations[rgRel]["type-id"] == "589447ea-be2c-46cc-b9e9-469e1d06e18a"
 				)
 				&& releases[r]["release-group"].relations[rgRel].direction == "backward"
+				|| (
+					releases[r]["release-group"].relations[rgRel].type == "excerpt from"
+					|| releases[r]["release-group"].relations[rgRel]["type-id"] == "6d3242b9-0eb5-45c7-bf07-303aaff46d0f"
+				)
+				&& releases[r]["release-group"].relations[rgRel].direction == "backward"
+
 			) {
 				if (!lowMemory) {
-					modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " Includes ", createA(releases[r]["release-group"].relations[rgRel].release_group.title, "/release-group/" + releases[r]["release-group"].relations[rgRel].release_group.id)]), 1);
+					var excerpt = releases[r]["release-group"].relations[rgRel].type.match(/excerpt/);
+					excerpt = excerpt ? excerpt[0] + " " : "";
+					modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " Includes " + excerpt, createA(releases[r]["release-group"].relations[rgRel].release_group.title, "/release-group/" + releases[r]["release-group"].relations[rgRel].release_group.id)]), 1);
 				}
 				addRemoveEntities("release-group", releases[r]["release-group"].relations[rgRel].release_group, action);
 				if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"].relations[rgRel].release_group["artist-credit"], action); }
