@@ -317,6 +317,7 @@ function decorate(entityLink) {
 				if (
 					entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/']):not([href$='/cover-art'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))
 					&& !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")
+					&& !(cat == "aliases")
 				) {
 					row.classList.add(prefix + "Row");
 				}
