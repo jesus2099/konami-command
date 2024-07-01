@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2024.7.1
+// @version      2024.7.3
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -317,6 +317,7 @@ function decorate(entityLink) {
 				if (
 					entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/']):not([href$='/cover-art'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))
 					&& !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")
+					&& cat != "aliases"
 				) {
 					row.classList.add(prefix + "Row");
 				}
