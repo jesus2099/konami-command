@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2024.6.13
+// @version      2024.7.1
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -219,7 +219,13 @@ if (cat) {
 	} else {
 		// MusicBrainz.org: React problems
 		var DOMChanged = true;
-		document.querySelector("div#content, div#page").addEventListener("DOMNodeInserted", function(event) { DOMChanged = true; });
+		(new MutationObserver(function(mutations, observer) {
+			for (var m = 0; m < mutations.length; m++) {
+				if (mutations[m].type === "childList") {
+					DOMChanged = true;
+				}
+			}
+		})).observe(document.querySelector("div#content, div#page"), {childList: true, subtree: true});
 		setInterval(function() {
 			// Make sure to re-scan page content (after, not during) each time React does some funny stuff hydrate redraw content
 			if (!document.querySelector("p.loading-message") && DOMChanged) {
