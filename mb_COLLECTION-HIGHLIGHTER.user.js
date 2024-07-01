@@ -310,22 +310,21 @@ function decorate(entityLink) {
 				if (edit) {
 					edit.classList.add(prefix + (entityLink == edit.querySelector("div.edit-details a") ? "Box" : "Row"));
 				}
-			} else {
-				// in other pages: Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists
-				var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
-				if (row) {
-					if (
-						entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/']):not([href$='/cover-art'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))
-						&& !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")
-					) {
-						row.classList.add(prefix + "Row");
-					}
-					// decorate tracks without holding them
-					if (cat == "release" && entityType == "recording" || cat == "recording" && entityType == "release") {
-						var track = row.querySelector("a[href*='/track/']");
-						if (track) {
-							track.classList.add(prefix + "Item");
-						}
+			}
+			// Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists
+			var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
+			if (row) {
+				if (
+					entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/']):not([href$='/cover-art'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))
+					&& !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")
+				) {
+					row.classList.add(prefix + "Row");
+				}
+				// decorate tracks without holding them
+				if (cat == "release" && entityType == "recording" || cat == "recording" && entityType == "release") {
+					var track = row.querySelector("a[href*='/track/']");
+					if (track) {
+						track.classList.add(prefix + "Item");
 					}
 				}
 			}
