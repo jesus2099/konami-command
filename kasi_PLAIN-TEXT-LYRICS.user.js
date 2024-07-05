@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2021.2.2
-// @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, music.goo.ne.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
+// @version      2024.7.6
+// @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/kasi_PLAIN-TEXT-LYRICS
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/kasi_PLAIN-TEXT-LYRICS.user.js
@@ -17,7 +17,6 @@
 // @match        *://j-lyric.net/artist/*/*.html
 // @match        *://joysound.com/ex/search/karaoke/_selSongNo_*_songwords.htm
 // @match        *://lyrics.gyao.yahoo.co.jp/ly/*
-// @match        *://music.goo.ne.jp/lyric/*
 // @match        *://petitlyrics.com/lyrics/*
 // @match        *://rio.yahooapis.jp/RioWebService/V2/*
 // @match        *://utaten.com/lyric/*
@@ -107,41 +106,6 @@ var kasimasin = {
 			tmp = document.querySelector("ResultSet > Result > Lyrics"); if (tmp) { alrt += "\n" + tmp.textContent.replace(/<br>/gi, "\n"); }
 			document.addEventListener("click", function(event) { alert(alrt); }, false);
 			alert(alrt);
-		},
-	},
-	"music.goo": {
-		"na": "goo音楽",
-		"init": function(start) {
-			if (start) {
-				var jsonurl = /\/sp\/lyric\/print_json\.php\?[^']+/;
-				document.querySelector("head").addEventListener("DOMNodeInserted", function(event) {
-					var src;
-					if (this.lastChild.tagName == "SCRIPT" && (src = this.lastChild.getAttribute("src")) && src.match(jsonurl)) {
-						this.removeChild(this.lastChild);
-						db("json call prevented");
-					}
-				}, false);
-				var scripts = document.querySelectorAll("div#main script[type='text/javascript']:not([src])");
-				for (var s = 0; s < scripts.length; s++) {
-					var url = scripts[s].innerText.match(jsonurl);
-					if (url) {
-						kasimasin.kasi_url = "" + url;
-						break;
-					}
-				}
-				machine();
-			}
-		},
-		"kabe_css": "div#lyric_canvas",
-		"xhr_machine": function(xhr) {
-			var json = xhr.responseText.match(/draw\((\[".+"\])\);/);
-			if (json && (json = eval(json[1])) && typeof json == "object" && json != null && json.length > 0) {
-				var kasi = "";
-				for (var k = 0; k < json.length; k++) {
-					kasi += json[k];
-				}
-				gogogo(kasi);
-			} else { gogogo(null, "json"); }
 		},
 	},
 	"petitlyrics": {
