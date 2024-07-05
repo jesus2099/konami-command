@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2024.5.16
+// @version      2024.7.6
 // @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
@@ -63,20 +63,6 @@ document.addEventListener("mousedown", function(event) {
 		}
 	}
 });
-// for Snap Links extension v1.9.5 by Ayush and Mpkstroff http://addons.opera.com/extensions/details/snap-links
-document.addEventListener("mousedown", function(event) {
-	document.addEventListener("DOMAttrModified", snapLinksDOMAttrModified);
-});
-document.addEventListener("mouseup", function(event) {
-	document.removeEventListener("DOMAttrModified", snapLinksDOMAttrModified);
-});
-function snapLinksDOMAttrModified(event) {
-	var element = event.target || event.srcElement;
-	if (element && element.tagName == "A" && event.attrName == "style" && event.attrChange == 2 && event.newValue.match(/outline.+!important/)) {
-		// attrChange: 1 MODIFICATION, 2 ADDITION, 3 REMOVAL
-		process(element);
-	}
-}
 function process(anchor) {
 	var HREF = anchor.getAttribute("href");
 	if (HREF) {
