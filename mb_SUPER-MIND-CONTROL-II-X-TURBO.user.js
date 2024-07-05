@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.7.5
+// @version      2024.7.6
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -519,7 +519,9 @@ if (j2sets.EASY_DATE && !location.pathname.match(/^\/account\/edit/)) {
 	if (!userjs.reactHydratePage) {
 		EASY_DATE_init();
 	}
-	document.body.addEventListener("DOMNodeInserted", EASY_DATE_calmDOM, false);
+	(new MutationObserver(function(mutations, observer) {
+		EASY_DATE_calmDOM();
+	})).observe(document.body, {childList: true, subtree: true});
 }
 var EASY_DATE_calmDOMto;
 function EASY_DATE_calmDOM() {
@@ -1252,8 +1254,9 @@ function updateTags(event) {
 	if (tagZone) {
 		if (!event) {
 			tagZone.parentNode.insertBefore(createTag("div", {s: {position: "relative", bottom: "-1rem", color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]), tagZone.previousSibling);
-			tagZone.addEventListener("DOMNodeInserted", updateTags);
-			tagZone.addEventListener("DOMSubtreeModified", updateTags);
+			(new MutationObserver(function(mutations, observer) {
+				updateTags();
+			})).observe(tagZone, {childList: true, subtree: true});
 		}
 		setTimeout(function() {
 			var newUpvotedTags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > a:not([href^='" + account.pathname + "']) + span.tag-vote-buttons.tag-upvoted");
@@ -1399,7 +1402,10 @@ if (enttype) {
 	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && self.location.pathname.match(new RegExp("/release/(add.*|" + stre_GUID + "/edit)$"))) {
 		var releaseEditor = document.querySelector("div#release-editor");
 		if (releaseEditor) {
-			releaseEditor.addEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
+			TRACKLIST_TOOLS_observer = new MutationObserver(function(mutations, observer) {
+				TRACKLIST_TOOLS_calmDOM();
+			});
+			TRACKLIST_TOOLS_observer.observe(releaseEditor, {childList: true, subtree: true});
 			releaseEditor.addEventListener("mouseover", TRACKLIST_TOOLS_buttonHandler);
 			releaseEditor.addEventListener("mouseout", TRACKLIST_TOOLS_buttonHandler);
 			releaseEditor.addEventListener("click", TRACKLIST_TOOLS_buttonHandler);
@@ -1595,6 +1601,7 @@ function tooManyEventsToggle(event) {
 }
 /* --- ENTITY BONUS functions --- */
 var TRACKLIST_TOOLS_calmDOMto;
+var TRACKLIST_TOOLS_observer;
 function TRACKLIST_TOOLS_calmDOM() {
 	if (TRACKLIST_TOOLS_calmDOMto) {
 		clearTimeout(TRACKLIST_TOOLS_calmDOMto);
@@ -1689,9 +1696,9 @@ function TRACKLIST_TOOLS_getInputs(inputCSS, obj, evt) {
 }
 function TRACKLIST_TOOLS_init() {
 	debug("TRACKLIST_TOOLS_init");
-	releaseEditor.removeEventListener("DOMNodeInserted", TRACKLIST_TOOLS_calmDOM);
-	releaseEditor.addEventListener("DOMNodeInserted", function(event) {
-		var tps = this.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
+	TRACKLIST_TOOLS_observer.disconnect();
+	(new MutationObserver(function(mutations, observer) {
+		var tps = releaseEditor.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
 		for (let tp = 0; tp < tps.length; tp++) {
 			if (!tps[tp].parentNode.querySelector("." + userjs.id + "track-length-parser")) {
 				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Time Parser"), tps[tp]);
@@ -1700,7 +1707,7 @@ function TRACKLIST_TOOLS_init() {
 				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "search-replace", title: "SHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Search→replace"), tps[tp]);
 			}
 		}
-	}, false);
+	})).observe(releaseEditor, {childList: true, subtree: true});
 }
 function unlinkH1Link(event) {
 	event.currentTarget.removeEventListener("mouseover", unlinkH1Link);
