@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.7.6
+// @version      2024.7.10
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1247,28 +1247,25 @@ if (j2sets.TAG_TOOLS && account) {
 		}
 	}
 	j2superturbo.addCSSRule("div.sidebar-tags ul[class$='-list'] a[href^='/user/'] { background-color: #B1EBB0 }");
-	updateTags();
-}
-function updateTags(event) {
 	var tagZone = document.querySelector("div.sidebar-tags");
 	if (tagZone) {
-		if (!event) {
-			tagZone.parentNode.insertBefore(createTag("div", {s: {position: "relative", bottom: "-1rem", color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]), tagZone.previousSibling);
-			(new MutationObserver(function(mutations, observer) {
-				updateTags();
-			})).observe(tagZone, {childList: true, subtree: true});
-		}
-		setTimeout(function() {
-			var newUpvotedTags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > a:not([href^='" + account.pathname + "']) + span.tag-vote-buttons.tag-upvoted");
-			for (var t = 0; t < newUpvotedTags.length; t++) {
-				ownifyTag(newUpvotedTags[t].previousSibling);
-			}
-			var oldUpvotedTags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > a[href^='" + account.pathname + "'] + span.tag-vote-buttons:not(.tag-upvoted)");
-			for (var t = 0; t < oldUpvotedTags.length; t++) {
-				ownifyTag(oldUpvotedTags[t].previousSibling, true);
-			}
-		}, 123);
+		tagZone.parentNode.insertBefore(createTag("div", {s: {position: "relative", bottom: "-1rem", color: "black", fontWeight: "normal", "float": "right"}}, ["↙", createTag("span", {s: {backgroundColor: "#B1EBB0"}}, "mine"), " and others’"]), tagZone.previousSibling);
+		(new MutationObserver(function(mutations, observer) {
+			updateTags();
+		})).observe(tagZone, {childList: true, subtree: true, attributes: true});
 	}
+}
+function updateTags() {
+	setTimeout(function() {
+		var newUpvotedTags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > a:not([href^='" + account.pathname + "']) + span.tag-vote-buttons.tag-upvoted");
+		for (var t = 0; t < newUpvotedTags.length; t++) {
+			ownifyTag(newUpvotedTags[t].previousSibling);
+		}
+		var oldUpvotedTags = document.querySelectorAll("div.sidebar-tags ul[class$='-list'] > li > a[href^='" + account.pathname + "'] + span.tag-vote-buttons:not(.tag-upvoted)");
+		for (var t = 0; t < oldUpvotedTags.length; t++) {
+			ownifyTag(oldUpvotedTags[t].previousSibling, true);
+		}
+	}, 123);
 }
 function ownifyTag(tag, revert) {
 	if (revert) {
