@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2024.5.20
+// @version      2024.7.22
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -17,6 +17,7 @@
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/recordings/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/subscribed/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/event\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/event-art)/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/isrc\//
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/edit$)/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
@@ -54,7 +55,11 @@ var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acous
 var css_recording = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
 var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='/work/'], td:not(.pos):not(.video) div.ars > dl.ars > dd > span.mp > a[href^='/work/']";
 var tracksHtml = null;
-var pagecat = self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i) ? "edits" : "release";
+var pagecat;
+if (self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i)) { pagecat = "edits"; } else {
+	var entity_type = location.pathname.match(/^\/(event|release)/i);
+	if (entity_type) { pagecat = entity_type[1]; }
+}
 if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
 if (pagecat != "edits" && self.location.pathname.match(/^\/recording\//i)) { pagecat = "recording"; }
 if (self.location.pathname.match(/^\/isrc\//)) { pagecat = "isrc"; }
@@ -76,7 +81,7 @@ if (pagecat) {
 				if (CAAtab && CAAtab.textContent.match(/\(0\)$/)) {
 					CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
 					CAAtab.style.setProperty("background-color", "#FF6");
-					CAAtab.replaceChild(document.createTextNode("Add Cover Art"), CAAtab.firstChild);
+					CAAtab.replaceChild(document.createTextNode("Add cover art"), CAAtab.firstChild);
 				}
 				// Tracklist stuff
 				css.insertRule("a[" + userjs + "recname] { text-shadow: 1px 2px 2px #999; color: maroon }", 0);
@@ -134,6 +139,18 @@ if (pagecat) {
 					xhr.open("GET", MBS + releasewsURL.replace(/%s/, pageMbid), true);
 					xhr.overrideMimeType("text/xml");
 					xhr.send(null);
+				}
+			}, 1000);
+			break;
+		case "event":
+			// React hydrate clumsy workaround
+			setTimeout(function() {
+				// EAA tab / Add link
+				var EAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/event-art']");
+				if (EAAtab && EAAtab.textContent.match(/\(0\)$/)) {
+					EAAtab.setAttribute("href", EAAtab.getAttribute("href").replace(/event-art/, "add-event-art"));
+					EAAtab.style.setProperty("background-color", "#FF6");
+					EAAtab.replaceChild(document.createTextNode("Add event art"), EAAtab.firstChild);
 				}
 			}, 1000);
 			break;
