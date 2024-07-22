@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.7.10.1738
+// @version      2024.7.22
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -674,10 +674,10 @@ if (j2sets.SPOT_AC) {
 // ================================================================= DISPLAY+
 // ## SPOT_CAA ##
 // ==========================================================================
-j2setting("SPOT_CAA", true, true, "cover art archive’s images stand out from other images. Allows spotting incorrectly padded CAA uploads and looks cool altogether");
+j2setting("SPOT_CAA", true, true, "cover art archive’s images stand out from other images. Allows spotting incorrectly padded CAA uploads and looks cool altogether. Now also supports event art archive (EAA) and zabe40 Entity Images userscript PR #16");
 j2setting("SPOT_CAA_css", "box-shadow: 0 0 8px black;", true, "CSS syntax (on “a.artwork-image > img”)");
 if (j2sets.SPOT_CAA) {
-	j2superturbo.addCSSRule("img[src*='//coverartarchive.org/'], img[src*='//archive.org/download/mbid-'], img.uploader-preview-image { " + j2sets.SPOT_CAA_css + " }");
+	j2superturbo.addCSSRule("img[src*='//coverartarchive.org/'], img[src*='//eventartarchive.org/'], #sidebar .picture > img, img[src*='//archive.org/download/mbid-'], img.uploader-preview-image { " + j2sets.SPOT_CAA_css + " }");
 }
 // ================================================================= DISPLAY+
 // ## WARN_NEW_WINDOW ##
