@@ -102,7 +102,7 @@ function init(edit_notes) {
 			}
 		}
 		var buttons = createTag("div", {a: {class: "buttons"}});
-		var savecb = buttons.appendChild(createTag("label", {a: {title: "saves edit note on page unload"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
+		var savecb = buttons.appendChild(createTag("label", {a: {title: "save edit note"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
 		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
 		savecb.checked = save;
 		savecb.parentNode.appendChild(document.createTextNode(" remember \u00a0"));
@@ -174,6 +174,7 @@ function createClearButtor() {
 	}, false); // onclick
 	butt.style.setProperty("color", "red");
 	butt.style.setProperty("background-color", cWARN);
+	butt.setAttribute("title", "clear edit note");
 	return butt;
 }
 function wait_for_elements(selector, callback) {
