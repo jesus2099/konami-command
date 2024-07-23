@@ -41,28 +41,23 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-/* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
-var textLabels = ["n-1", "n-2", "n-3", "n-4", "n-5", "n-6", "n-7", "n-8", "n-9", "n-10"]; /* maximum 10 labels empty [] will skip buttons */
-var delLabel = "×";
-var setPrevNoteOnLoad = true; /* "true" will restore last edit note on load (user can choose text with buttons in either case) */
-var setPrevNoteOnEditPageLoad = false; /* "true" can be troublesome if you just want to vote, believe me */
-/* funky colours */
-var cOK = "greenyellow";
-// var cNG = "pink";
-var cWARN = "gold";
-/* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs94629";
+var memories = 10;
+var colours = {
+	ok: "greenyellow",
+	warning: "gold"
+};
 var notetextStorage = "jesus2099userjs::last_editnotetext";
 var acoustid = self.location.href.match(/acoustid\.org\/edit\//);
 var mb = !acoustid;
 var editpage = (mb && self.location.href.match(/musicbrainz\.org\/edit\/\d+($|[?#&])/));
 var editsearchpage = (mb && self.location.href.match(/musicbrainz\.org\/.+(?:edits|subscribed)/));
-var re = (mb && document.querySelector("div#release-editor"));
+var release_editor = (mb && document.querySelector("div#release-editor"));
 var save = !localStorage.getItem(userjs + "forget") && (editpage || !editsearchpage);
 var content = document.querySelector(mb ? "#page" : "div.content");
 var savedHeight = localStorage.getItem(userjs + "_savedHeight");
 var notetext;
-var submitbtn;
+var submit_button;
 wait_for_elements((mb ? "#page" : "div.content") + " textarea" + (mb ? ".edit-note, textarea#edit-note-text" : ""), init);
 function init(edit_notes) {
 	if (edit_notes.length === 1) {
@@ -84,14 +79,14 @@ function init(edit_notes) {
 			}
 		});
 	} else { notetext = false; }
-	submitbtn = content.querySelector(mb ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
-	if (submitbtn === null && re) submitbtn = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
-	if (submitbtn === null && location.href.match(/edit-relationships$/)) submitbtn = document.querySelector("div#content.rel-editor form > div.row.no-label.buttons > button.submit.positive[type='submit']");
+	submit_button = content.querySelector(mb ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
+	if (submit_button === null && release_editor) submit_button = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
+	if (submit_button === null && location.href.match(/edit-relationships$/)) submit_button = document.querySelector("div#content.rel-editor form > div.row.no-label.buttons > button.submit.positive[type='submit']");
 	if (notetext) {
 		if (mb) {
 			var carcan = getParent(notetext, "div", "half-width");
 			if (carcan) {
-				if (re) carcan.style.setProperty("width", "inherit");
+				if (release_editor) carcan.style.setProperty("width", "inherit");
 				else notetext.parentNode.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
 			}
 			notetext.style.setProperty("width", "98%");
@@ -102,15 +97,15 @@ function init(edit_notes) {
 			}
 		}
 		var buttons = createTag("div", {a: {class: "buttons"}});
-		var savecb = buttons.appendChild(createTag("label", {a: {title: "save edit note"}, s: {backgroundColor: (save ? cOK : cWARN), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event.shiftKey) { sendEvent(submitbtn, "click"); } }}}));
-		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
-		savecb.checked = save;
-		savecb.parentNode.appendChild(document.createTextNode(" remember \u00a0"));
-		buttons.appendChild(createClearButtor());
-		for (var ni = 0; ni < textLabels.length; ni++) {
+		var save_checkbox = buttons.appendChild(createTag("label", {a: {title: "save edit note"}, s: {backgroundColor: (save ? colours.ok : colours.warning), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event.shiftKey) { sendEvent(submit_button, "click"); } }}}));
+		save_checkbox = save_checkbox.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? colours.ok : colours.warning); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
+		save_checkbox.checked = save;
+		save_checkbox.parentNode.appendChild(document.createTextNode(" remember "));
+		buttons.appendChild(create_clear_button());
+		for (var m = 0; m < memories; m++) {
 			buttons.appendChild(document.createTextNode(" "));
-			let butt = createButtor(textLabels[ni], "50px");
-			let buttid = notetextStorage + "0" + ni;
+			let butt = create_button("n-" + (+m + 1), "50px");
+			let buttid = notetextStorage + "0" + m;
 			butt.setAttribute("id", buttid);
 			let lastnotetext = localStorage.getItem(buttid);
 			if (!lastnotetext) {
@@ -122,7 +117,7 @@ function init(edit_notes) {
 				butt.addEventListener("click", function(event) {
 					force_value(notetext, this.getAttribute("title"));
 					notetext.focus();
-					if (event.shiftKey) { sendEvent(submitbtn, "click"); }
+					if (event.shiftKey) { sendEvent(submit_button, "click"); }
 				}, false); // onclick
 			}
 			buttons.appendChild(butt);
@@ -130,50 +125,48 @@ function init(edit_notes) {
 		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
 		notetext.parentNode.insertBefore(buttons, notetext);
 		let lastnotetext = localStorage.getItem(notetextStorage + "00");
-		if (save && !editsearchpage && (!editpage && setPrevNoteOnLoad || editpage && setPrevNoteOnEditPageLoad) && lastnotetext && notetext.value == "") {
+		if (save && !editsearchpage && !editpage && lastnotetext && notetext.value == "") {
 			force_value(notetext, lastnotetext);
 		}
 	}
-	if (submitbtn !== null) {
-		submitbtn.addEventListener("click", saveNote, false);
-		submitbtn.insertBefore(document.createTextNode("🐘 "), submitbtn.firstChild);
+	if (submit_button !== null) {
+		submit_button.addEventListener("click", save_note, false);
+		submit_button.insertBefore(document.createTextNode("🐘 "), submit_button.firstChild);
 	} else if (!editsearchpage) {
 		// alert("Error: ELEPHANT did not find submit button and cannot save edit note.");
 	}
 }
-function saveNote() {
+function save_note() {
 	if (notetext) {
-		if (textLabels.length > 0) {
-			var thisnotetext = notetext.value.replace(/\u00a0—\u00a0[\r\n]{1,2}Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_MERGE-HELPOR-2.user.js
-			var ls00 = localStorage.getItem(notetextStorage + "00");
-			if (save && thisnotetext != ls00) {
-				if (ls00 != "") {
-					for (var isav = textLabels.length - 1; isav > 0; isav--) {
-						var prev = localStorage.getItem(notetextStorage + "0" + (isav - 1));
-						if (prev) {
-							localStorage.setItem(notetextStorage + "0" + isav, localStorage.getItem(notetextStorage + "0" + (isav - 1)));
-						}
+		var thisnotetext = notetext.value.replace(/\u00a0—\u00a0[\r\n]{1,2}Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_MERGE-HELPOR-2.user.js
+		var ls00 = localStorage.getItem(notetextStorage + "00");
+		if (save && thisnotetext != ls00) {
+			if (ls00 != "") {
+				for (var isav = memories - 1; isav > 0; isav--) {
+					var prev = localStorage.getItem(notetextStorage + "0" + (isav - 1));
+					if (prev) {
+						localStorage.setItem(notetextStorage + "0" + isav, localStorage.getItem(notetextStorage + "0" + (isav - 1)));
 					}
 				}
-				localStorage.setItem(notetextStorage + "00", thisnotetext);
 			}
+			localStorage.setItem(notetextStorage + "00", thisnotetext);
 		}
 	}
 }
-function createButtor(label, width) {
+function create_button(label, width) {
 	let butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
 	if (width) { butt.style.setProperty("width", width); }
 	return butt;
 }
-function createClearButtor() {
-	let butt = createButtor(delLabel, "25px");
+function create_clear_button() {
+	let butt = create_button("×", "25px");
 	butt.addEventListener("click", function(event) {
 		force_value(notetext, "");
 		notetext.focus();
-		if (event.shiftKey) { sendEvent(submitbtn, "click"); }
+		if (event.shiftKey) { sendEvent(submit_button, "click"); }
 	}, false); // onclick
 	butt.style.setProperty("color", "red");
-	butt.style.setProperty("background-color", cWARN);
+	butt.style.setProperty("background-color", colours.warning);
 	butt.setAttribute("title", "clear edit note");
 	return butt;
 }
