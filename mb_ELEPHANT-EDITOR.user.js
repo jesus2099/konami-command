@@ -113,16 +113,21 @@ function init(edit_notes) {
 				butt.style.setProperty("opacity", ".5");
 			} else {
 				butt.setAttribute("title", lastnotetext);
-				butt.setAttribute("value", lastnotetext.replace(/(http:\/\/|https:\/\/|www\.|[\n\r])/gi, "").substr(0, 6));
+				butt.setAttribute("value", summarise(lastnotetext));
 				butt.addEventListener("click", function(event) {
-					force_value(notetext, this.getAttribute("title"));
-					notetext.focus();
-					if (event.shiftKey) { sendEvent(submit_button, "click"); }
+					if (event.ctrlKey) {
+						forget(event.target.getAttribute("id").match(/(\d)$/)[1]);
+						notetext.focus();
+					} else {
+						force_value(notetext, this.getAttribute("title"));
+						notetext.focus();
+						if (event.shiftKey) { sendEvent(submit_button, "click"); }
+					}
 				}, false); // onclick
 			}
 			buttons.appendChild(butt);
 		}
-		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
+		buttons.appendChild(document.createTextNode(" ← shift+click: submit / ctrl+click: remove"));
 		notetext.parentNode.insertBefore(buttons, notetext);
 		let lastnotetext = localStorage.getItem(notetextStorage + "00");
 		if (save && !editsearchpage && !editpage && lastnotetext && notetext.value == "") {
@@ -153,6 +158,27 @@ function save_note() {
 		}
 	}
 }
+function forget(memory_index) {
+	if (memory_index >= 0 && memory_index < memories) {
+		for (var mi = memory_index; mi < memories; mi++) {
+			var memory_button = document.querySelector("[id='" + notetextStorage + "0" + mi + "']");
+			var next_memory = localStorage.getItem(notetextStorage + "0" + (+mi + 1));
+			if (next_memory === null) {
+				next_memory = "n-" + (+mi + 1);
+				localStorage.removeItem(notetextStorage + "0" + mi);
+				memory_button.removeAttribute("title");
+				memory_button.setAttribute("disabled", "true");
+				memory_button.style.setProperty("opacity", ".5");
+			} else {
+				localStorage.setItem(notetextStorage + "0" + mi, next_memory);
+				memory_button.setAttribute("title", next_memory);
+			}
+			memory_button.setAttribute("value", summarise(next_memory));
+		}
+	} else {
+		alert("Error while asked to forget memory n-" + (+memory_index + 1));
+	}
+}
 function create_button(label, width) {
 	let butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
 	if (width) { butt.style.setProperty("width", width); }
@@ -169,6 +195,9 @@ function create_clear_button() {
 	butt.style.setProperty("background-color", colours.warning);
 	butt.setAttribute("title", "clear edit note");
 	return butt;
+}
+function summarise(full_edit_note) {
+	return full_edit_note.replace(/(http:\/\/|https:\/\/|www\.|[\n\r])/gi, "").substr(0, 6);
 }
 function wait_for_elements(selector, callback) {
 	var wait_for_elements_interval_id = setInterval(function() {
