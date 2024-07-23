@@ -145,12 +145,19 @@ function save_note() {
 	if (notetext) {
 		var thisnotetext = notetext.value.replace(/\u00a0—\u00a0[\r\n]{1,2}Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_MERGE-HELPOR-2.user.js
 		var ls00 = localStorage.getItem(notetextStorage + "00");
-		if (save && thisnotetext != ls00) {
-			if (ls00 != "") {
+		if (save && thisnotetext !== ls00) {
+			if (ls00 !== "") {
+				// remove earlier (rightwards) duplicates
+				for (var idel = memories - 1; idel > 0; idel--) {
+					if (thisnotetext === localStorage.getItem(notetextStorage + "0" + idel)) {
+						forget(idel);
+					}
+				}
+				// insert new note at the left and shift everything rightwards
 				for (var isav = memories - 1; isav > 0; isav--) {
 					var prev = localStorage.getItem(notetextStorage + "0" + (isav - 1));
 					if (prev) {
-						localStorage.setItem(notetextStorage + "0" + isav, localStorage.getItem(notetextStorage + "0" + (isav - 1)));
+						localStorage.setItem(notetextStorage + "0" + isav, prev);
 					}
 				}
 			}
