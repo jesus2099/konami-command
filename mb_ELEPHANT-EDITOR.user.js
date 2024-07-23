@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2024.2.18
+// @version      2024.7.23
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -106,7 +106,9 @@ function init(edit_notes) {
 		savecb = savecb.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? cOK : cWARN); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
 		savecb.checked = save;
 		savecb.parentNode.appendChild(document.createTextNode(" remember \u00a0"));
+		buttons.appendChild(createClearButtor());
 		for (var ni = 0; ni < textLabels.length; ni++) {
+			buttons.appendChild(document.createTextNode(" "));
 			let butt = createButtor(textLabels[ni], "50px");
 			let buttid = notetextStorage + "0" + ni;
 			butt.setAttribute("id", buttid);
@@ -124,9 +126,7 @@ function init(edit_notes) {
 				}, false); // onclick
 			}
 			buttons.appendChild(butt);
-			buttons.appendChild(document.createTextNode(" "));
 		}
-		buttons.appendChild(createClearButtor());
 		buttons.appendChild(document.createTextNode(" ← shift+click to submit right away"));
 		notetext.parentNode.insertBefore(buttons, notetext);
 		let lastnotetext = localStorage.getItem(notetextStorage + "00");
