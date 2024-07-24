@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         DEBUG
-// @version      2024.5.16
+// @version      2024.7.24
 // @description  Event and context info
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/DEBUG
@@ -25,6 +25,11 @@ document.body.addEventListener("click", keyboardMouseEventDebug);
 document.body.addEventListener("dblclick", keyboardMouseEventDebug);
 document.body.addEventListener("mousedown", keyboardMouseEventDebug);
 document.body.addEventListener("mouseup", keyboardMouseEventDebug);
+document.body.addEventListener("contextmenu", keyboardMouseEventDebug);
+document.body.addEventListener("touchstart", keyboardMouseEventDebug);
+document.body.addEventListener("touchmove", keyboardMouseEventDebug);
+document.body.addEventListener("touchend", keyboardMouseEventDebug);
+document.body.addEventListener("touchcancel", keyboardMouseEventDebug);
 function keyboardMouseEventDebug(event) {
 	console.debug(
 		event.type.toUpperCase().padEnd(12)
