@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         jira. MOBILE VIEW TOGGLE SWITCH
-// @version      2024.7.24
+// @version      2024.7.24.1101
 // @description  ☠ OBSOLETE ☠ Provides a convenient "Switch to mobile version" big header toggle link in all JIRA sites, in addition to the existing reverse "Switch to desktop version"
 // @namespace    https://github.com/jesus2099/konami-command
 // @author       jesus2099
@@ -10,4 +10,4 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-alert("Please uninstall my “jira. TURBO BOOST” userscript as I will not update my Jira scripts any more. Jira is going Cloud, which is completely different stuff.\njesus2099");
+console.error("Please uninstall my “jira. TURBO BOOST” userscript as I will not update my Jira scripts any more. Jira is going Cloud, which is completely different stuff.\njesus2099");

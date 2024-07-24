@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         jira. TURBO BOOST
-// @version      2024.7.24
+// @version      2024.7.24.1101
 // @description  ☠ OBSOLETE ☠ Fast toggle/switch quick filters (Ctrl for native additive behaviour)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jira_TURBO-BOOST
@@ -14,4 +14,4 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-alert("Please uninstall my “jira. TURBO BOOST” userscript as I will not update my Jira scripts any more. Jira is going Cloud, which is completely different stuff.\njesus2099");
+console.error("Please uninstall my “jira. TURBO BOOST” userscript as I will not update my Jira scripts any more. Jira is going Cloud, which is completely different stuff.\njesus2099");
