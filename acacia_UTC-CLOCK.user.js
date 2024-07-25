@@ -23,13 +23,12 @@ UTC_clock.display.classList.add("j2-utc-clock");
 UTC_clock.css.setAttribute("type", "text/css");
 document.head.appendChild(UTC_clock.css);
 UTC_clock.css = UTC_clock.css.sheet;
-UTC_clock.css.insertRule("app-header mat-toolbar-row > div.j2-utc-clock { opacity: .6; background-color: #fcf; margin: 0 auto; padding: 0 8px; font-size: .5em; border: dashed #636 1px; color: #303; }", 0);
-UTC_clock.css.insertRule("app-header:hover mat-toolbar-row > div.j2-utc-clock { display: none; }", 0);
+UTC_clock.css.insertRule("app-footer footer > div.j2-utc-clock { opacity: .8; font-size: .8em; background-color: #fcf; margin-right: auto; padding: 2px 8px; border: solid #c9c 1px; color: #303; font-weight: bold; }", 0);
 
-var sibling = document.querySelector("app-header mat-toolbar-row div.ml-auto");
-if (sibling) {
+var footer = document.querySelector("app-footer footer");
+if (footer) {
 	UTC_clock.display.appendChild(document.createTextNode(getUTCTimeString(getLocale())));
-	sibling.parentNode.insertBefore(UTC_clock.display, sibling);
+	footer.insertBefore(UTC_clock.display, footer.firstChild);
 }
 
 setInterval(function() {
