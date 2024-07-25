@@ -10,4 +10,4 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-console.error(`Please uninstall my “${GM_info.script.name}” userscript.\nI am sorry but I am stopping its development to focus on supporting more useful scripts.\n\nI will not update my Jira scripts any more. Jira is going Cloud, which is completely different stuff.\n\n — ${GM_info.script.author}`);
+console.error(`Please uninstall the following obsolete userscript:\n\n ${GM_info.script.name}\n\nI am sorry but I am stopping its development to focus on supporting more useful scripts.\n\nI will not update my Jira scripts any more. Jira is going Cloud, which is completely different stuff.\n\n — ${GM_info.script.author}`);
