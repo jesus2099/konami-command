@@ -20,10 +20,11 @@ var UTC_clock = {
 	display: document.createElement("div")
 }
 UTC_clock.display.classList.add("j2-utc-clock");
+UTC_clock.display.setAttribute("title", GM_info.script.name + " version " + GM_info.script.version);
 UTC_clock.css.setAttribute("type", "text/css");
 document.head.appendChild(UTC_clock.css);
 UTC_clock.css = UTC_clock.css.sheet;
-UTC_clock.css.insertRule("app-footer footer > div.j2-utc-clock { opacity: .8; font-size: .8em; background-color: #fcf; margin-right: auto; padding: 2px 8px; border: solid #c9c 1px; color: #303; font-weight: bold; }", 0);
+UTC_clock.css.insertRule("app-footer > footer > div.j2-utc-clock { font-size: .88em; margin-right: auto; text-shadow: 2px 2px 4px grey; }", 0);
 
 var footer = document.querySelector("app-footer footer");
 if (footer) {
