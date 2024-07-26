@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name            acacia. UTC CLOCK
-// @version         2024.7.25
+// @version         2024.7.26
 // @description:fr  Affiche l‘heure TU
 // @description     Show UTC Clock
 // @namespace       https://github.com/jesus2099/konami-command
@@ -26,15 +26,15 @@ document.head.appendChild(UTC_clock.css);
 UTC_clock.css = UTC_clock.css.sheet;
 UTC_clock.css.insertRule("app-footer > footer > div.j2-utc-clock { font-size: .88em; margin-right: auto; text-shadow: 2px 2px 4px grey; }", 0);
 
-var footer = document.querySelector("app-footer footer");
-if (footer) {
+waitForElement("app-footer footer", function(footer) {
 	UTC_clock.display.appendChild(document.createTextNode(getUTCTimeString(getLocale())));
 	footer.insertBefore(UTC_clock.display, footer.firstChild);
-}
+	setInterval(function() {
+		UTC_clock.display.replaceChild(document.createTextNode(getUTCTimeString(getLocale())), UTC_clock.display.firstChild);
+	}, 5000);
+});
 
-setInterval(function() {
-	UTC_clock.display.replaceChild(document.createTextNode(getUTCTimeString(getLocale())), UTC_clock.display.firstChild);
-}, 5000);
+
 function getUTCTimeString(locale) {
 	return (new Date()).toLocaleString(
 		locale,
@@ -62,4 +62,13 @@ function getLocale() {
 			break;
 	}
 	return locale;
+}
+function waitForElement(selector, callback) {
+	var waitForElementIntervalID = setInterval(function() {
+		var element = document.querySelector(selector);
+		if (element) {
+			clearInterval(waitForElementIntervalID);
+			callback(element);
+		}
+	}, 123);
 }
