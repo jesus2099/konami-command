@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2024.7.23
+// @version      2024.7.29
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -41,6 +41,8 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
+var IS_MOBILE_DEVICE = /Mobile/i.test(navigator.userAgent);
 var userjs = "jesus2099userjs94629";
 var memories = 10;
 var colours = {
@@ -114,20 +116,37 @@ function init(edit_notes) {
 			} else {
 				butt.setAttribute("title", lastnotetext);
 				butt.setAttribute("value", summarise(lastnotetext));
-				butt.addEventListener("click", function(event) {
-					if (event.ctrlKey) {
-						forget(event.target.getAttribute("id").match(/(\d)$/)[1]);
-						notetext.focus();
-					} else {
-						force_value(notetext, this.getAttribute("title"));
-						notetext.focus();
-						if (event.shiftKey) { sendEvent(submit_button, "click"); }
-					}
-				}, false); // onclick
+				if (IS_TOUCH_SCREEN) {
+					onLongPress(butt, function(event) {
+						if (confirm("Do you want to remove this memory?\n\n" + event.target.getAttribute("title"))) {
+							forget(event.target.getAttribute("id").match(/(\d)$/)[1]);
+						}
+					});
+				}
+				if (!IS_MOBILE_DEVICE || !IS_TOUCH_SCREEN) {
+					butt.addEventListener("click", function(event) {
+						if (event.ctrlKey) {
+							forget(event.target.getAttribute("id").match(/(\d)$/)[1]);
+							notetext.focus();
+						} else {
+							force_value(notetext, this.getAttribute("title"));
+							if (!IS_TOUCH_SCREEN) {
+								notetext.focus();
+							}
+							if (event.shiftKey) { sendEvent(submit_button, "click"); }
+						}
+					}, false); // onclick
+				}
 			}
 			buttons.appendChild(butt);
 		}
-		buttons.appendChild(document.createTextNode(" ← shift+click: submit / ctrl+click: remove"));
+		if (IS_TOUCH_SCREEN) {
+			buttons.appendChild(document.createElement("br"));
+			buttons.appendChild(document.createTextNode("long touch: remove ↗"));
+		}
+		if (!IS_MOBILE_DEVICE || !IS_TOUCH_SCREEN) {
+			buttons.appendChild(document.createTextNode(" ← shift+click: submit / ctrl+click: remove"));
+		}
 		notetext.parentNode.insertBefore(buttons, notetext);
 		let lastnotetext = localStorage.getItem(notetextStorage + "00");
 		if (save && !editsearchpage && !editpage && lastnotetext && notetext.value == "") {
@@ -214,4 +233,20 @@ function wait_for_elements(selector, callback) {
 			callback(elements);
 		}
 	}, 123);
+}
+function onLongPress(element, callback) {
+	// https://stackoverflow.com/a/60207895/2236179
+	let timer;
+	element.addEventListener("touchstart", function(event) {
+		timer = setTimeout(function() {
+			timer = null;
+			callback(event);
+		}, 500);
+	});
+	function cancel() {
+		clearTimeout(timer);
+	}
+	element.addEventListener("touchend", cancel);
+	element.addEventListener("touchcancel", cancel);
+	element.addEventListener("touchmove", cancel);
 }
