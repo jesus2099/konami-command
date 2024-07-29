@@ -39,7 +39,7 @@
 // @match        *://*.musicbrainz.org/release/add*
 // @match        *://*.musicbrainz.org/work/*/add-iswc
 // @match        *://acoustid.org/edit/*
-// @run-at       document-end
+// @run-at       document-idle
 // ==/UserScript==
 "use strict";
 var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
