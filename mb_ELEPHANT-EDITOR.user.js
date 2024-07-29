@@ -10,6 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-01-13; https://web.archive.org/web/20131103163403/userscripts.org/scripts/show/94629 / https://web.archive.org/web/20141011084017/userscripts-mirror.org/scripts/show/94629
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
+// @require      https://github.com/jesus2099/konami-command/raw/c5fb7fe162530fdbd7e017170f24169272a729a0/lib/CONTROL-POMME.js?version=2024.3.14.1822
 // @require      https://github.com/jesus2099/konami-command/raw/f5b4bdb4f7ce1fedbc6c14b784425c2645b03a85/lib/SUPER.js?version=2023.3.23
 // @grant        none
 // @match        *://*.musicbrainz.org/*/add-alias
@@ -99,7 +100,7 @@ function init(edit_notes) {
 			}
 		}
 		var buttons = createTag("div", {a: {class: "buttons"}});
-		var save_checkbox = buttons.appendChild(createTag("label", {a: {title: "save edit note"}, s: {backgroundColor: (save ? colours.ok : colours.warning), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event.shiftKey) { sendEvent(submit_button, "click"); } }}}));
+		var save_checkbox = buttons.appendChild(createTag("label", {a: {title: "save edit note"}, s: {backgroundColor: (save ? colours.ok : colours.warning), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event[CONTROL_POMME.shift.key]) { sendEvent(submit_button, "click"); } }}}));
 		save_checkbox = save_checkbox.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? colours.ok : colours.warning); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
 		save_checkbox.checked = save;
 		save_checkbox.parentNode.appendChild(document.createTextNode(" remember "));
@@ -125,7 +126,7 @@ function init(edit_notes) {
 				}
 				if (!IS_MOBILE_DEVICE || !IS_TOUCH_SCREEN) {
 					butt.addEventListener("click", function(event) {
-						if (event.ctrlKey) {
+						if (event[CONTROL_POMME.ctrl.key]) {
 							forget(event.target.getAttribute("id").match(/(\d)$/)[1]);
 							notetext.focus();
 						} else {
@@ -133,7 +134,7 @@ function init(edit_notes) {
 							if (!IS_TOUCH_SCREEN) {
 								notetext.focus();
 							}
-							if (event.shiftKey) { sendEvent(submit_button, "click"); }
+							if (event[CONTROL_POMME.shift.key]) { sendEvent(submit_button, "click"); }
 						}
 					}, false); // onclick
 				}
@@ -145,7 +146,7 @@ function init(edit_notes) {
 			buttons.appendChild(document.createTextNode("long touch: remove ↗"));
 		}
 		if (!IS_MOBILE_DEVICE || !IS_TOUCH_SCREEN) {
-			buttons.appendChild(document.createTextNode(" ← shift+click: submit / ctrl+click: remove"));
+			buttons.appendChild(document.createTextNode(" ← " + CONTROL_POMME.shift.label + "click: submit / " + CONTROL_POMME.ctrl.label + "click: remove"));
 		}
 		notetext.parentNode.insertBefore(buttons, notetext);
 		let lastnotetext = localStorage.getItem(notetextStorage + "00");
@@ -215,7 +216,7 @@ function create_clear_button() {
 	butt.addEventListener("click", function(event) {
 		force_value(notetext, "");
 		notetext.focus();
-		if (event.shiftKey) { sendEvent(submit_button, "click"); }
+		if (event[CONTROL_POMME.shift.key]) { sendEvent(submit_button, "click"); }
 	}, false); // onclick
 	butt.style.setProperty("color", "red");
 	butt.style.setProperty("background-color", colours.warning);
