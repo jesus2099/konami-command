@@ -44,6 +44,10 @@
 "use strict";
 var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
 var IS_MOBILE_DEVICE = /Mobile/i.test(navigator.userAgent);
+var ON_MB = location.host.match(/^musicbrainz\.(eu|org)/);
+var ON_EDIT_PAGE = (ON_MB && location.pathname.match(/^\/edit\/\d+$/));
+var ON_EDIT_SEARCH_PAGE = (ON_MB && location.pathname.match(/^\/.+(?:edits|subscribed)/));
+var ON_RELEASE_EDITOR_PAGE = (ON_MB && document.querySelector("div#release-editor"));
 var userjs = "jesus2099userjs94629";
 var memories = 10;
 var colours = {
@@ -51,45 +55,40 @@ var colours = {
 	warning: "gold"
 };
 var notetextStorage = "jesus2099userjs::last_editnotetext";
-var acoustid = self.location.href.match(/acoustid\.org\/edit\//);
-var mb = !acoustid;
-var editpage = (mb && self.location.href.match(/musicbrainz\.org\/edit\/\d+($|[?#&])/));
-var editsearchpage = (mb && self.location.href.match(/musicbrainz\.org\/.+(?:edits|subscribed)/));
-var release_editor = (mb && document.querySelector("div#release-editor"));
-var save = !localStorage.getItem(userjs + "forget") && (editpage || !editsearchpage);
-var content = document.querySelector(mb ? "#page" : "div.content");
-var savedHeight = localStorage.getItem(userjs + "_savedHeight");
+var save = !localStorage.getItem(userjs + "forget") && (ON_EDIT_PAGE || !ON_EDIT_SEARCH_PAGE);
+var content = document.querySelector(ON_MB ? "#page" : "div.content");
+var saved_height = localStorage.getItem(userjs + "_savedHeight");
 var notetext;
 var submit_button;
-wait_for_elements((mb ? "#page" : "div.content") + " textarea" + (mb ? ".edit-note, textarea#edit-note-text" : ""), init);
+waitForElements((ON_MB ? "#page" : "div.content") + " textarea" + (ON_MB ? ".edit-note, textarea#edit-note-text" : ""), init);
 function init(edit_notes) {
 	if (edit_notes.length === 1) {
 		notetext = edit_notes[0];
-		if (acoustid) {
+		if (!ON_MB) {
 			notetext.style.setProperty("height", "8em");
 			notetext.style.setProperty("width", "100%");
 		}
-		if (savedHeight) {
-			notetext.style.setProperty("height", savedHeight + "px");
+		if (saved_height) {
+			notetext.style.setProperty("height", saved_height + "px");
 			addAfter(createTag("div", {s: {textAlign: "right"}}, createTag("a", {e: {click: function(event) {
 				localStorage.removeItem(userjs + "_savedHeight");
 				this.parentNode.replaceChild(document.createTextNode("Size reset! It will take effect at next page load."), this);
 			}}}, "↖Reset size")), notetext);
 		}
 		notetext.addEventListener("mouseup", function(event) {
-			if (this.offsetHeight != savedHeight) {
+			if (this.offsetHeight != saved_height) {
 				localStorage.setItem(userjs + "_savedHeight", this.offsetHeight);
 			}
 		});
 	} else { notetext = false; }
-	submit_button = content.querySelector(mb ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
-	if (submit_button === null && release_editor) submit_button = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
+	submit_button = content.querySelector(ON_MB ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
+	if (submit_button === null && ON_RELEASE_EDITOR_PAGE) submit_button = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
 	if (submit_button === null && location.href.match(/edit-relationships$/)) submit_button = document.querySelector("div#content.rel-editor form > div.row.no-label.buttons > button.submit.positive[type='submit']");
 	if (notetext) {
-		if (mb) {
+		if (ON_MB) {
 			var carcan = getParent(notetext, "div", "half-width");
 			if (carcan) {
-				if (release_editor) carcan.style.setProperty("width", "inherit");
+				if (ON_RELEASE_EDITOR_PAGE) carcan.style.setProperty("width", "inherit");
 				else notetext.parentNode.style.setProperty("width", carcan.parentNode.offsetWidth + "px");
 			}
 			notetext.style.setProperty("width", "98%");
@@ -104,10 +103,10 @@ function init(edit_notes) {
 		save_checkbox = save_checkbox.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? colours.ok : colours.warning); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
 		save_checkbox.checked = save;
 		save_checkbox.parentNode.appendChild(document.createTextNode(" remember "));
-		buttons.appendChild(create_clear_button());
+		buttons.appendChild(createClearButton());
 		for (var m = 0; m < memories; m++) {
 			buttons.appendChild(document.createTextNode(" "));
-			let butt = create_button("n-" + (+m + 1), "50px");
+			let butt = createButton("n-" + (+m + 1), "50px");
 			let buttid = notetextStorage + "0" + m;
 			butt.setAttribute("id", buttid);
 			let lastnotetext = localStorage.getItem(buttid);
@@ -150,18 +149,18 @@ function init(edit_notes) {
 		}
 		notetext.parentNode.insertBefore(buttons, notetext);
 		let lastnotetext = localStorage.getItem(notetextStorage + "00");
-		if (save && !editsearchpage && !editpage && lastnotetext && notetext.value == "") {
+		if (save && !ON_EDIT_SEARCH_PAGE && !ON_EDIT_PAGE && lastnotetext && notetext.value == "") {
 			force_value(notetext, lastnotetext);
 		}
 	}
 	if (submit_button !== null) {
-		submit_button.addEventListener("click", save_note, false);
+		submit_button.addEventListener("click", saveNote, false);
 		submit_button.insertBefore(document.createTextNode("🐘 "), submit_button.firstChild);
-	} else if (!editsearchpage) {
+	} else if (!ON_EDIT_SEARCH_PAGE) {
 		// alert("Error: ELEPHANT did not find submit button and cannot save edit note.");
 	}
 }
-function save_note() {
+function saveNote() {
 	if (notetext) {
 		var thisnotetext = notetext.value.replace(/\u00a0—\u00a0[\r\n]{1,2}Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_MERGE-HELPOR-2.user.js
 		var ls00 = localStorage.getItem(notetextStorage + "00");
@@ -206,13 +205,13 @@ function forget(memory_index) {
 		alert("Error while asked to forget memory n-" + (+memory_index + 1));
 	}
 }
-function create_button(label, width) {
+function createButton(label, width) {
 	let butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
 	if (width) { butt.style.setProperty("width", width); }
 	return butt;
 }
-function create_clear_button() {
-	let butt = create_button("×", "25px");
+function createClearButton() {
+	let butt = createButton("×", "25px");
 	butt.addEventListener("click", function(event) {
 		force_value(notetext, "");
 		notetext.focus();
@@ -226,11 +225,11 @@ function create_clear_button() {
 function summarise(full_edit_note) {
 	return full_edit_note.replace(/(http:\/\/|https:\/\/|www\.|[\n\r])/gi, "").substr(0, 6);
 }
-function wait_for_elements(selector, callback) {
-	var wait_for_elements_interval_id = setInterval(function() {
+function waitForElements(selector, callback) {
+	var waitForElements_interval_id = setInterval(function() {
 		var elements = document.querySelectorAll(selector);
 		if (elements.length > 0) {
-			clearInterval(wait_for_elements_interval_id);
+			clearInterval(waitForElements_interval_id);
 			callback(elements);
 		}
 	}, 123);
