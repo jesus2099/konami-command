@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2024.7.22
+// @version      2024.7.31
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -18,7 +18,7 @@
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/subscribed/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/event\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/event-art)/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/isrc\//
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/isrc\/[a-z]{2}[a-z0-9]{3}[0-9]{2}[0-9]{5}/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/edit$)/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\?/
@@ -41,7 +41,8 @@ var trackLengthDiffInfo = 5000; // ms
 var trackLengthDiffWarn = 15000; // ms
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
 var userjs = "jesus2099userjs81127";
-var MBS = self.location.protocol + "//" + self.location.host;
+var DEBUG = localStorage.getItem("jesus2099debug");
+var MBS = location.protocol + "//" + location.host;
 var hasDupes = { ISRC: 0, AcoustID: 0 };
 var shownisrcs = [];
 var shownacoustids = [];
@@ -55,15 +56,19 @@ var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acous
 var css_recording = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
 var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='/work/'], td:not(.pos):not(.video) div.ars > dl.ars > dd > span.mp > a[href^='/work/']";
 var tracksHtml = null;
-var pagecat;
-if (self.location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i)) { pagecat = "edits"; } else {
-	var entity_type = location.pathname.match(/^\/(event|release)/i);
-	if (entity_type) { pagecat = entity_type[1]; }
+var page_type;
+if (location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i)) {
+	page_type = "edits";
+} else {
+	var entity_type = location.pathname.match(/^\/(event|isrc|recording|release)/i);
+	if (entity_type) {
+		page_type = entity_type[1];
+	} else if (location.pathname.match(/\/recordings/i)) {
+		page_type = "recordings";
+	}
 }
-if (self.location.pathname.match(/\/recordings/i)) { pagecat = "recordings"; }
-if (pagecat != "edits" && self.location.pathname.match(/^\/recording\//i)) { pagecat = "recording"; }
-if (self.location.pathname.match(/^\/isrc\//)) { pagecat = "isrc"; }
-const pageMbid = self.location.pathname.match(re_GUID);
+debug("Page type: " + page_type);
+const pageMbid = location.pathname.match(re_GUID);
 var paginatedRelease = document.querySelector("div#content table.tbl.medium > tbody[style*='display'][style*='none'], div#content table.tbl.medium > tbody a.load-tracks");
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
@@ -71,8 +76,8 @@ document.head.appendChild(css);
 css = css.sheet;
 css.insertRule("div#page table.add-isrcs tbody a[href^='/isrc/'], div#page table.merge-recordings tbody a[href^='/isrc/'], div#page table.remove-isrc tbody a[href^='/isrc/'], div#page table." + userjs + "-has-isrcs tbody a[href^='/isrc/'] { white-space: nowrap !important; }", 0);
 css.insertRule("div#content." + userjs + "hide-recdis table.tbl.medium span." + userjs + "recdis.comment { display: none; }", 0);
-if (pagecat) {
-	switch (pagecat) {
+if (page_type) {
+	switch (page_type) {
 		case "release":
 			// React hydrate clumsy workaround
 			setTimeout(function() {
@@ -263,7 +268,7 @@ if (pagecat) {
 						coolBubble.error("Error " + this.status + (this.statusText ? " “" + this.statusText + "”" : "") + " while fetching inline track stuff.");
 					});
 					coolBubble.info("Loading “" + document.querySelector("h1").textContent + "” shadow recording…");
-					xhr.open("get", self.location.protocol + "//" + self.location.host + "/ws/2/recording?query=rid:" + pageMbid, true);
+					xhr.open("get", MBS + "/ws/2/recording?query=rid:" + pageMbid, true);
 					xhr.overrideMimeType("text/xml");
 					xhr.send(null);
 				}
@@ -658,4 +663,9 @@ function time(_ms) {
 		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" + (d.getUTCMinutes() / 100).toFixed(2).slice(2) : d.getUTCMinutes()) + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2) + (d.getUTCMilliseconds() > 0 ? "." + (d.getUTCMilliseconds() / 1000).toFixed(3).slice(2) : "");
 	}
 	return "?:??";
+}
+function debug(text) {
+	if (DEBUG) {
+		console.debug(text);
+	}
 }
