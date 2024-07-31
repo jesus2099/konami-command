@@ -47,6 +47,49 @@ var hasDupes = { ISRC: 0, AcoustID: 0 };
 var shownisrcs = [];
 var shownacoustids = [];
 var shownworks = {count: 0};
+var texts = {
+	de: {
+		add_cover_art: "Cover‐Art hinzufügen",
+		add_event_art: "Event‐Art hinzufügen"
+	},
+	en: {
+		add_cover_art: "Add cover art",
+		add_event_art: "Add event art"
+	},
+	es: {
+		add_cover_art: "Añadir imágenes",
+		add_event_art: "Añadir imágenes"
+	},
+	et: {
+		add_cover_art: "Lisa kaanepiltid",
+		add_event_art: "Lisa pildid"
+	},
+	fr: {
+		add_cover_art: "Ajouter des images",
+		add_event_art: "Ajouter des images"
+	},
+	it: {
+		add_cover_art: "Aggiungi copertine",
+		add_event_art: "Aggiungi immagini dell’evento"
+	},
+	ja: {
+		add_cover_art: "カバーアートを追加",
+		add_event_art: "イベントアートを追加"
+	},
+	nl: {
+		add_cover_art: "Afbeeldingen toevoegen",
+		add_event_art: "Afbeeldingen toevoegen"
+	}
+};
+var lang = document.querySelector("html").getAttribute("lang");
+if (lang) {
+	if (texts[lang]) {
+		texts = texts[lang];
+	} else {
+		texts = texts["en"];
+	}
+}
+debug(texts);
 var isrcURL = "/isrc/%s";
 var acoustidURL = "//acoustid.org/track/%s";
 var releasewsURL = "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musicbrainz.org/XMLWebService#release_resources */
@@ -643,7 +686,7 @@ function addIMGTabLink() {
 	if (IMGtab && IMGtab.textContent.match(/\(0\)$/)) {
 		IMGtab.setAttribute("href", IMGtab.getAttribute("href").replace(/(cover|event)-art/, "add-$1-art"));
 		IMGtab.style.setProperty("background-color", "#FF6");
-		IMGtab.replaceChild(document.createTextNode("Add " + IMGtab.getAttribute("href").match(/(cover|event)-art/)[1] + " art"), IMGtab.firstChild);
+		IMGtab.replaceChild(document.createTextNode(texts["add_" + (page_type == "release" ? "cover" : "event") + "_art"]), IMGtab.firstChild);
 	}
 }
 
