@@ -17,7 +17,7 @@
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/recordings/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/subscribed/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/event\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/event-art)/
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/event\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/(add-)?event-art)/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/isrc\/[a-z]{2}[a-z0-9]{3}[0-9]{2}[0-9]{5}/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/edit$)/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
@@ -82,12 +82,7 @@ if (page_type) {
 			// React hydrate clumsy workaround
 			setTimeout(function() {
 				// CAA tab / Add link
-				var CAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/cover-art']");
-				if (CAAtab && CAAtab.textContent.match(/\(0\)$/)) {
-					CAAtab.setAttribute("href", CAAtab.getAttribute("href").replace(/cover-art/, "add-cover-art"));
-					CAAtab.style.setProperty("background-color", "#FF6");
-					CAAtab.replaceChild(document.createTextNode("Add cover art"), CAAtab.firstChild);
-				}
+				addIMGTabLink();
 				// Tracklist stuff
 				css.insertRule("a[" + userjs + "recname] { text-shadow: 1px 2px 2px #999; color: maroon }", 0);
 				if (contractFingerPrints) {
@@ -151,12 +146,7 @@ if (page_type) {
 			// React hydrate clumsy workaround
 			setTimeout(function() {
 				// EAA tab / Add link
-				var EAAtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='/event-art']");
-				if (EAAtab && EAAtab.textContent.match(/\(0\)$/)) {
-					EAAtab.setAttribute("href", EAAtab.getAttribute("href").replace(/event-art/, "add-event-art"));
-					EAAtab.style.setProperty("background-color", "#FF6");
-					EAAtab.replaceChild(document.createTextNode("Add event art"), EAAtab.firstChild);
-				}
+				addIMGTabLink();
 			}, 1000);
 			break;
 		case "isrc":
@@ -646,6 +636,14 @@ function acoustidFishBatch(recids) {
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		xhr.overrideMimeType("text/xml");
 		xhr.send(params);
+	}
+}
+function addIMGTabLink() {
+	var IMGtab = document.querySelector("div.tabs > ul.tabs > li > a[href$='-art']");
+	if (IMGtab && IMGtab.textContent.match(/\(0\)$/)) {
+		IMGtab.setAttribute("href", IMGtab.getAttribute("href").replace(/(cover|event)-art/, "add-$1-art"));
+		IMGtab.style.setProperty("background-color", "#FF6");
+		IMGtab.replaceChild(document.createTextNode("Add " + IMGtab.getAttribute("href").match(/(cover|event)-art/)[1] + " art"), IMGtab.firstChild);
 	}
 }
 
