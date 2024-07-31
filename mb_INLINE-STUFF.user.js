@@ -81,7 +81,8 @@ var texts = {
 		add_event_art: "Afbeeldingen toevoegen"
 	}
 };
-var lang = document.querySelector("html").getAttribute("lang");
+var lang = document.querySelector("html[lang]");
+lang = lang && lang.getAttribute("lang") || "en";
 if (lang) {
 	if (texts[lang]) {
 		texts = texts[lang];
