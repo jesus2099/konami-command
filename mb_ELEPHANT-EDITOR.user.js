@@ -86,6 +86,7 @@ function init(edit_notes) {
 	}
 	submit_button = content.querySelector(ON_MB ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
 	if (submit_button === null && ON_RELEASE_EDITOR_PAGE) submit_button = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
+	if (submit_button === null && ON_EDIT_PAGE) submit_button = document.querySelector("form[action='/edit/enter_votes'] > span.buttons > button[type='submit']");
 	if (submit_button === null && location.href.match(/edit-relationships$/)) submit_button = document.querySelector("div#content.rel-editor form > div.row.no-label.buttons > button.submit.positive[type='submit']");
 	if (notetext) {
 		if (ON_MB) {
