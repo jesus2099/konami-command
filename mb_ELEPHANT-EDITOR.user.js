@@ -31,6 +31,7 @@
 // @match        *://*.musicbrainz.org/edit/*
 // @match        *://*.musicbrainz.org/edit/artist/add.html?*
 // @match        *://*.musicbrainz.org/edit/subscribed*
+// @match        *://*.musicbrainz.org/event/*/*-event-art*
 // @match        *://*.musicbrainz.org/isrc/delete*
 // @match        *://*.musicbrainz.org/mod/*
 // @match        *://*.musicbrainz.org/recording/*/add-isrc
