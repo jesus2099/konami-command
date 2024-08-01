@@ -81,7 +81,9 @@ function init(edit_notes) {
 				localStorage.setItem(userjs + "_savedHeight", this.offsetHeight);
 			}
 		});
-	} else { notetext = false; }
+	} else {
+		notetext = false;
+	}
 	submit_button = content.querySelector(ON_MB ? "form div.buttons button[type='submit'].submit.positive" : "input[type='submit']");
 	if (submit_button === null && ON_RELEASE_EDITOR_PAGE) submit_button = document.querySelector("button.positive[type='button'][data-click='submitEdits']");
 	if (submit_button === null && location.href.match(/edit-relationships$/)) submit_button = document.querySelector("div#content.rel-editor form > div.row.no-label.buttons > button.submit.positive[type='submit']");
@@ -100,8 +102,28 @@ function init(edit_notes) {
 			}
 		}
 		var buttons = createTag("div", {a: {class: "buttons"}});
-		var save_checkbox = buttons.appendChild(createTag("label", {a: {title: "save edit note"}, s: {backgroundColor: (save ? colours.ok : colours.warning), minWidth: "0", margin: "0"}, e: {click: function(event) { if (event[CONTROL_POMME.shift.key]) { sendEvent(submit_button, "click"); } }}}));
-		save_checkbox = save_checkbox.appendChild(createTag("input", {a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"}, s: {display: "inline"}, e: {change: function(event) { save = this.checked; this.parentNode.style.setProperty("background-color", save ? colours.ok : colours.warning); localStorage.setItem(userjs + "forget", save ? "" : "1"); }}}));
+		var save_checkbox = buttons.appendChild(createTag("label", {
+			a: {title: "save edit note"},
+			s: {backgroundColor: (save ? colours.ok : colours.warning), minWidth: "0", margin: "0"},
+			e: {
+				click: function(event) {
+					if (event[CONTROL_POMME.shift.key]) {
+						sendEvent(submit_button, "click");
+					}
+				}
+			}
+		}));
+		save_checkbox = save_checkbox.appendChild(createTag("input", {
+			a: {type: "checkbox", class: "jesus2099remember", tabindex: "-1"},
+			s: {display: "inline"},
+			e: {
+				change: function(event) {
+					save = this.checked;
+					this.parentNode.style.setProperty("background-color", save ? colours.ok : colours.warning);
+					localStorage.setItem(userjs + "forget", save ? "" : "1");
+				}
+			}
+		}));
 		save_checkbox.checked = save;
 		save_checkbox.parentNode.appendChild(document.createTextNode(" remember "));
 		buttons.appendChild(createClearButton());
@@ -137,7 +159,7 @@ function init(edit_notes) {
 							sendEvent(submit_button, "click");
 						}
 					}
-				}, false); // onclick
+				}); // onclick
 			}
 			buttons.appendChild(butt);
 		}
@@ -155,7 +177,7 @@ function init(edit_notes) {
 		}
 	}
 	if (submit_button !== null) {
-		submit_button.addEventListener("click", saveNote, false);
+		submit_button.addEventListener("click", saveNote);
 		submit_button.insertBefore(document.createTextNode("🐘 "), submit_button.firstChild);
 	} else if (!ON_EDIT_SEARCH_PAGE) {
 		// alert("Error: ELEPHANT did not find submit button and cannot save edit note.");
@@ -208,16 +230,21 @@ function forget(memory_index) {
 }
 function createButton(label, width) {
 	let butt = createTag("input", {a: {type: "button", value: label, tabindex: "-1", class: "styled-button"}, s: {display: "inline", padding: "2px", float: "none"}});
-	if (width) { butt.style.setProperty("width", width); }
+	if (width) {
+		butt.style.setProperty("width", width);
+	}
 	return butt;
 }
 function createClearButton() {
 	let butt = createButton("×", "25px");
 	butt.addEventListener("click", function(event) {
 		force_value(notetext, "");
-		notetext.focus();
-		if (event[CONTROL_POMME.shift.key]) { sendEvent(submit_button, "click"); }
-	}, false); // onclick
+		if (event[CONTROL_POMME.shift.key]) {
+			sendEvent(submit_button, "click");
+		} else {
+			notetext.focus();
+		}
+	}); // onclick
 	if (IS_TOUCH_SCREEN) {
 		onLongPress(butt, function(event) {
 			force_value(notetext, "");
