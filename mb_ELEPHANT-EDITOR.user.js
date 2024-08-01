@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2024.8.1
+// @version      2024.8.2
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -218,6 +218,12 @@ function createClearButton() {
 		notetext.focus();
 		if (event[CONTROL_POMME.shift.key]) { sendEvent(submit_button, "click"); }
 	}, false); // onclick
+	if (IS_TOUCH_SCREEN) {
+		onLongPress(butt, function(event) {
+			force_value(notetext, "");
+			sendEvent(submit_button, "click");
+		});
+	}
 	butt.style.setProperty("color", "red");
 	butt.style.setProperty("background-color", colours.warning);
 	butt.setAttribute("title", "clear edit note");
