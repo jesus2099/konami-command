@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2024.7.29
+// @version      2024.8.1
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -123,20 +123,20 @@ function init(edit_notes) {
 						}
 					});
 				}
-				if (!IS_MOBILE_DEVICE || !IS_TOUCH_SCREEN) {
-					butt.addEventListener("click", function(event) {
-						if (event[CONTROL_POMME.ctrl.key]) {
-							forget(event.target.getAttribute("id").match(/(\d)$/)[1]);
+				butt.addEventListener("click", function(event) {
+					if (event[CONTROL_POMME.ctrl.key]) {
+						forget(event.target.getAttribute("id").match(/(\d)$/)[1]);
+						notetext.focus();
+					} else {
+						force_value(notetext, this.getAttribute("title"));
+						if (!IS_TOUCH_SCREEN) {
 							notetext.focus();
-						} else {
-							force_value(notetext, this.getAttribute("title"));
-							if (!IS_TOUCH_SCREEN) {
-								notetext.focus();
-							}
-							if (event[CONTROL_POMME.shift.key]) { sendEvent(submit_button, "click"); }
 						}
-					}, false); // onclick
-				}
+						if (event[CONTROL_POMME.shift.key]) {
+							sendEvent(submit_button, "click");
+						}
+					}
+				}, false); // onclick
 			}
 			buttons.appendChild(butt);
 		}
