@@ -26,12 +26,19 @@ var coverArtFilenames = document.querySelectorAll("table.details[class$='cover-a
 for (var filename = 0; filename < coverArtFilenames.length; filename++) {
 	mbid = coverArtFilenames[filename].textContent.match(/^mbid-([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})-\d+\.\w+$/);
 	if (mbid) {
-		var a = document.createElement("a");
-		a.setAttribute("href", "//archive.org/0/items/mbid-" + mbid[1] + "/" + coverArtFilenames[filename].textContent);
-		a.classList.add("jesus2099CAALink");
-		a.style.setProperty("text-shadow", "0 0 4px #ff6");
-		a.setAttribute("title", GM_info.script.name);
-		a.appendChild(coverArtFilenames[filename].parentNode.replaceChild(a, coverArtFilenames[filename]));
+		coverArtFilenames[filename].parentNode.replaceChild(createTag(
+			"a", {
+				a: {
+					class: "jesus2099CAALink",
+					href: "//archive.org/0/items/mbid-" + mbid[1] + "/" + coverArtFilenames[filename].textContent,
+					title: GM_info.script.name
+				},
+				s: {
+					textShadow: "0 0 4px #ff6"
+				}
+			},
+			coverArtFilenames[filename].textContent
+		), coverArtFilenames[filename]);
 	}
 }
 if (document.getElementsByClassName("jesus2099CAALink").length > 0) {
@@ -43,18 +50,25 @@ function showThumbnails() {
 		failedCAAImages[image].classList.add("jesus2099CAALink_skip");
 		var associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
 		if (associatedCAALink) {
-			var thumbnail = document.createElement("img");
-			thumbnail.setAttribute("title", GM_info.script.name + " \nunlinked image, still in CAA, cf. filename link above");
-			thumbnail.style.setProperty("float", "left");
-			thumbnail.style.setProperty("margin-right", "1em");
-			thumbnail.style.setProperty("max-width", "600px");
-			thumbnail.style.setProperty("border", "thick solid #ff6");
+			var thumbnail = createTag(
+				"img", {
+					a: {
+						title: GM_info.script.name + " \nunlinked image, still in CAA, cf. filename link above"
+					},
+					s: {
+						border: "thick solid #ff6",
+						float: "left",
+						marginRight: "1em",
+						maxWidth: "600px"
+					}
+				}
+			);
+			failedCAAImages[image].parentNode.parentNode.insertBefore(thumbnail, failedCAAImages[image].parentNode);
 			var CAAurls = [associatedCAALink.getAttribute("href")];
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb500$1"));
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb250$1"));
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_itemimage$1")); // same as _thumb below but less frequent
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb$1")); // will try this first then fallback to above
-			failedCAAImages[image].parentNode.parentNode.insertBefore(thumbnail, failedCAAImages[image].parentNode);
 			fallbackImageLoader(thumbnail, CAAurls);
 		}
 	}
