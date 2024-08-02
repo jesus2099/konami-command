@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2024.4.11
+// @version      2024.8.2
 // @description  musicbrainz.org: Linkify cover art edit “Filenames” (as specified in https://musicbrainz.org/edit/42525958); Add cool links to cover art tab and archive pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
@@ -29,6 +29,8 @@ for (var filename = 0; filename < coverArtFilenames.length; filename++) {
 		var a = document.createElement("a");
 		a.setAttribute("href", "//archive.org/0/items/mbid-" + mbid[1] + "/" + coverArtFilenames[filename].textContent);
 		a.classList.add("jesus2099CAALink");
+		a.style.setProperty("text-shadow", "0 0 4px #ff6");
+		a.setAttribute("title", GM_info.script.name);
 		a.appendChild(coverArtFilenames[filename].parentNode.replaceChild(a, coverArtFilenames[filename]));
 	}
 }
@@ -42,11 +44,11 @@ function showThumbnails() {
 		var associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
 		if (associatedCAALink) {
 			var thumbnail = document.createElement("img");
-			thumbnail.setAttribute("title", "unlinked image, still in CAA, cf. filename link above");
+			thumbnail.setAttribute("title", GM_info.script.name + " \nunlinked image, still in CAA, cf. filename link above");
 			thumbnail.style.setProperty("float", "left");
 			thumbnail.style.setProperty("margin-right", "1em");
 			thumbnail.style.setProperty("max-width", "600px");
-			thumbnail.style.setProperty("border", "thick solid red");
+			thumbnail.style.setProperty("border", "thick solid #ff6");
 			var CAAurls = [associatedCAALink.getAttribute("href")];
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb500$1"));
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb250$1"));
@@ -80,7 +82,7 @@ for (var caa_edit = 0; caa_edit < cover_art_edits.length; caa_edit++) {
 	mbid = cover_art_edits[caa_edit].getAttribute("href").match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
 	if (mbid) {
 		mbid = mbid[0];
-		cover_art_edits[caa_edit].closest("tbody").appendChild(createTag("tr", {}, [
+		cover_art_edits[caa_edit].closest("tbody").appendChild(createTag("tr", {a: {title: GM_info.script.name}, s: {textShadow: "0 0 4px #ff6"}}, [
 			createTag("th", {}, "Cool links:"),
 			createTag("td", {}, [
 				createTag("a", {a: {href: "/release/" + mbid + "/cover-art", class: "jesus2099CAALink_skip"}}, "Cover Art tab"),
