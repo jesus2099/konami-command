@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2024.8.2
-// @description  musicbrainz.org: Linkify cover art edit “Filenames” (as specified in https://musicbrainz.org/edit/42525958); Add cool links to cover art tab and archive pages
+// @version      2024.8.2.1832
+// @description  musicbrainz.org: Linkify cover art edit “Filenames” (as specified in https://musicbrainz.org/edit/42525958); Add cool links to cover art tab and archive pages; Display (most) broken images
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_CAA-LINKS.user.js
@@ -15,12 +15,14 @@
 // @match        *://*.musicbrainz.org/*/*/edits*
 // @match        *://*.musicbrainz.org/*/*/open_edits*
 // @match        *://*.musicbrainz.org/edit/*
+// @match        *://*.musicbrainz.org/release/*/cover-art
 // @match        *://*.musicbrainz.org/search/edits*
 // @match        *://*.musicbrainz.org/user/*/edits/open*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
 var mbid;
+var ON_CAA_TAB = location.pathname.match(/\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/cover-art$/);
 // Linkify cover art file names
 var coverArtFilenames = document.querySelectorAll("table.details[class$='cover-art'] > tbody code");
 for (var filename = 0; filename < coverArtFilenames.length; filename++) {
@@ -41,14 +43,24 @@ for (var filename = 0; filename < coverArtFilenames.length; filename++) {
 		), coverArtFilenames[filename]);
 	}
 }
-if (document.getElementsByClassName("jesus2099CAALink").length > 0) {
+if (document.getElementsByClassName("jesus2099CAALink").length > 0 || ON_CAA_TAB) {
 	setInterval(showThumbnails, 2000);
 }
 function showThumbnails() {
-	var failedCAAImages = document.querySelectorAll("table.details[class$='cover-art'] > tbody a[href$='/cover-art']:not(.jesus2099CAALink_skip)");
+	var failedCAAImages = [];
+	if (ON_CAA_TAB) {
+		failedCAAImages = document.querySelectorAll("#content .artwork > .cover-art-error:not(.jesus2099CAALink_skip)");
+	} else { // edits
+		failedCAAImages = document.querySelectorAll("table.details[class$='cover-art'] > tbody .cover-art-error:not(.jesus2099CAALink_skip)");
+	}
 	for (var image = 0; image < failedCAAImages.length; image++) {
 		failedCAAImages[image].classList.add("jesus2099CAALink_skip");
-		var associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
+		var associatedCAALink = [];
+		if (ON_CAA_TAB) {
+			associatedCAALink = failedCAAImages[image].parentNode.parentNode.querySelector("p.small a[href^='//coverartarchive.org/release/']:last-of-type")
+			} else { // edits
+				associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
+			}
 		if (associatedCAALink) {
 			var thumbnail = createTag(
 				"img", {
@@ -63,7 +75,7 @@ function showThumbnails() {
 					}
 				}
 			);
-			failedCAAImages[image].parentNode.parentNode.insertBefore(thumbnail, failedCAAImages[image].parentNode);
+			failedCAAImages[image].parentNode.insertBefore(thumbnail, failedCAAImages[image]);
 			var CAAurls = [associatedCAALink.getAttribute("href")];
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb500$1"));
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb250$1"));
@@ -99,7 +111,7 @@ for (var caa_edit = 0; caa_edit < cover_art_edits.length; caa_edit++) {
 		cover_art_edits[caa_edit].closest("tbody").appendChild(createTag("tr", {a: {title: GM_info.script.name}, s: {textShadow: "0 0 4px #ff6"}}, [
 			createTag("th", {}, "Cool links:"),
 			createTag("td", {}, [
-				createTag("a", {a: {href: "/release/" + mbid + "/cover-art", class: "jesus2099CAALink_skip"}}, "Cover Art tab"),
+				createTag("a", {a: {href: "/release/" + mbid + "/cover-art"}}, "Cover Art tab"),
 				" | ",
 				createTag("a", {a: {href: "//archive.org/details/mbid-" + mbid}}, "Archive release page"),
 				" | ",
