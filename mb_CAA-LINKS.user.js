@@ -57,10 +57,10 @@ function showThumbnails() {
 		failedCAAImages[image].classList.add("jesus2099CAALink_skip");
 		var associatedCAALink = [];
 		if (ON_CAA_TAB) {
-			associatedCAALink = failedCAAImages[image].parentNode.parentNode.querySelector("p.small a[href^='//coverartarchive.org/release/']:last-of-type")
-			} else { // edits
-				associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
-			}
+			associatedCAALink = failedCAAImages[image].parentNode.parentNode.querySelector("p.small a[href^='//coverartarchive.org/release/']:last-of-type");
+		} else { // edits
+			associatedCAALink = failedCAAImages[image].parentNode.parentNode.parentNode.querySelector("a.jesus2099CAALink");
+		}
 		if (associatedCAALink) {
 			var thumbnail = createTag(
 				"img", {
