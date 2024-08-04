@@ -22,7 +22,7 @@
 // ==/UserScript==
 "use strict";
 var mbid;
-var ON_CAA_TAB = location.pathname.match(/\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/cover-art$/);
+var ON_CAA_TAB = location.pathname.match(/^\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/cover-art$/);
 // Linkify cover art file names
 var coverArtFilenames = document.querySelectorAll("table.details[class$='cover-art'] > tbody code");
 for (var filename = 0; filename < coverArtFilenames.length; filename++) {
