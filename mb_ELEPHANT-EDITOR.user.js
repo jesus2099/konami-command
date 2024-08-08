@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2024.8.2
+// @version      2024.8.9
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -45,7 +45,7 @@
 "use strict";
 var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
 var IS_MOBILE_DEVICE = /Mobile/i.test(navigator.userAgent);
-var ON_MB = location.host.match(/^musicbrainz\.(eu|org)/);
+var ON_MB = location.host.match(/^((beta|test)\.)?musicbrainz\.(eu|org)/);
 var ON_EDIT_PAGE = (ON_MB && location.pathname.match(/^\/edit\/\d+$/));
 var ON_EDIT_SEARCH_PAGE = (ON_MB && location.pathname.match(/^\/.+(?:edits|subscribed)/));
 var ON_RELEASE_EDITOR_PAGE = (ON_MB && document.querySelector("div#release-editor"));
