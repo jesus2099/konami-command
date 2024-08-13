@@ -10,6 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-12-13; https://web.archive.org/web/20131103163401/userscripts.org/scripts/show/120382 / https://web.archive.org/web/20141011084015/userscripts-mirror.org/scripts/show/120382
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
+// @require      https://github.com/jesus2099/konami-command/raw/c5fb7fe162530fdbd7e017170f24169272a729a0/lib/CONTROL-POMME.js?version=2024.3.14.1822
 // @require      https://github.com/jesus2099/konami-command/raw/e835cfc19c665c8e9893ac1946fc52f639d8d672/lib/MB-JUNK-SHOP.js?version=2022.10.26
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
@@ -85,8 +86,8 @@ if (ltitle) {
 			releases = Array.prototype.slice.call(releases);
 			sidebar.insertBefore(RGRecordingsMassMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
-				console.debug(event.type + "\n" + (event.altKey ? "alt+" : "") + (event.ctrlKey ? "crtl+" : "") + (event.shiftKey ? "shift+" : "") + event.key);
-				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key.match(/^m$/i)) {
+				console.debug(event.type + "\n" + (event[CONTROL_POMME.alt.key] ? CONTROL_POMME.alt.label : "") + (event[CONTROL_POMME.ctrl.key] ? CONTROL_POMME.ctrl.label : "") + (event[CONTROL_POMME.shift.key] ? CONTROL_POMME.shift.label : "") + event.key);
+				if (!event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key] && event.key.match(/^m$/i)) {
 					loadRGRecordings(releases);
 					return stop(event);
 				}
@@ -107,8 +108,8 @@ if (ltitle) {
 		if (document.getElementsByClassName("account").length > 0) {
 			sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
-				console.debug(event.type + "\n" + (event.altKey ? "alt+" : "") + (event.ctrlKey ? "crtl+" : "") + (event.shiftKey ? "shift+" : "") + event.key);
-				if (!event.altKey && event.ctrlKey && event.shiftKey && event.key.match(/^m$/i)) {
+				console.debug(event.type + "\n" + (event[CONTROL_POMME.alt.key] ? CONTROL_POMME.alt.label : "") + (event[CONTROL_POMME.ctrl.key] ? CONTROL_POMME.ctrl.label : "") + (event[CONTROL_POMME.shift.key] ? CONTROL_POMME.shift.label : "") + event.key);
+				if (!event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key] && event.key.match(/^m$/i)) {
 					prepareLocalRelease();
 					return stop(event);
 				}
@@ -408,9 +409,9 @@ function updateMatchModeDisplay() {
 function massMergeGUI() {
 	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
-			if (event.key == "Enter" && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
+			if (event.key == "Enter" && (event.target == startpos || event.target == editNote && event[CONTROL_POMME.ctrl.key])) {
 				queueAll.click();
-			} else if (event.target == editNote && !event.altKey && event.ctrlKey && !event.shiftKey) {
+			} else if (event.target == editNote && !event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && !event[CONTROL_POMME.shift.key]) {
 				switch (event.key) {
 					case "s":
 						return saveEditNote(event);
@@ -423,7 +424,7 @@ function massMergeGUI() {
 	}}, [
 		createTag("h2", {}, userjs.name),
 		createTag("p", {}, "version " + userjs.version),
-		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", createTag("kbd", {}, "CTRL"), " + ", createTag("kbd", {}, "SHIFT"), "+", createTag("kbd", {}, "M")]),
+		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", CONTROL_POMME.ctrl.label, CONTROL_POMME.shift.label, "M"]),
 		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release: ", createTag("span", {a: {"class": "remote-release-link"}})]),
 	]);
 	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", userjs.name + " remote release URL"));
@@ -518,7 +519,7 @@ function massMergeGUI() {
 		": shift up/down",
 		document.createElement("br"),
 		"☞ ",
-		createTag("kbd", {}, "ENTER"),
+		createTag("kbd", {}, "Enter"),
 		": queue all"
 	]));
 	MMRdiv.addEventListener("click", function(event) {
@@ -566,7 +567,7 @@ function massMergeGUI() {
 	loadEditNoteButt.setAttribute("tabindex", "-1");
 	loadEditNoteButt.setAttribute("title", "Reload edit note text from local storage");
 	loadEditNoteButt.addEventListener("click", loadEditNote);
-	MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "ENTER"), ": queue all", document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "S"), ": ", saveEditNoteButt, document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "O"), ": ", loadEditNoteButt]));
+	MMRdiv.appendChild(createTag("p", {}, ["☞ ", CONTROL_POMME.ctrl.label, "Enter", ": queue all", document.createElement("br"), "☞ ", CONTROL_POMME.ctrl.label, "S", ": ", saveEditNoteButt, document.createElement("br"), "☞ ", CONTROL_POMME.ctrl.label, "O", ": ", loadEditNoteButt]));
 	MMRdiv.appendChild(createTag("p", {}, "Each recording merge will automatically target the oldest, unless direction is manually changed by clicking each arrow button or below batch button."));
 	from = MMRdiv.appendChild(createInput("hidden", "from", ""));
 	to = MMRdiv.appendChild(createInput("hidden", "to", ""));
@@ -1246,9 +1247,9 @@ function leven(a, b) {
 function RGRecordingsMassMergeGUI() {
 	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
-			if (event.key == "Enter" && (event.target == startpos || event.target == editNote && event.ctrlKey)) {
+			if (event.key == "Enter" && (event.target == startpos || event.target == editNote && event[CONTROL_POMME.ctrl.key])) {
 				queueAll.click();
-			} else if (event.target == editNote && !event.altKey && event.ctrlKey && !event.shiftKey) {
+			} else if (event.target == editNote && !event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && !event[CONTROL_POMME.shift.key]) {
 				switch (event.key) {
 					case "s":
 						return saveEditNote(event);
@@ -1261,7 +1262,7 @@ function RGRecordingsMassMergeGUI() {
 	}}, [
 		createTag("h2", {}, userjs.name),
 		createTag("p", {}, "version " + userjs.version),
-		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", createTag("kbd", {}, "CTRL"), " + ", createTag("kbd", {}, "SHIFT"), "+", createTag("kbd", {}, "M")]),
+		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", CONTROL_POMME.ctrl.label, CONTROL_POMME.shift.label, "M"]),
 //		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release", createTag("span", {a: {"class": "remote-release-link"}}), ":"]),
 	]);
 	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", userjs.name + " loading recordings…"));
@@ -1288,7 +1289,7 @@ function RGRecordingsMassMergeGUI() {
 	loadEditNoteButt.setAttribute("tabindex", "-1");
 	loadEditNoteButt.setAttribute("title", "Reload edit note text from local storage");
 	loadEditNoteButt.addEventListener("click", loadEditNote);
-	MMRdiv.appendChild(createTag("p", {}, ["☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "ENTER"), ": queue all", document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "S"), ": ", saveEditNoteButt, document.createElement("br"), "☞ ", createTag("kbd", {}, "CTRL"), "+", createTag("kbd", {}, "O"), ": ", loadEditNoteButt]));
+	MMRdiv.appendChild(createTag("p", {}, ["☞ ", CONTROL_POMME.ctrl.label, "Enter", ": queue all", document.createElement("br"), "☞ ", CONTROL_POMME.ctrl.label, "S", ": ", saveEditNoteButt, document.createElement("br"), "☞ ", CONTROL_POMME.ctrl.label, "O", ": ", loadEditNoteButt]));
 	MMRdiv.appendChild(createTag("p", {}, "Each recording merge will automatically target the oldest MBID."));
 	queuetrack = MMRdiv.appendChild(createTag("div", {s: {textAlign: "center", backgroundColor: cInfo, display: "none"}}, "\u00A0"));
 	return MMRdiv;
