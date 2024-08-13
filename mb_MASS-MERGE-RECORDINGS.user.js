@@ -86,7 +86,6 @@ if (ltitle) {
 			releases = Array.prototype.slice.call(releases);
 			sidebar.insertBefore(RGRecordingsMassMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
-				console.debug(event.type + "\n" + (event[CONTROL_POMME.alt.key] ? CONTROL_POMME.alt.label : "") + (event[CONTROL_POMME.ctrl.key] ? CONTROL_POMME.ctrl.label : "") + (event[CONTROL_POMME.shift.key] ? CONTROL_POMME.shift.label : "") + event.key);
 				if (!event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key] && event.key.match(/^m$/i)) {
 					loadRGRecordings(releases);
 					return stop(event);
@@ -108,7 +107,6 @@ if (ltitle) {
 		if (document.getElementsByClassName("account").length > 0) {
 			sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
-				console.debug(event.type + "\n" + (event[CONTROL_POMME.alt.key] ? CONTROL_POMME.alt.label : "") + (event[CONTROL_POMME.ctrl.key] ? CONTROL_POMME.ctrl.label : "") + (event[CONTROL_POMME.shift.key] ? CONTROL_POMME.shift.label : "") + event.key);
 				if (!event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key] && event.key.match(/^m$/i)) {
 					prepareLocalRelease();
 					return stop(event);
@@ -1330,7 +1328,6 @@ function loadingAllRecordings() {
 			alert("Error loading RG recordings!");
 		}
 	});
-	console.log("/ws/2/recording?query=rgid%3A" + release_group_MBID[1] + "&limit=100");
 	xhr.open("GET", "/ws/2/recording?query=rgid%3A" + release_group_MBID[1] + "&limit=100", true);
 	xhr.responseType = "json";
 	xhr.setRequestHeader("Accept", "application/json");
@@ -1378,9 +1375,7 @@ function appendToRecordingList(recordings) {
 			var sortName = stripName(recordingRow.querySelector("td:nth-child(2)").textContent + (recordingRow.querySelector("span.video") ? "_video" : ""));
 			for (var rr = 0; rr < recordingList.rows.length; rr++) {
 				var recordingSortName = stripName(recordingList.rows[rr].querySelector("td:nth-child(2)").textContent + (recordingList.rows[rr].querySelector("span.video") ? "_video" : ""));
-				console.log(sortName + " <= " + recordingSortName);
 				if (sortName < recordingSortName) {
-					console.log("oui");
 					recordingList.insertBefore(recordingRow, recordingList.rows[rr]);
 					sortName = false;
 					break;
@@ -1390,7 +1385,6 @@ function appendToRecordingList(recordings) {
 				}
 			}
 			if (sortName != false) {
-				console.log("non");
 				recordingList.appendChild(recordingRow);
 			}
 		}
