@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.6.13.205
+// @version      2024.8.13
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -47,7 +47,7 @@ var regex_MBID = new RegExp(sregex_MBID, "i");
 var css_track = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
 var css_track_ac = "td:not(.pos):not(.title):not(.rating):not(.treleases)";
 var css_collapsed_medium = "div#content table.tbl.medium > thead > tr > th > a.expand-medium > span.expand-triangle";
-var sregex_title = ".+?[„“«‘] ?(.+) ?[“”»’] \\S+ (.+?) - MusicBrainz";
+var sregex_title = "(?:.+?[„“«‘] ?(?<release>.+) ?[“”»’] \\S+ (?<artists>.+?)|(?<artists>.+?)のリリース(?:グループ)?「(?<release>.+)」) - MusicBrainz";
 var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
 var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
 var rem2loc = "◀";
@@ -95,10 +95,10 @@ if (ltitle) {
 	} else {
 		var localRelease = {
 			"release-group": document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
-			title: ltitle[1],
-			looseTitle: looseTitle(ltitle[1]),
+			title: ltitle.groups.release,
+			looseTitle: looseTitle(ltitle.groups.release),
 			comment: document.querySelector("h1 > span.comment > bdi"),
-			ac: ltitle[2],
+			ac: ltitle.groups.artists,
 			id: self.location.pathname.match(regex_MBID)[0],
 			tracks: []
 		};
@@ -639,7 +639,7 @@ function loadReleasePage() {
 			var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
 			var mediums = releaseWithoutARs.match(/<table class="tbl medium">[\s\S]+?<\/table>/g);
 			var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
-			var releaseAC = releaseWithoutARs.match(/<p class="subheader"><span class="prefix">~<\/span> <!-- -->[^<]+ (<.+?) <span class="small">\(/);
+			var releaseAC = releaseWithoutARs.match(/<p class="subheader"><span class="prefix">~<\/span> (?:<!-- -->[^<]+ )?(<a href="\/artist\/.+?)(?:<span class="small">|のリリース)/);
 			var discount = releaseWithoutARs.match(/<a class="expand-medium"/g).length;
 			if (!remoteRelease.disc && releaseWithoutARs.match(/<tbody style="display:none"><\/tbody>/)) {
 				var disc = prompt("This " + discount + " medium release has some collapsed mediums.\nIn this case I can only load one medium at a time.\n\nPlease enter the medium number that you want to load.\n\nNext time you can directly paste the medium link:\n " + MBS + "/release/" + remoteRelease.id + "/disc/1.", "1");
@@ -651,10 +651,10 @@ function loadReleasePage() {
 				}
 			} else if (rtitle) {
 				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>){0,2}<a href=".*\/release-group\/([^"/]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>){0,2}\)/)[1];
-				remoteRelease.title = HTMLToText(rtitle[1]);
+				remoteRelease.title = HTMLToText(rtitle.groups.release);
 				remoteRelease.looseTitle = looseTitle(remoteRelease.title);
 				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
-				remoteRelease.ac = rtitle[2];
+				remoteRelease.ac = rtitle.groups.artists;
 				removeChildren(mbidInfo);
 				if (remoteRelease.id == localRelease.id) {
 					mbidInfo.appendChild(document.createTextNode(" (same" + (remoteRelease.disc ? ", " + remoteRelease.disc.substr(1).replace(/\//, "\u00a0") + "/" + discount : "") + ")"));
