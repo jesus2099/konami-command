@@ -10,6 +10,7 @@
 		--header-height: 64px;
 		--header-side: 16px;
 		--header-bottom: 12px;
+		scroll-padding-top: calc(var(--header-height) + var(--header-bottom));
 	}
 	html > body > div.header {
 		position: sticky;
