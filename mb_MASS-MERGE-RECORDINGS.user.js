@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.8.13
+// @version      2024.8.20
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -638,7 +638,6 @@ function loadReleasePage() {
 			var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
 			var mediums = releaseWithoutARs.match(/<table class="tbl medium">[\s\S]+?<\/table>/g);
 			var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
-			var releaseAC = releaseWithoutARs.match(/<p class="subheader"><span class="prefix">~<\/span> (?:<!-- -->[^<]+ )?(<a href="\/artist\/.+?)(?:<span class="small">|のリリース)/);
 			var discount = releaseWithoutARs.match(/<a class="expand-medium"/g).length;
 			if (!remoteRelease.disc && releaseWithoutARs.match(/<tbody style="display:none"><\/tbody>/)) {
 				var disc = prompt("This " + discount + " medium release has some collapsed mediums.\nIn this case I can only load one medium at a time.\n\nPlease enter the medium number that you want to load.\n\nNext time you can directly paste the medium link:\n " + MBS + "/release/" + remoteRelease.id + "/disc/1.", "1");
@@ -699,7 +698,7 @@ function loadReleasePage() {
 							var current_track = {
 								number: current_medium + trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
 								name: HTMLToText(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
-								artistCredit: trackRows[t].match(/<td class="wrap-anywhere">/g) && trackRows[t].match(/<td class="wrap-anywhere">/g).length === 1 ? trackRows[t].match(/[\s\S]*<td class="wrap-anywhere">([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : releaseAC[1],
+								artistCredit: trackRows[t].match(/<td class="wrap-anywhere">/g) && trackRows[t].match(/<td class="wrap-anywhere">/g).length === 1 ? trackRows[t].match(/[\s\S]*<td class="wrap-anywhere">([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : rtitle.groups.artists,
 								length: trackLength,
 								recording: {
 									rowid: recIDs[t],
