@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.8.19.2333
+// @version      2024.8.21
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1296,7 +1296,7 @@ if (j2sets.STATIC_MENU && document.querySelector("div.header")) {
 	MBJS.displayBanner(createTag("fragment", {}, [
 		createTag("h1", {}, "STATIC_MENU → mb_STICKY-HEADER"),
 		createTag("p", {}, ["⚠\uFE0F For the sake of maintanability, ", GM_info.script.name, "’s ", createTag("b", {}, "STATIC_MENU"), " has been replaced by a new userstyle called ", createTag("a", {a: {href: "https://github.com/jesus2099/konami-command/blob/master/mb_STICKY-HEADER.user.css", target: "_blank"}}, "mb_STICKY-HEADER"), "."]),
-		createTag("p", {}, ["💁\uFE0F You should now disable STATIC_MENU and ", createTag("a", {a: {href: "https://github.com/jesus2099/konami-command/raw/master/mb_STICKY-HEADER.user.css", target: "_blank"}}, "install mb_STICKY-HEADER"), " thanks to ", createTag("a", {a: {href: "//add0n.com/stylus.html", target: "_blank"}}, "Stylus"), " extension."])
+		createTag("p", {}, ["💁\uFE0F You should now disable STATIC_MENU ", j2superturbo.menu.expl, " and ", createTag("a", {a: {href: "https://github.com/jesus2099/konami-command/raw/master/mb_STICKY-HEADER.user.css", target: "_blank"}}, "install mb_STICKY-HEADER"), " thanks to ", createTag("a", {a: {href: "//add0n.com/stylus.html", target: "_blank"}}, "Stylus"), " extension."])
 	]));
 }
 // ==========================================================================
