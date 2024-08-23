@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2024.8.23
+// @version      2024.8.23.1
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -13,20 +13,22 @@
 // @require      https://github.com/jesus2099/konami-command/raw/e835cfc19c665c8e9893ac1946fc52f639d8d672/lib/MB-JUNK-SHOP.js?version=2022.10.26
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
+// @match        *://*.musicbrainz.eu/*
 // @match        *://*.musicbrainz.org/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
 var userjs = "j2userjs124579";
 var rembid = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
-var mergeType = self.location.pathname.match(/^\/(.+)\/merge/);
+var mergeType = location.pathname.match(/^\/(.+)\/merge/);
 var lastTick = new Date().getTime();
 var WSrate = 1000;
+var mergeForm, tbl, entities;
 if (mergeType) {
 	/* main merge tool */
-	var mergeForm = document.querySelector("div#content > form[method='post']");
-	var tbl = mergeForm.querySelector("table.tbl");
-	var entities = {};
+	mergeForm = document.querySelector("div#content > form[method='post']");
+	tbl = mergeForm.querySelector("table.tbl");
+	entities = {};
 	var deferScript = setInterval(function() {
 		// Make sure no more React funny stuff will redraw content (on /recording/merge for the moment)
 		if (!document.querySelector("p.loading-message")) {
@@ -255,7 +257,7 @@ function loadEntInfo() {
 		var rowid = entInfoZone.getAttribute("id").match(/\d+$/)[0];
 		entInfoZone.appendChild(loadimg("info"));
 		var mbid = entities[rowid].a.getAttribute("href").match(rembid)[0];
-		var url = self.location.protocol + "//" + self.location.host + "/ws/2/" + mergeType + "/" + mbid + "?inc=";
+		var url = location.protocol + "//" + location.host + "/ws/2/" + mergeType + "/" + mbid + "?inc=";
 		switch (mergeType) {
 			case "artist":
 				url += "release-groups+works+recordings";
