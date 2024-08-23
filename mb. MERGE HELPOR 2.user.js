@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2023.8.20
+// @version      2024.8.23
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -225,28 +225,14 @@ function findUsefulMergeInfo() {
 			/* make the release each medium is from a clickable link */
 			for (let releases = {}, mediums = document.querySelectorAll("input[name$='.release_id'][type='hidden']"), m = 0; m < mediums.length; m++) {
 				if (!releases[mediums[m].value]) {
-					releases[mediums[m].value] = {fragment: document.createDocumentFragment()};
+					releases[mediums[m].value] = {};
 					var releaseCell = getSibling(document.querySelector("form table.tbl > tbody input[type='radio'][name='merge.target'][value='" + mediums[m].value + "']").parentNode, "td");
 					releases[mediums[m].value].format = releaseCell.parentNode.getElementsByTagName("td")[3].textContent.replace(/\s/g, "").replace(/"/g, "″");
-					for (let c = 0; c < releaseCell.childNodes.length; c++) {
-						releases[mediums[m].value].fragment.appendChild(releaseCell.childNodes[c].cloneNode(true));
-					}
-					var funkeyCAA = releases[mediums[m].value].fragment.querySelector("div.jesus2099userjs154481");
-					if (funkeyCAA) {
-						removeNode(funkeyCAA);
-					}
-					let a = releases[mediums[m].value].fragment.querySelector("a[href^='/release/']");
-					a.setAttribute("target", "_blank");
-					a.style.setProperty("color", self.getComputedStyle(releaseCell.getElementsByTagName("a")[0]).getPropertyValue("color"));
-					releases[mediums[m].value].title = a.textContent;
 				}
-				var text = mediums[m].parentNode.lastChild.textContent.trim();
-				mediums[m].parentNode.replaceChild(createTag("fragment", {}, [
-					" " + text.substring(1, text.lastIndexOf(releases[mediums[m].value].title)),
-					releases[mediums[m].value].fragment.cloneNode(true),
-					createTag("span", {a: {class: "comment"}}, " (" + releases[mediums[m].value].format + ")"),
-					text.substring(text.lastIndexOf(releases[mediums[m].value].title) + releases[mediums[m].value].title.length, text.length - 1)
-				]), mediums[m].parentNode.lastChild);
+				mediums[m].parentNode.insertBefore(
+					createTag("span", {a: {class: "comment"}, s: {fontWeight: "bold", textShadow: "1px 1px 2px white"}}, " " + releases[mediums[m].value].format + " "),
+					mediums[m].parentNode.querySelector("input:last-of-type").nextSibling
+				);
 			}
 		}
 	}
