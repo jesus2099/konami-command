@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.8.20
+// @version      2024.8.25
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -48,7 +48,7 @@ var regex_MBID = new RegExp(sregex_MBID, "i");
 var css_track = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
 var css_track_ac = "td:not(.pos):not(.title):not(.rating):not(.treleases)";
 var css_collapsed_medium = "div#content table.tbl.medium > thead > tr > th > a.expand-medium > span.expand-triangle";
-var sregex_title = "(?:.+?[„“«‘] ?(?<release>.+) ?[“”»’] \\S+ (?<artists>.+?)|(?<artists>.+?)のリリース(?:グループ)?「(?<release>.+)」) - MusicBrainz";
+var sregex_title = "(?:.+?[„“«‘] ?(.+) ?[“”»’] \\S+ (.+?)|(.+?)のリリース(?:グループ)?「(.+)」) - MusicBrainz";
 var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
 var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
 var rem2loc = "◀";
@@ -81,6 +81,10 @@ var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
 var release_group_MBID = self.location.pathname.match(new RegExp("^/release-group/(" + sregex_MBID + ")$"));
 var releases = document.querySelectorAll("div#content table.tbl > tbody > tr > td > a[href^='/release/'] > bdi, div#content table.tbl > tbody > tr > td > span.mp > a[href^='/release/'] > bdi");
 if (ltitle) {
+	ltitle = {
+		artists: ltitle[2] || ltitle[3],
+		title: ltitle[1] || ltitle[4]
+	};
 	if (release_group_MBID) {
 		if (document.getElementsByClassName("account").length > 0 && releases.length > 0) {
 			releases = Array.prototype.slice.call(releases);
@@ -95,10 +99,10 @@ if (ltitle) {
 	} else {
 		var localRelease = {
 			"release-group": document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
-			title: ltitle.groups.release,
-			looseTitle: looseTitle(ltitle.groups.release),
+			title: ltitle.title,
+			looseTitle: looseTitle(ltitle.title),
 			comment: document.querySelector("h1 > span.comment > bdi"),
-			ac: ltitle.groups.artists,
+			ac: ltitle.artists,
 			id: self.location.pathname.match(regex_MBID)[0],
 			tracks: []
 		};
@@ -648,11 +652,15 @@ function loadReleasePage() {
 					infoMerge("Disc number out of bounds (1–" + discount + ") or unreadable", false);
 				}
 			} else if (rtitle) {
+				rtitle = {
+					artists: rtitle[2] || rtitle[3],
+					title: rtitle[1] || rtitle[4]
+				};
 				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>){0,2}<a href=".*\/release-group\/([^"/]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>){0,2}\)/)[1];
-				remoteRelease.title = HTMLToText(rtitle.groups.release);
+				remoteRelease.title = HTMLToText(rtitle.title);
 				remoteRelease.looseTitle = looseTitle(remoteRelease.title);
 				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
-				remoteRelease.ac = rtitle.groups.artists;
+				remoteRelease.ac = rtitle.artists;
 				removeChildren(mbidInfo);
 				if (remoteRelease.id == localRelease.id) {
 					mbidInfo.appendChild(document.createTextNode(" (same" + (remoteRelease.disc ? ", " + remoteRelease.disc.substr(1).replace(/\//, "\u00a0") + "/" + discount : "") + ")"));
@@ -698,7 +706,7 @@ function loadReleasePage() {
 							var current_track = {
 								number: current_medium + trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
 								name: HTMLToText(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
-								artistCredit: trackRows[t].match(/<td class="wrap-anywhere">/g) && trackRows[t].match(/<td class="wrap-anywhere">/g).length === 1 ? trackRows[t].match(/[\s\S]*<td class="wrap-anywhere">([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : rtitle.groups.artists,
+								artistCredit: trackRows[t].match(/<td class="wrap-anywhere">/g) && trackRows[t].match(/<td class="wrap-anywhere">/g).length === 1 ? trackRows[t].match(/[\s\S]*<td class="wrap-anywhere">([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : remoteRelease.ac,
 								length: trackLength,
 								recording: {
 									rowid: recIDs[t],
