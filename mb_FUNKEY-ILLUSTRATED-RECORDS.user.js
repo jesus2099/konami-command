@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2024.2.18
+// @version      2024.8.25
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -54,7 +54,7 @@ var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
 css = css.sheet;
-css.insertRule("table.tbl.release-group-list > tbody > tr > td > a[href$='/cover-art'] ~ span.caa-icon { display: none; }", 0);
+css.insertRule("table.tbl > tbody > tr > td > a[href$='/cover-art'][ref^='/release-group/'] ~ span.caa-icon { display: none; }", 0);
 // Add CAA icons in secondary release lists
 if (location.pathname.match(/^\/artist\/[^/]+\/relationships$|^\/cdtoc\/|^\/recording\//)) {
 	var releases = document.querySelectorAll("tbody > tr > td a[href^='/release/']");
