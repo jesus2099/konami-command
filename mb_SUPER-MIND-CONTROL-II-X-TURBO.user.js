@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.8.21
+// @version      2024.8.26
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -11,7 +11,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2010-09-09; https://web.archive.org/web/20140328200933/userscripts.org/scripts/show/85790 / https://web.archive.org/web/20141011084019/userscripts-mirror.org/scripts/show/85790 / see topic GÓ GÓ AMÍGO
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
-// @require      https://github.com/jesus2099/konami-command/raw/f0b88c95669a0c1fcb73d178557d24fc2e7f83d9/lib/MB-JUNK-SHOP.js?version=2024.8.19
+// @require      https://github.com/jesus2099/konami-command/raw/bcceaa5f3da43e9ee805cba2eccda07f602d3f0c/lib/MB-JUNK-SHOP.js?version=2024.8.26
 // @require      https://github.com/jesus2099/konami-command/raw/f5b4bdb4f7ce1fedbc6c14b784425c2645b03a85/lib/SUPER.js?version=2023.3.23
 // @grant        none
 // @match        *://*.musicbrainz.org/*
@@ -1293,11 +1293,14 @@ function tagswitch(h1, urltxt) {
 j2setting("STATIC_MENU", true, true, "☠ OBSOLETE ☠ Has been replaced by mb_STICKY-HEADER userstyle");
 if (j2sets.STATIC_MENU && document.querySelector("div.header")) {
 	debug("STATIC_MENU");
+	j2superturbo.css.insertRule("." + MBJS.id + ".banner." + userjs.id + " h1 { margin-bottom: 1em; }", 0);
+	j2superturbo.css.insertRule("." + MBJS.id + ".banner." + userjs.id + " p { text-align: left; }", 0);
+	j2superturbo.css.insertRule("." + MBJS.id + ".banner." + userjs.id + " a { text-decoration: underline; font-weight: bold; }", 0);
 	MBJS.displayBanner(createTag("fragment", {}, [
 		createTag("h1", {}, "STATIC_MENU → mb_STICKY-HEADER"),
 		createTag("p", {}, ["⚠\uFE0F For the sake of maintanability, ", GM_info.script.name, "’s ", createTag("b", {}, "STATIC_MENU"), " has been replaced by a new userstyle called ", createTag("a", {a: {href: "https://github.com/jesus2099/konami-command/blob/master/mb_STICKY-HEADER.user.css", target: "_blank"}}, "mb_STICKY-HEADER"), "."]),
 		createTag("p", {}, ["💁\uFE0F You should now disable STATIC_MENU ", j2superturbo.menu.expl, " and ", createTag("a", {a: {href: "https://github.com/jesus2099/konami-command/raw/master/mb_STICKY-HEADER.user.css", target: "_blank"}}, "install mb_STICKY-HEADER"), " thanks to ", createTag("a", {a: {href: "//add0n.com/stylus.html", target: "_blank"}}, "Stylus"), " extension."])
-	]));
+	]), userjs.id);
 }
 // ==========================================================================
 // ## SLOW_DOWN_RETRY ##
