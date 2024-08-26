@@ -78,7 +78,6 @@ function addTracklistUpDownKeyNavigation() {
 			// detect UP ↑ / DOWN ↓ to push cursor to upper or lower text field
 			var class_name_match = event.target.className.match(/(?:\s|^)(pos|track-(name|length))(?:\s|$)/);
 			if (class_name_match && (event.key == "ArrowUp" || event.key == "ArrowDown")) {
-				event.preventDefault();
 				var same_class_inputs = tracklist.querySelectorAll("input." + class_name_match[1]);
 				var index;
 				for (index = 0; index < same_class_inputs.length; index++) {
@@ -88,13 +87,16 @@ function addTracklistUpDownKeyNavigation() {
 				}
 				index += event.key == "ArrowUp" ? -1 : 1;
 				if (index >= 0 && index < same_class_inputs.length) {
+					event.preventDefault();
 					if (
 						event.shiftKey && !event.target.className.match(/pos|track-length/)
 						|| !event.shiftKey && event.target.className.match(/pos|track-length/)
 						|| event.target.selectionStart === 0 && event.target.selectionEnd === event.target.value.length
 					) {
 						// select all
-						same_class_inputs[index].select();
+						// input.select() is more straightforward, but it does not scroll the window
+						same_class_inputs[index].selectionStart = 0;
+						same_class_inputs[index].selectionEnd = same_class_inputs[index].value.length;
 					} else {
 						if (event.target.selectionStart == event.target.selectionEnd && event.target.selectionStart == event.target.value.length) {
 							// place the caret at the end
@@ -106,7 +108,7 @@ function addTracklistUpDownKeyNavigation() {
 							same_class_inputs[index].selectionEnd = event.target.selectionEnd;
 						}
 					}
-					// activate the input
+					// activate the input (but does not scroll to make it visible)
 					same_class_inputs[index].focus();
 				}
 			}
