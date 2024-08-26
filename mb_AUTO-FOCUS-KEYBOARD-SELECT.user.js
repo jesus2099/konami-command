@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2024.8.26.2058
+// @version      2024.8.26.2228
 // @description  musicbrainz.org: MOUSE-LESS EDITING! Cleverly focus and refocus fields in various MusicBrainz edit pages and tracklist Up Down key navigation
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_AUTO-FOCUS-KEYBOARD-SELECT
@@ -95,17 +95,14 @@ function addTracklistUpDownKeyNavigation() {
 					) {
 						// select all
 						// input.select() is more straightforward, but it does not scroll the window
-						same_class_inputs[index].selectionStart = 0;
-						same_class_inputs[index].selectionEnd = same_class_inputs[index].value.length;
+						same_class_inputs[index].setSelectionRange(0, same_class_inputs[index].value.length);
 					} else {
 						if (event.target.selectionStart == event.target.selectionEnd && event.target.selectionStart == event.target.value.length) {
 							// place the caret at the end
-							same_class_inputs[index].selectionStart = same_class_inputs[index].value.length;
-							same_class_inputs[index].selectionEnd = same_class_inputs[index].value.length;
+							same_class_inputs[index].setSelectionRange(same_class_inputs[index].value.length, same_class_inputs[index].value.length);
 						} else {
 							// keep same selection or caret position
-							same_class_inputs[index].selectionStart = event.target.selectionStart;
-							same_class_inputs[index].selectionEnd = event.target.selectionEnd;
+							same_class_inputs[index].setSelectionRange(event.target.selectionStart, event.target.selectionEnd);
 						}
 					}
 					// activate the input (but does not scroll to make it visible)
