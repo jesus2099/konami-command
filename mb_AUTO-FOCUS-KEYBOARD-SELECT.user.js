@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2024.5.31
-// @description  musicbrainz.org: MOUSE-LESS EDITING ! Cleverly focuses fields in various musicbrainz edit pages and allows keyboard selection of relationship types as well as some release editor keyboard navigation performance features
+// @version      2024.8.26.2058
+// @description  musicbrainz.org: MOUSE-LESS EDITING! Cleverly focus and refocus fields in various MusicBrainz edit pages and tracklist Up Down key navigation
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_AUTO-FOCUS-KEYBOARD-SELECT
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_AUTO-FOCUS-KEYBOARD-SELECT.user.js
@@ -47,27 +47,86 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-/* ---------- configuration below ---------- */
-var autoFocus = true; /* focuses on most clever field http://tickets.musicbrainz.org/browse/MBS-2213 */
-var selectText = false; /* selects the focused field’s text */
-var moreURLmatch = true; /* more URL patterns matching in add/edit links (blog, etc.) */
-var tracklistEditorEnhancer = true; /* press UP↓/↑DOWN keys to navigate through track positions, names and lengths, auto clean‐up and format track length */
-/* ---------- configuration above ---------- */
-// work in progress, don't refrain from requesting more pages and/or fields
-function mostCleverInputToFocus() {
-	var i;
-	switch (self.location.pathname.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/, "*").replace(/[0-9]+/, "*")) {
+// focus most clever field http://tickets.musicbrainz.org/browse/MBS-2213
+var input = getMostCleverInputToFocus();
+if (input) {
+	input.focus();
+	if (input.getAttribute("type") == "text") {
+		// Put caret at the text end
+		var value_length = input.value.length;
+		if (value_length) {
+			input.setSelectionRange(value_length, value_length);
+		}
+	}
+	highlight(input);
+}
+// re‐focus input field after related tool click http://tickets.musicbrainz.org/browse/MBS-7321
+// TODO: Maybe remove if bad good idea https://tickets.metabrainz.org/browse/MBS-7321?focusedId=67924&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-67924
+var tools = document.querySelectorAll("input[class*='with-guesscase'] ~ button:not(.guesscase-options)");
+for (var t = 0; t < tools.length; t++) {
+	tools[t].addEventListener("click", function(event) {
+		var related_input = this.parentNode.querySelector("input");
+		related_input.focus();
+		highlight(related_input);
+	});
+}
+function addTracklistUpDownKeyNavigation() {
+	// press UP↓/↑DOWN keys to navigate through track positions, names and lengths, auto clean‐up and format track length
+	var tracklist = document.querySelector("#tracklist");
+	if (tracklist) {
+		tracklist.addEventListener("keydown", function(event) {
+			// detect UP ↑ / DOWN ↓ to push cursor to upper or lower text field
+			var class_name_match = event.target.className.match(/(?:\s|^)(pos|track-(name|length))(?:\s|$)/);
+			if (class_name_match && (event.key == "ArrowUp" || event.key == "ArrowDown")) {
+				event.preventDefault();
+				var same_class_inputs = tracklist.querySelectorAll("input." + class_name_match[1]);
+				var index;
+				for (index = 0; index < same_class_inputs.length; index++) {
+					if (same_class_inputs[index] == event.target) {
+						break;
+					}
+				}
+				index += event.key == "ArrowUp" ? -1 : 1;
+				if (index >= 0 && index < same_class_inputs.length) {
+					if (
+						event.shiftKey && !event.target.className.match(/pos|track-length/)
+						|| !event.shiftKey && event.target.className.match(/pos|track-length/)
+						|| event.target.selectionStart === 0 && event.target.selectionEnd === event.target.value.length
+					) {
+						// select all
+						same_class_inputs[index].select();
+					} else {
+						if (event.target.selectionStart == event.target.selectionEnd && event.target.selectionStart == event.target.value.length) {
+							// place the caret at the end
+							same_class_inputs[index].selectionStart = same_class_inputs[index].value.length;
+							same_class_inputs[index].selectionEnd = same_class_inputs[index].value.length;
+						} else {
+							// keep same selection or caret position
+							same_class_inputs[index].selectionStart = event.target.selectionStart;
+							same_class_inputs[index].selectionEnd = event.target.selectionEnd;
+						}
+					}
+					// activate the input
+					same_class_inputs[index].focus();
+				}
+			}
+		}, false);
+	}
+}
+function getMostCleverInputToFocus() {
+	var best_input;
+	switch (location.pathname.replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/, "*").replace(/[0-9]+/, "*")) {
 		case "/artist/*/add-alias":
 		case "/work/*/add-alias":
 		case "/label/*/add-alias":
 		case "/artist/*/alias/*/edit":
 		case "/label/*/alias/*/edit":
 		case "/work/*/alias/*/edit":
-			i = document.querySelector("input[id='id-edit-alias.name']");
+			best_input = document.querySelector("input[id='id-edit-alias.name']");
 			break;
 		case "/artist/create":
 		case "/artist/*/edit":
-			i = document.querySelector("input[id='id-edit-artist.name']");
+			best_input = document.querySelector("input[id='id-edit-artist.name']");
 			break;
 		case "/artist/*/edit_annotation":
 		case "/label/*/edit_annotation":
@@ -75,99 +134,38 @@ function mostCleverInputToFocus() {
 		case "/release/*/edit_annotation":
 		case "/release-group/*/edit_annotation":
 		case "/work/*/edit_annotation":
-			i = document.querySelector("textarea[id='id-edit-annotation.text']");
+			best_input = document.querySelector("textarea[id='id-edit-annotation.text']");
 			break;
 		case "/cdtoc/attach":
 		case "/cdtoc/move":
-			i = (
+			best_input = (
 				document.querySelector("input[id='id-filter-release.query']")
 				|| document.querySelector("input[id='id-filter-artist.query']")
 			);
 			break;
-		case "/edit/relationship/create_url":
-			i = document.querySelector("input[id='id-ar.url']");
-			if (moreURLmatch) {
-// TODO: see if those selectors are not included in MBS now
-// TODO: convert this code for entity edit case instead of now defunct /edit/relationship/*
-				var type = document.querySelector("select[id='id-ar.link_type_id']");
-				if (type) {
-					i.addEventListener("keyup", function(event) {
-						var urlmatch = {
-							199: /6109\.jp|ameblo|blog|cocolog|instagram\.com|jugem\.jp|plaza.rakuten\.co\.jp|tumblr\.com/i, // blog
-							288: /sonymusic\.co\.jp|\/disco/i, // discography
-						};
-						for (var utype in urlmatch) if (Object.prototype.hasOwnProperty.call(urlmatch, utype)) {
-							var option = type.querySelector("option[value='" + utype + "']");
-							if (option && i.value.match(urlmatch[utype])) {
-								type.value = utype;
-								break;
-							}
-						}
-					}, false);
-				}
-			}
-			break;
 		case "/label/create":
 		case "/label/*/edit":
-			i = document.querySelector("input[id='id-edit-label.name']");
+			best_input = document.querySelector("input[id='id-edit-label.name']");
 			break;
 		case "/recording/create":
 		case "/recording/*/edit":
-			i = document.querySelector("input[id='id-edit-recording.name']");
+			best_input = document.querySelector("input[id='id-edit-recording.name']");
 			break;
 		case "/recording/*/add-isrc":
-			i = document.querySelector("input[id='id-add-isrc.isrc']");
+			best_input = document.querySelector("input[id='id-add-isrc.isrc']");
 			break;
 		case "/release/add":
 		case "/release/*/edit":
-			if (tracklistEditorEnhancer) {
-				var tracklist = document.querySelector("div#tracklist");
-				if (tracklist) {
-					tracklist.addEventListener("keydown", function(event) {
-						// detect UP ↑ / DOWN ↓ to push cursor to upper or lower text field
-						var classNameMatch = event.target.className.match(/(?:\s|^)(pos|track-(name|length))(?:\s|$)/);
-						if (classNameMatch && (event.key == "ArrowUp" || event.key == "ArrowDown")) {
-							event.preventDefault();
-							var its = tracklist.querySelectorAll("input." + classNameMatch[1]);
-							var it;
-							for (it = 0; it < its.length; it++) {
-								if (its[it] == event.target) {
-									break;
-								}
-							}
-							it += event.key == "ArrowUp" ? -1 : 1;
-							if (it >= 0 && it < its.length) {
-								if (
-									event.shiftKey && !event.target.className.match(/pos|track-length/)
-									|| !event.shiftKey && event.target.className.match(/pos|track-length/)
-									|| event.target.selectionStart == 0 && event.target.selectionEnd == event.target.value.length
-								) {
-									its[it].select();
-								} else {
-									if (event.target.selectionStart == event.target.selectionEnd && event.target.selectionStart == event.target.value.length) {
-										its[it].selectionStart = its[it].value.length;
-										its[it].selectionEnd = its[it].value.length;
-									} else {
-										its[it].selectionStart = event.target.selectionStart;
-										its[it].selectionEnd = event.target.selectionEnd;
-									}
-								}
-								its[it].focus();
-							}
-						}
-					}, false);
-				}
-			}
-			i = (
-				document.querySelector("input#id-name")
-				|| document.querySelector("select[id$='.format_id']")
+			best_input = (
+				document.querySelector("input#name")
 			);
+			addTracklistUpDownKeyNavigation();
 			break;
 		case "/release/*/add-cover-art":
-			i = document.querySelector("input[id='id-add-cover-art.comment']");
+			best_input = document.querySelector("input[id='id-add-cover-art.comment']");
 			break;
 		case "/release/*/edit-cover-art/*":
-			i = document.querySelector("input[id='id-edit-cover-art.comment']");
+			best_input = document.querySelector("input[id='id-edit-cover-art.comment']");
 			break;
 		case "/artist/*/tags":
 		case "/label/*/tags":
@@ -175,63 +173,36 @@ function mostCleverInputToFocus() {
 		case "/release/*/tags":
 		case "/release-group/*/tags":
 		case "/work/*/tags":
-			i = document.querySelector("textarea[id='id-tag.tags']");
+			best_input = document.querySelector("textarea[id='id-tag.tags']");
+			break;
+		case "/url/*/edit":
+			best_input = document.querySelector("input[id='id-edit-url.url']");
 			break;
 		case "/release-group/create":
-		case "/url/*/edit":
-			i = document.querySelector("input[id='id-edit-url.url']");
-			break;
 		case "/release-group/*/edit":
-			i = document.querySelector("input[id='id-edit-release-group.name']");
+			best_input = document.querySelector("input[id='id-edit-release-group.name']");
 			break;
 		case "/work/create":
 		case "/work/*/edit":
-			i = document.querySelector("input[id='id-edit-work.name']");
+			best_input = document.querySelector("input[id='id-edit-work.name']");
 			break;
 		case "/work/*/add-iswc":
-			i = document.querySelector("input[id='id-add-iswc.iswc']");
+			best_input = document.querySelector("input[id='id-add-iswc.iswc']");
 			break;
 	}
-	return i ? i : document.querySelector("textarea[id*='edit_note'], textarea[id*='edit-note']");
+	return best_input ? best_input : document.querySelector("textarea[id*='edit_note'], textarea[id*='edit-note']");
 }
-if (autoFocus) {
-	var input = mostCleverInputToFocus();
-	if (input) {
-		input.focus();
-		if (input.getAttribute("type") == "text") {
-			if (selectText) {
-				input.select();
-			} else {
-				// leave cursor at the text end
-				var valueLength = input.value.length;
-				if (valueLength) {
-					input.setSelectionRange(valueLength, valueLength);
-				}
-			}
-		}
-		highlight(input);
-	}
-	// re‐focus input field after related tool click http://tickets.musicbrainz.org/browse/MBS-7321
-	var tools = document.querySelectorAll("input[class*='with-guesscase'] ~ button:not(.guesscase-options)");
-	for (var t = 0; t < tools.length; t++) {
-		tools[t].addEventListener("click", function(event) {
-			var relatedInput = this.parentNode.querySelector("input");
-			relatedInput.focus();
-			highlight(relatedInput);
-		});
-	}
-}
-var hli;
-var rgbi;
+// the focus animation
+var interval, blue;
 function highlight(input) {
-	rgbi = 0;
-	hli = setInterval(function() { hl(input); }, 50);
+	blue = 0;
+	interval = setInterval(function() { hl(input); }, 50);
 }
 function hl(input) {
-	input.style.setProperty("background-color", "rgb(255, 255, " + rgbi + ")");
-	rgbi += 50;
-	if (rgbi >= 255) {
-		clearInterval(hli);
+	input.style.setProperty("background-color", "rgb(255, 255, " + blue + ")");
+	blue += 50;
+	if (blue >= 255) {
+		clearInterval(interval);
 		input.style.removeProperty("background-color");
 	}
 }
