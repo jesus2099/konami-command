@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name            acacia. UTC CLOCK
+// @name            acacia. BONUS
 // @version         2024.7.26
-// @description:fr  Affiche l’heure TU
-// @description     Show UTC Clock
+// @description:fr  Affiche une horloge UTC
+// @description     Show an UTC Clock
 // @namespace       https://github.com/jesus2099/konami-command
-// @supportURL      https://github.com/jesus2099/konami-command/labels/acacia_UTC-CLOCK
-// @downloadURL     https://github.com/jesus2099/konami-command/raw/master/acacia_UTC-CLOCK.user.js
+// @supportURL      https://github.com/jesus2099/konami-command/labels/acacia_BONUS
+// @downloadURL     https://github.com/jesus2099/konami-command/raw/master/acacia_BONUS.user.js
 // @author          jesus2099
 // @licence         CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence         GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
@@ -15,22 +15,24 @@
 // @run-at          document-idle
 // ==/UserScript==
 "use strict";
-var UTC_clock = {
+var acacia_BONUS = {
 	css: document.createElement("style"),
-	display: document.createElement("div")
 };
-UTC_clock.display.classList.add("j2-utc-clock");
-UTC_clock.display.setAttribute("title", GM_info.script.name + " version " + GM_info.script.version);
-UTC_clock.css.setAttribute("type", "text/css");
-document.head.appendChild(UTC_clock.css);
-UTC_clock.css = UTC_clock.css.sheet;
-UTC_clock.css.insertRule("app-footer > footer > div.j2-utc-clock { padding: 2px 8px; font-family: monospace; margin-right: auto; background-color: " + (location.host.match(/-/) ? "green" : "red") + "; border-radius: .8em; color: white; font-weight: bold; text-shadow: 1px 1px 3px black; box-shadow: 2px 2px 4px grey; }", 0);
+acacia_BONUS.css.setAttribute("type", "text/css");
+document.head.appendChild(acacia_BONUS.css);
+acacia_BONUS.css = acacia_BONUS.css.sheet;
+
+// UTC Clock
+acacia_BONUS.UTC_clock = document.createElement("div");
+acacia_BONUS.UTC_clock.classList.add("j2-utc-clock");
+acacia_BONUS.UTC_clock.setAttribute("title", GM_info.script.name + " version " + GM_info.script.version);
+acacia_BONUS.css.insertRule("app-footer > footer > div.j2-utc-clock { padding: 2px 8px; font-family: monospace; margin-right: auto; background-color: " + (location.host.match(/-/) ? "green" : "red") + "; border-radius: .8em; color: white; font-weight: bold; text-shadow: 1px 1px 3px black; box-shadow: 2px 2px 4px grey; }", 0);
 
 waitForElement("app-footer footer", function(footer) {
-	UTC_clock.display.appendChild(document.createTextNode(getUTCTimeString(getLocale())));
-	footer.insertBefore(UTC_clock.display, footer.firstChild);
+	acacia_BONUS.UTC_clock.appendChild(document.createTextNode(getUTCTimeString(getLocale())));
+	footer.insertBefore(acacia_BONUS.UTC_clock, footer.firstChild);
 	setInterval(function() {
-		UTC_clock.display.replaceChild(document.createTextNode(getUTCTimeString(getLocale())), UTC_clock.display.firstChild);
+		acacia_BONUS.UTC_clock.replaceChild(document.createTextNode(getUTCTimeString(getLocale())), acacia_BONUS.UTC_clock.firstChild);
 	}, 5000);
 });
 
