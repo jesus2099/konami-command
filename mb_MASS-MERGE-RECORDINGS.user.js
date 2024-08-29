@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.8.25
+// @version      2024.8.30
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -101,12 +101,14 @@ if (ltitle) {
 			"release-group": document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
 			title: ltitle.title,
 			looseTitle: looseTitle(ltitle.title),
-			comment: document.querySelector("h1 > span.comment > bdi"),
+			comment: document.querySelector("h1 > span.comment > bdi") || "",
 			ac: ltitle.artists,
 			id: self.location.pathname.match(regex_MBID)[0],
 			tracks: []
 		};
-		if (localRelease.comment) localRelease.comment = " (" + localRelease.comment.textContent + ")"; else localRelease.comment = "";
+		if (localRelease.comment) {
+			localRelease.comment = "(" + localRelease.comment.textContent + ")";
+		}
 		var remoteRelease = {tracks: []};
 		if (document.getElementsByClassName("account").length > 0) {
 			sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
@@ -229,7 +231,8 @@ function mergeRecsStep(_step) {
 	}
 }
 function releaseInfoRow(sourceOrTarget, rel, trackIndex) {
-	return sourceOrTarget + ": " + MBS + "/release/" + rel.id + " #'''" + (trackIndex + 1) + "'''/" + rel.tracks.length + ". “'''" + protectEditNoteText(rel.title) + "'''”" + protectEditNoteText(rel.comment) + " by '''" + protectEditNoteText(rel.ac) + "'''\n";
+	var spaced_comment = rel.comment ? " " + rel.comment : "";
+	return sourceOrTarget + ": " + MBS + "/release/" + rel.id + " #'''" + (trackIndex + 1) + "'''/" + rel.tracks.length + ". “'''" + protectEditNoteText(rel.title) + "'''”" + protectEditNoteText(spaced_comment) + " by '''" + protectEditNoteText(rel.ac) + "'''\n";
 }
 function checkMerge(errorText) {
 	retry.checking = true;
@@ -659,7 +662,10 @@ function loadReleasePage() {
 				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>){0,2}<a href=".*\/release-group\/([^"/]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>){0,2}\)/)[1];
 				remoteRelease.title = HTMLToText(rtitle.title);
 				remoteRelease.looseTitle = looseTitle(remoteRelease.title);
-				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/);
+				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/) || "";
+				if (remoteRelease.comment) {
+					remoteRelease.comment = "(" + HTMLToText(remoteRelease.comment[1]) + ")";
+				}
 				remoteRelease.ac = rtitle.artists;
 				removeChildren(mbidInfo);
 				if (remoteRelease.id == localRelease.id) {
@@ -668,11 +674,7 @@ function loadReleasePage() {
 					mbidInfo.appendChild(createA(remoteRelease.title, "/release/" + remoteRelease.id));
 					if (remoteRelease.comment) {
 						mbidInfo.appendChild(document.createTextNode(" "));
-						remoteRelease.comment = "(" + HTMLToText(remoteRelease.comment[1]) + ")";
 						mbidInfo.appendChild(createTag("span", {a: {class: "comment"}}, remoteRelease.comment));
-						remoteRelease.comment = " " + remoteRelease.comment;
-					} else {
-						remoteRelease.comment = "";
 					}
 					if (remoteRelease.disc) {
 						mbidInfo.appendChild(createTag("fragment", null, [" (", createA(remoteRelease.disc.substr(1).replace(/\//, "\u00a0"), "/release/" + remoteRelease.id + remoteRelease.disc + "#" + remoteRelease.disc.replace(/\//g, "")),  "/" + discount + ")"]));
