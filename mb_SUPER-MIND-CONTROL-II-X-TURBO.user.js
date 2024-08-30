@@ -1290,7 +1290,7 @@ function tagswitch(h1, urltxt) {
 // ==========================================================================
 // Replaced by https://github.com/jesus2099/konami-command/blob/master/mb_STICKY-HEADER.user.css
 // TODO: Remove STATIC_MENU completely
-j2setting("STATIC_MENU", true, true, "☠ OBSOLETE ☠ Has been replaced by mb_STICKY-HEADER userstyle");
+j2setting("STATIC_MENU", false, false, "☠ OBSOLETE ☠ Has been replaced by mb_STICKY-HEADER userstyle");
 if (j2sets.STATIC_MENU && document.querySelector("div.header")) {
 	debug("STATIC_MENU");
 	j2superturbo.css.insertRule("." + MBJS.id + ".banner." + userjs.id + " h1 { margin-bottom: 1em; }", 0);
