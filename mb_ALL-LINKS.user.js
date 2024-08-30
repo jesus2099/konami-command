@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2024.6.28
+// @version      2024.6.30
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -71,25 +71,25 @@ var webSearchLinks = {
 		webPageSearch: {
 			title: {en: "Web pages", de: "Webseiten", fr: "Pages Web", nl: "Webpagina’s"},
 			target: [
-				"//duckduckgo.com/?q=%release-group-artist-credit%+%release-group-name%",
-				"//duckduckgo.com/?q=%release-artist-credit%+%release-name%",
-				"//duckduckgo.com/?q=%entity-name%"
+				"//duckduckgo.com/?q=%22%release-group-artist-credit%%22+%22%release-group-name%%22",
+				"//duckduckgo.com/?q=%22%release-artist-credit%%22+%22%release-name%%22",
+				"//duckduckgo.com/?q=%22%entity-name%%22"
 			]
 		},
 		imageSearch: {
 			title: {en: "Images", de: "Bilder", fr: "Images", nl: "Afbeeldingen"},
 			target: [
-				"//duckduckgo.com/?q=%release-group-artist-credit%+%release-group-name%+!i",
-				"//duckduckgo.com/?q=%release-artist-credit%+%release-name%+!i",
-				"//duckduckgo.com/?q=%entity-name%+!i"
+				"//duckduckgo.com/?q=%22%release-group-artist-credit%%22+%22%release-group-name%%22+!i",
+				"//duckduckgo.com/?q=%22%release-artist-credit%%22+%22%release-name%%22+!i",
+				"//duckduckgo.com/?q=%22%entity-name%%22+!i"
 			]
 		},
 		videoSearch: {
 			title: {en: "Videos", de: "Videos", fr: "Vidéos", nl: "Video’s"},
 			target: [
-				"//duckduckgo.com/?q=%release-group-artist-credit%+%release-group-name%+!v",
-				"//duckduckgo.com/?q=%release-artist-credit%+%release-name%+!v",
-				"//duckduckgo.com/?q=%entity-name%+!v"
+				"//duckduckgo.com/?q=%22%release-group-artist-credit%%22+%22%release-group-name%%22+!v",
+				"//duckduckgo.com/?q=%22%release-artist-credit%%22+%22%release-name%%22+!v",
+				"//duckduckgo.com/?q=%22%entity-name%%22+!v"
 			]
 		},
 		waybackMachineHistory: {
@@ -400,7 +400,7 @@ var whitelistSearchLinks = {
 				nl: "Bladmuziek"
 			},
 			items: {
-				"IMSLP/Petrucci Music Library": "//duckduckgo.com/?q=site:imslp.org+%work-name%"
+				"IMSLP/Petrucci Music Library": "//duckduckgo.com/?q=site:imslp.org+%22%work-name%%22"
 			}
 		},
 		regionalDBs: {
@@ -425,8 +425,8 @@ var whitelistSearchLinks = {
 							"//vgmdb.net/search?type=album&q=%release-name%",
 							"//vgmdb.net/search?type=org&q=%label-name%",
 						],
-						Yunisan: "//duckduckgo.com/?q=site:www22.big.or.jp+%22%2F%7Eyunisan%2Fvi%2F%22+%artist-name%",
-						VKDB: "//duckduckgo.com/?q=site:vkdb.jp+%artist-name%"
+						Yunisan: "//duckduckgo.com/?q=site:www22.big.or.jp+%22%2F%7Eyunisan%2Fvi%2F%22+%22%artist-name%%22",
+						VKDB: "//duckduckgo.com/?q=site:vkdb.jp+%22%artist-name%%22"
 					}
 				},
 				KR: {
@@ -1640,7 +1640,7 @@ function configureModule(event) {
 		case "configure user autolinks":
 			// TODO: provide a real editor
 			var loadedUserAutolinks = localStorage.getItem(userjs + "_user-autolinks") || {};
-			var newUserAutolinks = prompt("Edit your user autolinks\nCopy/paste in a real editor\nSorry for such an awful prompt\n\nAvailable variables:\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\n- for url entity pages: %url-target% (while %entity-name% and %url-name% are deliberately ignored)\n\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%entity-name%+reviews\",\n\"Search for fans\": \"//duckduckgo.com/?q=%artist-name%+fans\",\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
+			var newUserAutolinks = prompt("Edit your user autolinks\nCopy/paste in a real editor\nSorry for such an awful prompt\n\nAvailable variables:\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\n- for url entity pages: %url-target% (while %entity-name% and %url-name% are deliberately ignored)\n\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%22%entity-name%%22+reviews\",\n\"Search for fans\": \"//duckduckgo.com/?q=%22%artist-name%%22+fans\",\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
 			if (newUserAutolinks && newUserAutolinks != loadedUserAutolinks && JSON.stringify(newUserAutolinks)) {
 				localStorage.setItem(userjs + "_user-autolinks", newUserAutolinks);
 			}
