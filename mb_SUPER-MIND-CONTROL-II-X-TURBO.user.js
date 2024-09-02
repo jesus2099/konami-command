@@ -873,9 +873,9 @@ if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/
 			var refineEntity = entitySpecificEdits(entityType, refine_sidebar, "pure+cover+relationship");
 			if (refineEntity) {
 				entityEdits.parentNode.appendChild(createTag("ul", {a: {title: userjs.name}, s: {border: "2px solid purple"}},
-					createTag("li", {}, [createTag("a", {a: {title: "No child/related entity (VERY SLOW)", href: refineEntity}}, "All " + entityType.replace(/_/, "\u00a0") + " edits"), " (SLOW)",
+					createTag("li", {}, [createTag("a", {a: {title: "No child/related entity (VERY SLOW)", href: refineEntity}}, "Only this " + entityType.replace(/_/, "\u00a0") + " edits"), " (SLOW)",
 						createTag("ul", {s: {paddingLeft: "10px"}}, [
-							createTag("li", {a: {id: userjs.id + "-pure+cover"}, s: {background: "#ff6"}}, createTag("a", {a: {href: entitySpecificEdits(entityType, refine_sidebar, "pure+cover")}}, "Non‐relationship edits")),
+							createTag("li", {a: {id: userjs.id + "-pure+cover"}, s: {background: "#ff6"}}, createTag("a", {a: {href: entitySpecificEdits(entityType, refine_sidebar, "pure+cover")}, s: {fontWeight: "bold"}}, "Pure " + entityType.replace(/_/, "\u00a0") + " edits")),
 							createTag("li", {}, [createTag("span", {}, [createTag("a", {a: {class: userjs.id + "-pre-ngs-rels", href: entitySpecificEdits(entityType, refine_sidebar, "relationship")}}, "Relationship edits"), " (SLOW)"]),
 								createTag("ul", {s: {paddingLeft: "10px"}}, [
 									createTag("li", {s: {background: "#ff6", textDecoration: "initial"}}, createTag("a", {a: {class: userjs.id + "-post-ngs-rels", href: entitySpecificEdits(entityType, refine_sidebar, "post-ngs-relationship")}, title: "Edits since 2011-05-17"}, "Post‐NGS")),
@@ -885,14 +885,17 @@ if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/
 						])
 					])
 				));
-				refineEntity = entitySpecificEdits(entityType, refine_sidebar, "cover");
-				if (refineEntity) {
-					document.getElementById(userjs.id + "-pure+cover").appendChild(
-						createTag("ul", {a: {id: userjs.id + "-pure+cover"}, s: {paddingLeft: "10px"}}, [
-							createTag("li", {}, createTag("a", {a: {href: entitySpecificEdits(entityType, refine_sidebar, "pure")}, s: {fontWeight: "bold"}}, "Pure " + entityType.replace(/_/, "\u00a0") + " edits")),
-							createTag("li", {}, createTag("a", {a: {href: refineEntity}}, "Cover art edits"))
-						])
-					);
+				if (entityType == "release") {
+					refineEntity = entitySpecificEdits(entityType, refine_sidebar, "cover");
+					if (refineEntity) {
+						document.getElementById(userjs.id + "-pure+cover").appendChild(createTag("fragment", {}, [
+							" (",
+								createTag("a", {a: {title: "No art edits", href: entitySpecificEdits(entityType, refine_sidebar, "pure")}}, "no"),
+							"/",
+							createTag("a", {a: {title: "Only art edits", href: refineEntity}}, "art"),
+							")"
+						]));
+					}
 				}
 				// Check if there are pre‐NGS relationship edits
 				var xhr_cool_search_links = new XMLHttpRequest();
