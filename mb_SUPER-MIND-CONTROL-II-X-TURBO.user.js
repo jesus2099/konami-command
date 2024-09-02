@@ -108,7 +108,7 @@ document.head.appendChild(j2superturbo.css);
 j2superturbo.css = j2superturbo.css.sheet;
 var j2sets = {}, j2docs = {}, j2defs = {}, j2setsclean = [];
 j2setting();
-j2superturbo.menu.addItem(createTag("a", {a: {title: "settings:\n" + GM_info.script.description.replace(/^[^:]+: /, "").replace(/ \/ /g, "\n")}, e: {click: function(event) {
+j2superturbo.menu.addItem(createTag("a", {a: {title: "Settings:\n" + GM_info.script.description.replace(/^[^:]+: /, "").replace(/ \/ /g, "\n")}, e: {click: function(event) {
 	var j2setsdiv = document.getElementById(userjs.id + "j2sets");
 	if (!j2setsdiv) {
 		j2setting();
@@ -223,7 +223,7 @@ function j2docit(txt) {
 	var jira = txt.match(/\b(MBS-\d+)\b/);
 	if (jira) {
 		var arr = txt.split(jira[1]);
-		arr.splice(1, 0, createTag("a", {a: {href: "http://tickets.musicbrainz.org/browse/" + jira[1].toUpperCase(), target: "_blank", title: "opens in new window"}}, jira[1]));
+		arr.splice(1, 0, createTag("a", {a: {href: "http://tickets.musicbrainz.org/browse/" + jira[1].toUpperCase(), target: "_blank", title: "Opens in new window"}}, jira[1]));
 		return arr;
 	} else return [txt];
 }
@@ -836,7 +836,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 			if (editn <= lastseenedits[which][0]) {
 				editlist.setAttribute("title", "SEEN EDIT");
 				if (editn == lastseenedits[which][0]) {
-					editlist.parentNode.insertBefore(createTag("hr", {a: {title: "edits below are already seen"}, s: {height: "0px", border: "none", "border-top": "4px dashed red"}}), editlist);
+					editlist.parentNode.insertBefore(createTag("hr", {a: {title: "Edits below are already seen"}, s: {height: "0px", border: "none", "border-top": "4px dashed red"}}), editlist);
 					if (ed > 0) { getSibling(editlist, "div", "edit-list", true).scrollIntoView(); }
 				}
 			} else {
@@ -868,7 +868,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/
 			entityID = entityID.getAttribute("href").match(/add-to-merge=(\d+)/)[1];
 			entityName = entityName.textContent;
 			var refine_sidebar = "/search/edits?conditions.0.operator=%3D&conditions.0.field=" + entityType + "&conditions.0.name=" + encodeURIComponent(entityName) + "&conditions.0.args.0=" + entityID + "&order=desc&combinator=and&negation=0";
-			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "another cool search link from " + userjs.name, href: refine_sidebar + "&form_only=yes"}, s: {background: "#ff6"}}, "refine"), ")"]), entityEdits);
+			addAfter(createTag("span", {}, [" (", createTag("a", {a: {title: "Another cool search link from " + userjs.name, href: refine_sidebar + "&form_only=yes"}, s: {background: "#ff6"}}, "refine"), ")"]), entityEdits);
 			entityEdits.setAttribute("title", "Includes child/related entity edits");
 			var refineEntity = entitySpecificEdits(entityType, refine_sidebar, "pure+cover+relationship");
 			if (refineEntity) {
