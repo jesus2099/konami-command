@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.8.30
+// @version      2024.9.4
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -989,6 +989,31 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 				/* Remove label         */ editTypes.push("13");
 				/* Remove label alias   */ editTypes.push("17,262");
 				break;
+			case "recording":
+				/* Add disc ID                                    */ editTypes.push("55,232");
+				/* Add ISRCs                                      */ editTypes.push("76");
+				/* Add medium                                     */ editTypes.push("51");
+				/* Add recording alias                            */ editTypes.push("711");
+				/* Add recording annotation                       */ editTypes.push("75");
+				/* Add release (historic)                         */ editTypes.push("216");
+				/* Add standalone recording                       */ editTypes.push("71");
+				/* Add track (historic)                           */ editTypes.push("207,218");
+				/* Edit medium                                    */ editTypes.push("52");
+				/* Edit recording                                 */ editTypes.push("72,204,245");
+				/* Edit recording alias                           */ editTypes.push("713");
+				/* Edit track (historic)                          */ editTypes.push("205,210");
+				/* Merge recordings                               */ editTypes.push("74");
+				/* Move disc ID                                   */ editTypes.push("56,221");
+				/* Remove disc ID                                 */ editTypes.push("54,220");
+				/* Remove ISRC                                    */ editTypes.push("78");
+				/* Remove medium                                  */ editTypes.push("53");
+				/* Remove recording                               */ editTypes.push("73");
+				/* Remove recording alias                         */ editTypes.push("712");
+				/* Remove release                                 */ editTypes.push("212,310");
+				/* Remove releases (historic)                     */ editTypes.push("224");
+				/* Remove track                                   */ editTypes.push("211");
+				/* Set track lengths                              */ editTypes.push("58,253");
+				break;
 			case "release":
 				/* Add disc ID                                    */ editTypes.push("55,232");
 				/* Add ISRCs                                      */ editTypes.push("76");
@@ -1061,7 +1086,7 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 				/* artist-instrument relationships    */ linkTypes.push(896);
 				/* artist-label relationships         */ linkTypes.push(119, 117, 120, 115, 1081, 121, 990, 116, 991, 723, 724);
 				/* artist-place relationships         */ linkTypes.push(701, 702, 703, 704, 714, 832, 988, 856, 937, 925, 923, 924, 926, 975);
-				/* artist-recording relationships     */ linkTypes.push(122, 156, 148, 149, 150, 151, 152, 760, 157, 147, 153, 155, 154, 297, 158, 300, 298, 961, 858, 962, 160, 141, 138, 136, 140, 133, 143, 128, 1011, 132, 144, 726, 129, 142, 869, 134, 135, 146, 137, 130, 125, 123, 986, 127);
+				/* artist-recording relationships     */ linkTypes.push(122, 156, 148, 149, 150, 151, 152, 760, 1186, 157, 147, 153, 155, 154, 297, 158, 300, 298, 961, 858, 962, 1230, 1241, 1242, 125, 1244, 1243, 1245, 160, 141, 138, 136, 140, 133, 143, 128, 1011, 132, 144, 726, 1236, 129, 142, 869, 134, 135, 146, 137, 130, 123, 986, 127);
 				/* artist-release relationships       */ linkTypes.push(34, 51, 44, 60, 45, 46, 53, 759, 50, 43, 47, 48, 49, 58, 54, 55, 56, 57, 871, 295, 41, 40, 296, 59, 30, 28, 31, 42, 969, 29, 26, 36, 1012, 37, 38, 727, 25, 22, 709, 710, 1010, 23, 18, 993, 927, 928, 27, 19, 929, 20, 987, 32, 24);
 				/* artist-release_group relationships */ linkTypes.push(65, 868, 62, 63, 974);
 				/* artist-series relationships        */ linkTypes.push(996, 1000, 1002, 750, 751, 1003, 859, 994, 1004);
@@ -1077,12 +1102,28 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 				/* instrument-label relationships    */ linkTypes.push(918);
 				/* label-label relationships         */ linkTypes.push(205, 200, 201, 202, 203, 725);
 				/* label-place relationships         */ linkTypes.push(989);
-				/* label-recording relationships     */ linkTypes.push(867, 206, 945, 946, 949, 950, 998);
+				/* label-recording relationships     */ linkTypes.push(867, 206, 945, 946, 949, 950, 1178, 1252, 1228, 998);
 				/* label-release relationships       */ linkTypes.push(66, 359, 360, 942, 955, 361, 362, 708, 711, 712, 833, 848, 985, 349, 944, 947, 948, 951, 952, 999);
 				/* label-release_group relationships */ linkTypes.push(970);
 				/* label-series relationships        */ linkTypes.push(933);
 				/* label-url relationships           */ linkTypes.push(219, 221, 224, 211, 212, 213, 214, 899, 903, 218, 215, 290, 304, 225, 982, 957, 960, 959, 958, 997, 1005, 719, 222, 210, 216, 217, 311, 313, 354, 838, 851, 977);
 				/* label-work relationships          */ linkTypes.push(208, 890, 922);
+				break;
+			case "recording":
+				/* Add relationship                  */ editTypes.push("90,233");
+				/* Edit relationship                 */ editTypes.push("91,234");
+				/* Remove relationship               */ editTypes.push("92,235");
+				/* Reorder relationships             */ editTypes.push("99");
+				/* area-recording relationships      */ linkTypes.push(814, 698, 758, 821, 830, 864, 827, 964);
+				/* artist-recording relationships    */ linkTypes.push(122, 156, 148, 149, 150, 151, 152, 760, 1186, 157, 147, 153, 155, 154, 297, 158, 300, 298, 961, 858, 962, 1230, 1241, 1242, 125, 1244, 1243, 1245, 160, 141, 138, 136, 140, 133, 143, 128, 1011, 132, 144, 726, 1236, 129, 142, 869, 134, 135, 146, 137, 130, 123, 986, 127);
+				/* event-recording relationships     */ linkTypes.push(809, 966);
+				/* label-recording relationships     */ linkTypes.push(867, 206, 945, 946, 949, 950, 1178, 1252, 1228, 998);
+				/* place-recording relationships     */ linkTypes.push(813, 693, 694, 819, 829, 866, 825, 963);
+				/* recording-recording relationships */ linkTypes.push(233, 226, 1238, 1239, 309, 857, 236, 238, 234, 227, 228, 230, 231, 232, 1177);
+				/* recording-release relationships   */ linkTypes.push(69);
+				/* recording-series relationships    */ linkTypes.push(740, 1006);
+				/* recording-url relationships       */ linkTypes.push(256, 258, 302, 257, 254, 255, 268, 979, 905, 306, 285, 976);
+				/* recording-work relationships      */ linkTypes.push(278);
 				break;
 			case "release":
 				/* Add relationship                */ editTypes.push("90,233");
