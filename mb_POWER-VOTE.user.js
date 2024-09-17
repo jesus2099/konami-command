@@ -193,7 +193,7 @@ if (search_form) {
 				var gid = span_autocomplete.querySelector("input[type='hidden'].gid").value;
 				var id = span_autocomplete.querySelector("input[type='hidden'].id").value;
 				var name = span_autocomplete.querySelector("input.name.ui-autocomplete-input.lookup-performed").value;
-				if (type && (gid || id) && name && type[1] != "recording") { // TODO: remove recording exlusion when MBS bug is fixed #703 https://tickets.metabrainz.org/browse/MBS-12560
+				if (type && (gid || id) && name) {
 					type = type[1];
 					if (type == "editor") {
 						type = "user";
