@@ -38,7 +38,6 @@ var rangeclick = true; // multiple votes by clicking first vote then shift-click
 var collapseEdits = true;
 var voteColours = true;
 // - --- - --- - --- - END  OF  CONFIGURATION - --- - --- - --- -
-var str_regex_gid = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent); // FF has bugs
 if (FF) { FF = {"1": "#b1ebb0", "0": "#ebb1ba", "-1": "#f2f0a5"}; }
 j2css.insertRule("div.edit-list." + userjs.id + "force, div.edit-list." + userjs.id + "ninja > div.edit-actions, div.edit-list." + userjs.id + "ninja > div.edit-details, div.edit-list." + userjs.id + "ninja > div.edit-notes { overflow: hidden !important; height: 0 !important; !important; padding: 0 !important; margin: 0 !important; }", 0);
@@ -239,17 +238,10 @@ if (search_form) {
 								}
 							};
 							xhr.addEventListener("readystatechange", function(event) {
-								var MBID = this.responseURL.match(new RegExp("/" + this.type + "/(" + str_regex_gid + ")$"));
+								var MBID = this.responseURL.match(new RegExp("/" + this.type + "/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$"));
 								if (MBID) {
 									this.updateGid(MBID[1]);
 									this.abort();
-								}
-							});
-							xhr.addEventListener("load", function(event) {
-								// Reached only if not redirected to MBID (bug with work entity type) https://tickets.metabrainz.org/browse/MBS-12562
-								var MBID = this.responseText.match(new RegExp("<h1>.+\\b(" + str_regex_gid + ")\\b"));
-								if (MBID) {
-									this.updateGid(MBID[1]);
 								}
 							});
 							xhr.open("GET", path, true);
