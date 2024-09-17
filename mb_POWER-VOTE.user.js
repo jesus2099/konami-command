@@ -188,7 +188,7 @@ if (search_form) {
 				&&
 				(span_autocomplete = mutations[m].target.parentNode)
 			) {
-				var type = span_autocomplete.className.match(/\b(area|artist|editor|event|instrument|label|place|recording|release-group|release|series|work)\b/);
+				var type = span_autocomplete.className.match(/\b(area|artist|editor|event|genre|instrument|label|place|recording|release-group|release|series|work)\b/);
 				var gid = span_autocomplete.querySelector("input[type='hidden'].gid").value;
 				var id = span_autocomplete.querySelector("input[type='hidden'].id").value;
 				var name = span_autocomplete.querySelector("input.name.ui-autocomplete-input.lookup-performed").value;
