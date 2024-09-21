@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2024.7.3
+// @version      2024.9.4
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -36,7 +36,6 @@ var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|place
 if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
 	var highlightColour = "purple";
-	var highlightInEditNotes = false;
 	var skipArtists = [
 		"89ad4ac3-39f7-470e-963a-56509c546377", // Various Artists
 		"f731ccc4-e22a-43af-a747-64213329e088", // [anonymous]
@@ -253,11 +252,8 @@ function findOwnedStuff() {
 		stuff[cstuff] = {};
 		var uphill = "";
 		var downhill = cat == "release" && cstuff == "label" ? "" : "[count(ancestor::xhtml:div[contains(@id, 'sidebar')])=0]";
-		if (!highlightInEditNotes && (cat == "edit" || cat == "edits")) {
-			downhill += "[count(ancestor::xhtml:div[contains(@class, 'edit-notes')])=0]";
-		}
 		var root = cat == "track" /* acoustid.org */ ? "//musicbrainz.org/" : "/";
-		var path = uphill + "//xhtml:a[starts-with(@href, '" + root + cstuff + "/')][not(starts-with(@class, '" + prefix + "'))]" + downhill;
+		var path = uphill + "//xhtml:a[contains(@href, '" + root + cstuff + "/')][not(starts-with(@class, '" + prefix + "'))]" + downhill;
 		var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		for (let i = 0; i < xp.snapshotLength; i++) {
 			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
