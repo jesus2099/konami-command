@@ -890,7 +890,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/
 					if (refineEntity) {
 						document.getElementById(userjs.id + "-pure+cover").appendChild(createTag("fragment", {}, [
 							" (",
-								createTag("a", {a: {title: "No art edits", href: entitySpecificEdits(entityType, refine_sidebar, "pure")}}, "no"),
+							createTag("a", {a: {title: "No art edits", href: entitySpecificEdits(entityType, refine_sidebar, "pure")}}, "no"),
 							"/",
 							createTag("a", {a: {title: "Only art edits", href: refineEntity}}, "art"),
 							")"
