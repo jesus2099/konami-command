@@ -311,6 +311,7 @@ function decorate(entityLink) {
 			if (row) {
 				if (
 					entityLink == row.querySelector("a[href]:not([href*='coverartarchive.org']):not([href*='/track/']):not([href$='/cover-art'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))
+					&& !(cat == "cdtoc" && entityType == "recording")
 					&& !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")
 					&& cat != "aliases"
 				) {
