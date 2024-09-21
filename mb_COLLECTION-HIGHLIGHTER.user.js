@@ -310,7 +310,7 @@ function decorate(entityLink) {
 			var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
 			if (row) {
 				if (
-					entityLink == row.querySelector("a:not([href*='coverartarchive.org']):not([href*='/track/']):not([href$='/cover-art'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))
+					entityLink == row.querySelector("a[href]:not([href*='coverartarchive.org']):not([href*='/track/']):not([href$='/cover-art'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))
 					&& !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")
 					&& cat != "aliases"
 				) {
