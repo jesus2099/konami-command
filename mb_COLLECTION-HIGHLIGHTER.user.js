@@ -14,15 +14,14 @@
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\//
 // @include      /^https?:\/\/acoustid\.org\/track\//
-// @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/account\//
-// @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/admin\//
-// @exclude      *.org/collection/*/own_collection/*
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(eu|org)\//
+// @exclude      /^https?:\/\/((beta|test)\.)?musicbrainz\.(eu|org)\/account\//
+// @exclude      /^https?:\/\/((beta|test)\.)?musicbrainz\.(eu|org)\/admin\//
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var DEBUG = false;
+var DEBUG = localStorage.getItem("jesus2099debug");
 let scriptNameAndVersion = GM_info.script.name.substr("4") + " " + GM_info.script.version;
 // ############################################################################
 // #                                                                          #
