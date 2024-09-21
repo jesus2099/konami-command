@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2024.9.17
+// @version      2024.9.21
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -40,6 +40,7 @@ var voteColours = true;
 // - --- - --- - --- - END  OF  CONFIGURATION - --- - --- - --- -
 var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent); // FF has bugs
 if (FF) { FF = {"1": "#b1ebb0", "0": "#ebb1ba", "-1": "#f2f0a5"}; }
+var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
 j2css.insertRule("div.edit-list." + userjs.id + "force, div.edit-list." + userjs.id + "ninja > div.edit-actions, div.edit-list." + userjs.id + "ninja > div.edit-details, div.edit-list." + userjs.id + "ninja > div.edit-notes { overflow: hidden !important; height: 0 !important; !important; padding: 0 !important; margin: 0 !important; }", 0);
 j2css.insertRule("div#" + userjs.id + "xhrstat { position: fixed; top: 0; left: 0; border: 2px solid black; border-width: 0 2px 2px 0; background-color: #ff6; }", 0);
 j2css.insertRule("tr.rename-artist-credits." + userjs.id + "yes > th { vertical-align: middle; }", 0);
@@ -64,7 +65,7 @@ var texts = {
 		order_oldest_first: "die ältesten zuerst",
 		reset_votes: "Stimmen zurücksetzen",
 		show_form: "Formular zeigen",
-		vote_all: " // Über alle nicht abgestimmten Änderungen abstimmen (shift+Klick für alle) → ",
+		vote_all: " // Über alle nicht abgestimmten Änderungen abstimmen (" + CONTROL_POMME.shift.label + "Klick für alle) → ",
 	},
 	en: {
 		double_click_to_vote: "double-click to vote this edit",
@@ -359,7 +360,7 @@ if (editform) {
 			if (rangeclick && (rad || this)) {
 				if (event[CONTROL_POMME.shift.key] && userjs.lastradio && rad != userjs.lastradio && rad.value === userjs.lastradio.value) {
 					rangeclick = false;
-					rangeVote(event, rad.value, Math.min(userjs.radios.indexOf(rad), userjs.radios.indexOf(userjs.lastradio)), Math.max(userjs.radios.indexOf(rad), userjs.radios.indexOf(userjs.lastradio)));
+					rangeVote(event, rad.value, event[CONTROL_POMME.shift.key], Math.min(userjs.radios.indexOf(rad), userjs.radios.indexOf(userjs.lastradio)), Math.max(userjs.radios.indexOf(rad), userjs.radios.indexOf(userjs.lastradio)));
 					rangeclick = true;
 					userjs.lastradio = null;
 				} else {
@@ -582,6 +583,10 @@ function preNGS(editHeader) {
 	editHeader.parentNode.classList.add("pre-ngs");
 }
 function shortcutsRow() {
+	var vote_all_text = texts[lang].vote_all;
+	if (IS_TOUCH_SCREEN) {
+		vote_all_text = vote_all_text.replace(new RegExp(CONTROL_POMME.shift.label.replace("+", "\\+") + "[clik]+\\b"), "long touch");
+	}
 	return createTag("div", {a: {class: "edit-list"}, s: {border: border}}, [
 		createTag("div", {a: {class: "edit-actions c applied"}},
 			createTag("div", {a: {class: "voteopts buttons"}}, [
@@ -593,7 +598,7 @@ function shortcutsRow() {
 		),
 		createTag("div", {a: {class: "edit-details"}, s: {margin: "0", textAlign: "right"}}, [
 			createTag("span", {a: {class: "buttons"}}, shortcut("reset-votes", texts[lang].reset_votes)),
-			texts[lang].vote_all
+			vote_all_text
 		])
 	]);
 }
@@ -601,16 +606,19 @@ function shortcut(vote, label) {
 	var button = createTag("input", {
 		a: {type: "button", value: label, class: "styled-button"},
 		s: {float: "none", margin: FF ? "0 3px 0 0" : "0 3px", padding: FF ? "0 2px" : "0 3px"},
-		e: {click: function(event) { rangeVote(event, vote); }}
+		e: {click: function(event) { rangeVote(event, vote, event[CONTROL_POMME.shift.key]); }}
 	});
+	if (IS_TOUCH_SCREEN) {
+		onLongPress(button, function(event) { rangeVote(event, vote, true); });
+	}
 	if (onlySubmitTabIndexed) { button.setAttribute("tabindex", "-1"); } // remove keyboard navigation from mass vote buttons (good idea?)
 	return button;
 }
-function rangeVote(event, vote, min, max) {
+function rangeVote(event, vote, force, min, max) {
 	if (vote != "reset-votes") {
 		if (event.detail === 1) { // first click
 			for (let i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : userjs.radios.length); i++) { // FF shift+click label NG
-				if (userjs.radios[i].getAttribute("value") == vote && !userjs.radios[i].checked && !ninja(event, userjs.radios[i].closest("div.edit-list")) && (event[CONTROL_POMME.shift.key] || notVotedYet(userjs.radios[i]))) {
+				if (userjs.radios[i].getAttribute("value") == vote && !userjs.radios[i].checked && !ninja(event, userjs.radios[i].closest("div.edit-list")) && (force || notVotedYet(userjs.radios[i]))) {
 					sendEvent(userjs.radios[i], "click");
 				}
 			}
@@ -679,4 +687,20 @@ function scroll_to_first_selected_options() {
 			}
 		}
 	}
+}
+function onLongPress(element, callback) {
+	// https://stackoverflow.com/a/60207895/2236179
+	let timer;
+	element.addEventListener("touchstart", function(event) {
+		timer = setTimeout(function() {
+			timer = null;
+			callback(event);
+		}, 500);
+	});
+	function cancel() {
+		clearTimeout(timer);
+	}
+	element.addEventListener("touchend", cancel);
+	element.addEventListener("touchcancel", cancel);
+	element.addEventListener("touchmove", cancel);
 }
