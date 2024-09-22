@@ -9,6 +9,7 @@
 
 @-moz-document domain("community.metabrainz.org") {
 	abbr[title]:hover {
+		cursor: help;
 		text-shadow: 2px 2px 2px black;
 	}
 	abbr[title]:hover:after {
