@@ -1,0 +1,25 @@
+/* ==UserStyle==
+@name         mb-wiki. MOBILE FIX
+@namespace    https://github.com/jesus2099/konami-command
+@version      2024.9.23
+@description  Only for mobile: Fix various display bugs on MB Wiki (half-screen OTHER-401, no Page Actions menu)
+@author       jesus2099
+@since        2022-12-28; https://community.metabrainz.org/t/mb-wiki-skin-monobook-bug-on-mobile/603441?u=jesus2099
+==/UserStyle== */
+@-moz-document domain("wiki.musicbrainz.org") {
+	/* Reclaim the left half of the screen */
+	#content {
+		margin-left: unset !important;
+	}
+	/* Show Page Actions popup menu */
+	#p-cactions {
+		z-index: 10000;
+	}
+	#p-cactions li a:hover {
+		color: black;
+	}
+	/* Show Discussion and Edit Source menu items */
+	#ca-edit, #ca-talk {
+		position: initial !important;
+	}
+}
