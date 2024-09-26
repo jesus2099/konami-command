@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2024.8.25
+// @version      2024.9.26
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -14,6 +14,7 @@
 // @grant        none
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/(artist|cdtoc|collection|label|recording|series|tag)\//
+// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release([-_]group)?\/.+$/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/merge(\?.*)?$/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\?.+/
