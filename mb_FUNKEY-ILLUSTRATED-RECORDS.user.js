@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2024.9.26
+// @version      2024.9.27
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -11,7 +11,9 @@
 // @since        2012-12-19; https://web.archive.org/web/20131103163409/userscripts.org/scripts/show/154481 / https://web.archive.org/web/20141011084022/userscripts-mirror.org/scripts/show/154481
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
-// @grant        none
+// @grant        GM_registerMenuCommand
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/(artist|cdtoc|collection|label|recording|series|tag)\//
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+/
@@ -28,25 +30,34 @@
 // ==/UserScript==
 "use strict";
 
-/* ---CONFIG-START--- */
-var bigpics = true; // displays big pics illustrated discography in main artist page
-var smallpics = true; // displays small pics for every releases and release groups, everywhere
-var colour = "yellow"; // used for various mouse-over highlights
-/* ---CONFIG-STOPR--- */
-
 let userjs = "jesus2099userjs154481"; // linked in mb. MERGE HELPOR 2, mb_HIDE-DIGITAL-RELEASES and mb_PRINT-ALL-PAGES
 let types = ["release-group", "release"];
 let GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 
+var colour = "yellow";
+var pics_settings = {
+	big: GM_getValue("bigpics", true),
+	small: GM_getValue("smallpics", true),
+	setMenu: function(id) {
+		GM_registerMenuCommand((pics_settings[id] ? "☑" : "☐") + " " + id.toUpperCase() + " PICS", function(event) {
+			pics_settings[id] = !pics_settings[id];
+			GM_setValue(id + "pics", pics_settings[id]);
+			pics_settings.setMenu(id);
+		}, {autoClose: false, id: id});
+	},
+};
+pics_settings.setMenu("big");
+pics_settings.setMenu("small");
+
 // Exclusions
-if (bigpics) {
+if (pics_settings.big) {
 	if (location.pathname.match(/^\/artist\/[^/]+\/(recordings|relationship)|^\/recording/)) {
-		bigpics = false;
+		pics_settings.big = false;
 	}
 }
-if (smallpics) {
+if (pics_settings.small) {
 	if (location.pathname.match(/^\/search\/edits|(open_)?edits$/)) {
-		smallpics = false;
+		pics_settings.small = false;
 	}
 }
 
@@ -67,7 +78,7 @@ if (location.pathname.match(/^\/artist\/[^/]+\/relationships$|^\/cdtoc\/|^\/reco
 // Add thumbnail in MBS release CAA icons
 var caaIcons = document.querySelectorAll("a[href$='/cover-art'] > span.caa-icon");
 if (caaIcons.length > 0) {
-	// TODO: commenting this out might bring regressions: smallpics = false;
+	// TODO: commenting this out might bring regressions: pics_settings.small = false;
 	for (var ci = 0; ci < caaIcons.length; ci++) {
 		loadCaaIcon(caaIcons[ci]);
 	}
@@ -90,7 +101,7 @@ setTimeout(function() {
 				}
 				// SMALL PICS
 				// ----------
-				if (smallpics) {
+				if (pics_settings.small) {
 					if (types[t] == "release-group") {
 						var CAALoader = new XMLHttpRequest();
 						CAALoader.addEventListener("load", function(event) {
@@ -138,7 +149,7 @@ setTimeout(function() {
 				box.addEventListener("mouseout", updateBig);
 				// BIG PICS
 				// --------
-				if (bigpics && (box = box.previousSibling && box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
+				if (pics_settings.big && (box = box.previousSibling && box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
 					var artisttd = artistcol && getSibling(getParent(as[a], "td"), "td");
 					// textContent is faster but shows <script> content. artisttd contains React? <script> when pending AC edits. https://kellegous.com/j/2013/02/27/innertext-vs-textcontent/
 					box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\n" + artisttd.innerText.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
