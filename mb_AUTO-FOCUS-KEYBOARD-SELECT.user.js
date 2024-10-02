@@ -90,9 +90,9 @@ function addTracklistUpDownKeyNavigation() {
 					event.preventDefault();
 					event.stopPropagation();
 					if (
-						event.shiftKey && !event.target.className.match(/pos|track-length/)
-						|| !event.shiftKey && event.target.className.match(/pos|track-length/)
-						|| event.target.selectionStart === 0 && event.target.selectionEnd === event.target.value.length
+						event.shiftKey
+						|| event.target.className.match(/pos|track-length/)
+						|| event.target.selectionEnd - event.target.selectionStart === event.target.value.length
 					) {
 						// select all
 						// input.select() is more straightforward, but it does not scroll the window
@@ -110,7 +110,7 @@ function addTracklistUpDownKeyNavigation() {
 					same_class_inputs[index].focus();
 				}
 			}
-		}, false);
+		});
 	}
 }
 function getMostCleverInputToFocus() {
