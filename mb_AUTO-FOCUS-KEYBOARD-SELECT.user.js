@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2024.8.26.2228
+// @version      2024.10.2
 // @description  musicbrainz.org: MOUSE-LESS EDITING! Cleverly focus and refocus fields in various MusicBrainz edit pages and tracklist Up Down key navigation
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_AUTO-FOCUS-KEYBOARD-SELECT
@@ -88,6 +88,7 @@ function addTracklistUpDownKeyNavigation() {
 				index += event.key == "ArrowUp" ? -1 : 1;
 				if (index >= 0 && index < same_class_inputs.length) {
 					event.preventDefault();
+					event.stopPropagation();
 					if (
 						event.shiftKey && !event.target.className.match(/pos|track-length/)
 						|| !event.shiftKey && event.target.className.match(/pos|track-length/)
