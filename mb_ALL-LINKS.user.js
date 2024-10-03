@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2024.6.30
+// @version      2024.10.3
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -612,6 +612,9 @@ var whitelistSearchLinks = {
 					"//secondhandsongs.com/search/performance?op_title=contains&title=%recording-name%&op_performer=contains&display=title.performer&sort=simplifiedTitle",
 					"//secondhandsongs.com/search/release?op_title=contains&title=%release-name%&op_performer=contains&display=title.performer&sort=simplifiedTitle",
 					"//secondhandsongs.com/search/work?op_title=contains&title=%work-name%&op_credits=contains&display=title.credits&sort=simplifiedTitle"
+				],
+				"setlist.fm": [
+					"//www.setlist.fm/search?query=%artist-name%"
 				],
 				WhoSampled: [
 					"//www.whosampled.com/search/artists/?q=%artist-name%",
