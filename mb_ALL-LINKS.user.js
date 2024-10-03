@@ -15,6 +15,7 @@
 // @match        *://*.musicbrainz.org/area/*
 // @match        *://*.musicbrainz.org/artist/*
 // @match        *://*.musicbrainz.org/event/*
+// @match        *://*.musicbrainz.org/genre/*
 // @match        *://*.musicbrainz.org/instrument/*
 // @match        *://*.musicbrainz.org/label/*
 // @match        *://*.musicbrainz.org/place/*
