@@ -700,6 +700,17 @@ var additionalSearchLinks = {
 						"Joshin web (barcode)": "//joshinweb.jp/dp/%release-barcode%.html",
 						"ヨドバシカメラ (cat)": "//www.yodobashi.com/category/91139/?word=%release-catalogue-number%",
 					}
+				},
+				USA: {
+					items: {
+						BMI: [
+							"//repertoire.bmi.com/Search/Search?SearchForm.Main_Search=Title&SearchForm.Main_Search_Text=%recording-name%",
+							"//repertoire.bmi.com/Search/Search?SearchForm.Main_Search=Title&SearchForm.Main_Search_Text=%work-name%",
+							"//repertoire.bmi.com/Search/Search?SearchForm.Main_Search=Publisher&SearchForm.Main_Search_Text=%label-name%"
+						],
+						"BMI (performer)": "//repertoire.bmi.com/Search/Search?SearchForm.Main_Search=Performer&SearchForm.Main_Search_Text=%artist-name%",
+						"BMI (writer)": "//repertoire.bmi.com/Search/Search?SearchForm.Main_Search=Writer%2FComposer&SearchForm.Main_Search_Text=%artist-name%"
+					}
 				}
 			}
 		},
