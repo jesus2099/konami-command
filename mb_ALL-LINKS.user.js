@@ -614,9 +614,7 @@ var whitelistSearchLinks = {
 					"//secondhandsongs.com/search/release?op_title=contains&title=%release-name%&op_performer=contains&display=title.performer&sort=simplifiedTitle",
 					"//secondhandsongs.com/search/work?op_title=contains&title=%work-name%&op_credits=contains&display=title.credits&sort=simplifiedTitle"
 				],
-				"setlist.fm": [
-					"//www.setlist.fm/search?query=%artist-name%"
-				],
+				"setlist.fm": "//www.setlist.fm/search?query=%artist-name%",
 				WhoSampled: [
 					"//www.whosampled.com/search/artists/?q=%artist-name%",
 					"//www.whosampled.com/search/tracks/?q=%recording-name%",
