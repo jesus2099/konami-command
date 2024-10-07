@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.8.30
+// @version      2024.10.7
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -115,6 +115,17 @@ if (ltitle) {
 			document.body.addEventListener("keydown", function(event) {
 				if (!event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key] && event.key.match(/^m$/i)) {
 					prepareLocalRelease();
+					return stop(event);
+				} else if (
+					matchMode.current == matchMode.sequential
+					&& event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key] && event.key.match(/^Arrow(Up|Down|Left|Right)$/i)
+				) {
+					if (event.key.match(/^Arrow(Up|Left)$/i) && startpos.selectedIndex > 0) {
+						startpos.selectedIndex -= 1;
+					} else if (event.key.match(/^Arrow(Down|Right)$/i) && startpos.selectedIndex < startpos.length - 1) {
+						startpos.selectedIndex += 1;
+					}
+					sendEvent(startpos, "change");
 					return stop(event);
 				}
 			});
@@ -493,7 +504,7 @@ function massMergeGUI() {
 	});
 	MMRdiv.appendChild(createTag("p", {}, "Once you paste the remote release URL, all its recordings will be loaded and made available for merge with the local recordings in the left hand tracklist."));
 	MMRdiv.appendChild(createTag("p", {}, "Herebelow, you can shift the alignement of local and remote tracklists."));
-	MMRdiv.appendChild(createTag("p", {s: {marginBottom: "0px"}}, "Start position:"));
+	MMRdiv.appendChild(createTag("p", {s: {marginBottom: "0px"}}, "Remote tracklist start position:"));
 	/* track parsing */
 	startpos = MMRdiv.appendChild(createTag("select", {s: {fontSize: ".8em", width: "100%"}, e: {change: function(event) {
 		/* hitting ENTER on a once changed <select> triggers onchange even if no recent change */
@@ -513,15 +524,15 @@ function massMergeGUI() {
 		}
 	});
 	MMRdiv.appendChild(createTag("p", {}, [
-		"☞ ",
+		"☞ ", CONTROL_POMME.ctrl.label, CONTROL_POMME.shift.label,
 		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "↑"),
-		" / ",
-		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "→"),
-		" / ",
+		"/",
 		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "↓"),
-		" / ",
+		"/",
 		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "←"),
-		": shift up/down",
+		"/",
+		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "→"),
+		": shift",
 		document.createElement("br"),
 		"☞ ",
 		createTag("kbd", {}, "Enter"),
@@ -529,7 +540,6 @@ function massMergeGUI() {
 	]));
 	MMRdiv.addEventListener("click", function(event) {
 		if (matchMode.current == matchMode.sequential && event.target.classList.contains(userjs.id + "arrowButton")) {
-			startpos.focus();
 			if (event.target.textContent.match(/[↑←]/) && startpos.selectedIndex > 0) {
 				startpos.selectedIndex -= 1;
 			} else if (event.target.textContent.match(/[↓→]/) && startpos.selectedIndex < startpos.length - 1) {
@@ -743,6 +753,7 @@ function loadReleasePage() {
 				}
 				startpos.value = bestStartPosition() || 0;
 				spreadTracks(event);
+				startpos.focus();
 			}
 		}
 	});
@@ -786,7 +797,6 @@ function spreadTracks(event) {
 	if (startpos.value < 0) outOfView -= startpos.value;
 	infoMerge("☞ " + mergebutts + " recording" + (mergebutts == 1 ? "" : "s") + " ready to merge" + (outOfView > 0 ? " (" + outOfView + " out of view)" : ""), mergebutts > 0);
 	disableInputs(queueAll, mergebutts < 1);
-	if (mergebutts > 0 || !event || !event.type || event.type != "load") startpos.focus();
 }
 function buildMergeForm(loc, rem) {
 	var locTrack = localRelease.tracks[loc];
