@@ -425,9 +425,7 @@ function updateMatchModeDisplay() {
 function massMergeGUI() {
 	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
-			if (event.key == "Enter" && (event.target == startpos || event.target == editNote && event[CONTROL_POMME.ctrl.key])) {
-				queueAll.click();
-			} else if (event.target == editNote && !event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && !event[CONTROL_POMME.shift.key]) {
+			if (event.target == editNote && !event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && !event[CONTROL_POMME.shift.key]) {
 				switch (event.key) {
 					case "s":
 						return saveEditNote(event);
@@ -532,11 +530,7 @@ function massMergeGUI() {
 		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "←"),
 		"/",
 		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "→"),
-		": shift",
-		document.createElement("br"),
-		"☞ ",
-		createTag("kbd", {}, "Enter"),
-		": queue all"
+		": shift"
 	]));
 	MMRdiv.addEventListener("click", function(event) {
 		if (matchMode.current == matchMode.sequential && event.target.classList.contains(userjs.id + "arrowButton")) {
@@ -582,7 +576,7 @@ function massMergeGUI() {
 	loadEditNoteButt.setAttribute("tabindex", "-1");
 	loadEditNoteButt.setAttribute("title", "Reload edit note text from local storage");
 	loadEditNoteButt.addEventListener("click", loadEditNote);
-	MMRdiv.appendChild(createTag("p", {}, ["☞ ", CONTROL_POMME.ctrl.label, "Enter", ": queue all", document.createElement("br"), "☞ ", CONTROL_POMME.ctrl.label, "S", ": ", saveEditNoteButt, document.createElement("br"), "☞ ", CONTROL_POMME.ctrl.label, "O", ": ", loadEditNoteButt]));
+	MMRdiv.appendChild(createTag("p", {}, ["☞ ", CONTROL_POMME.ctrl.label, "S", ": ", saveEditNoteButt, document.createElement("br"), "☞ ", CONTROL_POMME.ctrl.label, "O", ": ", loadEditNoteButt]));
 	MMRdiv.appendChild(createTag("p", {}, "Each recording merge will automatically target the oldest, unless direction is manually changed by clicking each arrow button or below batch button."));
 	from = MMRdiv.appendChild(createInput("hidden", "from", ""));
 	to = MMRdiv.appendChild(createInput("hidden", "to", ""));
@@ -1264,9 +1258,7 @@ function leven(a, b) {
 function RGRecordingsMassMergeGUI() {
 	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
-			if (event.key == "Enter" && (event.target == startpos || event.target == editNote && event[CONTROL_POMME.ctrl.key])) {
-				queueAll.click();
-			} else if (event.target == editNote && !event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && !event[CONTROL_POMME.shift.key]) {
+			if (event.target == editNote && !event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && !event[CONTROL_POMME.shift.key]) {
 				switch (event.key) {
 					case "s":
 						return saveEditNote(event);
@@ -1306,7 +1298,7 @@ function RGRecordingsMassMergeGUI() {
 	loadEditNoteButt.setAttribute("tabindex", "-1");
 	loadEditNoteButt.setAttribute("title", "Reload edit note text from local storage");
 	loadEditNoteButt.addEventListener("click", loadEditNote);
-	MMRdiv.appendChild(createTag("p", {}, ["☞ ", CONTROL_POMME.ctrl.label, "Enter", ": queue all", document.createElement("br"), "☞ ", CONTROL_POMME.ctrl.label, "S", ": ", saveEditNoteButt, document.createElement("br"), "☞ ", CONTROL_POMME.ctrl.label, "O", ": ", loadEditNoteButt]));
+	MMRdiv.appendChild(createTag("p", {}, ["☞ ", CONTROL_POMME.ctrl.label, "S", ": ", saveEditNoteButt, document.createElement("br"), "☞ ", CONTROL_POMME.ctrl.label, "O", ": ", loadEditNoteButt]));
 	MMRdiv.appendChild(createTag("p", {}, "Each recording merge will automatically target the oldest MBID."));
 	queuetrack = MMRdiv.appendChild(createTag("div", {s: {textAlign: "center", backgroundColor: cInfo, display: "none"}}, "\u00A0"));
 	return MMRdiv;
