@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.10.7
+// @version      2024.10.10
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -10,7 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-12-13; https://web.archive.org/web/20131103163401/userscripts.org/scripts/show/120382 / https://web.archive.org/web/20141011084015/userscripts-mirror.org/scripts/show/120382
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://github.com/jesus2099/konami-command/raw/c5fb7fe162530fdbd7e017170f24169272a729a0/lib/CONTROL-POMME.js?version=2024.3.14.1822
+// @require      https://github.com/jesus2099/konami-command/raw/c3758667354d3ad62c5fc72fa179e2cead9bc917/lib/CONTROL-POMME.js?version=2024.10.10
 // @require      https://github.com/jesus2099/konami-command/raw/e835cfc19c665c8e9893ac1946fc52f639d8d672/lib/MB-JUNK-SHOP.js?version=2022.10.26
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
@@ -438,7 +438,7 @@ function massMergeGUI() {
 	}}, [
 		createTag("h2", {}, userjs.name),
 		createTag("p", {}, "version " + userjs.version),
-		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", CONTROL_POMME.ctrl.label, CONTROL_POMME.shift.label, "M"]),
+		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", CONTROL_POMME.ctrl_shift.label, "M"]),
 		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release: ", createTag("span", {a: {"class": "remote-release-link"}})]),
 	]);
 	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", userjs.name + " remote release URL"));
@@ -522,7 +522,7 @@ function massMergeGUI() {
 		}
 	});
 	MMRdiv.appendChild(createTag("p", {}, [
-		"☞ ", CONTROL_POMME.ctrl.label, CONTROL_POMME.shift.label,
+		"☞ ", CONTROL_POMME.ctrl_shift.label,
 		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "↑"),
 		"/",
 		createTag("kbd", {a: {class: userjs.id + "arrowButton"}, s: {cursor: "pointer"}}, "↓"),
@@ -1271,7 +1271,7 @@ function RGRecordingsMassMergeGUI() {
 	}}, [
 		createTag("h2", {}, userjs.name),
 		createTag("p", {}, "version " + userjs.version),
-		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", CONTROL_POMME.ctrl.label, CONTROL_POMME.shift.label, "M"]),
+		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", CONTROL_POMME.ctrl_shift.label, "M"]),
 //		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release", createTag("span", {a: {"class": "remote-release-link"}}), ":"]),
 	]);
 	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", userjs.name + " loading recordings…"));
