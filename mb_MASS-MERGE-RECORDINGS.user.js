@@ -1464,7 +1464,7 @@ function releaseList(recording) {
 function sort_elements(container, data_sort) {
 	// data_sort = example-haha for data-example-haha
 	// dataSort = exampleHaha for dataset.exampleHaha
-	var dataSort = data_sort.replace(/-([a-z])/g, function(match, p1, offset, string) { return p1.toUpperCase(); });
+	var dataSort = data_sort.replace(/-([a-z])/g, function(match, p1) { return p1.toUpperCase(); });
 	var elements = Array.from(container.children);
 	elements.sort(function(a, b) {
 		return a.querySelector("[data-" + data_sort + "]").dataset[dataSort].localeCompare(b.querySelector("[data-" + data_sort + "]").dataset[dataSort]);
