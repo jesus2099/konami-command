@@ -748,7 +748,7 @@ function loadReleasePage() {
 				}
 				startpos.value = bestStartPosition() || 0;
 				spreadTracks(event);
-				startpos.focus();
+				mergeStatus.blur();
 			}
 		}
 	});
