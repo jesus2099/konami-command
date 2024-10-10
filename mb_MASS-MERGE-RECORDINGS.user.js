@@ -117,7 +117,8 @@ if (ltitle) {
 					prepareLocalRelease();
 					return stop(event);
 				} else if (
-					matchMode.current == matchMode.sequential
+					startpos.children.length !== 0
+					&& matchMode.current == matchMode.sequential
 					&& event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key] && event.key.match(/^Arrow(Up|Down|Left|Right)$/i)
 				) {
 					if (event.key.match(/^Arrow(Up|Left)$/i) && startpos.selectedIndex > 0) {
