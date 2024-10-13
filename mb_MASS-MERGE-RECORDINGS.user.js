@@ -11,7 +11,7 @@
 // @since        2011-12-13; https://web.archive.org/web/20131103163401/userscripts.org/scripts/show/120382 / https://web.archive.org/web/20141011084015/userscripts-mirror.org/scripts/show/120382
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://github.com/jesus2099/konami-command/raw/c3758667354d3ad62c5fc72fa179e2cead9bc917/lib/CONTROL-POMME.js?version=2024.10.10
-// @require      https://github.com/jesus2099/konami-command/raw/e835cfc19c665c8e9893ac1946fc52f639d8d672/lib/MB-JUNK-SHOP.js?version=2022.10.26
+// @require      https://github.com/jesus2099/konami-command/raw/89dce29b9cce6e92e552f7d8ce2f5cb0ed161f2a/lib/MB-JUNK-SHOP.js?version=2024.10.13
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/(disc\/\d+)?)?(\?tport=\d+)?(#.*)?$/
@@ -138,7 +138,7 @@ if (ltitle) {
 	console.error("Local title (/^" + sregex_title + "$/) not found in document.title (" + document.title + ").");
 }
 function mergeRecsStep(_step) {
-	if (editNote.value && !MB_is_invalid_edit_note(editNote.value)) {
+	if (editNote.value && MBJS.isValidEditNote(editNote.value)) {
 		editNote.style.removeProperty("background-color");
 		if (editNote.nextSibling.matches("p.error." + userjs.id)) {
 			editNote.parentNode.removeChild(editNote.nextSibling);
@@ -237,7 +237,7 @@ function mergeRecsStep(_step) {
 	} else {
 		if (!editNote.nextSibling.matches("p.error." + userjs.id)) {
 			editNote.parentNode.insertBefore(createTag("p", {a: {class: "error"}}, "Merging recordings is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\n\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc."), editNote);
-			addAfter(createTag("p", {a: {class: "error " + userjs.id}}, MB_text("invalid_edit_note")), editNote);
+			addAfter(createTag("p", {a: {class: "error " + userjs.id}}, MBJS.texts("invalid_edit_note")), editNote);
 		}
 		editNote.style.setProperty("background-color", cNG);
 		infoMerge("Invalid edit note.", false, true);
@@ -1381,7 +1381,7 @@ function releaseList(recording) {
 		}
 	}
 	sort_elements(list, "release-date");
-	MB_collapsible_list(list, "release");
+	MBJS.collapseList(list, "release");
 	return list;
 }
 function sort_elements(container, data_sort) {
