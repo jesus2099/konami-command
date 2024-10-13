@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.10.10
+// @version      2024.10.13
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -298,8 +298,6 @@ function nextButt(successOrEditID) {
 	var nextButtFromQueue = mergeQueue.shift();
 	if (nextButtFromQueue) {
 		enableAndClick(nextButtFromQueue);
-	} else {
-		noScrollFocus(startpos);
 	}
 }
 function tryAgain(errorText) {
@@ -412,9 +410,6 @@ function changeMatchMode(event) {
 		}
 		var notMatched = remoteRelease.tracks.length - matchedRemoteTracks.length;
 		infoMerge((notMatched === 0 ? "All" : "☞") + " " + matchedRemoteTracks.length + " remote track title" + (matchedRemoteTracks.length == 1 ? "" : "s") + " matched" + (notMatched > 0 ? " (" + notMatched + " left)" : ""), matchedRemoteTracks.length > 0);
-		if (matchedRemoteTracks.length > 0) {
-			noScrollFocus(queueAll);
-		}
 	}
 }
 function updateMatchModeDisplay() {
@@ -1208,11 +1203,6 @@ function chrono(minimumDelay) {
 		lastTick = new Date().getTime();
 		return lastTick;
 	}
-}
-function noScrollFocus(field) {
-	var x = scrollX, y = scrollY;
-	field.focus();
-	scrollTo(x, y);
 }
 /*
 // 'leven' function taken from https://github.com/sindresorhus/leven
