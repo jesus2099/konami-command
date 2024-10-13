@@ -39,7 +39,7 @@ var lastTick = new Date().getTime();
 var MBSminimumDelay = 1000;
 var retryDelay = 2000;
 var currentButt;
-var MBS = self.location.protocol + "//" + self.location.host;
+var MBS = location.protocol + "//" + location.host;
 var sidebar = document.getElementById("sidebar");
 var recid2trackIndex = {remote: {}, local: {}}; // recid:tracks index
 var mergeQueue = []; // contains next mergeButts
@@ -78,7 +78,7 @@ css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id
 css.insertRule("/*body." + userjs.id + "*/ div#content > table.tbl." + userjs.id + "reclist > tbody > tr.sameName > td:nth-child(2) { border-left: 2px solid red; }", 0);
 var dtitle = document.title;
 var ltitle = dtitle.match(new RegExp("^" + sregex_title + "$"));
-var release_group_MBID = self.location.pathname.match(new RegExp("^/release-group/(" + sregex_MBID + ")$"));
+var release_group_MBID = location.pathname.match(new RegExp("^/release-group/(" + sregex_MBID + ")$"));
 var releases = document.querySelectorAll("div#content table.tbl > tbody > tr > td > a[href^='/release/'] > bdi, div#content table.tbl > tbody > tr > td > span.mp > a[href^='/release/'] > bdi");
 if (ltitle) {
 	ltitle = {
@@ -103,7 +103,7 @@ if (ltitle) {
 			looseTitle: looseTitle(ltitle.title),
 			comment: document.querySelector("h1 > span.comment > bdi") || "",
 			ac: ltitle.artists,
-			id: self.location.pathname.match(regex_MBID)[0],
+			id: location.pathname.match(regex_MBID)[0],
 			tracks: []
 		};
 		if (localRelease.comment) {
@@ -938,9 +938,9 @@ function expandCollapseAllMediums(clickThis) {
 	}
 }
 function prepareLocalRelease() {
-	if (self.location.pathname.match(/\/disc\/\d+/)) {
+	if (location.pathname.match(/\/disc\/\d+/)) {
 		if (confirm(userjs.name + " only works on normal release pages (not on this kind of disc anchor version).\n\nDo you agree to reload page?")) {
-			self.location.assign(MBS + "/release/" + localRelease.id);
+			location.assign(MBS + "/release/" + localRelease.id);
 		}
 		return;
 	}
@@ -1082,14 +1082,6 @@ function strtime2ms(str) { // temporary until WS available again
 	}
 	return ms;
 }
-/* function time(_ms, pad) {/* adapt mb_INLINE-TRACK-ARTIST’s with milliseconds instead when https://github.com/jesus2099/konami-command/issues/48 is fixed *//*
-	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
-	if (ms > 0) {
-		var d = new Date(parseInt(("" + ms).slice(-3), 10) < 500 ? ms : ms + 1000); // a trick to round to nearest second as we hide milliseconds
-		return (d.getUTCHours() > 0 ? d.getUTCHours() + ":" : "") + (pad && d.getUTCMinutes() < 10 ? (d.getUTCHours() > 0 ? "0" : " ") : "") + d.getUTCMinutes() + ":" + (d.getUTCSeconds() / 100).toFixed(2).slice(2);
-	}
-	return "?:??";
-} */
 function time(_ms) { // from INLINE STUFF
 	var ms = typeof _ms == "string" ? parseInt(_ms, 10) : _ms;
 	if (ms > 0) {
@@ -1102,15 +1094,6 @@ function format(number) {
 	/* thanks to http://snipplr.com/view/72657/thousand-separator */
 	return (number + "").replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, "$&,");
 }
-/*
-function ac2str(ac) {
-	var str = "";
-	for (let c = 0; c < ac.length; c++) {
-		str += ac[c].name + ac[c].joinPhrase;
-	}
-	return str;
-}
-*/
 function ac2dom(ac) {
 	if (typeof ac == "string") return document.createTextNode(ac);
 	var dom = document.createDocumentFragment();
@@ -1204,48 +1187,6 @@ function chrono(minimumDelay) {
 		return lastTick;
 	}
 }
-/*
-// 'leven' function taken from https://github.com/sindresorhus/leven
-// Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
-// Released under the MIT License:
-// https://raw.githubusercontent.com/sindresorhus/leven/49baddd/license
-function leven(a, b) {
-	if (a === b) {
-		return 0;
-	}
-	var aLen = a.length;
-	var bLen = b.length;
-	if (aLen === 0) {
-		return bLen;
-	}
-	if (bLen === 0) {
-		return aLen;
-	}
-	var bCharCode;
-	var ret;
-	var tmp;
-	var tmp2;
-	var i = 0;
-	var j = 0;
-	var arr = [];
-	var charCodeCache = [];
-	while (i < aLen) {
-		charCodeCache[i] = a.charCodeAt(i);
-		arr[i] = ++i;
-	}
-	while (j < bLen) {
-		bCharCode = b.charCodeAt(j);
-		tmp = j++;
-		ret = j;
-		for (i = 0; i < aLen; i++) {
-			tmp2 = bCharCode === charCodeCache[i] ? tmp : tmp + 1;
-			tmp = arr[i];
-			ret = arr[i] = tmp > ret ? tmp2 > ret ? ret + 1 : tmp2 : tmp2 > tmp ? tmp + 1 : tmp2;
-		}
-	}
-	return ret;
-}
-*/
 function RGRecordingsMassMergeGUI() {
 	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
@@ -1263,7 +1204,7 @@ function RGRecordingsMassMergeGUI() {
 		createTag("h2", {}, userjs.name),
 		createTag("p", {}, "version " + userjs.version),
 		createTag("p", {a: {"class": "main-shortcut"}}, ["☞ ", CONTROL_POMME.ctrl_shift.label, "M"]),
-//		createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release", createTag("span", {a: {"class": "remote-release-link"}}), ":"]),
+		// createTag("p", {s: {marginBottom: "0px!"}}, ["Remote release", createTag("span", {a: {"class": "remote-release-link"}}), ":"]),
 	]);
 	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", userjs.name + " loading recordings…"));
 	mergeStatus.style.setProperty("width", "100%");
@@ -1334,15 +1275,6 @@ function loadingAllRecordings() {
 	xhr.responseType = "json";
 	xhr.setRequestHeader("Accept", "application/json");
 	setTimeout(function() { xhr.send(null); }, chrono(MBSminimumDelay));
-//	var loadTracks = document.querySelector("div#content table.tbl.medium > tbody a.load-tracks");
-//	if (loadTracks) {
-//		var loadingMessage = document.querySelector("h1.loading-" + userjs.id);
-//		loadingMessage.appendChild(document.createTextNode("."));
-//		loadTracks.click();
-//		setTimeout(loadingAllRecordings, 200);
-//	} else {
-//		showRGModeGUI();
-//	}
 }
 function appendToRecordingList(recordings) {
 	scrollTo(0, 0);
