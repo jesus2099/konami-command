@@ -50,6 +50,7 @@ var css_track_ac = "td:not(.pos):not(.title):not(.rating):not(.treleases)";
 var css_collapsed_medium = "div#content table.tbl.medium > thead > tr > th > a.expand-medium > span.expand-triangle";
 var sregex_title = "(?:.+?[„“«‘] ?(.+) ?[“”»’] \\S+ (.+?)|(.+?)のリリース(?:グループ)?「(.+)」) - MusicBrainz";
 var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
+var localRelease, remoteRelease;
 var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
 var rem2loc = "◀";
 var loc2rem = "▶";
@@ -97,7 +98,7 @@ if (ltitle) {
 			});
 		}
 	} else {
-		var localRelease = {
+		localRelease = {
 			"release-group": document.querySelector("div.releaseheader > p.subheader a[href*='/release-group/']").getAttribute("href").match(regex_MBID)[0],
 			title: ltitle.title,
 			looseTitle: looseTitle(ltitle.title),
@@ -109,7 +110,7 @@ if (ltitle) {
 		if (localRelease.comment) {
 			localRelease.comment = "(" + localRelease.comment.textContent + ")";
 		}
-		var remoteRelease = {tracks: []};
+		remoteRelease = {tracks: []};
 		if (document.getElementsByClassName("account").length > 0) {
 			sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
