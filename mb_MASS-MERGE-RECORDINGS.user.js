@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.10.13
+// @version      2024.10.14
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -61,8 +61,8 @@ document.head.appendChild(css);
 css = css.sheet;
 css.insertRule("body." + userjs.id + " div#" + userjs.id + " > .main-shortcut { display: none; }", 0);
 css.insertRule("body." + userjs.id + " div#content table.tbl.medium > * > tr > .rating { display: none; }", 0);
-css.insertRule("body." + userjs.id + " div#content table.tbl.medium > tbody > tr > td > div.ars { display: none; }", 0);
-css.insertRule("body." + userjs.id + " div#content table.tbl.medium > tbody > tr > td > a[href^='http://acousticbrainz.org/'][style='float: right;'] { display: none; }", 0); // link to mb_ACOUSTICBRAINZ-LINKS https://gist.github.com/jesus2099/8e223f09d64d831a9514
+css.insertRule("body." + userjs.id + " div#content table.tbl.medium > tbody > tr > td > div.ars { display: none !important; }", 0);
+css.insertRule("body." + userjs.id + " div#content table.tbl.medium > tbody > tr > td a[href^='//acoustid.org/track/']{ display: none; }", 0); // link to Compare AcoustIDs easier! https://github.com/otringal/MB-userscripts/blob/master/Musicbrainz_acoustid.user.js
 css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " { margin-top: 12px; cursor: pointer; }", 0);
 css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " > :not(h2):not(.main-shortcut) { display: none; }", 0);
 css.insertRule("body:not(." + userjs.id + ") div#" + userjs.id + " input[name='mergeStatus'] { font-size: 9px!important; background-color: #fcf; }", 0);
