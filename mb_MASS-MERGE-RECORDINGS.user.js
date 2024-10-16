@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.10.14
+// @version      2024.10.16
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -918,8 +918,8 @@ function buildMergeForm(loc, rem) {
 	var tracktd = getParent(locTrack.a, "td");
 	var bestPos = tracktd.querySelector("td > span.mp");
 	bestPos = bestPos ? bestPos : locTrack.a;
-	var recdis = tracktd.querySelector("span.userjs81127recdis");
-	if (recdis) { bestPos = recdis; }
+	var recording_comment = tracktd.querySelector("span.comment"); // usually added by userscripts like mb_INLINE-STUFF
+	if (recording_comment) { bestPos = recording_comment; }
 	addAfter(rmForm, bestPos);
 	if (remTrack.recording.rowid != locTrack.recid) {
 		var remoteRowID = parseInt(remTrack.recording.rowid, 10);
@@ -950,10 +950,6 @@ function prepareLocalRelease() {
 	for (let n = 0; n < inlineStuffedRecordingNames.length; n++) {
 		replaceChildren(createTag("bdi", {}, inlineStuffedRecordingNames[n].getAttribute("jesus2099userjs81127recname")), inlineStuffedRecordingNames[n]);
 		inlineStuffedRecordingNames[n].removeAttribute("jesus2099userjs81127recname");
-	}
-	var inlineStuffedRecordingComments = document.querySelectorAll("span.jesus2099userjs81127recdis");
-	for (let c = 0; c < inlineStuffedRecordingComments.length; c++) {
-		removeNode(inlineStuffedRecordingComments[c]);
 	}
 	// link to mb_INLINE-STUFF (end)
 	document.body.appendChild(createTag("div", {a: {class: "loading-" + userjs.id}, s: {position: "fixed", background: "#FEF", opacity: ".6", top: "0px", right: "0px", bottom: "0px", left: "0px"}}));
