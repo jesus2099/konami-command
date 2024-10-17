@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name            acacia. BONUS
-// @version         2024.10.10
-// @description:fr  Affiche si on est en prod ; Affiche une horloge UTC
-// @description     Show PRD banner; Show an UTC Clock
+// @version         2024.10.17
+// @description:fr  Affiche si on est en prod ; Affiche une horloge UTC ; Shift+click pour tout ouvrir/fermer
+// @description     Show PRD banner; Show an UTC Clock; Shift+click to expand/collapse all
 // @namespace       https://github.com/jesus2099/konami-command
 // @supportURL      https://github.com/jesus2099/konami-command/labels/acacia_BONUS
 // @downloadURL     https://github.com/jesus2099/konami-command/raw/master/acacia_BONUS.user.js
@@ -67,19 +67,22 @@ function getLocale() {
 	return locale;
 }
 
-// Shift+Click to epxand/collapse all
+// Shift+click to expand/collapse all
 document.addEventListener("click", function(event) {
 	if (event.shiftKey) {
-		var mat_card = event.target.closest("mat-dialog-content mat-card");
+		var mat_card = event.target.closest("div mat-card");
 		if (mat_card) {
 			var mat_icon = mat_card.querySelector("mat-icon");
-			var other_mat_icons = mat_card.closest("mat-dialog-content").querySelectorAll("mat-card mat-icon");
-			for (var i = 0; i < other_mat_icons.length; i++) {
-				if (
-					other_mat_icons[i] != mat_icon
-					&& other_mat_icons[i].textContent != mat_icon.textContent
-				)
-					other_mat_icons[i].click();
+			if (mat_icon.textContent.match(/^expand_(less|more)$/)) {
+				var other_mat_icons = mat_card.closest("div").querySelectorAll("mat-card mat-icon");
+				for (var i = 0; i < other_mat_icons.length; i++) {
+					if (
+						other_mat_icons[i] != mat_icon
+						&& other_mat_icons[i].textContent.match(/^expand_(less|more)$/)
+						&& other_mat_icons[i].textContent != mat_icon.textContent
+					)
+						other_mat_icons[i].click();
+				}
 			}
 		}
 	}
