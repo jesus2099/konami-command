@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.10.16
+// @version      2024.10.23
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -918,8 +918,12 @@ function buildMergeForm(loc, rem) {
 	var tracktd = getParent(locTrack.a, "td");
 	var bestPos = tracktd.querySelector("td > span.mp");
 	bestPos = bestPos ? bestPos : locTrack.a;
-	var recording_comment = tracktd.querySelector("span.comment"); // usually added by userscripts like mb_INLINE-STUFF
-	if (recording_comment) { bestPos = recording_comment; }
+	var recording_comment = tracktd.querySelector("span.comment");
+	if (recording_comment && !recording_comment.closest(".ars")) {
+		// only if it is local track recording comment, added by userscripts like mb_INLINE-STUFF
+		// ignore inline credit (hidden by script) (frequent) comments
+		bestPos = recording_comment;
+	}
 	addAfter(rmForm, bestPos);
 	if (remTrack.recording.rowid != locTrack.recid) {
 		var remoteRowID = parseInt(remTrack.recording.rowid, 10);
