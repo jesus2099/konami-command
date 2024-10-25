@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.10.23
+// @version      2024.10.25
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -10,7 +10,7 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2011-12-13; https://web.archive.org/web/20131103163401/userscripts.org/scripts/show/120382 / https://web.archive.org/web/20141011084015/userscripts-mirror.org/scripts/show/120382
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://github.com/jesus2099/konami-command/raw/c3758667354d3ad62c5fc72fa179e2cead9bc917/lib/CONTROL-POMME.js?version=2024.10.10
+// @require      https://github.com/jesus2099/konami-command/raw/198d05ea555257eaf8a2a8d8333a8cdeda28d8ad/lib/CONTROL-POMME.js?version=2024.10.25
 // @require      https://github.com/jesus2099/konami-command/raw/89dce29b9cce6e92e552f7d8ce2f5cb0ed161f2a/lib/MB-JUNK-SHOP.js?version=2024.10.13
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
@@ -91,7 +91,7 @@ if (ltitle) {
 			releases = Array.prototype.slice.call(releases);
 			sidebar.insertBefore(RGRecordingsMassMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
-				if (!event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key] && event.key.match(/^m$/i)) {
+				if (CONTROL_POMME.ctrl_shift.test(event) && event.key.match(/^m$/i)) {
 					loadRGRecordings(releases);
 					return stop(event);
 				}
@@ -114,13 +114,13 @@ if (ltitle) {
 		if (document.getElementsByClassName("account").length > 0) {
 			sidebar.insertBefore(massMergeGUI(), sidebar.querySelector("h2.collections"));
 			document.body.addEventListener("keydown", function(event) {
-				if (!event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key] && event.key.match(/^m$/i)) {
+				if (CONTROL_POMME.ctrl_shift.test(event) && event.key.match(/^m$/i)) {
 					prepareLocalRelease();
 					return stop(event);
 				} else if (
 					startpos.children.length !== 0
 					&& matchMode.current == matchMode.sequential
-					&& event[CONTROL_POMME.ctrl.key] && event[CONTROL_POMME.shift.key] && event.key.match(/^Arrow(Up|Down|Left|Right)$/i)
+					&& CONTROL_POMME.ctrl_shift.test(event) && event.key.match(/^Arrow(Up|Down|Left|Right)$/i)
 				) {
 					if (event.key.match(/^Arrow(Up|Left)$/i) && startpos.selectedIndex > 0) {
 						startpos.selectedIndex -= 1;
@@ -422,7 +422,7 @@ function updateMatchModeDisplay() {
 function massMergeGUI() {
 	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
-			if (event.target == editNote && !event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && !event[CONTROL_POMME.shift.key]) {
+			if (event.target == editNote && CONTROL_POMME.ctrl.test(event)) {
 				switch (event.key) {
 					case "s":
 						return saveEditNote(event);
@@ -1191,7 +1191,7 @@ function chrono(minimumDelay) {
 function RGRecordingsMassMergeGUI() {
 	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
-			if (event.target == editNote && !event[CONTROL_POMME.alt.key] && event[CONTROL_POMME.ctrl.key] && !event[CONTROL_POMME.shift.key]) {
+			if (event.target == editNote && CONTROL_POMME.ctrl.test(event)) {
 				switch (event.key) {
 					case "s":
 						return saveEditNote(event);
