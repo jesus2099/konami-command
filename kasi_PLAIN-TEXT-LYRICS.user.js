@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2024.11.2.2355
-// @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
+// @version      2024.11.3
+// @description  j-lyric.net, joysound.com, kkbox.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/kasi_PLAIN-TEXT-LYRICS
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/kasi_PLAIN-TEXT-LYRICS.user.js
@@ -20,7 +20,6 @@
 // @match        *://petitlyrics.com/lyrics/*
 // @match        *://rio.yahooapis.jp/RioWebService/V2/*
 // @match        *://utaten.com/lyric/*
-// @match        *://www.kasi-time.com/item-*.html
 // @match        *://www.kget.jp/lyric/*
 // @match        *://www.kkbox.com/*/*/song/*
 // @run-at       document-end
@@ -50,21 +49,6 @@ var kasimasin = {
 					div.style.setProperty("overflow-y", "inherit");
 					div.style.setProperty("position", "inherit");
 				}
-				gogogo();
-			}
-		},
-	},
-	"kasi-time": {
-		"na": "歌詞タイム",
-		"kabe_css": "div.mainkashi",
-		"kabe_keep": true,
-		"init": function(start) {
-			if (start) {
-				machine();
-			}
-		},
-		"direct_machine": function() {
-			if (kabe) {
 				gogogo();
 			}
 		},
