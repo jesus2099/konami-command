@@ -161,22 +161,8 @@ var kasimasin = {
 	"uta-net": {
 		"na": "歌ネット",
 		"clean_url": "https://www.uta-net.com/song/%uta%/",
-		"init": function(start) {
-			if (start) { machine(); }
-		},
-		"kabe_css": "object#showkasi",
 		"uta_re": /\/(\d+)\/$/,
-		"kasi_css": ["object#showkasi > embed", "src"],
-		"xhr_responseType": "arraybuffer",
-		"xhr_machine": function(xhr) {
-			var kara = abHexSearch(xhr.response, "FF0000");
-			var made = abHexSearch(xhr.response, "00", kara + 12);
-			if (kara > -1 && made > -1) {
-				ab2str(xhr.response, gogogo, kara + 12, made);
-			} else {
-				gogogo(null, kara + "〜" + made);
-			}
-		},
+		"kabe_css": "div#kashi_area",
 	},
 	"utaten": {
 		"na": "UtaTen",
@@ -255,11 +241,13 @@ function machine() {
 					return true;
 				}, true);
 			});
-			mati = document.createElement("div");
-			mati.appendChild(document.createTextNode(GM_info.script.name + " "));
-			mati.appendChild(document.createElement("strong")).appendChild(document.createTextNode("PLEASE WAIT"));
-			mati.style.setProperty("margin", "16px 0 0 0");
-			kabe.parentNode.insertBefore(mati, kabe);
+			if (kasimasin.direct_machine || kasimasin.xhr_machine) {
+				mati = document.createElement("div");
+				mati.appendChild(document.createTextNode(GM_info.script.name + " "));
+				mati.appendChild(document.createElement("strong")).appendChild(document.createTextNode("PLEASE WAIT"));
+				mati.style.setProperty("margin", "16px 0 0 0");
+				kabe.parentNode.insertBefore(mati, kabe);
+			}
 		}
 		var url;
 		if (kasimasin.kasi_url || kasimasin.kasi_css) {
@@ -300,14 +288,16 @@ function machine() {
 }
 function gogogo(kasi, err) {
 	var ka = typeof kasi == "string" ? document.createElement("pre").appendChild(document.createTextNode(kasi)).parentNode : kasi;
-	if (ka.tagName && ka.tagName == "PRE") {
+	if (ka && ka.tagName && ka.tagName == "PRE") {
 		kasi_pre = ka;
 	}
-	mati.style.setProperty("color", err ? "red" : "green");
-	mati.querySelector("strong").replaceChild(document.createTextNode(err ? "ERROR エラー （" + err + " ）" : "OK"), mati.querySelector("strong").firstChild);
-	if (DEBUG) {
-		mati.style.setProperty("cursor", "pointer");
-		mati.addEventListener("click", function(event) { iti = true; machine(); }, false);
+	if (mati) {
+		mati.style.setProperty("color", err ? "red" : "green");
+		mati.querySelector("strong").replaceChild(document.createTextNode(err ? "ERROR エラー （" + err + " ）" : "OK"), mati.querySelector("strong").firstChild);
+		if (DEBUG) {
+			mati.style.setProperty("cursor", "pointer");
+			mati.addEventListener("click", function(event) { iti = true; machine(); }, false);
+		}
 	}
 	if (err == null) {
 		var div;
@@ -323,30 +313,6 @@ function gogogo(kasi, err) {
 	if (kasimasin.kabe_keep == null || kasimasin.kabe_keep == false || err) {
 		kabe.style.setProperty("display", "none");
 	}
-}
-/* BINARY MACHINE */
-// function d2h(d) { return d.toString(16).toUpperCase(); }
-function h2d(h) { return parseInt(h, 16); }
-function abHexSearch(pAb, hq, pFrom, pTo) {
-	var ab = new Uint8Array(pAb);
-	var hqlen = hq.length / 2;
-	var from = (pFrom && pFrom > 0 && pFrom + hqlen < ab.byteLength) ? pFrom : 0;
-	var to = (pTo && pTo >= from && pTo <= ab.byteLength) ? pTo : ab.byteLength;
-	for (var i = from; i < to; i++) {
-		for (var j = 0; j < hqlen; j = j + 2) {
-			if (ab[i + j] != h2d(hq.substr(j, 2))) { break; }
-			if (j == hqlen - 1) { return i; }
-		}
-	}
-	return -1;
-}
-function ab2str(ab, callback, from, to) {
-	var offset = from ? from : 0;
-	var length = to ? to - offset : null;
-	var b = new Blob([new Uint8Array(ab, offset, length)]);
-	var f = new FileReader();
-	f.onload = function(event) { callback(event.target.result); };
-	f.readAsText(b);
 }
 function base64DecodeToUnicode(str) {
 	// https://stackoverflow.com/a/77383580/2236179
