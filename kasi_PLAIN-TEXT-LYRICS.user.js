@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2024.7.6
+// @version      2024.11.2
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/kasi_PLAIN-TEXT-LYRICS
@@ -112,12 +112,37 @@ var kasimasin = {
 		"na": "プチリリ",
 		"clean_url": "https://petitlyrics.com/lyrics/%uta%",
 		"uta_re": /\/lyrics\/(\d+)\/?$/,
+		"kabe_css": "canvas#lyrics",
 		"direct_machine": function() {
 			if (kabe) {
-				gogogo(kabe.textContent);
+				var token = document.querySelector("script[src^='/lib/pl-lib.js']");
+				if (token) {
+					var xhr_token = new XMLHttpRequest();
+					xhr_token.onload = function(event) {
+						var extract_token = xhr_token.response.match(/\('X-CSRF-Token', '([a-z0-9]+)'\)/);
+						var xhr_lyrics = new XMLHttpRequest();
+						xhr_lyrics.onload = function(event) {
+							var lyrics_encoded_array = JSON.parse(xhr_lyrics.response);
+							var lyrics_text = "";
+							for (var l = 0; l < lyrics_encoded_array.length; l++) {
+								lyrics_text += base64DecodeToUnicode(lyrics_encoded_array[l].lyrics) + "\n";
+							}
+							if (lyrics_text) {
+								gogogo(kabe.textContent);
+								kasi_pre.replaceChild(document.createTextNode("\n" + lyrics_text), kasi_pre.firstChild);
+							}
+						};
+						xhr_lyrics.open("post", "/com/get_lyrics.ajax", true);
+						xhr_lyrics.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+						xhr_lyrics.setRequestHeader("X-CSRF-Token", extract_token[1]);
+						xhr_lyrics.setRequestHeader("x-requested-with", "XMLHttpRequest");
+						xhr_lyrics.send("lyrics_id=" + kasimasin.uta);
+					};
+					xhr_token.open("get", token.getAttribute("src"), true);
+					xhr_token.send(null);
+				}
 			}
 		},
-		"kabe_css": "canvas#lyrics",
 	},
 	"utamap": {
 		"na": "うたまっぷ",
@@ -164,7 +189,7 @@ var kasimasin = {
 		},
 	},
 };
-var kabe, mati;
+var kabe, mati, kasi_pre;
 var matches = [];
 for (var m = 0; m < GM_info.script.matches.length; m++) {
 	var key = GM_info.script.matches[m].replace(/^\*:\/\/[.*]{0,2}(www\.)?|\.(com|co\.jp|ne\.jp|jp|net)\/{1}.*$/g, "");
@@ -275,6 +300,9 @@ function machine() {
 }
 function gogogo(kasi, err) {
 	var ka = typeof kasi == "string" ? document.createElement("pre").appendChild(document.createTextNode(kasi)).parentNode : kasi;
+	if (ka.tagName && ka.tagName == "PRE") {
+		kasi_pre = ka;
+	}
 	mati.style.setProperty("color", err ? "red" : "green");
 	mati.querySelector("strong").replaceChild(document.createTextNode(err ? "ERROR エラー （" + err + " ）" : "OK"), mati.querySelector("strong").firstChild);
 	if (DEBUG) {
@@ -319,6 +347,10 @@ function ab2str(ab, callback, from, to) {
 	var f = new FileReader();
 	f.onload = function(event) { callback(event.target.result); };
 	f.readAsText(b);
+}
+function base64DecodeToUnicode(str) {
+	// https://stackoverflow.com/a/77383580/2236179
+	return new TextDecoder().decode(Uint8Array.from(atob(str), function(element) { return element.charCodeAt(0); }));
 }
 function db(inf) {
 	if (DEBUG) { console.log(inf); }
