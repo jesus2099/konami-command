@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2024.11.2
+// @version      2024.11.2.2355
 // @description  j-lyric.net, joysound.com, kasi-time.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/kasi_PLAIN-TEXT-LYRICS
@@ -22,6 +22,7 @@
 // @match        *://utaten.com/lyric/*
 // @match        *://www.kasi-time.com/item-*.html
 // @match        *://www.kget.jp/lyric/*
+// @match        *://www.kkbox.com/*/*/song/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -77,6 +78,10 @@ var kasimasin = {
 				gogogo();
 			}
 		},
+	},
+	"kkbox": {
+		"na": "KKBOX",
+		"kabe_css": "td.lyrics",
 	},
 	"lyrics.gyao.yahoo": {
 		"na": "GyaO!歌詞",
