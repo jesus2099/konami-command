@@ -11,7 +11,7 @@
 // @since        2010-12-05; https://web.archive.org/web/20131119110024/userscripts.org/scripts/show/91968 / https://web.archive.org/web/20141011084011/userscripts-mirror.org/scripts/show/91968
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @match        *://*.utamap.com/*.php?surl=*
+// @match        *://www.utamap.com/*.php?surl=*
 // @match        *://*.uta-net.com/movie/*/
 // @match        *://*.uta-net.com/song/*/
 // @match        *://j-lyric.net/artist/*/*.html
@@ -25,7 +25,7 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var DEBUG = false;
+var DEBUG = localStorage.getItem("jesus2099debug");
 var kasimasin = {
 	"j-lyric": { // allow contextmenu
 		"na": "J-Lyric.net",
@@ -147,16 +147,8 @@ var kasimasin = {
 	"utamap": {
 		"na": "うたまっぷ",
 		"clean_url": "https://www.utamap.com/showkasi.php?surl=%uta%",
-		"init": function(start) {
-			if (start) { machine(); }
-		},
-		"kabe_css": "object#showkasi,canvas#canvas2",
-		"uta_re": /surl=(.+)&?.*$/,
-		"kasi_url": "/phpflash/flashfalsephp.php?unum=%uta%",
-		"xhr_overrideMimeType": "text/xml; charset=utf-8",
-		"xhr_machine": function(xhr) {
-			gogogo(xhr.responseText.replace(/^test1=[0-9]+&test2=/, ""));
-		},
+		"uta_re": /\bsurl=([^&]+)/,
+		"kabe_css": "td.kasi_honbun",
 	},
 	"uta-net": {
 		"na": "歌ネット",
