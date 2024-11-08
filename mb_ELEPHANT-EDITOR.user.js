@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2024.8.9
+// @version      2024.11.8
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -11,7 +11,7 @@
 // @since        2011-01-13; https://web.archive.org/web/20131103163403/userscripts.org/scripts/show/94629 / https://web.archive.org/web/20141011084017/userscripts-mirror.org/scripts/show/94629
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://github.com/jesus2099/konami-command/raw/c5fb7fe162530fdbd7e017170f24169272a729a0/lib/CONTROL-POMME.js?version=2024.3.14.1822
-// @require      https://github.com/jesus2099/konami-command/raw/f5b4bdb4f7ce1fedbc6c14b784425c2645b03a85/lib/SUPER.js?version=2023.3.23
+// @require      https://github.com/jesus2099/konami-command/raw/f1cbb2368209bc51a175062dc512f1a1eb7d25a7/lib/SUPER.js?version=2024.11.8
 // @grant        none
 // @match        *://*.musicbrainz.org/*/add-alias
 // @match        *://*.musicbrainz.org/*/change-quality
@@ -152,7 +152,7 @@ function init(edit_notes) {
 						forget(event.target.getAttribute("id").match(/(\d)$/)[1]);
 						notetext.focus();
 					} else {
-						force_value(notetext, this.getAttribute("title"));
+						forceValue(notetext, this.getAttribute("title"));
 						if (!IS_TOUCH_SCREEN) {
 							notetext.focus();
 						}
@@ -174,7 +174,7 @@ function init(edit_notes) {
 		notetext.parentNode.insertBefore(buttons, notetext);
 		let lastnotetext = localStorage.getItem(notetextStorage + "00");
 		if (save && !ON_EDIT_SEARCH_PAGE && !ON_EDIT_PAGE && lastnotetext && notetext.value == "") {
-			force_value(notetext, lastnotetext);
+			forceValue(notetext, lastnotetext);
 		}
 	}
 	if (submit_button !== null) {
@@ -239,7 +239,7 @@ function createButton(label, width) {
 function createClearButton() {
 	let butt = createButton("×", "25px");
 	butt.addEventListener("click", function(event) {
-		force_value(notetext, "");
+		forceValue(notetext, "");
 		if (event[CONTROL_POMME.shift.key]) {
 			sendEvent(submit_button, "click");
 		} else {
@@ -248,7 +248,7 @@ function createClearButton() {
 	}); // onclick
 	if (IS_TOUCH_SCREEN) {
 		onLongPress(butt, function(event) {
-			force_value(notetext, "");
+			forceValue(notetext, "");
 			sendEvent(submit_button, "click");
 		});
 	}

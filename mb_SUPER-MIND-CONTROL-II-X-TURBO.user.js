@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.10.24
+// @version      2024.11.8
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -12,7 +12,7 @@
 // @since        2010-09-09; https://web.archive.org/web/20140328200933/userscripts.org/scripts/show/85790 / https://web.archive.org/web/20141011084019/userscripts-mirror.org/scripts/show/85790 / see topic GÓ GÓ AMÍGO
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/bcceaa5f3da43e9ee805cba2eccda07f602d3f0c/lib/MB-JUNK-SHOP.js?version=2024.8.26
-// @require      https://github.com/jesus2099/konami-command/raw/f5b4bdb4f7ce1fedbc6c14b784425c2645b03a85/lib/SUPER.js?version=2023.3.23
+// @require      https://github.com/jesus2099/konami-command/raw/f1cbb2368209bc51a175062dc512f1a1eb7d25a7/lib/SUPER.js?version=2024.11.8
 // @grant        none
 // @match        *://*.musicbrainz.org/*
 // @exclude      *://blog.musicbrainz.org/*
@@ -575,14 +575,14 @@ function EASY_DATE_init() {
 								}
 								var input = this.parentNode.querySelector("input[placeholder='" + i + "']");
 								input.focus();
-								force_value(input, ymd[i]);
+								forceValue(input, ymd[i]);
 							}
 							this.style.setProperty("background-color", "#cfc");
 							if (location.pathname.match(/\/edit-relationships$/)) {
 								EASY_DATE_cloneDate(this);
 							}
 						} else {
-							force_value(this.previousSibling, this.value);
+							forceValue(this.previousSibling, this.value);
 							if (!this.value.match(/^\d\d\d\d$/)) this.style.setProperty("background-color", "#fcc");
 						}
 					},
@@ -628,7 +628,7 @@ function EASY_DATE_cloneDate(current, hotkey) {
 		if (!hotkey && !downwards) {
 			return;
 		}
-		force_value(inps[downwards ? 1 : 0], inps[downwards ? 0 : 1].value);
+		forceValue(inps[downwards ? 1 : 0], inps[downwards ? 0 : 1].value);
 	}
 }
 function EASY_DATE_deleteDatesHotkey(event) {
@@ -643,7 +643,7 @@ function EASY_DATE_deleteDates(current) {
 	for (let p = 0; p < ph.length; p++) {
 		var inps = current.closest("table.relationship-details > tbody, fieldset").querySelectorAll("input[placeholder='" + ph[p] + "']");
 		for (let i = 0; i < inps.length; i++) {
-			force_value(inps[i], "");
+			forceValue(inps[i], "");
 		}
 	}
 	var endedCheckbox = current.closest("table.relationship-details > tbody, fieldset").querySelector("input[id$='period.ended'][type='checkbox']");
@@ -660,7 +660,7 @@ function EASY_DATE_nextField(event) {
 			nextField.focus();
 			nextField.select();
 			if (fullDigitMode) {
-				force_value(nextField, event.key);
+				forceValue(nextField, event.key);
 			}
 			return stop(event);
 		}
