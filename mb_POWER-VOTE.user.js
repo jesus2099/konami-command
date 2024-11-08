@@ -606,11 +606,27 @@ function shortcut(vote, label) {
 	var button = createTag("input", {
 		a: {type: "button", value: label, class: "styled-button"},
 		s: {float: "none", margin: FF ? "0 3px 0 0" : "0 3px", padding: FF ? "0 2px" : "0 3px"},
-		e: {click: function(event) { rangeVote(event, vote, event[CONTROL_POMME.shift.key]); }}
+		e: {
+			click: function(event) { rangeVote(event, vote, event[CONTROL_POMME.shift.key]); },
+			touchstart: function(event) {
+				if (IS_TOUCH_SCREEN) {
+					this.longTouchTimer = setTimeout(function() {
+						rangeVote(event, vote, true);
+					}, 500);
+				}
+			},
+			touchend: function() {
+				if (IS_TOUCH_SCREEN) {
+					clearTimeout(this.longTouchTimer);
+				}
+			},
+			touchmove: function() {
+				if (IS_TOUCH_SCREEN) {
+					clearTimeout(this.longTouchTimer);
+				}
+			}
+		}
 	});
-	if (IS_TOUCH_SCREEN) {
-		onLongPress(button, function(event) { rangeVote(event, vote, true); });
-	}
 	if (onlySubmitTabIndexed) { button.setAttribute("tabindex", "-1"); } // remove keyboard navigation from mass vote buttons (good idea?)
 	return button;
 }
@@ -687,20 +703,4 @@ function scroll_to_first_selected_options() {
 			}
 		}
 	}
-}
-function onLongPress(element, callback) {
-	// https://stackoverflow.com/a/60207895/2236179
-	let timer;
-	element.addEventListener("touchstart", function(event) {
-		timer = setTimeout(function() {
-			timer = null;
-			callback(event);
-		}, 500);
-	});
-	function cancel() {
-		clearTimeout(timer);
-	}
-	element.addEventListener("touchend", cancel);
-	element.addEventListener("touchcancel", cancel);
-	element.addEventListener("touchmove", cancel);
 }
