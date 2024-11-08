@@ -591,7 +591,7 @@ function EASY_DATE_init() {
 				}}
 			), years[y]);
 		years[y].classList.add(userjs.id + "easydate");
-		years[y].classList.add("jesus2099") // linked to https://github.com/loujine/musicbrainz-scripts/blob/ab70378a0344bc222c17eed6ddad0734598a8f9d/mb-edit-create_from_wikidata.user.js#L256-L258
+		years[y].classList.add("jesus2099"); // linked to https://github.com/loujine/musicbrainz-scripts/blob/ab70378a0344bc222c17eed6ddad0734598a8f9d/mb-edit-create_from_wikidata.user.js#L256-L258
 		years[y].style.setProperty("display", "none");
 		(new MutationObserver(function(mutations, observer) {
 			// copy YYYY value to YYY+ when it is changed by MBS
