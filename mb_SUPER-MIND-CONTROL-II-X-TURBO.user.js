@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.11.8
+// @version      2024.11.8.109
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1408,15 +1408,15 @@ if (enttype) {
 	// ## TRACKLIST_TOOLS ## ex-TRACK_LENGTH_PARSER+search→replace(bookmarklet)+set-selected-works-date
 	// =========================================================================
 	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/(add.*|" + stre_GUID + "/edit)$"))) {
-		var releaseEditor = document.querySelector("div#release-editor");
-		if (releaseEditor) {
+		userjs.releaseEditor = document.querySelector("div#release-editor");
+		if (userjs.releaseEditor) {
 			TRACKLIST_TOOLS_observer = new MutationObserver(function(mutations, observer) {
 				TRACKLIST_TOOLS_calmDOM();
 			});
-			TRACKLIST_TOOLS_observer.observe(releaseEditor, {childList: true, subtree: true});
-			releaseEditor.addEventListener("mouseover", TRACKLIST_TOOLS_buttonHandler);
-			releaseEditor.addEventListener("mouseout", TRACKLIST_TOOLS_buttonHandler);
-			releaseEditor.addEventListener("click", TRACKLIST_TOOLS_buttonHandler);
+			TRACKLIST_TOOLS_observer.observe(userjs.releaseEditor, {childList: true, subtree: true});
+			userjs.releaseEditor.addEventListener("mouseover", TRACKLIST_TOOLS_buttonHandler);
+			userjs.releaseEditor.addEventListener("mouseout", TRACKLIST_TOOLS_buttonHandler);
+			userjs.releaseEditor.addEventListener("click", TRACKLIST_TOOLS_buttonHandler);
 		}
 	}
 	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/" + stre_GUID + "/edit-relationships$"))) {
@@ -1706,7 +1706,7 @@ function TRACKLIST_TOOLS_init() {
 	debug("TRACKLIST_TOOLS_init");
 	TRACKLIST_TOOLS_observer.disconnect();
 	(new MutationObserver(function(mutations, observer) {
-		var tps = releaseEditor.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
+		var tps = userjs.releaseEditor.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
 		for (let tp = 0; tp < tps.length; tp++) {
 			if (!tps[tp].parentNode.querySelector("." + userjs.id + "track-length-parser")) {
 				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Time Parser"), tps[tp]);
@@ -1715,7 +1715,7 @@ function TRACKLIST_TOOLS_init() {
 				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "search-replace", title: "SHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Search→replace"), tps[tp]);
 			}
 		}
-	})).observe(releaseEditor, {childList: true, subtree: true});
+	})).observe(userjs.releaseEditor, {childList: true, subtree: true});
 }
 function unlinkH1Link(event) {
 	event.currentTarget.removeEventListener("mouseover", unlinkH1Link);
