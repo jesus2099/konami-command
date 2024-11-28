@@ -85,8 +85,12 @@ if (cat) {
 		userjs.releaseID = userjs.releaseID[0];
 		var mainReleasePage = self.location.pathname.match(new RegExp("^/release/" + userjs.strMBID + "$"));
 		var colls = document.querySelectorAll("div#sidebar a[href*='/collection_collaborator/add?release='], div#sidebar a[href*='/collection_collaborator/remove?release=']");
+		userjs.in_this_many_collections = 0;
 		for (let coll = 0; coll < colls.length; coll++) {
 			if (userjs.collectionsID.indexOf(colls[coll].getAttribute("href").match(new RegExp(userjs.strMBID))) > -1) {
+				if (colls[coll].getAttribute("href").match(/remove/)) {
+					userjs.in_this_many_collections += 1;
+				}
 				if (mainReleasePage) {
 					collectionUpdater(colls[coll], colls[coll].getAttribute("href").match(/add|remove/).toString());
 				} else {
@@ -388,7 +392,7 @@ function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add
 					}
 				} else {
 					modal(true, "No new releases.", 2);
-					unlockModal();
+					conclusionCallback();
 				}
 			}
 		} else {
@@ -646,46 +650,48 @@ var altered = false;
 function collectionUpdater(link, action) {
 	if (link && action) {
 		link.addEventListener("click", function(event) {
-			modal(true, "Refreshing memory…", 1);
-			userjs.collectionsID = GM_getValue("collections") || "";
-			for (let type in userjs.stuff) if (Object.prototype.hasOwnProperty.call(userjs.stuff, type) && userjs.collected_stuff.indexOf(type) >= 0) {
-				userjs.stuff[type].rawids = GM_getValue(type + "s");
-				userjs.stuff[type].ids = userjs.stuff[type].rawids != null ? (userjs.stuff[type].rawids.length > 0 ? userjs.stuff[type].rawids.trim().split(" ") : []) : null;
-			}
-			setTitle(true);
-			lastLink(this.getAttribute("href"));
-			switch (action) {
-				case "add":
-					userjs.stuff["release-new"] = {ids: []};
-					userjs.stuff["missingRecordingWorks"] = [];
-					userjs.collectionLoadingStartDate = Date.now();
-					userjs.currentTaskStartDate = Date.now();
-					loadReleases("/" + userjs.releaseID, action, concludeDynamicReleaseLoading);
-					return stop(event);
-					// break;
-				case "remove":
-					// Force release for "Add to / Remove from collection" but not for "Force highlight ON /OFF"
-					altered = this.getAttribute("href") != self.location.href;
-					var checks = getStuffs();
-					if (userjs.stuff["release"].rawids.indexOf(userjs.releaseID) > -1) {
-						modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
-						userjs.stuff["release"].rawids = userjs.stuff["release"].rawids.replace(new RegExp(userjs.releaseID + "( |$)"), "");
-						GM_setValue("releases", userjs.stuff["release"].rawids);
-						altered = true;
-					}
-					if (checks.length > 0) {
-						lastLink(this.getAttribute("href"));
-						stuffRemover(checks);
+			if (action == "add" || userjs.in_this_many_collections < 2) {
+				modal(true, "Refreshing memory…", 1);
+				userjs.collectionsID = GM_getValue("collections") || "";
+				for (let type in userjs.stuff) if (Object.prototype.hasOwnProperty.call(userjs.stuff, type) && userjs.collected_stuff.indexOf(type) >= 0) {
+					userjs.stuff[type].rawids = GM_getValue(type + "s");
+					userjs.stuff[type].ids = userjs.stuff[type].rawids != null ? (userjs.stuff[type].rawids.length > 0 ? userjs.stuff[type].rawids.trim().split(" ") : []) : null;
+				}
+				setTitle(true);
+				lastLink(this.getAttribute("href"));
+				switch (action) {
+					case "add":
+						userjs.stuff["release-new"] = {ids: []};
+						userjs.stuff["missingRecordingWorks"] = [];
+						userjs.collectionLoadingStartDate = Date.now();
+						userjs.currentTaskStartDate = Date.now();
+						loadReleases("/" + userjs.releaseID, action, concludeDynamicReleaseLoading);
 						return stop(event);
-					}
-					break;
-			}
-			if (!altered) {
-				modal(true, "Nothing has changed.", 1);
-				setTimeout(function() { modal(false); }, 1000);
-				return stop(event);
-			} else {
-				modal(true, "Re‐loading page…", 1);
+						// break;
+					case "remove":
+						// Force release for "Add to / Remove from collection" but not for "Force highlight ON /OFF"
+						altered = this.getAttribute("href") != self.location.href;
+						var checks = getStuffs();
+						if (userjs.stuff["release"].rawids.indexOf(userjs.releaseID) > -1) {
+							modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
+							userjs.stuff["release"].rawids = userjs.stuff["release"].rawids.replace(new RegExp(userjs.releaseID + "( |$)"), "");
+							GM_setValue("releases", userjs.stuff["release"].rawids);
+							altered = true;
+						}
+						if (checks.length > 0) {
+							lastLink(this.getAttribute("href"));
+							stuffRemover(checks);
+							return stop(event);
+						}
+						break;
+				}
+				if (!altered) {
+					modal(true, "Nothing has changed.", 1);
+					setTimeout(function() { modal(false); }, 1000);
+					return stop(event);
+				} else {
+					modal(true, "Re‐loading page…", 1);
+				}
 			}
 		}, false);
 		decorate(link);
