@@ -3,6 +3,7 @@
 // @version      2024.11.28
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
+// @homepageURL  https://community.metabrainz.org/t/collection-highlighter-highlight-owned-stuff-releases-recordings/559889?u=jesus2099
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_COLLECTION-HIGHLIGHTER.user.js
 // @author       jesus2099
@@ -22,7 +23,16 @@
 // ==/UserScript==
 "use strict";
 var DEBUG = localStorage.getItem("jesus2099debug");
-let scriptNameAndVersion = GM_info.script.name.substr("4") + " " + GM_info.script.version;
+var userjs = {
+	name_ver: GM_info.script.name.substr(4) + " " + GM_info.script.version,
+	prefix: "collectionHighlighter",
+	highlightColour: "purple",
+	MBWSRate: 999,
+	MBWSSpeedLimit: 100, // from 1 (only 1 result per request) to 100 (maxium amount of result per request)
+	maxRetry: 20,
+	retryPause: 5000,
+	slowDownStepAfterRetry: 0,
+};
 // ############################################################################
 // #                                                                          #
 // #                         BUTTONS / TRIGGERS / GUI                         #
@@ -34,8 +44,7 @@ lang = lang && lang.getAttribute("lang") || "en-GB";
 var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
 if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
-	var highlightColour = "purple";
-	var skipArtists = [
+	userjs.skipArtists = [
 		"89ad4ac3-39f7-470e-963a-56509c546377", // Various Artists
 		"f731ccc4-e22a-43af-a747-64213329e088", // [anonymous]
 		"33cf029c-63b0-41a0-9855-be2a3665fb3b", // [data]
@@ -45,53 +54,43 @@ if (cat) {
 		"9be7f096-97ec-4615-8957-8d40b5dcbc41", // [traditional]
 		"125ec42a-7229-4250-afc5-e057484327fe", // [unknown]
 	];
-	var skipLabels = [
+	userjs.skipLabels = [
 		"157afde4-4bf5-4039-8ad2-5a15acc85176", // [no label]
 		"46caaa9e-3e26-49b5-827c-64ccc73c1b07", // [unknown]
 	];
-	var MBWSRate = 999;
-	var MBWSSpeedLimit = 100; // from 1 (only 1 result per request) to 100 (maxium amount of result per request)
 	/* -------- CONFIGURATION  END  (don’t edit below) -------- */
-	var prefix = "collectionHighlighter";
-	var dialogprefix = "..:: " + scriptNameAndVersion.replace(/ /g, " :: ") + " ::..\n\n";
-	var maxRetry = 20;
-	var retryPause = 5000;
-	var slowDownStepAfterRetry = 0;
-	var css_nextPage = "ul.pagination > li:last-of-type > a";
-	var retry = 0;
-	var lowMemory = navigator.deviceMemory && navigator.deviceMemory <= 1; // 1 (GB) on my Raspberry Pi 3B+
+	userjs.dialogprefix = "..:: " + userjs.name_ver.replace(/ /g, " :: ") + " ::..\n\n";
+	userjs.retry = 0;
+	userjs.lowMemory = navigator.deviceMemory && navigator.deviceMemory <= 1; // 1 (GB) on my Raspberry Pi 3B+
 	var j2ss = document.createElement("style");
 	j2ss.setAttribute("type", "text/css");
 	document.head.appendChild(j2ss);
 	j2ss = j2ss.sheet;
-	var brdr = " border-left: 3px solid " + highlightColour + "; ";
-	j2ss.insertRule("." + prefix + "Box {" + brdr.replace(/-left/, "") + "}", 0);
-	j2ss.insertRule("." + prefix + "Row {" + brdr + "}", 0);
-	j2ss.insertRule("li." + prefix + "Row { padding-left: 3px; }", 0);
-	j2ss.insertRule("." + prefix + "Item { text-shadow: 0 0 8px " + highlightColour + "!important; }", 0);
-	var collectionsID = GM_getValue("collections") || "";
-	var releaseID;
-	var stuff = {};
-	var collectedStuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
-	var strType = "release-group|recording|label|artist|work";
-	var strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
-	var collectionLoadingStartDate;
-	var currentTaskStartDate;
+	var brdr = " border-left: 3px solid " + userjs.highlightColour + "; ";
+	j2ss.insertRule("." + userjs.prefix + "Box {" + brdr.replace(/-left/, "") + "}", 0);
+	j2ss.insertRule("." + userjs.prefix + "Row {" + brdr + "}", 0);
+	j2ss.insertRule("li." + userjs.prefix + "Row { padding-left: 3px; }", 0);
+	j2ss.insertRule("." + userjs.prefix + "Item { text-shadow: 0 0 8px " + userjs.highlightColour + "!important; }", 0);
+	userjs.collectionsID = GM_getValue("collections") || "";
+	userjs.stuff = {};
+	userjs.collected_stuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
+	userjs.strType = "release-group|recording|label|artist|work";
+	userjs.strMBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 	cat = cat[1].replace(/edit\/subscribed|votes/, "edits").replace(/_/, "-");
 	debug("CAT: " + cat);
 // ############################################################################
 // #                                       DISPLAY RELEASE PAGE SIDEBAR TOOLS #
 // ############################################################################
-	if (cat == "release" && (releaseID = self.location.pathname.match(new RegExp(strMBID)))) {
-		releaseID = releaseID[0];
-		var mainReleasePage = self.location.pathname.match(new RegExp("^/release/" + strMBID + "$"));
+	if (cat == "release" && (userjs.releaseID = self.location.pathname.match(new RegExp(userjs.strMBID)))) {
+		userjs.releaseID = userjs.releaseID[0];
+		var mainReleasePage = self.location.pathname.match(new RegExp("^/release/" + userjs.strMBID + "$"));
 		var colls = document.querySelectorAll("div#sidebar a[href*='/collection_collaborator/add?release='], div#sidebar a[href*='/collection_collaborator/remove?release=']");
 		for (let coll = 0; coll < colls.length; coll++) {
-			if (collectionsID.indexOf(colls[coll].getAttribute("href").match(new RegExp(strMBID))) > -1) {
+			if (userjs.collectionsID.indexOf(colls[coll].getAttribute("href").match(new RegExp(userjs.strMBID))) > -1) {
 				if (mainReleasePage) {
 					collectionUpdater(colls[coll], colls[coll].getAttribute("href").match(/add|remove/).toString());
 				} else {
-					addAfter(createTag("div", {s: {textShadow: "0 0 8px " + highlightColour}}, ["(please go to ", createTag("a", {a: {href: "/release/" + releaseID}}, "main release page"), " for this button to auto‐update your collection highlighter)"]), colls[coll]);
+					addAfter(createTag("div", {s: {textShadow: "0 0 8px " + userjs.highlightColour}}, ["(please go to ", createTag("a", {a: {href: "/release/" + userjs.releaseID}}, "main release page"), " for this button to auto‐update your collection highlighter)"]), colls[coll]);
 				}
 			}
 		}
@@ -113,29 +112,29 @@ if (cat) {
 // ############################################################################
 		var xp1 = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th/text()[contains(., 'Veröffentlichungen') or contains(., 'Väljalasked') or contains(., 'Releases') or contains(., 'Publicaciones') or contains(., 'Parutions') or contains(., 'Pubblicazioni') or contains(., 'Uitgaves') or contains(., 'Julkaisut') or contains(., 'Κυκλοφορίες') or contains(., 'リリース')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		for (let tbl_idx = 0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
-			xp1.snapshotItem(tbl_idx).parentNode.parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, scriptNameAndVersion));
+			xp1.snapshotItem(tbl_idx).parentNode.parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, userjs.name_ver));
 			var tbl = getParent(xp1.snapshotItem(tbl_idx).parentNode, "table");
 			var xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			for (let i = 0; i < xp.snapshotLength; i++) {
 				let coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
-				var collid = coll.getAttribute("href").match(new RegExp(strMBID));
+				var collid = coll.getAttribute("href").match(new RegExp(userjs.strMBID));
 				var loadButtons = [];
 				var loadButtonText = "Load";
-				if (collectionsID.indexOf(collid) > -1) {
+				if (userjs.collectionsID.indexOf(collid) > -1) {
 					decorate(coll);
 					loadButtonText = "Reload";
 				}
 				loadButtons.push(createA(
 					"Append",
 					function(event) {
-						var opts = document.querySelectorAll("td." + prefix + " input[type='checkbox']:checked");
-						stuff = {};
+						var opts = document.querySelectorAll("td." + userjs.prefix + " input[type='checkbox']:checked");
+						userjs.stuff = {};
 						for (let opt = 0; opt < opts.length; opt++) {
-							stuff[opts[opt].getAttribute("name")] = {};
+							userjs.stuff[opts[opt].getAttribute("name")] = {};
 						}
-						collectionLoadingStartDate = Date.now();
-						currentTaskStartDate = Date.now();
-						loadCollection(this.getAttribute("title").match(new RegExp(strMBID)), "add");
+						userjs.collectionLoadingStartDate = Date.now();
+						userjs.currentTaskStartDate = Date.now();
+						loadCollection(this.getAttribute("title").match(new RegExp(userjs.strMBID)), "add");
 					},
 					"Add this collection’s content to highlighter (" + collid + ")"
 				));
@@ -144,10 +143,10 @@ if (cat) {
 					loadButtonText,
 					function(event) {
 						var cmsg = "This will REPLACE your current loaded stuff.";
-						if (confirm(dialogprefix + cmsg)) {
+						if (confirm(userjs.dialogprefix + cmsg)) {
 							// erase local stuff
-							for (let stu = 0; stu < collectedStuff.length; stu++) {
-								GM_deleteValue(collectedStuff[stu] + "s");
+							for (let stu = 0; stu < userjs.collected_stuff.length; stu++) {
+								GM_deleteValue(userjs.collected_stuff[stu] + "s");
 							}
 							// then append (previous button)
 							this.previousSibling.previousSibling.click();
@@ -159,8 +158,8 @@ if (cat) {
 				if (i == 0) {
 					/* settings */
 					var settings = [];
-					for (let stu = 0; stu < collectedStuff.length; stu++) if (collectedStuff[stu] != "collection") {
-						var cstuff = collectedStuff[stu];
+					for (let stu = 0; stu < userjs.collected_stuff.length; stu++) if (userjs.collected_stuff[stu] != "collection") {
+						var cstuff = userjs.collected_stuff[stu];
 						var lab = document.createElement("label");
 						lab.appendChild(concat([createTag("input", {a: {type: "checkbox", name: cstuff}, e: {change: function(event) { GM_setValue("cfg" + this.getAttribute("name"), this.checked ? "1" : "0"); }}}), cstuff + "s "]));
 						var cfgcb = lab.querySelector("input[type='checkbox'][name='" + cstuff + "']");
@@ -204,7 +203,7 @@ if (cat) {
 						settings.push(lab);
 						settings.push(document.createElement("br"));
 					}
-					xp.snapshotItem(i).appendChild(createTag("td", {a: {class: prefix, rowspan: xp.snapshotLength}}, concat(settings)));
+					xp.snapshotItem(i).appendChild(createTag("td", {a: {class: userjs.prefix, rowspan: xp.snapshotLength}}, concat(settings)));
 				}
 			}
 		}
@@ -246,30 +245,30 @@ function findOwnedStuff() {
 	for (let annotationLinks = document.querySelectorAll("div#content div.annotation a, div#content div.annotation-preview a"), l = 0; l < annotationLinks.length; l++) {
 		annotationLinks[l].setAttribute("href", annotationLinks[l].getAttribute("href").trim().replace(/^((https?:)?\/\/((beta|test)\.)?musicbrainz\.org)\//, "/"));
 	}
-	for (let stu = 0; stu < collectedStuff.length; stu++) {
-		var cstuff = collectedStuff[stu];
-		stuff[cstuff] = {};
+	for (let stu = 0; stu < userjs.collected_stuff.length; stu++) {
+		var cstuff = userjs.collected_stuff[stu];
+		userjs.stuff[cstuff] = {};
 		var uphill = "";
 		var downhill = cat == "release" && cstuff == "label" ? "" : "[count(ancestor::xhtml:div[contains(@id, 'sidebar')])=0]";
 		var root = cat == "track" /* acoustid.org */ ? "//musicbrainz.org/" : "/";
-		var path = uphill + "//xhtml:a[contains(@href, '" + root + cstuff + "/')][not(starts-with(@class, '" + prefix + "'))]" + downhill;
+		var path = uphill + "//xhtml:a[contains(@href, '" + root + cstuff + "/')][not(starts-with(@class, '" + userjs.prefix + "'))]" + downhill;
 		var xp = document.evaluate(path, document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		for (let i = 0; i < xp.snapshotLength; i++) {
-			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + strMBID + ")$"));
+			var mbid = xp.snapshotItem(i).getAttribute("href").match(new RegExp("/" + cstuff + "/(" + userjs.strMBID + ")$"));
 			if (mbid) {
 				mbid = mbid[1];
-				debug(cstuff + " is already loaded? " + stuff[cstuff].loaded);
-				if (!stuff[cstuff].loaded) {
+				debug(cstuff + " is already loaded? " + userjs.stuff[cstuff].loaded);
+				if (!userjs.stuff[cstuff].loaded) {
 					debug("Load " + cstuff);
-					stuff[cstuff].rawids = GM_getValue(cstuff + "s");
-					if (stuff[cstuff].rawids) {
-						stuff[cstuff].ids = stuff[cstuff].rawids.trim().split(" ");
-						debug(" \n" + stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\nMatching: " + path);
+					userjs.stuff[cstuff].rawids = GM_getValue(cstuff + "s");
+					if (userjs.stuff[cstuff].rawids) {
+						userjs.stuff[cstuff].ids = userjs.stuff[cstuff].rawids.trim().split(" ");
+						debug(" \n" + userjs.stuff[cstuff].ids.length + " " + cstuff.toUpperCase() + (userjs.stuff[cstuff].ids.length == 1 ? "" : "S") + " loaded (" + cstuff + "s)\nMatching: " + path);
 					} else { debug(" \nNo " + cstuff.toUpperCase() + "S in highlighter (" + cstuff + "s)"); }
-					stuff[cstuff].loaded = true;
-					debug(cstuff + " is now loaded? " + stuff[cstuff].loaded);
+					userjs.stuff[cstuff].loaded = true;
+					debug(cstuff + " is now loaded? " + userjs.stuff[cstuff].loaded);
 				}
-				if (stuff[cstuff].ids && stuff[cstuff].ids.indexOf(mbid) > -1) {
+				if (userjs.stuff[cstuff].ids && userjs.stuff[cstuff].ids.indexOf(mbid) > -1) {
 					debug(mbid + " ● “" + xp.snapshotItem(i).textContent + "”");
 					decorate(xp.snapshotItem(i));
 				}
@@ -283,13 +282,13 @@ function findOwnedStuff() {
 function decorate(entityLink) {
 	if (!getParent(entityLink, "div", "tabs")) {
 		// Does not highlight tabs.
-		entityLink.classList.add(prefix + "Item");
+		entityLink.classList.add(userjs.prefix + "Item");
 		var page = document.getElementById("page");
 		if (getParent(entityLink, "h1")) {
 			// Entity page is boxed.
-			page.classList.add(prefix + "Box");
+			page.classList.add(userjs.prefix + "Box");
 		} else {
-			var entityType = entityLink.getAttribute("href").match(new RegExp("/(.+?)/" + strMBID, "i")) || "";
+			var entityType = entityLink.getAttribute("href").match(new RegExp("/(.+?)/" + userjs.strMBID, "i")) || "";
 			if (entityType) {
 				entityType = entityType[1];
 			}
@@ -297,13 +296,13 @@ function decorate(entityLink) {
 				// entity edit page is boxed
 				var editDetails = getParent(entityLink, "table", "details");
 				if (editDetails && entityLink == editDetails.querySelector("a")) {
-					page.classList.add(prefix + "Box");
+					page.classList.add(userjs.prefix + "Box");
 				}
 			} else if (cat == "edits") {
 				// in edit lists: Release or release group edits are boxed; other entity edits are left bordered
 				var edit = getParent(entityLink, "div", "edit-list");
 				if (edit) {
-					edit.classList.add(prefix + (entityLink == edit.querySelector("div.edit-details a") ? "Box" : "Row"));
+					edit.classList.add(userjs.prefix + (entityLink == edit.querySelector("div.edit-details a") ? "Box" : "Row"));
 				}
 			}
 			// Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists
@@ -312,16 +311,16 @@ function decorate(entityLink) {
 				if (
 					entityLink == row.querySelector("a[href]:not([href*='coverartarchive.org']):not([href*='/track/']):not([href$='/cover-art'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))
 					&& !(cat == "cdtoc" && entityType == "recording")
-					&& !(cat == "release" && page.classList.contains(prefix + "Box") && entityType == "recording")
+					&& !(cat == "release" && page.classList.contains(userjs.prefix + "Box") && entityType == "recording")
 					&& cat != "aliases"
 				) {
-					row.classList.add(prefix + "Row");
+					row.classList.add(userjs.prefix + "Row");
 				}
 				// decorate tracks without holding them
 				if (cat == "release" && entityType == "recording" || cat == "recording" && entityType == "release") {
 					var track = row.querySelector("a[href*='/track/']");
 					if (track) {
-						track.classList.add(prefix + "Item");
+						track.classList.add(userjs.prefix + "Item");
 					}
 				}
 			}
@@ -334,25 +333,25 @@ function decorate(entityLink) {
 function loadCollection(collectionMBID, action) {
 	setTitle(true);
 	// Add collection MBID to list of highlighted
-	collectionsID = GM_getValue("collections") || "";
-	if (collectionsID.indexOf(collectionMBID) < 0) {
-		collectionsID += collectionMBID + " ";
+	userjs.collectionsID = GM_getValue("collections") || "";
+	if (userjs.collectionsID.indexOf(collectionMBID) < 0) {
+		userjs.collectionsID += collectionMBID + " ";
 	}
-	modal(true, concat([createTag("h3", {}, dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "<hr>", "Loading collection " + collectionMBID + "…"]), 2);
-	for (let stu in stuff) if (Object.prototype.hasOwnProperty.call(stuff, stu) && collectedStuff.indexOf(stu) >= 0) {
-		stuff[stu].rawids = GM_getValue(stu + "s") || "";
+	modal(true, concat([createTag("h3", {}, userjs.dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "<hr>", "Loading collection " + collectionMBID + "…"]), 2);
+	for (let stu in userjs.stuff) if (Object.prototype.hasOwnProperty.call(userjs.stuff, stu) && userjs.collected_stuff.indexOf(stu) >= 0) {
+		userjs.stuff[stu].rawids = GM_getValue(stu + "s") || "";
 	}
-	stuff["release-new"] = {ids: []};
-	stuff["missingRecordingWorks"] = [];
-	if (lowMemory) {
+	userjs.stuff["release-new"] = {ids: []};
+	userjs.stuff["missingRecordingWorks"] = [];
+	if (userjs.lowMemory) {
 		modal(true, "Low memory machine (" + navigator.deviceMemory + " GB): Displaying less stuff to preserve performances.", 2);
 	}
 	loadReleases("?collection=" + collectionMBID, action, concludeCollectionLoading);
 }
 function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add or remove */, conclusionCallback, _offset) {
 	var offset = _offset || 0;
-	var ws2releaseUrl = "/ws/2/release" + query + (query.indexOf("?") >= 0 ? "&" : "?") + "inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels+recording-rels&limit=" + MBWSSpeedLimit + "&offset=" + offset;
-	if (offset == 0 || !lowMemory) {
+	var ws2releaseUrl = "/ws/2/release" + query + (query.indexOf("?") >= 0 ? "&" : "?") + "inc=release-groups+release-group-level-rels+release-group-rels+labels+recordings+artist-credits+recording-level-rels+work-rels+recording-rels&limit=" + userjs.MBWSSpeedLimit + "&offset=" + offset;
+	if (offset == 0 || !userjs.lowMemory) {
 		modal(true, "Fetching releases…", 1);
 	}
 	var xhr = new XMLHttpRequest();
@@ -361,29 +360,29 @@ function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add
 			error(concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
 		} else if (this.status == 200) {
 			var oneRelease = this.response.releases === undefined;
-			if (!lowMemory) {
+			if (!userjs.lowMemory) {
 				modal(true, "Received " + (oneRelease ? 1 : this.response.releases.length.toLocaleString(lang)) + " release" + ((oneRelease ? 1 : this.response.releases.length) == 1 ? "" : "s") + ":", 2);
 			}
 			browseReleases(oneRelease ? [this.response] : this.response.releases, action, offset, oneRelease ? 1 : this.response["release-count"]);
-			if (!lowMemory) {
+			if (!userjs.lowMemory) {
 				modal(true, "", 1);
 			}
 			var newOffset = !oneRelease && this.response["release-offset"] + this.response.releases.length;
 			if (!oneRelease && newOffset < this.response["release-count"]) {
-				retry = 0;
-				setTimeout(function() { loadReleases(query, action, conclusionCallback, newOffset); }, chrono(MBWSRate));
+				userjs.retry = 0;
+				setTimeout(function() { loadReleases(query, action, conclusionCallback, newOffset); }, chrono(userjs.MBWSRate));
 			} else {
 				// end of recursive function
-				if (stuff["release-new"].ids.length > 0) {
-					delete(stuff["release-new"]); // free up memory
-					if (stuff["missingRecordingWorks"].length > 0) {
-						modal(true, concat(["<hr>", "\u26A0\uFE0F Big releases require ", createTag("b", {s: {color: highlightColour}}, "delayed work fetching"), " (for " + stuff["missingRecordingWorks"].length.toLocaleString(lang) + " recordings):"]), 2);
-						retry = 0;
+				if (userjs.stuff["release-new"].ids.length > 0) {
+					delete(userjs.stuff["release-new"]); // free up memory
+					if (userjs.stuff["missingRecordingWorks"].length > 0) {
+						modal(true, concat(["<hr>", "\u26A0\uFE0F Big releases require ", createTag("b", {s: {color: userjs.highlightColour}}, "delayed work fetching"), " (for " + userjs.stuff["missingRecordingWorks"].length.toLocaleString(lang) + " recordings):"]), 2);
+						userjs.retry = 0;
 						setTimeout(function() {
-							currentTaskStartDate = Date.now();
-							loadMissingRecordingWorks(stuff["missingRecordingWorks"], action, conclusionCallback);
-							delete(stuff["missingRecordingWorks"]); // free up memory
-						}, chrono(MBWSRate));
+							userjs.currentTaskStartDate = Date.now();
+							loadMissingRecordingWorks(userjs.stuff["missingRecordingWorks"], action, conclusionCallback);
+							delete(userjs.stuff["missingRecordingWorks"]); // free up memory
+						}, chrono(userjs.MBWSRate));
 					} else {
 						conclusionCallback();
 					}
@@ -393,13 +392,13 @@ function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add
 				}
 			}
 		} else {
-			if (retry++ < maxRetry) {
-				MBWSRate += slowDownStepAfterRetry;
-				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 2);
+			if (userjs.retry++ < userjs.maxRetry) {
+				userjs.MBWSRate += userjs.slowDownStepAfterRetry;
+				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + userjs.retry + "/" + userjs.maxRetry + ")", 2);
 				debugRetry(this.status);
-				setTimeout(function() { loadReleases(query, action, conclusionCallback, offset); }, chrono(retryPause));
+				setTimeout(function() { loadReleases(query, action, conclusionCallback, offset); }, chrono(userjs.retryPause));
 			} else {
-				error("Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
+				error("Too many (" + userjs.maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
 			}
 		}
 	});
@@ -417,16 +416,16 @@ function browseReleases(releases, action, offset, releaseCount) {
 	for (var r = 0; r < releases.length; r++) {
 		var country = releases[r].country ? createTag("span", {a: {class: "flag flag-" + releases[r].country}}) : "";
 		var disambiguation = releases[r].disambiguation ? createTag("span", {a: {class: "comment"}}, "(" + releases[r].disambiguation + ")") : "";
-		if (!lowMemory) {
-			modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, (offset + r + 1).toLocaleString(lang).padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), " ", disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
+		if (!userjs.lowMemory) {
+			modal(true, concat([createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + userjs.highlightColour}}, (offset + r + 1).toLocaleString(lang).padStart(6, " ")), ". ", country, createA(releases[r].title, "/release/" + releases[r].id), " ", disambiguation]), 1, {text: "releases", current: offset + r + 1, total: releaseCount});
 		} else {
 			modal(true, "", 0, {text: "releases", current: offset + r + 1, total: releaseCount});
 		}
 		var missingRecordingLevelRels = 0;
-		if (stuff["release"].rawids.indexOf(releases[r].id) < 0) { stuff["release-new"].ids.push(releases[r].id); }
+		if (userjs.stuff["release"].rawids.indexOf(releases[r].id) < 0) { userjs.stuff["release-new"].ids.push(releases[r].id); }
 		addRemoveEntities("release", releases[r], action);
-		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["artist-credit"], action); }
-		if (stuff["label"]) { addRemoveEntities("label", releases[r]["label-info"], action); }
+		if (userjs.stuff["artist"]) { addRemoveEntities("artist", releases[r]["artist-credit"], action); }
+		if (userjs.stuff["label"]) { addRemoveEntities("label", releases[r]["label-info"], action); }
 		addRemoveEntities("release-group", releases[r]["release-group"], action);
 		for (var rgRel = 0; rgRel < releases[r]["release-group"].relations.length; rgRel++) {
 			// add included release groups and their artists
@@ -443,17 +442,17 @@ function browseReleases(releases, action, offset, releaseCount) {
 				&& releases[r]["release-group"].relations[rgRel].direction == "backward"
 
 			) {
-				if (!lowMemory) {
+				if (!userjs.lowMemory) {
 					var excerpt = releases[r]["release-group"].relations[rgRel].type.match(/excerpt/);
 					excerpt = excerpt ? excerpt[0] + " " : "";
 					modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " Includes " + excerpt, createA(releases[r]["release-group"].relations[rgRel].release_group.title, "/release-group/" + releases[r]["release-group"].relations[rgRel].release_group.id)]), 1);
 				}
 				addRemoveEntities("release-group", releases[r]["release-group"].relations[rgRel].release_group, action);
-				if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"].relations[rgRel].release_group["artist-credit"], action); }
+				if (userjs.stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"].relations[rgRel].release_group["artist-credit"], action); }
 			}
 		}
 		addRemoveEntities("release-group", releases[r]["release-group"], action);
-		if (stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"]["artist-credit"], action); }
+		if (userjs.stuff["artist"]) { addRemoveEntities("artist", releases[r]["release-group"]["artist-credit"], action); }
 		for (var m = 0; m < releases[r].media.length; m++) {
 			if (releases[r].media[m].pregap) {
 				missingRecordingLevelRels += browseTrack(releases[r].media[m].pregap, action);
@@ -465,22 +464,22 @@ function browseReleases(releases, action, offset, releaseCount) {
 				missingRecordingLevelRels += browseTrack(releases[r].media[m]["data-tracks"][dt], action);
 			}
 		}
-		if (!lowMemory && missingRecordingLevelRels > 0) {
-			modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F " + missingRecordingLevelRels.toLocaleString(lang) + " recordings queued for ", createTag("b", {s: {color: highlightColour}}, "delayed work fetching")]), 1);
+		if (!userjs.lowMemory && missingRecordingLevelRels > 0) {
+			modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " \u26A0\uFE0F " + missingRecordingLevelRels.toLocaleString(lang) + " recordings queued for ", createTag("b", {s: {color: userjs.highlightColour}}, "delayed work fetching")]), 1);
 		}
 	}
 }
 function browseTrack(track, action) {
 	var missingRecordingLevelRels = 0;
-	if (stuff["artist"]) { addRemoveEntities("artist", track["artist-credit"], action); }
-	if (stuff["recording"]) { addRemoveEntities("recording", track.recording, action); }
-	if (stuff["artist"]) { addRemoveEntities("artist", track.recording["artist-credit"], action); }
-	if (stuff["recording"] || stuff["work"]) {
+	if (userjs.stuff["artist"]) { addRemoveEntities("artist", track["artist-credit"], action); }
+	if (userjs.stuff["recording"]) { addRemoveEntities("recording", track.recording, action); }
+	if (userjs.stuff["artist"]) { addRemoveEntities("artist", track.recording["artist-credit"], action); }
+	if (userjs.stuff["recording"] || userjs.stuff["work"]) {
 		if (track.recording.relations) {
 			for (var r = 0; r < track.recording.relations.length; r++) {
 				// add works
 				if (
-					stuff["work"]
+					userjs.stuff["work"]
 					&& (
 						track.recording.relations[r].type === "performance"
 						|| track.recording.relations[r]["type-id"] === "a3005666-a872-32c3-ad06-98af558e99b0"
@@ -492,7 +491,7 @@ function browseTrack(track, action) {
 				}
 				// add compiled recordings and their artists
 				if (
-					stuff["recording"]
+					userjs.stuff["recording"]
 					&& (
 						track.recording.relations[r].type === "compilation"
 						|| track.recording.relations[r]["type-id"] === "1b6311e8-5f81-43b7-8c55-4bbae71ec00c"
@@ -501,20 +500,20 @@ function browseTrack(track, action) {
 					// in case of another MBS-12714
 					&& track.recording.relations[r]["target-type"] == "recording" && track.recording.relations[r].recording
 				) {
-					if (!lowMemory) {
+					if (!userjs.lowMemory) {
 						modal(true, concat([createTag("code", {s: {whiteSpace: "pre", color: "grey"}}, "\t└"), " Compiles ", createA(track.recording.relations[r].recording.title, "/recording/" + track.recording.relations[r].recording.id)]), 1);
 					}
 					addRemoveEntities("recording", track.recording.relations[r].recording, action);
-					if (stuff["artist"]) {
+					if (userjs.stuff["artist"]) {
 						addRemoveEntities("artist", track.recording.relations[r].recording["artist-credit"], action);
 					}
 				}
 			}
 		} else {
 			// no recording.relations: when there are more than 500 tracks, the recording-level-rels are not returned
-			if (stuff["missingRecordingWorks"].indexOf(track.recording.id) < 0) {
+			if (userjs.stuff["missingRecordingWorks"].indexOf(track.recording.id) < 0) {
 				// add each recording to a list for later later work fetch
-				stuff["missingRecordingWorks"].push(track.recording.id);
+				userjs.stuff["missingRecordingWorks"].push(track.recording.id);
 				missingRecordingLevelRels += 1;
 			}
 		}
@@ -553,18 +552,18 @@ function addRemoveEntities(type, _entities, action) {
 				break;
 		}
 		debug(type);
-		debug(stuff[type]);
+		debug(userjs.stuff[type]);
 		if (
 			entity !== null // labels can be null
-			&& stuff[type] // this type is highlighted (initial load)
-			&& typeof stuff[type].rawids == "string" // this type is highlighted (dynamic load)
-			&& stuff[type].rawids.indexOf(entity.id) < 0 // this entity is not yet tracked
-			&& !(type == "artist" && skipArtists.indexOf(entity.id) >= 0) // ignore Various Artists and such
-			&& !(type == "label" && skipLabels.indexOf(entity.id) >= 0) // ignore [no label] and such
+			&& userjs.stuff[type] // this type is highlighted (initial load)
+			&& typeof userjs.stuff[type].rawids == "string" // this type is highlighted (dynamic load)
+			&& userjs.stuff[type].rawids.indexOf(entity.id) < 0 // this entity is not yet tracked
+			&& !(type == "artist" && userjs.skipArtists.indexOf(entity.id) >= 0) // ignore Various Artists and such
+			&& !(type == "label" && userjs.skipLabels.indexOf(entity.id) >= 0) // ignore [no label] and such
 		) {
 			switch (action) {
 				case "add":
-					stuff[type].rawids += entity.id + " ";
+					userjs.stuff[type].rawids += entity.id + " ";
 					break;
 				case "remove":
 					// TODO: remove entity
@@ -584,7 +583,7 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 	var batchSize = 100;
 	batchSize -= mbs12154; // #### REMOVE WHEN MBS-12154 FIXED
 	var batch = recordings.slice(batchOffset, batchOffset + batchSize);
-	var workQueryURL = "/ws/2/work?query=rid%3A" + batch.join("+OR+rid%3A") + "&limit=" + MBWSSpeedLimit + "&offset=" + wsResponseOffset;
+	var workQueryURL = "/ws/2/work?query=rid%3A" + batch.join("+OR+rid%3A") + "&limit=" + userjs.MBWSSpeedLimit + "&offset=" + wsResponseOffset;
 	if (wsResponseOffset === 0) {
 		modal(true, "Fetching works for " + batch.length + " recordings… ", 0);
 	}
@@ -593,7 +592,7 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 		if (this.status == 200) {
 			var works = this.response.works;
 			modal(true, works.length.toString(), 0, {text: "recordings", current: batchOffset + batch.length, total: recordings.length});
-			if (stuff["work"]) {
+			if (userjs.stuff["work"]) {
 				for (var r = 0; r < works.length; r++) {
 					addRemoveEntities("work", works[r], action);
 				}
@@ -601,12 +600,12 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 			var newWsResponseOffset = this.response.offset + works.length;
 			if (newWsResponseOffset < this.response.count) {
 				modal(true, concat([createTag("span", {s: {color: "grey"}}, "+"), " works"]), 0);
-				mbs12154 += this.response.count - MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
-				if (mbs12154 < MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
-					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: highlightColour}}, ["Slow down required (", createTag("a", {a: {href: "https://tickets.metabrainz.org/browse/MBS-12154", target: "_blank"}}, "MBS-12154"), ")"]), "<br>", "Reducing recording query size: ", createTag("del", {}, batchSize), "→", createTag("b", {}, batchSize - this.response.count + MBWSSpeedLimit), " recordings"]), 2); // #### REMOVE WHEN MBS-12154 FIXED
-					retry = 0;
-					// #### UNCOMMENT WHEN MBS-12154 FIXED // setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, newWsResponseOffset); }, chrono(MBWSRate));
-					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset); }, chrono(MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
+				mbs12154 += this.response.count - userjs.MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
+				if (mbs12154 < userjs.MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
+					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: userjs.highlightColour}}, ["Slow down required (", createTag("a", {a: {href: "https://tickets.metabrainz.org/browse/MBS-12154", target: "_blank"}}, "MBS-12154"), ")"]), "<br>", "Reducing recording query size: ", createTag("del", {}, batchSize), "→", createTag("b", {}, batchSize - this.response.count + userjs.MBWSSpeedLimit), " recordings"]), 2); // #### REMOVE WHEN MBS-12154 FIXED
+					userjs.retry = 0;
+					// #### UNCOMMENT WHEN MBS-12154 FIXED // setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, newWsResponseOffset); }, chrono(userjs.MBWSRate));
+					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset); }, chrono(userjs.MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
 				} else { // #### REMOVE WHEN MBS-12154 FIXED
 					error("MBS-12154 bug\n\nCannot load works."); // #### REMOVE WHEN MBS-12154 FIXED
 				} // #### REMOVE WHEN MBS-12154 FIXED
@@ -614,8 +613,8 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 				modal(true, " works", 1);
 				var newBatchOffset = batchOffset + batch.length;
 				if (newBatchOffset < recordings.length) {
-					retry = 0;
-					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, newBatchOffset); }, chrono(MBWSRate));
+					userjs.retry = 0;
+					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, newBatchOffset); }, chrono(userjs.MBWSRate));
 				} else {
 					// end of recursive function
 					modal(true, "", 1);
@@ -623,13 +622,13 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 				}
 			}
 		} else {
-			if (retry++ < maxRetry) {
-				MBWSRate += slowDownStepAfterRetry;
-				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + retry + "/" + maxRetry + ")", 2);
+			if (userjs.retry++ < userjs.maxRetry) {
+				userjs.MBWSRate += userjs.slowDownStepAfterRetry;
+				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + userjs.retry + "/" + userjs.maxRetry + ")", 2);
 				debugRetry(this.status);
-				setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, wsResponseOffset); }, chrono(retryPause));
+				setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, wsResponseOffset); }, chrono(userjs.retryPause));
 			} else {
-				error("Too many (" + maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading missing recording works).");
+				error("Too many (" + userjs.maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading missing recording works).");
 			}
 		}
 	});
@@ -648,30 +647,30 @@ function collectionUpdater(link, action) {
 	if (link && action) {
 		link.addEventListener("click", function(event) {
 			modal(true, "Refreshing memory…", 1);
-			collectionsID = GM_getValue("collections") || "";
-			for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && collectedStuff.indexOf(type) >= 0) {
-				stuff[type].rawids = GM_getValue(type + "s");
-				stuff[type].ids = stuff[type].rawids != null ? (stuff[type].rawids.length > 0 ? stuff[type].rawids.trim().split(" ") : []) : null;
+			userjs.collectionsID = GM_getValue("collections") || "";
+			for (let type in userjs.stuff) if (Object.prototype.hasOwnProperty.call(userjs.stuff, type) && userjs.collected_stuff.indexOf(type) >= 0) {
+				userjs.stuff[type].rawids = GM_getValue(type + "s");
+				userjs.stuff[type].ids = userjs.stuff[type].rawids != null ? (userjs.stuff[type].rawids.length > 0 ? userjs.stuff[type].rawids.trim().split(" ") : []) : null;
 			}
 			setTitle(true);
 			lastLink(this.getAttribute("href"));
 			switch (action) {
 				case "add":
-					stuff["release-new"] = {ids: []};
-					stuff["missingRecordingWorks"] = [];
-					collectionLoadingStartDate = Date.now();
-					currentTaskStartDate = Date.now();
-					loadReleases("/" + releaseID, action, concludeDynamicReleaseLoading);
+					userjs.stuff["release-new"] = {ids: []};
+					userjs.stuff["missingRecordingWorks"] = [];
+					userjs.collectionLoadingStartDate = Date.now();
+					userjs.currentTaskStartDate = Date.now();
+					loadReleases("/" + userjs.releaseID, action, concludeDynamicReleaseLoading);
 					return stop(event);
 					// break;
 				case "remove":
 					// Force release for "Add to / Remove from collection" but not for "Force highlight ON /OFF"
 					altered = this.getAttribute("href") != self.location.href;
 					var checks = getStuffs();
-					if (stuff["release"].rawids.indexOf(releaseID) > -1) {
+					if (userjs.stuff["release"].rawids.indexOf(userjs.releaseID) > -1) {
 						modal(true, concat([createTag("b", {}, "Removing this release"), " from loaded collection…"]), 1);
-						stuff["release"].rawids = stuff["release"].rawids.replace(new RegExp(releaseID + "( |$)"), "");
-						GM_setValue("releases", stuff["release"].rawids);
+						userjs.stuff["release"].rawids = userjs.stuff["release"].rawids.replace(new RegExp(userjs.releaseID + "( |$)"), "");
+						GM_setValue("releases", userjs.stuff["release"].rawids);
 						altered = true;
 					}
 					if (checks.length > 0) {
@@ -709,19 +708,19 @@ function getStuffs(what, pwhere) {
 		return cont.querySelectorAll(selector[what]);
 	} else {
 		var allrelsel = selector["release-group"];
-		if (stuff["recording"].ids) { allrelsel += ", " + selector["recording"]; }
-		if (stuff["label"].ids) { allrelsel += ", " + selector["label"]; }
+		if (userjs.stuff["recording"].ids) { allrelsel += ", " + selector["recording"]; }
+		if (userjs.stuff["label"].ids) { allrelsel += ", " + selector["label"]; }
 		var all = basicOnly(cont.querySelectorAll(allrelsel));
 		var allrecsel = "", sep = "";
-		if (stuff["artist"].ids) { allrecsel += sep + selector["artist"]; sep = ", "; }
-		if (stuff["work"].ids) { allrecsel += sep + selector["work"]; }
+		if (userjs.stuff["artist"].ids) { allrecsel += sep + selector["artist"]; sep = ", "; }
+		if (userjs.stuff["work"].ids) { allrecsel += sep + selector["work"]; }
 		if (allrecsel != "") {
 			all = basicOnly(cont.querySelectorAll(allrecsel), all);
 		}
 		return all;
 	}
 	function pathname(href) {
-		return href.match(new RegExp("/[^/]+/" + strMBID)) + "";
+		return href.match(new RegExp("/[^/]+/" + userjs.strMBID)) + "";
 	}
 	function basicOnly(nodes, parr) {
 		var arr = parr ? parr : [];
@@ -732,7 +731,7 @@ function getStuffs(what, pwhere) {
 		for (let n = 0; n < nodes.length; n++) {
 			if (nodes[n].getAttribute) {
 				var href = pathname(nodes[n].getAttribute("href"));
-				if (href && href.match(new RegExp(strMBID + "$")) && hrefs.indexOf(href) == -1) {
+				if (href && href.match(new RegExp(userjs.strMBID + "$")) && hrefs.indexOf(href) == -1) {
 					hrefs.push(href);
 					arr.push(nodes[n]);
 				}
@@ -748,7 +747,7 @@ function stuffRemover(checks, pp) {
 	var check = checks[0];
 	if (check) {
 		var p = pp ? pp : 1;
-		var checkMatch = check.getAttribute("href").match(new RegExp("/(" + strType + ")/(" + strMBID + ")$", "i"));
+		var checkMatch = check.getAttribute("href").match(new RegExp("/(" + userjs.strType + ")/(" + userjs.strMBID + ")$", "i"));
 		if (checkMatch) {
 			var checkType = checkMatch[1];
 			var checkID = checkMatch[2];
@@ -764,7 +763,7 @@ function stuffRemover(checks, pp) {
 					checkAgainst = "recording";
 					break;
 			}
-			if (typeof stuff[checkAgainst].rawids == "string" && stuff[checkType].rawids.indexOf(checkID) > -1) {
+			if (typeof userjs.stuff[checkAgainst].rawids == "string" && userjs.stuff[checkType].rawids.indexOf(checkID) > -1) {
 				var url = "/" + checkType + "/" + checkID;
 				if (checkType == "artist") { url += "/recordings"; }
 				url += "?page=" + p;
@@ -774,35 +773,34 @@ function stuffRemover(checks, pp) {
 					if (this.readyState == 4) {
 						if (this.status == 200) {
 							var res = document.createElement("html"); res.innerHTML = this.responseText;
-							var nextPage = res.querySelector(css_nextPage);
 							var mates = getStuffs(checkAgainst, res);
 							for (let m = 0; m < mates.length; m++) {
-								if (stuff[checkAgainst].rawids.indexOf(mates[m].getAttribute("href").match(new RegExp(strMBID))) > -1) {
+								if (userjs.stuff[checkAgainst].rawids.indexOf(mates[m].getAttribute("href").match(new RegExp(userjs.strMBID))) > -1) {
 									modal(true, createTag("span", {s: {color: "grey"}}, ["still used by ", createA(mates[m].textContent, mates[m].getAttribute("href"), checkAgainst), ": keeping."]), 1);
-									retry = 0;
-									setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
+									userjs.retry = 0;
+									setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(userjs.MBWSRate));
 									return;
 								}
 							}
-							if (nextPage) {
+							if (res.querySelector("ul.pagination > li:last-of-type > a")) {
 								if (p == 1) { modal(true, createTag("span", {s: {color: "grey"}}, "(several pages but this check will stop as soon as it finds something)"), 1); }
-								retry = 0;
-								setTimeout(function() { stuffRemover(checks, p + 1); }, chrono(MBWSRate));
+								userjs.retry = 0;
+								setTimeout(function() { stuffRemover(checks, p + 1); }, chrono(userjs.MBWSRate));
 							} else {
 								modal(true, concat([createTag("span", {s: {color: "grey"}}, "not used any more: "), createTag("b", {}, "removing"), "…"]), 1);
-								stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
-								GM_setValue(checkType + "s", stuff[checkType].rawids);
+								userjs.stuff[checkType].rawids = userjs.stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
+								GM_setValue(checkType + "s", userjs.stuff[checkType].rawids);
 								altered = true;
-								retry = 0;
-								setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
+								userjs.retry = 0;
+								setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(userjs.MBWSRate));
 							}
 						} else {
-							if (retry++ < maxRetry) {
-								MBWSRate += slowDownStepAfterRetry;
+							if (userjs.retry++ < userjs.maxRetry) {
+								userjs.MBWSRate += userjs.slowDownStepAfterRetry;
 								debugRetry(this.status);
-								setTimeout(function() { stuffRemover(checks, p); }, chrono(retryPause));
+								setTimeout(function() { stuffRemover(checks, p); }, chrono(userjs.retryPause));
 							} else {
-								error("Too many (" + maxRetry + ") errors (last " + this.status + " while checking stuff to remove).");
+								error("Too many (" + userjs.maxRetry + ") errors (last " + this.status + " while checking stuff to remove).");
 							}
 						}
 					} // 4
@@ -812,14 +810,14 @@ function stuffRemover(checks, pp) {
 				xhr.open("GET", MBS + url, true);
 				xhr.send(null);
 			} else {
-				if (!stuff[checkAgainst].rawids) {/* Protection for some edge cases of new script using old script data */
+				if (!userjs.stuff[checkAgainst].rawids) {/* Protection for some edge cases of new script using old script data */
 					modal(true, concat([createTag("span", {s: {color: "grey"}}, ["no ", checkAgainst, "s at all (", createA("#87", "//github.com/jesus2099/konami-command/issues/87"), "): "]), "removing…"]), 1);
-					stuff[checkType].rawids = stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
-					GM_setValue(checkType + "s", stuff[checkType].rawids);
+					userjs.stuff[checkType].rawids = userjs.stuff[checkType].rawids.replace(new RegExp(checkID + "( |$)"), "");
+					GM_setValue(checkType + "s", userjs.stuff[checkType].rawids);
 					altered = true;
 				}
-				retry = 0;
-				setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(MBWSRate));
+				userjs.retry = 0;
+				setTimeout(function() { stuffRemover(checks.slice(1)); }, chrono(userjs.MBWSRate));
 			}
 		}
 	} else {
@@ -855,34 +853,34 @@ function saveRawIdsToGMStorage() {
 	setTitle(false);
 	modal(true, concat(["<hr>", createTag("h2", {}, "Highlighted stuff")]), 1);
 	// display summary of added entities and write all MBID in the storage now
-	for (let type in stuff) if (Object.prototype.hasOwnProperty.call(stuff, type) && stuff[type].rawids) {
-		stuff[type].ids = stuff[type].rawids.length > 0 ? stuff[type].rawids.trim().split(" ") : [];
-		modal(true, createTag("span", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + highlightColour}}, stuff[type].ids.length.toLocaleString(lang).padStart(12, " ")), createTag("b", {}, " " + type.replace(/-/, " ") + (stuff[type].ids.length == 1 ? "" : "s")), "… "]));
-		GM_setValue(type + "s", stuff[type].rawids);
+	for (let type in userjs.stuff) if (Object.prototype.hasOwnProperty.call(userjs.stuff, type) && userjs.stuff[type].rawids) {
+		userjs.stuff[type].ids = userjs.stuff[type].rawids.length > 0 ? userjs.stuff[type].rawids.trim().split(" ") : [];
+		modal(true, createTag("span", {}, [createTag("code", {s: {whiteSpace: "pre", textShadow: "0 0 8px " + userjs.highlightColour}}, userjs.stuff[type].ids.length.toLocaleString(lang).padStart(12, " ")), createTag("b", {}, " " + type.replace(/-/, " ") + (userjs.stuff[type].ids.length == 1 ? "" : "s")), "… "]));
+		GM_setValue(type + "s", userjs.stuff[type].rawids);
 		modal(true, "saved.", 1);
 		// free up memory
-		stuff[type].rawids = "";
-		stuff[type].ids = [];
+		userjs.stuff[type].rawids = "";
+		userjs.stuff[type].ids = [];
 	}
-	GM_setValue("collections", collectionsID);
-	modal(true, concat(["<br>", createTag("b", {s: {color: highlightColour}}, "Everything loaded!")]), 1);
-	modal(true, concat(["<hr>", "Collection loaded in highlighter in ", sInt2msStr(Math.floor((Date.now() - collectionLoadingStartDate) / 1000)), ".", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
+	GM_setValue("collections", userjs.collectionsID);
+	modal(true, concat(["<br>", createTag("b", {s: {color: userjs.highlightColour}}, "Everything loaded!")]), 1);
+	modal(true, concat(["<hr>", "Collection loaded in highlighter in ", sInt2msStr(Math.floor((Date.now() - userjs.collectionLoadingStartDate) / 1000)), ".", "<br>", "You may now enjoy this stuff highlighted in various appropriate places. YAY(^o^;)Y", "<br>"]), 1);
 }
 function error(msg) {
 	setTitle(false);
 	modal(true, createTag("pre", {s: {fontWeight: "bolder", backgroundColor: "yellow", color: "red", border: "2px dashed black", boxShadow: "2px 2px 2px grey", width: "fit-content", margin: "1em auto", padding: "1em"}}, createTag("code", {}, msg)), 1).style.setProperty("background-color", "pink");
-	alert(dialogprefix + msg);
+	alert(userjs.dialogprefix + msg);
 	modal(true, concat(["You may ", createA("have a look at known issues and/or create a new bug report", GM_info.script.namespace + "/issues/new?labels=" + GM_info.script.name.replace(". ", "_").replace(" ", "-")), " or just ", createA("reload this page", function(event) { self.location.reload(); }), "."]), 1);
 	unlockModal();
 }
 function unlockModal() {
 	modal(true, concat(["☞ You can now review these cute logs, or close it (press “Escape” or click outside). ஜ۩۞۩ஜ"]), 1);
-	document.getElementById(prefix + "Modal").previousSibling.addEventListener("click", closeModal);
+	document.getElementById(userjs.prefix + "Modal").previousSibling.addEventListener("click", closeModal);
 	document.body.addEventListener("keydown", closeModal);
 }
 function closeModal(event) {
 	if (event.type == "click" || event.type == "keydown" && event.key == "Escape") {
-		var modalWall = document.getElementById(prefix + "Modal").previousSibling;
+		var modalWall = document.getElementById(userjs.prefix + "Modal").previousSibling;
 		if (gaugeto) { clearTimeout(gaugeto); gaugeto = null; }
 		modalWall.parentNode.removeChild(modalWall.nextSibling);
 		modalWall.parentNode.removeChild(modalWall);
@@ -893,11 +891,11 @@ function closeModal(event) {
 }
 var gaugeto;
 function modal(show, data, newlines, gauge) {
-	var obj = document.getElementById(prefix + "Modal");
+	var obj = document.getElementById(userjs.prefix + "Modal");
 	if (show && !obj) {
 		coolstuff("div", "50", "100%", "100%", "black", ".6");
 		obj = coolstuff("div", "55", "600px", "92%", "white");
-		obj.setAttribute("id", prefix + "Modal");
+		obj.setAttribute("id", userjs.prefix + "Modal");
 		obj.style.setProperty("padding", "4px");
 		obj.style.setProperty("overflow", "auto");
 		obj.style.setProperty("border", "4px solid black");
@@ -931,13 +929,13 @@ function modal(show, data, newlines, gauge) {
 					gau.style.setProperty("display", "block");
 				}
 				gau.style.setProperty("width", Math.ceil(self.innerWidth * gauge.current / gauge.total) + "px");
-				var elapsedSeconds = Math.floor((Date.now() - currentTaskStartDate) / 1000);
-				var totalSeconds = Math.ceil(elapsedSeconds > 0 ? elapsedSeconds * gauge.total / gauge.current : (gauge.total - gauge.current) * MBWSRate / 1000);
+				var elapsedSeconds = Math.floor((Date.now() - userjs.currentTaskStartDate) / 1000);
+				var totalSeconds = Math.ceil(elapsedSeconds > 0 ? elapsedSeconds * gauge.total / gauge.current : (gauge.total - gauge.current) * userjs.MBWSRate / 1000);
 				gau.lastChild.replaceChild(document.createTextNode((gauge.text ? gauge.text + " " : "") + gauge.current.toLocaleString(lang) + " / " + gauge.total.toLocaleString(lang) + " (" + percentage + "%); loading time: elapsed " + sInt2msStr(elapsedSeconds) + " / estimated total " + sInt2msStr(totalSeconds) + ", remaining " + sInt2msStr(totalSeconds - elapsedSeconds)), gau.lastChild.firstChild);
 				setTitle(true, percentage);
 				if (gauge.current >= gauge.total) {
 					gaugeto = setTimeout(function() {
-						if ((obj = document.getElementById(prefix + "Modal")) !== null) {
+						if ((obj = document.getElementById(userjs.prefix + "Modal")) !== null) {
 							obj.firstChild.style.setProperty("display", "none");
 						}
 					}, 10000);
@@ -1000,7 +998,7 @@ function lastLink(href) {
 		if (ll) {
 			GM_deleteValue("lastlink");
 			modal(true, "Re‐loading page…", 1);
-			setTimeout(function() { self.location.href = ll; }, chrono(MBWSRate));
+			setTimeout(function() { self.location.href = ll; }, chrono(userjs.MBWSRate));
 		} else {
 			modal(true, "", 1);
 			error("Sorry, I’m lost. I don’t know what was the link you last clicked.");
@@ -1062,11 +1060,11 @@ function sInt2msStr(seconds) {
 }
 function debug(txt) {
 	if (DEBUG) {
-		console.debug(prefix + "\n" + txt);
+		console.debug(userjs.prefix + "\n" + txt);
 	}
 }
 function debugRetry(status) {
-	debug("Error " + status + "\nRetrying (" + retry + "/" + maxRetry + ") in " + retryPause + " ms\nSlowing down, new rate: " + (MBWSRate - slowDownStepAfterRetry) + "+" + slowDownStepAfterRetry + " = " + MBWSRate + " ms");
+	debug("Error " + status + "\nRetrying (" + userjs.retry + "/" + userjs.maxRetry + ") in " + userjs.retryPause + " ms\nSlowing down, new rate: " + (userjs.MBWSRate - userjs.slowDownStepAfterRetry) + "+" + userjs.slowDownStepAfterRetry + " = " + userjs.MBWSRate + " ms");
 }
 function nsr(prefix) {
 	var ns = {
