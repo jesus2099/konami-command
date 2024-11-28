@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2024.9.4
+// @version      2024.11.28
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COLLECTION-HIGHLIGHTER
@@ -64,10 +64,10 @@ if (cat) {
 	j2ss.setAttribute("type", "text/css");
 	document.head.appendChild(j2ss);
 	j2ss = j2ss.sheet;
-	var brdr = " border-left: 4px solid " + highlightColour + "; ";
+	var brdr = " border-left: 3px solid " + highlightColour + "; ";
 	j2ss.insertRule("." + prefix + "Box {" + brdr.replace(/-left/, "") + "}", 0);
 	j2ss.insertRule("." + prefix + "Row {" + brdr + "}", 0);
-	j2ss.insertRule("li." + prefix + "Row { padding-left: 4px; }", 0);
+	j2ss.insertRule("li." + prefix + "Row { padding-left: 3px; }", 0);
 	j2ss.insertRule("." + prefix + "Item { text-shadow: 0 0 8px " + highlightColour + "!important; }", 0);
 	var collectionsID = GM_getValue("collections") || "";
 	var releaseID;
