@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.11.23
+// @version      2024.11.28
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -514,156 +514,134 @@ function percentage(p, c) {
 // =============================================================== KEYBOARD+
 // ## EASY_DATE ## basic paste-a-date!-like (https://web.archive.org/web/20131112023543/userscripts.org/scripts/show/121217)
 // =========================================================================
-j2setting("EASY_DATE", false, true, "you can paste full date in the YYYY field, it will split it\nascending D.M.YYYY or descending YYYY.M.D, almost any format except american (MBS-1197)\n\nPress “C” to copy current date into the other (begin→end or end→begin)\nPress “D” to delete dates");
+j2setting("EASY_DATE", false, true, "You can paste full date in the YYYY field, it will split it\nascending D.M.YYYY or descending YYYY.M.D,\nalmost any format except american (MBS-1197)\n\nYou can freely type date, without tabulating, across year-month-date\n(with only digits 20241231, or with separators 2024.12/31)\n\nPress “c” to copy current date into the other (begin→end or end→begin)\nPress “d” to delete dates");
 if (j2sets.EASY_DATE && !location.pathname.match(/^\/account\/edit/)) {
-	// React hydrate imposes delay
-	userjs.reactHydratePage = location.pathname.match(/^\/event|\/(add-alias|alias\/\d+\/edit)$/);
-	if (!userjs.reactHydratePage) {
-		EASY_DATE_init();
-	}
-	(new MutationObserver(function(mutations, observer) {
-		EASY_DATE_calmDOM();
-	})).observe(document.body, {childList: true, subtree: true});
-}
-var EASY_DATE_calmDOMto;
-function EASY_DATE_calmDOM() {
-	if (EASY_DATE_calmDOMto) {
-		clearTimeout(EASY_DATE_calmDOMto);
-	}
-	EASY_DATE_calmDOMto = setTimeout(EASY_DATE_init, userjs.reactHydratePage ? 1000 : 100);
-}
-function EASY_DATE_init() {
-	debug("EASY_DATE_init");
-	for (let years = document.querySelectorAll(".partial-date > input[placeholder='YYYY'][maxlength='4'][size='4']:not(." + userjs.id + "easydate)"), y = 0; y < years.length; y++) {
-		addAfter(
-			createTag("input", {
-				a: {value: years[y].value, placeholder: "YYY+", size: "4", title: "EASY_DATE®\n" + j2docs.EASY_DATE},
-				s: {backgroundColor: "#ff9"},
-				e: {
-					input: function(event) {
-						this.style.setProperty("background-color", "#ff9");
-						this.value = this.value.trim().replace(/[０-９]/g, function(d) {
-							return String.fromCharCode(d.charCodeAt(0) - "０".charCodeAt(0) + "0".charCodeAt(0));
-						}).replace(/^\D+|\D+$/, "");
-						var date;
-						if (!this.value.match(/\D/)) {
-							switch (this.value.length) {
-								case 5:
-									this.value = this.value.substr(0, 4);
-									break;
-								case 6:
-									this.value = (parseInt(this.value, 10) > 19 ? "19" : "20") + this.value;
-									// fall through
-								case 8:
-									date = this.value.match(new RegExp("^" + re_date.YYYY + re_date.MM + re_date.DD + "$"));
-									break;
-							}
-						} else {
-							date = this.value.match(new RegExp("^(?:" + re_date.YYYY + "\\D+" + re_date.MM + "(?:\\D+" + re_date.DD + ")?|(?:" + re_date.DD + "\\D+)" + re_date.MM + "\\D+" + re_date.YYYY + "|" + re_date.YYYY + "\\D+" + re_date.M + "(?:\\D+" + re_date.D + ")?|(?:" + re_date.D + "\\D+)?" + re_date.M + "\\D+" + re_date.YYYY + "|" + re_date.YY + "\\D+" + re_date.M + "(?:\\D+" + re_date.D + ")?|(?:" + re_date.D + "\\D+)?" + re_date.M + "\\D+" + re_date.YY + ")$"));
+	document.addEventListener("focusin", function(event) {
+		if (event.target.matches("input.partial-date-year, input.partial-date-month, input.partial-date-day")) {
+			if (!event.target.closest("table.relationship-details, fieldset").querySelector(".jesus2099easydate")) {
+				var doc = createTag("pre", {a: {class: "jesus2099easydate"}}, "EASY_DATE®\n----------\n\n" + j2docs.EASY_DATE);
+				if (event.target.closest("fieldset")) {
+					event.target.closest("fieldset").appendChild(createTag("div", {a: {class: "row"}}, doc));
+				} else {
+					event.target.closest("table.relationship-details").appendChild(createTag("tfoot", {}, createTag("tr", {}, createTag("td", {a: {colspan: "2"}}, doc))));
+				}
+			}
+			event.target.select();
+		}
+	});
+	document.addEventListener("paste", function(event) {
+		if (event.target.matches("input.partial-date-year, input.partial-date-month, input.partial-date-day")) {
+			var date = event.clipboardData.getData("text/plain").trim();
+			// fullwidth to halfwidth
+			date = date.replace(/[０-９]/g, function(d) {
+				return String.fromCharCode(d.charCodeAt(0) - "０".charCodeAt(0) + "0".charCodeAt(0));
+			});
+			// remove non-digit prefix and suffix
+			date = date.replace(/^\D+|\D+$/, "");
+			if (!date.match(/\D/)) {
+				switch (date.length) {
+					case 5:
+						date = date.substr(0, 4);
+						break;
+					case 6:
+						// YY to YYYY
+						date = EASY_DATE_YY_to_YYYY(date.substr(0, 2)) + date;
+						// fall through
+					case 8:
+						date = date.match(new RegExp("^" + re_date.YYYY + re_date.MM + re_date.DD + "$"));
+						break;
+				}
+			} else {
+				date = date.match(new RegExp("^(?:" + re_date.YYYY + "\\D+" + re_date.MM + "(?:\\D+" + re_date.DD + ")?|(?:" + re_date.DD + "\\D+)" + re_date.MM + "\\D+" + re_date.YYYY + "|" + re_date.YYYY + "\\D+" + re_date.M + "(?:\\D+" + re_date.D + ")?|(?:" + re_date.D + "\\D+)?" + re_date.M + "\\D+" + re_date.YYYY + "|" + re_date.YY + "\\D+" + re_date.M + "(?:\\D+" + re_date.D + ")?|(?:" + re_date.D + "\\D+)?" + re_date.M + "\\D+" + re_date.YY + ")$"));
+			}
+			if (date) {
+				date = {
+					year:  date[1] || date[6] || date[7] || date[12] || date[13] || date[18],
+					month: date[2] || date[5] || date[8] || date[11] || date[14] || date[17],
+					day:   date[3] || date[4] || date[9] || date[10] || date[15] || date[16]
+				};
+				for (var i in date) if (Object.prototype.hasOwnProperty.call(date, i) && date[i]) {
+					if (i == "year" && date[i].length == 2) {
+						// YY to YYYY
+						date[i] = EASY_DATE_YY_to_YYYY(date[i]) + date[i];
+					} else if (date[i].length == 1) {
+						date[i] = "0" + date[i];
+					}
+					var input = event.target.closest(".partial-date").querySelector("input.partial-date-" + i);
+					input.focus();
+					forceValue(input, date[i]);
+					input.style.setProperty("background-color", "#cfc");
+				}
+				if (location.pathname.match(/\/edit-relationships$/)) {
+					EASY_DATE_cloneDate(event.target);
+				}
+			} else {
+				if (!date.match(/^\d\d\d\d$/)) event.target.style.setProperty("background-color", "#fcc");
+				stop(event);
+			}
+		}
+	});
+	document.addEventListener("keydown", function(event) {
+		if (event.target.matches("input.partial-date-year, input.partial-date-month, input.partial-date-day")) {
+			if (!event.altKey && !event.ctrlKey && !event.metaKey && event.key) {
+				if (event.key.match(/^(c|d)$/)) {
+					switch (event.key) {
+						case "c":
+							EASY_DATE_cloneDate(event.target, true);
+							break;
+						case "d":
+							EASY_DATE_deleteDates(event.target);
+							break;
+					}
+					return stop(event);
+				} else if (event.key.match(/[0-9０-９\-/.]/) && event.target.matches("input.partial-date-year, input.partial-date-month")) {
+					var separator_mode = event.key == "-" || event.key == "/" || event.key == ".";
+					var full_digit_mode = event.target.selectionStart === event.target.selectionEnd && event.target.value.length === event.target.getAttribute("placeholder").length && event.key.match(/[0-9０-９]/);
+					if (separator_mode || full_digit_mode) {
+						var next_field = event.target.parentNode.querySelector("input.partial-date-" + (event.target.matches("input.partial-date-year") ? "month" : "day"));
+						next_field.focus();
+						next_field.select();
+						if (full_digit_mode) {
+							forceValue(next_field, event.key);
 						}
-						if (date) {
-							var ymd = {
-								YYYY: date[1] || date[6] || date[7] || date[12] || date[13] || date[18],
-								MM:   date[2] || date[5] || date[8] || date[11] || date[14] || date[17],
-								DD:   date[3] || date[4] || date[9] || date[10] || date[15] || date[16]
-							};
-							for (let i in ymd) if (Object.prototype.hasOwnProperty.call(ymd, i) && ymd[i]) {
-								if (i == "YYYY" && ymd[i].length == 2) {
-									ymd[i] = (parseInt(ymd[i], 10) > 19 ? "19" : "20") + ymd[i];
-								} else if (ymd[i].length == 1) {
-									ymd[i] = "0" + ymd[i];
-								}
-								var input = this.parentNode.querySelector("input[placeholder='" + i + "']");
-								input.focus();
-								forceValue(input, ymd[i]);
-							}
-							this.style.setProperty("background-color", "#cfc");
-							if (location.pathname.match(/\/edit-relationships$/)) {
-								EASY_DATE_cloneDate(this);
-							}
-						} else {
-							forceValue(this.previousSibling, this.value);
-							if (!this.value.match(/^\d\d\d\d$/)) this.style.setProperty("background-color", "#fcc");
-						}
-					},
-					focus: function(event) { this.select(); },
-					keydown: [EASY_DATE_cloneDateHotkey, EASY_DATE_nextField, EASY_DATE_deleteDatesHotkey]
-				}}
-			), years[y]);
-		years[y].classList.add(userjs.id + "easydate");
-		years[y].classList.add("jesus2099"); // linked to https://github.com/loujine/musicbrainz-scripts/blob/ab70378a0344bc222c17eed6ddad0734598a8f9d/mb-edit-create_from_wikidata.user.js#L256-L258
-		years[y].style.setProperty("display", "none");
-		(new MutationObserver(function(mutations, observer) {
-			// copy YYYY value to YYY+ when it is changed by MBS
-			for (var m = 0; m < mutations.length; m++) {
-				if (
-					mutations[m].type === "attributes"
-					&&
-					mutations[m].target.matches("input[type='text'][placeholder='YYYY'].partial-date-year." + userjs.id + "easydate")
-				) {
-					if (mutations[m].target.nextSibling.value !== mutations[m].target.value) {
-						mutations[m].target.nextSibling.value = mutations[m].target.value;
+						return stop(event);
 					}
 				}
 			}
-		})).observe(years[y], {attributes: true, attributeFilter: ["value"]});
-		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_cloneDateHotkey);
-		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_deleteDatesHotkey);
-		years[y].parentNode.querySelector("input[placeholder='DD']").addEventListener("keydown", EASY_DATE_cloneDateHotkey);
-		years[y].parentNode.querySelector("input[placeholder='DD']").addEventListener("keydown", EASY_DATE_deleteDatesHotkey);
-		years[y].parentNode.querySelector("input[placeholder='MM']").addEventListener("keydown", EASY_DATE_nextField);
-	}
+		}
+	});
 }
-function EASY_DATE_cloneDateHotkey(event) {
-	if (!event.ctrlKey && event.key == "c") {
-		stop(event);
-		EASY_DATE_cloneDate(this, true);
-	}
+function EASY_DATE_YY_to_YYYY(yy) {
+	// 94 means 1994 but 19 means 2019
+	return (parseInt(yy, 10) > 28 ? "19" : "20") + yy;
 }
 function EASY_DATE_cloneDate(current, hotkey) {
-	var ph = ["YYYY", "MM", "DD"];
-	for (let p = 0; p < ph.length; p++) {
-		var inps = current.closest("table.relationship-details > tbody, fieldset").querySelectorAll("input[placeholder='" + ph[p] + "']");
-		var downwards = (current.parentNode == inps[0].parentNode);
+	var date_elements = ["year", "month", "day"];
+	for (let p = 0; p < date_elements.length; p++) {
+		var date_parts = current.closest("table.relationship-details > tbody, fieldset").querySelectorAll("input.partial-date-" + date_elements[p]);
+		var downwards = (current.parentNode == date_parts[0].parentNode);
 		if (!hotkey && !downwards) {
 			return;
 		}
-		forceValue(inps[downwards ? 1 : 0], inps[downwards ? 0 : 1].value);
-	}
-}
-function EASY_DATE_deleteDatesHotkey(event) {
-	// TODO: would better be attached at form itself instead of on each inputs
-	if (!event.ctrlKey && event.key == "d") {
-		stop(event);
-		EASY_DATE_deleteDates(this);
+		date_parts[downwards ? 1 : 0].focus();
+		forceValue(date_parts[downwards ? 1 : 0], date_parts[downwards ? 0 : 1].value);
+		date_parts[downwards ? 1 : 0].style.setProperty("background-color", "#cfc");
 	}
 }
 function EASY_DATE_deleteDates(current) {
-	var ph = ["YYYY", "MM", "DD"];
-	for (let p = 0; p < ph.length; p++) {
-		var inps = current.closest("table.relationship-details > tbody, fieldset").querySelectorAll("input[placeholder='" + ph[p] + "']");
-		for (let i = 0; i < inps.length; i++) {
-			forceValue(inps[i], "");
+	var date_elements = ["year", "month", "day"];
+	for (let p = 0; p < date_elements.length; p++) {
+		var date_parts = current.closest("table.relationship-details > tbody, fieldset").querySelectorAll("input.partial-date-" + date_elements[p]);
+		for (let i = 0; i < date_parts.length; i++) {
+			date_parts[i].focus();
+			forceValue(date_parts[i], "");
+			date_parts[i].style.removeProperty("background-color");
 		}
 	}
-	var endedCheckbox = current.closest("table.relationship-details > tbody, fieldset").querySelector("input[id$='period.ended'][type='checkbox']");
-	if (endedCheckbox.checked) {
+	var endedCheckbox = current.closest("table.relationship-details > tbody, fieldset").querySelector("input[name='period.ended'][type='checkbox']");
+	if (endedCheckbox && endedCheckbox.checked) {
+		endedCheckbox.focus();
 		endedCheckbox.click();
-	}
-}
-function EASY_DATE_nextField(event) {
-	if (!event.ctrlKey) {
-		var separatorMode = event.key == "-" || event.key == "/" || event.key == ".";
-		var fullDigitMode = this.selectionStart == this.selectionEnd && this.value.length == this.getAttribute("placeholder").length && event.key.match(/[0-9]/);
-		if (separatorMode || fullDigitMode) {
-			var nextField = this.parentNode.querySelector("input[placeholder='" + (this.getAttribute("placeholder") == "MM" ? "DD" : "MM") + "']");
-			nextField.focus();
-			nextField.select();
-			if (fullDigitMode) {
-				forceValue(nextField, event.key);
-			}
-			return stop(event);
-		}
 	}
 }
 // ================================================================= DISPLAY+
