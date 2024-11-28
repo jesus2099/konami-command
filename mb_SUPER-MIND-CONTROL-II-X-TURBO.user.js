@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.11.28
+// @version      2024.11.28.200
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -617,6 +617,7 @@ function EASY_DATE_YY_to_YYYY(yy) {
 }
 function EASY_DATE_cloneDate(current, hotkey) {
 	var date_elements = ["year", "month", "day"];
+	var copied_date = "";
 	for (let p = 0; p < date_elements.length; p++) {
 		var date_parts = current.closest("table.relationship-details > tbody, fieldset").querySelectorAll("input.partial-date-" + date_elements[p]);
 		var downwards = (current.parentNode == date_parts[0].parentNode);
@@ -626,6 +627,10 @@ function EASY_DATE_cloneDate(current, hotkey) {
 		date_parts[downwards ? 1 : 0].focus();
 		forceValue(date_parts[downwards ? 1 : 0], date_parts[downwards ? 0 : 1].value);
 		date_parts[downwards ? 1 : 0].style.setProperty("background-color", "#cfc");
+		copied_date += date_parts[downwards ? 0 : 1].value;
+	}
+	if (copied_date === "") {
+		EASY_DATE_uncheckEnded(current);
 	}
 }
 function EASY_DATE_deleteDates(current) {
@@ -638,7 +643,10 @@ function EASY_DATE_deleteDates(current) {
 			date_parts[i].style.removeProperty("background-color");
 		}
 	}
-	var endedCheckbox = current.closest("table.relationship-details > tbody, fieldset").querySelector("input[name='period.ended'][type='checkbox']");
+	EASY_DATE_uncheckEnded(current);
+}
+function EASY_DATE_uncheckEnded(current) {
+	var endedCheckbox = current.closest("table.relationship-details > tbody, fieldset").querySelector("input[name$='period.ended'][type='checkbox']");
 	if (endedCheckbox && endedCheckbox.checked) {
 		endedCheckbox.focus();
 		endedCheckbox.click();
