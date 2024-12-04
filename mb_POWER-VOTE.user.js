@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2024.11.9
+// @version      2024.12.4
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -111,6 +111,9 @@ var texts = {
 		show_form: "Vorm tonen",
 		vote_all: " // Stem op alle niet-gestemde wijzigingen (" + CONTROL_POMME.shift.label + "klik voor alles) → ",
 	},
+	getText: function(key) {
+		return this[lang] && this[lang][key] ? this[lang][key] : this.en[key];
+	}
 };
 // Update window title with result count
 var edits_found = document.querySelector("#content > .search-toggle > p > strong");
@@ -132,9 +135,9 @@ if (edit_list.length > 1) {
 			>
 			edit_list[1].querySelector("div.edit-list > div.edit-header > h2 > a[href*='/edit/']").getAttribute("href").match(/\d+$/)[0]
 		) {
-			order = texts[lang].order_newest_first;
+			order = texts.getText("order_newest_first");
 		} else {
-			order = texts[lang].order_oldest_first;
+			order = texts.getText("order_oldest_first");
 		}
 
 	}
@@ -160,7 +163,7 @@ if (search_form) {
 				search_form.parentNode.classList.remove(userjs.id + "-hide-form");
 				removeNode(event.target);
 				scroll_to_first_selected_options();
-			}, mouseover: function(event) { event.target.click(); }}}, texts[lang].show_form)
+			}, mouseover: function(event) { event.target.click(); }}}, texts.getText("show_form"))
 		]));
 	} else {
 		var visible_form_waiter = setInterval(function() {
@@ -217,9 +220,9 @@ if (search_form) {
 							title: GM_info.script.name
 						}}, name),
 						" <",
-						createTag("a", {a: {href: bonus_links.open_edits, title: texts[lang].open_edits, class: userjs.id + "-permalink"}}, "O"),
-						createTag("a", {a: {href: bonus_links.editing_history, title: texts[lang].editing_history, class: userjs.id + "-permalink"}}, "H"),
-						createTag("a", {a: {href: bonus_links.edit, title: texts[lang].edit, class: userjs.id + "-permalink"}}, "E"),
+						createTag("a", {a: {href: bonus_links.open_edits, title: texts.getText("open_edits"), class: userjs.id + "-permalink"}}, "O"),
+						createTag("a", {a: {href: bonus_links.editing_history, title: texts.getText("editing_history"), class: userjs.id + "-permalink"}}, "H"),
+						createTag("a", {a: {href: bonus_links.edit, title: texts.getText("edit"), class: userjs.id + "-permalink"}}, "E"),
 						">"
 					]);
 					if (!permalink) {
@@ -345,7 +348,7 @@ if (editform) {
 		}
 		// Double click to vote single edits
 		var labinput = getParent(inputs[i], "label") || inputs[i];
-		labinput.setAttribute("title", texts[lang].double_click_to_vote);
+		labinput.setAttribute("title", texts.getText("double_click_to_vote"));
 		labinput.addEventListener("dblclick", function(event) {
 			var edit = this.closest("div.edit-list");
 			var vote = (this.querySelector("input[type='radio']") || this).value;
@@ -374,6 +377,9 @@ if (editform) {
 	if (userjs.radios.length > 4) {
 		// init localised vote texts directly from MBS page
 		for (var v = 0, votes = ["yes", "no", "abstain", "none"]; v < votes.length; v++) {
+			if (!texts[lang]) {
+				texts[lang] = {};
+			}
 			texts[lang][votes[v]] = userjs.radios[v].closest("label").textContent;
 		}
 		if (showtop) { showtop = editform.insertBefore(shortcutsRow(), editform.firstChild.nextSibling); }
@@ -583,21 +589,21 @@ function preNGS(editHeader) {
 	editHeader.parentNode.classList.add("pre-ngs");
 }
 function shortcutsRow() {
-	var vote_all_text = texts[lang].vote_all;
+	var vote_all_text = texts.getText("vote_all");
 	if (IS_TOUCH_SCREEN) {
 		vote_all_text = vote_all_text.replace(new RegExp(CONTROL_POMME.shift.label.replace("+", "\\+") + "[clik]+\\b"), "long touch");
 	}
 	return createTag("div", {a: {class: "edit-list"}, s: {border: border}}, [
 		createTag("div", {a: {class: "edit-actions c applied"}},
 			createTag("div", {a: {class: "voteopts buttons"}}, [
-				shortcut("1", texts[lang].yes),
-				shortcut("0", texts[lang].no),
-				shortcut("-1", texts[lang].abstain),
-				shortcut("-2", texts[lang].none)
+				shortcut("1", texts.getText("yes")),
+				shortcut("0", texts.getText("no")),
+				shortcut("-1", texts.getText("abstain")),
+				shortcut("-2", texts.getText("none"))
 			])
 		),
 		createTag("div", {a: {class: "edit-details"}, s: {margin: "0", textAlign: "right"}}, [
-			createTag("span", {a: {class: "buttons"}}, shortcut("reset-votes", texts[lang].reset_votes)),
+			createTag("span", {a: {class: "buttons"}}, shortcut("reset-votes", texts.getText("reset_votes"))),
 			vote_all_text
 		])
 	]);
