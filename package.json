@@ -9,5 +9,8 @@
 	},
 	"devDependencies": {
 		"eslint": "^7.19.0"
+	},
+	"dependencies": {
+		"bookmarklet": "^3.0.0"
 	}
 }
