@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.12.4
+// @version      2024.12.6
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -561,9 +561,10 @@ if (j2sets.EASY_DATE && !location.pathname.match(/^\/account\/edit/)) {
 					forceValue(input, date[i]);
 					input.style.setProperty("background-color", "#cfc");
 				}
-				if (location.pathname.match(/\/edit-relationships$/)) {
+				if (event.target.matches("input:not([name^='edit-'])[name*='.begin_date.'], input:not([name^='edit-'])[name*='.end_date.']")) {
 					EASY_DATE_cloneDate(event.target);
 				}
+				stop(event);
 			} else {
 				if (!date.match(/^\d\d\d\d$/)) event.target.style.setProperty("background-color", "#fcc");
 				stop(event);
