@@ -1,8 +1,9 @@
 // ==Bookmarklet==
-// @name     Insert tab
-// @version  2024.12.4
-// @author   jesus2099
-// @created  long time ago
+// @name         ↦
+// @description  Insert tabulation character
+// @version      2024.12.4
+// @author       jesus2099
+// @created      long time ago
 // ==/Bookmarklet==
 
 document.activeElement.setRangeText("\t", document.activeElement.selectionStart, document.activeElement.selectionEnd, "end");
