@@ -1,5 +1,5 @@
 // ==Bookmarklet==
-// @name         ↦
+// @name         Tab ↦
 // @description  Insert tabulation character
 // @version      2024.12.4
 // @author       jesus2099
