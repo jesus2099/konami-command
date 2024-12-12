@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2022.9.16
+// @version      2024.12.12
 // @description  chatlogs.metabrainz.org: swicth between #musicbrainz and #metabrainz channels; centre highlight message (for post permalink URL)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
@@ -16,11 +16,10 @@
 // ==/UserScript==
 "use strict";
 var userjs = "j2userjs127580";
-var date = self.location.pathname.match(/\/(\d{4})[-/](\d{2})[-/](\d{2})\b/);
-if (date) date = date[1] + "-" + date[2] + "-" + date[3];
-var loc = self.location.href.match(/https?:\/\/chatlogs\.metabrainz\.org\/(brainzbot|libera)\/([^/]+)\/|mbja/);
+var date = self.location.pathname.match(/\/(?<year>\d{4})[-/](?<month>0[1-9]|1[12])[-/](?<day>0[1-9]|[12][0-9]|3[01])\b/);
+if (date) date = date.groups.year + "-" + date.groups.month + "-" + date.groups.day;
+var loc = self.location.href.match(/https?:\/\/chatlogs\.metabrainz\.org\/(?<network>brainzbot|libera)\/(?<channel>[^/]+)\//);
 if (loc) {
-	var cat = loc[2];
 	var mbCHATLOGSPOWERUPinterval = setInterval(function() {
 		if (document.head && document.body) {
 			clearInterval(mbCHATLOGSPOWERUPinterval);
@@ -30,8 +29,7 @@ if (loc) {
 			css = css.sheet;
 			// remove top black bar which takes much space
 			css.insertRule("header#Site-Header { display: none; }", 0);
-			css.insertRule("header#Log-Header { padding: 0px; }", 0);
-			css.insertRule("header#Log-Header { top: 0px; }", 0);
+			css.insertRule("header#Log-Header { padding: 0px; top: 0px; }", 0);
 			// toolbar
 			css.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; z-index: 50; }", 0);
 			css.insertRule("body { padding-bottom: .5em; }", 0);
@@ -39,15 +37,15 @@ if (loc) {
 			ctt.setAttribute("id", userjs + "toolbar");
 			/* cross linking */
 			separate(ctt);
-			var tgt = (cat.match(/^musicbrainz$/) ? "meta" : "music") + "brainz";
+			var tgt = (loc.groups.channel.match(/^musicbrainz$/) ? "meta" : "music") + "brainz";
 			var tgtA = createA("#" + tgt, (self.location.pathname.match(/\/search\/$/) ? self.location.href : self.location.pathname).replace(/\/(meta|music)brainz\//, "/" + tgt + "/"));
-			if (cat == "musicbrainz") {
+			if (loc.groups.channel == "musicbrainz") {
 				ctt.appendChild(document.createTextNode("#musicbrainz"));
 			} else {
 				ctt.appendChild(tgtA);
 			}
 			separate(ctt);
-			if (cat == "metabrainz") {
+			if (loc.groups.channel == "metabrainz") {
 				ctt.appendChild(document.createTextNode("#metabrainz"));
 			} else {
 				ctt.appendChild(tgtA);
@@ -55,9 +53,9 @@ if (loc) {
 			/* prev./next day */
 			if (date) {
 				separate(ctt);
-				ctt.appendChild(createA("« prev.", shiftDate(-1)));
+				ctt.appendChild(createA("« prev.", shiftDate(date, -1)));
 				separate(ctt);
-				ctt.appendChild(createA("next »", shiftDate(+1)));
+				ctt.appendChild(createA("next »", shiftDate(date, +1)));
 			}
 			if (document.body.firstChild) {
 				document.body.insertBefore(ctt, document.body.firstChild);
@@ -79,20 +77,13 @@ if (loc) {
 		}
 	}, 123);
 }
-function shiftDate(shift) {
-	var sdate = (new Date(date));
-	sdate.setDate(sdate.getDate() + shift);
-	var yyyy = zeroPad(sdate.getFullYear(), 4);
-	var mm = zeroPad(sdate.getMonth() + 1, 2);
-	var dd = zeroPad(sdate.getDate(), 2);
+function shiftDate(current_date, shift) {
+	var shifted_date = (new Date(current_date));
+	shifted_date.setDate(shifted_date.getDate() + shift);
+	var yyyy = shifted_date.getFullYear().toString().padStart(4, "0");
+	var mm = (shifted_date.getMonth() + 1).toString().padStart(2, "0");
+	var dd = shifted_date.getDate().toString().padStart(2, "0");
 	return self.location.pathname.match(/[^\d]+/) + yyyy + "-" + mm + "-" + dd + "/";
-}
-function zeroPad(i, cols) {
-	var str = "" + i;
-	while (str.length < cols) {
-		str = "0" + str;
-	}
-	return str;
 }
 function createA(text, link, title) {
 	var a = document.createElement("a");
