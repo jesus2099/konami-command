@@ -36,20 +36,23 @@ if (loc) {
 			var ctt = document.createElement("div");
 			ctt.setAttribute("id", userjs + "toolbar");
 			/* cross linking */
-			separate(ctt);
-			var tgt = (loc.groups.channel.match(/^musicbrainz$/) ? "meta" : "music") + "brainz";
-			var tgtA = createA("#" + tgt, (self.location.pathname.match(/\/search\/$/) ? self.location.href : self.location.pathname).replace(/\/(meta|music)brainz\//, "/" + tgt + "/"));
-			if (loc.groups.channel == "musicbrainz") {
-				ctt.appendChild(document.createTextNode("#musicbrainz"));
-			} else {
-				ctt.appendChild(tgtA);
-			}
-			separate(ctt);
-			if (loc.groups.channel == "metabrainz") {
-				ctt.appendChild(document.createTextNode("#metabrainz"));
-			} else {
-				ctt.appendChild(tgtA);
-			}
+			[
+				"bookbrainz",
+				"listenbrainz",
+				"metabrainz",
+				"musicbrainz",
+				"musicbrainz-picard-development",
+			].forEach(function (channel) {
+				separate(ctt);
+				if (loc.groups.channel != channel) {
+					ctt.appendChild(createA(
+						"#" + channel,
+						(self.location.pathname.match(/\/search\/$/) ? self.location.href : self.location.pathname).replace("/" + loc.groups.channel + "/", "/" + channel + "/")
+					));
+				} else {
+					ctt.appendChild(document.createTextNode("#" + channel));
+				}
+			});
 			/* prev./next day */
 			if (date) {
 				separate(ctt);
