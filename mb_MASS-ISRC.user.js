@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
-// @version      2024.10.19
+// @version      2024.12.20
 // @description  kepstin’s magicisrc. Paste a bunch of ISRC instead of one by one
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MASS-ISRC
@@ -21,6 +21,7 @@ if (location.host === "magicisrc.kepstin.ca") {
 		if (event && event.target && event.target.classList.contains("form-control") && event.target.getAttribute("id").match(/^isrc\d+-\d+$/)) {
 			var isrcList = event.clipboardData.getData("text").toUpperCase().match(/[A-Z]{2}-?[A-Z0-9]{3}-?[0-9]{2}-?[0-9]{5}/g);
 			if (isrcList && (!arrHasDupes(isrcList) || confirm("Achtung, there are duplicates!"))) {
+				event.preventDefault();
 				var isrcInputs = event.currentTarget.querySelectorAll("table > tbody > tr > td input.form-control[id^='isrc']");
 				var lastUpdatedInput;
 				for (var isrc = 0, input = 0, startingInputIndex = null; input < isrcInputs.length; input += 1) {
