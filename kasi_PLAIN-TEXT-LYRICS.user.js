@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2024.11.3
+// @version      2024.12.24
 // @description  j-lyric.net, joysound.com, kkbox.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/kasi_PLAIN-TEXT-LYRICS
@@ -100,7 +100,7 @@ var kasimasin = {
 	"petitlyrics": {
 		"na": "プチリリ",
 		"clean_url": "https://petitlyrics.com/lyrics/%uta%",
-		"uta_re": /\/lyrics\/(\d+)\/?$/,
+		"uta_re": /\/lyrics\/(\d+)\b/,
 		"kabe_css": "canvas#lyrics",
 		"direct_machine": function() {
 			if (kabe) {
@@ -181,7 +181,7 @@ if (doko) {
 	if (kasimasin.uta_re && (url = self.location.href.match(kasimasin.uta_re))) {
 		kasimasin.uta = url[1];
 	}
-	if (kasimasin.clean_url && (url = kasimasin.clean_url.replace(/%uta%/g, kasimasin.uta)) && url != self.location.href) {
+	if (kasimasin.clean_url && kasimasin.uta && (url = kasimasin.clean_url.replace(/%uta%/g, kasimasin.uta)) && url != self.location.href) {
 		self.location.href = url;
 	} else {
 		if (kasimasin.init) { kasimasin.init(true); } else { machine(); }
