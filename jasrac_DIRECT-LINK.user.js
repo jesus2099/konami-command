@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRACへの直リンク
-// @version      2022.4.10
+// @version      2025.1.2
 // @description  J-WIDの作品データベース検索サービスへの自動接続で直リン（直接のリンク）が出来なる allow JASRAC direct links by auto-login
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac_DIRECT-LINK
@@ -15,7 +15,9 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var proceedButton, home = "https://www2.jasrac.or.jp/eJwid/main?trxID=F00100";
+var proceedButton;
+var home_URL = "https://www2.jasrac.or.jp/eJwid/main?trxID=F00100";
+var results_URL = "https://www2.jasrac.or.jp/eJwid/main?trxID=A00401-3";
 /* mark visited links */
 var j2css = document.createElement("style");
 j2css.setAttribute("type", "text/css");
@@ -47,7 +49,7 @@ if (self == top && document.body.textContent.match(/システムエラーが発�
 	removeChildren(document.body);
 	var toto = document.body.appendChild(createTag("div", {}, {"background-color": "purple", border: ".5em solid black", color: "white", "font-size": "2em", "font-weight": "bold", margin: "1em", padding: "2em", "text-align": "center", "text-shadow": "1px 2px 2px black"}, {}, document.createTextNode("接続中")));
 	document.title = toto.textContent;
-	document.body.appendChild(createTag("iframe", {src: home}, {border: "0", width: "0", height: "0"}, {load: function(event) {
+	document.body.appendChild(createTag("iframe", {src: home_URL}, {border: "0", width: "0", height: "0"}, {load: function(event) {
 		toto.appendChild(document.createTextNode("…"));
 		document.title = toto.textContent;
 		setTimeout(function() { self.location.reload(true); }, 1);
@@ -66,7 +68,7 @@ if (self == top && document.body.textContent.match(/システムエラーが発�
 			}
 		}
 	} catch (error) {} */
-	document.body.appendChild(createTag("a", {href: home}, {"background-color": "#ff9", "font-weight": "bold", position: "fixed", top: "0", right: "49%", padding: "0 4px 4px 4px", border: "2px solid orange", "border-top": "none"}, {click: function(event) { hasHome(true); }, mouseover: function(event) { this.replaceChild(hasHome(), this.firstChild); }}, hasHome()));
+	document.body.appendChild(createTag("a", {href: home_URL}, {"background-color": "#ff9", "font-weight": "bold", position: "fixed", top: "0", right: "49%", padding: "0 4px 4px 4px", border: "2px solid orange", "border-top": "none", "z-index": "666"}, {click: function(event) { hasHome(true); }, mouseover: function(event) { this.replaceChild(hasHome(), this.firstChild); }}, hasHome()));
 	var works = document.querySelectorAll("table.contentsTable td > a[name='AUTO_JUMP'][target='_blank']");
 	for (var a = 0; a < works.length; a++) {
 		works[a].removeAttribute("target");
@@ -80,7 +82,7 @@ if (self == top && document.body.textContent.match(/システムエラーが発�
 function hasHome(action) {
 	var has = false;
 	try {
-		if (self.opener != null && self.opener.innerWidth > 0 && self.opener.top.location.href == home) {
+		if (self.opener != null && self.opener.innerWidth > 0 && self.opener.top.location.href.indexOf(home_URL) + self.opener.top.location.href.indexOf(results_URL) > -2) {
 			has = true;
 		}
 	} catch (error) {}
@@ -91,6 +93,12 @@ function hasHome(action) {
 		return document.createTextNode(has ? "CLOSE" : "HOME");
 	}
 }
+// Allow results page being referer of child work pages
+document.addEventListener("mousedown", function(event) {
+	if (event.target.matches("a[href^='main?trxID=F20101'][target='_blank']:not([rel='opener'])")) {
+		event.target.setAttribute("rel", "opener");
+	}
+});
 function rowHighlight(event) {
 	var row;
 	if (event.target.tagName == "TD") {
