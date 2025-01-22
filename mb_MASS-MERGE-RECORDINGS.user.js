@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2024.10.25
+// @version      2025.1.22
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -237,7 +237,7 @@ function mergeRecsStep(_step) {
 	} else {
 		if (!editNote.nextSibling.matches("p.error." + userjs.id)) {
 			editNote.parentNode.insertBefore(createTag("p", {a: {class: "error"}}, "Merging recordings is a destructive edit that is impossible to undo without losing ISRCs, AcoustIDs, edit histories, etc.\n\nPlease make sure your edit note makes it clear why you are sure that these recordings are exactly the same versions, mixes, cuts, etc."), editNote);
-			addAfter(createTag("p", {a: {class: "error " + userjs.id}}, MBJS.texts("invalid_edit_note")), editNote);
+			addAfter(createTag("p", {a: {class: "error " + userjs.id}}, MBJS.getText("invalid_edit_note")), editNote);
 		}
 		editNote.style.setProperty("background-color", cNG);
 		infoMerge("Invalid edit note.", false, true);
