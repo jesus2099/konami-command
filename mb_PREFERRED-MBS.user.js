@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2024.7.6
-// @description  choose your favourite MusicBrainz server (main or beta) and no link will ever send you to the other
+// @version      2025.1.28
+// @description  Choose your favourite MusicBrainz server (MBS) (main/beta/test) and no link will ever send you to the others
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
@@ -13,23 +13,22 @@
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @include      /^https?:\/\//
-// @exclude      /^https?:\/\/((beta|test)\.)?musicbrainz\.(eu|org)\//
 // @run-at       document-start
 // ==/UserScript==
 "use strict";
 /* ----------------------------------------------- */
-/* preferredMBS can be either (there is no more HTTP)
- * https://musicbrainz.org or https://beta.musicbrainz.org
+/* preferred_MBS can be either (there is no more HTTP)
+ * https://musicbrainz.org or https://beta.musicbrainz.org or https://test.musicbrainz.org
  * it is not intended to work with any other values */
-var preferredMBS = "https://musicbrainz.org";
+var preferred_MBS = "https://musicbrainz.org";
 /* ----------------------------------------------- */
 /* Simple Discourse click tracker problem work-around ------------- */
-var discourseURL = self.location.href.match(/^https?:\/\/community\.metabrainz\.org\/clicks\/track\?url=([^?&]+)/);
+var discourseURL = location.href.match(/^https?:\/\/community\.metabrainz\.org\/clicks\/track\?url=([^?&]+)/);
 if (discourseURL) {
-	self.location.replace(decodeURIComponent(discourseURL[1]));
+	location.replace(decodeURIComponent(discourseURL[1]));
 }
 /* ---------------------------------------------------------------- */
-preferredMBS = leftTrim(preferredMBS);
+preferred_MBS = leftTrim(preferred_MBS);
 document.addEventListener("submit", function(event) {
 	var element = event.target || event.srcElement;
 	if (element && element.nodeType == Node.ELEMENT_NODE && element.tagName == "FORM") {
@@ -58,7 +57,7 @@ document.addEventListener("mousedown", function(event) {
 		if (element.tagName != "A") {
 			element = getParent(element, "a");
 		}
-		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) { // mb_SUPER-MIND-CONTROL-II-X-TURBO
+		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) { // mb_SUPER-MIND-CONTROL-II-X-TURBO server switcher
 			process(element);
 		}
 	}
@@ -66,7 +65,14 @@ document.addEventListener("mousedown", function(event) {
 function process(anchor) {
 	var HREF = anchor.getAttribute("href");
 	if (HREF) {
-		var newHref = prefer(HREF);
+		var newHref;
+		if (anchor.closest(".edit-note-text")) {
+			// Force stay on the same MBS when clicking edit note links (annotations are doing it natively OK)
+			// Test at https://musicbrainz.org/edit/1736776
+			newHref = prefer(HREF, location.protocol + "//" + location.host);
+		} else {
+			newHref = prefer(HREF);
+		}
 		if (newHref) {
 			anchor.setAttribute("href", newHref);
 			anchor.style.setProperty("background-color", "#cfc");
@@ -80,21 +86,29 @@ function process(anchor) {
 		}
 	}
 }
-function prefer(URL) {
-	var newUrl = preferredMBS;
-	var urlMatch = URL.trim().match(/^(https?:)?(\/\/)?((?:beta\.)?musicbrainz\.org(?::\d+)?)(\/.*)?(\?.*)?(#.*)?$/);
+function prefer(URL, forced_MBS) {
+	var newUrl = forced_MBS ? forced_MBS : preferred_MBS;
+	var urlMatch = URL.trim().match(/^(https?:)?(\/\/)?(((beta|test)\.)?musicbrainz\.org(:\d+)?)(?<path>\/.*)?(?<query>\?.*)?(?<hash>#.*)?$/);
 	if (urlMatch) {
-		newUrl += (urlMatch[4] ? urlMatch[4] : "") + (urlMatch[5] ? urlMatch[5] : "") + (urlMatch[6] ? urlMatch[6] : "");
+		if (urlMatch.groups.path) {
+			newUrl += urlMatch.groups.path;
+		}
+		if (urlMatch.groups.query) {
+			newUrl += urlMatch.groups.query;
+		}
+		if (urlMatch.groups.hash) {
+			newUrl += urlMatch.groups.hash;
+		}
 	}
-	return (newUrl && newUrl != preferredMBS && newUrl != leftTrim(URL) ? newUrl : null);
+	return (newUrl && newUrl != preferred_MBS && newUrl != leftTrim(URL) ? newUrl : null);
 }
 function leftTrim(url) {
 	var trimmedURL = url;
-	if (trimmedURL.indexOf(self.location.protocol) === 0) {
+	if (trimmedURL.indexOf(location.protocol) === 0) {
 		trimmedURL = trimmedURL.replace(/^https?:/, "");
 	}
-	if (trimmedURL.indexOf("//" + self.location.host) === 0) {
-		trimmedURL = trimmedURL.replace(new RegExp("^//" + self.location.host), "");
+	if (trimmedURL.indexOf("//" + location.host) === 0) {
+		trimmedURL = trimmedURL.replace(new RegExp("^//" + location.host), "");
 	}
 	return trimmedURL;
 }
