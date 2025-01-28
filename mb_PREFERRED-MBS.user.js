@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2025.1.28.111
+// @version      2025.1.28.339
 // @description  Choose your favourite MusicBrainz server (MBS) (main/beta/test) and no link will ever send you to the others
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
@@ -99,7 +99,9 @@ function prefer(URL, forced_MBS) {
 		if (urlMatch.groups.hash) {
 			newUrl += urlMatch.groups.hash;
 		}
-		return (newUrl && newUrl != preferred_MBS && newUrl != leftTrim(URL) ? newUrl : null);
+		if (newUrl && newUrl != (forced_MBS ? forced_MBS : preferred_MBS) && leftTrim(newUrl) != leftTrim(URL)) {
+			return newUrl;
+		}
 	}
 }
 function leftTrim(url) {
