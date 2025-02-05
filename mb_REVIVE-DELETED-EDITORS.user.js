@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2025.2.5.1310
+// @version      2025.2.5.1411
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -274,7 +274,7 @@ function swapValues(event) {
 			break;
 		case "blur":
 			var deletedEditorID = this.value.match(/Deleted Editor #(\d+)/);
-			if (deletedEditorID && editors[deletedEditor[1]]) {
+			if (deletedEditorID && editors[deletedEditorID[1]]) {
 				this.setAttribute("_deletedEditor", this.value);
 				this.value = editors[deletedEditorID[1]].namewas;
 			}
