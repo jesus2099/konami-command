@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SHOW CAA COMMENTS IN REORDER PAGE
-// @version      2020.11.17.2099
+// @version      2025.2.24
 // @description  Show cover art comments to ease reordering, especially when thumbnails have not been generated yet.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SHOW-CAA-COMMENTS-IN-REORDER-PAGE
@@ -15,10 +15,10 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
-var imageLoaders = document.querySelectorAll("div.thumb-position > a > span.cover-art-image[data-title]");
+var imageLoaders = document.querySelectorAll("div.thumb-position img[src*='MB/information'][title]");
 for (var i = 0; i < imageLoaders.length; i++) {
 	var subtitle = document.createElement("div");
-	var splitText = imageLoaders[i].getAttribute("data-title").match(/^([^(]+)?(?: \(([\w\W]+)\))?$/);
+	var splitText = imageLoaders[i].getAttribute("title").match(/^([^(]+)?(?: \(([\w\W]+)\))?$/);
 	if (splitText) {
 		for (var j = 1; j < splitText.length; j++) {
 			if (splitText[j]) {
