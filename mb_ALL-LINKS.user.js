@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2024.10.3
+// @version      2025.2.28
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -96,7 +96,19 @@ var webSearchLinks = {
 		waybackMachineHistory: {
 			title: {en: "Archive history", de: "Archivierte Versionen", fr: "Versions archivées", nl: "Archiefgeschiedenis"},
 			target: "//web.archive.org/web/*/%url-target%"
-		}
+		},
+		"Lyrics": [
+			"//duckduckgo.com/?q=intitle%3A%22%recording-name%%22%20%22lyrics%22",
+			"//duckduckgo.com/?q=intitle%3A%22%work-name%%22%20%22lyrics%22",
+		],
+		"Paroles": [
+			"//duckduckgo.com/?q=intitle%3A%22%recording-name%%22%20%22paroles%22",
+			"//duckduckgo.com/?q=intitle%3A%22%work-name%%22%20%22paroles%22",
+		],
+		"歌詞": [
+			"//duckduckgo.com/?q=intitle%3A%22%recording-name%%22%20%22歌詞%22",
+			"//duckduckgo.com/?q=intitle%3A%22%work-name%%22%20%22歌詞%22",
+		],
 	}
 };
 var whitelistSearchLinks = {
