@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         INSTALL USER SCRIPT
-// @version      2023.12.5
+// @version      2025.3.8
 // @description  bitbucket.org, github.com, gitlab.com: Install links for userscripts and userstyles
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/INSTALL-USER-SCRIPT
@@ -41,7 +41,7 @@ var host = {
 	},
 	"gitlab.com": {
 		css: {
-			files: "table.tree-table tbody td.tree-item-file-name a[href*='%fileType%']",
+			files: "table.tree-table tbody > tr > .tree-item-file-name a[href*='%fileType%']",
 			icon: "span > svg.file-icon",
 		},
 		href: { match: /(\/[^/]+\/[^/]+)\/blob\//, replace: "$1/raw/" },
