@@ -1116,11 +1116,11 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 				/* Edit relationship               */ editTypes.push("91,234");
 				/* Remove relationship             */ editTypes.push("92,235");
 				/* Reorder relationships           */ editTypes.push("99");
-				/* area-release relationships      */ linkTypes.push(815, 699, 757, 756, 967, 822, 831, 863, 826, 835, 849);
-				/* artist-release relationships    */ linkTypes.push(34, 51, 44, 60, 45, 46, 53, 759, 50, 43, 47, 48, 49, 58, 54, 55, 56, 57, 871, 295, 41, 40, 296, 59, 30, 28, 31, 42, 969, 29, 26, 36, 1012, 37, 38, 727, 25, 22, 709, 710, 1010, 23, 18, 993, 927, 928, 27, 19, 929, 20, 987, 32, 24);
+				/* area-release relationships      */ linkTypes.push(815, 699, 757, 756, 967, 822, 831, 863, 826, 835, 849, 1181, 1268, 1269, 1270, 1271, 1272, 1273, 1274);
+				/* artist-release relationships    */ linkTypes.push(34, 51, 44, 60, 45, 46, 53, 759, 50, 43, 47, 48, 49, 58, 54, 55, 56, 57, 871, 295, 41, 40, 296, 59, 30, 28, 31, 42, 969, 29, 26, 36, 1012, 37, 38, 727, 25, 22, 709, 710, 1010, 23, 18, 993, 927, 928, 27, 19, 929, 20, 987, 32, 24, 1179, 1187, 1184, 1185, 1235, 1267);
 				/* event-release relationships     */ linkTypes.push(795, 796, 810);
-				/* label-release relationships     */ linkTypes.push(66, 359, 360, 942, 955, 361, 362, 708, 711, 712, 833, 848, 985, 349, 944, 947, 948, 951, 952, 999);
-				/* place-release relationships     */ linkTypes.push(812, 695, 696, 697, 968, 820, 828, 865, 824, 953, 941, 954);
+				/* label-release relationships     */ linkTypes.push(66, 359, 360, 942, 955, 361, 362, 708, 711, 712, 833, 848, 985, 349, 944, 947, 948, 951, 952, 999, 1170, 1171, 1172, 1173, 1174, 1175, 1183, 1253, 1280);
+				/* place-release relationships     */ linkTypes.push(812, 695, 696, 697, 968, 820, 828, 865, 824, 953, 941, 954, 1182, 1246, 1247, 1248, 1249, 1250, 1251);
 				/* recording-release relationships */ linkTypes.push(69);
 				/* release-release relationships   */ linkTypes.push(4, 2, 6, 1009, 3, 1);
 				/* release-series relationships    */ linkTypes.push(741);
