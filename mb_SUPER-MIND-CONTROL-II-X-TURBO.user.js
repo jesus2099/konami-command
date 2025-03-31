@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2024.12.6
+// @version      2025.3.31
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1129,10 +1129,12 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 				/* Reorder relationships                     */ editTypes.push("99");
 				/* artist-release_group relationships        */ linkTypes.push(65, 868, 62, 63, 974);
 				/* event-release_group relationships         */ linkTypes.push(797, 887);
+				/* genre-release_group relationships         */ linkTypes.push(1261);
 				/* label-release_group relationships         */ linkTypes.push(970);
-				/* release_group-release_group relationships */ linkTypes.push(12, 17, 15, 13, 8, 9, 10, 11, 894);
-				/* release_group-series relationships        */ linkTypes.push(742, 888, 1007);
-				/* release_group-url relationships           */ linkTypes.push(93, 88, 94, 287, 907, 96, 89, 90, 97, 284, 353, 853);
+				/* release_group-release_group relationships */ linkTypes.push(12, 17, 15, 13, 8, 9, 10, 11, 894, 1082, 1176, 1229, 1240);
+				/* release_group-series relationships        */ linkTypes.push(742, 888, 1007, 1282);
+				/* release_group-url relationships           */ linkTypes.push(93, 88, 94, 287, 907, 96, 89, 90, 97, 284, 353, 853, 1169, 1190);
+				/* release_group-work relationships          */ linkTypes.push(1283);
 				break;
 		}
 	}
