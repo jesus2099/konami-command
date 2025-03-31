@@ -1081,16 +1081,19 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 				/* Edit relationship                 */ editTypes.push("91,234");
 				/* Remove relationship               */ editTypes.push("92,235");
 				/* Reorder relationships             */ editTypes.push("99");
-				/* artist-label relationships        */ linkTypes.push(119, 117, 120, 115, 1081, 121, 990, 116, 991, 723, 724);
+				/* area-label relationships          */ linkTypes.push(1237);
+				/* artist-label relationships        */ linkTypes.push(119, 117, 120, 115, 1081, 121, 990, 116, 991, 723, 724, 1258, 1259, 1266);
+				/* event-label relationships         */ linkTypes.push(1168);
+				/* genre-label relationships         */ linkTypes.push(1164);
 				/* instrument-label relationships    */ linkTypes.push(918);
 				/* label-label relationships         */ linkTypes.push(205, 200, 201, 202, 203, 725);
 				/* label-place relationships         */ linkTypes.push(989);
-				/* label-recording relationships     */ linkTypes.push(867, 206, 945, 946, 949, 950, 1178, 1252, 1228, 998);
-				/* label-release relationships       */ linkTypes.push(66, 359, 360, 942, 955, 361, 362, 708, 711, 712, 833, 848, 985, 349, 944, 947, 948, 951, 952, 999);
+				/* label-recording relationships     */ linkTypes.push(867, 206, 945, 946, 949, 950, 1178, 1252, 1228, 998, 1277);
+				/* label-release relationships       */ linkTypes.push(66, 359, 360, 942, 955, 361, 362, 708, 711, 712, 833, 848, 985, 349, 944, 947, 948, 951, 952, 999, 1170, 1171, 1172, 1173, 1174, 1175, 1183, 1253, 1280);
 				/* label-release_group relationships */ linkTypes.push(970);
 				/* label-series relationships        */ linkTypes.push(933);
-				/* label-url relationships           */ linkTypes.push(219, 221, 224, 211, 212, 213, 214, 899, 903, 218, 215, 290, 304, 225, 982, 957, 960, 959, 958, 997, 1005, 719, 222, 210, 216, 217, 311, 313, 354, 838, 851, 977);
-				/* label-work relationships          */ linkTypes.push(208, 890, 922);
+				/* label-url relationships           */ linkTypes.push(219, 221, 224, 211, 212, 213, 214, 899, 903, 218, 215, 290, 304, 225, 982, 957, 960, 959, 958, 997, 1005, 719, 222, 210, 216, 217, 311, 313, 354, 838, 851, 977, 1130, 1194);
+				/* label-work relationships          */ linkTypes.push(208, 890, 922, 1265);
 				break;
 			case "recording":
 				/* Add relationship                  */ editTypes.push("90,233");
