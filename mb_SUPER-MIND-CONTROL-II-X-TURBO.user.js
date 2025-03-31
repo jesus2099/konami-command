@@ -1101,9 +1101,9 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 				/* Remove relationship               */ editTypes.push("92,235");
 				/* Reorder relationships             */ editTypes.push("99");
 				/* area-recording relationships      */ linkTypes.push(814, 698, 758, 821, 830, 864, 827, 964);
-				/* artist-recording relationships    */ linkTypes.push(122, 156, 148, 149, 150, 151, 152, 760, 1186, 157, 147, 153, 155, 154, 297, 158, 300, 298, 961, 858, 962, 1230, 1241, 1242, 125, 1244, 1243, 1245, 160, 141, 138, 136, 140, 133, 143, 128, 1011, 132, 144, 726, 1236, 129, 142, 869, 134, 135, 146, 137, 130, 123, 986, 127);
+				/* artist-recording relationships    */ linkTypes.push(122, 156, 148, 149, 150, 151, 152, 760, 1186, 157, 147, 153, 155, 154, 297, 158, 300, 298, 961, 858, 962, 1230, 1241, 1242, 125, 1244, 1243, 1245, 160, 141, 138, 136, 140, 133, 143, 128, 1011, 132, 144, 726, 1236, 129, 142, 869, 134, 135, 146, 137, 130, 123, 986, 127, 1276);
 				/* event-recording relationships     */ linkTypes.push(809, 966);
-				/* label-recording relationships     */ linkTypes.push(867, 206, 945, 946, 949, 950, 1178, 1252, 1228, 998);
+				/* label-recording relationships     */ linkTypes.push(867, 206, 945, 946, 949, 950, 1178, 1252, 1228, 998, 1277);
 				/* place-recording relationships     */ linkTypes.push(813, 693, 694, 819, 829, 866, 825, 963);
 				/* recording-recording relationships */ linkTypes.push(233, 226, 1238, 1239, 309, 857, 236, 238, 234, 227, 228, 230, 231, 232, 1177);
 				/* recording-release relationships   */ linkTypes.push(69);
