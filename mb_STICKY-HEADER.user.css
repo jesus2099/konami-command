@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           mb. STICKY HEADER
 @namespace      https://github.com/jesus2099/konami-command
-@version        2024.8.19
+@version        2025.4.11
 @description    Makes the MusicBrainz main menu always visible (replaces mb_SUPER-MIND-CONTROL-II-X-TURBO’s STATIC_MENU)
 @author         jesus2099
 ==/UserStyle== */
@@ -10,7 +10,7 @@
 		--header-height: 64px;
 		--header-side: 16px;
 		--header-bottom: 12px;
-		scroll-padding-top: calc(var(--header-height) + var(--header-bottom));
+		scroll-margin-top: calc(var(--header-height) + var(--header-bottom));
 	}
 	html > body > div.header {
 		position: sticky;
