@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         instagram. REDIRECT TO MIRROR
-// @version      2025.2.20
+// @version      2025.3.1
 // @description  instagram.com is blocked to non members, browse imginn.com instead
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/instagram_REDIRECT-TO-MIRROR
@@ -11,8 +11,28 @@
 // @since        2024
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
+// @match        *://*.imginn.com/p/*
 // @match        *://*.instagram.com/*
-// @run-at       document-start
+// @run-at       document-idle
 // ==/UserScript==
 "use strict";
-location.assign("https://imginn.com" + location.pathname);
+if (location.host !== "imginn.com") {
+	location.assign("https://imginn.com" + location.pathname);
+} else {
+	var css = document.createElement("style");
+	css.setAttribute("type", "text/css");
+	document.head.appendChild(css);
+	css = css.sheet;
+	css.insertRule("div.desc, div.con { word-break: unset !important; }", 0);
+	var created = document.querySelector("div.page-post");
+	var time = document.querySelector("div.time");
+	if (
+		created
+		&& time
+		&& (created = created.dataset.created)
+		&& (created = parseInt(created))
+	) {
+		time.insertBefore(document.createElement("hr"), time.firstChild);
+		time.insertBefore(document.createTextNode((new Date(created * 1000)).toLocaleString()), time.firstChild);
+	}
+}
