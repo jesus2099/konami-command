@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         instagram. REDIRECT TO MIRROR
-// @version      2025.3.1
+// @version      2025.4.25
 // @description  instagram.com is blocked to non members, browse imginn.com instead
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/instagram_REDIRECT-TO-MIRROR
@@ -17,7 +17,18 @@
 // ==/UserScript==
 "use strict";
 if (location.host !== "imginn.com") {
-	location.assign("https://imginn.com" + location.pathname);
+	var amstramgram = "https://imginn.com";
+	if (location.pathname.match(/^\/accounts\/login/)) {
+		var params = new URLSearchParams(location.search);
+		if (params.has("next")) {
+			var next = params.get("next");
+			if ((next = next.match(/^https?:\/\/(www\.)?instagram\.com(?<pathname>\/.+)/))) {
+				location.assign(amstramgram + next.groups.pathname);
+			}
+		}
+	} else {
+		location.assign(amstramgram + location.pathname);
+	}
 } else {
 	var css = document.createElement("style");
 	css.setAttribute("type", "text/css");
