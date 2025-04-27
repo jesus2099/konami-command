@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2025.3.31
+// @version      2025.4.27
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1261,20 +1261,24 @@ function serverSwitch(server, separator) {
 // ==========================================================================
 j2setting("TAG_TOOLS", true, true, "makes tag pages better titled and adds a tag switch between current users’, all users’ and your own tags — sidebar tag links will link your own tags (if any) instead of global");
 if (j2sets.TAG_TOOLS && account) {
-	var tagscope = location.pathname.replace(new RegExp("^" + MBS + "|[?#].*$", "g"), "").match(/^(?:\/user\/([^/]+))?(?:\/tags|(\/tag\/([^/]+))(?:\/(?:artist|release-group|release|recording|work|label))?)$/);
+	var tagscope = location.pathname.replace(new RegExp("^" + MBS + "|[?#].*$", "g"), "").match(/^(?:\/user\/(?<user>[^/]+))?(?<path>\/tags|\/tag\/(?<tag>[^/]+)(?:\/(?<type>artist|release-group|release|recording|work|label))?)$/);
 	if (tagscope) {
 		debug("TAG_TOOLS");
 		var h1 = document.querySelector("h1");
-		var tags = tagscope[0].match(/tags$/);
+		var tags = tagscope.groups.path.match(/tags$/);
 		if (h1 && account.pathname) {
 			var tagswitches = [];
-			var scope = typeof tagscope[1] == "string" ? decodeURIComponent(tagscope[1]) : "";
-			if (scope != account.name) {
-				tagswitches.push([account.pathname + (tags ? "/tags" : tagscope[2]), (scope == "" ? "only " : "") + "mine"]);
+			var scope = typeof tagscope.groups.user == "string" ? decodeURIComponent(tagscope.groups.user) : "";
+			if (scope !== account.name) {
+				tagswitches.push([account.pathname + tagscope.groups.path, (scope === "" ? "only " : "") + "mine"]);
 			}
-			if (scope != "") {
-				tagswitches.push([MBS + (tags ? "/tags" : tagscope[2]), "everyone’s"]);
-				h1.appendChild(document.createTextNode("’s tag" + (tags ? "s" : " “" + decodeURIComponent(tagscope[3]) + "”")));
+			if (scope !== "") {
+				tagswitches.push([MBS + tagscope.groups.path, "everyone’s"]);
+				h1.appendChild(document.createTextNode("’s tag" + (tags ? "s" : " “" + decodeURIComponent(tagscope.groups.tag) + "”")));
+			}
+			if (tagscope.groups.type) {
+				h1.appendChild(createTag("span", {s: {color: "grey"}}, " on "));
+				h1.appendChild(document.createTextNode(tagscope.groups.type.replace(/-/, " ") + "s"));
 			}
 			document.title = h1.textContent;
 			tagswitch(h1, tagswitches);
@@ -1310,7 +1314,7 @@ function ownifyTag(tag, revert) {
 	}
 }
 function tagswitch(h1, urltxt) {
-	var switcht = h1.appendChild(createTag("span", {s: {color: "grey", textShadow: "1px 1px 2px silver"}}, " (see "));
+	var switcht = h1.appendChild(createTag("span", {s: {color: "grey"}}, " (see "));
 	for (let i = 0; i < urltxt.length; i++) {
 		if (i > 0) { switcht.appendChild(document.createTextNode(" or ")); }
 		switcht.appendChild(createTag("a", {a: {href: urltxt[i][0]}}, urltxt[i][1]));
