@@ -360,8 +360,8 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 							form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.type_id", value: "17"}}));
 							createWork += "&edit-work.type_id=17";
 						} else {
-							form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.language_id", value: "486"}}));
-							createWork += "&edit-work.language_id=486";
+							form.appendChild(createTag("input", {a: {type: "hidden", name: "edit-work.languages.0", value: "486"}}));
+							createWork += "&edit-work.languages.0=486";
 						}
 						/* https://musicbrainz.org/relationships */
 						createWork += getWorkCredits({
