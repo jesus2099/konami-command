@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2025.4.10
+// @version      2025.5.2
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -199,13 +199,14 @@ function mergeRecsStep(_step) {
 				if (to.value === "") {
 					nextButt(false);
 				} else if (this.status == 200) {
+					var response = document.createElement("html");
+					response.innerHTML = this.responseText;
 					if (step === 0) {
 						if (
-							this.responseText.match(new RegExp('<form method="post">'))
-							&& this.responseText.indexOf('value="' + from.value + '"') > -1
-							&& this.responseText.indexOf('<a href="/recording/' + from.getAttribute("ref") + '">') > -1
-							&& this.responseText.indexOf('value="' + to.value + '"') > -1
-							&& this.responseText.indexOf('<a href="/recording/' + to.getAttribute("ref") + '">') > -1
+							response.querySelector("form[method='post'] table.tbl input[type='radio'][name='merge.target'][value='" + from.value + "']")
+							&& response.querySelector("form[method='post'] table.tbl a[href$='/recording/" + from.getAttribute("ref") + "']")
+							&& response.querySelector("form[method='post'] table.tbl input[type='radio'][name='merge.target'][value='" + to.value + "']")
+							&& response.querySelector("form[method='post'] table.tbl a[href$='/recording/" + to.getAttribute("ref") + "']")
 						) {
 							mergeRecsStep(1);
 						} else {
@@ -213,8 +214,8 @@ function mergeRecsStep(_step) {
 						}
 					} else if (step === 1) {
 						if (
-							this.responseText.indexOf('<h1><span class="mp"><a href="/recording/' + to.getAttribute("ref") + '">') > -1
-							&& this.responseText.indexOf('href="/recording/merge_queue?add-to-merge=' + to.value) > -1
+							response.querySelector("h1 > span.mp > a[href$='/recording/" + to.getAttribute("ref") + "']")
+							&& response.querySelector("a[href*='/recording/merge_queue?add-to-merge=" + to.value + "']")
 						) {
 							nextButt(true);
 						} else {
