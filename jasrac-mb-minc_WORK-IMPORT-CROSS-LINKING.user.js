@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2024.4.30
+// @version      2025.5.5
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽権利情報検索ナビ (ex-音楽の森 aka MINC and Music Forest) and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -617,8 +617,6 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			}
 			var icomment = document.getElementById("id-edit-work.comment");
 			var stypeid = document.getElementById("id-edit-work.type_id");
-// TODO: restore language button feature (search slangid) https://github.com/jesus2099/konami-command/issues/321
-			var slangid = document.querySelector("select[name='edit-work.languages.0']");
 			var teditnote = document.getElementById("id-edit-work.edit_note");
 			if (document.referrer.match(/jasrac\.or\.jp/) && (sakuhin = teditnote.value.match(new RegExp("^(.+) \\(work code '''(" + reCode + ")'''"))) !== null) {
 				xhrWork.code = sakuhin[2];
@@ -631,6 +629,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			stypeid.style.setProperty("width", "260px");
 			var buttons = stypeid.parentNode.appendChild(createTag("span", {a: {class: "buttons"}}, [createTypeButton(vocal), createTypeButton(instrumental)]));
 			stypeid.style.setProperty("width", (parseInt(self.getComputedStyle(stypeid).getPropertyValue("width"), 10) - parseInt(self.getComputedStyle(buttons).getPropertyValue("width"), 10)) + "px");
+// TODO: restore language button feature (search slangid) https://github.com/jesus2099/konami-command/issues/321
 			// buttons = slangid.parentNode.appendChild(createTag("span", {a: {class: "buttons"}}, [createLangButton("日", 198), createLangButton("EN", 120)]));
 			// slangid.style.setProperty("width", (parseInt(self.getComputedStyle(slangid).getPropertyValue("width"), 10) - parseInt(self.getComputedStyle(buttons).getPropertyValue("width"), 10)) + "px");
 			teditnote.parentNode.appendChild(document.createElement("br"));
@@ -1014,6 +1013,7 @@ function toCamelCase(s) {
 	return s.toLowerCase().replace(/\b(.)/g, function($1) { return $1.toUpperCase(); });
 }
 function setType(type) {
+	var slangid = !document.querySelector("select[name='edit-work.languages.1']") && document.querySelector("select[name='edit-work.languages.0']");
 	switch (type.toLowerCase()) {
 		case vocal.toLowerCase():
 			if (stypeid.value == 17) {
@@ -1022,11 +1022,13 @@ function setType(type) {
 				stypeid.style.setProperty("background", cWARN);
 				stypeid.value = 17;
 			}
-			if (slangid.selectedIndex !== 0 && slangid.value != 486) {
-				slangid.style.setProperty("background", cOK);
-			} else {
-				slangid.style.setProperty("background", cWARN);
-				slangid.value = 198;
+			if (slangid) {
+				if (slangid.selectedIndex !== 0 && slangid.value != 486) {
+					slangid.style.setProperty("background", cOK);
+				} else {
+					slangid.style.setProperty("background", cWARN);
+					slangid.value = 198;
+				}
 			}
 			break;
 		case instrumental.toLowerCase():
@@ -1036,11 +1038,13 @@ function setType(type) {
 				stypeid.style.setProperty("background", cWARN);
 				stypeid.selectedIndex = 0;
 			}
-			if (slangid.value == 486) {
-				slangid.style.setProperty("background", cOK);
-			} else {
-				slangid.style.setProperty("background", cWARN);
-				slangid.value = 486;
+			if (slangid){
+				if (slangid.value == 486) {
+					slangid.style.setProperty("background", cOK);
+				} else {
+					slangid.style.setProperty("background", cWARN);
+					slangid.value = 486;
+				}
 			}
 			break;
 	}
