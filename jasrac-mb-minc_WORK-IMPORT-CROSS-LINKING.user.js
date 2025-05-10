@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2025.5.5
+// @version      2025.5.10
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽権利情報検索ナビ (ex-音楽の森 aka MINC and Music Forest) and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -11,7 +11,7 @@
 // @since        2011-01-14; https://web.archive.org/web/20131103163356/userscripts.org/scripts/show/94676 / https://web.archive.org/web/20141011084012/userscripts-mirror.org/scripts/show/94676
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/84cae2328f2dca0bc750e0961d669005771f16b8/lib/CONTROL-POMME.js?version=2024.3.14
-// @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
+// @require      https://github.com/jesus2099/konami-command/raw/1036cd5ccd35d404c3e9e197151f6cb22c52dd87/lib/SUPER.js?version=2024.12.3
 // @grant        none
 // @match        *://*.musicbrainz.org/work/*
 // @include      /https?:\/\/www\.minc\.or\.jp\/((music|product)\/list|saku\/detail)/
@@ -1027,7 +1027,7 @@ function setType(type) {
 					slangid.style.setProperty("background", cOK);
 				} else {
 					slangid.style.setProperty("background", cWARN);
-					slangid.value = 198;
+					forceValue(slangid, 198);
 				}
 			}
 			break;
@@ -1043,7 +1043,7 @@ function setType(type) {
 					slangid.style.setProperty("background", cOK);
 				} else {
 					slangid.style.setProperty("background", cWARN);
-					slangid.value = 486;
+					forceValue(slangid, 486);
 				}
 			}
 			break;
