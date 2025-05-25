@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2025.2.28
+// @version      2025.5.25
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -1450,7 +1450,7 @@ function replaceAllTokens(string, encode) {
 		if (!Object.prototype.hasOwnProperty.call(tokenValues, token)) {
 			return false;
 		}
-		string = string.replace(token, encode && token != "%url-target%" ? encodeURIComponent(tokenValues[token]) : tokenValues[token]);
+		string = string.replace(token, encode && token != "%url-target%" ? encodeURIComponent(tokenValues[token]).replace(/[()]/g, "") : tokenValues[token]);
 	}
 	return string;
 }
