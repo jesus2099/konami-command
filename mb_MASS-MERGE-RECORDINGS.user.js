@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2025.5.2
+// @version      2025.5.26
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -33,6 +33,7 @@ var cWarning = "yellow";
 var cMerge = "#fcc";
 var cCancel = "#cfc";
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
+var DEBUG = localStorage.getItem("jesus2099debug");
 var safeLengthDelta = 4;
 var largeSpread = 15; // MBS-7417 / https://github.com/metabrainz/musicbrainz-server/blob/217111e3a12b705b9499e7fdda6be93876d30fb0/lib/MusicBrainz/Server/Edit/Utils.pm#L467
 var lastTick = new Date().getTime();
@@ -55,6 +56,9 @@ var matchMode = {current: null, sequential: null, title: null, titleAndAC: null}
 var rem2loc = "◀";
 var loc2rem = "▶";
 var retry = {count: 0, checking: false};
+if (DEBUG && GM_info && GM_info.platform) {
+	userjs.debug = "::" + (GM_info.platform.mobile ? " mobile :: " : " ") + GM_info.platform.os + " " + GM_info.platform.browserName + " " + GM_info.platform.browserVersion.split(".")[0] + " ::";
+}
 var css = document.createElement("style");
 css.setAttribute("type", "text/css");
 document.head.appendChild(css);
@@ -187,6 +191,9 @@ function mergeRecsStep(_step) {
 			paramsup += " —\n" + userjs.name + " (" + userjs.version + ") in “" + matchMode.current.value.replace(/^Match unordered /i, "") + "” match mode";
 			if (retry.count > 0) {
 				paramsup += " — '''retry'''" + (retry.count > 1 ? " #" + retry.count : "") + " (" + protectEditNoteText(retry.message) + ")";
+			}
+			if (userjs.debug) {
+				paramsup += "\n" + userjs.debug;
 			}
 			params[step] += encodeURIComponent(paramsup);
 		}
