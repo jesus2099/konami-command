@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         kasi. PLAIN TEXT LYRICS 歌詞コピー 純文本歌詞
-// @version      2024.12.24
+// @version      2025.7.5
 // @description  j-lyric.net, joysound.com, kkbox.com, lyric.kget.jp, lyrics.gyao.yahoo.co.jp, petitlyrics.com, utamap.com, uta-net.com, utaten.com
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/kasi_PLAIN-TEXT-LYRICS
@@ -29,7 +29,7 @@ var DEBUG = localStorage.getItem("jesus2099debug");
 var kasimasin = {
 	"j-lyric": { // allow contextmenu
 		"na": "J-Lyric.net",
-		"kabe_css": "#lyricBody",
+		"kabe_css": "#Lyric",
 		"kabe_keep": true,
 		"direct_machine": function() {
 			if (kabe) {
