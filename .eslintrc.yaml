@@ -21,6 +21,7 @@ globals:
 # lib/SUPER.js
  addAfter:            readonly
  createTag:           readonly
+ decodeHTML:          readonly
  disableInputs:       readonly
  enableInputs:        readonly
  forceValue:          readonly
