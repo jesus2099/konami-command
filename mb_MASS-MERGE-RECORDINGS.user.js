@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2025.6.24
+// @version      2025.7.21
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -12,7 +12,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://github.com/jesus2099/konami-command/raw/198d05ea555257eaf8a2a8d8333a8cdeda28d8ad/lib/CONTROL-POMME.js?version=2024.10.25
 // @require      https://github.com/jesus2099/konami-command/raw/89dce29b9cce6e92e552f7d8ce2f5cb0ed161f2a/lib/MB-JUNK-SHOP.js?version=2024.10.13
-// @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
+// @require      https://github.com/jesus2099/konami-command/raw/63aeeec359c7f1b5920308f1b105da4cce09ffe2/lib/SUPER.js?version=2025.7.21
 // @grant        none
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/(disc\/\d+)?)?(\?tport=\d+)?(#.*)?$/
 // @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\?|$)/
@@ -671,11 +671,11 @@ function loadReleasePage() {
 					title: rtitle[1] || rtitle[4]
 				};
 				remoteRelease["release-group"] = releaseWithoutARs.match(/\((?:<span[^>]*>){0,2}<a href=".*\/release-group\/([^"/]+)">(?:<bdi>)?[^<]+(?:<\/bdi>)?<\/a>(?:<\/span>){0,2}\)/)[1];
-				remoteRelease.title = HTMLToText(rtitle.title);
+				remoteRelease.title = decodeHTML(rtitle.title);
 				remoteRelease.looseTitle = looseTitle(remoteRelease.title);
 				remoteRelease.comment = releaseWithoutARs.match(/<h1>.+<span class="comment">\(<bdi>([^<]+)<\/bdi>\)<\/span><\/h1>/) || "";
 				if (remoteRelease.comment) {
-					remoteRelease.comment = "(" + HTMLToText(remoteRelease.comment[1]) + ")";
+					remoteRelease.comment = "(" + decodeHTML(remoteRelease.comment[1]) + ")";
 				}
 				remoteRelease.ac = rtitle.artists;
 				removeChildren(mbidInfo);
@@ -718,7 +718,7 @@ function loadReleasePage() {
 							if (trackLength) trackLength = strtime2ms(trackLength[0]);
 							var current_track = {
 								number: current_medium + trackRows[t].match(new RegExp("<td class=\"pos[\\s\\S]+?<a href=\"" + "/track/" + sregex_MBID + "\">(.*?)</a>"))[1],
-								name: HTMLToText(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
+								name: decodeHTML(trackInfos[t].match(/<bdi>([^<]*)<\/bdi>/)[1]),
 								artistCredit: trackRows[t].match(/<td class="wrap-anywhere">/g) && trackRows[t].match(/<td class="wrap-anywhere">/g).length === 1 ? trackRows[t].match(/[\s\S]*<td class="wrap-anywhere">([\s\S]+?)<\/td>/)[1].trim().replace(/<a/g, '<a target="_blank"') : remoteRelease.ac,
 								length: trackLength,
 								recording: {
@@ -729,7 +729,7 @@ function loadReleasePage() {
 								},
 								isDataTrack: false
 							};
-							current_track.artistCreditAsPlainText = HTMLToText(current_track.artistCredit);
+							current_track.artistCreditAsPlainText = decodeHTML(current_track.artistCredit);
 							current_track.looseName = looseTitle(current_track.name);
 							current_track.looseAC = looseTitle(current_track.artistCreditAsPlainText);
 							remoteRelease.tracks.push(current_track);
@@ -1188,11 +1188,6 @@ function toHalfWidth(s) {
 	return s.replace(/[\uff01-\uff5d]/g, function(a) {
 		return String.fromCharCode(a.charCodeAt(0) - 65248);
 	}).replace(/\u3000/g, "\u0020").replace(/\uff5e/g, "\u301c");
-}
-function HTMLToText(HTMLBlurb) {
-	var decoder = document.createElement("div");
-	decoder.innerHTML = HTMLBlurb;
-	return decoder.textContent;
 }
 function chrono(minimumDelay) {
 	if (minimumDelay) {
