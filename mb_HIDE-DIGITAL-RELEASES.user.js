@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2023.1.19
+// @version      2025.7.24
 // @description  musicbrainz.org: Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
@@ -52,18 +52,22 @@ css.insertRule("body." + userjs.id + " div.jesus2099userjs154481bigbox > a." + u
 css.insertRule("body." + userjs.id + " table.tbl > tbody > tr.even > td { background-color: #FEF; }", 0);
 css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
 // hide only if there are physical releases
-var hiddenReleases = document.querySelectorAll("tr." + userjs.id);
-if (hiddenReleases.length > 0 && releaseRows.length > hiddenReleases.length) {
+userjs.hiddenReleaseRows = document.querySelectorAll("tr." + userjs.id);
+if (userjs.hiddenReleaseRows.length > 0 && releaseRows.length > userjs.hiddenReleaseRows.length) {
 	toggleDLReleases();
-	// toggle button
-	var mergeButton = document.querySelector("div.row > span.buttons > button[type='submit']");
-	var toggleButton = document.createElement("button");
-	toggleButton.appendChild(document.createTextNode("Show/hide the " + hiddenReleases.length + " DL releases"));
-	toggleButton.style.setProperty("background-color", "#FEF");
-	toggleButton.setAttribute("title", userjs.id);
-	toggleButton.setAttribute("type", "");
-	toggleButton.addEventListener("click", toggleDLReleases);
-	mergeButton.parentNode.appendChild(toggleButton);
+	setInterval(function() {
+		// keep reinserting toggle button if it gets removed by react-hydrate
+		if (!document.querySelector("div.row > span.buttons > button[title='" + userjs.id + "'][type='']")) {
+			userjs.mergeButton = document.querySelector("div.row > span.buttons > button[type='submit']");
+			userjs.toggleButton = document.createElement("button");
+			userjs.toggleButton.appendChild(document.createTextNode("Show/hide the " + userjs.hiddenReleaseRows.length + " DL releases"));
+			userjs.toggleButton.style.setProperty("background-color", "#FEF");
+			userjs.toggleButton.setAttribute("title", userjs.id);
+			userjs.toggleButton.setAttribute("type", "");
+			userjs.toggleButton.addEventListener("click", toggleDLReleases);
+			userjs.mergeButton.parentNode.appendChild(userjs.toggleButton);
+		}
+	}, 2000);
 }
 // Hide associated mb_FUNKEY-ILLUSTRATED-RECORDS
 setTimeout(function() {
