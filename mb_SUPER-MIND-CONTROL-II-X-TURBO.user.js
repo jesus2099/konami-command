@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2025.4.27
+// @version      2025.7.25
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -683,11 +683,10 @@ if (j2sets.CENTER_FLAGS) {
 j2setting("HIDE_RATINGS", false, true, "hide those cute little stars and everything related to ratings in MB");
 if (j2sets.HIDE_RATINGS) {
 	j2superturbo.addCSSRule("div#content table.tbl > * > tr > th.rating, div#content table.tbl > tbody > tr > td.rating, div#sidebar > h2.rating, div#sidebar > h2.rating + p, div#page > div.tabs > ul.tabs > li:not(.sel) > a[href$='/ratings'], div.header ul.menu li.data a[href$='/ratings'] { display: none; }");
-	// work around for missing rating classes (artist, collection)
-	var ratingIndex = document.querySelector("div#content table.tbl > tbody > tr > td:not(.rating) > span.inline-rating");
-	if (ratingIndex) {
-		debug("HIDE_RATINGS");
-		j2superturbo.addCSSRule("div#content table.tbl > * > tr > *:nth-child(" + (ratingIndex.parentNode.cellIndex + 1) + ") { display: none; }");
+	// add missing rating class to artist and collection table body rating cells
+	var rating_cells = document.querySelectorAll("div#content table.tbl > tbody > tr > td:not(.rating) > span.inline-rating");
+	for (var c = 0; c < rating_cells.length; c++) {
+		rating_cells[c].parentNode.classList.add("rating");
 	}
 }
 // ================================================================= DISPLAY+
