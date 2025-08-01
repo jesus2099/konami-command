@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2025.7.25
-// @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected works date / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
+// @version      2025.8.3
+// @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected recording dates / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SUPER-MIND-CONTROL-II-X-TURBO
@@ -1378,7 +1378,7 @@ function delayMsg(sec) {
 }
 /* --- ENTITY BONUS --- */
 j2setting("MARK_PENDING_EDIT_MEDIUMS", true, true, "puts a border around mediums with pending edits");
-j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected works date” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
+j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected recording dates” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
 j2setting("RECORDING_LENGTH_COLUMN", true, true, "Displays recording lengths in work page (similar to Loujine’s script) as well as in artist relationships page");
 j2setting("RELEASE_EVENT_COLUMN", true, true, "Displays release dates in label relationships page");
@@ -1424,39 +1424,34 @@ if (enttype) {
 					}
 				}
 			}}}, [userjs.icon.cloneNode(false), " Remove recording relationships ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
-			/* :::: MASS SET WORKS’ RECORDING DATES :::: */
+			/* :::: MASS SET SELECTED RECORDING DATES :::: */
 			j2superturbo.menu.addItem(createTag("a", {e: {click: function(event) {
-				var checkedRelationships = {
-					checkBoxes: document.querySelectorAll("#tracklist tr.track td.works div.ar input[type='checkbox']:checked")
-				};
-				for (let cb = 0; cb < checkedRelationships.checkBoxes.length; cb++) {
-					var recordingGid = getParent(checkedRelationships.checkBoxes[cb], "tr", "track").querySelector("td.recording a[href^='/recording/']").getAttribute("href").match(re_GUID)[0];
-					var workGid = getParent(checkedRelationships.checkBoxes[cb], "div", "ar").querySelector("a[href^='/work/']").getAttribute("href").match(re_GUID)[0];
-					checkedRelationships[recordingGid + "-" + workGid] = true;
-				}
-				if (checkedRelationships.checkBoxes.length > 0) {
-					var date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
-					if (date) {
-						if ((date = date.match(new RegExp(re_date.ISO + "(?:.+" + re_date.ISO + ")?")))) {
-							MB.relationshipEditor.UI.checkedWorks().forEach(function(work) {
-								work.relationships().forEach(function(relationship) {
-									if (
-										relationship.entityTypes == "recording-work"
-										&& checkedRelationships[relationship.entities.saved[0].gid + "-" + relationship.entities.saved[1].gid]
-									) {
-										relationship.begin_date.year(date[2]);
-										relationship.begin_date.month(date[3]);
-										relationship.begin_date.day(date[4]);
-										relationship.end_date.year(date[5] ? date[6] : date[2]);
-										relationship.end_date.month(date[5] ? date[7] : date[3]);
-										relationship.end_date.day(date[5] ? date[8] : date[4]);
+				if (document.querySelector("#edit-relationship-dialog")) {
+					alert("Close the Edit relationship popup")
+				} else {
+					userjs.checkedRelationships = {
+						checkBoxes: document.querySelectorAll("#tracklist tr.track > td.recording > input.recording[type='checkbox']:checked"),
+						pencils: []
+					};
+					if (userjs.checkedRelationships.checkBoxes.length > 0) {
+						userjs.checkedRelationships.date = prompt("Type an YYYY-MM-DD, YYYY-MM or YYYY formated date that will be applied to all selected work relationships below.\nYou can type two dates, separated by at least one any character (example: “2014-12-31 2015-01”). This will set a date ranged relationship.");
+						if (userjs.checkedRelationships.date) {
+							if ((userjs.checkedRelationships.date = userjs.checkedRelationships.date.match(new RegExp(re_date.ISO + "(?:.+" + re_date.ISO + ")?")))) {
+								for (let cb = 0; cb < userjs.checkedRelationships.checkBoxes.length; cb++) {
+									for (let p = 0, pencils = userjs.checkedRelationships.checkBoxes[cb].closest("tr.track").querySelectorAll("table.rel-editor-table > tbody > tr.recording-of button.edit-item"); p < pencils.length; p++) {
+										userjs.checkedRelationships.pencils = userjs.checkedRelationships.pencils.concat(Array.from(pencils));
 									}
-								});
-							});
-						} else { alert("Wrong date format"); }
+								}
+								TRACKLIST_TOOLS_setWorkRecDate();
+							} else {
+								alert("Wrong date format");
+							}
+						}
+					} else {
+						alert("No recordings selected");
 					}
 				}
-			}}}, [userjs.icon.cloneNode(false), " Set selected works’ recording dates ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
+			}}}, [userjs.icon.cloneNode(false), " Set selected recording dates ", createTag("small", {s: {color: "grey"}}, "← TRACKLIST_TOOLS™")]));
 		}
 	}
 	// ================================================================ DISPLAY-
@@ -1706,6 +1701,33 @@ function TRACKLIST_TOOLS_init() {
 			}
 		}
 	})).observe(userjs.releaseEditor, {childList: true, subtree: true});
+}
+function TRACKLIST_TOOLS_setWorkRecDate() {
+	if (userjs.checkedRelationships.pencils.length > 0) {
+		userjs.checkedRelationships.current_pencil = userjs.checkedRelationships.pencils.shift();
+		var rel_id = userjs.checkedRelationships.current_pencil.getAttribute("id").match(/^edit-relationship-recording-work-(\d+)$/)[1];
+		rel_id = "#edit-relationship-dialog input[type='text']#relationship-type-recording-work-" + rel_id;
+		userjs.checkedRelationships.current_pencil.click();
+		waitForElement(rel_id, function() {
+			forceValue(document.querySelector("#edit-relationship-dialog table.relationship-details > tbody input[id='id-period.begin_date.year']"), userjs.checkedRelationships.date[2]);
+			forceValue(document.querySelector("#edit-relationship-dialog table.relationship-details > tbody input[id='id-period.begin_date.month']"), userjs.checkedRelationships.date[3] || "");
+			forceValue(document.querySelector("#edit-relationship-dialog table.relationship-details > tbody input[id='id-period.begin_date.day']"), userjs.checkedRelationships.date[4] || "");
+			forceValue(document.querySelector("#edit-relationship-dialog table.relationship-details > tbody input[id='id-period.end_date.year']"), (userjs.checkedRelationships.date[5] ? userjs.checkedRelationships.date[6] : userjs.checkedRelationships.date[2]) || "");
+			forceValue(document.querySelector("#edit-relationship-dialog table.relationship-details > tbody input[id='id-period.end_date.month']"), (userjs.checkedRelationships.date[5] ? userjs.checkedRelationships.date[7] : userjs.checkedRelationships.date[3]) || "");
+			forceValue(document.querySelector("#edit-relationship-dialog table.relationship-details > tbody input[id='id-period.end_date.day']"), (userjs.checkedRelationships.date[5] ? userjs.checkedRelationships.date[8] : userjs.checkedRelationships.date[4]) || "");
+			document.querySelector("#edit-relationship-dialog div.buttons button.positive").click();
+		});
+		waitForNoElements(rel_id, function() { TRACKLIST_TOOLS_setWorkRecDate(); });
+	}
+}
+function waitForNoElements(selector, callback) {
+	var waitForElementIntervalID = setInterval(function() {
+		var element = document.querySelector(selector);
+		if (!element) {
+			clearInterval(waitForElementIntervalID);
+			callback(element);
+		}
+	}, 123);
 }
 function unlinkH1Link(event) {
 	event.currentTarget.removeEventListener("mouseover", unlinkH1Link);
