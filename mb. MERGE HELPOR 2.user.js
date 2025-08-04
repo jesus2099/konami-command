@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2024.8.23.1
+// @version      2025.8.4
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -19,6 +19,8 @@
 // ==/UserScript==
 "use strict";
 var userjs = "j2userjs124579";
+var lang = document.querySelector("html[lang]");
+lang = lang && lang.getAttribute("lang") || "en-GB";
 var rembid = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
 var mergeType = location.pathname.match(/^\/(.+)\/merge/);
 var lastTick = new Date().getTime();
@@ -165,7 +167,7 @@ function findUsefulMergeInfo() {
 		});
 		var entityRows = mergeForm.querySelectorAll("form table.tbl > tbody > tr");
 		var headers = tbl.querySelector("thead tr");
-		if (showEntityInfo && mergeType.match(/(release|release-group)/)) {
+		if (showEntityInfo && mergeType.match(/(artist|release|release-group)/)) {
 			headers.appendChild(document.createElement("th")).appendChild(document.createTextNode("Information"));
 		} else {
 			showEntityInfo = false;
@@ -286,15 +288,15 @@ function loadEntInfo() {
 							}
 							tmp = res.evaluate(".//mb:work-list", res, nsr, XPathResult.ANY_TYPE, null);
 							while ((tmp2 = tmp.iterateNext()) !== null) {
-								stackInfo(entInfoZone, tmp2.getAttribute("count") + " works");
+								stackInfo(entInfoZone, parseInt(tmp2.getAttribute("count")).toLocaleString(lang) + " works");
 							}
 							tmp = res.evaluate(".//mb:release-group-list", res, nsr, XPathResult.ANY_TYPE, null);
 							while ((tmp2 = tmp.iterateNext()) !== null) {
-								stackInfo(entInfoZone, tmp2.getAttribute("count") + " records");
+								stackInfo(entInfoZone, parseInt(tmp2.getAttribute("count")).toLocaleString(lang) + " records");
 							}
 							tmp = res.evaluate(".//mb:recording-list", res, nsr, XPathResult.ANY_TYPE, null);
 							while ((tmp2 = tmp.iterateNext()) !== null) {
-								stackInfo(entInfoZone, tmp2.getAttribute("count") + " recs");
+								stackInfo(entInfoZone, parseInt(tmp2.getAttribute("count")).toLocaleString(lang) + " recs");
 							}
 							break;
 						case "release":
