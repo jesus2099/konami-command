@@ -525,6 +525,12 @@ var whitelistSearchLinks = {
 						],
 						"Svensk Mediedatabas (cat. no.)": "//smdb.kb.se/catalog/search?q=%release-catalogue-number%",
 					}
+				},
+				VN: {
+					title: "Việt Nam",
+					items: {
+						"Wikipedia (vi)": "//vi.wikipedia.org/w?search=%entity-name%"
+					}
 				}
 			}
 		},
