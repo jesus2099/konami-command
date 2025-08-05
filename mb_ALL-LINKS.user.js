@@ -475,8 +475,8 @@ var whitelistSearchLinks = {
 					},
 					items: {
 						"Encyclopédisque": [
-							"http://www.encyclopedisque.fr/recherche.html?ra=%artist-name%&sp=1#resultat",
-							"http://www.encyclopedisque.fr/recherche.html?rd=%release-name%&sp=1#resultat"
+							"//jesus2099.gitlab.io/forward-request.html?_accept-charset=ISO-8859-15&_action=//www.encyclopedisque.fr/recherche.html%23resultat&ra=%artist-latin-script-name%&sp=1",
+							"//jesus2099.gitlab.io/forward-request.html?_accept-charset=ISO-8859-15&_action=//www.encyclopedisque.fr/recherche.html%23resultat&rd=%release-name%&sp=1"
 						]
 					}
 				},
