@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2025.5.25
+// @version      2025.8.6
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -438,7 +438,6 @@ var whitelistSearchLinks = {
 							"//vgmdb.net/search?type=album&q=%release-name%",
 							"//vgmdb.net/search?type=org&q=%label-name%",
 						],
-						Yunisan: "//duckduckgo.com/?q=site:www22.big.or.jp+%22%2F%7Eyunisan%2Fvi%2F%22+%22%artist-name%%22",
 						VKDB: "//duckduckgo.com/?q=site:vkdb.jp+%22%artist-name%%22"
 					}
 				},
