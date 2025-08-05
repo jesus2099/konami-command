@@ -675,13 +675,16 @@ var additionalSearchLinks = {
 							{
 								fr: "//repertoire.sacem.fr/resultats?filters=titles&query=%work-name%#searchBtn",
 								"de en nl": "//repertoire.sacem.fr/en/results?filters=titles&query=%work-name%#searchBtn"
-							}, {
+							},
+							{
 								fr: "//repertoire.sacem.fr/resultats?filters=titles&query=%recording-name%#searchBtn",
 								"de en nl": "//repertoire.sacem.fr/en/results?filters=titles&query=%recording-name%#searchBtn"
-							}, {
-								fr: "//repertoire.sacem.fr/resultats?filters=parties&query=%artist-name%#searchBtn",
-								"de en nl": "//repertoire.sacem.fr/en/results?filters=parties&query=%artist-name%#searchBtn"
-							}, {
+							},
+							{
+								fr: "//repertoire.sacem.fr/resultats?filters=parties&query=%artist-latin-script-name%#searchBtn",
+								"de en nl": "//repertoire.sacem.fr/en/results?filters=parties&query=%artist-latin-script-name%#searchBtn"
+							},
+							{
 								fr: "//repertoire.sacem.fr/resultats?filters=parties&query=%label-name%#searchBtn",
 								"de en nl": "//repertoire.sacem.fr/en/results?filters=parties&query=%label-name%#searchBtn"
 							}
