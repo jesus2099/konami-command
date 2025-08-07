@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2025.8.3
+// @version      2025.8.8
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected recording dates / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1378,7 +1378,7 @@ function delayMsg(sec) {
 }
 /* --- ENTITY BONUS --- */
 j2setting("MARK_PENDING_EDIT_MEDIUMS", true, true, "puts a border around mediums with pending edits");
-j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set selected recording dates” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
+j2setting("TRACKLIST_TOOLS", true, true, "adds “Remove recording relationships” and “Set recording dates” in releationship editor and tools to the tracklist tab of release editor" + j2superturbo.menu.expl + ": a “Time Parser” button next to the existing “Track Parser” in release editor’s tracklists and a “Search→Replace” button");
 j2setting("UNLINK_ENTITY_HEADER", false, true, "unlink entity headers where link is same as current location (artist/release/etc. name) — if you use COLLECTION HIGHLIGHTER or anything that you wish change the header, make it run first or you might not see its effects");
 j2setting("RECORDING_LENGTH_COLUMN", true, true, "Displays recording lengths in work page (similar to Loujine’s script) as well as in artist relationships page");
 j2setting("RELEASE_EVENT_COLUMN", true, true, "Displays release dates in label relationships page");
@@ -1395,9 +1395,14 @@ if (enttype) {
 		}
 	}
 	// ================================================================== MOUSE+
-	// ## TRACKLIST_TOOLS ## ex-TRACK_LENGTH_PARSER+search→replace(bookmarklet)+set-selected-works-date
+	// ## TRACKLIST_TOOLS ## ex-TRACK_LENGTH_PARSER + search→replace(bookmarklet) + set-selected-recording-dates + highlight propagate to recording checkboxes
 	// =========================================================================
 	if (j2sets.TRACKLIST_TOOLS && enttype == "release" && location.pathname.match(new RegExp("/release/(add.*|" + stre_GUID + "/edit)$"))) {
+		/* :::: Highlight propagate track edits to recordings :::: */
+		j2superturbo.addCSSRule("#release-editor #recordings fieldset table td.checkbox { border-right: 4px solid orange; }");
+		j2superturbo.addCSSRule("#release-editor #recordings fieldset table td.checkbox > label[data-bind*='artist'] { background: #ffc; }");
+		j2superturbo.addCSSRule("#release-editor #recordings fieldset table td.checkbox > label[data-bind*='title'] { background: #cfc; }");
+		/* :::: Tracklist parsers and search→replace :::: */
 		userjs.releaseEditor = document.querySelector("div#release-editor");
 		if (userjs.releaseEditor) {
 			TRACKLIST_TOOLS_observer = new MutationObserver(function(mutations, observer) {
