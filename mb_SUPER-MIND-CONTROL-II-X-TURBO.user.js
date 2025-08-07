@@ -1432,7 +1432,7 @@ if (enttype) {
 			/* :::: MASS SET SELECTED RECORDING DATES :::: */
 			j2superturbo.menu.addItem(createTag("a", {e: {click: function(event) {
 				if (document.querySelector("#edit-relationship-dialog")) {
-					alert("Close the Edit relationship popup")
+					alert("Close the Edit relationship popup");
 				} else {
 					userjs.checkedRelationships = {
 						checkBoxes: document.querySelectorAll("#tracklist tr.track > td.recording > input.recording[type='checkbox']:checked"),
