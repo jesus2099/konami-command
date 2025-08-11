@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2025.8.30
+// @version      2025.9.4
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -201,7 +201,7 @@ var whitelistSearchLinks = {
 					},
 					items: {
 						"Cape Breton Fiddle Recordings": [
-							"https://www.cbfiddle.com/rx/tunesearch.cgi?search=%recording&-name%",
+							"https://www.cbfiddle.com/rx/tunesearch.cgi?search=%recording-name%",
 							"https://www.cbfiddle.com/rx/tunesearch.cgi?search=%work-name%"
 						],
 						// Skipped "DanceDB" which has no free text search
