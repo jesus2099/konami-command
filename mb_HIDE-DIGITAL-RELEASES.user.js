@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2025.7.24
+// @version      2025.8.22
 // @description  musicbrainz.org: Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
@@ -50,7 +50,9 @@ css = css.sheet;
 css.insertRule("body." + userjs.id + " tr." + userjs.id + " { display: none; }", 0);
 css.insertRule("body." + userjs.id + " div.jesus2099userjs154481bigbox > a." + userjs.id + " { display: none !important; }", 0); // link to mb_FUNKEY-ILLUSTRATED-RECORDS
 css.insertRule("body." + userjs.id + " table.tbl > tbody > tr.even > td { background-color: #FEF; }", 0);
-css.insertRule("tr." + userjs.id + " td, tr." + userjs.id + " td * { color: #F66; }", 0);
+css.insertRule("tr." + userjs.id + " > td > * { opacity: .666; }", 0);
+css.insertRule("tr." + userjs.id + " > td:first-child { border-left: solid medium #f9f; }", 0);
+css.insertRule("tr." + userjs.id + " > td:last-child { border-right: solid medium #f9f; }", 0);
 // hide only if there are physical releases
 userjs.hiddenReleaseRows = document.querySelectorAll("tr." + userjs.id);
 if (userjs.hiddenReleaseRows.length > 0 && releaseRows.length > userjs.hiddenReleaseRows.length) {
