@@ -69,7 +69,7 @@ if (userjs.hiddenReleaseRows.length > 0 && releaseRows.length > userjs.hiddenRel
 			userjs.toggleButton.addEventListener("click", toggleDLReleases);
 			userjs.mergeButton.parentNode.appendChild(userjs.toggleButton);
 		}
-	}, 2000);
+	}, 666);
 }
 // Hide associated mb_FUNKEY-ILLUSTRATED-RECORDS
 setTimeout(function() {
@@ -80,7 +80,7 @@ setTimeout(function() {
 			hiddenReleaseCAA.classList.add(userjs.id);
 		}
 	}
-}, 500);
+}, 666);
 function markDownloadReleases(releaseRows) {
 	var formatRowIndex = !account || location.pathname.match(/\/search\b/) ? 2 : 3;
 	for (var r = 0; r < releaseRows.length; r++) {
