@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2025.1.28.339
+// @version      2025.8.23
 // @description  Choose your favourite MusicBrainz server (MBS) (main/beta/test) and no link will ever send you to the others
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
