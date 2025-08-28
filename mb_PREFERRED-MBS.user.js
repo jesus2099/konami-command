@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2025.8.28
+// @version      2025.8.28.1822
 // @description  Choose your favourite MusicBrainz server (MBS) (main/beta/test) and no link will ever send you to the others
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
@@ -27,7 +27,7 @@ if (discourseURL) {
 	location.replace(decodeURIComponent(discourseURL[1]));
 }
 /* ---------------------------------------------------------------- */
-var MBS = location.host.match(/^((beta|test)\.)?musicbrainz\.org$/i);
+var MBS = location.host.match(/^(musicbrainz\.eu|((beta|test)\.)?musicbrainz\.org)$/i);
 preferred_MBS = leftTrim(preferred_MBS);
 if (!MBS) {
 	// Redirect importers to preferred MBS
@@ -99,7 +99,7 @@ function process(anchor) {
 }
 function prefer(URL, forced_MBS) {
 	var newUrl = forced_MBS ? forced_MBS : preferred_MBS;
-	var urlMatch = URL.trim().match(/^(https?:)?(\/\/)?(((beta|test)\.)?musicbrainz\.org(:\d+)?)(?<path>\/.*)?(?<query>\?.*)?(?<hash>#.*)?$/);
+	var urlMatch = URL.trim().match(/^(https?:)?(\/\/)?(((beta|test)\.)?musicbrainz\.(org|eu)(:\d+)?)(?<path>\/.*)?(?<query>\?.*)?(?<hash>#.*)?$/);
 	if (urlMatch) {
 		if (urlMatch.groups.path) {
 			newUrl += urlMatch.groups.path;
