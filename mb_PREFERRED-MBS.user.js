@@ -10,7 +10,6 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2016-01-12; inspiration by https://web.archive.org/web/20140712013355/userscripts-mirror.org/scripts/show/487275
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
-// @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @include      /^https?:\/\//
 // @run-at       document-start
@@ -48,8 +47,6 @@ if (!MBS) {
 					}
 					element.setAttribute("action", newAction);
 					element.style.setProperty("background-color", "#cfc");
-					setTimeout(function() { element.submit(); }, 10);
-					return stop(event);
 				}
 			}
 		}
@@ -62,7 +59,7 @@ document.addEventListener("mousedown", function(event) {
 	var element = event.target || event.srcElement;
 	if (element && element.nodeType == Node.ELEMENT_NODE) {
 		if (element.tagName != "A") {
-			element = getParent(element, "a");
+			element = element.closest("a");
 		}
 		if (
 			element
