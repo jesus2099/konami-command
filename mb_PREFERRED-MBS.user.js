@@ -16,28 +16,28 @@
 // ==/UserScript==
 "use strict";
 /* ----------------------------------------------- */
-/* preferred_MBS can be either (there is no more HTTP)
- * https://musicbrainz.org or https://beta.musicbrainz.org or https://test.musicbrainz.org
+/* preferred_mbs can be either (there is no more HTTP)
+ * https://musicbrainz.org or https://beta.musicbrainz.org or https://test.musicbrainz.org or https://musicbrainz.eu
  * it is not intended to work with any other values */
-var preferred_MBS = "https://musicbrainz.org";
+var preferred_mbs = "https://musicbrainz.org";
 /* ----------------------------------------------- */
 /* Simple Discourse click tracker problem work-around ------------- */
-var discourseURL = location.href.match(/^https?:\/\/community\.metabrainz\.org\/clicks\/track\?url=([^?&]+)/);
-if (discourseURL) {
-	location.replace(decodeURIComponent(discourseURL[1]));
+var discourse_url = location.href.match(/^https?:\/\/community\.metabrainz\.org\/clicks\/track\?url=([^?&]+)/);
+if (discourse_url) {
+	location.replace(decodeURIComponent(discourse_url[1]));
 }
 /* ---------------------------------------------------------------- */
-var MBS = location.host.match(/^(musicbrainz\.eu|((beta|test)\.)?musicbrainz\.org)$/i);
-preferred_MBS = leftTrim(preferred_MBS);
-if (!MBS) {
+var is_mbs = location.host.match(/^(musicbrainz\.eu|((beta|test)\.)?musicbrainz\.org)$/i);
+preferred_mbs = leftTrim(preferred_mbs);
+if (!is_mbs) {
 	// Redirect importers to preferred MBS
 	document.addEventListener("submit", function(event) {
 		var element = event.target || event.srcElement;
 		if (element && element.nodeType == Node.ELEMENT_NODE && element.tagName == "FORM") {
-			var ACTION = element.getAttribute("action");
-			if (ACTION && !ACTION.match(/oauth/) && !element.querySelector("input[type='password']")) {
-				var newAction = prefer(ACTION);
-				if (newAction) {
+			var action = element.getAttribute("action");
+			if (action && !action.match(/oauth/) && !element.querySelector("input[type='password']")) {
+				var new_action = prefer(action);
+				if (new_action) {
 					var urlInput = element.querySelector("input[name='url']");
 					if (urlInput) {
 						var newUrl = prefer(urlInput.value);
@@ -45,7 +45,7 @@ if (!MBS) {
 							urlInput.value = newUrl;
 						}
 					}
-					element.setAttribute("action", newAction);
+					element.setAttribute("action", new_action);
 					element.style.setProperty("background-color", "#cfc");
 				}
 			}
@@ -65,8 +65,8 @@ document.addEventListener("mousedown", function(event) {
 			element
 			&& element.matches("a:not(.jesus2099-bypass-mb_PREFERRED-MBS)") // mb_SUPER-MIND-CONTROL-II-X-TURBO server switcher
 			&& (
-				!MBS
-				|| MBS && element.closest(".edit-note-text")
+				!is_mbs
+				|| element.closest(".edit-note-text")
 			)
 		) {
 			process(element);
@@ -74,18 +74,18 @@ document.addEventListener("mousedown", function(event) {
 	}
 });
 function process(anchor) {
-	var HREF = anchor.getAttribute("href");
-	if (HREF) {
-		var newHref;
+	var href = anchor.getAttribute("href");
+	if (href) {
+		var new_href;
 		if (anchor.closest(".edit-note-text")) {
 			// Force stay on the same MBS when clicking edit note links (annotations are doing it natively OK)
 			// Test at https://musicbrainz.org/edit/1736776
-			newHref = prefer(HREF, location.protocol + "//" + location.host);
+			new_href = prefer(href, location.protocol + "//" + location.host);
 		} else {
-			newHref = prefer(HREF);
+			new_href = prefer(href);
 		}
-		if (newHref) {
-			anchor.setAttribute("href", newHref);
+		if (new_href) {
+			anchor.setAttribute("href", new_href);
 			anchor.style.setProperty("background-color", "#cfc");
 			anchor.style.setProperty("color", "#606");
 			anchor.style.setProperty("text-decoration", "line-through");
@@ -93,35 +93,35 @@ function process(anchor) {
 			if (tooltip) {
 				tooltip += "\n";
 			}
-			anchor.setAttribute("title", tooltip + "old: " + HREF + "\nnew: " + newHref);
+			anchor.setAttribute("title", tooltip + "old: " + href + "\nnew: " + new_href);
 		}
 	}
 }
-function prefer(URL, forced_MBS) {
-	var newUrl = forced_MBS ? forced_MBS : preferred_MBS;
-	var urlMatch = URL.trim().match(/^(https?:)?(\/\/)?(((beta|test)\.)?musicbrainz\.(org|eu)(:\d+)?)(?<path>\/.*)?(?<query>\?.*)?(?<hash>#.*)?$/);
-	if (urlMatch) {
-		if (urlMatch.groups.path) {
-			newUrl += urlMatch.groups.path;
+function prefer(url, forced_mbs) {
+	var new_url = forced_mbs ? forced_mbs : preferred_mbs;
+	var matched_url = url.trim().match(/^(https?:)?(\/\/)?(((beta|test)\.)?musicbrainz\.(org|eu)(:\d+)?)(?<path>\/.*)?(?<query>\?.*)?(?<hash>#.*)?$/);
+	if (matched_url) {
+		if (matched_url.groups.path) {
+			new_url += matched_url.groups.path;
 		}
-		if (urlMatch.groups.query) {
-			newUrl += urlMatch.groups.query;
+		if (matched_url.groups.query) {
+			new_url += matched_url.groups.query;
 		}
-		if (urlMatch.groups.hash) {
-			newUrl += urlMatch.groups.hash;
+		if (matched_url.groups.hash) {
+			new_url += matched_url.groups.hash;
 		}
-		if (newUrl && newUrl != (forced_MBS ? forced_MBS : preferred_MBS) && leftTrim(newUrl) != leftTrim(URL)) {
-			return newUrl;
+		if (new_url && new_url != (forced_mbs ? forced_mbs : preferred_mbs) && leftTrim(new_url) != leftTrim(url)) {
+			return new_url;
 		}
 	}
 }
 function leftTrim(url) {
-	var trimmedURL = url;
-	if (trimmedURL.indexOf(location.protocol) === 0) {
-		trimmedURL = trimmedURL.replace(/^https?:/, "");
+	var trimmed_url = url;
+	if (trimmed_url.indexOf(location.protocol) === 0) {
+		trimmed_url = trimmed_url.replace(/^https?:/, "");
 	}
-	if (trimmedURL.indexOf("//" + location.host) === 0) {
-		trimmedURL = trimmedURL.replace(new RegExp("^//" + location.host), "");
+	if (trimmed_url.indexOf("//" + location.host) === 0) {
+		trimmed_url = trimmed_url.replace(new RegExp("^//" + location.host), "");
 	}
-	return trimmedURL;
+	return trimmed_url;
 }
