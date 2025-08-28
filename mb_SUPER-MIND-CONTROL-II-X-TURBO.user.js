@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2025.8.8
+// @version      2025.8.28
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected recording dates / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -15,6 +15,7 @@
 // @require      https://github.com/jesus2099/konami-command/raw/7e350a72575bc729e9aa58af6796dadc2eca685d/lib/SUPER.js?version=2024.12.3
 // @grant        none
 // @match        *://*.musicbrainz.org/*
+// @match        *://musicbrainz.eu/*
 // @exclude      *://blog.musicbrainz.org/*
 // @exclude      *://bugs.musicbrainz.org/*
 // @exclude      *://chatlogs.musicbrainz.org/*
@@ -1181,8 +1182,8 @@ if (j2sets.COPY_TOC && account && location.pathname.match(/^\/cdtoc\/[^/]+-$/)) 
 // ## SERVER_SWITCH ##
 // ==========================================================================
 // Most of this code was written when we had *.mbsandbox.org dev test servers: https://wiki.musicbrainz.org/History:Development/Sandbox
-// It is now limited to MBS, beta and test but I am reluctent to remove dead code, just in case
-j2setting("SERVER_SWITCH", true, true, "fast switch between normal, beta and test. look for the new top-right MBS menu");
+// It is now limited to main, beta, test and EU but I am reluctent to remove dead code, just in case
+j2setting("SERVER_SWITCH", true, true, "fast switch between main, beta, test and EU. look for the new top-right MBS menu");
 // j2setting("SERVER_SWITCH_mbsandbox", '["celes", "chirlu", "reosarevok"]', true, "type an array of subdomains to .mbsandbox.org");
 if (j2sets.SERVER_SWITCH) {
 	debug("SERVER_SWITCH");
@@ -1191,13 +1192,9 @@ if (j2sets.SERVER_SWITCH) {
 		for (let languageLinks = langMenu.querySelectorAll("a[href*='/set-language/']"), a = 0; a < languageLinks.length; a++) {
 			languageLinks[a].classList.add("jesus2099-bypass-mb_PREFERRED-MBS"); // mb_PREFERRED-MBS
 		}
-		var servname;
-		if ((servname = location.hostname.match(/^([^.]+)\.[^.]+\.[^.]+$/))) {
-			servname = servname[1];
-		} else {
-			servname = "MBS";
-		}
-		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs.id + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [userjs.icon.cloneNode(false), " ", createTag("code", {}, servname), " ▾"]), document.createElement("ul")]), langMenu);
+		var server_name = location.hostname.match(/^((?<subdomain>beta|test)\.)?musicbrainz\.(?<tld>org|eu)$/);
+		server_name = server_name.groups.subdomain ? server_name.groups.subdomain : server_name.groups.tld == "org" ? "main" : server_name.groups.tld;
+		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs.id + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [userjs.icon.cloneNode(false), " ", createTag("code", {}, server_name), " ▾"]), document.createElement("ul")]), langMenu);
 		menu.addEventListener("click", function(event) {
 			if (getParent(event.target, "li", userjs.id + "serverSwitch")) {
 				event.stopPropagation();
@@ -1216,9 +1213,9 @@ if (j2sets.SERVER_SWITCH) {
 		}, true);
 		menu.lastChild.addEventListener("click", function(event) { event.stopPropagation(); });
 		menu = menu.firstChild.nextSibling;
-		var mbMains = ["", "beta.", "test."];
+		var mbMains = ["musicbrainz.org", "beta.musicbrainz.org", "test.musicbrainz.org", "musicbrainz.eu"];
 		for (let mb = 0; mb < mbMains.length; mb++) {
-			menu.appendChild(serverSwitch(mbMains[mb] + "musicbrainz.org"));
+			menu.appendChild(serverSwitch(mbMains[mb]));
 		}
 		if (j2sets.SERVER_SWITCH_mbsandbox) {
 			var mbSandBoxes = JSON.parse(j2sets.SERVER_SWITCH_mbsandbox);
