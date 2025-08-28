@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2025.8.23
+// @version      2025.8.28
 // @description  Choose your favourite MusicBrainz server (MBS) (main/beta/test) and no link will ever send you to the others
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
@@ -28,36 +28,50 @@ if (discourseURL) {
 	location.replace(decodeURIComponent(discourseURL[1]));
 }
 /* ---------------------------------------------------------------- */
+var MBS = location.host.match(/^((beta|test)\.)?musicbrainz\.org$/i);
 preferred_MBS = leftTrim(preferred_MBS);
-document.addEventListener("submit", function(event) {
-	var element = event.target || event.srcElement;
-	if (element && element.nodeType == Node.ELEMENT_NODE && element.tagName == "FORM") {
-		var ACTION = element.getAttribute("action");
-		if (ACTION && !ACTION.match(/oauth/) && !element.querySelector("input[type='password']")) {
-			var newAction = prefer(ACTION);
-			if (newAction) {
-				var urlInput = element.querySelector("input[name='url']");
-				if (urlInput) {
-					var newUrl = prefer(urlInput.value);
-					if (newUrl) {
-						urlInput.value = newUrl;
+if (!MBS) {
+	// Redirect importers to preferred MBS
+	document.addEventListener("submit", function(event) {
+		var element = event.target || event.srcElement;
+		if (element && element.nodeType == Node.ELEMENT_NODE && element.tagName == "FORM") {
+			var ACTION = element.getAttribute("action");
+			if (ACTION && !ACTION.match(/oauth/) && !element.querySelector("input[type='password']")) {
+				var newAction = prefer(ACTION);
+				if (newAction) {
+					var urlInput = element.querySelector("input[name='url']");
+					if (urlInput) {
+						var newUrl = prefer(urlInput.value);
+						if (newUrl) {
+							urlInput.value = newUrl;
+						}
 					}
+					element.setAttribute("action", newAction);
+					element.style.setProperty("background-color", "#cfc");
+					setTimeout(function() { element.submit(); }, 10);
+					return stop(event);
 				}
-				element.setAttribute("action", newAction);
-				element.style.setProperty("background-color", "#cfc");
-				setTimeout(function() { element.submit(); }, 10);
-				return stop(event);
 			}
 		}
-	}
-}, true);
+	}, true);
+}
+// Redirect links to preferred MBS
+// Non-MBS websites: All MBS links
+// MBS websites: Edit note text links only https://tickets.metabrainz.org/browse/MBS-13728
 document.addEventListener("mousedown", function(event) {
 	var element = event.target || event.srcElement;
 	if (element && element.nodeType == Node.ELEMENT_NODE) {
 		if (element.tagName != "A") {
 			element = getParent(element, "a");
 		}
-		if (element && element.tagName == "A" && !element.classList.contains("jesus2099-bypass-mb_PREFERRED-MBS")) { // mb_SUPER-MIND-CONTROL-II-X-TURBO server switcher
+		if (
+			element
+			&& element.matches("a:not(.jesus2099-bypass-mb_PREFERRED-MBS)") // mb_SUPER-MIND-CONTROL-II-X-TURBO server switcher
+			&& (
+				!MBS
+				|| MBS && element.closest(".edit-note-text")
+			)
+		) {
 			process(element);
 		}
 	}
