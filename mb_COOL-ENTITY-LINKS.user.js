@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COOL ENTITY LINKS
-// @version      2024.10.28
+// @version      2025.8.29
 // @description  musicbrainz.org: In some pages like edits, blog, forums, chatlogs, tickets, annotations, etc. it will prefix entity links with an icon, shorten and embelish all sorts of MB links (cdtoc, entities, tickets, bugs, edits, etc.).
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_COOL-ENTITY-LINKS
@@ -13,14 +13,15 @@
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
 // @match        *://*.musicbrainz.org/*
+// @match        *://*.musicbrainz.eu/*
 // @match        *://blog.metabrainz.org/*
 // @match        *://chatlogs.metabrainz.org/libera/*
 // @match        *://tickets.metabrainz.org/browse/*
 // @match        *://web.archive.org/web/*/bugs.musicbrainz.org/ticket/*
 // @match        *://web.archive.org/web/*/chatlogs.musicbrainz.org/*
 // @match        *://web.archive.org/web/*/forums.musicbrainz.org/viewtopic.php*
-// @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/account\//
-// @exclude      /^https?:\/\/(\w+\.)?musicbrainz\.org\/admin\//
+// @exclude      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/account\//
+// @exclude      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/admin\//
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -75,14 +76,16 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 	var as, cssas;
 	if (entities[ent].fullpath) {
 		cssas = "a[href^='" + u + "'], a[href^='http:" + u + "'], a[href^='https:" + u + "']";
-	} else if (self.location.href.match(/^https?:\/\/((beta|test)\.)?musicbrainz\.org/)) {
+	} else if (self.location.href.match(/^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)/)) {
 		cssas  = ".annotation-body a[href^='" + entities[ent].path + "'], ";
 		cssas += ".annotation-body a[href*='//" + u + "'], ";
+		cssas += ".annotation-body a[href*='//" + u.replace(/\.org/, ".eu") + "'], ";
 		cssas += ".annotation-body a[href*='//test." + u + "'], ";
 		cssas += ".annotation-body a[href*='//beta." + u + "'], ";
 		cssas += ".annotation-body a[href*='//classic." + u + "'][href$='.html'], ";
 		cssas += ".edit-note-text a[href^='" + entities[ent].path + "'], ";
 		cssas += ".edit-note-text a[href*='//" + u + "'], ";
+		cssas += ".edit-note-text a[href*='//" + u.replace(/\.org/, ".eu") + "'], ";
 		cssas += ".edit-note-text a[href*='//test." + u + "'], ";
 		cssas += ".edit-note-text a[href*='//beta." + u + "'], ";
 		cssas += ".edit-note-text a[href*='//classic." + u + "'][href$='.html']";
@@ -122,7 +125,7 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 					}
 					newA.appendChild(subA);
 				}
-				var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.musicbrainz\.org)/);
+				var altserv = href.match(/^[^/]*\/\/(?:(test|beta|classic)\.musicbrainz\.org)/) || href.match(/^[^/]*\/\/musicbrainz\.(eu)/);
 				if (altserv) {
 					newA.appendChild(document.createTextNode(" (" + altserv[1] + ")"));
 				}
@@ -133,7 +136,7 @@ for (var ent in entities) if (Object.prototype.hasOwnProperty.call(entities, ent
 				}
 				newA.insertBefore(createTag("b", {}, ent + "\u00A0"), newA.firstChild);
 				if (entities[ent].noTools !== true) {
-					if (u.match(/musicbrainz\.org/) && (ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
+					if (u.match(/musicbrainz\.(org|eu)/) && (ent == "user" && href.match(/user\/[^/]+$/) || !entities[ent].id && href.match(new RegExp(GUIDi + "$"))) && (editsLink || editLink)) {
 						var fragment = document.createDocumentFragment();
 						fragment.appendChild(newA);
 						addAfter(document.createTextNode(">"), newA);
