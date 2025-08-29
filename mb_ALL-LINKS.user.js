@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2025.8.29
+// @version      2025.8.30
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -25,19 +25,19 @@
 // @match        *://*.musicbrainz.org/series/*
 // @match        *://*.musicbrainz.org/url/*
 // @match        *://*.musicbrainz.org/work/*
-// @match        *://*.musicbrainz.eu/area/*
-// @match        *://*.musicbrainz.eu/artist/*
-// @match        *://*.musicbrainz.eu/event/*
-// @match        *://*.musicbrainz.eu/genre/*
-// @match        *://*.musicbrainz.eu/instrument/*
-// @match        *://*.musicbrainz.eu/label/*
-// @match        *://*.musicbrainz.eu/place/*
-// @match        *://*.musicbrainz.eu/recording/*
-// @match        *://*.musicbrainz.eu/release/*
-// @match        *://*.musicbrainz.eu/release-group/*
-// @match        *://*.musicbrainz.eu/series/*
-// @match        *://*.musicbrainz.eu/url/*
-// @match        *://*.musicbrainz.eu/work/*
+// @match        *://musicbrainz.eu/area/*
+// @match        *://musicbrainz.eu/artist/*
+// @match        *://musicbrainz.eu/event/*
+// @match        *://musicbrainz.eu/genre/*
+// @match        *://musicbrainz.eu/instrument/*
+// @match        *://musicbrainz.eu/label/*
+// @match        *://musicbrainz.eu/place/*
+// @match        *://musicbrainz.eu/recording/*
+// @match        *://musicbrainz.eu/release/*
+// @match        *://musicbrainz.eu/release-group/*
+// @match        *://musicbrainz.eu/series/*
+// @match        *://musicbrainz.eu/url/*
+// @match        *://musicbrainz.eu/work/*
 // @exclude      */*/*/*annotat*
 // @exclude      */*/*/*create*
 // @exclude      */*/*/*delete*
