@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HIDE DIGITAL RELEASES
-// @version      2025.8.22
+// @version      2025.8.29
 // @description  musicbrainz.org: Release group page: Hide digital releases
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HIDE-DIGITAL-RELEASES
@@ -11,11 +11,11 @@
 // @since        2021-02-25; https://community.metabrainz.org/t/digital-releases/361875/125?u=jesus2099
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/releases($|\?)/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}($|\?)/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/label\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}($|\?)/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}($|\?)/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\?query=.+\btype=release\b/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/releases($|\?)/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}($|\?)/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/label\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}($|\?)/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}($|\?)/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/search\?query=.+\btype=release\b/
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2024.9.27
+// @version      2025.8.29
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -14,18 +14,21 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/(artist|cdtoc|collection|label|recording|series|tag)\//
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release([-_]group)?\/.+$/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/merge(\?.*)?$/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\?.+/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\?.*type=(annotation|release(_group)?).*$/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/user\/[^/]+\/edits/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/user\/[^/]+\/(ratings|tag\/)/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/(artist|cdtoc|collection|label|recording|series|tag)\//
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/edit\/\d+/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/release([-_]group)?\/.+$/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/release\/merge(\?.*)?$/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/search\/edits\?.+/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/search\?.*type=(annotation|release(_group)?).*$/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/user\/[^/]+\/edits/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/user\/[^/]+\/(ratings|tag\/)/
 // @exclude      *.org/*/*/edit
 // @exclude      *.org/*/*/edit?*
 // @exclude      *.org/cdtoc/remove*
+// @exclude      *.eu/*/*/edit
+// @exclude      *.eu/*/*/edit?*
+// @exclude      *.eu/cdtoc/remove*
 // @run-at       document-idle
 // ==/UserScript==
 "use strict";

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2025.7.21
+// @version      2025.8.29
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -14,8 +14,8 @@
 // @require      https://github.com/jesus2099/konami-command/raw/89dce29b9cce6e92e552f7d8ce2f5cb0ed161f2a/lib/MB-JUNK-SHOP.js?version=2024.10.13
 // @require      https://github.com/jesus2099/konami-command/raw/63aeeec359c7f1b5920308f1b105da4cce09ffe2/lib/SUPER.js?version=2025.7.21
 // @grant        none
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/(disc\/\d+)?)?(\?tport=\d+)?(#.*)?$/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\?|$)/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/(disc\/\d+)?)?(\?tport=\d+)?(#.*)?$/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\?|$)/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

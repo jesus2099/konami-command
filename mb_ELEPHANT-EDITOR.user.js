@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2024.11.8
+// @version      2025.8.29
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -39,13 +39,39 @@
 // @match        *://*.musicbrainz.org/release/*/edit*
 // @match        *://*.musicbrainz.org/release/add*
 // @match        *://*.musicbrainz.org/work/*/add-iswc
+// @match        *://*.musicbrainz.eu/*/add-alias
+// @match        *://*.musicbrainz.eu/*/change-quality
+// @match        *://*.musicbrainz.eu/*/create*
+// @match        *://*.musicbrainz.eu/*/delete
+// @match        *://*.musicbrainz.eu/*/edit
+// @match        *://*.musicbrainz.eu/*/edit/?*
+// @match        *://*.musicbrainz.eu/*/edit_annotation
+// @match        *://*.musicbrainz.eu/*/merge
+// @match        *://*.musicbrainz.eu/*/merge?*
+// @match        *://*.musicbrainz.eu/*/move?dest=*
+// @match        *://*.musicbrainz.eu/*/remove*
+// @match        *://*.musicbrainz.eu/*edits*
+// @match        *://*.musicbrainz.eu/artist/*/split
+// @match        *://*.musicbrainz.eu/cdtoc/*
+// @match        *://*.musicbrainz.eu/dialog?path=%2F*%2Fcreate*
+// @match        *://*.musicbrainz.eu/edit/*
+// @match        *://*.musicbrainz.eu/edit/artist/add.html?*
+// @match        *://*.musicbrainz.eu/edit/subscribed*
+// @match        *://*.musicbrainz.eu/event/*/*-event-art*
+// @match        *://*.musicbrainz.eu/isrc/delete*
+// @match        *://*.musicbrainz.eu/mod/*
+// @match        *://*.musicbrainz.eu/recording/*/add-isrc
+// @match        *://*.musicbrainz.eu/release*/*/*-cover-art*
+// @match        *://*.musicbrainz.eu/release/*/edit*
+// @match        *://*.musicbrainz.eu/release/add*
+// @match        *://*.musicbrainz.eu/work/*/add-iswc
 // @match        *://acoustid.org/edit/*
 // @run-at       document-idle
 // ==/UserScript==
 "use strict";
 var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
 var IS_MOBILE_DEVICE = /Mobile/i.test(navigator.userAgent);
-var ON_MB = location.host.match(/^((beta|test)\.)?musicbrainz\.(eu|org)/);
+var ON_MB = location.host.match(/^((beta|test)\.)?musicbrainz\.(org|eu)/);
 var ON_EDIT_PAGE = (ON_MB && location.pathname.match(/^\/edit\/\d+$/));
 var ON_EDIT_SEARCH_PAGE = (ON_MB && location.pathname.match(/^\/.+(?:edits|subscribed)/));
 var ON_RELEASE_EDITOR_PAGE = (ON_MB && document.querySelector("div#release-editor"));

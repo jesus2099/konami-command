@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2024.8.2.1832
+// @version      2025.8.29
 // @description  musicbrainz.org: Linkify cover art edit “Filenames” (as specified in https://musicbrainz.org/edit/42525958); Add cool links to cover art tab and archive pages; Display (most) broken images
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
@@ -18,6 +18,12 @@
 // @match        *://*.musicbrainz.org/release/*/cover-art
 // @match        *://*.musicbrainz.org/search/edits*
 // @match        *://*.musicbrainz.org/user/*/edits/open*
+// @match        *://*.musicbrainz.eu/*/*/edits*
+// @match        *://*.musicbrainz.eu/*/*/open_edits*
+// @match        *://*.musicbrainz.eu/edit/*
+// @match        *://*.musicbrainz.eu/release/*/cover-art
+// @match        *://*.musicbrainz.eu/search/edits*
+// @match        *://*.musicbrainz.eu/user/*/edits/open*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

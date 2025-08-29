@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2024.12.4
+// @version      2025.8.29
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -13,11 +13,11 @@
 // @require      https://github.com/jesus2099/konami-command/raw/45e79077994ef566d0f7f513f8d838c151f1989d/lib/CONTROL-POMME.js?version=2023.2.23
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits\b/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+\b/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/(open|subscribed(_editors)?)\b/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\b/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/user\/[^/]+\/(edits(\/open)?|votes)\b/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits\b/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/edit\/\d+\b/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/edit\/(open|subscribed(_editors)?)\b/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/search\/edits\b/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/user\/[^/]+\/(edits(\/open)?|votes)\b/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

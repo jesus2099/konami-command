@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS ISRC
-// @version      2024.12.20
+// @version      2025.8.29
 // @description  kepstin’s magicisrc. Paste a bunch of ISRC instead of one by one
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MASS-ISRC
@@ -12,7 +12,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @match        *://magicisrc.kepstin.ca/*
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -48,7 +48,7 @@ if (location.host === "magicisrc.kepstin.ca") {
 			}
 		}
 	});
-} else if (location.host.match(/musicbrainz\.org$/)) {
+} else if (location.host.match(/musicbrainz\.(org|eu)/)) {
 	var lastEditing = document.querySelector("div#sidebar > h2.editing + ul.links > li.separator");
 	if (lastEditing) {
 		var magicISRCLink = document.createElement("a");

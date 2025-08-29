@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2025.7.21
+// @version      2025.8.29
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
@@ -12,7 +12,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://github.com/jesus2099/konami-command/raw/63aeeec359c7f1b5920308f1b105da4cce09ffe2/lib/SUPER.js?version=2025.7.21
 // @grant        none
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/[^/]+\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

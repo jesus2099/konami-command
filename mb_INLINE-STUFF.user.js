@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2024.7.31
+// @version      2025.8.29
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -13,16 +13,16 @@
 // @require      https://github.com/jesus2099/konami-command/raw/ab3d205ab8a9897ac3ef23075fda26bed07ca342/lib/COOL-BUBBLES.js?version=2016.6.1.1310
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/recordings/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/\d+/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/edit\/subscribed/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/event\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/(add-)?event-art)/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/isrc\/[a-z]{2}[a-z0-9]{3}[0-9]{2}[0-9]{5}/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/edit$)/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/search\/edits\?/
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/user\/[^/]+\/edits/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/recordings/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/edit\/\d+/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/edit\/subscribed/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/event\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/(add-)?event-art)/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/isrc\/[a-z]{2}[a-z0-9]{3}[0-9]{2}[0-9]{5}/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/edit$)/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/search\/edits\?/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/user\/[^/]+\/edits/
 // @run-at       document-idle
 // ==/UserScript==
 "use strict";
