@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2025.3.17
+// @version      2025.8.30
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -24,6 +24,19 @@
 // @match        *://*.musicbrainz.org/statistics/editors*
 // @match        *://*.musicbrainz.org/user/*
 // @match        *://*.musicbrainz.org/work/*
+// @match        *://musicbrainz.eu/*edits*
+// @match        *://musicbrainz.eu/area/*/users*
+// @match        *://musicbrainz.eu/artist/*
+// @match        *://musicbrainz.eu/edit/*
+// @match        *://musicbrainz.eu/election*
+// @match        *://musicbrainz.eu/label/*
+// @match        *://musicbrainz.eu/recording/*
+// @match        *://musicbrainz.eu/release/*
+// @match        *://musicbrainz.eu/release-group/*
+// @match        *://musicbrainz.eu/search*type=editor*
+// @match        *://musicbrainz.eu/statistics/editors*
+// @match        *://musicbrainz.eu/user/*
+// @match        *://musicbrainz.eu/work/*
 // @run-at       document-idle
 // ==/UserScript==
 "use strict";

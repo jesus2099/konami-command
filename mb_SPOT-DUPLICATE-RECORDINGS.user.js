@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SPOT DUPLICATE RECORDINGS
-// @version      2022.9.26.1
+// @version      2025.8.30
 // @description  musicbrainz.org: Spot recordings that are linked multiple times to the same work
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SPOT-DUPLICATE-RECORDINGS
@@ -14,8 +14,10 @@
 // @grant        none
 // @match        *://*.musicbrainz.org/recording/*
 // @match        *://*.musicbrainz.org/work/*
-// @exclude      *.org/recording/*/*
-// @exclude      *.org/work/*/*
+// @match        *://musicbrainz.eu/recording/*
+// @match        *://musicbrainz.eu/work/*
+// @exclude      */recording/*/*
+// @exclude      */work/*/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2025.5.17
+// @version      2025.8.30
 // @description  musicbrainz.org: MOUSE-LESS EDITING! Cleverly focus and refocus fields in various MusicBrainz edit pages and tracklist Up Down key navigation
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_AUTO-FOCUS-KEYBOARD-SELECT
@@ -11,7 +11,7 @@
 // @since        2012-06-08; https://web.archive.org/web/20131103163357/userscripts.org/scripts/show/135547 / https://web.archive.org/web/20141011084007/userscripts-mirror.org/scripts/show/135547
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
-// @include      /^https?:\/\/(\w+\.)?musicbrainz\.org\/(recording|release)\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/delete$/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/(recording|release)\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/delete$/
 // @match        *://*.musicbrainz.org/*/*/add-alias
 // @match        *://*.musicbrainz.org/*/*/alias/*/delete
 // @match        *://*.musicbrainz.org/*/*/alias/*/edit
@@ -44,6 +44,38 @@
 // @match        *://*.musicbrainz.org/work/*/add-iswc
 // @match        *://*.musicbrainz.org/work/*/edit
 // @match        *://*.musicbrainz.org/work/create*
+// @match        *://musicbrainz.eu/*/*/add-alias
+// @match        *://musicbrainz.eu/*/*/alias/*/delete
+// @match        *://musicbrainz.eu/*/*/alias/*/edit
+// @match        *://musicbrainz.eu/*/*/edit_annotation*
+// @match        *://musicbrainz.eu/*/*/tags*
+// @match        *://musicbrainz.eu/artist/*/edit
+// @match        *://musicbrainz.eu/artist/create
+// @match        *://musicbrainz.eu/cdtoc/*/set-durations?tracklist=*
+// @match        *://musicbrainz.eu/cdtoc/attach*
+// @match        *://musicbrainz.eu/cdtoc/move*
+// @match        *://musicbrainz.eu/cdtoc/remove*
+// @match        *://musicbrainz.eu/edit/*/cancel*
+// @match        *://musicbrainz.eu/edit-note/*/modify
+// @match        *://musicbrainz.eu/isrc/delete*
+// @match        *://musicbrainz.eu/label/*/edit
+// @match        *://musicbrainz.eu/label/create
+// @match        *://musicbrainz.eu/recording/*/add-isrc
+// @match        *://musicbrainz.eu/recording/*/edit
+// @match        *://musicbrainz.eu/recording/*/remove-puid*
+// @match        *://musicbrainz.eu/recording/create*
+// @match        *://musicbrainz.eu/release/*/add-cover-art
+// @match        *://musicbrainz.eu/release/*/edit
+// @match        *://musicbrainz.eu/release/*/edit-cover-art/*
+// @match        *://musicbrainz.eu/release/*/remove-cover-art/*
+// @match        *://musicbrainz.eu/release/*/reorder-cover-art
+// @match        *://musicbrainz.eu/release/add*
+// @match        *://musicbrainz.eu/release-group/*/edit
+// @match        *://musicbrainz.eu/release-group/create*
+// @match        *://musicbrainz.eu/url/*/edit
+// @match        *://musicbrainz.eu/work/*/add-iswc
+// @match        *://musicbrainz.eu/work/*/edit
+// @match        *://musicbrainz.eu/work/create*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

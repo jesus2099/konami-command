@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. HYPER MOULINETTE
-// @version      2024.3.23
+// @version      2025.8.30
 // @description  musicbrainz.org: Mass PUT or DELETE releases in a collection from an edit search, an other collection, or a tag
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_HYPER-MOULINETTE
@@ -12,7 +12,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
-// @match        *://*.musicbrainz.org/user/*/collections
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/user\/[^/]+\/collections$/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";

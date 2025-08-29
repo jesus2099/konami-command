@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. LOCAL STORAGE MANAGER
-// @version      2021.6.15
+// @version      2025.8.30
 // @changelog    https://github.com/jesus2099/konami-command/commits/master/mb_LOCAL-STORAGE-MANAGER.user.js
 // @description  musicbrainz.org: Read, write, edit and delete key/values from your mb local storage (in About menu)
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_LOCAL-STORAGE-MANAGER
@@ -14,6 +14,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        none
 // @match        *://*.musicbrainz.org/*
+// @match        *://musicbrainz.eu/*
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
