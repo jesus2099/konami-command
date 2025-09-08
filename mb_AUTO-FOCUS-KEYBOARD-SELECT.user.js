@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2025.8.30
+// @version      2025.9.9
 // @description  musicbrainz.org: MOUSE-LESS EDITING! Cleverly focus and refocus fields in various MusicBrainz edit pages and tracklist Up Down key navigation
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_AUTO-FOCUS-KEYBOARD-SELECT
@@ -213,7 +213,7 @@ function getMostCleverInputToFocus() {
 		case "/release/*/tags":
 		case "/release-group/*/tags":
 		case "/work/*/tags":
-			best_input = document.querySelector("textarea[id='id-tag.tags']");
+			best_input = document.querySelector("#tag-form textarea");
 			break;
 		case "/url/*/edit":
 			best_input = document.querySelector("input[id='id-edit-url.url']");
