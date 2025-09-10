@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CAA LINKS
-// @version      2025.8.30
+// @version      2025.9.10
 // @description  musicbrainz.org: Linkify cover art edit “Filenames” (as specified in https://musicbrainz.org/edit/42525958); Add cool links to cover art tab and archive pages; Display (most) broken images
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CAA-LINKS
@@ -71,18 +71,18 @@ function showThumbnails() {
 			var thumbnail = createTag(
 				"img", {
 					a: {
-						title: GM_info.script.name + " \nunlinked image, still in CAA, cf. filename link above"
+						title: "Loading aided by " + GM_info.script.name + " fallback image loader"
 					},
 					s: {
-						border: "thick solid #ff6",
-						float: "left",
-						marginRight: "1em",
-						maxWidth: "600px"
+						border: "3px solid #ff6",
+						borderImage: "linear-gradient(to top left, violet, indigo, blue, green, yellow, orange, red) 1",
+						boxSizing: "border-box"
 					}
 				}
 			);
 			failedCAAImages[image].parentNode.insertBefore(thumbnail, failedCAAImages[image]);
 			var CAAurls = [associatedCAALink.getAttribute("href")];
+			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb1200$1"));
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb500$1"));
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_thumb250$1"));
 			CAAurls.unshift(CAAurls[CAAurls.length - 1].replace(/(\.\w+)$/, "_itemimage$1")); // same as _thumb below but less frequent
