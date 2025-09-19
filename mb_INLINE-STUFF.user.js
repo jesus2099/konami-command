@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2025.8.29
+// @version      2025.9.19
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -203,24 +203,30 @@ if (page_type) {
 			document.querySelector("div#content table.tbl").classList.add(userjs + "-has-isrcs"); // for later duplicate spot
 			// fall through
 		case "edits":
-			var iedits = document.querySelectorAll("div#page table.add-isrcs, div#page table.merge-recordings, div#page table.remove-isrc, div#page table." + userjs + "-has-isrcs");
-			for (var ied = 0; ied < iedits.length; ied++) {
-				shownisrcs = [];
-				var as = iedits[ied].getElementsByTagName("a");
-				for (var ia = 0; ia < as.length; ia++) {
-					var href = as[ia].getAttribute("href").match(/isrc[=/]([^?]+)$/);
-					if (href) {
-						as[ia].replaceChild(coolifyISRC(as[ia].textContent), as[ia].firstChild);
-						if (shownisrcs[href[1]]) {
-							hasDupes.ISRC++;
-							shownisrcs[href[1]].style.setProperty("background-color", dupeColour);
-							as[ia].style.setProperty("background-color", dupeColour);
-						} else {
-							shownisrcs[href[1]] = as[ia];
+			// React hydrate clumsy workaround
+			setTimeout(function() {
+				debug("ISRC start");
+				var iedits = document.querySelectorAll("div#page table.add-isrcs, div#page table.merge-recordings, div#page table.remove-isrc, div#page table." + userjs + "-has-isrcs");
+				for (var ied = 0; ied < iedits.length; ied++) {
+					shownisrcs = [];
+					var as = iedits[ied].getElementsByTagName("a");
+					for (var ia = 0; ia < as.length; ia++) {
+						var href = as[ia].getAttribute("href").match(/isrc[=/]([^?]+)$/);
+						if (href) {
+							debug(Object.keys(as[ia].closest("div.isrc-list-container")));
+							as[ia].replaceChild(coolifyISRC(as[ia].textContent), as[ia].firstChild);
+							if (shownisrcs[href[1]]) {
+								hasDupes.ISRC++;
+								shownisrcs[href[1]].style.setProperty("background-color", dupeColour);
+								as[ia].style.setProperty("background-color", dupeColour);
+							} else {
+								shownisrcs[href[1]] = as[ia];
+							}
 						}
 					}
 				}
-			}
+				debug("ISRC end");
+			}, 666);
 			break;
 		case "recording":
 			// format sidebar ISRCs

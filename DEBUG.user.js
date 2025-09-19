@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         DEBUG
-// @version      2024.7.24
+// @version      2025.9.19
 // @description  Event and context info
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/DEBUG
@@ -17,6 +17,9 @@
 console.debug(GM_info.script.name + " - " + location.href);
 if (GM_info.platform) console.debug("GM_info.platform: " + JSON.stringify(GM_info.platform, null, "\t"));
 console.debug(GM_info);
+document.addEventListener("mb-hydration", function(event) {
+	console.debug("Got mb-hydration event:", event);
+});
 document.body.addEventListener("keydown", keyboardMouseEventDebug);
 document.body.addEventListener("keypress", keyboardMouseEventDebug);
 document.body.addEventListener("keyup", keyboardMouseEventDebug);
