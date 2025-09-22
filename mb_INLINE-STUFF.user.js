@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2025.9.19
+// @version      2025.9.22
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -20,6 +20,7 @@
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/event\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/(add-)?event-art)/
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/isrc\/[a-z]{2}[a-z0-9]{3}[0-9]{2}[0-9]{5}/
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/recording\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\/edit$)/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/recording\/merge/
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}([^/]|$|\/disc\/\d+)/
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/search\/edits\?/
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/user\/[^/]+\/edits/
@@ -103,12 +104,12 @@ var tracksHtml = null;
 var page_type;
 if (location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i)) {
 	page_type = "edits";
+} else if (location.pathname.match(/\/recordings|^\/recording\/merge$/i)) {
+	page_type = "recordings";
 } else {
 	var entity_type = location.pathname.match(/^\/(event|isrc|recording|release)/i);
 	if (entity_type) {
 		page_type = entity_type[1];
-	} else if (location.pathname.match(/\/recordings/i)) {
-		page_type = "recordings";
 	}
 }
 debug("Page type: " + page_type);
@@ -209,7 +210,7 @@ if (page_type) {
 				var iedits = document.querySelectorAll("div#page table.add-isrcs, div#page table.merge-recordings, div#page table.remove-isrc, div#page table." + userjs + "-has-isrcs");
 				for (var ied = 0; ied < iedits.length; ied++) {
 					shownisrcs = [];
-					var as = iedits[ied].getElementsByTagName("a");
+					var as = iedits[ied].querySelectorAll("a[href*='isrc']");
 					for (var ia = 0; ia < as.length; ia++) {
 						var href = as[ia].getAttribute("href").match(/isrc[=/]([^?]+)$/);
 						if (href) {
