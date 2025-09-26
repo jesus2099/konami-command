@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PRINT ALL PAGES
-// @version      2025.8.29
+// @version      2025.9.26
 // @description  musicbrainz.org: Print your complete collections to make your shopping lists or check lists. Maybe it will work on more than just collections, in the future.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PRINT-ALL-PAGES
@@ -24,6 +24,7 @@ if (form) {
 	var lastPage;
 	// locate the pagination toolbar or create it if none
 	var pagination = form.querySelector("nav ul.pagination");
+	var button_label = "apply nice print layout";
 	if (!pagination) {
 		lastPage = 1;
 		pagination = form.insertBefore(document.createElement("nav"), form.firstChild).appendChild(createTag("ul", {a: {class: "pagination"}}));
@@ -33,6 +34,7 @@ if (form) {
 		if (lastPage) {
 			lastPage = parseInt(lastPage.getAttribute("href").match(/\d+$/)[0], 10);
 		}
+		button_label = "load all pages and " + button_label;
 	}
 	// put the little button instead of the first page disabled Previous button
 	replaceChildren(createTag("li", {}, createTag(
@@ -43,7 +45,7 @@ if (form) {
 			e: {click: preparePage}
 		}, [
 			createTag("img", {a: {alt: "loading", src: GM_info.script.icon}, s: {verticalAlign: "text-bottom"}}),
-			" Load all pages for print"
+			" " + button_label[0].toUpperCase() + button_label.substring(1)
 		]
 	)), pagination.firstChild);
 }
