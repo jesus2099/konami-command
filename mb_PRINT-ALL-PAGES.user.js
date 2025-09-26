@@ -21,18 +21,17 @@ var userjs = {
 };
 var form = document.querySelector("div#content h2 + form[method='post']");
 if (form) {
-	var lastPage;
 	// locate the pagination toolbar or create it if none
 	var pagination = form.querySelector("nav ul.pagination");
 	var button_label = "apply nice print layout";
 	if (!pagination) {
-		lastPage = 1;
+		userjs.lastPage = 1;
 		pagination = form.insertBefore(document.createElement("nav"), form.firstChild).appendChild(createTag("ul", {a: {class: "pagination"}}));
 		pagination.appendChild(document.createElement("li"));
 	} else {
-		lastPage = pagination.querySelector("ul.pagination > li:nth-last-child(3) > a");
-		if (lastPage) {
-			lastPage = parseInt(lastPage.getAttribute("href").match(/\bpage=(\d+)\b/)[1], 10);
+		userjs.lastPage = pagination.querySelector("ul.pagination > li:nth-last-child(3) > a");
+		if (userjs.lastPage) {
+			userjs.lastPage = parseInt(userjs.lastPage.getAttribute("href").match(/\bpage=(\d+)\b/)[1], 10);
 		}
 		button_label = "load all pages and " + button_label;
 	}
@@ -116,8 +115,8 @@ function preparePage(event) {
 	for (var i = 0; i < collectionHighlights.length; i++) {
 		collectionHighlights[i].className = collectionHighlights[i].className.replace(/\bcollectionHighlighter(Box|Item|Row)\b/g);
 	}
-	if (lastPage !== 1) {
-		appendPage(2, lastPage);
+	if (userjs.lastPage !== 1) {
+		appendPage(2, userjs.lastPage);
 	} else {
 		finalTouch();
 	}
