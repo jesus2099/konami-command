@@ -97,8 +97,10 @@ function preparePage(event) {
 		labelColumnIndex = getParent(labelColumnIndex, "th").cellIndex + 1;
 		css.all.insertRule("tbody td:nth-child(" + labelColumnIndex + ") span.comment { display: none; }", 0);
 	}
-	// hide caa icons (only)
+	// hide caa and no-caa icons
 	css.all.insertRule("a[href$='/cover-art'], span.blank-icon { display: none; }", 0);
+	// hide (high and low) data quality icons
+	css.all.insertRule("span[class$='-data-quality'] { display: none; }", 0);
 	// hide irrelevant pagination buttons
 	css.all.insertRule("div#content > form > nav > ul { display: none; }", 0);
 	// hide SPOT_AC
