@@ -12,7 +12,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @grant        none
-// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\?order=.*)?$/
+// @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/collection\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?!\?.*\bpage=([^1]|1\d+)).*$/
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
@@ -32,7 +32,7 @@ if (form) {
 	} else {
 		lastPage = pagination.querySelector("ul.pagination > li:nth-last-child(3) > a");
 		if (lastPage) {
-			lastPage = parseInt(lastPage.getAttribute("href").match(/\d+$/)[0], 10);
+			lastPage = parseInt(lastPage.getAttribute("href").match(/\bpage=(\d+)\b/)[1], 10);
 		}
 		button_label = "load all pages and " + button_label;
 	}
@@ -149,7 +149,7 @@ function appendPage(page, last) {
 			var nextPage = responseDOM.querySelector("ul.pagination > li:last-of-type > a");
 			if (
 				nextPage
-				&& (nextPage = parseInt(nextPage.getAttribute("href").match(/\d+$/)[0], 10))
+				&& (nextPage = parseInt(nextPage.getAttribute("href").match(/\bpage=(\d+)\b/)[1], 10))
 				&& nextPage > page
 				&& nextPage <= last
 			) {
@@ -163,7 +163,7 @@ function appendPage(page, last) {
 			alert("Error " + this.status + "(" + this.statusText + ") while loading page " + page + ".");
 		}
 	});
-	xhr.open("GET", self.location.href + (self.location.href.indexOf("?") > 1 ? "&" : "?") + "page=" + page, true);
+	xhr.open("GET", location.href.replace(/&?page=[^&]*\b/, "").replace(/\?&/, "?") + (location.href.indexOf("?") > 1 ? "&" : "?") + "page=" + page, true);
 	xhr.send(null);
 }
 function finalTouch() {
