@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2025.8.29
+// @version      2025.10.2
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -1376,7 +1376,11 @@ function releaseList(recording) {
 				trackLength.classList.add("warn-length");
 			}
 			// position
-			releaseRow.appendChild(createTag("td", {}, [createTag("a", {a: {title: recording.releases[r].media[0].format, href: "/track/" + recording.releases[r].media[0].track[0].id}}, recording.releases[r].media[0].position + "." + (recording.releases[r].media[0]["track-offset"] + 1)), "/", recording.releases[r].media[0]["track-count"]]));
+			var track = (recording.releases[r].media[0]["track-offset"] + 1).toString();
+			if (track !== recording.releases[r].media[0].track[0].number) {
+				track = recording.releases[r].media[0].track[0].number + "(" + track + ")";
+			}
+			releaseRow.appendChild(createTag("td", {}, [createTag("a", {a: {title: recording.releases[r].media[0].format, href: "/track/" + recording.releases[r].media[0].track[0].id}}, recording.releases[r].media[0].position + "." + track), "/", recording.releases[r].media[0]["track-count"]]));
 			// release year (MBS-12534 date problems again)
 			releaseRow.appendChild(createTag("td", {a: {"data-release-date": recording.releases[r].date || "error"}}, recording.releases[r].date ? recording.releases[r].date.substr(0, 4) : "????"));
 			// release link
