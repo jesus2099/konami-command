@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         esrh. FULL YEAR
-// @version      2023.8.23
+// @version      2025.10.15
 // @description  Affiche les congés sur toute l’année
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/esrh_FULL-YEAR
@@ -10,13 +10,13 @@
 // @licence      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
 // @since        2023-05-26; 2018 as bookmarklet
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
+// @require      https://html2canvas.hertzen.com/dist/html2canvas.min.js
 // @include      /^https?:\/\/[ericvhs]{11}\.[fiancer]{9}\.[rf]{2}\//
 // @run-at       document-idle
 // ==/UserScript==
 "use strict";
 var userjs = {
 	id: GM_info.script.name.replace(/\.\s/, "_").replace(/\s/g, "-"),
-	name: GM_info.script.name,
 	css: document.createElement("style")
 };
 userjs.css.setAttribute("type", "text/css");
@@ -36,7 +36,7 @@ if (full_year_path_match) {
 		userjs.css.insertRule("body#popup > div#popup_container > div:not(#contenu) { display: none; }", 0);
 		userjs.css.insertRule("span#AFTimeEPlanning_textMY { border-bottom: 1px solid black; color: #303; cursor: pointer; font-size: 1.5em; }", 0);
 		header.closest("tr").style.setProperty("background-color", "#fef");
-		header.parentNode.insertBefore(createTag("div", {}, userjs.name), header.parentNode.firstChild);
+		header.parentNode.insertBefore(createTag("div", {}, [GM_info.script.name, " ", createTag("code", {}, GM_info.script.version)]), header.parentNode.firstChild);
 		header.replaceChild(document.createTextNode(full_year_path_match[1]), header.firstChild);
 		header.setAttribute("title", "Changer d’année");
 		header.addEventListener("click", function(event) {
@@ -56,6 +56,33 @@ if (full_year_path_match) {
 		header.parentNode.style.setProperty("color", "#c6c");
 		header.parentNode.insertBefore(createTag("fragment", {}, [year_link(parseInt(full_year_path_match[1]) - 1), " << "]), header);
 		header.parentNode.insertBefore(createTag("fragment", {}, [" >> ", year_link(parseInt(full_year_path_match[1]) + 1)]), header.nextSibling);
+		// download year as image
+		// https://stackoverflow.com/a/56537796/2236179
+		header.parentNode.firstChild.appendChild(createTag("big", {a: {title: "Sauvegarder"}, s: {cursor: "pointer"}, e: {click: function() {
+			html2canvas(document.querySelector("#AFTimeEPlanning_mainDiv > table"))
+				.then(canvas => {
+					canvas.style.display = "none";
+					document.body.appendChild(canvas);
+					return canvas;
+				})
+				.then(canvas => {
+					const image = canvas.toDataURL("image/png");
+					const a = document.createElement("a");
+					var now = new Date();
+					now =
+						now.getFullYear()
+						+ (now.getMonth() + 1).toString().padStart(2, "0")
+						+ now.getDate().toString().padStart(2, "0")
+						+ " "
+						+ now.getHours().toString().padStart(2, "0")
+						+ now.getMinutes().toString().padStart(2, "0")
+						+ now.getSeconds().toString().padStart(2, "0");
+					a.setAttribute("download", "Congés " + full_year_path_match[1] + " (" + now + ").png");
+					a.setAttribute("href", image);
+					a.click();
+					canvas.remove();
+				});
+		}}}, " 💾 "));
 	}
 } else if ((location.pathname + location.search).match(/^\/TimeManagFF\/Core\/default\.jsp\?role=[EM]/)) {
 	waitForElement("select#AFTimeEPlanning_newYear", function(new_year) {
