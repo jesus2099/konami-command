@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2025.11.3
+// @version      2025.11.5
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -155,7 +155,7 @@ setTimeout(function() {
 				if (pics_settings.big && (box = box.previousSibling && box.previousSibling.tagName == "DIV" && box.previousSibling.classList.contains(userjs + "bigbox") ? box.previousSibling : box.parentNode.insertBefore(createTag("div", {a: {class: userjs + "bigbox"}}), box))) {
 					var artisttd = artistcol && getSibling(getParent(as[a], "td"), "td");
 					// textContent is faster but shows <script> content. artisttd contains React? <script> when pending AC edits. https://kellegous.com/j/2013/02/27/innertext-vs-textcontent/
-					var bigpic = box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\n" + artisttd.innerText.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
+					box.appendChild(createTag("a", {a: {href: as[a].getAttribute("href"), title: as[a].textContent + (artisttd ? "\n" + artisttd.innerText.trim() : "")}, s: {display: "inline-block", height: "100%", margin: "8px 8px 4px 4px"}}, [
 						"⌛",
 						createTag("img", {
 							a: {src: imgurl + "-250", alt: as[a].textContent},
@@ -168,11 +168,6 @@ setTimeout(function() {
 							}
 						})
 					]));
-					if (as[a].closest(".details") && !as[a].closest(".details .tbl")) {
-						// Prevent edit list display jumps
-						bigpic.style.setProperty("float", "left");
-						bigpic.style.setProperty("margin-right", "-142px");
-					}
 				}
 			}
 		}
