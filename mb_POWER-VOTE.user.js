@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2025.11.17
+// @version      2025.11.17.1952
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -41,9 +41,9 @@ var voteColours = true;
 var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent); // FF has bugs
 if (FF) { FF = {"1": "#b1ebb0", "0": "#ebb1ba", "-1": "#f2f0a5"}; }
 var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
-j2css.insertRule("div.edit-list." + userjs.id + "force { display: none; }", 0);
-j2css.insertRule("div.edit-list." + userjs.id + "ninja > div.edit-actions, div.edit-list." + userjs.id + "ninja > div.entered-from, div.edit-list." + userjs.id + "ninja > div.edit-details, div.edit-list." + userjs.id + "ninja > div.edit-notes { display: none; }", 0);
-j2css.insertRule("div#" + userjs.id + "xhrstat { position: fixed; top: 0; left: 0; border: 2px solid black; border-width: 0 2px 2px 0; background-color: #ff6; }", 0);
+j2css.insertRule("div.edit-list." + userjs.id + "hidden { display: none; }", 0);
+j2css.insertRule("div.edit-list." + userjs.id + "collapsed > div.edit-actions, div.edit-list." + userjs.id + "collapsed > div.entered-from, div.edit-list." + userjs.id + "collapsed > div.edit-details, div.edit-list." + userjs.id + "collapsed > div.edit-notes { display: none; }", 0);
+j2css.insertRule("div#" + userjs.id + "xhrstat { position: absolute; top: 0; left: 0; border: 2px solid black; border-width: 0 2px 2px 0; background-color: #ff6; }", 0);
 j2css.insertRule("tr.rename-artist-credits." + userjs.id + "yes > th { vertical-align: middle; }", 0);
 j2css.insertRule("tr.rename-artist-credits." + userjs.id + "yes > td { color: #f00; font-weight: bolder; font-size: 2em; text-shadow: 1px 1px 0 #663; text-transform: uppercase; }", 0);
 j2css.insertRule("/*div#content >*/ form[action='/search/edits'] span." + userjs.id + "-permalink { background-color: #ffc; }", 0);
@@ -409,7 +409,7 @@ if (editform) {
 					this.replaceChild(document.createTextNode(collapse[expand ? 0 : 1]), this.firstChild);
 					this.setAttribute("title", this.getAttribute("title").replace(new RegExp(expand ? "expand" : "collapse", "g"), expand ? "collapse" : "expand"));
 					this.setAttribute("rel", expand ? "collapse" : "expand");
-					ninja(event, this.closest("div.edit-list"), !expand);
+					collapseEdit(this.closest("div.edit-list"), !expand);
 					var editheader = getParent(this, "div", "edit-header");
 					var editheadersel = "div.edit-header", editor, vote;
 					var userCSS = "div.edit-header > p.subheader > a[href*='/user/']";
@@ -474,7 +474,7 @@ function queueApprove(edit, editId) {
 	xhr.open("POST", "/edit/" + editId + "/approve", true);
 	updateXHRstat(++userjs.pendingXHRvote);
 	xhr.send(null);
-	ninja(null, edit, true, "force");
+	hideEdit(edit, true);
 }
 function queueVote(edit, editId, vote, callback) {
 	var editNote = edit.querySelector("textarea");
@@ -489,7 +489,7 @@ function queueVote(edit, editId, vote, callback) {
 	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	updateXHRstat(++userjs.pendingXHRvote);
 	xhr.send(params);
-	ninja(null, edit, true, "force");
+	hideEdit(edit, true);
 }
 function checkAfterQueue(xhr, queueType, callback) {
 	var anotherEdit = xhr.responseText.match(/<title>\D+(\d+) - MusicBrainz<\/title>/);
@@ -522,7 +522,7 @@ function checkAfterQueue(xhr, queueType, callback) {
 			errorMessage += "No votes pending.\n";
 		}
 		if (editEntry) {
-			ninja(null, editEntry, false, "force");
+			hideEdit(editEntry, false);
 			editEntry.setAttribute("title", errorMessage);
 			editEntry.style.setProperty("background-color", "pink");
 			editEntry.style.setProperty("cursor", "help");
@@ -625,7 +625,7 @@ function rangeVote(event, vote, force, min, max) {
 	if (vote != "reset-votes") {
 		if (event.detail < 2) { // first click (1) or touch (0)
 			for (let i = (min ? min + (FF ? 0 : 1) : 0); i < (max ? max + 1 : userjs.radios.length); i++) { // FF shift+click label NG
-				if (userjs.radios[i].getAttribute("value") == vote && !userjs.radios[i].checked && !ninja(event, userjs.radios[i].closest("div.edit-list")) && (force || notVotedYet(userjs.radios[i]))) {
+				if (userjs.radios[i].getAttribute("value") == vote && !userjs.radios[i].checked && !isCollapsedEdit(userjs.radios[i].closest("div.edit-list")) && (force || notVotedYet(userjs.radios[i]))) {
 					sendEvent(userjs.radios[i], "click");
 				}
 			}
@@ -650,13 +650,18 @@ function disable(cont, dis) {
 		return true;
 	} else { return false; }
 }
-function ninja(event, edit, collapse, specificClassName) {
-	var ninjaClassName = specificClassName ? specificClassName : "ninja";
-	if (typeof collapse != "undefined") {
-		disable(edit, collapse);
-		if (collapse) edit.classList.add(userjs.id + ninjaClassName);
-		else edit.classList.remove(userjs.id + ninjaClassName);
-	} else return edit.classList.contains(userjs.id + ninjaClassName);
+function hideEdit(edit, hide) {
+	disable(edit, hide);
+	if (hide) edit.classList.add(userjs.id + "hidden");
+	else edit.classList.remove(userjs.id + "hidden");
+}
+function collapseEdit(edit, collapse) {
+	disable(edit, collapse);
+	if (collapse) edit.classList.add(userjs.id + "collapsed");
+	else edit.classList.remove(userjs.id + "collapsed");
+}
+function isCollapsedEdit(edit) {
+	return edit.classList.contains(userjs.id + "collapsed");
 }
 function updateXHRstat(nbr) {
 	var stat = document.getElementById(userjs.id + "xhrstat");
@@ -666,7 +671,7 @@ function updateXHRstat(nbr) {
 		stat.appendChild(document.createTextNode(" "));
 		stat.style.setProperty("z-index", "2099");
 	}
-	stat.replaceChild(document.createTextNode(nbr + " background vote" + (nbr == 1 ? "" : "s") + " pending…"), stat.firstChild);
+	stat.replaceChild(document.createTextNode(nbr + " background vote" + (nbr === 1 ? "" : "s") + " pending…"), stat.firstChild);
 	if (!editform.querySelector("div.edit-list div.edit-description")) {
 		self.removeEventListener("beforeunload", preventLosingUnsavedChanges); // Allow reload (no more edits)
 		self.location.reload();
