@@ -41,7 +41,8 @@ var voteColours = true;
 var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent); // FF has bugs
 if (FF) { FF = {"1": "#b1ebb0", "0": "#ebb1ba", "-1": "#f2f0a5"}; }
 var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
-j2css.insertRule("div.edit-list." + userjs.id + "force, div.edit-list." + userjs.id + "ninja > div.edit-actions, div.edit-list." + userjs.id + "ninja > div.entered-from, div.edit-list." + userjs.id + "ninja > div.edit-details, div.edit-list." + userjs.id + "ninja > div.edit-notes { overflow: hidden !important; height: 0 !important; !important; padding: 0 !important; margin: 0 !important; }", 0);
+j2css.insertRule("div.edit-list." + userjs.id + "force { display: none; }", 0);
+j2css.insertRule("div.edit-list." + userjs.id + "ninja > div.edit-actions, div.edit-list." + userjs.id + "ninja > div.entered-from, div.edit-list." + userjs.id + "ninja > div.edit-details, div.edit-list." + userjs.id + "ninja > div.edit-notes { display: none; }", 0);
 j2css.insertRule("div#" + userjs.id + "xhrstat { position: fixed; top: 0; left: 0; border: 2px solid black; border-width: 0 2px 2px 0; background-color: #ff6; }", 0);
 j2css.insertRule("tr.rename-artist-credits." + userjs.id + "yes > th { vertical-align: middle; }", 0);
 j2css.insertRule("tr.rename-artist-credits." + userjs.id + "yes > td { color: #f00; font-weight: bolder; font-size: 2em; text-shadow: 1px 1px 0 #663; text-transform: uppercase; }", 0);
@@ -653,11 +654,6 @@ function ninja(event, edit, collapse, specificClassName) {
 	var ninjaClassName = specificClassName ? specificClassName : "ninja";
 	if (typeof collapse != "undefined") {
 		disable(edit, collapse);
-		var allbutheader = "div.edit-actions, div.edit-notes, div.edit-details";
-		var editEntryContent = specificClassName ? [edit] : edit.querySelectorAll(allbutheader);
-		for (var i = 0; i < editEntryContent.length; i++) {
-			editEntryContent[i].style.setProperty("display", collapse ? "none" : "");
-		}
 		if (collapse) edit.classList.add(userjs.id + ninjaClassName);
 		else edit.classList.remove(userjs.id + ninjaClassName);
 	} else return edit.classList.contains(userjs.id + ninjaClassName);
