@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2025.9.28
+// @version      2025.12.6
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -35,7 +35,6 @@ var contractFingerPrints = true; /* more compact AcoustIDs but brwoser can still
 	"" for no name change, %br% is return to new line feed
 	ex.: "%track-name%*", "%track-name% (%recording-name%)" or even %recording-name% */
 var markTrackRecNameDiff = "%track-name%%br%%recording-name%";
-var recUseInRelationshipLink = "+relate"; /* null or delete for no such tool */
 var recAddToMergeLink = "+merge"; /* null or delete for no such tool */
 var formatISRC = true; // Turn USJT19900112 into coloured US-JT1-99-00112 (country-label-year-number)
 var trackLengthDiffInfo = 5000; // ms
@@ -134,7 +133,7 @@ if (page_type) {
 					css.insertRule("div.ars[class^='ars AcoustID'] code { display: inline-block; overflow-x: hidden; vertical-align: bottom; width: 6ch}", 0);
 				}
 				if (pageMbid && (tracksHtml = document.querySelectorAll("div#content table.tbl.medium > tbody > tr[id]:not(.subh)")).length > 0) {
-					if (recUseInRelationshipLink || recAddToMergeLink) {
+					if (recAddToMergeLink) {
 						for (var ith = 0; ith < tracksHtml.length; ith++) {
 							var toolzone = tracksHtml[ith].querySelector("td.treleases");
 							if (toolzone) {
@@ -142,12 +141,8 @@ if (page_type) {
 								toolzone.className = userjs + "toolzone";
 								toolzone.style.setProperty("display", "none");
 								var rec = tracksHtml[ith].querySelector(css_recording);
-								if (recUseInRelationshipLink && rec) {
-									toolzone.appendChild(createA(recUseInRelationshipLink, rec.getAttribute("href") + "/relate", "Use this recording in a relationship…"));
-								}
 								var rat = tracksHtml[ith].querySelector("span.star-rating a.set-rating");
 								if (recAddToMergeLink && rat) {
-									if (recUseInRelationshipLink) { toolzone.appendChild(document.createElement("br")); }
 									toolzone.appendChild(createA(recAddToMergeLink, "/recording/merge_queue?add-to-merge=" + rat.getAttribute("href").match(/id=([0-9]+)/)[1], "Merge this recording…"));
 								}
 								toolzone = toolzone.parentNode.appendChild(document.createElement("div"));
@@ -522,7 +517,7 @@ function idCount(type, count) {
 		});
 		var showTZ = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createElement("label")).appendChild(document.createElement("input"));
 		showTZ.setAttribute("type", "checkbox");
-		showTZ.parentNode.appendChild(document.createTextNode(" Show relate/merge tools"));
+		showTZ.parentNode.appendChild(document.createTextNode(" Show merge tools"));
 		showTZ.addEventListener("click", function(event) {
 			var tzs = document.querySelectorAll("div." + userjs + "toolzone");
 			for (var tz = 0; tz < tzs.length; tz++) {
