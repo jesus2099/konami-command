@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name         atlassian. BUG FIXES
 @namespace    https://github.com/jesus2099/konami-command
-@version      2025.12.8
+@version      2025.12.8.2015
 @description  Hide AI crap and show stronger diff colours
 @author       jesus2099
 @since        2024
@@ -20,6 +20,6 @@
 	}
 	body#jira {
 		/* hide AI cluttering crap */
-		div[data-editor-content-component='true'] { display: none; }
+		div[data-editor-content-component='true'], [data-testid='issue.views.issue-base.foundation.status.improve-issue'], [data-testid='atlassian-intelligence-toolbar-button'] { display: none; }
 	}
 }
