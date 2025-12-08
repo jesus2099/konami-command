@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name         atlassian. BUG FIXES
 @namespace    https://github.com/jesus2099/konami-command
-@version      2025.12.5
+@version      2025.12.8
 @description  Hide AI crap and show stronger diff colours
 @author       jesus2099
 @since        2024
@@ -14,7 +14,7 @@
 		.diff-html-removed { background: pink; text-decoration: line-through; }
 		.diff-html-changed { background: cyan; text-decoration: underline dashed; }
 		/* hide AI cluttering crap */
-		div#search-page-smart-answers, [data-testid^='ak-editor-ai-selection-toolbar-ai-button'], [data-testid^='context-menu-rovo-chat'] { display: none; }
+		div#search-page-smart-answers, [data-testid^='ak-editor-ai-selection-toolbar-ai-button'], [data-testid^='context-menu-rovo-chat'], [data-testid='object-sidebar-container'] > :last-child /* contains platform-ai-button */, [data-testid='app-navigation-ai-mate'] { display: none; }
 		/* hide clumsy search suggestions */
 		div[data-testid='search-page-results-list'] > :not([data-testid='search-page-result']) { display: none; }
 	}
