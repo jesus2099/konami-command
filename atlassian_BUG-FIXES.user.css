@@ -1,8 +1,8 @@
 /* ==UserStyle==
 @name         atlassian. BUG FIXES
 @namespace    https://github.com/jesus2099/konami-command
-@version      2025.12.8.2015
-@description  Hide AI crap and show stronger diff colours
+@version      2025.12.9
+@description  Hide asshole intelligence (AI) crap in Jira and Confluence; and show stronger diff colours in Confluence
 @author       jesus2099
 @since        2024
 ==/UserStyle== */
@@ -20,6 +20,6 @@
 	}
 	body#jira {
 		/* hide AI cluttering crap */
-		div[data-editor-content-component='true'], [data-testid='issue.views.issue-base.foundation.status.improve-issue'], [data-testid='atlassian-intelligence-toolbar-button'] { display: none; }
+		[data-editor-content-component='true'], [data-testid='issue.views.issue-base.foundation.status.improve-issue'], [data-testid='atlassian-intelligence-toolbar-button'], [data-testid='atlassian-navigation.ui.conversation-assistant.app-navigation-ai-mate'] { display: none; }
 	}
 }
