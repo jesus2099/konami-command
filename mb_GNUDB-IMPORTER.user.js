@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. GNUDB IMPORTER
-// @version      2024.10.10
+// @version      2025.12.12
 // @description  GnuDB.org: EXPERIMENTAL! Import GnuDB/FreeDB/CDDB entries to MusicBrainz, thanks to murdos mbimport.js library
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_GNUDB-IMPORTER
@@ -23,7 +23,12 @@
 // https://www.jwz.org/doc/cddb.html
 // https://en.wikipedia.org/wiki/CDDB
 // https://fr.wikipedia.org/wiki/DiscId
-var releaseArtist = document.querySelector("h1").textContent;
+var releaseArtist = document.querySelector("h1");
+if (releaseArtist) {
+	releaseArtist = releaseArtist.textContent;
+} else {
+	releaseArtist = "Various";
+}
 var tracklist = document.querySelector("div#content > table > tbody");
 // Handle "Various Artists" releases
 var va = false;
