@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. GNUDB IMPORTER
-// @version      2025.12.12
+// @version      2025.12.12.1151
 // @description  GnuDB.org: EXPERIMENTAL! Import GnuDB/FreeDB/CDDB entries to MusicBrainz, thanks to murdos mbimport.js library
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_GNUDB-IMPORTER
@@ -27,14 +27,14 @@ var releaseArtist = document.querySelector("h1");
 if (releaseArtist) {
 	releaseArtist = releaseArtist.textContent;
 } else {
-	releaseArtist = "Various";
+	releaseArtist = "";
 }
 var tracklist = document.querySelector("div#content > table > tbody");
 // Handle "Various Artists" releases
 var va = false;
 var vaSeparator = "";
 var r;
-if (releaseArtist.match(/\bdivers(es)?\b|\bcompil(ation\b)?|^nhi[ềe]u\s|^オムニバス$|^various\b|^v\.?a\.?$|^o\.?s\.?t\.?$|\bfilm\b|\bjeux?\b|\bgames?\b/i)) {
+if (releaseArtist.match(/^$|\bdivers(es)?\b|\bcompil(ation\b)?|^nhi[ềe]u\s|^オムニバス$|^various\b|^v\.?a\.?$|^o\.?s\.?t\.?$|\bfilm\b|\bjeux?\b|\bgames?\b/i)) {
 	for (var s = 0, separators = [" / ", "／", " - ", "/"]; !va && s < separators.length; s++) {
 		for (r = 1; r < tracklist.rows.length; r++) {
 			var checkSeparator = tracklist.rows[r].cells[2].textContent.match(new RegExp(separators[s]));
