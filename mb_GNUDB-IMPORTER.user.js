@@ -58,7 +58,6 @@ var parsedRelease = {
 		artist_name: va ? "Various Artists" : releaseArtist,
 		mbid: va ? "89ad4ac3-39f7-470e-963a-56509c546377" : null
 	}],
-	annotation: "Imported from " + location.href,
 	discs: [{
 		format: "CD",
 		tracks: []
