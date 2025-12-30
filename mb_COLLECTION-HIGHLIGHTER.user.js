@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2024.11.28
+// @version      2025.12.30
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepageURL  https://community.metabrainz.org/t/collection-highlighter-highlight-owned-stuff-releases-recordings/559889?u=jesus2099
@@ -359,50 +359,52 @@ function loadReleases(query /* "?collection=MBID&" or "/MBID?" */, action /* add
 		modal(true, "Fetching releases…", 1);
 	}
 	var xhr = new XMLHttpRequest();
-	xhr.addEventListener("load", function(event) {
-		if (this.status == 401) {
-			error(concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
-		} else if (this.status == 200) {
-			var oneRelease = this.response.releases === undefined;
-			if (!userjs.lowMemory) {
-				modal(true, "Received " + (oneRelease ? 1 : this.response.releases.length.toLocaleString(lang)) + " release" + ((oneRelease ? 1 : this.response.releases.length) == 1 ? "" : "s") + ":", 2);
-			}
-			browseReleases(oneRelease ? [this.response] : this.response.releases, action, offset, oneRelease ? 1 : this.response["release-count"]);
-			if (!userjs.lowMemory) {
-				modal(true, "", 1);
-			}
-			var newOffset = !oneRelease && this.response["release-offset"] + this.response.releases.length;
-			if (!oneRelease && newOffset < this.response["release-count"]) {
-				userjs.retry = 0;
-				setTimeout(function() { loadReleases(query, action, conclusionCallback, newOffset); }, chrono(userjs.MBWSRate));
-			} else {
-				// end of recursive function
-				if (userjs.stuff["release-new"].ids.length > 0) {
-					delete(userjs.stuff["release-new"]); // free up memory
-					if (userjs.stuff["missingRecordingWorks"].length > 0) {
-						modal(true, concat(["<hr>", "\u26A0\uFE0F Big releases require ", createTag("b", {s: {color: userjs.highlightColour}}, "delayed work fetching"), " (for " + userjs.stuff["missingRecordingWorks"].length.toLocaleString(lang) + " recordings):"]), 2);
-						userjs.retry = 0;
-						setTimeout(function() {
-							userjs.currentTaskStartDate = Date.now();
-							loadMissingRecordingWorks(userjs.stuff["missingRecordingWorks"], action, conclusionCallback);
-							delete(userjs.stuff["missingRecordingWorks"]); // free up memory
-						}, chrono(userjs.MBWSRate));
+	xhr.addEventListener("readystatechange", function(event) {
+		if (this.readyState === XMLHttpRequest.DONE) {
+			if (this.status == 401) {
+				error(concat(["Error 401. Please ", createA("report bug", GM_info.script.supportURL), " to ", GM_info.script.author, "."]));
+			} else if (this.status == 200) {
+				var oneRelease = this.response.releases === undefined;
+				if (!userjs.lowMemory) {
+					modal(true, "Received " + (oneRelease ? 1 : this.response.releases.length.toLocaleString(lang)) + " release" + ((oneRelease ? 1 : this.response.releases.length) == 1 ? "" : "s") + ":", 2);
+				}
+				browseReleases(oneRelease ? [this.response] : this.response.releases, action, offset, oneRelease ? 1 : this.response["release-count"]);
+				if (!userjs.lowMemory) {
+					modal(true, "", 1);
+				}
+				var newOffset = !oneRelease && this.response["release-offset"] + this.response.releases.length;
+				if (!oneRelease && newOffset < this.response["release-count"]) {
+					userjs.retry = 0;
+					setTimeout(function() { loadReleases(query, action, conclusionCallback, newOffset); }, chrono(userjs.MBWSRate));
+				} else {
+					// end of recursive function
+					if (userjs.stuff["release-new"].ids.length > 0) {
+						delete(userjs.stuff["release-new"]); // free up memory
+						if (userjs.stuff["missingRecordingWorks"].length > 0) {
+							modal(true, concat(["<hr>", "\u26A0\uFE0F Big releases require ", createTag("b", {s: {color: userjs.highlightColour}}, "delayed work fetching"), " (for " + userjs.stuff["missingRecordingWorks"].length.toLocaleString(lang) + " recordings):"]), 2);
+							userjs.retry = 0;
+							setTimeout(function() {
+								userjs.currentTaskStartDate = Date.now();
+								loadMissingRecordingWorks(userjs.stuff["missingRecordingWorks"], action, conclusionCallback);
+								delete(userjs.stuff["missingRecordingWorks"]); // free up memory
+							}, chrono(userjs.MBWSRate));
+						} else {
+							conclusionCallback();
+						}
 					} else {
+						modal(true, "No new releases.", 2);
 						conclusionCallback();
 					}
-				} else {
-					modal(true, "No new releases.", 2);
-					conclusionCallback();
 				}
-			}
-		} else {
-			if (userjs.retry++ < userjs.maxRetry) {
-				userjs.MBWSRate += userjs.slowDownStepAfterRetry;
-				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + userjs.retry + "/" + userjs.maxRetry + ")", 2);
-				debugRetry(this.status);
-				setTimeout(function() { loadReleases(query, action, conclusionCallback, offset); }, chrono(userjs.retryPause));
 			} else {
-				error("Too many (" + userjs.maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
+				if (userjs.retry++ < userjs.maxRetry) {
+					userjs.MBWSRate += userjs.slowDownStepAfterRetry;
+					modal(true, "Error " + this.status + " “" + this.statusText + "” (" + userjs.retry + "/" + userjs.maxRetry + ")", 2);
+					debugRetry(this.status);
+					setTimeout(function() { loadReleases(query, action, conclusionCallback, offset); }, chrono(userjs.retryPause));
+				} else {
+					error("Too many (" + userjs.maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading collection).");
+				}
 			}
 		}
 	});
@@ -592,47 +594,49 @@ function loadMissingRecordingWorks(recordings, action, conclusionCallback, _batc
 		modal(true, "Fetching works for " + batch.length + " recordings… ", 0);
 	}
 	var xhr = new XMLHttpRequest();
-	xhr.addEventListener("load", function(event) {
-		if (this.status == 200) {
-			var works = this.response.works;
-			modal(true, works.length.toString(), 0, {text: "recordings", current: batchOffset + batch.length, total: recordings.length});
-			if (userjs.stuff["work"]) {
-				for (var r = 0; r < works.length; r++) {
-					addRemoveEntities("work", works[r], action);
+	xhr.addEventListener("readystatechange", function(event) {
+		if (this.readyState === XMLHttpRequest.DONE) {
+			if (this.status == 200) {
+				var works = this.response.works;
+				modal(true, works.length.toString(), 0, {text: "recordings", current: batchOffset + batch.length, total: recordings.length});
+				if (userjs.stuff["work"]) {
+					for (var r = 0; r < works.length; r++) {
+						addRemoveEntities("work", works[r], action);
+					}
 				}
-			}
-			var newWsResponseOffset = this.response.offset + works.length;
-			if (newWsResponseOffset < this.response.count) {
-				modal(true, concat([createTag("span", {s: {color: "grey"}}, "+"), " works"]), 0);
-				mbs12154 += this.response.count - userjs.MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
-				if (mbs12154 < userjs.MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
-					modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: userjs.highlightColour}}, ["Slow down required (", createTag("a", {a: {href: "https://tickets.metabrainz.org/browse/MBS-12154", target: "_blank"}}, "MBS-12154"), ")"]), "<br>", "Reducing recording query size: ", createTag("del", {}, batchSize), "→", createTag("b", {}, batchSize - this.response.count + userjs.MBWSSpeedLimit), " recordings"]), 2); // #### REMOVE WHEN MBS-12154 FIXED
-					userjs.retry = 0;
-					// #### UNCOMMENT WHEN MBS-12154 FIXED // setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, newWsResponseOffset); }, chrono(userjs.MBWSRate));
-					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset); }, chrono(userjs.MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
-				} else { // #### REMOVE WHEN MBS-12154 FIXED
-					error("MBS-12154 bug\n\nCannot load works."); // #### REMOVE WHEN MBS-12154 FIXED
-				} // #### REMOVE WHEN MBS-12154 FIXED
-			} else {
-				modal(true, " works", 1);
-				var newBatchOffset = batchOffset + batch.length;
-				if (newBatchOffset < recordings.length) {
-					userjs.retry = 0;
-					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, newBatchOffset); }, chrono(userjs.MBWSRate));
+				var newWsResponseOffset = this.response.offset + works.length;
+				if (newWsResponseOffset < this.response.count) {
+					modal(true, concat([createTag("span", {s: {color: "grey"}}, "+"), " works"]), 0);
+					mbs12154 += this.response.count - userjs.MBWSSpeedLimit; // #### REMOVE WHEN MBS-12154 FIXED
+					if (mbs12154 < userjs.MBWSSpeedLimit) { // #### REMOVE WHEN MBS-12154 FIXED
+						modal(true, concat(["<br>", "<br>", createTag("b", {s: {color: userjs.highlightColour}}, ["Slow down required (", createTag("a", {a: {href: "https://tickets.metabrainz.org/browse/MBS-12154", target: "_blank"}}, "MBS-12154"), ")"]), "<br>", "Reducing recording query size: ", createTag("del", {}, batchSize), "→", createTag("b", {}, batchSize - this.response.count + userjs.MBWSSpeedLimit), " recordings"]), 2); // #### REMOVE WHEN MBS-12154 FIXED
+						userjs.retry = 0;
+						// #### UNCOMMENT WHEN MBS-12154 FIXED // setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, newWsResponseOffset); }, chrono(userjs.MBWSRate));
+						setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset); }, chrono(userjs.MBWSRate)); // #### REMOVE WHEN MBS-12154 FIXED
+					} else { // #### REMOVE WHEN MBS-12154 FIXED
+						error("MBS-12154 bug\n\nCannot load works."); // #### REMOVE WHEN MBS-12154 FIXED
+					} // #### REMOVE WHEN MBS-12154 FIXED
 				} else {
-					// end of recursive function
-					modal(true, "", 1);
-					conclusionCallback();
+					modal(true, " works", 1);
+					var newBatchOffset = batchOffset + batch.length;
+					if (newBatchOffset < recordings.length) {
+						userjs.retry = 0;
+						setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, newBatchOffset); }, chrono(userjs.MBWSRate));
+					} else {
+						// end of recursive function
+						modal(true, "", 1);
+						conclusionCallback();
+					}
 				}
-			}
-		} else {
-			if (userjs.retry++ < userjs.maxRetry) {
-				userjs.MBWSRate += userjs.slowDownStepAfterRetry;
-				modal(true, "Error " + this.status + " “" + this.statusText + "” (" + userjs.retry + "/" + userjs.maxRetry + ")", 2);
-				debugRetry(this.status);
-				setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, wsResponseOffset); }, chrono(userjs.retryPause));
 			} else {
-				error("Too many (" + userjs.maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading missing recording works).");
+				if (userjs.retry++ < userjs.maxRetry) {
+					userjs.MBWSRate += userjs.slowDownStepAfterRetry;
+					modal(true, "Error " + this.status + " “" + this.statusText + "” (" + userjs.retry + "/" + userjs.maxRetry + ")", 2);
+					debugRetry(this.status);
+					setTimeout(function() { loadMissingRecordingWorks(recordings, action, conclusionCallback, batchOffset, wsResponseOffset); }, chrono(userjs.retryPause));
+				} else {
+					error("Too many (" + userjs.maxRetry + ") errors (last " + this.status + " “" + this.statusText + "” while loading missing recording works).");
+				}
 			}
 		}
 	});
@@ -776,7 +780,7 @@ function stuffRemover(checks, pp) {
 				modal(true, concat(["Checking " + checkType + " ", createA(checkType != "release-group" ? check.getAttribute("jesus2099userjs81127recname") || check.textContent : checkID, check.getAttribute("href"), checkType), " against all its ", createA(checkAgainst + "s" + (p > 1 ? " (page " + p + ")" : ""), url), "…"]), 1); // jesus2099userjs81127recname linked to mb_INLINE-STUFF
 				var xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function(event) {
-					if (this.readyState == 4) {
+					if (this.readyState === XMLHttpRequest.DONE) {
 						if (this.status == 200) {
 							var res = document.createElement("html"); res.innerHTML = this.responseText;
 							var mates = getStuffs(checkAgainst, res);
