@@ -15,10 +15,11 @@
 // @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @include      /^https?:\/\/acoustid\.org\/track\//
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(eu|org)\//
 // @exclude      /^https?:\/\/((beta|test)\.)?musicbrainz\.(eu|org)\/account\//
 // @exclude      /^https?:\/\/((beta|test)\.)?musicbrainz\.(eu|org)\/admin\//
+// @include      /^https?:\/\/acoustid\.org\/track\//
+// @include      /^https?:\/\/magicisrc\.kepstin\.ca\//
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
@@ -41,7 +42,7 @@ var userjs = {
 var MBS = self.location.protocol + "//" + self.location.host;
 var lang = document.querySelector("html[lang]");
 lang = lang && lang.getAttribute("lang") || "en-GB";
-var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
+var cat = self.location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|puid|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/) || location.host.match(/\b(magicisrc)\b/);
 if (cat) {
 	/* -------- CONFIGURATION START (don’t edit above) -------- */
 	userjs.skipArtists = [
@@ -218,7 +219,7 @@ if (cat) {
 		// AcoustID.org: no problems
 		findOwnedStuff();
 	} else {
-		// MusicBrainz.org: React problems
+		// MusicBrainz.org and magicisrc: React problems
 		var DOMChanged = true;
 		(new MutationObserver(function(mutations, observer) {
 			for (var m = 0; m < mutations.length; m++) {
@@ -226,7 +227,7 @@ if (cat) {
 					DOMChanged = true;
 				}
 			}
-		})).observe(document.querySelector("div#content, div#page"), {childList: true, subtree: true});
+		})).observe(document.querySelector(cat == "magicisrc" ? "body" : "div#content, div#page"), {childList: true, subtree: true});
 		setInterval(function() {
 			// Make sure to re-scan page content (after, not during) each time React does some funny stuff hydrate redraw content
 			if (!document.querySelector("p.loading-message") && DOMChanged) {
