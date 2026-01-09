@@ -1443,7 +1443,7 @@ if (enttype) {
 						if (userjs.checkedRelationships.date) {
 							if ((userjs.checkedRelationships.date = userjs.checkedRelationships.date.match(new RegExp(re_date.ISO + "(?:.+" + re_date.ISO + ")?")))) {
 								for (let cb = 0; cb < userjs.checkedRelationships.checkBoxes.length; cb++) {
-									for (let p = 0, pencils = userjs.checkedRelationships.checkBoxes[cb].closest("tr.track").querySelectorAll("table.rel-editor-table > tbody > tr.recording-of button.edit-item"); p < pencils.length; p++) {
+									for (let p = 0, pencils = userjs.checkedRelationships.checkBoxes[cb].closest("tr.track").querySelectorAll("table.rel-editor-table > tbody > tr.recording-of button.edit-item:not([disabled])"); p < pencils.length; p++) {
 										userjs.checkedRelationships.pencils = userjs.checkedRelationships.pencils.concat(Array.from(pencils));
 									}
 								}
