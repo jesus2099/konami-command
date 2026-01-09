@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2025.11.20
+// @version      2026.1.9
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected recording dates / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1710,7 +1710,7 @@ function TRACKLIST_TOOLS_init() {
 function TRACKLIST_TOOLS_setWorkRecDate() {
 	if (userjs.checkedRelationships.pencils.length > 0) {
 		userjs.checkedRelationships.current_pencil = userjs.checkedRelationships.pencils.shift();
-		var rel_id = userjs.checkedRelationships.current_pencil.getAttribute("id").match(/^edit-relationship-recording-work-(\d+)$/)[1];
+		var rel_id = userjs.checkedRelationships.current_pencil.getAttribute("id").match(/^edit-relationship-recording-work-(-?\d+)$/)[1];
 		rel_id = "#edit-relationship-dialog input[type='text']#relationship-type-recording-work-" + rel_id;
 		userjs.checkedRelationships.current_pencil.click();
 		waitForElement(rel_id, function() {
