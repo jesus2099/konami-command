@@ -180,7 +180,7 @@ setTimeout(function() {
 			}
 		}
 	}
-}, reactHydratePage ? 1000 : 10);
+}, reactHydratePage ? 1000 : 600);
 
 function updateA(event) {
 	var ah = this.parentNode.getAttribute("href");
