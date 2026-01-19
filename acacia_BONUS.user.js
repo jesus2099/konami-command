@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name            acacia. BONUS
-// @version         2024.10.17
-// @description:fr  Affiche si on est en prod ; Affiche une horloge UTC ; Shift+click pour tout ouvrir/fermer
-// @description     Show PRD banner; Show an UTC Clock; Shift+click to expand/collapse all
+// @version         2026.1.19
+// @description:fr  Affiche si on est en prod ; Affiche une horloge UTC ; Alt+click pour copier le message ; Shift+click pour tout ouvrir/fermer
+// @description     Show PRD banner; Show an UTC Clock; Alt+click to copy message; Shift+click to expand/collapse all
 // @namespace       https://github.com/jesus2099/konami-command
 // @supportURL      https://github.com/jesus2099/konami-command/labels/acacia_BONUS
 // @downloadURL     https://github.com/jesus2099/konami-command/raw/master/acacia_BONUS.user.js
 // @author          jesus2099
 // @licence         CC-BY-NC-SA-4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
 // @licence         GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
-// @since           2024-07-25
-// @grant           none
+// @created         2024-07-25
+// @grant           GM_setClipboard
 // @include         /https?:\/\/[aci]{6}(-[cdertv]{3})?\.[fiancer]{9}\.fr/
 // @run-at          document-idle
 // ==/UserScript==
@@ -25,46 +25,23 @@ acacia_BONUS.css.setAttribute("type", "text/css");
 document.head.appendChild(acacia_BONUS.css);
 acacia_BONUS.css = acacia_BONUS.css.sheet;
 
-// UTC Clock
-waitForElement("app-footer footer", function(footer) {
-	acacia_BONUS.UTC_clock = document.createElement("div");
-	acacia_BONUS.UTC_clock.classList.add("j2-utc-clock", "text-white");
-	acacia_BONUS.UTC_clock.classList.add(acacia_BONUS.is_production ? "bg-red" : "bg-green");
-	acacia_BONUS.css.insertRule("app-footer > footer > div.j2-utc-clock { padding: 2px 8px; font-family: monospace; margin-right: auto; border-radius: .8em; font-weight: bold; text-shadow: 1px 1px 3px black; box-shadow: 2px 2px 4px grey; }", 0);
-	acacia_BONUS.UTC_clock.setAttribute("title", acacia_BONUS.script_name);
-	acacia_BONUS.UTC_clock.appendChild(document.createTextNode(getUTCTimeString(getLocale())));
-	footer.insertBefore(acacia_BONUS.UTC_clock, footer.firstChild);
-	setInterval(function() {
-		acacia_BONUS.UTC_clock.replaceChild(document.createTextNode(getUTCTimeString(getLocale())), acacia_BONUS.UTC_clock.firstChild);
-	}, 5000);
-});
-function getUTCTimeString(locale) {
-	return (new Date()).toLocaleString(
-		locale,
-		{
-			timeZone: "UTC",
-			timeZoneName: "short",
-			/* year: "numeric",
-			month: "long",
-			day: "2-digit",
-			weekday: "long", */
-			hour: "2-digit",
-			minute: "2-digit"
+/* // Hide footer
+if (innerHeight < 1000) {
+	acacia_BONUS.css.insertRule("body > app-root > app-footer { display: none; }", 0);
+} */
+
+// Alt+click to copy message body
+if (location.pathname == "/administration/executions") {
+	document.addEventListener("click", function(event) {
+		if (event.altKey && event.target.matches("pre.message-body")) {
+			var clip = event.target.innerText.match(/<STX>([\w\W]+)<ETX>/);
+			if (clip) {
+				clip = clip[1].replace(/(?<!\r)\n|\r(?!\n)/g, "\r\n").replace(/\r\n$/, "");
+				GM_setClipboard(clip, "text/plain");
+				console.log("Message copied to clipboard:\n" + clip);
+			}
 		}
-	);
-}
-function getLocale() {
-	var locale = localStorage.getItem("lang");
-	switch (locale) {
-		default:
-		case "fr":
-			locale = "fr-FR";
-			break;
-		case "en":
-			locale = "en-GB";
-			break;
-	}
-	return locale;
+	});
 }
 
 // Shift+click to expand/collapse all
@@ -87,25 +64,3 @@ document.addEventListener("click", function(event) {
 		}
 	}
 });
-
-// PRD banner
-if (acacia_BONUS.is_production) {
-	waitForElement("app-header > mat-toolbar > mat-toolbar-row", function(toolbar) {
-		var prd_banner = document.createElement("div");
-		prd_banner.classList.add("fixed", "-right-9", "top-1.5", "w-28", "rotate-45", "bg-red", "p-1", "text-center", "text-xs", "font-normal", "text-white", "opacity-75", "ng-star-inserted");
-		prd_banner.setAttribute("title", acacia_BONUS.script_name);
-		prd_banner.appendChild(document.createTextNode("PRD"));
-		toolbar.appendChild(prd_banner);
-	});
-}
-
-// Library
-function waitForElement(selector, callback) {
-	var waitForElementIntervalID = setInterval(function() {
-		var element = document.querySelector(selector);
-		if (element) {
-			clearInterval(waitForElementIntervalID);
-			callback(element);
-		}
-	}, 123);
-}
