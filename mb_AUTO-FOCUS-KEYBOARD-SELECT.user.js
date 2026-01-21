@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. AUTO-FOCUS + KEYBOARD-SELECT
-// @version      2025.9.9
+// @version      2026.1.21
 // @description  musicbrainz.org: MOUSE-LESS EDITING! Cleverly focus and refocus fields in various MusicBrainz edit pages and tracklist Up Down key navigation
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_AUTO-FOCUS-KEYBOARD-SELECT
@@ -233,16 +233,13 @@ function getMostCleverInputToFocus() {
 	return best_input ? best_input : document.querySelector("textarea[id*='edit_note'], textarea[id*='edit-note']");
 }
 // the focus animation
-var interval, blue;
+var css = document.createElement("style");
+css.setAttribute("type", "text/css");
+document.head.appendChild(css);
+css = css.sheet;
+css.insertRule("@keyframes j2-flash { from { background-color: yellow; filter: blur(.1em); } to { background-color: unset; filter: blur(0); } }", 0);
+css.insertRule(".j2-af-flash { animation-name: j2-flash; animation-duration: 250ms; animation-timing-function: ease-out; }", 0);
 function highlight(input) {
-	blue = 0;
-	interval = setInterval(function() { hl(input); }, 50);
-}
-function hl(input) {
-	input.style.setProperty("background-color", "rgb(255, 255, " + blue + ")");
-	blue += 50;
-	if (blue >= 255) {
-		clearInterval(interval);
-		input.style.removeProperty("background-color");
-	}
+	input.classList.remove("j2-af-flash");
+	setTimeout(function() { input.classList.add("j2-af-flash"); }, 12);
 }
