@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name         atlassian. NO BUGS
 @namespace    https://github.com/jesus2099/konami-command
-@version      2026.1.29
+@version      2026.1.29.2
 @description  Hide asshole intelligence (AI) crap in Jira and Confluence; and show stronger diff colours in Confluence
 @author       jesus2099
 @since        2024
@@ -14,12 +14,26 @@
 		.diff-html-removed { background: pink; text-decoration: line-through; }
 		.diff-html-changed { background: cyan; text-decoration: underline dashed; }
 		/* hide AI cluttering crap */
-		div#search-page-smart-answers, [data-testid^='ak-editor-ai-selection-toolbar-ai-button'], [data-testid^='context-menu-rovo-chat'], [data-testid='object-sidebar-container'] > div:has(div > div > div[role='presentation'] > div > button[data-testid='platform-ai-button']), [data-testid='app-navigation-ai-mate'], div[data-testid='browser-extension-banner']:has(span[aria-label='Rovo']) { display: none; }
+		div#search-page-smart-answers,
+		[data-testid^='ak-editor-ai-selection-toolbar-ai-button'],
+		[data-testid^='context-menu-rovo-chat'],
+		[data-testid='object-sidebar-container'] > div:has(div > div > div[role='presentation'] > div > button[data-testid='platform-ai-button']),
+		[data-testid='app-navigation-ai-mate'],
+		div[data-testid='browser-extension-banner']:has(span[aria-label='Rovo']),
 		/* hide clumsy search suggestions */
-		div[data-testid='search-page-results-list'] > :not([data-testid='search-page-result']) { display: none; }
+		div[data-testid='search-page-results-list'] > :not([data-testid='search-page-result'])
+		{
+			display: none;
+		}
 	}
 	body#jira {
 		/* hide AI cluttering crap */
-		[data-editor-content-component='true'], [data-testid='issue.views.issue-base.foundation.status.improve-issue'], [data-testid='atlassian-intelligence-toolbar-button'], [data-testid='atlassian-navigation.ui.conversation-assistant.app-navigation-ai-mate'] { display: none; }
+		[data-editor-content-component='true'],
+		[data-testid='issue.views.issue-base.foundation.status.improve-issue'],
+		[data-testid='atlassian-intelligence-toolbar-button'],
+		[data-testid='atlassian-navigation.ui.conversation-assistant.app-navigation-ai-mate']
+		{
+			display: none;
+		}
 	}
 }
