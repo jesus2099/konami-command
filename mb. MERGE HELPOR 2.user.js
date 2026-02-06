@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MERGE HELPOR 2
-// @version      2025.8.4
+// @version      2026.2.6
 // @description  musicbrainz.org: Merge helper highlights last clicked, shows info, indicates oldest MBID, manages (remove) entity merge list; merge queue (clear before add) tool; don’t reload page for nothing when nothing is checked
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_MERGE-HELPOR-2
@@ -40,17 +40,18 @@ if (mergeType) {
 	}, 500);
 } else {
 	/* merge queue (clear before add) tool */
-	var mergeButton = document.querySelector("div#content > form[action*='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit'], div#page > form[action*='/merge_queue'] > table.tbl ~ div.row > span.buttons > button[type='submit'], div#content > form[action*='/merge_queue'] > div.recording-list ~ div.row > span.buttons > button[type='submit']");
+	var mergeButton = document.querySelector("form[action*='/merge_queue'] span.buttons > button[type='submit']");
 	if (mergeButton) {
-		var checkForm = mergeButton.parentNode.parentNode.parentNode;
+		var check_form = mergeButton.closest("form");
+		mergeButton.style.setProperty("background-color", "#fef");
 		setButtonTextFromSelectedToAll(mergeButton, true);
-		checkForm.addEventListener("submit", function(event) {
+		check_form.addEventListener("submit", function(event) {
 			if (noChildrenChecked(this)) {
 				checkAllChildren(this);
 			}
 		});
 		var loadingAnimation = "url(data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP/MAP///////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQJBQAAACwAAAAAEAAQAAACIQyOF8uW2NpTcU1Q7czu8fttGTiK1YWdZISWprTCL9NGBQAh+QQJBQAAACwAAAAAEAAQAAACIIQdqXm9285TEc1QwcV1Zz19lxhmo1l2aXSqD7lKrXMWACH5BAkFAAAALAAAAAAQABAAAAIhRI4Hy5bY2lNxzVDtzO7x+20ZOIrVhZ1khJamtMIv00YFACH5BAkFAAAALAAAAAAQABAAAAIgjA2peb3bzlMRTVDDxXVnPX2XGGajWXZpdKoPuUqtcxYAOw==)";
-		mergeButton.parentNode.parentNode.parentNode.addEventListener("change", function(event) {
+		check_form.addEventListener("change", function(event) {
 			if (event.target.tagName == "INPUT" && event.target.getAttribute("type") == "checkbox") {
 				var nothingChecked = noChildrenChecked(this);
 				setButtonTextFromSelectedToAll(mergeButton, nothingChecked);
@@ -60,9 +61,9 @@ if (mergeType) {
 		/* clear merge queue and add new stuff to merge queue within only one click */
 		var reMergeButton = mergeButton.cloneNode(true);
 		reMergeButton.replaceChild(document.createTextNode("Clear queue then " + mergeButton.textContent.toLowerCase()), reMergeButton.firstChild);
-		reMergeButton.setAttribute("title", "You don’t need this if you are adding a different type of entities.");
+		reMergeButton.setAttribute("title", "Shift+click to merge in new tab\nCtrl+click to merge in background tab (browser support may vary)\nYou don’t need this if you are adding a different type of entities.");
 		reMergeButton.style.setProperty("cursor", "help");
-		reMergeButton.style.setProperty("background-color", "#ff3");
+		reMergeButton.style.setProperty("background-color", "#fef");
 		reMergeButton.addEventListener("click", function(event) {
 			/* store control and/or shift key statuses to pass them to the other later merge button click */
 			var modifierKeys = (event.altKey ? "alt+" : "") + (event.ctrlKey ? "ctrl+" : "") + (event.metaKey ? "meta+" : "") + (event.shiftKey ? "shift+" : "");
@@ -79,7 +80,7 @@ if (mergeType) {
 					reMergeButton.style.setProperty("background-color", "#fcc");
 				}
 			});
-			xhr.open("GET", mergeButton.parentNode.parentNode.parentNode.getAttribute("action").replace(/(\/merge)_queue.*$/, "$1?submit=cancel"), true);
+			xhr.open("GET", check_form.getAttribute("action").replace(/(\/merge)_queue.*$/, "$1?submit=cancel"), true);
 			xhr.send(null);
 			return stop(event);
 		});
