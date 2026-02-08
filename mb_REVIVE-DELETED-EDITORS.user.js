@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2026.1.28
+// @version      2026.2.8
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -252,8 +252,13 @@ var editors = {
 };
 var standout /* from the crowd */ = true;
 /* - --- - --- - --- - END OF CONFIGURATION - --- - --- - --- - */
-var MBS = self.location.protocol + "//" + self.location.host;
+var MBS = location.protocol + "//" + location.host;
 var you = document.querySelector("div.header ul.menu li.account a[href^='/user/']");
+var css = document.createElement("style");
+css.setAttribute("type", "text/css");
+document.head.appendChild(css);
+css = css.sheet;
+css.insertRule("a.j2revivededitor {color: darkred !important; text-decoration: line-through}", 0);
 if (document.querySelector("div.header ul.menu li.account a[href$='/logout'], div#page") == null) { return; }
 if (you) {
 	if (editors["%you%"]) {
@@ -262,10 +267,6 @@ if (you) {
 		delete editors["%you%"];
 	}
 	if (standout) {
-		var css = document.createElement("style");
-		css.setAttribute("type", "text/css");
-		document.head.appendChild(css);
-		css = css.sheet;
 		css.insertRule("div#page a[href='" + MBS + "/user/" + you + "'], div#page a[href='/user/" + you + "'] { background-color: yellow; color: purple; }", 0);
 	}
 }
@@ -276,7 +277,7 @@ for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, ed
 	document.title = deletedEditor ? document.title.replace(new RegExp(editorName + "(”)?"), namewas + "$1") : document.title.replace(new RegExp("^Editor( “" + editorName + "”)"), editors[editor] + "$1");
 	if (deletedEditor) {
 		editors[editor] = {begin: editors[editor][0], end: editors[editor][1], namewas: namewas, comment: editors[editor][3]};
-		if (document.title.match(/^editor not found/i) && self.location.pathname.match("^/user/" + editors[editor].namewas)) {
+		if (document.title.match(/^editor not found/i) && location.pathname.match("^/user/" + editors[editor].namewas)) {
 			var node = document.querySelector("div#page > h1");
 			if (node) {
 				node.replaceChild(document.createTextNode(" “" + editors[editor].namewas + "” → “" + editorName + "”"), node.firstChild);
@@ -288,7 +289,7 @@ for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, ed
 				node.style.setProperty("color", "darkred");
 				node.appendChild(document.createTextNode("Please wait while you are redirected to the editor page (" + editors[editor].namewas + " has been renamed to " + editorName + ")…"));
 			}
-			self.location.replace(MBS + "/user/" + encodeURIComponent(editorName));
+			location.replace(MBS + "/user/" + encodeURIComponent(editorName));
 			return;
 		} else {
 			editors[editor].fullspan = editors[editor].begin + " 〜 " + editors[editor].end;
@@ -310,12 +311,10 @@ for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, ed
 			var as = document.querySelectorAll("a[href='/user/" + encodeURIComponent(editorName) + "']");
 			for (var a = 0; a < as.length; a++) {
 				for (var n = 0; n < as[a].childNodes.length; n++) {
-					if ((as[a].childNodes[n].nodeType == 3 || as[a].childNodes[n].tagName && as[a].childNodes[n].tagName == "BDI") && as[a].childNodes[n].textContent == editorName) {
+					if ((as[a].childNodes[n].nodeType == Node.TEXT_NODE || as[a].childNodes[n].nodeType == Node.ELEMENT_NODE && as[a].childNodes[n].matches("bdi")) && as[a].childNodes[n].textContent == editorName) {
 						as[a].replaceChild(document.createTextNode(editors[editor].namewas), as[a].childNodes[n]);
-						as[a].style.setProperty("color", "darkred", "important");
-						as[a].style.setProperty("text-decoration", "line-through");
 						as[a].setAttribute("title", editors[editor].title);
-						as[a].classList.add("tooltip");
+						as[a].classList.add("tooltip", "j2revivededitor");
 						var moreInfo = document.createDocumentFragment();
 						moreInfo.appendChild(document.createTextNode("("));
 						if (editors[editor].comment) {
@@ -350,7 +349,7 @@ for (var editor in editors) if (Object.prototype.hasOwnProperty.call(editors, ed
 			}
 		}
 	}
-	if (self.location.href.match(new RegExp("^" + MBS + "/user/" + escape(editorName) + "$"))) {
+	if (location.href.match(new RegExp("^" + MBS + "/user/" + escape(editorName) + "$"))) {
 		var entryHeader = document.querySelectorAll("table.profileinfo > tbody > tr > th");
 		for (var h = 0; h < entryHeader.length; h++) {
 			if (entryHeader[h].textContent.match(/user type/i)) {
