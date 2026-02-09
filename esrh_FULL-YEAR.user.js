@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         esrh. FULL YEAR
-// @version      2025.10.15
+// @version      2026.2.10
 // @description  Affiche les congés sur toute l’année
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/esrh_FULL-YEAR
@@ -12,6 +12,7 @@
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
 // @require      https://html2canvas.hertzen.com/dist/html2canvas.min.js
 // @include      /^https?:\/\/[ericvhs]{11}\.[fiancer]{9}\.[rf]{2}\//
+// @grant        none
 // @run-at       document-idle
 // ==/UserScript==
 "use strict";
