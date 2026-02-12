@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name         atlassian. NO BUGS
 @namespace    https://github.com/jesus2099/konami-command
-@version      2026.2.12
+@version      2026.2.12.1435
 @description  Hide asshole intelligence (AI) crap in Jira and Confluence; and show stronger diff colours in Confluence
 @author       jesus2099
 @since        2024
@@ -17,14 +17,9 @@
 		div#search-page-smart-answers,
 		[data-testid^='ak-editor-ai-selection-toolbar-ai-button'],
 		[data-testid^='context-menu-rovo-chat'],
-		/* sidebar */
+		/* right sidebar */
 		[data-testid='object-sidebar-container'] > div:has(div > div > div[role='presentation'] button[data-testid='platform-ai-button']),
 		[data-testid='object-sidebar-control'] > div:has(button[data-testid='audio-button']),
-		/*
-			I also hide Feedback button because they don’t listen to us, anyway:
-			https://jira.atlassian.com/projects/AI/issues/AI-930?filter=allopenissues&orderby=votes+DESC (2nd most voted AI ticket)
-			https://community.atlassian.com/forums/Jira-questions/How-do-i-turn-off-deactivate-remote-the-AI-features/qaq-p/3114304
-		*/
 		[data-testid='object-sidebar-control'] > div:has(> button[data-testid='sidebar-feedback-button']),
 		[data-testid='app-navigation-ai-mate'],
 		div[data-testid='browser-extension-banner']:has(span[aria-label='Rovo']),
@@ -46,7 +41,11 @@
 		[data-editor-content-component='true'],
 		[data-testid='issue.views.issue-base.foundation.status.improve-issue'],
 		[data-testid='atlassian-intelligence-toolbar-button'],
-		[data-testid='atlassian-navigation.ui.conversation-assistant.app-navigation-ai-mate']
+		[data-testid='atlassian-navigation.ui.conversation-assistant.app-navigation-ai-mate'],
+		/* right sidebar */
+		[data-testid='layout-controller.ui.bottom-right-corner.container.styled-container'] :has(div[role='presentation'] button[data-testid='platform-ai-button']),
+		/* selection popup */
+		#_r2v_:has(button[data-testid='highlight-actions.ui.popup-target.popup-dialog.action-items.define-button.define-button'])
 		{
 			display: none;
 		}
