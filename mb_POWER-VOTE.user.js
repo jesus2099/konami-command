@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2025.11.17.1956
+// @version      2026.2.12
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -42,7 +42,7 @@ var FF = /firefox/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAg
 if (FF) { FF = {"1": "#b1ebb0", "0": "#ebb1ba", "-1": "#f2f0a5"}; }
 var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
 j2css.insertRule("div.edit-list." + userjs.id + "hidden { display: none; }", 0);
-j2css.insertRule("div.edit-list." + userjs.id + "collapsed > div.edit-actions, div.edit-list." + userjs.id + "collapsed > div.entered-from, div.edit-list." + userjs.id + "collapsed > div.edit-details, div.edit-list." + userjs.id + "collapsed > div.edit-notes { display: none; }", 0);
+j2css.insertRule("div.edit-list." + userjs.id + "collapsed > div:not(.edit-header) { display: none; }", 0);
 j2css.insertRule("div#" + userjs.id + "xhrstat { position: absolute; top: 0; left: 0; border: 2px solid black; border-width: 0 2px 2px 0; background-color: #ff6; }", 0);
 j2css.insertRule("tr.rename-artist-credits." + userjs.id + "yes > th { vertical-align: middle; }", 0);
 j2css.insertRule("tr.rename-artist-credits." + userjs.id + "yes > td { color: #f00; font-weight: bolder; font-size: 2em; text-shadow: 1px 1px 0 #663; text-transform: uppercase; }", 0);
