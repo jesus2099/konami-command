@@ -246,6 +246,7 @@ var editors = {
 	  "2513197": ["2024-08-15", "2024-09-22", "Echelon666", "Piotr Sakowski (PS123)"],
 	  "2530114": ["2024-10-02", "2025-01-31", "Peter69", "Piotr Sakowski (PS123)"],
 	  "2577447": ["2025-02-01", "", "PS123", "Piotr Sakowski (PS123)"],
+	  "2707154": ["2025-12-17", "2026-02-17", "aricoleman"],
 	    "PS123": "Weblate / Antichrist01 / Echelon69 / Echelon666 / Peter69",
 	/* “funny” stuff */
 	"jesus2099": "GOLD MASTER KING",
