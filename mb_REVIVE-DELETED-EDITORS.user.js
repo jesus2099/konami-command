@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2026.2.24
+// @version      2026.3.5
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -159,7 +159,7 @@ var editors = {
 	  "2058627": ["2019-03-16", "2019-09-07", "Sabiel"],
 	  "2067274": ["2019-05-10", "2019-09-19", "mczn", "Dyekho related"],
 	  "2069823": ["2019-05-26", "2019-08-27", "psycosid08"],
-	  "2071313": ["2019-06-04", "2024-06-20", "Echelon69", "Piotr Sakowski (PS123)"],
+	  "2071313": ["2019-06-04", "2024-06-20", "Echelon69", "Piotr Sakowski (WindowsLover)"],
 	  "2073100": ["2019-06-17", "2020-04-20", "austinthecat_"],
 	  "2077649": ["2019-07-15", "2019-07-23", "gabriel17"],
 	  "2077726": ["2019-07-15", "2021-08-19", "Syknro"],
@@ -241,13 +241,14 @@ var editors = {
 	  "2582476": ["2025-02-17", "2025-06-17", "DJ Lamberto DJ"],
 	  "2589042": ["2025-03-11", "2025-04-22", "bingusbogus"],
 	  "2594625": ["2025-03-31", "2025-10-23", "Asawin"],
-	  "2598968": ["2025-04-16", "2025-06-15", "Antichrist01", "Piotr Sakowski (PS123)"],
+	  "2598968": ["2025-04-16", "2025-06-15", "Antichrist01", "Piotr Sakowski (WindowsLover)"],
 	  "2603539": ["2025-05-04", "2025-05-22", "Daredevil5150"],
-	  "2513197": ["2024-08-15", "2024-09-22", "Echelon666", "Piotr Sakowski (PS123)"],
-	  "2530114": ["2024-10-02", "2025-01-31", "Peter69", "Piotr Sakowski (PS123)"],
-	  "2577447": ["2025-02-01", "", "PS123", "Piotr Sakowski (PS123)"],
+	  "2513197": ["2024-08-15", "2024-09-22", "Echelon666", "Piotr Sakowski (WindowsLover)"],
+	  "2530114": ["2024-10-02", "2025-01-31", "Peter69", "Piotr Sakowski (WindowsLover)"],
+	  "2577447": ["2025-02-01", "2025-02-11", "PS123", "Piotr Sakowski (WindowsLover)"],
 	  "2707154": ["2025-12-17", "2026-02-17", "aricoleman"],
-	    "PS123": "Weblate / Antichrist01 / Echelon69 / Echelon666 / Peter69",
+	  "2731977": ["2026-02-01", "", "WindowsLover", "Piotr Sakowski"],
+ "WindowsLover": "Piotr Sakowski: Weblate / Antichrist01 / Echelon69 / Echelon666 / Peter69 / PS123 / WindowsLover",
 	/* “funny” stuff */
 	"jesus2099": "GOLD MASTER KING",
 	    "%you%": "BEST MB EDITOR EVER",
