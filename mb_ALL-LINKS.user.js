@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2025.9.4
+// @version      2026.3.15
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -712,8 +712,9 @@ var additionalSearchLinks = {
 					},
 					items: {
 						CDJournal: [
-							"//jesus2099.gitlab.io/forward-request.html?_accept-charset=EUC-JP&_action=//www.cdjournal.com/search/do/&k=%artist-name%&target=a",
-							"//jesus2099.gitlab.io/forward-request.html?_accept-charset=EUC-JP&_action=//www.cdjournal.com/search/do/&k=%release-name%&target=cd",
+							"//www.cdjournal.com/search/do/?k=%artist-name%&target=a",
+							"//www.cdjournal.com/search/do/?k=%release-group-name%&target=cd",
+							"//www.cdjournal.com/search/do/?k=%release-name%&target=cd",
 						],
 						JASRAC: "//jesus2099.gitlab.io/forward-request.html?_accept-charset=Shift_JIS&_method=post&_action=//www2.jasrac.or.jp/eJwid/main%3FtrxID%3DA00401-3%23result&IN_DEFAULT_WORKS_KOUHO_MAX=100&IN_DEFAULT_WORKS_KOUHO_SEQ=1&IN_WORKS_TITLE_NAME1=%recording-name%&IN_WORKS_TITLE_CONDITION=1&IN_DEFAULT_SEARCH_WORKS_NAIGAI=0&RESULT_CURRENT_PAGE=1",
 						"MINC（アーティスト名・作家名）": "//www.minc.or.jp/artist/list/?nm=%artist-name%",
