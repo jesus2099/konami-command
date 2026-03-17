@@ -1,8 +1,8 @@
 /* ==UserStyle==
 @name         atlassian. NO BUGS
 @namespace    https://github.com/jesus2099/konami-command
-@version      2026.2.15.1411
-@description  Hide asshole intelligence (AI) crap in Jira and Confluence; and show stronger diff colours in Confluence
+@version      2026.3.17
+@description  Hide anti-intelligence (AI) crap in Jira and Confluence; and show stronger diff colours in Confluence
 @author       jesus2099
 @since        2024
 ==/UserStyle== */
@@ -47,7 +47,7 @@
 		/* right sidebar */
 		[data-testid='layout-controller.ui.bottom-right-corner.container.styled-container'] :has(div[role='presentation'] button[data-testid='platform-ai-button']),
 		/* selection popup */
-		#_r2v_:has(button[data-testid='highlight-actions.ui.popup-target.popup-dialog.action-items.define-button.define-button'])
+		div[id^='_r2']:has(button[data-testid='highlight-actions.ui.popup-target.popup-dialog.action-items.define-button.define-button'])
 		{
 			display: none;
 		}
