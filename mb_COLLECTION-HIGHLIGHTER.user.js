@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2025.12.30
+// @version      2026.3.20
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepageURL  https://community.metabrainz.org/t/collection-highlighter-highlight-owned-stuff-releases-recordings/559889?u=jesus2099
@@ -780,7 +780,7 @@ function stuffRemover(checks, pp) {
 				url += "?page=" + p;
 				modal(true, concat(["Checking " + checkType + " ", createA(checkType != "release-group" ? check.getAttribute("jesus2099userjs81127recname") || check.textContent : checkID, check.getAttribute("href"), checkType), " against all its ", createA(checkAgainst + "s" + (p > 1 ? " (page " + p + ")" : ""), url), "…"]), 1); // jesus2099userjs81127recname linked to mb_INLINE-STUFF
 				var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function(event) {
+				xhr.addEventListener("readystatechange", function(event) {
 					if (this.readyState === XMLHttpRequest.DONE) {
 						if (this.status == 200) {
 							var res = document.createElement("html"); res.innerHTML = this.responseText;
@@ -815,7 +815,7 @@ function stuffRemover(checks, pp) {
 							}
 						}
 					} // 4
-				};
+				});
 				debug(MBS + url);
 				chrono();
 				xhr.open("GET", MBS + url, true);
