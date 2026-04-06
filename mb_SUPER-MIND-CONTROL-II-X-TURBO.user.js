@@ -414,9 +414,9 @@ if (j2sets.USER_STATS && location.pathname.match(/^\/user\/[^/]+$/)) {
 	if (stats.length >= 3) {
 		debug("USER_STATS");
 		// Edits
-		var cell_acceptedEdits = stats[0].querySelector("a[href$='/edits/accepted']").closest("td");
-		var cell_voteddownEdits = stats[0].querySelector("a[href$='/edits/rejected']").closest("td");
-		var cell_appliedEdits = stats[0].querySelector("a[href$='/edits/applied']").closest("td");
+		var cell_acceptedEdits = stats[0].querySelector("td:has(a[href$='/edits/accepted'])");
+		var cell_voteddownEdits = stats[0].querySelector("td:has(a[href$='/edits/rejected'])");
+		var cell_appliedEdits = stats[0].querySelector("td:has(a[href$='/edits/applied'])");
 		var nb_acceptedEdits = readStat(cell_acceptedEdits);
 		var nb_voteddownEdits = readStat(cell_voteddownEdits);
 		var nb_totalNonAuto = nb_acceptedEdits + nb_voteddownEdits;
