@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PRINT ALL PAGES
-// @version      2025.9.26
+// @version      2026.4.6
 // @description  musicbrainz.org: Print your complete collections to make your shopping lists or check lists. Maybe it will work on more than just collections, in the future.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PRINT-ALL-PAGES
@@ -93,7 +93,7 @@ function preparePage(event) {
 	// hide label comments (including mod pending, thus the :nth-child)
 	var labelColumnIndex = form.querySelector("table.tbl > thead > tr > th a[href*='order='][href$='label']");
 	if (labelColumnIndex) {
-		labelColumnIndex = getParent(labelColumnIndex, "th").cellIndex + 1;
+		labelColumnIndex = labelColumnIndex.closest("th").cellIndex + 1;
 		css.all.insertRule("tbody td:nth-child(" + labelColumnIndex + ") span.comment { display: none; }", 0);
 	}
 	// hide caa and no-caa icons

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         JASRAC. work importer/editor into MusicBrainz + MB-JASRAC-音楽の森 links + MB back search links
-// @version      2025.5.10
+// @version      2026.4.6
 // @description  One click imports JASRAC works into MusicBrainz (name, iswc, type, credits, edit note, sort name, search hint) and マス歌詞®（mass-lyrics） and wikipedia links. It will do the same magic in work editor. Work links to both JASRAC and 音楽権利情報検索ナビ (ex-音楽の森 aka MINC and Music Forest) and back to MB
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/jasrac-mb-minc_WORK-IMPORT-CROSS-LINKING
@@ -110,7 +110,7 @@ var xhrJobs = {
 			for (let inp = 0; inp < inps.length; inp++) {
 				var input = inps[inp];
 				if (input.classList.contains("lookup-performed")) {
-					var row = getParent(input, "div", "row");
+					var row = input.closest("div.row");
 					var rel = "&rel-editor.rels." + (reli++) + ".";
 					xhrJobs["batch-relationship-create"].params +=
 						rel + "action=add" +
@@ -436,11 +436,11 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 			sakuhinCode = document.querySelector("span[id$='_jas_sakucd']");
 			var iswccode = document.querySelector("span[id$='_lbl_jas_nt_iswc']");
 			if (sakuhinmei && sakuhinCode && iswccode) {
-				sakuhinmei = getParent(sakuhinmei, "td");
+				sakuhinmei = sakuhinmei.closest("td");
 				var sakuhinmei_v = sakuhinmei.textContent;
-				sakuhinCode = getParent(sakuhinCode, "td");
+				sakuhinCode = sakuhinCode.closest("td");
 				var sakuhinCode_v = sakuhinCode.textContent.match(new RegExp(reCode)) + "";
-				iswccode = getParent(iswccode, "td");
+				iswccode = iswccode.closest("td");
 				var iswccode_v = iswccode.textContent.match(new RegExp(reISWC));
 				var jwForm = jasracSearch("title", sakuhinmei_v);
 				var jwSubmit = jwForm.querySelector("a[target='_self']");
@@ -548,7 +548,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 		case "work/create":
 			h1 = document.querySelector("h1");
 			iname = document.getElementById("id-edit-work.name");
-			xhrForm.form = getParent(iname, "form");
+			xhrForm.form = iname.closest("form");
 			insertBefore(createTag("p", {s: {color: "purple", border: "1px dashed #fcc", backgroundColor: "#ffc"}}, [createTag("h3", {}, userjs.name), MBS7313, " ☞ ", createA("Read more…", "https://github.com/jesus2099/konami-command/issues/14", null, "_blank")]), xhrForm.form);
 				/* xhrForm.form.addEventListener("submit", function(event) {
 				var inputs = xhrForm.form.querySelectorAll(xhrForm.originalInputs.css);
@@ -578,7 +578,7 @@ if (pagecat && !document.title.match(/slow down!/i)) {
 				xhrWork.newAliases = [];
 				for (let a = 0; a < aliases.length; a++) {
 					if (aliases[a].checked) {
-						var tr = getParent(aliases[a], "tr");
+						var tr = aliases[a].closest("tr");
 						var n = tr.querySelector("input[name='edit-alias.name']");
 						var sn = tr.querySelector("input[name='edit-alias.sort_name']");
 						var t = tr.querySelector("*[name='edit-alias.type_id']");
@@ -1163,7 +1163,7 @@ function aliasTable(add, clear) {
 				}
 			}, false);
 			if (!xhrWork.edit && a < 2 && !(aliases[a].type == "2" && aliases[a].name == iname.value)) {
-				getParent(se, "tr").querySelector("input." + userjs.id + "addit[type='checkbox']").click();
+				se.closest("tr").querySelector("input." + userjs.id + "addit[type='checkbox']").click();
 			}
 			var wname = tr.querySelector("input[name='edit-alias.name']");
 			var wsname = tr.querySelector("input[name='edit-alias.sort_name']");

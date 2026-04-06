@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2025.12.6
+// @version      2026.4.6
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -237,7 +237,7 @@ if (page_type) {
 			var tracks = document.querySelectorAll("div#content table.tbl > tbody > tr");
 			if (pageMbid && tracks.length > 0) {
 				/* locate length, track title and release artist columns */
-				var lengthColumnIndex = getParent(tracks[0], "table").querySelector("thead > tr > th.treleases").cellIndex + 1;
+				var lengthColumnIndex = tracks[0].closest("table").querySelector("thead > tr > th.treleases").cellIndex + 1;
 				var trackTitleColumnIndex = lengthColumnIndex - 1;
 				if (trackTitleColumnIndex && lengthColumnIndex) {
 					let xhr = new XMLHttpRequest();
@@ -253,7 +253,7 @@ if (page_type) {
 							if (trackLengthCell) { trackLengthCell.replaceChild(document.createTextNode(time(wsRecordingLength)), trackLengthCell.firstChild); }
 							var wsTracks = wsRecording.querySelectorAll("recording[id='" + pageMbid + "'] > release-list > release > medium-list > medium > track-list > track");
 							for (var wst = 0; wst < wsTracks.length; wst++) {
-								var wsRelease = getParent(wsTracks[wst], "release");
+								var wsRelease = wsTracks[wst].closest("release");
 								var wsReleaseMBID;
 								var wsPosition = wsTracks[wst].parentNode.parentNode.querySelector("position");
 								var wsTrackPosition = wsTracks[wst].parentNode.getAttribute("offset");

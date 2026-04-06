@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. POWER VOTE
-// @version      2026.2.12
+// @version      2026.4.6
 // @description  musicbrainz.org: Adds some buttons to check all unvoted edits (Yes/No/Abs/None) at once in the edit search page. You can also collapse/expand (all) edits for clarity. A handy reset votes button is also available + Double click radio to vote single edit + range click with shift to vote a series of edits., Hidden (collapsed) edits will never be voted (even if range click or shift+click force vote). Fast approve with edit notes. Prevent leaving voting page with unsaved changes. Add hyperlinks after inline looked up entity green fields.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_POWER-VOTE
@@ -284,7 +284,7 @@ if (editform) {
 				var pendingvotes = editform.querySelectorAll("div.voteopts input[type='radio']:not([value='-2']):not([disabled])");
 				for (let pv = 0; pv < pendingvotes.length; pv++) {
 					if (pendingvotes[pv].checked) {
-						sendEvent(getParent(pendingvotes[pv], "label") || pendingvotes[pv], "dblclick");
+						sendEvent(pendingvotes[pv].closest("label") || pendingvotes[pv], "dblclick");
 					}
 				}
 			}
@@ -327,9 +327,9 @@ if (editform) {
 				&& event.target.getAttribute("name").match(/^enter-vote\.vote\.\d+\.vote$/)
 			) {
 				setTimeout(function() {
-					var actions = getParent(this, "div", "edit-actions");
+					var actions = this.closest("div.edit-actions");
 					if (this.value != -2) {
-						actions.style.setProperty("background-color", FF ? FF[this.value] : self.getComputedStyle(getParent(this, "div", "vote")).getPropertyValue("background-color"));
+						actions.style.setProperty("background-color", FF ? FF[this.value] : self.getComputedStyle(this.closest("div.vote")).getPropertyValue("background-color"));
 					} else {
 						actions.style.removeProperty("background-color");
 					}
@@ -348,7 +348,7 @@ if (editform) {
 			}.bind(inputs[i]), 0);
 		}
 		// Double click to vote single edits
-		var labinput = getParent(inputs[i], "label") || inputs[i];
+		var labinput = inputs[i].closest("label") || inputs[i];
 		labinput.setAttribute("title", texts.getText("double_click_to_vote"));
 		labinput.addEventListener("dblclick", function(event) {
 			var edit = this.closest("div.edit-list");
@@ -410,7 +410,7 @@ if (editform) {
 					this.setAttribute("title", this.getAttribute("title").replace(new RegExp(expand ? "expand" : "collapse", "g"), expand ? "collapse" : "expand"));
 					this.setAttribute("rel", expand ? "collapse" : "expand");
 					collapseEdit(this.closest("div.edit-list"), !expand);
-					var editheader = getParent(this, "div", "edit-header");
+					var editheader = this.closest("div.edit-header");
 					var editheadersel = "div.edit-header", editor, vote;
 					var userCSS = "div.edit-header > p.subheader > a[href*='/user/']";
 					var voteCSS = "div.edit-list > div.edit-actions > div.voteopts input[type='radio']:checked";
@@ -437,7 +437,7 @@ if (editform) {
 							var ovote = others[other].closest("div.edit-list").querySelector(voteCSS);
 							if (ovote) ovote = ovote.getAttribute("value");
 							if (
-								(!editor || editor == getParent(others[other], "div", "edit-header").querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/)[1])
+								(!editor || editor == others[other].closest("div.edit-header").querySelector(userCSS).getAttribute("href").match(/\/user\/(.+)$/)[1])
 								&& (!vote || vote == ovote)
 							) {
 								sendEvent(others[other], "click");
@@ -452,7 +452,7 @@ if (editform) {
 	// If user started scrolling: scroll the page down of the height of inserted top buttons and toolbar, to avoid scroll jumps
 	if (self.pageYOffset > 0) {
 		var cs, offset = 0;
-		if (submitClone && (cs = self.getComputedStyle(getParent(submitClone, "div", "row")))) {
+		if (submitClone && (cs = self.getComputedStyle(submitClone.closest("div.row")))) {
 			offset += parseInt(cs.getPropertyValue("height").match(/\d+/), 10);
 			offset += parseInt(cs.getPropertyValue("margin").match(/\d+/), 10);
 		}
@@ -635,7 +635,7 @@ function rangeVote(event, vote, force, min, max) {
 	} else { for (let i = 0; i < userjs.radiosafe.length; i++) { sendEvent(userjs.radiosafe[i], "click"); } }
 }
 function notVotedYet(radiox) {
-	return getParent(radiox, "div", "voteopts").querySelector("input[type='radio'][value='-2']").checked;
+	return radiox.closest("div.voteopts").querySelector("input[type='radio'][value='-2']").checked;
 }
 function disable(cont, dis) {
 	var inputs = cont.querySelectorAll("input, select, textarea, button");

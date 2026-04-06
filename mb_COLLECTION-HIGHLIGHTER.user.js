@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2026.3.20
+// @version      2026.4.6
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepageURL  https://community.metabrainz.org/t/collection-highlighter-highlight-owned-stuff-releases-recordings/559889?u=jesus2099
@@ -118,7 +118,7 @@ if (cat) {
 		var xp1 = document.evaluate("//xhtml:table[contains(@class, 'tbl')]/xhtml:thead//xhtml:th/text()[contains(., 'Veröffentlichungen') or contains(., 'Väljalasked') or contains(., 'Releases') or contains(., 'Publicaciones') or contains(., 'Parutions') or contains(., 'Pubblicazioni') or contains(., 'Uitgaves') or contains(., 'Julkaisut') or contains(., 'Κυκλοφορίες') or contains(., 'リリース')]", document, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		for (let tbl_idx = 0; tbl_idx < xp1.snapshotLength > 0; tbl_idx++) {
 			xp1.snapshotItem(tbl_idx).parentNode.parentNode.appendChild(createTag("th", {a: {colspan: "2"}}, userjs.name_ver));
-			var tbl = getParent(xp1.snapshotItem(tbl_idx).parentNode, "table");
+			var tbl = xp1.snapshotItem(tbl_idx).parentNode.closest("table");
 			var xp = document.evaluate("./xhtml:tbody/xhtml:tr", tbl, nsr, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			for (let i = 0; i < xp.snapshotLength; i++) {
 				let coll = xp.snapshotItem(i).getElementsByTagName("a")[0];
@@ -285,11 +285,11 @@ function findOwnedStuff() {
 // #                                              HIGHLIGHT / DECORATE A LINK #
 // ############################################################################
 function decorate(entityLink) {
-	if (!getParent(entityLink, "div", "tabs")) {
+	if (!entityLink.closest("div.tabs")) {
 		// Does not highlight tabs.
 		entityLink.classList.add(userjs.prefix + "Item");
 		var page = document.getElementById("page");
-		if (getParent(entityLink, "h1")) {
+		if (entityLink.closest("h1")) {
 			// Entity page is boxed.
 			page.classList.add(userjs.prefix + "Box");
 		} else {
@@ -299,19 +299,19 @@ function decorate(entityLink) {
 			}
 			if (cat == "edit") {
 				// entity edit page is boxed
-				var editDetails = getParent(entityLink, "table", "details");
+				var editDetails = entityLink.closest("table.details");
 				if (editDetails && entityLink == editDetails.querySelector("a")) {
 					page.classList.add(userjs.prefix + "Box");
 				}
 			} else if (cat == "edits") {
 				// in edit lists: Release or release group edits are boxed; other entity edits are left bordered
-				var edit = getParent(entityLink, "div", "edit-list");
+				var edit = entityLink.closest("div.edit-list");
 				if (edit) {
 					edit.classList.add(userjs.prefix + (entityLink == edit.querySelector("div.edit-details a") ? "Box" : "Row"));
 				}
 			}
 			// Associated tracks are Leftmost entity table rows are left bordered. Not in owned release tracklists
-			var row = !getParent(entityLink, "ul") && !getParent(entityLink, "dl") && getParent(entityLink, "tr");
+			var row = !entityLink.closest("ul") && !entityLink.closest("dl") && entityLink.closest("tr");
 			if (row) {
 				if (
 					entityLink == row.querySelector("a[href]:not([href*='coverartarchive.org']):not([href*='/track/']):not([href$='/cover-art'])" + (cat == "recording" ? ":not([href^='/artist/'])" : ""))

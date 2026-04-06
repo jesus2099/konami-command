@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2026.4.4.1746
+// @version      2026.4.6
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected recording dates / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -215,7 +215,7 @@ function j2settinput(setting) {
 			inp.setAttribute("type", "text");
 			inp.setAttribute("value", val);
 			inp.style.setProperty("margin-left", "4px");
-			inp.addEventListener("keypress", function(event) { if (event.key == "Enter") { this.blur(); removeNode(getParent(this, "div")); } }, false);
+			inp.addEventListener("keypress", function(event) { if (event.key == "Enter") { this.blur(); removeNode(this.closest("div")); } }, false);
 			break;
 	}
 	return lbl;
@@ -251,7 +251,7 @@ if (j2sets.RELEASE_CLONER && account) {
 				} else {
 					var checkrels = document.querySelectorAll("table.tbl > tbody input[type='checkbox'][name='add-to-merge']");
 					for (let crmbid, cr = 0; cr < checkrels.length; cr++) {
-						if ((checkrels[cr].checked || checkrels.length == 1) && (crmbid = getParent(checkrels[cr], "tr")) && (crmbid = crmbid.querySelector("a[href*='/release/']").getAttribute("href").match(re_GUID))) {
+						if ((checkrels[cr].checked || checkrels.length == 1) && (crmbid = checkrels[cr].closest("tr")) && (crmbid = crmbid.querySelector("a[href*='/release/']").getAttribute("href").match(re_GUID))) {
 							crmbids.push("" + crmbid);
 						}
 					}
@@ -414,9 +414,9 @@ if (j2sets.USER_STATS && location.pathname.match(/^\/user\/[^/]+$/)) {
 	if (stats.length >= 3) {
 		debug("USER_STATS");
 		// Edits
-		var cell_acceptedEdits = getParent(stats[0].querySelector("a[href$='/edits/accepted']"), "td");
-		var cell_voteddownEdits = getParent(stats[0].querySelector("a[href$='/edits/rejected']"), "td");
-		var cell_appliedEdits = getParent(stats[0].querySelector("a[href$='/edits/applied']"), "td");
+		var cell_acceptedEdits = stats[0].querySelector("a[href$='/edits/accepted']").closest("td");
+		var cell_voteddownEdits = stats[0].querySelector("a[href$='/edits/rejected']").closest("td");
+		var cell_appliedEdits = stats[0].querySelector("a[href$='/edits/applied']").closest("td");
 		var nb_acceptedEdits = readStat(cell_acceptedEdits);
 		var nb_voteddownEdits = readStat(cell_voteddownEdits);
 		var nb_totalNonAuto = nb_acceptedEdits + nb_voteddownEdits;
@@ -506,7 +506,7 @@ function writeStat(statsCell, stat, total, max) {
 	}
 	if (parseInt(a.firstChild.textContent, 10) >= 25) {
 		a.style.setProperty("background-color", "#ff6");
-		getParent(statsCell, "tr").querySelector("th").style.setProperty("background-color", "#ff6");
+		statsCell.closest("tr").querySelector("th").style.setProperty("background-color", "#ff6");
 	}
 }
 function percentage(p, c) {
@@ -732,7 +732,7 @@ if (j2sets.ROW_HIGHLIGHTER && j2sets.ROW_HIGHLIGHTER_colour.match(/^(#[0-9a-f]{3
 // ## Common form submission function ##
 // ==========================================================================
 function parentFormSubmit(input, event) {
-	var form = getParent(input, "form") || document.querySelector("div#release-editor");
+	var form = input.closest("form") || document.querySelector("div#release-editor");
 	if (form) {
 		var submitbutt = form.querySelector("div#release-editor button.positive[data-click='submitEdits'], div.buttons > button[type='submit'], span.buttons > button[type='submit']");
 		if (submitbutt) {
@@ -752,7 +752,7 @@ if (j2sets.DOUBLE_CLICK_SUBMIT && location.pathname.match(/^\/(cdtoc\/|cdstub\/|
 	document.body.addEventListener("dblclick", function(event) {
 		if (
 			event.target.tagName
-			&& !getParent(event.target, "div", "edit-list") // mb_POWER-VOTE has its own DOUBLE_CLICK_SUBMIT
+			&& !event.target.closest("div.edit-list") // mb_POWER-VOTE has its own DOUBLE_CLICK_SUBMIT
 			&& !(
 				userjs.releaseEditor // release editor should not be submitted from random tabs
 				|| location.pathname.match(new RegExp("^/release/(add|" + stre_GUID + "/edit)$")) // in case above wasn’t detected
@@ -818,7 +818,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 		var edits = document.querySelectorAll("div.edit-header > h2 > a[href*='/edit/']");
 		for (let ed = 0; ed < edits.length; ed++) {
 			var editn = parseInt(edits[ed].getAttribute("href").match(/\d+$/), 10);
-			var editlist = getParent(edits[ed], "div", "edit-list");
+			var editlist = edits[ed].closest("div.edit-list");
 			if (!isOpenEdits && ed == 0 && editn > lastseenedits[which][0] && editn > lastseenedits[which][2]) {
 				lastseenedits[which][2] = editn;
 				upd = true;
@@ -1204,7 +1204,7 @@ if (j2sets.SERVER_SWITCH) {
 		server_name = server_name.groups.subdomain ? server_name.groups.subdomain : server_name.groups.tld == "org" ? "main" : server_name.groups.tld;
 		var menu = langMenu.parentNode.insertBefore(createTag("li", {a: {class: userjs.id + "serverSwitch"}, s: {float: "right", position: "relative"}}, [createTag("span", {a: {title: "Server Switch", class: "menu-header"}}, [userjs.icon.cloneNode(false), " ", createTag("code", {}, server_name), " ▾"]), document.createElement("ul")]), langMenu);
 		menu.addEventListener("click", function(event) {
-			if (getParent(event.target, "li", userjs.id + "serverSwitch")) {
+			if (event.target.closest("li." + userjs.id + "serverSwitch")) {
 				event.stopPropagation();
 				for (let openMenus = document.querySelectorAll(".header ul.menu li.fake-active"), m = 0; m < openMenus.length; m++) if (openMenus[m] != this) {
 					sendEvent(openMenus[m], "click");
@@ -1396,7 +1396,7 @@ if (enttype) {
 	if (j2sets.MARK_PENDING_EDIT_MEDIUMS && enttype == "release") {
 		debug("MARK_PENDING_EDIT_MEDIUMS");
 		for (let pendingEditMediums = document.querySelectorAll("div#content > table.tbl.medium > thead > tr.mp"), m = 0; m < pendingEditMediums.length; m++) {
-			getParent(pendingEditMediums[m], "table").style.setProperty("border", "4px solid #fd9");
+			pendingEditMediums[m].closest("table").style.setProperty("border", "4px solid #fd9");
 		}
 	}
 	// ================================================================== MOUSE+
@@ -1470,7 +1470,7 @@ if (enttype) {
 	if (j2sets.UNLINK_ENTITY_HEADER) {
 		var h1link = document.querySelector("div#page h1 a[href='" + location.pathname.match(new RegExp("/" + enttype + "/" + stre_GUID)) + "']");
 		if (h1link) {
-			let h1 = getParent(h1link, "h1");
+			let h1 = h1link.closest("h1");
 			if (h1.firstChild.nodeType != Node.TEXT_NODE) {
 				debug("UNLINK_ENTITY_HEADER");
 				h1link.classList.add(userjs.id);
@@ -1693,7 +1693,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 	}
 }
 function TRACKLIST_TOOLS_getInputs(inputCSS, obj, evt) {
-	var inputs = getParent(obj, "fieldset", "advanced-medium");
+	var inputs = obj.closest("fieldset.advanced-medium");
 	if (obj.value.match(/\(all\)/i) || evt.shiftKey) { inputs = inputs.parentNode; }
 	return inputs.querySelectorAll("fieldset.advanced-medium " + inputCSS);
 }

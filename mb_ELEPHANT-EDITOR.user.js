@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ELEPHANT EDITOR
-// @version      2025.8.30
+// @version      2026.4.6
 // @description  musicbrainz.org + acoustid.org: Remember last edit notes
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ELEPHANT-EDITOR
@@ -116,7 +116,7 @@ function init(edit_notes) {
 	if (submit_button === null && location.href.match(/edit-relationships$/)) submit_button = document.querySelector("div#content.rel-editor form > div.row.no-label.buttons > button.submit.positive[type='submit']");
 	if (notetext) {
 		if (ON_MB) {
-			var carcan = getParent(notetext, "div", "half-width");
+			var carcan = notetext.closest("div.half-width");
 			if (carcan) {
 				if (ON_RELEASE_EDITOR_PAGE) carcan.style.setProperty("width", "inherit");
 				else notetext.parentNode.style.setProperty("width", carcan.parentNode.offsetWidth + "px");

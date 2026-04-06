@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PENDING EDITS
-// @version      2025.8.29
+// @version      2026.4.6
 // @description  musicbrainz.org: Adds/fixes links to entity (pending) edits (if any); optionally adds links to associated artist(s) (pending) edits
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PENDING-EDITS
@@ -34,7 +34,7 @@ if (
 ) {
 	pageEntity.editinghistory = document.querySelector("div#sidebar ul.links a[href$='" + pageEntity.base + "/edits']");
 	if (pageEntity.editinghistory) {
-		pageEntity.ul = getParent(pageEntity.editinghistory, "ul");
+		pageEntity.ul = pageEntity.editinghistory.closest("ul");
 	} else {
 		pageEntity.ul = document.querySelector("div#sidebar ul.links");
 		pageEntity.editinghistory = createLink("edits"); // reverts MBS-57 (Remove “normal artist” functionality from Various Artists) drawback
@@ -43,7 +43,7 @@ if (
 		// TODO: Allow collections with missing MBS-3922 feature “Edit search: Filter edits by collections” https://tickets.metabrainz.org/browse/MBS-3922
 		appendRefineSearchFormLink(pageEntity.editinghistory);
 	}
-	pageEntity.li = getParent(pageEntity.editinghistory, "li");
+	pageEntity.li = pageEntity.editinghistory.closest("li");
 // OPEN EDITS
 	pageEntity.openedits = document.querySelector("div#sidebar a[href$='" + pageEntity.base + "/open_edits']");
 	if (pageEntity.openedits) {
@@ -81,7 +81,7 @@ if (
 					checked.push(art.base);
 					art.editinghistory = createLink("edits", art);
 					art.openedits = createLink("open_edits", art);
-					getParent(art.openedits, "li").classList.add("separator");
+					art.openedits.closest("li").classList.add("separator");
 					checkOpenEdits(art);
 				}
 			}
@@ -115,7 +115,7 @@ function appendRefineSearchFormLink(baseEditLink) {
 	}
 }
 function checkOpenEdits(obj) {
-	var smp = getParent(obj.openedits, "li").firstChild;
+	var smp = obj.openedits.closest("li").firstChild;
 	var count = smp.querySelector("span." + SCRIPT_KEY + "Count");
 	if (!count) {
 		smp.appendChild(document.createTextNode("\u00a0("));
@@ -175,7 +175,7 @@ function checkOpenEdits(obj) {
 }
 function updateLink(obj, details) {
 	var countText;
-	var li = getParent(obj.openedits, "li");
+	var li = obj.openedits.closest("li");
 	var count = li.querySelector("span." + SCRIPT_KEY + "Count");
 	if (typeof details == "object") {
 		countText = details.editCount;
@@ -248,7 +248,7 @@ function updateLink(obj, details) {
 	count.replaceChild(document.createTextNode(countText), count.firstChild); // “countText” linked in mb_MASS-MERGE-RECORDINGS.user.js
 }
 function mp(o, set) {
-	var li = getParent(o, "li");
+	var li = o.closest("li");
 	if (typeof set == "undefined") {
 		return li.firstChild.tagName == "SPAN" && li.firstChild.classList.contains("mp");
 	} else if (typeof set == "boolean" && li.firstChild.tagName == "SPAN") {

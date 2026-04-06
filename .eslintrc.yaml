@@ -25,7 +25,6 @@ globals:
  disableInputs:       readonly
  enableInputs:        readonly
  forceValue:          readonly
- getParent:           readonly
  getSibling:          readonly
  removeChildren:      readonly
  removeNode:          readonly

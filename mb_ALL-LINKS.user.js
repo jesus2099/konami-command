@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2026.3.15
+// @version      2026.4.6
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -1085,7 +1085,7 @@ function main() {
 					}
 					var xhr = new XMLHttpRequest();
 					xhr.id = wikidataID[0];
-					getParent(wikidatas[wd], "li").classList.add(userjs + "_wd-" + xhr.id);
+					wikidatas[wd].closest("li").classList.add(userjs + "_wd-" + xhr.id);
 					wikidatas[wd].parentNode.appendChild(createTag("img", {a: {alt: "checking available wikipedia languages…", src: "/static/images/icons/loading.gif"}}));
 					xhr.addEventListener("load", function(event) {
 						var wikidataListItem = sidebar.querySelector("ul.external_links > li." + userjs + "_wd-" + this.id);
@@ -1137,7 +1137,7 @@ function addExternalLink(parameters/* text, target, begin, end, sntarget, mbid, 
 				|| parameters.target.match(/\bviaf\b/) && sidebar.querySelector("ul.external_links > li a[href$='" + escapedTarget.replace(/^https?:/, "") + "/']");
 			if (existingLink) {
 				newLink = false;
-				li = getParent(existingLink, "li");
+				li = existingLink.closest("li");
 			} else {
 				li = createTag("li", {a: {ref: parameters.text}});
 				if (parameters.end) {

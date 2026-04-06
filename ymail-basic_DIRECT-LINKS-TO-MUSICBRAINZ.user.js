@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ymail-basic. DIRECT LINKS TO MUSICBRAINZ
-// @version      2022.9.26.1
+// @version      2026.4.6
 // @description  BASIC Yahoo! Mail only (/neo/b/). Adds links to MusicBrainz edits directly in mail.yahoo.com folders view (including "no votes" and "subscription" emails). No need to open all those e-mails any more. Only one link per edit ID, duplicate ID are coloured and e-mail(s) marked for deletion. Once clicked, the link is faded, to keep trace of already browsed edits. Limitations : only Opera(maybe) and y!mail BASIC I guess.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/ymail-basic_DIRECT-LINKS-TO-MUSICBRAINZ
@@ -38,7 +38,7 @@ if (emailSubjects) {
 		var editid = emailtxt.match(/^(?:Note added to|Someone has voted against)( your)? edit #([0-9]+)$/);
 		var jiraIdTitle = emailtxt.match(/^\[MeB JIRA\] \(([A-Z][A-Z\d]*-\d+)\) (.+)$/);
 		emailSubject.parentNode.style.setProperty("line-height", "13px");
-		var emailSender = getParent(emailSubject, "tr").querySelector("td[data-test-id='sender'] > a");
+		var emailSender = emailSubject.closest("tr").querySelector("td[data-test-id='sender'] > a");
 		if (jiraIdTitle) { // An email about a JIRA ticket
 			var jiraURL = "//tickets.musicbrainz.org/browse/" + jiraIdTitle[1];
 			editlink(emailSubject, jiraURL, edits[jiraURL], jiraIdTitle[1]);
@@ -58,7 +58,7 @@ if (emailSubjects) {
 			}
 			let xhr = new XMLHttpRequest();
 			xhr.emailSubject = emailSubject;
-			xhr.emailRow = getParent(emailSubject, "tr");
+			xhr.emailRow = emailSubject.closest("tr");
 			xhr.addEventListener("load", function(event) {
 				if (this.status > 199 && this.status < 400) {
 					this.emailRow.classList.remove("u_b"); // mark as read
@@ -76,11 +76,11 @@ if (emailSubjects) {
 			xhr.open("get", emailHref, true);
 			xhr.send(null);
 		} else if (emailSubject.getAttribute("title").match(/^Edits for your subscriptions$/)) { // A subscription email
-			getParent(emailSubject, "tr").style.setProperty("background-color", colourloading);
+			emailSubject.closest("tr").style.setProperty("background-color", colourloading);
 			emailSubject.insertBefore(loading(), emailSubject.firstChild);
 			let xhr = new XMLHttpRequest();
 			xhr.emailSubject = emailSubject;
-			xhr.emailRow = getParent(emailSubject, "tr");
+			xhr.emailRow = emailSubject.closest("tr");
 			xhr.addEventListener("load", function(event) {
 				if (this.status > 199 && this.status < 400) {
 					this.emailRow.classList.remove("u_b"); // mark as read
@@ -144,7 +144,7 @@ if (emailSubjects) {
 			let xhr = new XMLHttpRequest();
 			xhr.emailSubject = emailSubject;
 			xhr.emailSender = emailSender;
-			xhr.emailRow = getParent(emailSubject, "tr");
+			xhr.emailRow = emailSubject.closest("tr");
 			xhr.addEventListener("load", function(event) {
 				if (this.status > 199 && this.status < 400) {
 					this.emailRow.classList.remove("u_b"); // mark as read
@@ -174,7 +174,7 @@ function editlink(emailSubject, urlOrEditId, dupe, txt) {
 			sameEditLinks[e].style.setProperty("background-color", colourclicked);
 			sameEditLinks[e].style.setProperty("text-decoration", "line-through");
 			if (markReadEditsForDeletion) {
-				var cb = getParent(sameEditLinks[e], "tr");
+				var cb = sameEditLinks[e].closest("tr");
 				if (
 					cb
 					&& cb.getElementsByClassName(userjs + "new").length == 0

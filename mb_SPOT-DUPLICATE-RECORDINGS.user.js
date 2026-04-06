@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SPOT DUPLICATE RECORDINGS
-// @version      2025.8.30
+// @version      2026.4.6
 // @description  musicbrainz.org: Spot recordings that are linked multiple times to the same work
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_SPOT-DUPLICATE-RECORDINGS
@@ -57,7 +57,7 @@ function dupetxt(txt) {
 	}, "duplicate " + txt);
 }
 function dupeHighlight(e) {
-	for (var dupes = getParent(this, "tbody").getElementsByClassName(this.className), d = 0; d < dupes.length; d++) {
+	for (var dupes = this.closest("tbody").getElementsByClassName(this.className), d = 0; d < dupes.length; d++) {
 		dupes[d].style.setProperty("background-color", e.type == "mouseover" ? "red" : "yellow");
 		dupes[d].style.setProperty("color", e.type == "mouseover" ? "yellow" : "red");
 	}
