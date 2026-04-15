@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name         atlassian. NO BUGS
 @namespace    https://github.com/jesus2099/konami-command
-@version      2026.3.17.1647
+@version      2026.4.15
 @description  Hide anti-intelligence (AI) crap in Jira and Confluence; and show stronger diff colours in Confluence
 @author       jesus2099
 @since        2024
@@ -29,7 +29,7 @@
 		/* selection popup */
 		div#highlightActionsPopup button[data-testid='defineButton'],
 		div#highlightActionsPopup > div[data-testid='context-menu-other-apps'],
-		div[data-testid='floating-toolbar-items'] div:has(> div[role='presentation'] button[data-testid='media-overflow-dropdown-trigger']),
+		div[data-testid='editor-floating-toolbar'] div[data-toolbar-component='section']:has(button[data-testid='editor-toolbar__ask-rovo']),
 		/* history diff summary */
 		div#compare-instructions + div > a[aria-describedby='compare-instructions'] + div:has(> div[role='presentation'] > button),
 		/* hide clumsy search suggestions */
