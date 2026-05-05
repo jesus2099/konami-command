@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mb. PREFERRED MBS
-// @version      2025.8.28.1822
-// @description  Choose your favourite MusicBrainz server (MBS) (main/beta/test) and no link will ever send you to the others
+// @version      2026.5.6
+// @description  Choose your favourite MusicBrainz server (MBS) (main/beta/test/eu) / Stay in current MBS
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PREFERRED-MBS
 // @downloadURL  https://github.com/jesus2099/konami-command/raw/master/mb_PREFERRED-MBS.user.js
@@ -28,6 +28,9 @@ if (discourse_url) {
 }
 /* ---------------------------------------------------------------- */
 var is_mbs = location.host.match(/^(musicbrainz\.eu|((beta|test)\.)?musicbrainz\.org)$/i);
+// MBS-13728 bug: Annotation, edit note, collection description and user biography pasted MB links: Should always stay in same MBS (eu/org, beta/main)
+// https://tickets.metabrainz.org/browse/MBS-13728
+var MBS_13728_bug = "/* many paths */ .edit-note-text, /* /collection/<mbid> */ .description, /* /user/.+ */ .profileinfo .biography";
 preferred_mbs = leftTrim(preferred_mbs);
 if (!is_mbs) {
 	// Redirect importers to preferred MBS
@@ -66,7 +69,7 @@ document.addEventListener("mousedown", function(event) {
 			&& element.matches("a:not(.jesus2099-bypass-mb_PREFERRED-MBS)") // mb_SUPER-MIND-CONTROL-II-X-TURBO server switcher
 			&& (
 				!is_mbs
-				|| element.closest(".edit-note-text")
+				|| element.closest(MBS_13728_bug)
 			)
 		) {
 			process(element);
@@ -77,9 +80,12 @@ function process(anchor) {
 	var href = anchor.getAttribute("href");
 	if (href) {
 		var new_href;
-		if (anchor.closest(".edit-note-text")) {
-			// Force stay on the same MBS when clicking edit note links (annotations are doing it natively OK)
-			// Test at https://musicbrainz.org/edit/1736776
+		if (anchor.closest(MBS_13728_bug)) {
+			// Stay in current MBS when clicking edit note links (annotations are doing it natively OK)
+			// Test at:
+			// https://musicbrainz.org/edit/1736776
+			// https://beta.musicbrainz.org/collection/ece5ad67-e46a-4936-b466-693031a719e0
+			// https://beta.musicbrainz.org/user/jesus2099
 			new_href = prefer(href, location.protocol + "//" + location.host);
 		} else {
 			new_href = prefer(href);
