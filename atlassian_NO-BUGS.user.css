@@ -1,8 +1,8 @@
 /* ==UserStyle==
 @name         atlassian. NO BUGS
 @namespace    https://github.com/jesus2099/konami-command
-@version      2026.4.30
-@description  Hide anti-intelligence (AI) crap in Jira and Confluence; and show stronger diff colours in Confluence
+@version      2026.5.18
+@description  Hide AI crap in Jira and Confluence; Show stronger diff colours in Confluence
 @author       jesus2099
 @since        2024
 ==/UserStyle== */
@@ -13,10 +13,16 @@
 		.diff-html-added { background: lightgreen; text-decoration: underline; }
 		.diff-html-removed { background: pink; text-decoration: line-through; }
 		.diff-html-changed { background: cyan; text-decoration: underline dashed; }
-		/* hide AI cluttering crap */
+
+		/* ========= */
+		/* Hide crap */
+		/* ========= */
+		/* AI cluttering crap */
 		div#search-page-smart-answers,
 		[data-testid^='ak-editor-ai-selection-toolbar-ai-button'],
 		[data-testid^='context-menu-rovo-chat'],
+		/* search result AI summarize buttons */
+		div[data-testid='search-page-result'] button[data-testid='search-result-summarize-in-chat'],
 		/* right sidebar */
 		div:has(> div[role='presentation'] > div > button[data-testid='platform-ai-button']),
 		[data-testid='object-sidebar-control'] > div:has(button[data-testid='audio-button']),
@@ -41,7 +47,10 @@
 		}
 	}
 	body#jira {
-		/* hide AI cluttering crap */
+		/* ========= */
+		/* Hide crap */
+		/* ========= */
+		/* AI cluttering crap */
 		[data-editor-content-component='true'],
 		[data-testid='issue.views.issue-base.foundation.status.improve-issue'],
 		[data-testid='atlassian-intelligence-toolbar-button'],
