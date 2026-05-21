@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2026.4.6
+// @version      2026.5.21
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected recording dates / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1347,11 +1347,21 @@ if (j2sets.STATIC_MENU && document.querySelector("div.header")) {
 // ==========================================================================
 j2setting("SLOW_DOWN_RETRY", false, true, "gently auto‐retries requests when MB overloading so you don’t have to do it yourself. also retries “read timeout” searches and “502 Bad Gateway”.");
 if (j2sets.SLOW_DOWN_RETRY) {
-	var errortype = document.title.match(/^(502 Bad Gateway|504 Gateway Time-out|internal server error|search error|slow down!)/i);
+	var errortype = document.title.match(/^(502 Bad Gateway|504 Gateway Time-out|internal server error|search error|slow down!|$)/i);
 	if (errortype) {
 		debug("SLOW_DOWN_RETRY");
 		var retrydelay;
 		switch (errortype[1].toLowerCase()) {
+			case "":
+				// check that we are in the (^$ empty title) case where MB thought we were a bot, and rewind/retry
+				if (location.pathname == "/__meb_verify" && document.referrer) {
+					document.title = "⏳ slow down";
+					setTimeout(function() {
+						document.title = "⏮ rewind/retry";
+						location.replace(document.referrer);
+					}, 1000);
+				}
+				break;
 			case "slow down!":
 				retrydelay = 20;
 				break;
