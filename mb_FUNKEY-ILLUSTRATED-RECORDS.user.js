@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. FUNKEY ILLUSTRATED RECORDS
-// @version      2026.4.6
+// @version      2026.6.5
 // @description  musicbrainz.org: CAA front cover art archive pictures/images (release groups and releases) Big illustrated discography and/or inline everywhere possible without cluttering the pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_FUNKEY-ILLUSTRATED-RECORDS
@@ -72,7 +72,7 @@ css = css.sheet;
 css.insertRule("table.tbl > tbody > tr > td > a[href$='/cover-art'][ref^='/release-group/'] ~ span.caa-icon { display: none; }", 0);
 // Add CAA icons in secondary release lists
 if (location.pathname.match(/^\/artist\/[^/]+\/relationships$|^\/cdtoc\/|^\/recording\/|^\/edit\/|edits$/)) {
-	var releases = document.querySelectorAll("tbody > tr > td a[href^='/release/']");
+	var releases = document.querySelectorAll("tbody > tr > td a[href^='/release/'], .entered-from a[href^='/release/']");
 	for (var r = 0; r < releases.length; r++) {
 		var release = include_span_mp(releases[r]);
 		release.parentNode.insertBefore(createTag("a", {a: {href: releases[r].getAttribute("href") + "/cover-art"}}, createTag("span", {a: {class: "caa-icon " + userjs}})), release);
@@ -91,7 +91,7 @@ var reactHydratePage = location.pathname.match(/^\/release\//);
 setTimeout(function() {
 	for (var t = 0; t < types.length; t++) {
 		// TODO: rglink smallpic is often broken by React, though
-		var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/']:not([href$='/cover-art']), div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']:not([href$='/cover-art']), tr > td > span[class^='rglink'] + a[href^='/" + types[t] + "/']:not([href$='/cover-art'])");
+		var as = document.querySelectorAll("tr > td a[href^='/" + types[t] + "/']:not([href$='/cover-art']), div#page.fullwidth ul:not(.tabs) > li a[href^='/" + types[t] + "/']:not([href$='/cover-art']), tr > td > span[class^='rglink'] + a[href^='/" + types[t] + "/']:not([href$='/cover-art']), .entered-from a[href^='/" + types[t] + "/']:not([href$='/cover-art'])");
 		var istable, istablechecked, artistcol;
 		for (var a = 0; a < as.length; a++) {
 			var imgurl = as[a].getAttribute("href").match(new RegExp("^/" + types[t] + "/(" + GUID + ")$"));
@@ -147,7 +147,7 @@ setTimeout(function() {
 					}
 				}
 				// TODO: I think there is no longer any UL LI, now only TABLE TR, I guess but not sure...
-				var box = as[a].closest("table") || as[a].closest("ul");
+				var box = as[a].closest("table") || as[a].closest("ul") || as[a].closest(".entered-from");
 				box.addEventListener("mouseover", updateBig);
 				box.addEventListener("mouseout", updateBig);
 				// BIG PICS
@@ -176,6 +176,9 @@ setTimeout(function() {
 							}
 						})
 					]));
+					if (box.nextSibling.matches(".entered-from")) {
+						box.style.setProperty("float", "left");
+					}
 				}
 			}
 		}
