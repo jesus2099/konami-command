@@ -1,0 +1,15 @@
+/* ==UserStyle==
+@name         mb. HIDE RECORDING AND WORK URL RELATIONSHIPS AT BOTTOM OF RELEASE
+@namespace    https://github.com/jesus2099/konami-command
+@version      2026.6.22
+@description  Don’t show recording and work URL relationships at bottom of release page, but keep those for release and release group
+@author       jesus2099
+@since        2025-06-22; https://tickets.metabrainz.org/browse/MBS-14222
+==/UserStyle== */
+@-moz-document regexp("https?://((beta|test)\\.)?musicbrainz\\.(org|eu)/release/.+") {
+	.bottom-credits > table > tbody {
+		tr:has(a[href^='//']), tr:has(a[href^='http://']), tr:has(a[href^='https://']) {
+			display: none;
+		}
+	}
+}
