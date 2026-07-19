@@ -11,11 +11,38 @@
 // @since        2009-02-09; https://web.archive.org/web/20140328150654/userscripts.org/scripts/show/42102 / https://web.archive.org/web/20141011084020/userscripts-mirror.org/scripts/show/42102
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://github.com/jesus2099/konami-command/raw/63aeeec359c7f1b5920308f1b105da4cce09ffe2/lib/SUPER.js?version=2025.7.21
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/[^/]+\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+function storageRead(key, fallback) {
+	var value;
+	try { value = GM_getValue(key, undefined); } catch (error) { value = undefined; }
+	if (typeof value === "undefined") {
+		try {
+			var legacyValue = localStorage.getItem(key);
+			if (legacyValue !== null) {
+				value = legacyValue;
+				try { GM_setValue(key, value); var migratedValue = GM_getValue(key, undefined); if (typeof migratedValue !== "undefined" && migratedValue === value) { localStorage.removeItem(key); } else { value = fallback; } } catch (error) { value = fallback; }
+			} else {
+				value = fallback;
+			}
+		} catch (error) {
+			value = fallback;
+		}
+	}
+	return typeof value === "undefined" ? fallback : value;
+}
+function storageWrite(key, value) {
+	try { GM_setValue(key, value); } catch (error) { try { localStorage.setItem(key, value); } catch (error) {} }
+}
+function storageRemove(key) {
+	try { GM_deleteValue(key); } catch (error) {}
+	try { localStorage.removeItem(key); } catch (error) {}
+}
 // “const” NG in Opera 12 at least
 var SCRIPT_KEY = "jesus2099PendingEdits"; // linked in mb_MASS-MERGE-RECORDINGS.user.js
 var MBS = self.location.protocol + "//" + self.location.host;
@@ -208,7 +235,7 @@ function updateLink(obj, details) {
 			}
 			var expanded = "▼";
 			var collapsed = "◀";
-			var expandEditLists = (localStorage.getItem(SCRIPT_KEY + "PendingEditLists") != collapsed);
+			var expandEditLists = (storageRead(SCRIPT_KEY + "PendingEditLists", expanded) != collapsed);
 			var ul = createTag("ul", {a: {class: SCRIPT_KEY + "EditList"}, s: {display: expandEditLists ? "block" : "none", opacity: ".8"}});
 			for (var e = 0; e < titarray.length; e++) {
 				var edit1type2editor3count = titarray[e].match(/^(?:- )?([^(]+)(?: \(([^)]+)\))?(?: ×(\d+))?$/);
@@ -238,7 +265,7 @@ function updateLink(obj, details) {
 				for (var toggles = document.querySelectorAll("a." + SCRIPT_KEY + "Toggle"), t = 0; t < toggles.length; t++) {
 					replaceChildren(document.createTextNode(collapse ? collapsed : expanded), toggles[t]);
 				}
-				localStorage.setItem(SCRIPT_KEY + "PendingEditLists", collapse ? collapsed : expanded);
+				storageWrite(SCRIPT_KEY + "PendingEditLists", collapse ? collapsed : expanded);
 			}}}, expandEditLists ? expanded : collapsed), li.firstChild);
 		}
 	} else {

@@ -11,11 +11,38 @@
 // @since        2014-09-19
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/user\/[^/]+\/collections$/
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+function storageRead(key, fallback) {
+	var value;
+	try { value = GM_getValue(key, undefined); } catch (error) { value = undefined; }
+	if (typeof value === "undefined") {
+		try {
+			var legacyValue = localStorage.getItem(key);
+			if (legacyValue !== null) {
+				value = legacyValue;
+				try { GM_setValue(key, value); var migratedValue = GM_getValue(key, undefined); if (typeof migratedValue !== "undefined" && migratedValue === value) { localStorage.removeItem(key); } else { value = fallback; } } catch (error) { value = fallback; }
+			} else {
+				value = fallback;
+			}
+		} catch (error) {
+			value = fallback;
+		}
+	}
+	return typeof value === "undefined" ? fallback : value;
+}
+function storageWrite(key, value) {
+	try { GM_setValue(key, value); } catch (error) { try { localStorage.setItem(key, value); } catch (error) {} }
+}
+function storageRemove(key) {
+	try { GM_deleteValue(key); } catch (error) {}
+	try { localStorage.removeItem(key); } catch (error) {}
+}
 let userjs = {
 	id: "jesus2099",
 	name: GM_info.script.name.substr(4)
@@ -54,10 +81,10 @@ if (self.location.href.match(/\/collections/) && document.querySelector("h1").te
 function mouli() {
 	target = this.parentNode.parentNode.querySelector("a[href*='/collection/']").getAttribute("href").match(re_GUID);
 	method = this.textContent.toLowerCase();
-	source = prompt("Please paste your release edit search or other collection URL here.\nIt will parse these pages to modify the previously mentionned collection.", localStorage.getItem(userjs.id + "_" + method + "-source") || "");
+	source = prompt("Please paste your release edit search or other collection URL here.\nIt will parse these pages to modify the previously mentionned collection.", storageRead(userjs.id + "_" + method + "-source", "") || "");
 	client = userjs.name.replace(/^mb\. /, "").replace(/ /g, ".").toLowerCase() + "-" + GM_info.script.version;
 	if (target && method.match(/^(put|delete)$/i) && source) {
-		localStorage.setItem(userjs.id + "_" + method + "-source", source);
+		storageWrite(userjs.id + "_" + method + "-source", source);
 		source = source.replace(/^(https?:\/\/[^/]+)?(\/.+)/, "$2");
 		if (source.match(/\/tag\/[^/]+/)) {
 			source = source.replace(/(^.*\/tag\/[^/]+).*/, "$1/release");

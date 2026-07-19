@@ -12,7 +12,9 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/ab3d205ab8a9897ac3ef23075fda26bed07ca342/lib/COOL-BUBBLES.js?version=2016.6.1.1310
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/[^/]+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/(open_)?edits/
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/artist\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/recordings/
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/edit\/\d+/
@@ -27,6 +29,31 @@
 // @run-at       document-idle
 // ==/UserScript==
 "use strict";
+function storageRead(key, fallback) {
+	var value;
+	try { value = GM_getValue(key, undefined); } catch (error) { value = undefined; }
+	if (typeof value === "undefined") {
+		try {
+			var legacyValue = localStorage.getItem(key);
+			if (legacyValue !== null) {
+				value = legacyValue;
+				try { GM_setValue(key, value); var migratedValue = GM_getValue(key, undefined); if (typeof migratedValue !== "undefined" && migratedValue === value) { localStorage.removeItem(key); } else { value = fallback; } } catch (error) { value = fallback; }
+			} else {
+				value = fallback;
+			}
+		} catch (error) {
+			value = fallback;
+		}
+	}
+	return typeof value === "undefined" ? fallback : value;
+}
+function storageWrite(key, value) {
+	try { GM_setValue(key, value); } catch (error) { try { localStorage.setItem(key, value); } catch (error) {} }
+}
+function storageRemove(key) {
+	try { GM_deleteValue(key); } catch (error) {}
+	try { localStorage.removeItem(key); } catch (error) {}
+}
 /* - --- - --- - --- - START OF CONFIGURATION - --- - --- - --- - */
 var dupeColour = "pink";
 var infoColour = "lightcyan";
@@ -475,7 +502,7 @@ function createStuffFragment(stufftype, stuffs, shownstuffs, url, trackid, recid
 	tr.appendChild(td);
 	var table = document.createElement("div");
 	table.className = "ars " + stufftype + "81127";
-	table.style.setProperty("display", localStorage.getItem("hide" + stufftype + "81127") == "1" ? "none" : "block");
+	table.style.setProperty("display", storageRead("hide" + stufftype + "81127", "0") == "1" ? "none" : "block");
 	table.appendChild(tr);
 	return table;
 }
@@ -517,7 +544,7 @@ function idCount(type, count) {
 			createTag("input", {a: {type: "checkbox", ref: "recdis"}, e: {click: function(event) {
 				var content = document.querySelector("div#content");
 				if (content) {
-					localStorage.setItem(userjs.id + "hide-recdis", event.target.checked ? "0" : "1");
+					storageWrite(userjs.id + "hide-recdis", event.target.checked ? "0" : "1");
 					if (event.target.checked) {
 						content.classList.remove(userjs.id + "hide-recdis");
 					} else {
@@ -527,7 +554,7 @@ function idCount(type, count) {
 			}}}),
 			" Show recording comments"
 		])));
-		if (localStorage.getItem(userjs.id + "hide-recdis") !== "1") {
+		if (storageRead(userjs.id + "hide-recdis", "0") !== "1") {
 			idCountZone.querySelector("input[ref='recdis']").click();
 		}
 		var showOE = idCountZone.appendChild(document.createElement("dd")).appendChild(document.createElement("label")).appendChild(document.createElement("input"));
@@ -612,13 +639,13 @@ function idCount(type, count) {
 					cooldt.style.setProperty("background-color", dupeColour);
 				}
 				cooldd.appendChild(document.createTextNode(" ("));
-				var typetoggle = cooldd.appendChild(createA(localStorage.getItem("hide" + type + "81127") == "1" ? "show" : "hide", null, "shift+click to hide/show all"));
+				var typetoggle = cooldd.appendChild(createA(storageRead("hide" + type + "81127", "0") == "1" ? "show" : "hide", null, "shift+click to hide/show all"));
 				typetoggle.style.setProperty("cursor", "pointer");
 				typetoggle.setAttribute("id", "tog81127" + type);
 				typetoggle.addEventListener("click", function(event) {
 					var type =  this.getAttribute("id").match(/^tog81127([a-z]+)$/i)[1];
 					var show = (this.textContent == "show");
-					localStorage.setItem("hide" + type + "81127", show ? "0" : "1");
+					storageWrite("hide" + type + "81127", show ? "0" : "1");
 					var togstuffs = document.getElementsByClassName(type + 81127);
 					for (var itog = 0; itog < togstuffs.length; itog++) {
 						togstuffs[itog].style.setProperty("display", show ? "block" : "none");

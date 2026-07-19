@@ -11,7 +11,9 @@
 // @since        2011-08-02; https://web.archive.org/web/20131103162328/userscripts.org/scripts/show/108889 / https://web.archive.org/web/20141011084020/userscripts-mirror.org/scripts/show/108889
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://github.com/jesus2099/konami-command/raw/de88f870c0e6c633e02f32695e32c4f50329fc3e/lib/SUPER.js?version=2022.3.24.224
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
 // @match        *://*.musicbrainz.org/area/*
 // @match        *://*.musicbrainz.org/artist/*
 // @match        *://*.musicbrainz.org/event/*
@@ -59,9 +61,34 @@
 // ==/UserScript==
 "use strict";
 /* hint for Opera 12 users allow opera:config#UserPrefs|Allowscripttolowerwindow and opera:config#UserPrefs|Allowscripttoraisewindow */
+function storageRead(key, fallback) {
+	var value;
+	try { value = GM_getValue(key, undefined); } catch (error) { value = undefined; }
+	if (typeof value === "undefined") {
+		try {
+			var legacyValue = localStorage.getItem(key);
+			if (legacyValue !== null) {
+				value = legacyValue;
+				try { GM_setValue(key, value); var migratedValue = GM_getValue(key, undefined); if (typeof migratedValue !== "undefined" && migratedValue === value) { localStorage.removeItem(key); } else { value = fallback; } } catch (error) { value = fallback; }
+			} else {
+				value = fallback;
+			}
+		} catch (error) {
+			value = fallback;
+		}
+	}
+	return typeof value === "undefined" ? fallback : value;
+}
+function storageWrite(key, value) {
+	try { GM_setValue(key, value); } catch (error) { try { localStorage.setItem(key, value); } catch (error) {} }
+}
+function storageRemove(key) {
+	try { GM_deleteValue(key); } catch (error) {}
+	try { localStorage.removeItem(key); } catch (error) {}
+}
 const userjs = "jesus2099_all-links";
 const nonLatinName = /[\u0384-\u1cf2\u1f00-\uffff]/; // U+2FA1D is currently out of js range
-var rawLanguages = JSON.parse(localStorage.getItem(userjs + "_languages")) || ["navigator", "musicbrainz"];
+var rawLanguages = JSON.parse(storageRead(userjs + "_languages", "[\"navigator\",\"musicbrainz\"]")) || ["navigator", "musicbrainz"];
 const path_ID_separator = "::::";
 // Available tokens:
 // - for all entity pages: %entity-type% %entity-mbid% %entity-name%
@@ -1351,7 +1378,7 @@ function addSearchLinksSection(sectionPath, parentNode) {
 	return hasVisibleContent && !disabledSearchLinks[sectionID];
 }
 function addUserLinks(parentNode) {
-	var loadedUserLinks = JSON.parse(localStorage.getItem(userjs + "_user-autolinks")) || {};
+	var loadedUserLinks = JSON.parse(storageRead(userjs + "_user-autolinks", "{}")) || {};
 	var filteredUserLinks = {};
 	var currentSection = "";
 	var currentSectionIsEmpty = true;
@@ -1440,7 +1467,7 @@ function idToPath(id) {
 	return id.replace(userjs + "_searchLinks" + path_ID_separator, "").split(path_ID_separator);
 }
 function loadDisabledSearchLinks() {
-	var loadedSettings = JSON.parse(localStorage.getItem(userjs + "_disabled-search-links")) || {};
+	var loadedSettings = JSON.parse(storageRead(userjs + "_disabled-search-links", "{}")) || {};
 	for (var itemID in loadedSettings) if (Object.prototype.hasOwnProperty.call(loadedSettings, itemID)) {
 		var itemPath = idToPath(itemID);
 		if (itemPath && pathToItem(itemPath)) {
@@ -1448,7 +1475,7 @@ function loadDisabledSearchLinks() {
 		}
 	}
 	delete disabledSearchLinks[pathToID(["web"])];
-	localStorage.setItem(userjs + "_disabled-search-links", JSON.stringify(disabledSearchLinks));
+	storageWrite(userjs + "_disabled-search-links", JSON.stringify(disabledSearchLinks));
 }
 function pathToItem(path) {
 	var item = searchLinks;
@@ -1559,13 +1586,13 @@ function toggleEmpty(itemNode, hide) {
 	}
 }
 function toggleStorage(itemID) {
-	var toggledSettings = JSON.parse(localStorage.getItem(userjs + "_disabled-search-links")) || {};
+	var toggledSettings = JSON.parse(storageRead(userjs + "_disabled-search-links", "{}")) || {};
 	if (toggledSettings[itemID]) {
 		delete toggledSettings[itemID];
 	} else {
 		toggledSettings[itemID] = true;
 	}
-	localStorage.setItem(userjs + "_disabled-search-links", JSON.stringify(toggledSettings));
+	storageWrite(userjs + "_disabled-search-links", JSON.stringify(toggledSettings));
 }
 /* function weirdobg() {
 	var weirdo = userjs + " _" + (new Date().getTime());
@@ -1687,10 +1714,10 @@ function configureModule(event) {
 	switch (event.target.getAttribute("title")) {
 		case "configure user autolinks":
 			// TODO: provide a real editor
-			var loadedUserAutolinks = localStorage.getItem(userjs + "_user-autolinks") || {};
+			var loadedUserAutolinks = storageRead(userjs + "_user-autolinks", "{}") || {};
 			var newUserAutolinks = prompt("Edit your user autolinks\nCopy/paste in a real editor\nSorry for such an awful prompt\n\nAvailable variables:\n- for all entity pages: %entity-type%, %entity-mbid% and %entity-name%\n- for \"foobar\" entity pages: %foobar-mbid% and %foobar-name% where \"foobar\" is an entity type.\n- for artist entity pages: %artist-sort-name%, %artist-family-name-first% and %artist-latin-script-name%\n- for url entity pages: %url-target% (while %entity-name% and %url-name% are deliberately ignored)\n\nExample: {\"Search for reviews\": \"//duckduckgo.com/?q=%22%entity-name%%22+reviews\",\n\"Search for fans\": \"//duckduckgo.com/?q=%22%artist-name%%22+fans\",\n\"Works\": \"/ws/2/artist/%artist-mbid%?inc=works\",\n\"La FNAC\": \"http://recherche.fnac.com/SearchResult/ResultList.aspx?SCat=3%211&Search=%release-name%&sft=1&sa=0\"}", loadedUserAutolinks);
 			if (newUserAutolinks && newUserAutolinks != loadedUserAutolinks && JSON.stringify(newUserAutolinks)) {
-				localStorage.setItem(userjs + "_user-autolinks", newUserAutolinks);
+				storageWrite(userjs + "_user-autolinks", newUserAutolinks);
 			}
 			break;
 		case "filter search links":
@@ -1705,7 +1732,7 @@ function configureModule(event) {
 			var defaultLanguages = parseLanguages(["navigator", "musicbrainz"]);
 			var navigatorLanguages = guessNavigatorLanguages();
 			var musicbrainzLanguage = document.documentElement.getAttribute("lang") || "en";
-			var loadedLanguages = (localStorage.getItem(userjs + "_languages") || JSON.stringify(rawLanguages)).replace(/,/g, "$& ").replace(/\s+/g, " ");
+			var loadedLanguages = (storageRead(userjs + "_languages", JSON.stringify(rawLanguages)) || JSON.stringify(rawLanguages)).replace(/,/g, "$& ").replace(/\s+/g, " ");
 			var newLanguages = prompt("Choose your favourite language(s)\n\nType a language array: [\"favourite language\", \"second favourite\", …, \"least favourite\"]\n\nTwo meta languages can be used:\n- \"navigator\" for navigator settings, currently " + (navigatorLanguages.length > 0 ? "detected as " + JSON.stringify(navigatorLanguages).replace(/,/g, "$& ").replace(/\s+/g, " ") : "undetected") + "\n- \"musicbrainz\" for selected MusicBrainz UI language, currently " + (musicbrainzLanguage ? "detected as [" + JSON.stringify(musicbrainzLanguage) + "]" : "undetected") + "\n\nDefault:\n- [\"navigator\", \"musicbrainz\"], currently expands to " + JSON.stringify(defaultLanguages).replace(/,/g, "$& ").replace(/\s+/g, " ") + "\n\nSome examples:\n- [\"musicbrainz\", \"fr-FR\", \"en-GB\", \"vi\", \"ja\", \"navigator\"]\n- [\"fr\", \"en\", \"vi\", \"ja\"]\n- [\"en-GB\"]\n- [\"fr-FR\", \"navigator\", \"en-GB\", \"musicbrainz\"]\n- []" + "\n\nCurrent setting expands to " + JSON.stringify(parseLanguages(JSON.parse(loadedLanguages))).replace(/,/g, "$& ").replace(/\s+/g, " "), loadedLanguages);
 			if (
 				newLanguages
@@ -1714,7 +1741,7 @@ function configureModule(event) {
 				&& newLanguages != loadedLanguages
 				&& JSON.parse(newLanguages)
 			) {
-				localStorage.setItem(userjs + "_languages", newLanguages);
+				storageWrite(userjs + "_languages", newLanguages);
 				rawLanguages = JSON.parse(newLanguages);
 			}
 			break;

@@ -12,7 +12,9 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAMIDAAAAAIAAAP8AAP///////////////////yH5BAEKAAQALAAAAAAQABAAAAMuSLrc/jA+QBUFM2iqA2ZAMAiCNpafFZAs64Fr66aqjGbtC4WkHoU+SUVCLBohCQA7
 // @require      https://github.com/jesus2099/konami-command/raw/c5fb7fe162530fdbd7e017170f24169272a729a0/lib/CONTROL-POMME.js?version=2024.3.14.1822
 // @require      https://github.com/jesus2099/konami-command/raw/f1cbb2368209bc51a175062dc512f1a1eb7d25a7/lib/SUPER.js?version=2024.11.8
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
 // @match        *://*.musicbrainz.org/*/add-alias
 // @match        *://*.musicbrainz.org/*/change-quality
 // @match        *://*.musicbrainz.org/*/create*
@@ -69,6 +71,31 @@
 // @run-at       document-idle
 // ==/UserScript==
 "use strict";
+function storageRead(key, fallback) {
+	var value;
+	try { value = GM_getValue(key, undefined); } catch (error) { value = undefined; }
+	if (typeof value === "undefined") {
+		try {
+			var legacyValue = localStorage.getItem(key);
+			if (legacyValue !== null) {
+				value = legacyValue;
+				try { GM_setValue(key, value); var migratedValue = GM_getValue(key, undefined); if (typeof migratedValue !== "undefined" && migratedValue === value) { localStorage.removeItem(key); } else { value = fallback; } } catch (error) { value = fallback; }
+			} else {
+				value = fallback;
+			}
+		} catch (error) {
+			value = fallback;
+		}
+	}
+	return typeof value === "undefined" ? fallback : value;
+}
+function storageWrite(key, value) {
+	try { GM_setValue(key, value); } catch (error) { try { localStorage.setItem(key, value); } catch (error) {} }
+}
+function storageRemove(key) {
+	try { GM_deleteValue(key); } catch (error) {}
+	try { localStorage.removeItem(key); } catch (error) {}
+}
 var IS_TOUCH_SCREEN = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
 var IS_MOBILE_DEVICE = /Mobile/i.test(navigator.userAgent);
 var ON_MB = location.host.match(/^((beta|test)\.)?musicbrainz\.(org|eu)/);
@@ -82,9 +109,9 @@ var colours = {
 	warning: "gold"
 };
 var notetextStorage = "jesus2099userjs::last_editnotetext";
-var save = !localStorage.getItem(userjs + "forget") && (ON_EDIT_PAGE || !ON_EDIT_SEARCH_PAGE);
+var save = !storageRead(userjs + "forget", "") && (ON_EDIT_PAGE || !ON_EDIT_SEARCH_PAGE);
 var content = document.querySelector(ON_MB ? "#page" : "div.content");
-var saved_height = localStorage.getItem(userjs + "_savedHeight");
+var saved_height = storageRead(userjs + "_savedHeight", null);
 var notetext;
 var submit_button;
 waitForElements((ON_MB ? "#page" : "div.content") + " textarea" + (ON_MB ? ".edit-note, textarea#edit-note-text" : ""), init);
@@ -98,13 +125,13 @@ function init(edit_notes) {
 		if (saved_height) {
 			notetext.style.setProperty("height", saved_height + "px");
 			addAfter(createTag("div", {s: {textAlign: "right"}}, createTag("a", {e: {click: function(event) {
-				localStorage.removeItem(userjs + "_savedHeight");
+				storageRemove(userjs + "_savedHeight");
 				this.parentNode.replaceChild(document.createTextNode("Size reset! It will take effect at next page load."), this);
 			}}}, "↖Reset size")), notetext);
 		}
 		notetext.addEventListener("mouseup", function(event) {
 			if (this.offsetHeight != saved_height) {
-				localStorage.setItem(userjs + "_savedHeight", this.offsetHeight);
+				storageWrite(userjs + "_savedHeight", this.offsetHeight);
 			}
 		});
 	} else {
@@ -147,7 +174,7 @@ function init(edit_notes) {
 				change: function(event) {
 					save = this.checked;
 					this.parentNode.style.setProperty("background-color", save ? colours.ok : colours.warning);
-					localStorage.setItem(userjs + "forget", save ? "" : "1");
+					storageWrite(userjs + "forget", save ? "" : "1");
 				}
 			}
 		}));
@@ -159,7 +186,7 @@ function init(edit_notes) {
 			let butt = createButton("n-" + (+m + 1), "50px");
 			let buttid = notetextStorage + "0" + m;
 			butt.setAttribute("id", buttid);
-			let lastnotetext = localStorage.getItem(buttid);
+			let lastnotetext = storageRead(buttid, null);
 			if (!lastnotetext) {
 				butt.setAttribute("disabled", "true");
 				butt.style.setProperty("opacity", ".5");
@@ -198,7 +225,7 @@ function init(edit_notes) {
 			buttons.appendChild(document.createTextNode(" ← " + CONTROL_POMME.shift.label + "click: submit / " + CONTROL_POMME.ctrl.label + "click: remove"));
 		}
 		notetext.parentNode.insertBefore(buttons, notetext);
-		let lastnotetext = localStorage.getItem(notetextStorage + "00");
+		let lastnotetext = storageRead(notetextStorage + "00", null);
 		if (save && !ON_EDIT_SEARCH_PAGE && !ON_EDIT_PAGE && lastnotetext && notetext.value == "") {
 			forceValue(notetext, lastnotetext);
 		}
@@ -213,24 +240,24 @@ function init(edit_notes) {
 function saveNote() {
 	if (notetext) {
 		var thisnotetext = notetext.value.replace(/\u00a0—\u00a0[\r\n]{1,2}Merging into oldest \[MBID\] \(['\d,\s←+]+\)\./g, "").trim(); // linked in mb_MERGE-HELPOR-2.user.js
-		var ls00 = localStorage.getItem(notetextStorage + "00");
+		var ls00 = storageRead(notetextStorage + "00", null);
 		if (save && thisnotetext !== ls00) {
 			if (ls00 !== "") {
 				// remove earlier (rightwards) duplicates
 				for (var idel = memories - 1; idel > 0; idel--) {
-					if (thisnotetext === localStorage.getItem(notetextStorage + "0" + idel)) {
+					if (thisnotetext === storageRead(notetextStorage + "0" + idel, null)) {
 						forget(idel);
 					}
 				}
 				// insert new note at the left and shift everything rightwards
 				for (var isav = memories - 1; isav > 0; isav--) {
-					var prev = localStorage.getItem(notetextStorage + "0" + (isav - 1));
+					var prev = storageRead(notetextStorage + "0" + (isav - 1), null);
 					if (prev) {
-						localStorage.setItem(notetextStorage + "0" + isav, prev);
+						storageWrite(notetextStorage + "0" + isav, prev);
 					}
 				}
 			}
-			localStorage.setItem(notetextStorage + "00", thisnotetext);
+			storageWrite(notetextStorage + "00", thisnotetext);
 		}
 	}
 }
@@ -238,15 +265,15 @@ function forget(memory_index) {
 	if (memory_index >= 0 && memory_index < memories) {
 		for (var mi = memory_index; mi < memories; mi++) {
 			var memory_button = document.querySelector("[id='" + notetextStorage + "0" + mi + "']");
-			var next_memory = localStorage.getItem(notetextStorage + "0" + (+mi + 1));
+			var next_memory = storageRead(notetextStorage + "0" + (+mi + 1), null);
 			if (next_memory === null) {
 				next_memory = "n-" + (+mi + 1);
-				localStorage.removeItem(notetextStorage + "0" + mi);
+				storageRemove(notetextStorage + "0" + mi);
 				memory_button.removeAttribute("title");
 				memory_button.setAttribute("disabled", "true");
 				memory_button.style.setProperty("opacity", ".5");
 			} else {
-				localStorage.setItem(notetextStorage + "0" + mi, next_memory);
+				storageWrite(notetextStorage + "0" + mi, next_memory);
 				memory_button.setAttribute("title", next_memory);
 			}
 			memory_button.setAttribute("value", summarise(next_memory));

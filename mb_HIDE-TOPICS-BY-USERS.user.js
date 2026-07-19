@@ -11,13 +11,41 @@
 // @since        2021-03-23; https://meta.discourse.org/t/topics-created-by-ignored-users-showing-on-homepage/170366/12?u=jesus2099
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @grant        GM_registerMenuCommand
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
 // @include      https://community.metabrainz.org/*
 // @run-at       document-ready
 // ==/UserScript==
 "use strict";
+function storageRead(key, fallback) {
+	var value;
+	try { value = GM_getValue(key, undefined); } catch (error) { value = undefined; }
+	if (typeof value === "undefined") {
+		try {
+			var legacyValue = localStorage.getItem(key);
+			if (legacyValue !== null) {
+				value = legacyValue;
+				try { GM_setValue(key, value); var migratedValue = GM_getValue(key, undefined); if (typeof migratedValue !== "undefined" && migratedValue === value) { localStorage.removeItem(key); } else { value = fallback; } } catch (error) { value = fallback; }
+			} else {
+				value = fallback;
+			}
+		} catch (error) {
+			value = fallback;
+		}
+	}
+	return typeof value === "undefined" ? fallback : value;
+}
+function storageWrite(key, value) {
+	try { GM_setValue(key, value); } catch (error) { try { localStorage.setItem(key, value); } catch (error) {} }
+}
+function storageRemove(key) {
+	try { GM_deleteValue(key); } catch (error) {}
+	try { localStorage.removeItem(key); } catch (error) {}
+}
 var DEBUG = false;
 // load blacklist settings
-var settings = localStorage.getItem(GM_info.script.name);
+var settings = storageRead(GM_info.script.name, null);
 try {
 	settings = JSON.parse(settings);
 } catch (error) {
@@ -44,7 +72,7 @@ GM_registerMenuCommand("Edit blacklist", function() {
 	if (newBlacklist !== null) {
 		settings.users = newBlacklist.trim().replace(/\s+/g, " ").split(" ");
 		debug("Save new blacklist: " + settings.users);
-		localStorage.setItem(GM_info.script.name, JSON.stringify(settings));
+		storageWrite(GM_info.script.name, JSON.stringify(settings));
 	}
 });
 // hide topics created by backlisted users

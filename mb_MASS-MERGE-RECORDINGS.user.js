@@ -19,6 +19,31 @@
 // @run-at       document-end
 // ==/UserScript==
 "use strict";
+function storageRead(key, fallback) {
+	var value;
+	try { value = GM_getValue(key, undefined); } catch (error) { value = undefined; }
+	if (typeof value === "undefined") {
+		try {
+			var legacyValue = localStorage.getItem(key);
+			if (legacyValue !== null) {
+				value = legacyValue;
+				try { GM_setValue(key, value); var migratedValue = GM_getValue(key, undefined); if (typeof migratedValue !== "undefined" && migratedValue === value) { localStorage.removeItem(key); } else { value = fallback; } } catch (error) { value = fallback; }
+			} else {
+				value = fallback;
+			}
+		} catch (error) {
+			value = fallback;
+		}
+	}
+	return typeof value === "undefined" ? fallback : value;
+}
+function storageWrite(key, value) {
+	try { GM_setValue(key, value); } catch (error) { try { localStorage.setItem(key, value); } catch (error) {} }
+}
+function storageRemove(key) {
+	try { GM_deleteValue(key); } catch (error) {}
+	try { localStorage.removeItem(key); } catch (error) {}
+}
 let userjs = {
 	id: "MMR2099userjs120382", // linked to mb_INLINE-STUFF
 	name: GM_info.script.name.substr(4).replace(/\s/g, "\u00a0"),
@@ -563,7 +588,7 @@ function massMergeGUI() {
 	MMRdiv.appendChild(createTag("p", {}, [matchMode.sequential, matchMode.title, matchMode.titleAndAC]));
 	MMRdiv.appendChild(createTag("p", {s: {marginBottom: "0px"}}, "Merge edit notes:"));
 	editNote = MMRdiv.appendChild(createInput("textarea", "merge.edit_note"));
-	var lastEditNote = (localStorage && localStorage.getItem(userjs.id));
+	var lastEditNote = (localStorage && storageRead(userjs.id, null));
 	if (lastEditNote) {
 		editNote.appendChild(document.createTextNode(lastEditNote));
 		editNote.style.setProperty("background-color", cOK);
@@ -1027,7 +1052,7 @@ function showGUI() {
 }
 function saveEditNote(event) {
 	if (localStorage) {
-		localStorage.setItem(userjs.id + (release_group_MBID ? "_RG" : ""), editNote.value);
+		storageWrite(userjs.id + (release_group_MBID ? "_RG" : ""), editNote.value);
 		editNote.style.setProperty("background-color", cOK);
 		editNote.setAttribute("title", "Saved to local storage");
 	} else {
@@ -1038,7 +1063,7 @@ function saveEditNote(event) {
 }
 function loadEditNote(event) {
 	if (localStorage) {
-		var savedEditNote = localStorage.getItem(userjs.id + (release_group_MBID ? "_RG" : ""));
+		var savedEditNote = storageRead(userjs.id + (release_group_MBID ? "_RG" : ""), null);
 		if (savedEditNote) {
 			editNote.value = savedEditNote;
 			editNote.style.setProperty("background-color", cOK);
@@ -1223,7 +1248,7 @@ function RGRecordingsMassMergeGUI() {
 	mergeStatus.style.setProperty("width", "100%");
 	MMRdiv.appendChild(createTag("p", {s: {marginBottom: "0px"}}, "Merge edit notes:"));
 	editNote = MMRdiv.appendChild(createInput("textarea", "merge.edit_note"));
-	var lastEditNote = (localStorage && localStorage.getItem(userjs.id + "_RG"));
+	var lastEditNote = (localStorage && storageRead(userjs.id + "_RG", null));
 	if (lastEditNote) {
 		editNote.appendChild(document.createTextNode(lastEditNote));
 		editNote.style.setProperty("background-color", cOK);

@@ -13,7 +13,9 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKEDAP+/3/9/vwAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh/glqZXN1czIwOTkAIfkEAQACAwAsAAAAABAAEAAAAkCcL5nHlgFiWE3AiMFkNnvBed42CCJgmlsnplhyonIEZ8ElQY8U66X+oZF2ogkIYcFpKI6b4uls3pyKqfGJzRYAACH5BAEIAAMALAgABQAFAAMAAAIFhI8ioAUAIfkEAQgAAwAsCAAGAAUAAgAAAgSEDHgFADs=
 // @require      https://github.com/jesus2099/konami-command/raw/bcceaa5f3da43e9ee805cba2eccda07f602d3f0c/lib/MB-JUNK-SHOP.js?version=2024.8.26
 // @require      https://github.com/jesus2099/konami-command/raw/7e350a72575bc729e9aa58af6796dadc2eca685d/lib/SUPER.js?version=2024.12.3
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
 // @match        *://*.musicbrainz.org/*
 // @match        *://musicbrainz.eu/*
 // @exclude      *://blog.musicbrainz.org/*
@@ -33,6 +35,53 @@ let userjs = {
 	name: GM_info.script.name.substr(4).replace(/\s/g, "\u00a0"),
 	icon: createTag("img", {a: {src: GM_info.script.icon}, s: {verticalAlign: "middle", margin: "-8px 0"}})
 };
+function storageRead(key, fallback) {
+	var value;
+	try {
+		value = GM_getValue(key, undefined);
+	} catch (error) {
+		value = undefined;
+	}
+	if (typeof value === "undefined") {
+		try {
+			var legacyValue = localStorage.getItem(key);
+			if (legacyValue !== null) {
+				value = legacyValue;
+				try {
+					GM_setValue(key, value);
+					var migratedValue = GM_getValue(key, undefined);
+					if (typeof migratedValue !== "undefined" && migratedValue === value) {
+						localStorage.removeItem(key);
+					} else {
+						value = fallback;
+					}
+				} catch (error) {
+					value = fallback;
+				}
+			} else {
+				value = fallback;
+			}
+		} catch (error) {
+			value = fallback;
+		}
+	}
+	return typeof value === "undefined" ? fallback : value;
+}
+function storageWrite(key, value) {
+	try {
+		GM_setValue(key, value);
+	} catch (error) {
+		try { localStorage.setItem(key, value); } catch (error) {}
+	}
+}
+function storageRemove(key) {
+	try {
+		GM_deleteValue(key);
+	} catch (error) {}
+	try {
+		localStorage.removeItem(key);
+	} catch (error) {}
+}
 var debugBuffer = "";
 var DEBUG = false;
 var pageType = location.pathname.match(/(area(?!.+(artists|labels|releases|places|aliases|edits))|artist(?!.+(releases|recordings|works|relationships|aliases|edits))|artists|event|labels|releases|recordings|report|series|track|works|aliases|cdtoc|collection(?!s|.+edits)|collections|edit(?!s|\/subscribed)|edits|votes|edit\/subscribed|isrc|label(?!.+edits)|place(?!.+(aliases|edits))|ratings|recording(?!s|.+edits)|relationships|release[-_]group(?!.+edits)|release(?!s|-group|.+edits)|search(?!\/edits)|tracklist|tag|url|work(?!s))/);
@@ -120,7 +169,7 @@ j2superturbo.menu.addItem(createTag("a", {a: {title: "Settings:\n" + GM_info.scr
 					" | ",
 					createTag("a", {a: {href: GM_info.script.supportURL, target: "_blank"}}, "known issues"),
 					" | ",
-					createTag("a", {e: {click: function(event) { if (confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")) { localStorage.removeItem(userjs.id + "settings"); location.reload(); } }}}, "RESET"),
+					createTag("a", {e: {click: function(event) { if (confirm("RESET ALL YOUR SETTINGS TO DEFAULT?")) { storageRemove(userjs.id + "settings"); location.reload(); } }}}, "RESET"),
 					" | ",
 					createTag("a", {e: {click: function(event) { removeNode(document.getElementById(userjs.id + "j2sets")); }}}, "CLOSE"),
 				]),
@@ -179,7 +228,7 @@ function bug(error) {
 }
 function j2setting(setting, val, def, doc) {
 	if (setting == null) {
-		j2sets = localStorage.getItem(userjs.id + "settings");
+		j2sets = storageRead(userjs.id + "settings");
 		if (j2sets) { j2sets = JSON.parse(j2sets); } else { j2sets = {}; }
 	} else {
 		if (doc) {
@@ -191,7 +240,7 @@ function j2setting(setting, val, def, doc) {
 		}
 		if (val != null && (!def || j2sets[setting] == null)) {
 			j2sets[setting] = val;
-			localStorage.setItem(userjs.id + "settings", JSON.stringify(j2sets));
+			storageWrite(userjs.id + "settings", JSON.stringify(j2sets));
 		} else if (setting) {
 			return j2sets[setting];
 		}
@@ -802,7 +851,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 		var isOpenEdits = typeof (what[3] || what[6]) != "undefined";
 		var which = what[2] || what[5];
 		what = what[1] || what[4];
-		var lastseenedits = localStorage.getItem(userjs.id + "lastseenedits-" + what);
+		var lastseenedits = storageRead(userjs.id + "lastseenedits-" + what);
 		var upd = false;
 		if (lastseenedits) { lastseenedits = JSON.parse(lastseenedits); } else { lastseenedits = {}; }
 		var now = new Date();
@@ -835,7 +884,7 @@ if (j2sets.LAST_SEEN_EDIT && account) {
 			}
 		}
 		if (upd && !isOpenEdits) {
-			localStorage.setItem(userjs.id + "lastseenedits-" + what, JSON.stringify(lastseenedits));
+			storageWrite(userjs.id + "lastseenedits-" + what, JSON.stringify(lastseenedits));
 		}
 	}
 }
@@ -930,7 +979,7 @@ if (j2sets.COOL_SEARCH_LINKS && account && !location.pathname.match(/^\/search\/
 				if (location.href.indexOf(account.pathname) < 0 && typeof __MB__ !== "undefined") {
 					var myID = __MB__.$c.user.id;
 					if (myID) {
-						if (myID != localStorage.getItem(userjs.id + "me-userid")) localStorage.setItem(userjs.id + "me-userid", myID);
+						if (myID != storageRead(userjs.id + "me-userid")) storageWrite(userjs.id + "me-userid", myID);
 						if (!location.pathname.match(/^\/user\//)) {
 							refines.appendChild(document.createTextNode(" | "));
 							refines.appendChild(createTag("a", {a: {href: refine_search + notme.replace(/%myID%/g, myID).replace(/%myName%/g, escape(account.name))}}, "Exclude my own edits"));
@@ -1626,7 +1675,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 		if (event.type == "click") {
 			/* :::: TRACK NAME SEARCH→REPLACE :::: */
 			if (event.target.classList.contains(userjs.id + "search-replace")) {
-				var searchrep = localStorage.getItem(userjs.id + "search-replace");
+				var searchrep = storageRead(userjs.id + "search-replace");
 				searchrep = searchrep ? JSON.parse(searchrep) : ["", ""];
 				if (
 					(searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /\"([^\"]+)\"/g\n\nor normal (case sensitive and global): My String", searchrep[0]))
@@ -1642,7 +1691,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 							sendEvent(tracks[t], "change");
 						}
 					}
-					localStorage.setItem(userjs.id + "search-replace", JSON.stringify(searchrep));
+					storageWrite(userjs.id + "search-replace", JSON.stringify(searchrep));
 				}
 			/* :::: TRACK LENGTH PARSER :::: */
 			} else if (event.target.classList.contains(userjs.id + "track-length-parser")) {
