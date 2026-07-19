@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2026.4.6
+// @version      2026.7.19
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepageURL  https://community.metabrainz.org/t/collection-highlighter-highlight-owned-stuff-releases-recordings/559889?u=jesus2099
@@ -72,7 +72,7 @@ if (cat) {
 	j2ss.insertRule("." + userjs.prefix + "Row {" + brdr + "}", 0);
 	j2ss.insertRule("li." + userjs.prefix + "Row { padding-left: 3px; }", 0);
 	j2ss.insertRule("." + userjs.prefix + "Item { text-shadow: 0 0 8px " + userjs.highlightColour + "!important; }", 0);
-	userjs.collectionsID = GM_getValue("collections") || "";
+	userjs.collectionsID = GM_getValue("collections", "");
 	userjs.stuff = {};
 	userjs.collected_stuff = ["collection", "release", "release-group", "recording", "artist", "work", "label"];
 	userjs.strType = "release-group|recording|label|artist|work";
@@ -178,10 +178,10 @@ if (cat) {
 							cfgcb.setAttribute("disabled", "disabled");
 						} else {
 							// read previous settings
-							var cfgstu = GM_getValue("cfg" + cstuff);
-							if (cfgstu == "1") {
+							var cfgstu = GM_getValue("cfg" + cstuff); // or undefined
+							if (cfgstu === "1") {
 								cfgcb.setAttribute("checked", "checked");
-							} else if (cfgstu == "0") {
+							} else if (cfgstu === "0") {
 								cfgcb.removeAttribute("checked");
 							}
 						}
@@ -338,13 +338,13 @@ function decorate(entityLink) {
 function loadCollection(collectionMBID, action) {
 	setTitle(true);
 	// Add collection MBID to list of highlighted
-	userjs.collectionsID = GM_getValue("collections") || "";
+	userjs.collectionsID = GM_getValue("collections", "");
 	if (userjs.collectionsID.indexOf(collectionMBID) < 0) {
 		userjs.collectionsID += collectionMBID + " ";
 	}
 	modal(true, concat([createTag("h3", {}, userjs.dialogprefix), "WTF? If you want to stop this monster crap, just ", createA("reload", function(event) { self.location.reload(); }), " or close this page.", "<br>", "<br>", "<hr>", "Loading collection " + collectionMBID + "…"]), 2);
 	for (let stu in userjs.stuff) if (Object.prototype.hasOwnProperty.call(userjs.stuff, stu) && userjs.collected_stuff.indexOf(stu) >= 0) {
-		userjs.stuff[stu].rawids = GM_getValue(stu + "s") || "";
+		userjs.stuff[stu].rawids = GM_getValue(stu + "s", "");
 	}
 	userjs.stuff["release-new"] = {ids: []};
 	userjs.stuff["missingRecordingWorks"] = [];
@@ -657,7 +657,7 @@ function collectionUpdater(link, action) {
 		link.addEventListener("click", function(event) {
 			if (action == "add" || userjs.in_this_many_collections < 2) {
 				modal(true, "Refreshing memory…", 1);
-				userjs.collectionsID = GM_getValue("collections") || "";
+				userjs.collectionsID = GM_getValue("collections", "");
 				for (let type in userjs.stuff) if (Object.prototype.hasOwnProperty.call(userjs.stuff, type) && userjs.collected_stuff.indexOf(type) >= 0) {
 					userjs.stuff[type].rawids = GM_getValue(type + "s");
 					userjs.stuff[type].ids = userjs.stuff[type].rawids != null ? (userjs.stuff[type].rawids.length > 0 ? userjs.stuff[type].rawids.trim().split(" ") : []) : null;
