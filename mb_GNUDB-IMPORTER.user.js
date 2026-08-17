@@ -33,20 +33,20 @@ if (releaseArtist) {
 } else {
 	releaseArtist = "";
 }
-var tracklist = document.querySelector("div#content > table > tbody");
+var tracks = document.querySelectorAll(".tracklist > .track");
 // Handle "Various Artists" releases
 var va = false;
 var vaSeparator = "";
 var r;
 if (releaseArtist.match(/^$|\bdivers(es)?\b|\bcompil(ation\b)?|^nhi[ềe]u\s|^オムニバス$|^various\b|^v\.?a\.?$|^o\.?s\.?t\.?$|\bfilm\b|\bjeux?\b|\bgames?\b/i)) {
 	for (var s = 0, separators = [" / ", "／", " - ", "/"]; !va && s < separators.length; s++) {
-		for (r = 1; r < tracklist.rows.length; r++) {
-			var checkSeparator = tracklist.rows[r].cells[2].textContent.match(new RegExp(separators[s]));
+		for (r = 1; r < tracks.length; r++) {
+			var checkSeparator = tracks[r].querySelector(".track-title").textContent.match(new RegExp(separators[s]));
 			if (checkSeparator === null || checkSeparator.length !== 1) {
 				// if each track has exactly one occurrence of separator, this is it, otherwise try next separator
 				continue;
 			} else {
-				if (r === tracklist.rows.length - 1) {
+				if (r === tracks.length - 1) {
 					va = true;
 					vaSeparator = separators[s];
 				}
@@ -68,8 +68,8 @@ var parsedRelease = {
 	}]
 };
 // read tracklist
-for (r = 1; r < tracklist.rows.length; r++) {
-	var trackTitle = tracklist.rows[r].cells[2].textContent;
+for (r = 1; r < tracks.length; r++) {
+	var trackTitle = tracks[r].querySelector(".track-title").textContent;
 	var trackArtistCredit = parsedRelease.artist_credit;
 	if (va) {
 		trackTitle = trackTitle.split(vaSeparator);
@@ -78,7 +78,7 @@ for (r = 1; r < tracklist.rows.length; r++) {
 	}
 	parsedRelease.discs[0].tracks.push({
 		title: trackTitle,
-		duration: tracklist.rows[r].cells[1].textContent,
+		duration: tracks[r].querySelector(".track-time").textContent,
 		artist_credit: trackArtistCredit
 	});
 }
@@ -89,14 +89,14 @@ if (parsedRelease.discs[0].tracks[lastTrack].title.match(/^(data track|extra)$/i
 	parsedRelease.discs[0].format = "Enhanced CD";
 	parsedRelease.discs[0].tracks.pop();
 	parsedRelease.discs[0].tracks[lastTrack - 1].duration = msToDuration(durationToMs(parsedRelease.discs[0].tracks[lastTrack - 1].duration) - 152000);
-	tracklist.rows[lastTrack + 1].style.setProperty("background", "pink");
-	tracklist.rows[lastTrack].cells[1].style.setProperty("background", "pink");
-	tracklist.rows[lastTrack].cells[1].appendChild(document.createTextNode("→" + parsedRelease.discs[0].tracks[lastTrack - 1].duration));
+	tracks[lastTrack + 1].style.setProperty("background", "pink");
+	tracks[lastTrack].querySelector(".track-time").style.setProperty("background", "pink");
+	tracks[lastTrack].querySelector(".track-time").appendChild(document.createTextNode("→" + parsedRelease.discs[0].tracks[lastTrack - 1].duration));
 }
 // insert murdos MB search and import buttons, with (cough) innerHTML
 var MBStuff = document.createElement("span");
 MBStuff.innerHTML = MBImport.buildSearchLink(parsedRelease).replace("tracks:", "tracksmedium:").replace("<a", "<a target=_blank") + MBImport.buildFormHTML(MBImport.buildFormParameters(parsedRelease, "\n\n—\n" + location.href + " imported by " + GM_info.script.downloadURL.replace("raw", "blob") + " (" + GM_info.script.version + ") "));
-document.querySelector("div#content").insertBefore(MBStuff, document.querySelector("div#content > hr"));
+document.querySelector("section:has(.tracklist)").before(MBStuff);
 // tools
 function durationToMs(duration) {
 	var durationItems = duration.split(":");
