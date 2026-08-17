@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. GNUDB IMPORTER
-// @version      2025.12.12.1151
+// @version      2025.12.12.1212
 // @description  GnuDB.org: EXPERIMENTAL! Import GnuDB/FreeDB/CDDB entries to MusicBrainz, thanks to murdos mbimport.js library
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_GNUDB-IMPORTER
@@ -13,9 +13,13 @@
 // @require      https://github.com/murdos/musicbrainz-userscripts/raw/9fc80f796e361554f1f477a999dcdc8c45534a31/lib/mbimport.js
 // @grant        none
 // @include      /^https://gnudb.org/cd/([a-z]{2})?[0-9a-f]{2}[0-9a-f]{4}[0-9a-f]{2}$/
+// @include      https://gnudb.org/notrobot.php
 // @run-at       document-idle
 // ==/UserScript==
 "use strict";
+
+// Go back to requested page after successful captcha
+if (location.pathname == "/notrobot.php") history.back();
 
 /* global MBImport */ // eslint no-undef exception
 
