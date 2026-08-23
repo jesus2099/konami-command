@@ -598,8 +598,8 @@ var whitelistSearchLinks = {
 					"//www.discogs.com/%language%/search?q=%label-name%&type=label"
 				],
 				"Discogs (artist credit)": [
-					"//www.discogs.com/%language%/search?title=%release-name%&artist=%release-artist-credit%&type=release",
-					"//www.discogs.com/%language%/search?title=%release-group-name%&artist=%release-group-artist-credit%&type=release"
+					"//www.discogs.com/%language%/search?q=%22%release-name%%22+%22%release-artist-credit%%22&type=release",
+					"//www.discogs.com/%language%/search?q=%22%release-group-name%%22+%22%release-group-artist-credit%%22&type=release"
 				],
 				"Discogs (barcode)":  "//www.discogs.com/%language%/search/?q=%release-barcode%&type=release",
 				MusicMoz: "//musicmoz.org/search/search.cgi?search=%entity-name%",
