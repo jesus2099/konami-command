@@ -1504,28 +1504,33 @@ function setFavicon(li, url) {
 		} else {
 			// arbitrary /favicon.ico load try out
 			if (guessOtherFavicons && !favurlfound) {
-				favurlfound = url.match(/^(?:https?:)?(\/\/[^/]+)\/(?:.+_action=(?:https?:)?(\/\/[^/]+)\/)?/);
+				favurlfound = url.match(/^(?:https?:)?(\/\/[^/]+)\/(?:.+_action=((?:https?:)?\/\/[^/]+)\/)?/);
 				if (favurlfound) {
 					favurlfound = (favurlfound[1] != "//jesus2099.gitlab.io" ? favurlfound[1] : favurlfound[2]) + "/favicon.ico";
 				}
 			}
-			var ifit = favicontry.length;
-			favicontry[ifit] = new Image();
-			favicontry[ifit].addEventListener("error", function (event) {
-				this.li.classList.add("no-favicon");
-			});
-			favicontry[ifit].addEventListener("load", function (event) {
-				clearTimeout(this.to);
-				this.li.style.setProperty("background-image", "url(" + this.src + ")");
-				this.li.style.setProperty("background-size", "16px 16px");
-			});
-			favicontry[ifit].li = li;
-			favicontry[ifit].src = favurlfound;
-			favicontry[ifit].to = setTimeout(function() {
-				// don’t wait for more than 5 seconds
-				favicontry[ifit].src = "";
-				favicontry[ifit].li.classList.add("no-favicon");
-			}, 5000);
+			if (favurlfound.match(/^(https:)?\/\//)) {
+				var ifit = favicontry.length;
+				favicontry[ifit] = new Image();
+				favicontry[ifit].addEventListener("error", function (event) {
+					this.li.classList.add("no-favicon");
+				});
+				favicontry[ifit].addEventListener("load", function (event) {
+					clearTimeout(this.to);
+					this.li.style.setProperty("background-image", "url(" + this.src + ")");
+					this.li.style.setProperty("background-size", "16px 16px");
+				});
+				favicontry[ifit].li = li;
+				favicontry[ifit].src = favurlfound;
+				favicontry[ifit].to = setTimeout(function() {
+					// don’t wait for more than 5 seconds
+					favicontry[ifit].src = "";
+					favicontry[ifit].li.classList.add("no-favicon");
+				}, 5000);
+			} else {
+				// impossible to load http favicon (quebecinfomusique)
+				li.classList.add("no-favicon");
+			}
 		}
 	}
 }
