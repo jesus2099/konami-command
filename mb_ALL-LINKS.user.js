@@ -760,19 +760,20 @@ var additionalSearchLinks = {
 				nl: "Andere databases"
 			},
 			items: {
-				GnuDb: [
-					"//gnudb.org/search/artist/%22%artist-name%%22",
-					"//gnudb.org/search/%22%release-artist-credit%%22%20%22%release-name%%22",
-					"//gnudb.org/search/%22%release-group-artist-credit%%22%20%22%release-group-name%%22",
-					"//gnudb.org/search/song/%22%recording-name%%22",
-					"//gnudb.org/search/song/%22%work-name%%22",
+				GnuDb: [ // new syntax but now GnuDb is almost unusable because of AI attacks
+					"//gnudb.org/search.php?action=search&words=%22%artist-name%%22&mode=artist",
+					"//gnudb.org/search.php?action=search&words=%22%release-artist-credit%%22%20%22%release-name%%22",
+					"//gnudb.org/search.php?action=search&words=%22%release-group-artist-credit%%22%20%22%release-group-name%%22",
+					"//gnudb.org/search.php?action=search&words=%22%recording-name%%22&mode=song",
+					"//gnudb.org/search.php?action=search&words=%22%work-name%%22&mode=song",
 				],
 				"GnuDb (just title)": [
-					"//gnudb.org/search/album/%22%release-name%%22",
-					"//gnudb.org/search/album/%22%release-group-name%%22",
+					"//gnudb.org/search.php?action=search&words=%22%release-name%%22&mode=album",
+					"//gnudb.org/search.php?action=search&words=%22%release-group-name%%22&mode=album",
+					// "http://jesus2099.gitlab.io/forward-request.html?_action=https://gnudb.org/search.php&action=search&words=%22%release-group-name%%22&mode=album",
 				],
 				"GnuDb (abc)": [
-					"//gnudb.org/search/artist/%22%artist-latin-script-name%%22",
+					"//gnudb.org/search.php?action=search&words=%22%artist-latin-script-name%%22&mode=artist",
 				],
 			}
 		}
