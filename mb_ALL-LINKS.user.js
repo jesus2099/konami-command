@@ -894,7 +894,7 @@ var FAVICON_CLASSES = { // from https://github.com/metabrainz/musicbrainz-server
 	"pinterest.com": "pinterest",
 	"progarchives.com": "progarchives",
 	"psydb.net": "psydb",
-	"qim.com": "quebecinfomusique",
+	"quebecinfomusique.com": "quebecinfomusique",
 	"qobuz.com": "qobuz",
 	"ra.co": "residentadvisor",
 	"rateyourmusic.com": "rateyourmusic",
@@ -1480,8 +1480,8 @@ function replaceAllTokens(string, encode) {
 function setFavicon(li, url) {
 	var favclass = "no";
 	// MusicBrainz cached favicon CSS classes
-	var searchdomain = url.match(/site:([^+]*)\+/);
-	var urldomain = searchdomain ? searchdomain[1] : url.split("/")[2];
+	var searchdomain = url.match(/site:([^+]*)\+|_action=(?:https?:)?\/\/([^/]+)/);
+	var urldomain = searchdomain ? searchdomain[1] || searchdomain[2] : url.split("/")[2];
 	for (var classdomain in FAVICON_CLASSES) if (Object.prototype.hasOwnProperty.call(FAVICON_CLASSES, classdomain)) {
 		if (urldomain.match(classdomain)) {
 			favclass = FAVICON_CLASSES[classdomain];
