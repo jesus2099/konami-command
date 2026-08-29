@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2026.4.6
+// @version      2026.8.29
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -505,6 +505,23 @@ function massMergeGUI() {
 			infoMerge("Fetching recordings…");
 			loadReleasePage();
 			// loadReleaseWS(remoteRelease.id);
+		} else {
+			mbid = this.value.match(new RegExp("/medium/(" + sregex_MBID + ")"));
+			if (mbid) {
+				// Fetch /release/<release-MBID>/disc/<medium-number>#disc<medium-number> URL from provided /medium/<medium-MBID> URL
+				infoMerge("Looking up release…");
+				var xhr = new XMLHttpRequest();
+				xhr.addEventListener("readystatechange", function(event) {
+					var MBID = this.responseURL.match(new RegExp("/release/(" + sregex_MBID + ")(/disc/(\\d+))?"));
+					if (MBID) {
+						this.abort();
+						mergeStatus.value = MBID[0];
+						sendEvent(mergeStatus, "input");
+					}
+				});
+				xhr.open("GET", mbid[0], true);
+				xhr.send(null);
+			}
 		}
 	});
 	MMRdiv.appendChild(createTag("p", {}, "Once you paste the remote release URL, all its recordings will be loaded and made available for merge with the local recordings in the left hand tracklist."));
@@ -659,7 +676,7 @@ function loadReleasePage() {
 			var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
 			var discount = releaseWithoutARs.match(/<a class="expand-medium"/g).length;
 			if (!remoteRelease.disc && releaseWithoutARs.match(/<tbody style="display:none"><\/tbody>/)) {
-				var disc = prompt("This " + discount + " medium release has some collapsed mediums.\nIn this case I can only load one medium at a time.\n\nPlease enter the medium number that you want to load.\n\nNext time you can directly paste the medium link:\n " + MBS + "/release/" + remoteRelease.id + "/disc/1.", "1");
+				var disc = prompt("This " + discount + " medium release has some collapsed mediums.\nIn this case I can only load one medium at a time.\n\nPlease enter the medium number that you want to load.\n\nNext time you can directly paste the medium permalink.", "1");
 				if (disc && disc.match(/^\d+$/) && disc > 0 && disc <= discount) {
 					remoteRelease.disc = "/disc/" + disc;
 					loadReleasePage();
@@ -1019,7 +1036,7 @@ function showGUI() {
 	}
 	mergeStatus.focus();
 	navigator.clipboard.readText().then(function (clip_text) {
-		if (clip_text && clip_text.match(new RegExp("/release/(" + sregex_MBID + ")"))) {
+		if (clip_text && clip_text.match(new RegExp("/(release|medium)/(" + sregex_MBID + ")"))) {
 			mergeStatus.value = clip_text;
 			sendEvent(mergeStatus, "input");
 		}
