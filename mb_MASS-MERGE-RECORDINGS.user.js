@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2026.8.29
+// @version      2026.8.30
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -1040,6 +1040,19 @@ function showGUI() {
 			mergeStatus.value = clip_text;
 			sendEvent(mergeStatus, "input");
 		}
+	}).catch(function (error) {
+		console.error(error);
+		var clipboard_access_denied_help = createTag("div", {s: {border: "thin dashed brown"}}, createTag("p", {a: {class: "error"}, s: {fontStyle: "italic"}}, error.toString()));
+		clipboard_access_denied_help.appendChild(createTag("p", {}, ["Try enabling clipboard access within your ", createTag("b", {}, GM_info.platform.browserName)," browser."]));
+		switch (GM_info.platform.browserName) {
+			case "Firefox":
+				clipboard_access_denied_help.appendChild(createTag("p", {}, ["By setting ", createTag("pre", {}, "dom.events.testing.asyncClipboard = true"), " in ", createTag("a", {a: {href: "chrome://geckoview/content/config.xhtml", target: "_blank"}}, "about:config"), "."]));
+				break;
+			case "Vivaldi":
+				clipboard_access_denied_help.appendChild(createTag("p", {}, "By allowing clipboard in current website permissions (shield icon at the left of address bar)."));
+				break;
+		}
+		MMRdiv.insertBefore(clipboard_access_denied_help, MMRdiv.querySelector(".main-shortcut"));
 	});
 }
 function saveEditNote(event) {
