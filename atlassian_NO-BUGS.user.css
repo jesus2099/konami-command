@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name         atlassian. NO BUGS
 @namespace    https://github.com/jesus2099/konami-command
-@version      2026.7.15
+@version      2026.8.31
 @description  Hide AI crap in Jira and Confluence; Show stronger diff colours in Confluence
 @author       jesus2099
 @since        2024
@@ -65,7 +65,9 @@
 		/* comment editor toolbar */
 		[data-toolbar-component='section']:has(button[data-testid='editor-toolbar__ask-rovo']),
 		/* smart links popup */
-		div[data-testid='smart-links-container'] button[data-testid='smart-action-ai-summary-action-summarise-action']
+		div[data-testid='smart-links-container'] button[data-testid='smart-action-ai-summary-action-summarise-action'],
+		/* Issue AI Agents or whatnot */
+		div[data-testid^='ai-agent-sessions']
 		{
 			display: none;
 		}
