@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2026.8.30
+// @version      2026.9.1
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -453,7 +453,7 @@ function massMergeGUI() {
 	mergeStatus.addEventListener("input", function(event) {
 		matchMode.current = matchMode.sequential;
 		updateMatchModeDisplay();
-		var mbid = this.value.match(new RegExp("/release/(" + sregex_MBID + ")(/disc/(\\d+))?"));
+		var mbid = this.value.match(new RegExp("/release/(?<release>" + sregex_MBID + ")(?<disc>/disc/(\\d+))?|/medium/(?<medium>" + sregex_MBID + ")"));
 		if (mbid) {
 			localRelease.tracks = [];
 			recid2trackIndex.local = {};
@@ -499,29 +499,12 @@ function massMergeGUI() {
 					d++; dt = 0;
 				}
 			}
-			this.setAttribute("ref", this.value);
-			remoteRelease.id = mbid[1];
-			remoteRelease.disc = mbid[2] || "";
+			remoteRelease.id = mbid.groups.release;
+			remoteRelease.disc = mbid.groups.disc || "";
+			remoteRelease.medium_id = mbid.groups.medium;
 			infoMerge("Fetching recordings…");
 			loadReleasePage();
 			// loadReleaseWS(remoteRelease.id);
-		} else {
-			mbid = this.value.match(new RegExp("/medium/(" + sregex_MBID + ")"));
-			if (mbid) {
-				// Fetch /release/<release-MBID>/disc/<medium-number>#disc<medium-number> URL from provided /medium/<medium-MBID> URL
-				infoMerge("Looking up release…");
-				var xhr = new XMLHttpRequest();
-				xhr.addEventListener("readystatechange", function(event) {
-					var MBID = this.responseURL.match(new RegExp("/release/(" + sregex_MBID + ")(/disc/(\\d+))?"));
-					if (MBID) {
-						this.abort();
-						mergeStatus.value = MBID[0];
-						sendEvent(mergeStatus, "input");
-					}
-				});
-				xhr.open("GET", mbid[0], true);
-				xhr.send(null);
-			}
 		}
 	});
 	MMRdiv.appendChild(createTag("p", {}, "Once you paste the remote release URL, all its recordings will be loaded and made available for merge with the local recordings in the left hand tracklist."));
@@ -655,22 +638,36 @@ function massMergeGUI() {
 	return MMRdiv;
 }
 function loadReleasePage() {
+	var remote_type, remote_id;
+	if (remoteRelease.id) {
+		remote_type = "/release/";
+		remote_id = remoteRelease.id + remoteRelease.disc;
+	} else {
+		remote_type = "/medium/";
+		remote_id = remoteRelease.medium_id;
+	}
 	for (let ltrack = 0; ltrack < localRelease.tracks.length; ltrack++) {
 		// TODO: should probably remove some in spreadTracks() etc.
 		cleanTrack(localRelease.tracks[ltrack]);
 	}
 	var mbidInfo = document.getElementById(userjs.id).querySelector(".remote-release-link");
 	removeChildren(mbidInfo);
-	mbidInfo.setAttribute("title", remoteRelease.id + remoteRelease.disc);
+	mbidInfo.setAttribute("title", remote_type + remote_id);
 	mbidInfo.appendChild(document.createTextNode(" "));
-	mbidInfo.appendChild(createA(remoteRelease.id.match(/[\w\d]+/), "/release/" + remoteRelease.id));
+	mbidInfo.appendChild(createA(remote_id.match(/[\w\d]+/) + " (" + remote_type.substr(1, 1) + ")", remote_type + remote_id));
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener("error", function() { infoMerge("Error " + this.status + ": “" + this.statusText + "”", false); });
 	xhr.addEventListener("load", function(event) {
 		if (this.status < 200 || this.status >= 400) {
 			sendEvent(this, "error");
 		} else {
-			remoteRelease.id = this.responseURL.match(regex_MBID)[0];
+			var MBID = this.responseURL.match(new RegExp("/release/(?<release_id>" + sregex_MBID + ")(?<disc>/disc/(\\d+))?"));
+			if (MBID) {
+				remoteRelease.id = MBID.groups.release_id;
+				remoteRelease.disc = MBID.groups.disc || "";
+			} else {
+				infoMerge("Err001: " + MBID[0] + "(unexpected URL)", false, true);
+			}
 			var releaseWithoutARs = this.responseText.replace(/<dl class="ars">[\s\S]+?<\/dl>/g, "");
 			var mediums = releaseWithoutARs.match(/<table class="tbl medium">[\s\S]+?<\/table>/g);
 			var rtitle = releaseWithoutARs.match(new RegExp("<title>" + sregex_title + "</title>"));
@@ -776,7 +773,7 @@ function loadReleasePage() {
 			}
 		}
 	});
-	xhr.open("GET", MBS + "/release/" + remoteRelease.id + remoteRelease.disc, true);
+	xhr.open("GET", remote_type + remote_id, true);
 	setTimeout(function() { xhr.send(null); }, chrono(MBSminimumDelay));
 }
 function bestStartPosition(localTrack, matchAC) {
