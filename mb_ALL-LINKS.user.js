@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. ALL LINKS
-// @version      2026.8.23
+// @version      2026.9.8
 // @description  Hidden links include fanpage, social network, etc. (NO duplicates) Generated autolinks (configurable) includes plain web search, auto last.fm, Discogs and lyrics searches, etc. Shows begin/end dates on URL and provides edit link. Expands Wikidata links to wikipedia articles.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_ALL-LINKS
@@ -411,10 +411,10 @@ var whitelistSearchLinks = {
 					"//genius.com/search?q=%recording-name%",
 					"//genius.com/search?q=%work-name%"
 				],
-				"J-Lyric（歌手名）": "//j-lyric.net/index.php?ka=%artist-name%",
+				"J-Lyric（歌手名）": "//j-lyric.net/search.php?ex=on&ct=2&ca=2&cl=2&ops=2&ka=%artist-name%&search=%E6%A4%9C%E7%B4%A2",
 				"J-Lyric（曲名）": [
-					"//j-lyric.net/index.php?kt=%recording-name%",
-					"//j-lyric.net/index.php?kt=%work-name%"
+					"//j-lyric.net/search.php?ex=on&ct=2&ca=2&cl=2&kt=%recording-name%&search=%E6%A4%9C%E7%B4%A2",
+					"//j-lyric.net/search.php?ex=on&ct=2&ca=2&cl=2&kt=%work-name%&search=%E6%A4%9C%E7%B4%A2"
 				]
 			}
 		},
