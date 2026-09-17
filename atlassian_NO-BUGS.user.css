@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name         atlassian. NO BUGS
 @namespace    https://github.com/jesus2099/konami-command
-@version      2026.9.1
+@version      2026.9.17
 @description  Hide AI crap in Jira and Confluence; Show stronger diff colours in Confluence
 @author       jesus2099
 @since        2024 => https://jira.atlassian.com/browse/AI-930 + https://community.atlassian.com/forums/Jira-questions/How-do-i-turn-off-deactivate-remote-the-AI-features/qaa-p/3183807?utm_source=atlcomm&utm_medium=email&utm_campaign=kudos_answer&utm_content=post#M1166782
@@ -14,9 +14,9 @@
 		.diff-html-removed { background: pink; text-decoration: line-through; }
 		.diff-html-changed { background: cyan; text-decoration: underline dashed; }
 
-		/* ========= */
-		/* Hide crap */
-		/* ========= */
+		/* ==================== */
+		/* Hide CONFLUENCE crap */
+		/* ==================== */
 		/* AI cluttering crap */
 		div#search-page-smart-answers,
 		[data-testid^='ak-editor-ai-selection-toolbar-ai-button'],
@@ -47,9 +47,9 @@
 		}
 	}
 	body#jira {
-		/* ========= */
-		/* Hide crap */
-		/* ========= */
+		/* ============== */
+		/* Hide JIRA crap */
+		/* ============== */
 		/* AI cluttering crap */
 		[data-editor-content-component='true'],
 		[data-testid='issue.views.issue-base.foundation.status.improve-issue'],
@@ -68,7 +68,9 @@
 		div[data-testid='smart-links-container'] button[data-testid='smart-action-ai-summary-action-summarise-action'],
 		/* Issue AI Agents or whatnot */
 		div[data-testid^='ai-agent-sessions'],
-		div[role='presentation']:has(>button[data-testid='ai-agents-button.button'])
+		div[role='presentation']:has(> button[data-testid='ai-agents-button.button']),
+        /* Sub-ticket randomiser */
+        div[role='presentation']:has(> button[data-testid='ai-work-breakdown.ui.issue-breakdown-button.button'])
 		{
 			display: none;
 		}
