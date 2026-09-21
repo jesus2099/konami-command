@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. REVIVE DELETED EDITORS
-// @version      2026.3.5
+// @version      2026.9.22
 // @description  musicbrainz.org: reveal deleted editors’ names and emphasizes your own name to standout in MB pages
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_REVIVE-DELETED-EDITORS
@@ -246,6 +246,7 @@ var editors = {
 	  "2513197": ["2024-08-15", "2024-09-22", "Echelon666", "Piotr Sakowski (WindowsLover)"],
 	  "2530114": ["2024-10-02", "2025-01-31", "Peter69", "Piotr Sakowski (WindowsLover)"],
 	  "2577447": ["2025-02-01", "2025-02-11", "PS123", "Piotr Sakowski (WindowsLover)"],
+	  "2701595": ["2025-12-07", "2026-02-21", "lallu_chappu", "AI edit notes"],
 	  "2707154": ["2025-12-17", "2026-02-17", "aricoleman"],
 	  "2731977": ["2026-02-01", "", "WindowsLover", "Piotr Sakowski"],
  "WindowsLover": "Piotr Sakowski: Weblate / Antichrist01 / Echelon69 / Echelon666 / Peter69 / PS123 / WindowsLover",
