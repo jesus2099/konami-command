@@ -1354,6 +1354,7 @@ if (j2sets.SLOW_DOWN_RETRY) {
 		switch (errortype[1].toLowerCase()) {
 			case "":
 				// check that we are in the (^$ empty title) case where MB thought we were a bot, and rewind/retry
+				// For Duplicate Tabs Closer extension users: Whitelist: /^https?:\/\/((beta|test).)?musicbrainz.(eu|org)\/__meb_verify/
 				if (location.pathname == "/__meb_verify" && document.referrer) {
 					document.title = "⏳ slow down";
 					setTimeout(function() {
