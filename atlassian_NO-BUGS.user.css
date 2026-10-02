@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name         atlassian. NO BUGS
 @namespace    https://github.com/jesus2099/konami-command
-@version      2026.9.17
+@version      2026.10.2
 @description  Hide AI crap in Jira and Confluence; Show stronger diff colours in Confluence
 @author       jesus2099
 @since        2024 => https://jira.atlassian.com/browse/AI-930 + https://community.atlassian.com/forums/Jira-questions/How-do-i-turn-off-deactivate-remote-the-AI-features/qaa-p/3183807?utm_source=atlcomm&utm_medium=email&utm_campaign=kudos_answer&utm_content=post#M1166782
@@ -41,7 +41,9 @@
 		/* history diff summary */
 		div#compare-instructions + div > a[aria-describedby='compare-instructions'] + div:has(> div[role='presentation'] > button),
 		/* hide clumsy search suggestions */
-		div[data-testid='search-page-results-list'] > :not([data-testid='search-page-result'])
+		div[data-testid='search-page-results-list'] > :not([data-testid='search-page-result']),
+		/* search result useless ad-like popup AI button */
+		div[data-testid='platform-ai-proactive-nudge']
 		{
 			display: none;
 		}
