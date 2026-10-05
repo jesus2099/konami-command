@@ -504,6 +504,7 @@ function massMergeGUI() {
 			remoteRelease.medium_id = mbid.groups.medium;
 			infoMerge("Fetching recordings…");
 			loadReleasePage();
+			mergeStatus.blur();
 			// loadReleaseWS(remoteRelease.id);
 		}
 	});
@@ -769,7 +770,6 @@ function loadReleasePage() {
 				}
 				startpos.value = bestStartPosition() || 0;
 				spreadTracks(event);
-				mergeStatus.blur();
 			}
 		}
 	});
@@ -1040,7 +1040,7 @@ function showGUI() {
 	}).catch(function (error) {
 		console.error(error);
 		var clipboard_access_denied_help = createTag("div", {s: {border: "thin dashed brown"}}, createTag("p", {a: {class: "error"}, s: {fontStyle: "italic"}}, error.toString()));
-		clipboard_access_denied_help.appendChild(createTag("p", {}, ["Try enabling clipboard access within your ", createTag("b", {}, GM_info.platform.browserName)," browser."]));
+		clipboard_access_denied_help.appendChild(createTag("p", {}, ["Try enabling clipboard access within your ", createTag("b", {}, GM_info.platform.browserName), " browser."]));
 		switch (GM_info.platform.browserName) {
 			case "Firefox":
 				clipboard_access_denied_help.appendChild(createTag("p", {}, ["By setting ", createTag("pre", {}, "dom.events.testing.asyncClipboard = true"), " in ", createTag("a", {a: {href: "chrome://geckoview/content/config.xhtml", target: "_blank"}}, "about:config"), "."]));
