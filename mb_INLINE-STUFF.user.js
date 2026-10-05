@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. INLINE STUFF
-// @version      2026.4.9
+// @version      2026.10.5
 // @description  musicbrainz.org: Release page: Inline recording names, comments, ISRC and AcoustID. Direct CAA add link if none. Highlight duplicates in releases and edits. Recording page: millisecond display, spot track length and title variations.
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_INLINE-STUFF
@@ -98,8 +98,8 @@ var releasewsURL = "/ws/2/release/%s/?inc=recordings+isrcs"; /* http://wiki.musi
 var str_GUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var re_GUID = new RegExp(str_GUID, "i");
 var AcoustIDlinkingURL = "//acoustid.org/edit/toggle-track-mbid?track_gid=%acoustid&mbid=%mbid&state=%state";
-var css_recording = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
-var css_work = "td:not(.pos):not(.video) div.ars > dl.ars > dd > a[href^='/work/'], td:not(.pos):not(.video) div.ars > dl.ars > dd > span.mp > a[href^='/work/'] /* , .bottom-credits > table.details > tbody a[href^='/work/'] */";
+var css_recording = "td.title > a[href^='/recording/'], td.title > :not(div):not(.ars) a[href^='/recording/']";
+var css_work = "td.title div.ars > dl.ars > dd > a[href^='/work/'], td.title div.ars > dl.ars > dd > span.mp > a[href^='/work/'] /* , .bottom-credits > table.details > tbody a[href^='/work/'] */";
 var tracksHtml = null;
 var page_type;
 if (location.pathname.match(/\/show\/edit\/|\/mod\/search\/|\/edit|\/edits|\/open_edits/i)) {
@@ -165,11 +165,11 @@ if (page_type) {
 						}
 					}
 					for (var i = 0; i < tracksHtml.length; i++) {
-						var aRec = tracksHtml[i].querySelector(css_recording);
+						let aRec = tracksHtml[i].querySelector(css_recording);
 						if (aRec) {
 							var mbid = aRec.getAttribute("href").match(re_GUID);
 							if (mbid) { mbid = mbid[0]; }
-							let trackTitleCell = tracksHtml[i].querySelector("td:not(.pos):not(.video)");
+							let trackTitleCell = aRec.closest("td.title");
 							if (userjs.recordings[mbid].isrcs.length > 0) {
 								insertBeforeARS(trackTitleCell, createStuffFragment("ISRC", userjs.recordings[mbid].isrcs, shownisrcs, isrcURL, null, mbid));
 							}
@@ -206,13 +206,13 @@ if (page_type) {
 				// AcoustID
 				if (userjs.acoustids_loaded  && (tracksHtml = document.querySelectorAll("div#content table.tbl.medium > tbody > tr[id]:not(.subh):not(:has(." + userjs.id + "acoustids-handled))")).length > 0) {
 					for (var th = 0; th < tracksHtml.length; th++) {
-						let recmbid, trackTitleCell;
+						let aRec, recmbid, trackTitleCell;
 						if (
-							(recmbid = tracksHtml[th].querySelector(css_recording))
-							&& (recmbid = recmbid.getAttribute("href").match(new RegExp("/(" + str_GUID + ")$")))
+							(aRec = tracksHtml[th].querySelector(css_recording))
+							&& (recmbid = aRec.getAttribute("href").match(new RegExp("/(" + str_GUID + ")$")))
 							&& (recmbid = recmbid[1])
 							&& userjs.recordings[recmbid].acoustids.length > 0
-							&& (trackTitleCell = tracksHtml[th].querySelector("td:not(.pos):not(.video)"))
+							&& (trackTitleCell = aRec.closest("td.title"))
 						) {
 							insertBeforeARS(trackTitleCell, createStuffFragment("AcoustID", userjs.recordings[recmbid].acoustids, shownacoustids, acoustidURL, null, recmbid));
 							trackTitleCell.classList.add(userjs.id + "acoustids-handled");
