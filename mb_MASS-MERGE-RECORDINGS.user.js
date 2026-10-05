@@ -50,7 +50,7 @@ var css_track = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos)
 var css_track_ac = "td:not(.pos):not(.title):not(.rating):not(.treleases)";
 var css_collapsed_medium = "div#content table.tbl.medium > thead > tr > th > a.expand-medium > span.expand-triangle";
 var sregex_title = "(?:.+?[„“«‘] ?(.+) ?[“”»’] \\S+ (.+?)|(.+?)のリリース(?:グループ)?「(.+)」) - MusicBrainz";
-var startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
+var MMRdiv, startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
 var localRelease, remoteRelease;
 var matchMode = {current: null, sequential: null, title: null, titleAndAC: null};
 var rem2loc = "◀";
@@ -428,7 +428,7 @@ function updateMatchModeDisplay() {
 	enableInputs(startpos, matchMode.sequential == matchMode.current);
 }
 function massMergeGUI() {
-	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
+	MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
 			if (event.target == editNote && CONTROL_POMME.ctrl.test(event)) {
 				switch (event.key) {
@@ -450,6 +450,9 @@ function massMergeGUI() {
 	]);
 	mergeStatus = MMRdiv.appendChild(createInput("text", "mergeStatus", "", userjs.name + " remote release URL"));
 	mergeStatus.style.setProperty("width", "100%");
+	mergeStatus.addEventListener("focus", function(event) {
+		readReleaseMBIDFromClipboard();
+	});
 	mergeStatus.addEventListener("input", function(event) {
 		matchMode.current = matchMode.sequential;
 		updateMatchModeDisplay();
@@ -1013,7 +1016,7 @@ function showGUI() {
 	}
 	if (!document.body.classList.contains(userjs.id)) {
 		document.body.classList.add(userjs.id);
-		var MMRdiv = document.getElementById(userjs.id);
+		MMRdiv = document.getElementById(userjs.id);
 		var tracklistTop = document.querySelector("h2.tracklist");
 		if (tracklistTop && tracklistTop.offsetTop) {
 			var margin = tracklistTop.offsetTop - startpos.offsetTop + MMRdiv.offsetTop;
@@ -1032,6 +1035,9 @@ function showGUI() {
 		}
 	}
 	mergeStatus.focus();
+	readReleaseMBIDFromClipboard();
+}
+function readReleaseMBIDFromClipboard() {
 	navigator.clipboard.readText().then(function (clip_text) {
 		if (clip_text && clip_text.match(new RegExp("/(release|medium)/(" + sregex_MBID + ")"))) {
 			mergeStatus.value = clip_text;
@@ -1228,7 +1234,7 @@ function chrono(minimumDelay) {
 	}
 }
 function RGRecordingsMassMergeGUI() {
-	var MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
+	MMRdiv = createTag("div", {a: {id: userjs.id}, e: {
 		keydown: function(event) {
 			if (event.target == editNote && CONTROL_POMME.ctrl.test(event)) {
 				switch (event.key) {
