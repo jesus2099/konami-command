@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2026.9.1
+// @version      2026.10.5
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -1346,9 +1346,9 @@ function appendToRecordingList(recordings) {
 				createTag("td", {}, time(recordings[r].length)),
 				createTag("td", {}, releaseList(recordings[r]))
 			]);
-			var sortName = stripName(recordingRow.querySelector("td:nth-child(2)").textContent + (recordingRow.querySelector("span.video") ? "_video" : ""));
+			var sortName = stripName((recordingRow.querySelector("span.video") ? "_video_" : "_audio_") + recordingRow.querySelector("td:nth-child(2)").textContent);
 			for (var rr = 0; rr < recordingList.rows.length; rr++) {
-				var recordingSortName = stripName(recordingList.rows[rr].querySelector("td:nth-child(2)").textContent + (recordingList.rows[rr].querySelector("span.video") ? "_video" : ""));
+				var recordingSortName = stripName((recordingList.rows[rr].querySelector("span.video") ? "_video_" : "_audio_") + recordingList.rows[rr].querySelector("td:nth-child(2)").textContent);
 				if (sortName < recordingSortName) {
 					recordingList.insertBefore(recordingRow, recordingList.rows[rr]);
 					sortName = false;
