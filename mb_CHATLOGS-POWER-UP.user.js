@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. CHATLOGS POWER-UP
-// @version      2024.12.12
+// @version      2025.10.6
 // @description  chatlogs.metabrainz.org: swicth between #musicbrainz and #metabrainz channels; centre highlight message (for post permalink URL)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_CHATLOGS-POWER-UP
@@ -33,6 +33,8 @@ if (loc) {
 			// toolbar
 			css.insertRule("div#" + userjs + "toolbar { position: fixed; bottom: 0; right: 0; background-color: #ccc; padding: 2px 0 0 4px; border: 2px solid #eee; border-width: 2px 0 0 2px; z-index: 50; }", 0);
 			css.insertRule("body { padding-bottom: .5em; }", 0);
+			// unhide times and permalinks
+			css.insertRule("time.hide { display: inherit; }");
 			var ctt = document.createElement("div");
 			ctt.setAttribute("id", userjs + "toolbar");
 			/* cross linking */
