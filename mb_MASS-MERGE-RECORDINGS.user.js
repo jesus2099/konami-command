@@ -111,7 +111,6 @@ if (ltitle) {
 			id: location.pathname.match(regex_MBID)[0],
 			tracks: []
 		};
-		if (DEBUG) console.log("Local release AC: " + localRelease.ac);
 		if (localRelease.comment) {
 			localRelease.comment = "(" + localRelease.comment.textContent + ")";
 		}
@@ -487,10 +486,8 @@ function massMergeGUI() {
 						artistCredit: trackAC ? trackAC.textContent.trim() : localRelease.ac,
 						length: trackLength
 					});
-					if (DEBUG) console.log("Local track "+ (t + 1) + " AC: " + trackAC.innerHTML + " // " + localRelease.tracks[t].trackAC);
 					localRelease.tracks[t].looseName = looseTitle(localRelease.tracks[t].name);
 					localRelease.tracks[t].looseAC = looseTitle(localRelease.tracks[t].artistCredit);
-					if (DEBUG) console.log("Local track "+ (t + 1) + " loose AC: " + localRelease.tracks[t].looseAC);
 					/* if (jsonRelease) {
 						// localRelease.tracks[localRelease.tracks.length - 1] = jsonRelease.mediums[d - 1].tracks[dt];
 						for (let key in jsonRelease.mediums[d - 1].tracks[dt]) if (jsonRelease.mediums[d - 1].tracks[dt].hasOwnProperty(key)) {
@@ -714,6 +711,9 @@ function loadReleasePage() {
 					}
 					if (remoteRelease["release-group"] === localRelease["release-group"]) {
 						mbidInfo.appendChild(document.createTextNode(" (same release group)"));
+						if(editNote.value.replace(/[^a-z ]/gi, "").match(/merging +release *group/i)) {
+							editNote.value = editNote.value.replace(/\bmerging\b/, "same");
+						}
 					}
 				}
 				remoteRelease.tracks = [];
@@ -751,11 +751,9 @@ function loadReleasePage() {
 								},
 								isDataTrack: false
 							};
-							if (DEBUG) console.log("Remote release track " + current_track.number + " AC: " + current_track.artistCredit);
 							current_track.artistCreditAsPlainText = decodeHTML(current_track.artistCredit);
 							current_track.looseName = looseTitle(current_track.name);
 							current_track.looseAC = looseTitle(current_track.artistCreditAsPlainText);
-							if (DEBUG) console.log("Remote release track " + current_track.number + " loose AC: " + current_track.looseAC);
 							remoteRelease.tracks.push(current_track);
 							recid2trackIndex.remote[recIDs[t]] = remoteRelease.tracks.length - 1;
 						}
