@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2026.10.5.1821
+// @version      2026.10.6
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -46,8 +46,8 @@ var recid2trackIndex = {remote: {}, local: {}}; // recid:tracks index
 var mergeQueue = []; // contains next mergeButts
 var sregex_MBID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 var regex_MBID = new RegExp(sregex_MBID, "i");
-var css_track = "td:not(.pos):not(.video) > a[href^='/recording/'], td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']";
-var css_track_ac = "td:not(.pos):not(.title):not(.rating):not(.treleases)";
+var css_track = "td.title > a[href^='/recording/'], td.title > :not(div):not(.ars) a[href^='/recording/']";
+var css_track_ac = "td:not(:has(.ars)):has(a[href^='/artist/'])";
 var css_collapsed_medium = "div#content table.tbl.medium > thead > tr > th > a.expand-medium > span.expand-triangle";
 var sregex_title = "(?:.+?[„“«‘] ?(.+) ?[“”»’] \\S+ (.+?)|(.+?)のリリース(?:グループ)?「(.+)」) - MusicBrainz";
 var MMRdiv, startpos, mergeStatus, from, to, swap, editNote, queuetrack, queueAll;
@@ -111,6 +111,7 @@ if (ltitle) {
 			id: location.pathname.match(regex_MBID)[0],
 			tracks: []
 		};
+		if (DEBUG) console.log("Local release AC: " + localRelease.ac);
 		if (localRelease.comment) {
 			localRelease.comment = "(" + localRelease.comment.textContent + ")";
 		}
@@ -344,7 +345,7 @@ function queueTrack() {
 	document.title = (mergeQueue.length + 1) + "⌛ " + dtitle;
 }
 function cleanTrack(track, editID, retryCount) {
-	var rmForm = track.tr.querySelector("td:not(.pos):not(.video) form." + userjs.id);
+	var rmForm = track.tr.querySelector("td.title form." + userjs.id);
 	if (rmForm) {
 		if (editID) {
 			mp(track.tr.querySelector(css_track), true);
@@ -486,8 +487,10 @@ function massMergeGUI() {
 						artistCredit: trackAC ? trackAC.textContent.trim() : localRelease.ac,
 						length: trackLength
 					});
+					if (DEBUG) console.log("Local track "+ (t + 1) + " AC: " + trackAC.innerHTML + " // " + localRelease.tracks[t].trackAC);
 					localRelease.tracks[t].looseName = looseTitle(localRelease.tracks[t].name);
 					localRelease.tracks[t].looseAC = looseTitle(localRelease.tracks[t].artistCredit);
+					if (DEBUG) console.log("Local track "+ (t + 1) + " loose AC: " + localRelease.tracks[t].looseAC);
 					/* if (jsonRelease) {
 						// localRelease.tracks[localRelease.tracks.length - 1] = jsonRelease.mediums[d - 1].tracks[dt];
 						for (let key in jsonRelease.mediums[d - 1].tracks[dt]) if (jsonRelease.mediums[d - 1].tracks[dt].hasOwnProperty(key)) {
@@ -748,9 +751,11 @@ function loadReleasePage() {
 								},
 								isDataTrack: false
 							};
+							if (DEBUG) console.log("Remote release track " + current_track.number + " AC: " + current_track.artistCredit);
 							current_track.artistCreditAsPlainText = decodeHTML(current_track.artistCredit);
 							current_track.looseName = looseTitle(current_track.name);
 							current_track.looseAC = looseTitle(current_track.artistCreditAsPlainText);
+							if (DEBUG) console.log("Remote release track " + current_track.number + " loose AC: " + current_track.looseAC);
 							remoteRelease.tracks.push(current_track);
 							recid2trackIndex.remote[recIDs[t]] = remoteRelease.tracks.length - 1;
 						}
