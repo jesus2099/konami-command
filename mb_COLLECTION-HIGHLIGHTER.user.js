@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. COLLECTION HIGHLIGHTER
-// @version      2026.7.19
+// @version      2026.10.6
 // @description  musicbrainz.org: Highlights releases, release-groups, etc. that you have in your collections (anyone’s collection can be loaded) everywhere
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepageURL  https://community.metabrainz.org/t/collection-highlighter-highlight-owned-stuff-releases-recordings/559889?u=jesus2099
@@ -710,7 +710,7 @@ function getStuffs(what, pwhere) {
 	var selector = {
 		"release": "div#content table.tbl > tbody > tr > td a[href^='/release/']", // pwhere(lab,rec,rgr)
 		"release-group": "div.releaseheader a[href^='/release-group/']", // rel
-		"recording": (pwhere ? "div#content [href^='/recording/']" : "table.medium > tbody > tr > td:not(.pos):not(.video) > a[href^='/recording/'], table.medium > tbody > tr > td:not(.pos):not(.video) > :not(div):not(.ars) a[href^='/recording/']"), // pwhere(art,wrk)/rel
+		"recording": (pwhere ? "div#content [href^='/recording/']" : "table.medium > tbody > tr > td.title > a[href^='/recording/'], table.medium > tbody > tr > td.title > :not(div):not(.ars) a[href^='/recording/']"), // pwhere(art,wrk)/rel
 		"artist": "div.releaseheader a[href^='/artist/'], div#content table.tbl > tbody > tr > td > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > a[href^='/artist/'], div#content table.tbl > tbody > tr > td > span > span > a[href^='/artist/']", // rel
 		"work": "div#content div.ars > dl.ars > dd > a[href^='/work/'], div#content div.ars > dl.ars > dd > span.mp > a[href^='/work/'], div#content div.bottom-credits > table.details > tbody > tr > td > a[href^='/work/'], div#content div.bottom-credits > table.details > tbody > tr > td > span.mp > a[href^='/work/']", // rel
 		"label": "div#sidebar > ul.links > li a[href^='/label/']", // rel
