@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. PLAIN TEXT TRACKLIST
-// @version      2022.9.26.1
+// @version      2022.9.26.2
 // @description  Get a quick copy of the tracklists in plain text (several formats) for quick re-use (in track parser, EAC, foobar2000 or mp3tag for instance)
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://github.com/jesus2099/konami-command/labels/mb_PLAIN-TEXT-TRACKLIST
@@ -65,7 +65,7 @@ function textTracklist(tracks, patt) {
 		var tracknumber = tracks[i].querySelector("td.pos").textContent.trim();
 		if (tracknumber == "1" && i != 0) { tracklist += nextDisc; }
 		// eslint-disable-next-line no-unused-vars -- title sera utilisée par un eval(), plus loin
-		var title = (tracks[i].querySelector("td:not(.pos):not(.video) a[href^='/recording/']").textContent);
+		var title = (tracks[i].querySelector("td.title a[href^='/recording/']").textContent);
 		var artist = tracks[i].querySelector("td:not([class]) + td:not([class])");
 		if (artist) {
 			artist = artist.textContent.trim();
