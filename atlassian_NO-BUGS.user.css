@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name         atlassian. NO BUGS
 @namespace    https://github.com/jesus2099/konami-command
-@version      2026.10.2
+@version      2026.10.14
 @description  Hide AI crap in Jira and Confluence; Show stronger diff colours in Confluence
 @author       jesus2099
 @since        2024 => https://jira.atlassian.com/browse/AI-930 + https://community.atlassian.com/forums/Jira-questions/How-do-i-turn-off-deactivate-remote-the-AI-features/qaa-p/3183807?utm_source=atlcomm&utm_medium=email&utm_campaign=kudos_answer&utm_content=post#M1166782
@@ -29,6 +29,8 @@
 		[data-testid='object-sidebar-control'] > div:has(> button[data-testid='sidebar-feedback-button']),
 		[data-testid='app-navigation-ai-mate'],
 		div[data-testid='browser-extension-banner']:has(span[aria-label='Rovo']),
+		/* big bottom-right button (below floating tool bar) */
+		div:has(> #rovo-button-onboarding-spotlight),
 		/* “smart” links popup */
 		div.smart-links-hover-preview div[data-testid='smart-block-snippet-resolved-view'],
 		div.smart-links-hover-preview button[data-testid='smart-action-ai-summary-action-summarise-action'],
