@@ -1409,6 +1409,7 @@ if (enttype) {
 		j2superturbo.addCSSRule("#release-editor #recordings fieldset table td.checkbox { border-right: 4px solid orange; }");
 		j2superturbo.addCSSRule("#release-editor #recordings fieldset table td.checkbox > label[data-bind*='artist'] { background: #ffc; }");
 		j2superturbo.addCSSRule("#release-editor #recordings fieldset table td.checkbox > label[data-bind*='title'] { background: #cfc; }");
+		j2superturbo.addCSSRule("input.content-changed { background-color: yellow !important; }"); // linked to https://github.com/kellnerd/musicbrainz-scripts/blob/ed8a539113dba54e59c59e42e47d3e1b766a2a81/dist/guessUnicodePunctuation.user.js
 		/* :::: Tracklist parsers and search→replace :::: */
 		userjs.releaseEditor = document.querySelector("div#release-editor");
 		if (userjs.releaseEditor) {
@@ -1626,10 +1627,10 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 				) {
 					for (let t = 0, tracks = TRACKLIST_TOOLS_getInputs("fieldset.advanced-medium td.format > input[id^='medium-title-'][type='text'], fieldset.advanced-medium > div:not([style*='display: none']) td.title > input.track-name[type='text']", event.target, event); t < tracks.length; t++) {
 						var val = searchrep[0].match(/^\/.+\/[gi]*$/) ? tracks[t].value.replace(eval(searchrep[0]), searchrep[1]) : tracks[t].value.split(searchrep[0]).join(searchrep[1]);
-						tracks[t].style.removeProperty("background-color");
+						tracks[t].classList.remove("content-changed");
 						if (tracks[t].value != val) {
 							tracks[t].value = val;
-							tracks[t].style.setProperty("background-color", "yellow");
+							tracks[t].classList.add("content-changed");
 							tracks[t].focus();
 							sendEvent(tracks[t], "change");
 						}
@@ -1706,10 +1707,10 @@ function TRACKLIST_TOOLS_init() {
 		var tps = userjs.releaseEditor.querySelectorAll("#tracklist-tools button[data-click='openTrackParser']");
 		for (let tp = 0; tp < tps.length; tp++) {
 			if (!tps[tp].parentNode.querySelector("." + userjs.id + "track-length-parser")) {
-				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Time Parser"), tps[tp]);
+				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "track-length-parser", "_ctrlText": "Erase times", title: "CONTROL key to ERASE track times\nSHIFT key to alter all visible tracklists"}, s: {backgroundColor: "yellow"}}, "Time Parser"), tps[tp]);
 			}
 			if (!tps[tp].parentNode.querySelector("." + userjs.id + "search-replace")) {
-				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "search-replace", title: "SHIFT key to alter all open tracklists"}, s: {backgroundColor: "yellow"}}, "Search→replace"), tps[tp]);
+				addAfter(createTag("button", {a: {type: "button", "class": userjs.id + "search-replace", title: "SHIFT key to alter all visible tracklists"}, s: {backgroundColor: "yellow"}}, "Search→replace"), tps[tp]);
 			}
 		}
 	})).observe(userjs.releaseEditor, {childList: true, subtree: true});
