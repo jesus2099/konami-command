@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2026.10.10
+// @version      2026.10.14
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected recording dates / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1624,7 +1624,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 					(searchrep[0] = prompt("search\n\neither regex (case *i*nsensitive and *g*lobal are optional flags): /\"([^\"]+)\"/g\n\nor normal (case sensitive and global): My String", searchrep[0]))
 					&& (searchrep[1] = prompt("replace\n\nif it was a regex, you can use those $1 $2 $3 etc.: “$1”", searchrep[1])) != null
 				) {
-					for (let t = 0, tracks = TRACKLIST_TOOLS_getInputs("td.format > input[id^='medium-title-'][type='text'], td.title > input.track-name[type='text']", event.target, event); t < tracks.length; t++) {
+					for (let t = 0, tracks = TRACKLIST_TOOLS_getInputs("fieldset.advanced-medium td.format > input[id^='medium-title-'][type='text'], fieldset.advanced-medium > div:not([style*='display: none']) td.title > input.track-name[type='text']", event.target, event); t < tracks.length; t++) {
 						var val = searchrep[0].match(/^\/.+\/[gi]*$/) ? tracks[t].value.replace(eval(searchrep[0]), searchrep[1]) : tracks[t].value.split(searchrep[0]).join(searchrep[1]);
 						tracks[t].style.removeProperty("background-color");
 						if (tracks[t].value != val) {
@@ -1640,16 +1640,16 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 			} else if (event.target.classList.contains(userjs.id + "track-length-parser")) {
 				var durationParser = "(?:(?:(\\b\\d\\b)[°h])?(\\b\\d{1,3}\\b)[′’'m])?(\\b\\d{2}\\b)[″”\"s]|(?:(?:(\\b\\d\\b):)?(\\b\\d{1,3}\\b):)(\\b\\d{2}\\b)";
 				var erase = event.target.textContent.match(/erase/i) || event.ctrlKey;
-				var inputs = TRACKLIST_TOOLS_getInputs("td.length > input.track-length[type='text']:not(.disabled-hint)", event.target, event);
+				var inputs = TRACKLIST_TOOLS_getInputs("fieldset.advanced-medium > div:not([style*='display: none']) td.length > input.track-length[type='text']:not(.disabled-hint)", event.target, event);
 				var distitle = document.querySelector("td.length > input.track-length[type='text'].disabled-hint");
 				var times = !erase && prompt("Track length parser\n\nPlease paste your huge text including track times below.\n“1:23” and “1′23″” and even incorrect “1’23”” and “1'23\"” will be parsed.\nYou can for instance copy from your foobar2000 tracklist, minc.or.jp, etc.\nWARNING. You must understand that all current times will be overwritten in the tracklist editor.");
-				if (inputs.length == 0 && distitle) {
+				if (inputs.length === 0 && distitle) {
 					distitle = distitle.getAttribute("title") || "No track length found.";
 					event.target.setAttribute("disabled", "disabled");
 					event.target.setAttribute("title", distitle);
 					alert(distitle);
 				} else if (erase && confirm("Are you sure you want to ERASE all track times?") || times && (times = times.match(new RegExp(durationParser, "g")))) {
-					if (erase || inputs.length == times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are " + times.length + " lengths detected in your text, butt\nthere are " + inputs.length + " tracks in the tracklist.\nAre you sure to go on?")) {
+					if (erase || inputs.length === times.length || confirm("ACHTUNG, detected times and tracks count mismatch.\nThere are " + times.length + " lengths detected in your text, butt\nthere are " + inputs.length + " tracks in the tracklist.\nAre you sure to go on?")) {
 						for (let t = 0, i = 0; (erase || t < times.length) && i < inputs.length; t++, i++) {
 							var time = "";
 							if (!erase) {
@@ -1683,7 +1683,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 					}
 					if (event.shiftKey) {
 						if (!(event.ctrlKey && _ctrlText)) { event.target.style.setProperty("background-color", "gold"); }
-						event.target.replaceChild(document.createTextNode(event.target.textContent + " (all)"), event.target.firstChild);
+						event.target.replaceChild(document.createTextNode(event.target.textContent + " (all visible)"), event.target.firstChild);
 					}
 					break;
 				case "mouseout":
@@ -1697,7 +1697,7 @@ function TRACKLIST_TOOLS_buttonHandler(event) {
 function TRACKLIST_TOOLS_getInputs(inputCSS, obj, evt) {
 	var inputs = obj.closest("fieldset.advanced-medium");
 	if (obj.value.match(/\(all\)/i) || evt.shiftKey) { inputs = inputs.parentNode; }
-	return inputs.querySelectorAll("fieldset.advanced-medium " + inputCSS);
+	return inputs.querySelectorAll(inputCSS);
 }
 function TRACKLIST_TOOLS_init() {
 	debug("TRACKLIST_TOOLS_init");
