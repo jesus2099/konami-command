@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. MASS MERGE RECORDINGS
-// @version      2026.10.6.1337
+// @version      2026.11.11
 // @description  musicbrainz.org: Merges selected or all recordings from release A to release B – List all RG recordings
 // @namespace    https://github.com/jesus2099/konami-command
 // @supportURL   https://community.metabrainz.org/t/merge-duplicate-recordings-between-two-editions-of-the-same-album-with-mb-mass-merge-recordings/203168?u=jesus2099
@@ -13,7 +13,7 @@
 // @require      https://github.com/jesus2099/konami-command/raw/198d05ea555257eaf8a2a8d8333a8cdeda28d8ad/lib/CONTROL-POMME.js?version=2024.10.25
 // @require      https://github.com/jesus2099/konami-command/raw/89dce29b9cce6e92e552f7d8ce2f5cb0ed161f2a/lib/MB-JUNK-SHOP.js?version=2024.10.13
 // @require      https://github.com/jesus2099/konami-command/raw/63aeeec359c7f1b5920308f1b105da4cce09ffe2/lib/SUPER.js?version=2025.7.21
-// @grant        none
+// @grant        GM_notification
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/release\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/(disc\/\d+)?)?(\?tport=\d+)?(#.*)?$/
 // @include      /^https?:\/\/((beta|test)\.)?musicbrainz\.(org|eu)\/release-group\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\?|$)/
 // @run-at       document-end
@@ -1315,7 +1315,8 @@ function loadingAllRecordings() {
 			// alert(this.response.count > this.response.offset + this.response.recordings.length); // true: next page
 			// 122 recordings: https://musicbrainz.org/release-group/98e078fe-37d9-43f7-8bb4-96526727c4e0
 		} else {
-			alert("Error loading RG recordings!");
+			GM_notification("Got an Error " + this.status + " while loading RG recordings\nRetrying in 4 seconds", userjs.name);
+			setTimeout(loadingAllRecordings, 4000);
 		}
 	});
 	xhr.open("GET", "/ws/2/recording?query=rgid%3A" + release_group_MBID[1] + "&limit=100", true);
