@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         mb. SUPER MIND CONTROL Ⅱ X TURBO
-// @version      2026.10.14
+// @version      2026.11.13
 // @description  musicbrainz.org power-ups: RELEASE_CLONER. copy/paste releases / DOUBLE_CLICK_SUBMIT / CONTROL_ENTER_SUBMIT / TRACKLIST_TOOLS. search→replace, track length parser, remove recording relationships, set selected recording dates / LAST_SEEN_EDIT. handy for subscribed entities / COOL_SEARCH_LINKS / COPY_TOC / ROW_HIGHLIGHTER / SPOT_CAA / SPOT_AC / RECORDING_LENGTH_COLUMN / RELEASE_EVENT_COLUMN / WARN_NEW_WINDOW / SERVER_SWITCH / TAG_TOOLS / USER_STATS / EASY_DATE. paste full dates in one go / STATIC_MENU / SLOW_DOWN_RETRY / CENTER_FLAGS / RATINGS_ON_TOP / HIDE_RATINGS / UNLINK_ENTITY_HEADER / MARK_PENDING_EDIT_MEDIUMS
 // @namespace    https://github.com/jesus2099/konami-command
 // @homepage     https://github.com/jesus2099/konami-command/blob/master/mb_SUPER-MIND-CONTROL-II-X-TURBO.md
@@ -1040,6 +1040,19 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 				/* Remove release group         */ editTypes.push("23");
 				/* Remove release group alias   */ editTypes.push("27");
 				break;
+			case "work":
+				/* Add ISWCs            */ editTypes.push("49");
+				/* Add track (historic) */ editTypes.push("207,218");
+				/* Add work             */ editTypes.push("41");
+				/* Add work alias       */ editTypes.push("46");
+				/* Add work annotation  */ editTypes.push("45");
+				/* Edit work            */ editTypes.push("42");
+				/* Edit work alias      */ editTypes.push("48");
+				/* Merge works          */ editTypes.push("44");
+				/* Remove ISWC          */ editTypes.push("410");
+				/* Remove work          */ editTypes.push("43");
+				/* Remove work alias    */ editTypes.push("47");
+				break;
 		}
 	}
 	if (searchMode.match(/cover/)) {
@@ -1139,6 +1152,21 @@ function entitySpecificEdits(entityType, refine, searchMode) {
 				/* release_group-url relationships           */ linkTypes.push(88, 89, 90, 93, 94, 96, 97, 284, 287, 353, 853, 907, 1169, 1190);
 				/* release_group-work relationships          */ linkTypes.push(1283);
 				break;
+			case "work":
+				/* Add relationship                 */ editTypes.push("90,233");
+				/* Edit relationship                */ editTypes.push("91,234");
+				/* Remove relationship              */ editTypes.push("92,235");
+				/* Reorder relationships            */ editTypes.push("99");
+				/* area-work relationships          */ linkTypes.push(357, 715, 873, 875, 877, 879, 881, 884, 885, 914, 1279);
+				/* artist-work relationships        */ linkTypes.push(170, 167, 168, 165, 169, 844, 872, 1286, 917, 293, 282, 164, 294, 1285, 834, 1299, 162, 846, 889, 956, 161, 972, 1257);
+				/* event-work relationships         */ linkTypes.push(845);
+				/* label-work relationships         */ linkTypes.push(208, 890, 922, 1265);
+				/* place-work relationships         */ linkTypes.push(716, 874, 876, 878, 880, 882, 883, 886, 892, 983);
+				// Cleanup the edit history from obvious relationships /* recording-work relationships     */ linkTypes.push(278);
+				/* release_group-work relationships */ linkTypes.push(1283);
+				/* series-work relationships        */ linkTypes.push(743, 891);
+				/* url-work relationships           */ linkTypes.push(271, 939, 911, 913, 912, 274, 921, 908, 1188, 273, 279, 280, 286, 289, 312, 351, 843, 854, 971, 992);
+				/* work-work relationships          */ linkTypes.push(239, 241, 314, 315, 350, 316, 1046, 1284, 1047, 281, 1300, 1278);
 		}
 	}
 	if (editTypes.length > 0 || linkTypes.length > 0) {
